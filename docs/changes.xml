@@ -51,6 +51,12 @@
             </p>
             <bug id="2881"/>
         </change>
+        <change>
+            <p>
+                Fixed a javascript error when editing texts and using the <attr>formats</attr> attribute.
+            </p>
+            <bug id="2879"/>
+        </change>
     </changes>
 
     <changes for="administrators">
