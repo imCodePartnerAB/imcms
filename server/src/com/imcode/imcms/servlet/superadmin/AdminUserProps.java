@@ -1520,13 +1520,7 @@ public class AdminUserProps extends Administrator {
     } // End getCurrentUserId
 
     private String doPasswordString( String pwd ) {
-        // Lets fix the password string
-        int len = pwd.length();
-        pwd = "";
-        for ( int i = 0; i < len; i++ ) {
-            pwd += "*";
-        }
-        return pwd;
+        return StringUtils.repeat( "*", null != pwd ? pwd.length() : 0 ) ;
     }
 
     /**

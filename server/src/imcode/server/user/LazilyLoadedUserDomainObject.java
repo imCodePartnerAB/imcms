@@ -9,7 +9,7 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
     private boolean rolesLoaded;
 
     public LazilyLoadedUserDomainObject( int id ) {
-        this(id, false) ;
+        this(id, true) ;
     }
 
     public LazilyLoadedUserDomainObject( int id, boolean loadAttributes ) {
@@ -146,6 +146,7 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
     }
 
     public String getTitle() {
+        loadAttributes();
         return super.getTitle();
     }
 
