@@ -6,9 +6,12 @@
  */
 package imcode.server.document.textdocument;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Comparator;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.SetUtils;
+import org.apache.commons.collections.Predicate;
+
+import java.util.*;
 
 public class MenuDomainObject {
 
@@ -23,6 +26,7 @@ public class MenuDomainObject {
     public final static int MENU_SORT_ORDER__DEFAULT = MENU_SORT_ORDER__BY_HEADLINE;
 
     public final static int DEFAULT_SORT_KEY = 500;
+    private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
 
     public MenuDomainObject() {
         this(0, MENU_SORT_ORDER__DEFAULT) ;
@@ -31,7 +35,11 @@ public class MenuDomainObject {
     public MenuDomainObject( int id, int sortOrder ) {
         this.id = id;
         this.sortOrder = sortOrder;
-        menuItems = new TreeSet( getMenuItemComparatorForSortOrder( sortOrder ) );
+        menuItems = SetUtils.predicatedSortedSet( new TreeSet( getMenuItemComparatorForSortOrder( sortOrder ) ), new Predicate() {
+            public boolean evaluate( Object o ) {
+                return o instanceof MenuItemDomainObject && null != ((MenuItemDomainObject)o).getSortKey() ;
+            }
+        });
     }
 
     public int getId() {
@@ -51,7 +59,30 @@ public class MenuDomainObject {
     }
 
     public void addMenuItem( MenuItemDomainObject menuItem ) {
+        if (null == menuItem.getSortKey()) {
+            Integer maxSortKey = getMaxSortKey();
+            Integer sortKey;
+            if ( null != maxSortKey ) {
+                sortKey = new Integer( maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT );
+            } else {
+                sortKey = new Integer( DEFAULT_SORT_KEY );
+            }
+            menuItem.setSortKey( sortKey );
+        }
+
         menuItems.add( menuItem );
+    }
+
+    private Integer getMaxSortKey() {
+        Collection menuItemSortKeys = CollectionUtils.collect(menuItems,new Transformer() {
+            public Object transform( Object o ) {
+                return ((MenuItemDomainObject)o).getSortKey() ;
+            }
+        }) ;
+        if (menuItemSortKeys.isEmpty()) {
+            return null ;
+        }
+        return (Integer)Collections.max(menuItemSortKeys) ;
     }
 
     public void removeMenuItem( MenuItemDomainObject menuItem ) {
@@ -66,10 +97,10 @@ public class MenuDomainObject {
                 comparator = MenuItemComparator.TREE_SORT_KEY.chain(comparator);
                 break ;
             case MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED:
-                comparator = MenuItemComparator.SORT_KEY.chain(comparator).reversed();
+                comparator = MenuItemComparator.SORT_KEY.reversed().chain(comparator) ;
                 break;
             case MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED:
-                comparator = MenuItemComparator.MODIFIED_DATETIME.chain(comparator).reversed();
+                comparator = MenuItemComparator.MODIFIED_DATETIME.reversed().chain(comparator);
                 break;
         }
         return comparator ;

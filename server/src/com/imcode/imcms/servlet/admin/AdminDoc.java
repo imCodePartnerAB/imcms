@@ -32,6 +32,10 @@ public class AdminDoc extends HttpServlet {
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        if (!documentMapper.userHasMoreThanReadPermissionOnDocument( user, document )) {
+            flags = 0 ;
+        }
         if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
             forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION );
         } else if ( document instanceof BrowserDocumentDomainObject
@@ -61,8 +65,6 @@ public class AdminDoc extends HttpServlet {
             } else {
                 parent_meta_id = start_doc;
             }
-
-            UserDomainObject user = Utility.getLoggedOnUser( req );
 
             String tempstring = AdminDoc.adminDoc( meta_id, parent_meta_id, user, req, res );
 

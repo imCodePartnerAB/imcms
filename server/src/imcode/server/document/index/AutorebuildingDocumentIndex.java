@@ -32,10 +32,10 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
     private final static Logger log = Logger.getLogger( AutorebuildingDocumentIndex.class.getName() );
 
     private DirectoryIndex index;
-    private Thread indexBuildingThread;
-    private Timer scheduledIndexBuildingTimer;
-    private boolean currentlyBuildingNewIndex;
-    private Set documentsToAppendToNewIndex = new HashSet();
+    private Set documentsToAddToNewIndex = Collections.synchronizedSet( new HashSet() );
+    private Set documentsToRemoveFromNewIndex = Collections.synchronizedSet( new HashSet() );
+    private Object newIndexBuildingLock = new Integer( 0 );
+    private boolean buildingNewIndex;
 
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow queries?
@@ -44,17 +44,14 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
 
     public AutorebuildingDocumentIndex( File indexDirectory ) {
         this.index = new DirectoryIndex( indexDirectory );
-        scheduledIndexBuildingTimer = new Timer( true );
-        scheduleRecurringIndexRebuild();
-    }
-
-    private void scheduleRecurringIndexRebuild() {
+        Timer scheduledIndexBuildingTimer = new Timer( true );
         scheduledIndexBuildingTimer.scheduleAtFixedRate( new ScheduledIndexingTimerTask(), 0, INDEXING_SCHEDULE_PERIOD__MILLISECONDS );
     }
 
     public synchronized void indexDocument( DocumentDomainObject document ) {
-        if ( currentlyBuildingNewIndex ) {
-            documentsToAppendToNewIndex.add( document );
+        log.debug( "indexDocument - called" );
+        if ( buildingNewIndex ) {
+            documentsToAddToNewIndex.add( document );
         }
         try {
             index.indexDocument( document );
@@ -64,74 +61,90 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
         }
     }
 
-    public synchronized DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IOException {
+    public synchronized void removeDocument( DocumentDomainObject document ) {
+        if ( buildingNewIndex ) {
+            documentsToRemoveFromNewIndex.add( document );
+        }
         try {
-            return index.trySearch( query, searchingUser );
-        } catch ( IOException firstException ) {
-            log.warn( "Search failed. Reindexing and retrying...", firstException );
-            buildNewIndex();
-            try {
-                return index.trySearch( query, searchingUser );
-            } catch ( IOException secondException ) {
-                String errorMessage = "Search failed again, after reindexing and retrying.";
-                log.fatal( errorMessage, secondException );
-                IOException ex = new IOException( errorMessage );
-                ex.initCause( secondException );
-                throw ex;
-            }
+            index.removeDocument( document );
+        } catch ( IOException e ) {
+            log.error( "Failed to remove document " + document.getId() + " from index. Reindexing..." );
+            buildNewIndexInBackground();
         }
     }
 
-    private synchronized void buildNewIndexInBackground() {
-        indexBuildingThread = new Thread( "Background indexing thread" ) {
+    public synchronized DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IOException {
+        log.debug( "search - called" );
+        try {
+            return index.trySearch( query, searchingUser );
+        } catch ( IOException ex ) {
+            log.warn( "Search failed", ex );
+            buildNewIndexInBackground();
+            throw  ex;
+        }
+    }
+
+    private void buildNewIndexInBackground() {
+        Thread indexBuildingThread = new Thread( "Background indexing thread" ) {
             public void run() {
                 buildNewIndex();
             }
         };
+        int callersPriority = Thread.currentThread().getPriority();
+        int newPriority = Math.max( callersPriority - 1, Thread.MIN_PRIORITY );
+        indexBuildingThread.setPriority( newPriority );
+        log.info( "Setting the callersPriority on the background indexing thread to "
+                  + indexBuildingThread.getPriority() );
+
         indexBuildingThread.setDaemon( true );
         indexBuildingThread.start();
     }
 
     private void buildNewIndex() {
+        log.debug( "buildNewIndex - called" );
         NDC.push( "buildNewIndex" );
         try {
-            DirectoryIndex newIndex;
-            synchronized ( this ) {
-                if ( currentlyBuildingNewIndex ) {
-                    return;
-                }
-                currentlyBuildingNewIndex = true;
-                newIndex = createNewDirectoryDocumentIndex( this.index );
-            }
-            newIndex.indexAllDocuments();
-            synchronized ( this ) {
-                for ( Iterator iterator = documentsToAppendToNewIndex.iterator(); iterator.hasNext(); ) {
-                    DocumentDomainObject document = (DocumentDomainObject)iterator.next();
-                    newIndex.indexDocument( document );
-                    iterator.remove();
-                }
-                replaceIndexWithNewIndex( newIndex );
-                currentlyBuildingNewIndex = false;
-            }
+            File indexDirectoryFile = this.index.getDirectory();
+            File parentFile = indexDirectoryFile.getParentFile();
+            String name = indexDirectoryFile.getName();
+            buildNewIndex( parentFile, name );
         } catch ( IOException e ) {
             log.fatal( "Failed to index all documents.", e );
         } finally {
-            synchronized ( this ) {
-                currentlyBuildingNewIndex = false;
-            }
             NDC.pop();
         }
     }
 
-    private DirectoryIndex createNewDirectoryDocumentIndex( DirectoryIndex directory ) {
-        File indexDirectoryFile = directory.getDirectory();
-        File newIndexDirectoryFile = new File( indexDirectoryFile.getParentFile(), indexDirectoryFile.getName()
-                                                                                   + ".new" );
-        DirectoryIndex newIndexDirectory = new DirectoryIndex( newIndexDirectoryFile );
-        return newIndexDirectory;
+    private void buildNewIndex( File parentFile, String name ) throws IOException {
+        if ( buildingNewIndex ) {
+            return;
+        }
+        synchronized ( newIndexBuildingLock ) {
+            buildingNewIndex = true;
+            File newIndexDirectoryFile = new File( parentFile, name + ".new" );
+            DirectoryIndex newIndexDirectory = new DirectoryIndex( newIndexDirectoryFile );
+            newIndexDirectory.indexAllDocuments();
+            replaceIndexWithNewIndex( newIndexDirectory );
+            buildingNewIndex = false;
+        }
+        considerDocumentsForNewIndex();
+    }
+
+    private synchronized void considerDocumentsForNewIndex() throws IOException {
+        for ( Iterator iterator = documentsToAddToNewIndex.iterator(); iterator.hasNext(); ) {
+            DocumentDomainObject document = (DocumentDomainObject)iterator.next();
+            index.indexDocument( document );
+            iterator.remove();
+        }
+        for ( Iterator iterator = documentsToRemoveFromNewIndex.iterator(); iterator.hasNext(); ) {
+            DocumentDomainObject document = (DocumentDomainObject)iterator.next();
+            index.removeDocument( document );
+            iterator.remove();
+        }
     }
 
     private synchronized void replaceIndexWithNewIndex( DirectoryIndex newIndex ) throws IOException {
+        log.debug( "replaceIndexWithNewIndex - called" );
         File indexDirectory = index.getDirectory();
         File oldIndex = new File( indexDirectory.getParentFile(), indexDirectory.getName()
                                                                   + ".old" );
@@ -153,6 +166,7 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
     private class ScheduledIndexingTimerTask extends TimerTask {
 
         public void run() {
+            log.debug( "ScheduledIndexingTimerTask.run() - called" );
             Date nextExecutionTime = new Date( this.scheduledExecutionTime() + INDEXING_SCHEDULE_PERIOD__MILLISECONDS );
             String nextExecutionTimeString = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING ).format( nextExecutionTime );
             log.info( "Starting scheduled indexing. Next indexing at " + nextExecutionTimeString );
@@ -180,8 +194,7 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
                 searchStopWatch.start();
                 Hits hits = indexSearcher.search( query );
                 long searchTime = searchStopWatch.getTime();
-                DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-                List documentList = documentMapper.getDocumentListForHits( hits, searchingUser );
+                List documentList = getDocumentListForHits( hits, searchingUser );
                 log.debug( "Search for " + query.toString() + ": " + searchTime + "ms. Total: "
                            + searchStopWatch.getTime()
                            + "ms." );
@@ -194,12 +207,29 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
             }
         }
 
-        private void indexDocument( DocumentDomainObject document ) throws IOException {
-            deleteDocumentFromIndex( document );
-            addDocumentToIndex( document );
+        private List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
+            List documentList = new ArrayList( hits.length() );
+            final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            for ( int i = 0; i < hits.length(); ++i ) {
+                int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
+                DocumentDomainObject document = documentMapper.getDocument( metaId );
+                if (null == document) {
+                    buildNewIndexInBackground();
+                    continue ;
+                }
+                if ( documentMapper.userHasPermissionToSearchDocument( searchingUser, document ) ) {
+                    documentList.add( document );
+                }
+            }
+            return documentList;
         }
 
-        private void deleteDocumentFromIndex( DocumentDomainObject document ) throws IOException {
+        private void indexDocument( DocumentDomainObject document ) throws IOException {
+            removeDocument( document );
+            addDocument( document );
+        }
+
+        private void removeDocument( DocumentDomainObject document ) throws IOException {
             IndexReader indexReader = IndexReader.open( directory );
             try {
                 indexReader.delete( new Term( "meta_id", "" + document.getId() ) );
@@ -208,7 +238,7 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
             }
         }
 
-        private void addDocumentToIndex( DocumentDomainObject document ) throws IOException {
+        private void addDocument( DocumentDomainObject document ) throws IOException {
             IndexWriter indexWriter = createIndexWriter( false );
             try {
                 addDocumentToIndex( document, indexWriter );
@@ -243,11 +273,16 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
             IntervalSchedule indexingLogSchedule = new IntervalSchedule( INDEXING_LOG_PERIOD__MILLISECONDS );
 
             for ( int i = 0; i < documentIds.length; i++ ) {
-                addDocumentToIndex( documentMapper.getDocument( documentIds[i] ), indexWriter );
+                try {
+                    addDocumentToIndex( documentMapper.getDocument( documentIds[i] ), indexWriter );
+                } catch ( Exception ex ) {
+                    log.error( "Couln't index document with meta_id " + documentIds[i] + ", trying next document.", ex );
+                }
 
                 if ( indexingLogSchedule.isTime() ) {
                     logIndexingProgress( i, documentIds.length );
                 }
+                Thread.yield(); // To make sure other threads with the same priority onece in a while gets a chance to run something.
             }
 
             logIndexingCompleted( documentIds.length, indexingLogSchedule.getStopWatch() );

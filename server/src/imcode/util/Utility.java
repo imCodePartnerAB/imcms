@@ -4,6 +4,7 @@ import com.imcode.imcms.servlet.admin.AdminDoc;
 import imcode.server.ApplicationServer;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.http.HttpServletRequest;
@@ -122,10 +123,16 @@ public class Utility {
     }
 
     public static String getLinkedStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
-        return "<a href=\"AdminDoc?meta_id=" + document.getId() + "&" + AdminDoc.PARAMETER__DISPATCH_FLAGS + "=1\">" +
-               ApplicationServer.getIMCServiceInterface().getDocumentMapper().getStatusIconTemplate( document, user ) +
-               "</a>";
-
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        String statusIconTemplate = documentMapper.getStatusIconTemplate( document, user );
+        if ( documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+            statusIconTemplate = "<a href=\"AdminDoc?meta_id=" + document.getId() + "&"
+                                 + AdminDoc.PARAMETER__DISPATCH_FLAGS
+                                 + "=1\">" +
+                                 statusIconTemplate +
+                                 "</a>";
+        }
+        return statusIconTemplate;
     }
 
     public static boolean isValidEmail( String email ) {

@@ -1,6 +1,7 @@
 package imcode.server.parser;
 
 import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.MenuDomainObject;
@@ -197,12 +198,20 @@ class MenuParserSubstitution implements Substitution {
                                                                              StringBuffer result,
                                                                              Properties menuAttributes,
                                                                              PatternMatcher patMat, final int menuIndex ) {
-        Iterator menuItemsIterator = new FilterIterator(Arrays.asList(menu.getMenuItems()).iterator(), new Predicate() {
+        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        Iterator menuItemsIterator = new FilterIterator( Arrays.asList( menu.getMenuItems() ).iterator(), new Predicate() {
             public boolean evaluate( Object o ) {
-                DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument() ;
-                return editingMenu( menuIndex ) || document.isPublishedAndNotArchived() ;
+                DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
+                UserDomainObject user = parserParameters.getDocumentRequest().getUser();
+                if ( document.isVisibleInMenusForUnauthorizedUsers()
+                     || documentMapper.userHasAtLeastDocumentReadPermission( user, document ) ) {
+                    if ( editingMenu( menuIndex ) || document.isPublishedAndNotArchived() ) {
+                        return true;
+                    }
+                }
+                return false;
             }
-        });
+        } );
         int menuItemIndexStart = 0;
         try {
             menuItemIndexStart = Integer.parseInt( menuAttributes.getProperty( "indexstart" ) );
