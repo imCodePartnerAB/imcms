@@ -2,9 +2,19 @@
 
 <HEAD>
 <TITLE>Admin</TITLE>
+
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </HEAD>
 <BODY  bgcolor="#FFFFFF">
-<FORM METHOD="post" ACTION="/servlet/GetExistingDoc">
+<FORM METHOD="post" ACTION="GetExistingDoc">
 <CENTER>
       <TABLE cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
 		<TR bgcolor="#333366"> 
@@ -21,7 +31,7 @@
 			<p>&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Page
             with Meta ID</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <input type="TEXT" name="existing_meta_id" value="" SIZE=10> &nbsp;&nbsp;&nbsp;
-            <INPUT TYPE=SUBMIT VALUE="Add link" NAME="ok"><INPUT TYPE=RESET VALUE="Reset"><INPUT TYPE=SUBMIT VALUE="cancel" NAME="cancel"> 
+            <INPUT TYPE=SUBMIT VALUE="Add link" NAME="ok"><INPUT TYPE=RESET VALUE="Reset"><INPUT TYPE=SUBMIT VALUE="cancel" NAME="cancel">&nbsp; <a href="javascript:openHelp('19');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a> 
 			</p>
 			</TD>
 		</TR>

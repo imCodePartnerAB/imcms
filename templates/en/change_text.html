@@ -36,13 +36,16 @@
             <INPUT TYPE=SUBMIT VALUE="OK" NAME="ok">
 			<INPUT TYPE=RESET VALUE="Reset">
             <INPUT TYPE=SUBMIT VALUE="Cancel" NAME="cancel">
-            <span id="three" style="position:absolute; visibility:hidden"> 
+            <span id="three" style="position:absolute; visibility:hidden">
+              <input type="button" name="rensa" value="Delete" onClick="document.forms[0].text.value=''"><a href="javascript:openHelp('36');">&nbsp;<img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+	                </div>
             
             </span>
           </TD>
         </TR>
       </CENTER>
       <INPUT TYPE=HIDDEN NAME=meta_id VALUE=#meta_id#>
+      <INPUT TYPE="HIDDEN" NAME="txt_no" VALUE="#txt_no#">
     </TABLE>
 </FORM>
 </H3>

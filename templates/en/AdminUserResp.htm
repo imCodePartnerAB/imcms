@@ -12,11 +12,11 @@ function evalPrepareAdd() {
 	var valFieldsOk 
 	valFielsOk = true
 
-	if( document.forms[0].login_name.value == "" ) valFieldsOk = false  	
-	//if( document.forms[0].password1.value == "" ) valFieldsOk = false  	
-	//if( document.forms[0].password2.value == "" ) valFieldsOk = false  	
-	if( document.forms[0].first_name.value == "" ) valFieldsOk = false  	
-	if( document.forms[0].last_name.value == "" ) valFieldsOk = false  	
+	if( document.UserInfo.login_name.value == "" ) valFieldsOk = false  	
+	//if( document.UserInfo.password1.value == "" ) valFieldsOk = false  	
+	//if( document.UserInfo.password2.value == "" ) valFieldsOk = false  	
+	if( document.UserInfo.first_name.value == "" ) valFieldsOk = false  	
+	if( document.UserInfo.last_name.value == "" ) valFieldsOk = false  	
 
 	if(valFieldsOk == "") {
 		var msg = "You have not filled in an obligatory field! Please fill in all obligatory information fields."
@@ -24,18 +24,18 @@ function evalPrepareAdd() {
 		return false	
 	}
 	
-	if(document.forms[0].password1.value != document.forms[0].password2.value){
+	if(document.UserInfo.password1.value != document.UserInfo.password2.value){
 	
 		var msg = "NB! Verification of the password failed as the password entries did not match!"
-		document.forms[0].password1.value = "" 
-		document.forms[0].password2.value = ""
-		document.forms[0].password1.focus()
+		document.UserInfo.password1.value = "" 
+		document.UserInfo.password2.value = ""
+		document.UserInfo.password1.focus()
 		alert(msg)		
 		return false
 	}
 	
 	var userType 
-	userType = document.forms[0].user_type.selectedIndex 
+	userType = document.UserInfo.user_type.selectedIndex 
 	
 // Lets check if the user has make a choice
 	if(userType == "-1") {
@@ -45,7 +45,7 @@ function evalPrepareAdd() {
 	}
 
 	var userRole 
-	userRole = document.forms[0].roles.selectedIndex 
+	userRole = document.UserInfo.roles.selectedIndex 
 	if(userRole == "-1") {
 		var msg = "You have not selected a role for the user! Please choose which role(s) "
 		msg += "the user should have."
@@ -64,6 +64,7 @@ function evalPrepareAdd() {
 <form method="post" action="AdminUserProps">
   <input type="hidden" name="CURR_USER_ID" value="#CURR_USER_ID#">
   <input type="hidden" name="adminTask" value="#ADMIN_TASK#">
+  <input type="hidden" name="phone_id" value="#PHONE_ID#">
   <table width="40%" border="0" cellspacing="0">
     <tr bgcolor="#333366"> 
       <td width="5%">&nbsp;</td>
@@ -280,7 +281,7 @@ function evalPrepareAdd() {
         <p> 
           <input type="submit" name="SAVE_USER" value="Save" onClick="if(evalPrepareAdd()==false)return false; return true;">
           <input type="reset" name="Reset" value="Reset">
-          <input type="submit" name="GO_BACK" value="Cancel">
+          <input type="submit" name="GO_BACK" value="Cancel">&nbsp; <a href="javascript:openHelp('71');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open Help"></a>
         </p>
       </td>
       <td width="5%">&nbsp;</td>

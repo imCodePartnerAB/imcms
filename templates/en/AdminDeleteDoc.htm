@@ -14,7 +14,7 @@ function setAdminTask() {
 	
 	// Lets alert the user, he must make a choice
 	if(theChoice == "NO_CHOOSED") {
-		alert("Please try again and choose an alternative!");
+		alert("Ogiltigt val!");
 		return ;	
 	}
 	// Lets go administrate users
@@ -32,7 +32,7 @@ function setAdminTask() {
 
 	// Lets delete a meta id the form
 	if(theChoice == "DELETE_DOC") {
-	var msg = "Warning! The page will be deleted from the site and stored in the server! Continue?" ;
+	var msg = "Varning! Dokumentet kommer att raderas! Fortsätta?" ;
 		var Ok = window.confirm(msg);
 		if (! Ok) 
 		  return ;		 	  
@@ -48,6 +48,10 @@ function confirmDeleteDoc() {
 	else 
 		return false
 }
+
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
 //-->
 </SCRIPT>
 </head>
@@ -57,8 +61,7 @@ function confirmDeleteDoc() {
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
-		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Remove a web page 
-		  </font></b></div>
+		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Remove a web page</font></b></div>
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
@@ -69,14 +72,13 @@ function confirmDeleteDoc() {
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%" height="23">&nbsp;</td>
-	  <td width="90%" height="23"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Please insert
-		meta ID number of the page you wish to remove:</font></td>
+	  <td width="90%" height="23"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Please insert meta ID number of the page you wish to remove:</font></td>
 	  <td width="5%" height="23">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		Meta ID number: 
+		Meta-id: 
 		<input type="text" name="delete_meta_id" maxlength="9" size="9">
 		</font></td>
 	  <td width="5%">&nbsp;</td>
@@ -91,7 +93,7 @@ function confirmDeleteDoc() {
 	  <td width="90%" height="26"> 
 		<div align="left">
 		  <input type="submit" name="DELETE_DOC" value="Remove" onClick="if(confirmDeleteDoc()==false)return false; return true;">
-		  <input type="submit" name="GO_BACK" value="Back">
+		  <input type="submit" name="GO_BACK" value="Back">&nbsp; <a href="javascript:openHelp('85');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open Help"></a>
 		</div>
 	  </td>
 	  <td width="5%" height="23">&nbsp;</td>

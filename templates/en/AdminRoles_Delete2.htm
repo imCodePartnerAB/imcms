@@ -2,6 +2,15 @@
 <head>
 <title>Warning!</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -16,8 +25,7 @@
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Are you sure 
-		that you wish to remove this role? 
+	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Are you sure that you wish to remove this role? 
 		<input type="hidden" name="ROLE_ID" value="#CURRENT_ROLE_ID#">
 		</font></td>
 	  <td width="5%">&nbsp;</td>
@@ -32,7 +40,7 @@
 	  <td width="90%"> 
 		<p> 
 		  <input type="submit" name="DELETE_ROLE" value="OK">
-		  <input type="submit" name="CANCEL_ROLE" value="Cancel">
+		  <input type="submit" name="CANCEL_ROLE" value="Cancel">&nbsp; <a href="javascript:openHelp('88');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		</p>
 	  </td>
 	  <td width="5%">&nbsp;</td>

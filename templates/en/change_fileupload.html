@@ -1,6 +1,16 @@
-<HTML><HEAD><TITLE>Admin</TITLE></HEAD><BODY  bgcolor="#FFFFFF">
+<HTML><HEAD><TITLE>Admin</TITLE>
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
+</HEAD><BODY  bgcolor="#FFFFFF">
 <H3> 
-  <FORM METHOD=POST ENCTYPE="multipart/form-data" ACTION="#servlet_url#SaveFileUpload">
+  <FORM METHOD=POST ENCTYPE="multipart/form-data" ACTION="SaveFileUpload">
 	<CENTER>
 	  <TABLE BORDER="1" cellpadding="2" cellspacing="0" align="center" width="250">
 		<TR bgcolor="#333366"> 
@@ -37,6 +47,7 @@
 				  <td width="71%"> 
 					<center>
 					  &quot;#file#&quot; 
+            <input type="hidden" name="oldname" value="#file#">
 					</center>
 				  </td>
 				</tr>
@@ -47,7 +58,7 @@
 		<TR> 
 		  <TD bgcolor="#BABABA"> 
 			<CENTER>
-			  <INPUT TYPE=SUBMIT VALUE="Save" NAME="ok">
+			  <INPUT TYPE=SUBMIT VALUE="Save" NAME="ok">&nbsp; <a href="javascript:openHelp('74');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 			</center>
 		  </TD>
 		</TR>

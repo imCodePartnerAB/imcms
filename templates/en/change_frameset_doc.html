@@ -2,10 +2,19 @@
 <head>
 <title>Untitled Document</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </head>
 
 <body bgcolor="#FFFFFF">
-<form method=POST action="#servlet_url#SaveFrameset">
+<form method=POST action="SaveFrameset">
   <BR><BR><div align="center">
     <table 0 cellspacing=0 width="450" cellpadding="2" border="1" align="center">
       <tr bgcolor="#333366" > 
@@ -27,7 +36,7 @@
         <TR bgcolor="#BABABA"> 
           <TD valign="middle" align="center"> 
             <CENTER>
-              <INPUT TYPE=SUBMIT VALUE="Save" NAME="ok">
+              <INPUT TYPE=SUBMIT VALUE="Save" NAME="ok">&nbsp; <a href="javascript:openHelp('76');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
             </center>
           </TD>
         </TR>

@@ -2,8 +2,16 @@
 "http://www.w3.org/TR/html40/loose.dtd">
 <html>
 <head>
-<title>Show Page</title>
+<title>Show page</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
 
 </head>
 
@@ -13,8 +21,7 @@
     <tr bgcolor="#333366"> 
       <td width="5%">&nbsp;</td>
       <td width="90%"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Show
-          Page </font></b></div>
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Show page</font></b></div>
       </td>
       <td width="5%">&nbsp;</td>
     </tr>
@@ -28,7 +35,7 @@
       <td width="90%"> 
         <table width="100%" border="0">
           <tr> 
-            <td colspan="4"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;<font size="2"><b>Page type:</b></font></font></td>
+            <td colspan="4"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;<font size="2"><b>Page Type:</b></font></font></td>
           </tr>
           <tr> 
             <td colspan="4"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
@@ -108,7 +115,7 @@
       <td width="5%">&nbsp;</td>
       <td width="90%"> 
         <input type="submit" name="LISTDOC_LIST" value="Show" >
-        <input type="submit" name="CANCEL" value="Cancel">
+        <input type="submit" name="CANCEL" value="Cancel">&nbsp; <a href="javascript:openHelp('6');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open Help"></a>
       </td>
       <td width="5%">&nbsp;</td>
     </tr>

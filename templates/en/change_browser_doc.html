@@ -1,6 +1,16 @@
-<HTML><HEAD><TITLE>Admin - Add a page</TITLE></HEAD>
+<HTML><HEAD><TITLE>Admin - Add a page</TITLE>
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
+</HEAD>
 <BODY  bgcolor="#FFFFFF">
-<FORM METHOD=POST ACTION="#servlet_url#SaveBrowserDoc" name="">
+<FORM METHOD=POST ACTION="SaveBrowserDoc" name="">
   <CENTER>
     <table border = 1 cellspacing="0" cellpadding="2" width="430" align="center">
 	  <tr bgcolor="#333366" valign="middle"> 
@@ -36,7 +46,7 @@
 	  #getDocType# 
 	  <tr bgcolor="#BABABA"> 
 		<td colspan="3" valign="middle" align="center"> 
-		  <input type=submit value="Save" name="ok">
+		  <input type=submit value="Save" name="ok">&nbsp; <a href="javascript:openHelp('46');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		</td>
 	  </tr>
 	  <input type=HIDDEN name=meta_id value="#getMetaId#">

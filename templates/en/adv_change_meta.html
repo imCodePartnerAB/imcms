@@ -1,5 +1,15 @@
-<HTML><HEAD>
+<HTML>
+<HEAD>
 <TITLE>Edit pageinfo</TITLE>
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </HEAD>
 <body bgcolor="#FFFFFF">
 <FORM METHOD=POST ACTION="SaveMeta">
@@ -41,7 +51,7 @@
 			<td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 				<div align="left"> 
 					<input type=submit value="OK" name="ok">
-					<input type=reset value="Reset" name="cancel">
+					<input type=reset value="Reset" name="cancel">&nbsp; <a href="javascript:openHelp('39');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 					<font size="2"></font></div>
 			</td>
 		</tr>
@@ -55,14 +65,12 @@
 				(change when necessary)</font></b></td>
 		</tr>
 		<tr> 
-			<td width="61" valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Created 
-				</font></td>
+			<td width="61" valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Created</font></td>
 			<td valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#date_created# 
 				by #owner#</font></td>
 		</tr>
 		<tr> 
-			<td width="61" valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Modified 
-				</font></td>
+			<td width="61" valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Modified</font></td>
 			<td valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#date_modified#</font></td>
 		</tr>
 		<tr> 
@@ -133,7 +141,7 @@
 			<td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 				<div align="left"> 
 					<input type=submit value="OK" name="ok">
-					<input type=reset value="Reset" name="cancel">
+					<input type=reset value="Reset" name="cancel">&nbsp; <a href="javascript:openHelp('39');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open Help"></a>
 				</div>
 			</td>
 		</tr>

@@ -4,6 +4,15 @@
 <head>
 <title>Edit role authorityr</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -12,8 +21,7 @@
     <tr bgcolor="#333366"> 
       <td width="2%">&nbsp;</td>
       <td> 
-        <div align="center"> <b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Edit 
-          authority for role<br>
+        <div align="center"> <b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Edit authority for role<br>
           #CURRENT_ROLE_NAME#</font></b>
         </div>
         <input type="hidden" name="ROLE_ID" value="#CURRENT_ROLE_ID#">
@@ -30,7 +38,7 @@
       <td width="2%">&nbsp;</td>
       <td width="80%">
         <input type="submit" name="UPDATE_ROLE_PERMISSIONS" value="Save">
-        <input type="submit" name="CANCEL_ROLE" value="Cancel">
+        <input type="submit" name="CANCEL_ROLE" value="Cancel">&nbsp; <a href="javascript:openHelp('33');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open help"></a>
       </td>
       <td width="4%">&nbsp;</td>
     </tr>

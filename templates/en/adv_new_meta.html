@@ -1,4 +1,18 @@
-<HTML><HEAD><TITLE>Admin - Add a new page</TITLE></HEAD>
+<HTML>
+
+<HEAD>
+
+<TITLE>Admin - Add a new page</TITLE>
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
+</HEAD>
 <body bgcolor="#FFFFFF">
 <FORM METHOD=POST ACTION="SaveNewMeta">
   <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
@@ -46,7 +60,7 @@
 		<div align="left"> 
 		  <input type=submit value="OK" name="ok">
 		  <input type=reset value="Reset" name="reset">
-		  <input type=submit value="Cancel" name="cancel">
+		  <input type=submit value="Cancel" name="cancel">&nbsp; <a href="javascript:openHelp('90');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open Help"></a>
 		  <font size="2"></font></div>
 	  </td>
 	</tr>
@@ -132,7 +146,7 @@
 		<div align="left"> 
 		  <input type=submit value="OK" name="ok">
 		  <input type=reset value="Reset" name="reset">
-		  <input type=submit value="Cancel" name="cancel">
+		  <input type=submit value="Cancel" name="cancel">&nbsp; <a href="javascript:openHelp('90');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open Help"></a>
 		</div>
 	  </td>
 	</tr>

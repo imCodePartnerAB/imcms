@@ -2,6 +2,15 @@
 <head>
 <title>Counter Manager</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -21,7 +30,7 @@
   </tr>
   <tr bgcolor="#bababa"> 
 	<td width="5%">&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Administrate counter</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Administrate Counter</b></font></td>
 	<td width="5%">&nbsp;</td>
   </tr>
   <tr bgcolor="#bababa"> 
@@ -40,11 +49,10 @@
 			  </font></td>
 		  </tr>
 		  <tr> 
-			<td width="34%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Edit 
-			  counter:</font></td>
+			<td width="34%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Administrate Counter:</font></td>
 			<td width="66%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
 			  <input type="text" name="counter_value" value="#COUNTER_VALUE#" maxlength="80" size="10">
-			  <input type="submit" name="setCounter" value="Set counter">
+			  <input type="submit" name="setCounter" value="Uppdate">
 			  </font></td>
 		  </tr>
 		</table>
@@ -71,8 +79,7 @@
   </tr>
   <tr bgcolor="#bababa"> 
 	<td width="5%">&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Administrate 
-	  starting date</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Administrate starting date</b></font></td>
 	<td width="5%">&nbsp;</td>
   </tr>
   <tr bgcolor="#bababa"> 
@@ -86,17 +93,15 @@
 	  <form method="post" action="#SERVLET_URL#AdminCounter">
 		<table width="100%" border="0">
 		  <tr> 
-			<td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Current 
-			  starting date:</font></td>
+			<td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Current starting date:</font></td>
 			<td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#DATE_VALUE# 
 			  </font></td>
 		  </tr>
 		  <tr> 
-			<td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Edit 
-			  starting date</font></td>
+			<td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Edit starting date</font></td>
 			<td width="60%"> <font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
 			  <input type="text" name="date_value" value="#DATE_VALUE#" maxlength="80" size="10">
-			  <input type="submit" name="setDate" value="Set date">
+			  <input type="submit" name="setDate" value="Uppdate">
 			  </font></td>
 		  </tr>
 		</table>
@@ -111,7 +116,7 @@
 		<hr>
 		<form method="post" action="#SERVLET_URL#AdminCounter" name="Counter">
 		  <div align="left"> 
-			<input type="submit" name="CancelCounter" value="Back">
+			<input type="submit" name="CancelCounter" value="Back">&nbsp; <a href="javascript:openHelp('17');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open help"></a>
 		  </div>
 		</form>
 	  </div>

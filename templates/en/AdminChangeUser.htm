@@ -27,6 +27,9 @@ function evalEditUser() {
 		return true
 }
 
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
 //-->
 </SCRIPT>
 </head>
@@ -35,15 +38,13 @@ function evalEditUser() {
   <tr bgcolor="#333366"> 
 	<td width="5%">&nbsp;</td>
 	<td width="90%"> 
-	  <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Create new or change user
-		</font></b></div>
+	  <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Create new or change user</font></b></div>
 	</td>
 	<td width="5%">&nbsp;</td>
   </tr>
   <tr bgcolor="#bababa"> 
 	<td width="5%">&nbsp;</td>
-	<td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>Push the "New user" button <br>or<br>Mark 
-	  the user whose attributes you wish to change, and then push "edit".</font></td>
+	<td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Mark the user whose attributes you wish to change, and then push "edit".</font></td>
 	<td width="5%">&nbsp;</td>
   </tr>
   <tr bgcolor="#bababa"> 
@@ -89,8 +90,8 @@ function evalEditUser() {
 		<br>
 		<br>
 		<input type="submit" name=ADD_USER value="New user">
-		<input type="submit" name="CHANGE_USER" value="Edit " onClick="if(evalEditUser()==false)return false; return true;">
-		<input type="submit" name="GO_BACK" value="Back" >
+		<input type="submit" name="CHANGE_USER" value="Edit" onClick="if(evalEditUser()==false)return false; return true;">
+		<input type="submit" name="GO_BACK" value="Back">&nbsp; <a href="javascript:openHelp('38');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open help"></a>
 	  </form>
 	  &nbsp; <font size="2"> </font> </td>
 	<td width="5%" height="24">&nbsp;</td>

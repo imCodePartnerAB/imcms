@@ -5,6 +5,14 @@
 <title>Administrate roles</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -26,7 +34,7 @@
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
-		<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif">select a role/all: 
+		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">select a role/all: 
           <select name="ROLE_ID" size="3">
             <option value="ALL_USERS" selected>All</option>
             #ROLES_MENU#
@@ -45,7 +53,7 @@
 	  <td width="90%"> 
         <input type="submit" name="VIEW_USER_BELONGING_ROLE" value="Administrate" >
         <input type="submit" name="VIEW_USER_ACTIVATE" value="De-/Activate" >
-        <input type="submit" name="CANCEL" value="Back">
+        <input type="submit" name="CANCEL" value="Back">&nbsp; <a href="javascript:openHelp('29');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
       </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
