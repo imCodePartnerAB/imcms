@@ -28,7 +28,7 @@ Sections:
      Section[] sections = document.getSections();
      for (int i = 0; i < sections.length; i++) {
          Section section = sections[i];
-         %><%=section.getName()%><br><%
+         %><%=section.getName()%>&nbsp;[id = <%=section.getId()%>]<br><%
      }
 %>
 Language: "<%=document.getLanguage()%>"
