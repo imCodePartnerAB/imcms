@@ -48,7 +48,6 @@ public class TextDocumentParser {
     }
 
     private IMCServiceInterface service;
-    private static final int EXPECTED_CONTENT_BLOAT = 16384;
 
     public TextDocumentParser( IMCServiceInterface serverobject ) {
         this.service = serverobject;
@@ -90,24 +89,21 @@ public class TextDocumentParser {
 
             String template = getTemplate( document, parserParameters );
 
-            StringBuffer result = new StringBuffer( template.length() + EXPECTED_CONTENT_BLOAT );
-
             Perl5Matcher patMat = new Perl5Matcher();
 
             SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
 
             String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
-            result.append( imcmsMessage );
 
             Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
             MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
             MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution( parserParameters, document, menumode );
             ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
 
-            String returnresult = replaceTags( template, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution );
+            String tagsReplaced = replaceTags( template, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution );
 
-            returnresult = applyEmphasis( documentRequest, user, returnresult, patMat, result );
-            return returnresult;
+            String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
+            return imcmsMessage + emphasizedAndTagsReplaced ;
         } catch ( RuntimeException ex ) {
             log.error( "Error occurred during parsing.", ex );
             throw new UnhandledException( ex );
@@ -132,12 +128,12 @@ public class TextDocumentParser {
     }
 
     private String applyEmphasis( DocumentRequest documentRequest, UserDomainObject user, String string,
-                                  Perl5Matcher patMat, StringBuffer result ) {
+                                  Perl5Matcher patMat ) {
         String[] emp = documentRequest.getEmphasize();
         if ( emp != null ) { // If we have something to emphasize...
             String emphasize_string = service.getAdminTemplate( "textdoc/emphasize.html", user, null );
             Perl5Substitution emphasize_substitution = new Perl5Substitution( emphasize_string );
-            StringBuffer emphasized_result = new StringBuffer( string.length() ); // A StringBuffer to hold the result
+            StringBuffer result = new StringBuffer( string.length() ); // A StringBuffer to hold the result
             PatternMatcherInput emp_input = new PatternMatcherInput( string );    // A PatternMatcherInput to match on
             int last_html_offset = 0;
             int current_html_offset;
@@ -150,13 +146,13 @@ public class TextDocumentParser {
                 html_tag_string = result.substring( current_html_offset, last_html_offset );
                 non_html_tag_string = emphasizeString( non_html_tag_string, emp, emphasize_substitution, patMat );
                 // for each string to emphasize
-                emphasized_result.append( non_html_tag_string );
-                emphasized_result.append( html_tag_string );
+                result.append( non_html_tag_string );
+                result.append( html_tag_string );
             } // while
             non_html_tag_string = result.substring( last_html_offset );
             non_html_tag_string = emphasizeString( non_html_tag_string, emp, emphasize_substitution, patMat );
-            emphasized_result.append( non_html_tag_string );
-            return emphasized_result.toString();
+            result.append( non_html_tag_string );
+            return result.toString();
         }
         return string;
     }
