@@ -58,39 +58,39 @@ public class Version extends HttpServlet {
 	    out.print(files[i].getPath().substring(parent_dir.getPath().length()+1)+' ') ;
 
 	    Checksum checksum = new CRC32() ;
-	    int file_length = (int)files[i].length() ;
-	    char[] buffer = new char[BUFFERLENGTH] ;
-	    Reader in = new InputStreamReader(new CheckedInputStream(new FileInputStream(files[i]), checksum), "8859_1") ;
-	    StringBuffer file_buffer = new StringBuffer() ;
+	    long file_length = files[i].length() ;
 	    // Read the classfile, and have the inputstream compute the checksum as we go.
-	    for (int read; -1 != (read = in.read(buffer,0,BUFFERLENGTH));) {
-		file_buffer.append(buffer, 0, read) ;
-	    } ;
-
-	    // Find and print the revision.
-	    if (perl.match("/\\$"+"Revision: (\\d+(?:\\.\\d+)+) "+"\\$/",file_buffer.toString())) {
-		String revision = perl.group(1) ;
-		out.print(revision+' ') ;
-	    } else {
-		out.print("Unknown ") ;
+	    String line ;
+	    String revision = null ;
+	    String date_time = null ;
+	    try {
+		BufferedReader in = new BufferedReader(new InputStreamReader(new CheckedInputStream(new FileInputStream(files[i]), checksum), "8859_1")) ;
+		while (null != (line = in.readLine())) {
+		    // Find the revision.
+		    if (null == revision && perl.match("/\\$"+"Revision: (\\d+(?:\\.\\d+)+) "+"\\$/",line)) {
+			revision = perl.group(1) ;
+		    }
+		    // Find the date
+		    if (null == date_time && perl.match("/\\$"+"Date: (\\S+)\\s+(\\S+) "+"\\$/",line)) {
+			date_time = perl.group(1) + ' ' + perl.group(2) ;
+		    }
+		}
 	    }
+	    catch (IOException ignored) { } 
+	    catch (OutOfMemoryError ignored) { }
 
-	    // Find and print the date.
-	    if (perl.match("/\\$"+"Date: (\\S+)\\s+(\\S+) "+"\\$/",file_buffer.toString())) {
-		String date = perl.group(1) ;
-		String time = perl.group(2) ;
-		out.print(date+' '+time+' ') ;
-	    } else {
-		out.print("Unknown ") ;
-	    }
-
+	    // Print the revision.
+	    out.print( ( revision != null ? revision : "Unknown" ) + ' ') ;
+	    // Print the date.
+	    out.print( ( date_time != null ? date_time : "Unknown" ) + ' ') ;
 	    // Print the checksum.
 	    out.print(checksum.getValue()+" ") ;
 	    
-    	    // Find and print the last-modified date.
+	    // Find and print the last-modified date.
 	    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT) ;
 	    out.print(df.format(new Date(files[i].lastModified()))+" ") ;
 
+	    // Print the file-length.
 	    out.println(file_length) ;
 	}
 
