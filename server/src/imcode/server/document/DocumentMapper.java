@@ -52,12 +52,12 @@ public class DocumentMapper {
     private DocumentIndex documentIndex;
     private static final int FILE_BUFFER_LENGTH = 2048;
 
-    private static final String TEMPLATE__STATUS_NEW = "textdoc/status/new.frag";
-    private static final String TEMPLATE__STATUS_DISAPPROVED = "textdoc/status/disapproved.frag";
-    private static final String TEMPLATE__STATUS_PUBLISHED = "textdoc/status/published.frag";
-    private static final String TEMPLATE__STATUS_UNPUBLISHED = "textdoc/status/unpublished.frag";
-    private static final String TEMPLATE__STATUS_ARCHIVED = "textdoc/status/archived.frag";
-    private static final String TEMPLATE__STATUS_APPROVED = "textdoc/status/approved.frag";
+    private static final String TEMPLATE__STATUS_NEW = "status/new.frag";
+    private static final String TEMPLATE__STATUS_DISAPPROVED = "status/disapproved.frag";
+    private static final String TEMPLATE__STATUS_PUBLISHED = "status/published.frag";
+    private static final String TEMPLATE__STATUS_UNPUBLISHED = "status/unpublished.frag";
+    private static final String TEMPLATE__STATUS_ARCHIVED = "status/archived.frag";
+    private static final String TEMPLATE__STATUS_APPROVED = "status/approved.frag";
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
 
     public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {

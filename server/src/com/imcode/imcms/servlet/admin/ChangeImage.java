@@ -11,6 +11,7 @@ import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
+import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -25,6 +26,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
@@ -34,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Arrays;
 
 public class ChangeImage extends HttpServlet {
 
@@ -168,6 +172,7 @@ public class ChangeImage extends HttpServlet {
             }
         } );
         documentFinder.setRestrictingQuery( QUERY__IMAGE_FILE_DOCUMENTS );
+        documentFinder.addExtraSearchResultColumn(new ImageThumbnailSearchResultColumn()) ;
         documentFinder.forward( request, response );
     }
 
@@ -354,14 +359,32 @@ public class ChangeImage extends HttpServlet {
 
         public Query parse( String queryString ) {
             String[] queryStrings = StringUtils.split( queryString );
-            BooleanQuery booleanQuery = new BooleanQuery();
+            BooleanQuery wildcardsQuery = new BooleanQuery();
             for ( int i = 0; i < queryStrings.length; i++ ) {
                 String queryTerm = queryStrings[i];
-                booleanQuery.add( new WildcardQuery( new Term( DocumentIndex.FIELD__META_HEADLINE, "*" + queryTerm
+                wildcardsQuery.add( new WildcardQuery( new Term( DocumentIndex.FIELD__META_HEADLINE, "*" + queryTerm
                                                                                                    + "*" ) ), true, false );
+            }
+            BooleanQuery booleanQuery = new BooleanQuery() ;
+            booleanQuery.add(wildcardsQuery, false, false) ;
+            try {
+                booleanQuery.add(new DefaultQueryParser().parse( queryString ), false, false) ;
+            } catch ( ParseException e ) {
             }
             return booleanQuery;
         }
     }
 
+    private static class ImageThumbnailSearchResultColumn implements DocumentFinder.SearchResultColumn {
+
+        public String render( DocumentDomainObject document, HttpServletRequest request ) {
+            UserDomainObject user = Utility.getLoggedOnUser( request );
+            List values = Arrays.asList(new String[] { "imageUrl", "GetDoc?meta_id="+document.getId() } );
+            return ApplicationServer.getIMCServiceInterface().getAdminTemplate( "images/thumbnail.frag", user, values ) ;
+        }
+
+        public LocalizedMessage getName() {
+            return new LocalizedMessage( "server/src/com/imcode/imcms/servlet/admin/ChangeImage/search/image_thumbnail_label" ) ;
+        }
+    }
 }

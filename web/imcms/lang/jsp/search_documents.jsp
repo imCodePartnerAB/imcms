@@ -157,6 +157,13 @@
                         <th>&nbsp;</th>
                         <th align="left"><? imcms/lang/jsp/search_documents.jsp/document_id ?></th>
                         <th align="left"><? imcms/lang/jsp/search_documents.jsp/document_headline ?></th>
+                        <%
+                                DocumentFinder.SearchResultColumn[] searchResultColumns = documentFinder.getExtraSearchResultColumns() ;
+                                for ( int i = 0; i < searchResultColumns.length; i++ ) {
+                                    DocumentFinder.SearchResultColumn searchResultColumn = searchResultColumns[i];
+                                    %><th align="left"><%= searchResultColumn.getName().toLocalizedString(request) %></th><%
+                                }
+                        %>
                         <th width="100%">&nbsp;</th>
                     </tr><%
                     int firstDocumentIndexOnNextPage = ( firstDocumentIndex + documentsPerPage );
@@ -181,6 +188,12 @@
                                     <a href="GetDoc?meta_id=<%= document.getId() %>"><b><%= document.getHeadline() %></b></a>
                                 </font>
                             </td>
+                            <%
+                                for ( int j = 0; j < searchResultColumns.length; j++ ) {
+                                    DocumentFinder.SearchResultColumn searchResultColumn = searchResultColumns[j];
+                                    %><td><%= searchResultColumn.render(document, request ) %></td><%
+                                }
+                            %>
                             <td align="right">&nbsp;
                                 <% if (documentFinder.isDocumentsSelectable()) { %>
                                     <a href="SearchDocuments?<%= SearchDocumentsPage.REQUEST_PARAMETER__SELECTED_DOCUMENT_ID+"="+document.getId()+"&"+searchDocumentsPage.getParameterString(request)%>"><? imcms/lang/jsp/search_documents.jsp/select_document ?></a>

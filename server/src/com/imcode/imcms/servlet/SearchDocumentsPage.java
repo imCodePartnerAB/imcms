@@ -59,9 +59,6 @@ public class SearchDocumentsPage {
 
     private static final String REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER = "finder";
 
-    public SearchDocumentsPage() {
-    }
-
     static SearchDocumentsPage fromRequest( HttpServletRequest request ) {
         SearchDocumentsPage page = new SearchDocumentsPage();
         page.setFromRequest( request );

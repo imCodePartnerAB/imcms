@@ -8,20 +8,26 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
+import imcode.util.LocalizedMessage;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
+import org.apache.commons.collections.set.ListOrderedSet;
+import org.apache.commons.collections.SetUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
+import java.util.HashSet;
 
 public class DocumentFinder extends WebComponent {
 
     private SelectDocumentCommand selectDocumentCommand;
     private Query restrictingQuery;
     private QueryParser queryParser = new DefaultQueryParser();
+    private Set extraSearchResultColumns = SetUtils.orderedSet( new HashSet() ) ;
 
     public void selectDocument( DocumentDomainObject selectedDocument, HttpServletRequest request,
                                 HttpServletResponse response ) throws IOException, ServletException {
@@ -75,13 +81,24 @@ public class DocumentFinder extends WebComponent {
         return queryParser.parse( queryString );
     }
 
+    public void addExtraSearchResultColumn( SearchResultColumn searchResultColumn ) {
+        extraSearchResultColumns.add(searchResultColumn) ;
+    }
+
+    public SearchResultColumn[] getExtraSearchResultColumns() {
+        return (SearchResultColumn[])extraSearchResultColumns.toArray( new SearchResultColumn[extraSearchResultColumns.size()] );
+    }
+
     public interface SelectDocumentCommand {
 
         void selectDocument( DocumentDomainObject document, HttpServletRequest request,
                              HttpServletResponse response ) throws IOException, ServletException;
     }
 
-    public class SearchResultColumn {
+    public interface SearchResultColumn {
 
+        String render( DocumentDomainObject document, HttpServletRequest request ) ;
+
+        LocalizedMessage getName();
     }
 }
