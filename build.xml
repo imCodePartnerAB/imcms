@@ -323,7 +323,7 @@
     </target>
 
 
-    <target name="sql-lang">
+    <target name="sql-lang" depends="init">
 
         <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
 
