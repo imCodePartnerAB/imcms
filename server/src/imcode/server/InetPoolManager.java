@@ -10,9 +10,8 @@ import javax.sql.* ;
 import org.apache.log4j.Category;
 
 public class InetPoolManager {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-
+    private final static String CVS_REV  = "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
     // Inet poolmanager
     private PoolManager manager ;
@@ -26,16 +25,16 @@ public class InetPoolManager {
     // Properties for the DataSource. Why, oh why, does not DataSource have something like that?
     private Properties props ;
 
-    public InetPoolManager(Properties props) throws SQLException {
+    public InetPoolManager(String serverName, Properties props) throws SQLException {
 
 	this.props = props ;
-	
+
 	// Create the connection pool.
 	manager = new PoolManager();
 	try {
 	    manager.setMaxConnectionCount(Integer.parseInt(props.getProperty("MaxConnectionCount"))) ;
-	} catch (NumberFormatException ex) {
-	    log.info("setMaxConnectionCount",ex) ;
+	} catch (NumberFormatException ignored) {
+	    // ignored
 	}
 	log.info("MaxConnectionCount: "+manager.getMaxConnectionCount()) ;
 
@@ -46,22 +45,22 @@ public class InetPoolManager {
 	try {
 	    pds.setServerName( props.getProperty("ServerName") );
 	} catch (NullPointerException ex) {
-	    log.error("Failed to find ServerName!",ex) ;	    
+	    log.error("Failed to find ServerName!") ;
 	    throw ex ;
 	}
 	log.info("ServerName: "+pds.getServerName()) ;
 
 	try {
 	    pds.setPort( props.getProperty("Port") ) ;
-	} catch (NullPointerException ex) {
-	    log.warn( "Failed to find Port!",ex) ;	    
+	} catch (NullPointerException ignored) {
+	    // ignored
 	}
 	log.info("Port: "+pds.getPort()) ;
 
 	try {
 	    pds.setDatabaseName( props.getProperty("DatabaseName") );
 	} catch (NullPointerException ex) {
-	    log.error( "Failed to find DatabaseName!",ex) ;	    
+	    log.error( "Failed to find DatabaseName!") ;
 	    throw ex ;
 	}
 	log.info("DatabaseName: "+pds.getDatabaseName()) ;
@@ -69,7 +68,7 @@ public class InetPoolManager {
 	try {
 	    pds.setUser( props.getProperty("User") );
 	} catch (NullPointerException ex) {
-	    log.error( "Failed to find User!",ex) ;	    
+	    log.error( "Failed to find User!") ;
 	    throw ex ;
 	}
 	log.info("User: "+pds.getUser()) ;
@@ -77,14 +76,14 @@ public class InetPoolManager {
 	try {
 	    pds.setPassword( props.getProperty("Password") );
 	} catch (NullPointerException ex) {
-	    log.error("Failed to find Password!",ex) ;	    
+	    log.error("Failed to find Password!") ;
 	    throw ex ;
 	}
 
 	try {
 	    pds.setLoginTimeout(Integer.parseInt( props.getProperty("LoginTimeout") ) );
 	} catch (NumberFormatException ex) {
-		log.debug("Exception occured" ,ex );	   
+		log.debug("Failed to parse LoginTimeout");
 	}
 
 	log.info("LoginTimeout: "+pds.getLoginTimeout()) ;
@@ -92,11 +91,11 @@ public class InetPoolManager {
 	ds = pds;
 
 	Connection connection = null ;
-	
+
 	try {
 	    // request the Connection
 	    connection = getConnection() ;
-	
+
 	    //to get the driver version
 	    DatabaseMetaData conMD = connection.getMetaData();
 
@@ -105,7 +104,7 @@ public class InetPoolManager {
 
 	    connection.close() ;
 	} catch (SQLException ex) {
-	    log.fatal("Failed to make first contact with the DataSource.",ex );
+	    log.fatal("Failed to make first contact with the DataSource for server-object "+serverName+" ("+pds.getUser()+"@"+pds.getServerName()+":"+pds.getPort()+"/"+pds.getDatabaseName()+")");
 	    throw ex ;
 	}
     }
@@ -122,7 +121,7 @@ public class InetPoolManager {
 		+ getUsedConnectionCount() + "/"
 		+ getMaxConnectionCount() ;
 
-	    log.warn( err, ex) ;
+	    log.warn( err ) ;
 	    throw ex ;
 	}
     }

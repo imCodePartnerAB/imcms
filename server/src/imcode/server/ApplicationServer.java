@@ -18,10 +18,10 @@ import org.apache.log4j.Category;
  *@created    den 30 augusti 2001
  */
 public class ApplicationServer {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+    private final static String CVS_REV="$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
-    private final static String VERSION = "1.5.0 (2000-10-12 10:30)";
+    private final static String VERSION = "1.5.0";
     private final static String CONFIG_FILE = "ImcServer.cfg";
 
     private final static int LOGINTERVAL = 10000;
@@ -78,7 +78,7 @@ public class ApplicationServer {
 		Constructor objConstructor = objClass.getConstructor(new Class[]{InetPoolManager.class, Properties.class});
 
 		// Invoke Constructor(InetPoolManager, Properties) on class
-		serverObjects.put(servername, objConstructor.newInstance(new Object[]{new InetPoolManager(serverprops), serverprops}));
+		serverObjects.put(servername, objConstructor.newInstance(new Object[]{new InetPoolManager(servername,serverprops), serverprops}));
 
 	    } catch (ClassNotFoundException ex) {
 		log.fatal("Unable to find class " + classname, ex);
@@ -91,7 +91,7 @@ public class ApplicationServer {
 	    } catch (java.lang.reflect.InvocationTargetException ex) {
 		log.fatal("Failed to invoke found constructor " + classname + "(InetPoolManager, Properties) on class " + classname, ex);
 	    } catch (java.sql.SQLException ex) {
-		log.fatal("Failed to create connectionpool and datasource for " + servername, ex);
+		log.fatal("Failed to create connectionpool and datasource for " + servername);
 	    }
 	}
 
