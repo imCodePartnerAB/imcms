@@ -28,7 +28,6 @@ Sproc:ar kvar att flytta in i koden:
 (Ta bort den du håller på med)
 classification_fix.prc
 Hasse, arbetar med denna, färdigimplementerade men ej testad klart: copydocs.prc
-deleteinclude.prc
 deletenewdocpermissionsetex.prc
 deleteuseradminpermissibleroles.prc
 existingdocsgetselectedmetaids.prc
@@ -67,7 +66,6 @@ getuserflagsforuseroftype.prc
 getuserflagsoftype.prc
 getuserid.prc
 getuseridfromname.prc
-getuserinfo.prc
 getusernames.prc
 getuserpassword.prc
 getuserpermissionset.prc

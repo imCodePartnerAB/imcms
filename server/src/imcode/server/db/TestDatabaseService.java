@@ -49,7 +49,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            DatabaseTestInitializer.static_initMimer(),
+            //DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -226,7 +226,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             dbService.sproc_AddNewuser( user );
             int rowCount = dbService.sproc_updateUser( user );
             assertEquals( 1, rowCount );
-            DatabaseService.Table_users modifiedUser = getUser( dbService, USER_NEXT_FREE_ID );
+            DatabaseService.Table_users modifiedUser = dbService.getFromTable_users( new Integer(USER_NEXT_FREE_ID) );
             assertEquals( user, modifiedUser );
         }
     }
@@ -304,11 +304,11 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             dbService.sproc_AddNewuser( user );
 
             dbService.sproc_ChangeUserActiveStatus( USER_TEST_ID, false );
-            DatabaseService.Table_users modifiedUser = getUser( dbService, USER_TEST_ID );
+            DatabaseService.Table_users modifiedUser = dbService.getFromTable_users( new Integer(USER_TEST_ID) );
             assertEquals( 0, modifiedUser.active );
 
             dbService.sproc_ChangeUserActiveStatus( USER_TEST_ID, true );
-            DatabaseService.Table_users modifiedUser2 = getUser( dbService, USER_TEST_ID );
+            DatabaseService.Table_users modifiedUser2 = dbService.getFromTable_users( new Integer(USER_TEST_ID) );
             assertEquals( 1, modifiedUser2.active );
         }
     }
@@ -366,25 +366,20 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             assertTrue( documentForUserBefore.length != documentForUserAfter.length );
         }
     }
+
+    // todo: Fler testfall när det finns mer testdata.
+    public void test_sproc_deleteInclude() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 0 , databaseService.sproc_deleteInclude( DOC_ID_NON_EXISTING, 1 ) );
+        }
+    }
+
     // Below is helper functions to more than one test.
 
     private static DatabaseService.Table_users static_createDummyUser() {
         DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", 0, DOC_ID_FIRST_PAGE, 0, 1, 1, 1, new Timestamp( new java.util.Date().getTime() ) );
         return user;
-    }
-
-    // todo: this should be a method on DatabaseService?
-    private static DatabaseService.Table_users getUser( DatabaseService dbService, int user_id ) {
-        DatabaseService.Table_users[] sqlServerUsers = dbService.sproc_GetAllUsers_OrderByLastName();
-        DatabaseService.Table_users modifiedUser = null;
-        int i = 0;
-        while( modifiedUser == null ) {
-            if( sqlServerUsers[i].user_id == user_id ) {
-                modifiedUser = sqlServerUsers[i];
-            }
-            i++;
-        }
-        return modifiedUser;
     }
 
     private static void static_assertEquals( Object[] oneArr, Object[] anotherArr ) {

@@ -32,7 +32,7 @@ public abstract class DatabaseService {
 
     SQLProcessor sqlProcessor;
     private Logger log;
-    private File filePath ;
+    private File filePath;
 
     /**
      *  overide this in subclass if needed.
@@ -70,7 +70,7 @@ public abstract class DatabaseService {
     }
 
     DatabaseService( File filePath, Logger log ) {
-	this.filePath = filePath ;
+        this.filePath = filePath;
         this.log = log;
     }
 
@@ -166,10 +166,10 @@ public abstract class DatabaseService {
             this.admin_role = admin_role;
         }
 
-	    int role_id;
-	    String role_name;
-	    int permissions;
-	    int admin_role;
+        int role_id;
+        String role_name;
+        int permissions;
+        int admin_role;
     }
 
     Table_roles[] sproc_GetAllRoles_but_user() {
@@ -297,32 +297,37 @@ public abstract class DatabaseService {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                Table_users result = null;
-                int user_id = rs.getInt( "user_id" );
-                String login_name = rs.getString( "login_name" );
-                String login_password = rs.getString( "login_password" );
-                String first_name = rs.getString( "first_name" );
-                String last_name = rs.getString( "last_name" );
-                String title = rs.getString( "title" );
-                String company = rs.getString( "company" );
-                String address = rs.getString( "address" );
-                String city = rs.getString( "city" );
-                String zip = rs.getString( "zip" );
-                String country = rs.getString( "country" );
-                String county_council = rs.getString( "county_council" );
-                String email = rs.getString( "email" );
-                int external = rs.getInt( "external" );
-                int last_page = rs.getInt( "last_page" );
-                int archive_mode = rs.getInt( "archive_mode" );
-                int lang_id = rs.getInt( "lang_id" );
-                int user_type = rs.getInt( "user_type" );
-                int active = rs.getInt( "active" );
-                Timestamp create_date = rs.getTimestamp( "create_date" );
-                result = new Table_users( user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date );
+                Table_users result = mapTableUsers( rs );
                 return result;
             }
         } );
         return (Table_users[])queryResult.toArray( new Table_users[queryResult.size()] );
+    }
+
+    private Table_users mapTableUsers( ResultSet rs ) throws SQLException {
+        Table_users result = null;
+        int user_id = rs.getInt( "user_id" );
+        String login_name = rs.getString( "login_name" );
+        String login_password = rs.getString( "login_password" );
+        String first_name = rs.getString( "first_name" );
+        String last_name = rs.getString( "last_name" );
+        String title = rs.getString( "title" );
+        String company = rs.getString( "company" );
+        String address = rs.getString( "address" );
+        String city = rs.getString( "city" );
+        String zip = rs.getString( "zip" );
+        String country = rs.getString( "country" );
+        String county_council = rs.getString( "county_council" );
+        String email = rs.getString( "email" );
+        int external = rs.getInt( "external" );
+        int last_page = rs.getInt( "last_page" );
+        int archive_mode = rs.getInt( "archive_mode" );
+        int lang_id = rs.getInt( "lang_id" );
+        int user_type = rs.getInt( "user_type" );
+        int active = rs.getInt( "active" );
+        Timestamp create_date = rs.getTimestamp( "create_date" );
+        result = new Table_users( user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date );
+        return result;
     }
 
     static class View_TemplateGroup {
@@ -401,7 +406,7 @@ public abstract class DatabaseService {
         try {
             rowCount = addToTable_phones( transcation, number, userId, phoneType );
             transcation.commit();
-        } catch (SQLException ex ) {
+        } catch( SQLException ex ) {
             transcation.rollback();
         }
         return rowCount;
@@ -1074,7 +1079,7 @@ public abstract class DatabaseService {
         Iterator iterator = notFileDocs.iterator();
         while( iterator.hasNext() ) {
             Integer meta_id = (Integer)iterator.next();
-            if( hasCopyRights( userId, new Integer(parent_meta_id), meta_id ) ) {
+            if( hasCopyRights( userId, new Integer( parent_meta_id ), meta_id ) ) {
                 copyDocument( meta_id );
                 sproc_AddExistingDocToMenu( parent_meta_id, meta_id.intValue(), parent_menu_id );
             }
@@ -1095,7 +1100,7 @@ public abstract class DatabaseService {
     }
 
     private boolean hasCopyRights( Integer user_id, Integer parent_meta_id, Integer meta_id_to_copy ) {
-        if( !sproc_CheckUserDocSharePermission(user_id.intValue(), meta_id_to_copy.intValue() )){
+        if( !sproc_CheckUserDocSharePermission( user_id.intValue(), meta_id_to_copy.intValue() ) ) {
             return false;
         }
         return mayUserAddDocumentToParent( user_id, parent_meta_id, meta_id_to_copy );
@@ -1105,13 +1110,13 @@ public abstract class DatabaseService {
         int doc_type = sproc_GetDocType( meta_id_to_add.intValue() );
         // TODO: Use default-language instead of "se"
         View_doc_types[] user_doc_types = sproc_GetDocTypesForUser( user_id.intValue(), parent_meta_id.intValue(), "se" );
-        boolean userCanCreateDocType = false ;
-        for (int i = 0; i < user_doc_types.length; ++i) {
-            int userDocType = user_doc_types[i].doc_type ;
-            if (doc_type == userDocType) {
-                userCanCreateDocType = true ;
-                break ;
-           }
+        boolean userCanCreateDocType = false;
+        for( int i = 0; i < user_doc_types.length; ++i ) {
+            int userDocType = user_doc_types[i].doc_type;
+            if( doc_type == userDocType ) {
+                userCanCreateDocType = true;
+                break;
+            }
         }
         return userCanCreateDocType;
     }
@@ -1125,36 +1130,37 @@ public abstract class DatabaseService {
         int doc_type;
         String type;
     }
+
     /**
      Nice query that fetches all document types a user may create in a document,
      for easy insertion into an html-option-list, no less!
-    */
+     */
     View_doc_types[] sproc_GetDocTypesForUser( int user_id, int meta_id, String lang_prefix ) {
         String sql = "SELECT DISTINCT dt.doc_type, dt.type " +
             "FROM doc_types dt " +
             "JOIN user_roles_crossref urc " +
-                "ON urc.user_id = ? " +
-                "AND dt.lang_prefix = ? " +
+            "ON urc.user_id = ? " +
+            "AND dt.lang_prefix = ? " +
             "LEFT JOIN roles_rights rr " +
-                "ON rr.meta_id = ? " +
-                "AND rr.role_id = urc.role_id " +
+            "ON rr.meta_id = ? " +
+            "AND rr.role_id = urc.role_id " +
             "LEFT JOIN doc_permission_sets dps " +
-                "ON dps.meta_id = rr.meta_id " +
-                "AND dps.set_id = rr.set_id " +
+            "ON dps.meta_id = rr.meta_id " +
+            "AND dps.set_id = rr.set_id " +
             "LEFT JOIN doc_permission_sets_ex dpse " +
-                "ON dpse.permission_data = dt.doc_type " +
-                "AND dpse.meta_id = rr.meta_id " +
-                "AND dpse.set_id = rr.set_id " +
-                "AND dpse.permission_id = 8 "+ // -- Create document
+            "ON dpse.permission_data = dt.doc_type " +
+            "AND dpse.meta_id = rr.meta_id " +
+            "AND dpse.set_id = rr.set_id " +
+            "AND dpse.permission_id = 8 " + // -- Create document
             "WHERE dpse.permission_data IS NOT NULL " +
-                "OR rr.set_id = 0 " +
-                "OR urc.role_id = 0 " +
+            "OR rr.set_id = 0 " +
+            "OR urc.role_id = 0 " +
             "ORDER BY dt.doc_type";
-        Object[] paramValues = new Object[]{ new Integer( user_id ), lang_prefix, new Integer( meta_id ) };
+        Object[] paramValues = new Object[]{new Integer( user_id ), lang_prefix, new Integer( meta_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int doc_type = rs.getInt("doc_type");
-                String type = rs.getString("type");
+                int doc_type = rs.getInt( "doc_type" );
+                String type = rs.getString( "type" );
                 return new View_doc_types( doc_type, type );
             }
         } );
@@ -1225,7 +1231,7 @@ public abstract class DatabaseService {
             "date_modified, sort_position, menu_position, disable_search, target, frame_name, activate, " +
             "activated_datetime, archived_datetime " +
             "FROM meta WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int meta_id = rs.getInt( "meta_id" );
@@ -1308,7 +1314,7 @@ public abstract class DatabaseService {
     private Table_text_docs getFromTable_text_docs( Integer meta_id ) {
         String sql = "SELECT meta_id, template_id, group_id, sort_order, default_template_1, default_template_2 " +
             "FROM text_docs WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int meta_id = rs.getInt( "meta_id" );
@@ -1356,7 +1362,7 @@ public abstract class DatabaseService {
 
     private Table_url_docs getFromTable_url_docs( Integer meta_id ) {
         String sql = "SELECT meta_id, frame_name, target, url_ref, url_txt, lang_prefix FROM url_docs WHERE meta_id = ?";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int meta_id = rs.getInt( "meta_id" );
@@ -1397,7 +1403,7 @@ public abstract class DatabaseService {
 
     private Table_browser_docs getFromTable_browser_docs( Integer meta_id ) {
         String sql = "SELECT meta_id, to_meta_id, browser_id FROM browser_docs WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int meta_id = rs.getInt( "meta_id" );
@@ -1432,7 +1438,7 @@ public abstract class DatabaseService {
 
     private Table_frameset_docs getFromTable_frameset_docs( Integer meta_id ) {
         String sql = "SELECT meta_id, frame_set FROM frameset_docs WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int meta_id = rs.getInt( "meta_id" );
@@ -1467,7 +1473,7 @@ public abstract class DatabaseService {
 
     private Table_fileupload_docs getFromTable_fileupload_docs( Integer meta_id ) {
         String sql = "SELECT meta_id, filename, mime FROM fileupload_docs WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int meta_id = rs.getInt( "meta_id" );
@@ -1485,11 +1491,11 @@ public abstract class DatabaseService {
 
     private int addToTable_fileupload_docs( SQLProcessor.SQLTransaction transaction, Table_fileupload_docs tableData ) throws SQLException {
         String sql = "INSERT INTO fileupload_docs ( meta_id, filename, mime ) VALUES ( ?, ?, ? )";
-        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), tableData.filename, tableData.mime };
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), tableData.filename, tableData.mime};
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_texts{
+    static class Table_texts {
         Table_texts( int meta_id, int name, String text, int type, int counter ) {
             this.meta_id = meta_id;
             this.name = name;
@@ -1507,14 +1513,14 @@ public abstract class DatabaseService {
 
     private Table_texts[] getFromTable_texts( Integer meta_id ) {
         String sql = "SELECT meta_id, name, text, type, counter FROM texts WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt("meta_id");
-                int name = rs.getInt("name");
-                String text = rs.getString("text");
-                int type = rs.getInt("type");
-                int counter = rs.getInt("counter");
+                int meta_id = rs.getInt( "meta_id" );
+                int name = rs.getInt( "name" );
+                String text = rs.getString( "text" );
+                int type = rs.getInt( "type" );
+                int counter = rs.getInt( "counter" );
                 return new Table_texts( meta_id, name, text, type, counter );
             }
         } );
@@ -1523,9 +1529,9 @@ public abstract class DatabaseService {
 
     private int addToTable_texts( SQLProcessor.SQLTransaction transaction, Table_texts tableData ) throws SQLException {
         String sql = "INSERT INTO texts ( meta_id, name, text, type, counter ) VALUES ( ?, ?, ?, ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer( tableData.meta_id ), new Integer( tableData.name ), tableData.text,
-                                                new Integer( tableData.type), new Integer( tableData.counter ) };
-        return transaction.executeUpdate(sql, paramValues);
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.name ), tableData.text,
+                                            new Integer( tableData.type ), new Integer( tableData.counter )};
+        return transaction.executeUpdate( sql, paramValues );
     }
 
     static class Table_images {
@@ -1567,31 +1573,31 @@ public abstract class DatabaseService {
     // todo: Varning, Denna sproc returnerar inte exakt i den ordning som den ursprungliga sproc ville ha det.
     // todo: ej heller inehåller resultatet den formaterade varianten av name: '#img'+convert(varchar(5), name)+'#'
     Table_images[] sproc_getImages( int meta_id ) {
-        return getFromTable_images( new Integer( meta_id ));
+        return getFromTable_images( new Integer( meta_id ) );
     }
 
     private Table_images[] getFromTable_images( Integer meta_id ) {
         String sql = "SELECT meta_id, width, height, border, v_space, h_space, name, image_name, target, target_name, " +
             "align, alt_text, low_scr, imgurl, linkurl FROM images WHERE meta_id = ?";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt("meta_id");
-                int width = rs.getInt("width");
-                int height = rs.getInt("height");
-                int border = rs.getInt("border");
-                int v_space = rs.getInt("v_space");
-                int h_space = rs.getInt("h_space");
-                int name = rs.getInt("name");
-                String image_name = rs.getString("image_name");
-                String target = rs.getString("target");
-                String target_name = rs.getString("target_name");
-                String align = rs.getString("align");
-                String alt_text = rs.getString("alt_text");
-                String low_scr = rs.getString("low_scr");
-                String imgurl = rs.getString("imgurl");
-                String linkurl = rs.getString("linkurl");
-                return new Table_images( meta_id, width, height, border, v_space, h_space, name, image_name, target, target_name,align, alt_text, low_scr, imgurl, linkurl);
+                int meta_id = rs.getInt( "meta_id" );
+                int width = rs.getInt( "width" );
+                int height = rs.getInt( "height" );
+                int border = rs.getInt( "border" );
+                int v_space = rs.getInt( "v_space" );
+                int h_space = rs.getInt( "h_space" );
+                int name = rs.getInt( "name" );
+                String image_name = rs.getString( "image_name" );
+                String target = rs.getString( "target" );
+                String target_name = rs.getString( "target_name" );
+                String align = rs.getString( "align" );
+                String alt_text = rs.getString( "alt_text" );
+                String low_scr = rs.getString( "low_scr" );
+                String imgurl = rs.getString( "imgurl" );
+                String linkurl = rs.getString( "linkurl" );
+                return new Table_images( meta_id, width, height, border, v_space, h_space, name, image_name, target, target_name, align, alt_text, low_scr, imgurl, linkurl );
             }
         } );
         return (Table_images[])queryResult.toArray( new Table_images[queryResult.size()] );
@@ -1600,13 +1606,13 @@ public abstract class DatabaseService {
     private int addToTable_images( SQLProcessor.SQLTransaction transaction, Table_images tableData ) throws SQLException {
         String sql = "INSERT INTO images (meta_id, width, height, border, v_space, h_space, name, image_name, target, target_name," +
             " align, alt_text, low_scr, imgurl, linkurl ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer(tableData.meta_id),new Integer(tableData.width),
-                                             new Integer(tableData.height),new Integer(tableData.border),
-                                             new Integer(tableData.v_space),new Integer(tableData.h_space),
-                                             new Integer(tableData.name), tableData.image_name, tableData.target,
-                                             tableData.target_name, tableData.align, tableData.alt_text, tableData.low_scr,
-                                             tableData.imgurl, tableData.linkurl };
-        return transaction.executeUpdate(sql,  paramValues);
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.width ),
+                                            new Integer( tableData.height ), new Integer( tableData.border ),
+                                            new Integer( tableData.v_space ), new Integer( tableData.h_space ),
+                                            new Integer( tableData.name ), tableData.image_name, tableData.target,
+                                            tableData.target_name, tableData.align, tableData.alt_text, tableData.low_scr,
+                                            tableData.imgurl, tableData.linkurl};
+        return transaction.executeUpdate( sql, paramValues );
     }
 
     static class Table_includes {
@@ -1622,27 +1628,27 @@ public abstract class DatabaseService {
     }
 
     Table_includes[] sproc_GetInclues( int meta_id ) {
-        return getFromTable_includes( new Integer( meta_id ));
+        return getFromTable_includes( new Integer( meta_id ) );
     }
 
     private Table_includes[] getFromTable_includes( Integer meta_id ) {
         String sql = "SELECT meta_id, include_id, included_meta_id FROM includes WHERE meta_id = ? ORDER BY include_id";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt("meta_id");
-                int include_id= rs.getInt("include_id");
-                int included_meta_id= rs.getInt("included_meta_id");
+                int meta_id = rs.getInt( "meta_id" );
+                int include_id = rs.getInt( "include_id" );
+                int included_meta_id = rs.getInt( "included_meta_id" );
                 return new Table_includes( meta_id, include_id, included_meta_id );
             }
         } );
-            return (Table_includes[])queryResult.toArray( new Table_includes[queryResult.size()] );
+        return (Table_includes[])queryResult.toArray( new Table_includes[queryResult.size()] );
     }
 
     private int addToTable_includes( SQLProcessor.SQLTransaction transaction, Table_includes tableData ) throws SQLException {
         String sql = "INSERT INTO includes ( meta_id, include_id, included_meta_id ) VALUES ( ?, ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer( tableData.meta_id),new Integer( tableData.include_id),
-                                             new Integer( tableData.included_meta_id) };
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.include_id ),
+                                            new Integer( tableData.included_meta_id )};
         return transaction.executeUpdate( sql, paramValues );
     }
 
@@ -1660,12 +1666,12 @@ public abstract class DatabaseService {
 
     private Table_doc_permission_sets getFromTable_doc_permission_sets( Integer meta_id ) {
         String sql = "SELECT meta_id, set_id, permission_id FROM doc_permission_sets WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt("meta_id");
-                int set_id = rs.getInt("set_id");
-                int permission_id = rs.getInt("permission_id");
+                int meta_id = rs.getInt( "meta_id" );
+                int set_id = rs.getInt( "set_id" );
+                int permission_id = rs.getInt( "permission_id" );
                 return new Table_doc_permission_sets( meta_id, set_id, permission_id );
             }
         } );
@@ -1678,7 +1684,7 @@ public abstract class DatabaseService {
 
     private int addToTable_doc_permission_sets( SQLProcessor.SQLTransaction transaction, Table_doc_permission_sets tableData ) throws SQLException {
         String sql = "INSERT INTO doc_permission_sets ( meta_id, set_id, permission_id ) VALUES( ?, ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer( tableData.meta_id ),new Integer( tableData.set_id ),new Integer( tableData.permission_id ) };
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.set_id ), new Integer( tableData.permission_id )};
         return transaction.executeUpdate( sql, paramValues );
     }
 
@@ -1696,15 +1702,15 @@ public abstract class DatabaseService {
 
     private Table_new_doc_permission_sets getFromTable_new_doc_permission_sets( Integer meta_id ) {
         String sql = "SELECT meta_id, set_id, permission_id FROM new_doc_permission_sets WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt("meta_id");
-                int set_id = rs.getInt("set_id");
-                int permission_id = rs.getInt("permission_id");
+                int meta_id = rs.getInt( "meta_id" );
+                int set_id = rs.getInt( "set_id" );
+                int permission_id = rs.getInt( "permission_id" );
                 return new Table_new_doc_permission_sets( meta_id, set_id, permission_id );
             }
-        } ) ;
+        } );
         if( queryResult.size() == 0 ) {
             return null;
         } else {
@@ -1714,7 +1720,7 @@ public abstract class DatabaseService {
 
     private int addToTable_new_doc_permission_sets( SQLProcessor.SQLTransaction transaction, Table_new_doc_permission_sets tableData ) throws SQLException {
         String sql = "INSERT INTO new_doc_permission_sets (meta_id, set_id, permission_id) VALUES ( ?, ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer(tableData.meta_id),  new Integer(tableData.set_id),  new Integer(tableData.permission_id) };
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.set_id ), new Integer( tableData.permission_id )};
         return transaction.executeUpdate( sql, paramValues );
     }
 
@@ -1734,14 +1740,14 @@ public abstract class DatabaseService {
 
     private Table_doc_permission_sets_ex getFromTable_doc_permission_sets_ex( Integer meta_id ) {
         String sql = "SELECT meta_id, set_id, permission_id, permission_data FROM doc_permission_sets_ex WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt("meta_id");
-                int set_id = rs.getInt("set_id");
-                int permission_id = rs.getInt("permission_id");
-                int permission_data = rs.getInt("permission_data");
-                return new Table_doc_permission_sets_ex(meta_id, set_id, permission_id, permission_data);
+                int meta_id = rs.getInt( "meta_id" );
+                int set_id = rs.getInt( "set_id" );
+                int permission_id = rs.getInt( "permission_id" );
+                int permission_data = rs.getInt( "permission_data" );
+                return new Table_doc_permission_sets_ex( meta_id, set_id, permission_id, permission_data );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1753,11 +1759,11 @@ public abstract class DatabaseService {
 
     private int addToTable_doc_permission_sets_ex( SQLProcessor.SQLTransaction transaction, Table_doc_permission_sets_ex tableData ) throws SQLException {
         String sql = "INSERT INTO doc_permission_sets_ex (meta_id, set_id, permission_id, permission_data) VALUES ( ?, ?, ?, ? ) ";
-        Object[] paramValues = new Object[]{ new Integer( tableData.meta_id ), new Integer( tableData.set_id ), new Integer( tableData.permission_id ), new Integer( tableData.permission_data ) };
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.set_id ), new Integer( tableData.permission_id ), new Integer( tableData.permission_data )};
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_new_doc_permission_sets_ex{
+    static class Table_new_doc_permission_sets_ex {
         Table_new_doc_permission_sets_ex( int meta_id, int set_id, int permission_id, int permission_data ) {
             this.meta_id = meta_id;
             this.set_id = set_id;
@@ -1773,13 +1779,13 @@ public abstract class DatabaseService {
 
     private Table_new_doc_permission_sets_ex getFromTable_new_doc_permission_sets_ex( Integer meta_id ) {
         String sql = "SELECT meta_id, set_id, permission_id, permission_data FROM new_doc_permission_sets_ex WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt("meta_id");
-                int set_id = rs.getInt("set_id");
-                int permission_id = rs.getInt("permission_id");
-                int permission_data = rs.getInt("permission_data");
+                int meta_id = rs.getInt( "meta_id" );
+                int set_id = rs.getInt( "set_id" );
+                int permission_id = rs.getInt( "permission_id" );
+                int permission_data = rs.getInt( "permission_data" );
                 return new Table_new_doc_permission_sets_ex( meta_id, set_id, permission_id, permission_data );
             }
         } );
@@ -1792,7 +1798,7 @@ public abstract class DatabaseService {
 
     private int addToTable_new_doc_permission_sets_ex( SQLProcessor.SQLTransaction transaction, Table_new_doc_permission_sets_ex tableData ) throws SQLException {
         String sql = "INSERT INTO new_doc_permission_sets_ex (meta_id, set_id, permission_id, permission_data) VALUES ( ?, ?, ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer( tableData.meta_id ), new Integer( tableData.set_id ), new Integer( tableData.permission_id ),new Integer( tableData.permission_data ) };
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.set_id ), new Integer( tableData.permission_id ), new Integer( tableData.permission_data )};
         return transaction.executeUpdate( sql, paramValues );
     }
 
@@ -1810,12 +1816,12 @@ public abstract class DatabaseService {
 
     private Table_roles_rights getFromTable_roles_rights( Integer meta_id ) {
         String sql = "SELECT role_id, meta_id, set_id FROM roles_rights WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int role_id = rs.getInt("role_id");
-                int meta_id = rs.getInt("meta_id");
-                int set_id = rs.getInt("set_id");
+                int role_id = rs.getInt( "role_id" );
+                int meta_id = rs.getInt( "meta_id" );
+                int set_id = rs.getInt( "set_id" );
                 return new Table_roles_rights( role_id, meta_id, set_id );
             }
         } );
@@ -1828,7 +1834,7 @@ public abstract class DatabaseService {
 
     private int addToTable_roles_rights( SQLProcessor.SQLTransaction transaction, Table_roles_rights tableData ) throws SQLException {
         String sql = "INSERT INTO roles_rights (role_id, meta_id, set_id) VALUES ( ?, ?, ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer( tableData.role_id ), new Integer( tableData.meta_id ), new Integer( tableData.set_id ) };
+        Object[] paramValues = new Object[]{new Integer( tableData.role_id ), new Integer( tableData.meta_id ), new Integer( tableData.set_id )};
         return transaction.executeUpdate( sql, paramValues );
     }
 
@@ -1844,11 +1850,11 @@ public abstract class DatabaseService {
 
     private Table_meta_classification getFromTable_meta_classification( Integer meta_id ) {
         String sql = "SELECT meta_id, class_id FROM meta_classification WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt("meta_id");
-                int class_id = rs.getInt("class_id");
+                int meta_id = rs.getInt( "meta_id" );
+                int class_id = rs.getInt( "class_id" );
                 return new Table_meta_classification( meta_id, class_id );
             }
         } );
@@ -1861,11 +1867,11 @@ public abstract class DatabaseService {
 
     private int addToTable_meta_classification( SQLProcessor.SQLTransaction transaction, Table_meta_classification tableData ) throws SQLException {
         String sql = "INSERT INTO meta_classification (meta_id, class_id) VALUES ( ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer( tableData.meta_id ), new Integer( tableData.class_id ) };
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.class_id )};
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_meta_section{
+    static class Table_meta_section {
         public Table_meta_section( int meta_id, int section_id ) {
             this.meta_id = meta_id;
             this.section_id = section_id;
@@ -1877,11 +1883,11 @@ public abstract class DatabaseService {
 
     private Table_meta_section getFromTable_meta_section( Integer meta_id ) {
         String sql = "SELECT meta_id, section_id FROM meta_section WHERE meta_id = ? ";
-        Object[] paramValues = new Object[]{ meta_id };
+        Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt("meta_id");
-                int section_id = rs.getInt("section_id");
+                int meta_id = rs.getInt( "meta_id" );
+                int section_id = rs.getInt( "section_id" );
                 return new Table_meta_section( meta_id, section_id );
             }
         } );
@@ -1894,7 +1900,7 @@ public abstract class DatabaseService {
 
     private int addToTable_meta_section( SQLProcessor.SQLTransaction transaction, Table_meta_section tableData ) throws SQLException {
         String sql = "INSERT INTO meta_section ( meta_id, section_id ) VALUES ( ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer( tableData.meta_id ), new Integer( tableData.section_id ) };
+        Object[] paramValues = new Object[]{new Integer( tableData.meta_id ), new Integer( tableData.section_id )};
         return transaction.executeUpdate( sql, paramValues );
     }
 
@@ -2011,12 +2017,12 @@ public abstract class DatabaseService {
     }
 
     /**
-        Retrieve a text with type
-    */
+     Retrieve a text with type
+     */
     // Todo: Denna returnerade i orginalutförandet endast en del av datan som finns för rad i tabellen texts,
     // todo: ok att returnera hela på detta sätt?
     Table_texts sproc_GetText( int meta_id, int name ) {
-        Table_texts[] allTextInDocument = getFromTable_texts( new Integer( meta_id ));
+        Table_texts[] allTextInDocument = getFromTable_texts( new Integer( meta_id ) );
         for( int i = 0; i < allTextInDocument.length; i++ ) {
             Table_texts table_texts = allTextInDocument[i];
             if( table_texts.name == name ) {
@@ -2026,19 +2032,40 @@ public abstract class DatabaseService {
         return null;
     }
 
-    String[] sproc_GetUserRoles( int user_id ) {
-	String sql = "SELECT role_name from roles, user_roles_crossref "+
-	    "WHERE roles.role_id = user_roles_crossref.role_id AND user_roles_crossref.user_id = ?" ;
-	Object paramValues[] = new Object[] { new Integer( user_id ) } ;
-	List roleNames = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+    int sproc_deleteInclude( int meta_id, int include_id ) {
+        String sql = "DELETE FROM includes WHERE meta_id = ? AND include_id = ? ";
+        Object[] paramValues = new Object[]{new Integer( meta_id ), new Integer( include_id )};
+        return sqlProcessor.executeUpdate( sql, paramValues );
+    }
+
+    Table_users getFromTable_users( Integer user_id ) {
+        String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users " +
+            "WHERE user_id = ? ";
+        Object[] paramValues = new Object[]{user_id};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                String role_name = rs.getString("role_name");
-		return role_name ;
+                Table_users result = mapTableUsers( rs );
+                return result;
+            }
+        } );
+        if( null == queryResult ) {
+            return null;
+        } else {
+            return (Table_users)queryResult.get( 0 );
+        }
+    }
+
+    String[] sproc_GetUserRoles( int user_id ) {
+        String sql = "SELECT role_name from roles, user_roles_crossref " +
+            "WHERE roles.role_id = user_roles_crossref.role_id AND user_roles_crossref.user_id = ?";
+        Object paramValues[] = new Object[]{new Integer( user_id )};
+        List roleNames = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                String role_name = rs.getString( "role_name" );
+                return role_name;
             }
         } );
 
-	return (String[])roleNames.toArray(new String[roleNames.size()]) ;
-
+        return (String[])roleNames.toArray( new String[roleNames.size()] );
     }
-
 }
