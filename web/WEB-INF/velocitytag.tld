@@ -6,6 +6,7 @@ Library 1.2//EN"
 <taglib>
   <tlib-version>0.1</tlib-version>
   <jsp-version>1.1</jsp-version>
+  <short-name>imcms-velocity</short-name>
 
   <tag>
     <name>velocity</name>
