@@ -14,9 +14,11 @@ import java.util.*;
  * or @link http://ldap.akbkhome.com/objectclasstree/inetOrgPerson.html for details witch attributes that exists.
  */
 
-public class LdapUserAndRoleMapper implements UserAndRoleMapper {
+public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
 
     public final static String AUTHENTICATION_TYPE_SIMPLE = "simple";
+
+    private static final String LDAP_ATTRIBUTE_DISTINGUISHED_NAME = "distinguishedName" ;
 
     /** The following constanst are mapped to the Imcms internal user tables.
      /* Where the loginname is mapped to the attribute attribute
@@ -50,25 +52,34 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
     static final String DEFAULT_LDAP_ROLE = "LDAP";
 
     private DirContext ctx = null;
-    private String userIdentifier = null;
     private HashMap userFieldLdapMappings = null;
-    private String[] ldapAttributesAutoMappedToRoles;
-    private static final int USER__TYPE_AUTHENTICATED = 1;
+    private static final int USER_TYPE_AUTHENTICATED = 1;
 
     private String ldapURL;
     private String ldapAuthenticationType;
+    private String ldapUserObjectClass = null;
+    private String ldapUserIdentifyingAttribute = null;
     private String ldapUserName;
     private String ldapPassword;
+    private String[] ldapAttributesAutoMappedToRoles;
 
     public LdapUserAndRoleMapper( Properties ldapConfig ) throws LdapInitException {
         String ldapUrl = ldapConfig.getProperty( "LdapUrl" );
         String ldapAuthenticationType = LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE;
         String ldapUserName = ldapConfig.getProperty( "LdapUserName" );
         String ldapPassword = ldapConfig.getProperty( "LdapPassword" );
+        String ldapUserObjectClass = ldapConfig.getProperty( "LdapUserObjectClass" ) ;
+        String ldapUserIdentifyingAttribute = ldapConfig.getProperty( "LdapUserIdentifyingAttribute" ) ;
         String ldapStringOfAttributesMappedToRoles = ldapConfig.getProperty( "LdapAttributesMappedToRoles" );
         String[] ldapAttributesMappedToRoles = splitStringOnCommasAndSpaces( ldapStringOfAttributesMappedToRoles );
 
-        init( ldapUrl, ldapAuthenticationType, ldapUserName, ldapPassword, ldapAttributesMappedToRoles );
+        init( ldapUrl,
+              ldapAuthenticationType,
+              ldapUserObjectClass,
+              ldapUserIdentifyingAttribute,
+              ldapUserName,
+              ldapPassword,
+              ldapAttributesMappedToRoles );
     }
 
     /**
@@ -78,16 +89,35 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
      * @param ldapPassword A password that i used to log in (bind) to the ldap server
      */
 
-    public LdapUserAndRoleMapper( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
-        init( ldapURL, ldapAuthenticationType, ldapUserName, ldapPassword, ldapAttributesAutoMappedToRoles );
+    public LdapUserAndRoleMapper( String ldapUrl,
+                                  String ldapAuthenticationType,
+                                  String ldapUserObjectClass,
+                                  String ldapUserIdentifyingAttribute,
+                                  String ldapUserName,
+                                  String ldapPassword,
+                                  String[] ldapAttributesMappedToRoles ) throws LdapInitException {
+        init( ldapUrl,
+              ldapAuthenticationType,
+              ldapUserObjectClass,
+              ldapUserIdentifyingAttribute,
+              ldapUserName,
+              ldapPassword,
+              ldapAttributesMappedToRoles );
     }
 
-    private void init( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
+    private void init(  String ldapURL,
+                        String ldapAuthenticationType,
+                        String ldapUserObjectClass,
+                        String ldapUserIdentifyingAttribute,
+                        String ldapUserName, 
+                        String ldapPassword, 
+                        String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
         this.ldapAttributesAutoMappedToRoles = ldapAttributesAutoMappedToRoles;
-        this.userIdentifier = NONSTANDARD_USERID;
+        this.ldapUserIdentifyingAttribute = ldapUserIdentifyingAttribute;
         this.userFieldLdapMappings = createLdapMappings();
 
         this.ldapURL = ldapURL;
+        this.ldapUserObjectClass = ldapUserObjectClass;
         this.ldapAuthenticationType = ldapAuthenticationType;
         this.ldapUserName = ldapUserName;
         this.ldapPassword = ldapPassword;
@@ -97,7 +127,7 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
 
     private void setupInitialDirContext() throws LdapInitException {
         try {
-            ctx = staticSetupInitialDirContext( ldapURL, ldapAuthenticationType, ldapUserName, ldapPassword );
+            ctx = staticGetInitialDirContext( ldapURL, ldapAuthenticationType, ldapUserName, ldapPassword );
         } catch ( AuthenticationException ex ) {
             throw new LdapInitException( "Authentication failed, using login: '" + ldapUserName + "', password: '" + ldapPassword + "'", ex );
         } catch ( NameNotFoundException ex ) {
@@ -114,6 +144,36 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
         }
     }
 
+    public boolean authenticate( String loginName, String password ) {
+        boolean userAuthenticates = false ;
+        try {
+            Map userAttributes = searchForUserAttributes( loginName,
+                                                          new String[] { LDAP_ATTRIBUTE_DISTINGUISHED_NAME } ) ;
+            if (null != userAttributes) {
+
+              String userDistinguishedName = (String)userAttributes.get(LDAP_ATTRIBUTE_DISTINGUISHED_NAME) ;
+ 
+              if (null != userDistinguishedName) {
+                  staticGetInitialDirContext( ldapURL,
+                                              ldapAuthenticationType,
+                                              userDistinguishedName,
+                                              password );
+                  userAuthenticates = true ;
+              } else {
+                 userAuthenticates = false ;
+              }
+            } else {
+              userAuthenticates = false ;
+            }
+        } catch ( AuthenticationException ex ) {
+            userAuthenticates = false ;
+        } catch ( NamingException ex ) {
+            getLogger().warn("Failed to get ldap context.", ex) ;
+            userAuthenticates = false ;
+        }
+        return userAuthenticates ;
+    }
+
     public User getUser( String loginName ) {
         User result = null;
 
@@ -124,7 +184,7 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
 
             result.setLoginName( loginName );
             result.setActive( true );
-            result.setUserType( USER__TYPE_AUTHENTICATED );
+            result.setUserType( USER_TYPE_AUTHENTICATED );
         }
 
         return result;
@@ -227,8 +287,9 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
         return value;
     }
 
-    private static DirContext staticSetupInitialDirContext( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword ) throws NamingException {
-        String ContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
+    private static DirContext staticGetInitialDirContext( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword ) throws NamingException {
+        String ContextFactory = "com.sun.jndi.ldap.LdapCtxFactory" ;
+        
         Hashtable env = new Hashtable();
         env.put( Context.INITIAL_CONTEXT_FACTORY, ContextFactory );
         env.put( Context.PROVIDER_URL, ldapURL );
@@ -260,13 +321,12 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
     private Map searchForUserAttributes( String loginName, String[] attributesToReturn ) {
         Map attributeMap = null;
 
-        Attributes loginNameAttribute = new BasicAttributes( userIdentifier, loginName );
         try {
             try {
-                attributeMap = trySearchForUserAttributes( loginNameAttribute, attributesToReturn, loginName );
+                attributeMap = trySearchForUserAttributes( loginName, attributesToReturn );
             } catch ( CommunicationException e ) {
                 getLogger().warn( "Problem communicating with LDAP server, reconnecting.", e );
-                attributeMap = reconnectAndRetrySearchForUserAttributes( loginNameAttribute, attributesToReturn, loginName );
+                attributeMap = reconnectAndRetrySearchForUserAttributes( loginName, attributesToReturn );
             }
         } catch ( NamingException e ) {
             getLogger().warn( "Could not find user " + loginName, e );
@@ -274,23 +334,28 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
         return attributeMap;
     }
 
-    private Map reconnectAndRetrySearchForUserAttributes( Attributes loginNameAttribute, String[] attributesToReturn, String loginName ) throws NamingException {
+    private Map reconnectAndRetrySearchForUserAttributes( String loginName, String[] attributesToReturn ) throws NamingException {
         Map attributeMap = null;
         try {
             setupInitialDirContext();
         } catch ( LdapInitException e ) {
             getLogger().fatal( "Could not reconnect to LDAP server.", e );
         }
-        attributeMap = trySearchForUserAttributes( loginNameAttribute, attributesToReturn, loginName );
+        attributeMap = trySearchForUserAttributes( loginName, attributesToReturn );
         return attributeMap;
     }
 
-    private Map trySearchForUserAttributes( Attributes loginNameAttribute, String[] attributesToReturn, String loginName ) throws NamingException {
+    private Map trySearchForUserAttributes( String loginName, String[] attributesToReturn ) throws NamingException {
+        String searchFilter = "(&(objectClass="+ldapUserObjectClass+")("+ldapUserIdentifyingAttribute+"="+loginName+"))" ;
+        SearchControls searchControls = new SearchControls() ;
+        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setReturningAttributes(attributesToReturn);
+
+        NamingEnumeration enum = ctx.search( "", searchFilter, searchControls );
+        boolean foundUser = enum != null && enum.hasMore();
+
         Map attributeMap = null;
-        NamingEnumeration enum;
-        boolean foundUser;
-        enum = ctx.search( "", loginNameAttribute, attributesToReturn );
-        foundUser = enum != null && enum.hasMore();
+
         if ( foundUser ) {
             SearchResult searchResult = (SearchResult)enum.nextElement();
             attributeMap = createMapFromSearchResult( searchResult );

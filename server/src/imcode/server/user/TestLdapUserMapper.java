@@ -8,13 +8,37 @@ public class TestLdapUserMapper extends UserBaseTestCase {
 
    public void setUp() {
       try {
-         String ldapURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
-         String ldapUserName = "imcode\\hasbra";
-         String ldapPassword = "hasbra";
-         ldapUserMapper = new LdapUserAndRoleMapper( ldapURL, LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE, ldapUserName, ldapPassword, new String[0] );
+         String ldapURL = "ldap://ldap-vcn1.vtd.volvo.se:389/dc=vcn,dc=ds,dc=volvo,dc=net" ;
+         String ldapUserName = "CN=cs-ad-ldapquery,OU=ServiceAccounts,OU=AdOperation,OU=CS,DC=vcn,DC=ds,DC=volvo,DC=net" ;
+         String ldapPassword = "#D8leYS";
+         String ldapUserObjectClass = "person" ;
+         String ldapUserIdentifyingAttribute = "cn" ;
+         ldapUserMapper = new LdapUserAndRoleMapper(  ldapURL,
+                                                      LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE,
+                                                      ldapUserObjectClass,
+                                                      ldapUserIdentifyingAttribute,
+                                                      ldapUserName,
+                                                      ldapPassword,
+                                                      new String[0] );
       } catch( LdapUserAndRoleMapper.LdapInitException e ) {
          fail();
       }
+   }
+
+   public void testExistingUserLdapService() {
+      final String userName = "cs-ad-ldapquery" ;
+      User user = ldapUserMapper.getUser( userName );
+      assertNotNull( user );
+      assertEquals( userName, user.getLoginName() );
+      assertNull( user.getPassword() );
+   }
+   
+   public void testAuthenticate() {
+      final String userName = "cs-ad-ldapquery" ;
+      final String userPassword = "#D8leYS" ;
+
+      boolean userAuthenticates = ldapUserMapper.authenticate(userName,userPassword) ;
+      assertTrue(userAuthenticates) ;    
    }
 
    public void testInvalidName() {
@@ -27,6 +51,15 @@ public class TestLdapUserMapper extends UserBaseTestCase {
       assertNull( user );
    }
 
+   public void testGetRolesForUserLdapService() {
+      final String userName = "cs-ad-ldapquery" ;
+      User user = ldapUserMapper.getUser( userName );
+      String[] roleNames = ldapUserMapper.getRoleNames( user );
+      assertNotNull( roleNames );
+      assertTrue( Arrays.asList( roleNames ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
+   }
+   
+/*
    public void testExistingUserChristoffer() {
       User user = ldapUserMapper.getUser( "chrham" );
       assertNotNull( user );
@@ -49,7 +82,9 @@ public class TestLdapUserMapper extends UserBaseTestCase {
       assertTrue( user.isActive() );
       assertNull( user.getLangPrefix() );
    }
+*/
 
+/*
    public void testExistingUserWithUnsetAttributes() {
       User user = ldapUserMapper.getUser( "imcms_ldaptest" );
       assertNotNull( user );
@@ -72,13 +107,16 @@ public class TestLdapUserMapper extends UserBaseTestCase {
       assertTrue( user.isActive() );
       assertNull( user.getLangPrefix() );
    }
+*/
 
+/*
    public void testGetRolesForChristoffer() {
       User user = ldapUserMapper.getUser( "chrham" );
       String[] roleNames = ldapUserMapper.getRoleNames( user );
       assertNotNull( roleNames );
       assertTrue( Arrays.asList( roleNames ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
    }
+*/
 
    public void testGetAllRoleNames() {
       String[] roleNames = ldapUserMapper.getAllRoleNames() ;

@@ -37,16 +37,12 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
    }
 
    public boolean authenticate( String loginName, String password ) {
-      boolean result = false;
-      if (null != externalAuthenticator) {
-         boolean userExistsInOther = externalAuthenticator.authenticate( loginName, password );
-         result = userExistsInOther;
+      boolean userAuthenticatesInImcms = imcmsAuthenticatorAndUserMapper.authenticate( loginName, password );
+      boolean userAuthenticatesInExternal = false ;
+      if ( !userAuthenticatesInImcms && null != externalAuthenticator) {
+         userAuthenticatesInExternal = externalAuthenticator.authenticate( loginName, password );
       }
-      if( !result ) {
-         boolean userExistsInImcms = imcmsAuthenticatorAndUserMapper.authenticate( loginName, password );
-         result = userExistsInImcms;
-      }
-      return result;
+      return userAuthenticatesInImcms || userAuthenticatesInExternal ;
    }
 
    public User getUser( String loginName ) {
@@ -74,7 +70,8 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
       } else if( imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
          throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
       } else if( imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
-         throw new UserConflictException( "An imcmsAuthenticatorAndUserMapper-internal user was found in external directory.", null );
+         result = imcmsUser ;
+         //throw new UserConflictException( "An imcmsAuthenticatorAndUserMapper-internal user was found in external directory.", null );
       }
       return result;
    }

@@ -52,6 +52,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
    private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG );
    private final static Logger log = Logger.getLogger( IMCService.class.getName() );
    private static final String EXTERNAL_AUTHENTICATOR_SMB = "SMB";
+   private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP" ;
    private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
 
    static {
@@ -219,6 +220,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          externalAuthenticator = null;
       } else if( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
          externalAuthenticator = new SmbAuthenticator( authenticatorPropertiesSubset );
+      } else if( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
+         try { 
+            externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
+         } catch( LdapUserAndRoleMapper.LdapInitException e ) {
+            log.error( "LdapUserAndRoleMapper could not be created, using default user and role mapper.", e );
+         }
       } else {
          externalAuthenticator = (Authenticator)createInstanceOfClass( externalAuthenticatorName );
       }

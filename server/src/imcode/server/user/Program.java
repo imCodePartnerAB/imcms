@@ -3,7 +3,7 @@ package imcode.server.user;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
+import javax.naming.directory.*;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import java.util.Hashtable;
@@ -11,22 +11,31 @@ import java.util.Hashtable;
 public class Program {
    public static void main( String[] args ) throws NamingException {
 
-      String ldapServerURL = "ldap://loke:389/";
+      String ldapServerURL = "ldap://ldap-vcn1.vtd.volvo.se:389/dc=vcn,dc=ds,dc=volvo,dc=net" ;
+      //String ldapServerURL = "ldap://ldap-vcn1.vtd.volvo.se:389/" ;
       String ldapAuthenticationType = "simple";
-      String ldapUserName = "imcode\\hasbra";
-      String ldapPassword = "hasbra";
+      String ldapUserName = "CN=cs-ad-ldapquery,OU=ServiceAccounts,OU=AdOperation,OU=CS,DC=vcn,DC=ds,DC=volvo,DC=net" ;
+      String ldapPassword = "#D8leYS" ;
+
+      String userName = "user" ;
 
       DirContext ctx = s_setaupInitialDirContext( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword );
 
       SearchControls searchControls = new SearchControls();
-      searchControls.setSearchScope( SearchControls.ONELEVEL_SCOPE );
-      String name = "CN=Users, DC=imcode, DC=com";
-      String filter = "samaccountname=hasbra"; // See http://www.cis.ohio-state.edu/cs/Services/rfc/rfc-text/rfc2254.txt
+      searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
+      String name = "";
+      // See http://www.cis.ohio-state.edu/cs/Services/rfc/rfc-text/rfc2254.txt
+      String filter = "(&(objectClass=Person)(cn="+userName+"))" ;
 
       NamingEnumeration namingEnumeration = ctx.search( name, filter, searchControls );
       while( namingEnumeration.hasMoreElements() ) {
-         Object o = namingEnumeration.nextElement();
-         System.out.println( o.toString() );
+         SearchResult searchResult = (SearchResult)namingEnumeration.nextElement();
+         System.out.println( searchResult.getAttributes().get("DistinguishedName").toString() );
+         System.out.println( searchResult );
+         String[] attributes = searchResult.toString().split(", ") ;
+         for (int i=0; i < attributes.length; ++i) {
+           System.out.println(attributes[i]) ;
+         }
       }
 
       /*

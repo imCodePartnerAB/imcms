@@ -16,17 +16,21 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
 
    public void setUp() throws LdapUserAndRoleMapper.LdapInitException {
       mockImcmsService = new MockIMCServiceInterface();
-      String ldapServerURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
-      String ldapUserName = "imcode\\hasbra";
-      String ldapPassword = "hasbra";
-      ldapUserMapper = new LdapUserAndRoleMapper( ldapServerURL,
+      String ldapURL = "ldap://ldap-vcn1.vtd.volvo.se:389/dc=vcn,dc=ds,dc=volvo,dc=net" ;
+      String ldapUserObjectClass = "person" ;
+      String ldapUserIdentifyingAttribute = "cn" ;
+         String ldapUserName = "CN=cs-ad-ldapquery,OU=ServiceAccounts,OU=AdOperation,OU=CS,DC=vcn,DC=ds,DC=volvo,DC=net" ;
+         String ldapPassword = "#D8leYS";
+      ldapUserMapper = new LdapUserAndRoleMapper( ldapURL,
                                                   LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE,
+                                                  ldapUserObjectClass,
+                                                  ldapUserIdentifyingAttribute,
                                                   ldapUserName,
                                                   ldapPassword,
                                                   new String[]{LdapUserAndRoleMapper.NONSTANDARD_COMPANY} );
       imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( mockImcmsService );
       externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper,
-                                                                                        new SmbAuthenticator( "loke", "imcode" ),
+                                                                                        ldapUserMapper,
                                                                                         ldapUserMapper,
                                                                                         "se" );
    }
@@ -127,7 +131,8 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
 
    public void testNullExternalUserMapper() {
       try {
-         ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper(imcmsAuthenticatorAndUserMapper,new SmbAuthenticator("loke", "imcode"),null,"se") ;
+         ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = 
+          new ExternalizedImcmsAuthenticatorAndUserMapper(imcmsAuthenticatorAndUserMapper,ldapUserMapper,null,"se") ;
          fail();
       } catch ( IllegalArgumentException ex ) {
          //OK
