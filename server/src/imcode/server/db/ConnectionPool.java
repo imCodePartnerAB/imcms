@@ -21,10 +21,7 @@ public abstract class ConnectionPool {
             connectionPool.testConnectionAndLogResultToTheErrorLog();
 
         } catch ( Exception ex ) {
-            log.fatal( "Failed to create database connection pool" );
-            log.fatal( "Url = " + jdbcUrl );
-            log.fatal( "Driver = " + jdbcDriver );
-            log.fatal( "", ex );
+            log.fatal( "Failed to create connection pool Url: "+jdbcUrl+" Driver: "+jdbcDriver, ex );
             throw new RuntimeException( ex );
         }
         return connectionPool;

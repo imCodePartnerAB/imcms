@@ -15,6 +15,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
 import imcode.util.Parser;
 import imcode.util.Utility;
+import imcode.util.DateHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -61,15 +62,13 @@ public class AdminListDocs extends Administrator {
     private static final String TEMPLATE_LISTDOC_LIST_ELEMENT = "AdminListDocs_doclList_element.html";
     private static final String ERROR_HEADER = "AdminListDocs";
 
-    private static final String DATE_FORMATE = "yyyy-MM-dd";
-
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         // Lets validate the session
-        if ( checkSession( request, response ) == false ) {
+        if ( !checkSession( request, response ) ) {
             return;
         }
 
@@ -109,7 +108,7 @@ public class AdminListDocs extends Administrator {
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
         // Lets validate the session
-        if ( checkSession( request, response ) == false ) return;
+        if ( !checkSession( request, response ) ) return;
 
         // Lets get an user object
         imcode.server.user.UserDomainObject user = getUserObj( request, response );
@@ -126,7 +125,7 @@ public class AdminListDocs extends Administrator {
         }
 
         // Lets check if the user is an admin, otherwise throw him out.
-        if ( imcref.checkAdminRights( user ) == false ) {
+        if ( !imcref.checkAdminRights( user ) ) {
             String header = "Error in AdminRoleBelongings.";
             String msg = "The user is not an administrator." + "<BR>";
             this.log( header + msg );
@@ -237,14 +236,7 @@ public class AdminListDocs extends Administrator {
                     "#HEADER#", null,
                     "#DATE#", null,
                 };
-                // lets exchange som html codes
-                /*we dont need to do this anymore because it already in ouml.
-                  String[] pd =	{
-                  "&",	"&amp;",
-                  "<",	"&lt;",
-                  ">",	"&gt;",
-                  };
-                */
+
                 StringBuffer listOfDocs = new StringBuffer();
                 for ( int i = 0; i < docTypesToShow.length; i++ ) {
                     String[][] queryResult = imcref.sqlProcedureMulti( "ListDocsByDate",
@@ -294,7 +286,7 @@ public class AdminListDocs extends Administrator {
     private boolean isDateInRightFormat( String date ) {
 
         // Format the current time.
-        SimpleDateFormat formatter = new SimpleDateFormat( DATE_FORMATE );
+        SimpleDateFormat formatter = new SimpleDateFormat( DateHelper.DATE_FORMAT_STRING );
 
         try {
             formatter.parse( date );

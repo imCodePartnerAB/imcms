@@ -8,6 +8,7 @@ import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
+import imcode.util.net.SMTP;
 
 import java.io.File;
 import java.io.IOException;
@@ -303,7 +304,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // get templatehome
-   public File getTemplateHome() {
+   public File getTemplatePath() {
       return null;
    }
 
@@ -499,6 +500,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
     public TemplateMapper getTemplateMapper() {
+        return null;  // TODO
+    }
+
+    public SMTP getSMTP() {
         return null;  // TODO
     }
 

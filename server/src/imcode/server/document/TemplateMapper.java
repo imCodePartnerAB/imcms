@@ -101,7 +101,7 @@ public class TemplateMapper {
         service.sqlUpdateQuery( sqlStr, new String[]{"" + template.getId()} );
 
         // test if template exists and delete it
-        File f = new File( service.getTemplateHome() + "/text/" + template.getId() + ".html" );
+        File f = new File( service.getTemplatePath() + "/text/" + template.getId() + ".html" );
         if ( f.exists() ) {
             f.delete();
         }

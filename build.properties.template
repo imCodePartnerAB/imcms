@@ -122,6 +122,6 @@ tomcat.admin.password =
 webapp.manager.url = http://localhost:8080/manager
 
 
-# Which components to build.
-# Comment out any you don't want to build.
+# If you want to include an addon under addons/ in the build, name the directory here.
 
+#addon =

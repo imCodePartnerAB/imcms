@@ -124,7 +124,7 @@ class ErrorMessageGenerator {
         String errorMessage = "";
         try {
             // Lets get the path to the template library
-            File errorTemplatePath = imcref.getTemplateHome();
+            File errorTemplatePath = imcref.getTemplatePath();
 
             // Lets get the error code
             SettingsAccessor setObj = new SettingsAccessor(new java.io.File(errorTemplatePath, imcref.getUserLangPrefixOrDefaultLanguage(user) + "/admin/" + ErrorMessageGenerator.ERROR_CODE_FILE));

@@ -298,7 +298,8 @@
 	    depends="init,
 		     classes,
 		     libraries,
-		     web,conf,dir,sql"
+		     web,conf,dir,sql,
+             build-addon"
 	    description="Builds everything.">
 
         <copy todir="${WEB-INF}" file="install/web.xml"/>
@@ -306,6 +307,11 @@
         <!-- Write version.txt -->
         <echo message="${version}" file="${WEB-INF}/version.txt"/>
 
+    </target>
+
+
+    <target name="build-addon" if="addon" depends="classes" description="Build addon">
+        <ant antfile="addons/${addon}/build.xml" target="build" inheritall="false"/>
     </target>
 
 

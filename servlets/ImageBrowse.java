@@ -320,7 +320,7 @@ public class ImageBrowse extends HttpServlet {
     private static File getAdminTemplateFolder( IMCServiceInterface imcref, imcode.server.user.UserDomainObject user ) {
 
         // Since our templates are located into the admin folder, we'll have to hang on admin
-        File templateLib = imcref.getTemplateHome();
+        File templateLib = imcref.getTemplatePath();
         // Lets get the users language id. Use the langid to get the lang prefix from db.
         String langPrefix = user.getLangPrefix();
         templateLib = new File( templateLib, langPrefix + "/admin" );

@@ -10,6 +10,7 @@ import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.db.ConnectionPool;
+import imcode.util.net.SMTP;
 
 /**
  * Interface for the Imcode Net Server.
@@ -129,7 +130,7 @@ public interface IMCServiceInterface {
 	throws IOException ;
 
     // get templatehome
-    public File getTemplateHome()
+    public File getTemplatePath()
 	;
 
     // get url-path to images
@@ -287,4 +288,6 @@ public interface IMCServiceInterface {
     public String getFilename(int meta_id) ;
 
     TemplateMapper getTemplateMapper();
+
+    SMTP getSMTP();
 }
