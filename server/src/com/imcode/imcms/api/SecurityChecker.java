@@ -3,9 +3,6 @@ package com.imcode.imcms.api;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 class SecurityChecker {
 
     private final static String SUPERADMIN_ROLE = "Superadmin";

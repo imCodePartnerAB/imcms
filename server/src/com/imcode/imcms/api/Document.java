@@ -21,7 +21,7 @@ public class Document {
     UserAndRoleMapper userAndRoleMapper;
     IMCServiceInterface service;
 
-    private final static Logger log = Logger.getLogger( "com.imcode.imcms.api.Document" );
+    private final static Logger log = Logger.getLogger( com.imcode.imcms.api.Document.class.getName() );
     public static final int STATUS_NEW = DocumentDomainObject.STATUS_NEW ;
     public static final int STATUS_PUBLICATION_DISAPPROVED = DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED ;
     public static final int STATUS_PUBLICATION_APPROVED = DocumentDomainObject.STATUS_PUBLICATION_APPROVED ;

@@ -1,9 +1,3 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-jan-26
- * Time: 14:06:04
- */
 package imcode.server.document;
 
 import imcode.server.ApplicationServer;
@@ -11,7 +5,6 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.commons.collections.MultiMap;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.lucene.document.DateField;
@@ -22,13 +15,16 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class DocumentIndex {
 
@@ -49,18 +45,18 @@ public class DocumentIndex {
         StopWatch searchStopWatch = new StopWatch();
         searchStopWatch.start();
         Hits hits = indexSearcher.search( query );
-        log.debug( "Search for " + query.toString() + " took " + searchStopWatch.getTime() + "ms." );
-        List result = getDocumentListForHits( hits, searchingUser );
-        log.debug( "Search and result lookup took " + searchStopWatch.getTime() + "ms." );
+        long searchTime = searchStopWatch.getTime() ;
+        List documentList = getDocumentListForHits( hits, searchingUser );
+        log.debug( "Search for " + query.toString() + ": "+searchTime+"ms. Total: " + searchStopWatch.getTime() + "ms." );
         indexSearcher.close();
-        return (DocumentDomainObject[])result.toArray( new DocumentDomainObject[result.size()] );
+        return (DocumentDomainObject[])documentList.toArray( new DocumentDomainObject[documentList.size()] );
     }
 
     private List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
         List documentList = new ArrayList( hits.length() );
-        StopWatch getDocumentStopWatch = new StopWatch();
         final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface()
                 .getDocumentMapper();
+        StopWatch getDocumentStopWatch = new StopWatch();
         for ( int i = 0; i < hits.length(); ++i ) {
             int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
             getDocumentStopWatch.resume();
