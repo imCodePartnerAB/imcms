@@ -45,8 +45,56 @@ public class GetImages implements FilenameFilter, Comparator {
 		return arrlist ;
 	}
 	
+	/**
+    	* puts all files in the suplied directory (filtered) in ArrayList
+    	@param path the folder i.e. "D:\\Apache\\htdocs\\images"
+    	@param sorted ArrayList sorted
+    **/
 
-  
+    static public List getImageFilesInFolder(File path, boolean sorted) 
+	    {
+		List arrlist = new ArrayList();
+		File[] _imgArr = path.listFiles(_this);
+		
+
+		for(int i=0;i<_imgArr.length;i++) 
+		{
+			if( !_imgArr[i].isDirectory() )
+				arrlist.add(_imgArr[i]);
+		}
+
+		// sorts arrlist using compare-method of Comparator
+		if(sorted) Collections.sort(arrlist,_this);
+		return arrlist ;
+	}
+	
+	/**
+    	* reads down the file-hierarchy and puts all folders (filtered) in ArrayList
+    	@param path the filepath i.e. "D:\\Apache\\htdocs\\images"
+    	@param sorted ArrayList sorted
+    **/
+
+    static public List getImageFolders(File path, boolean sorted) 
+	{
+		List arrlist = new ArrayList();
+		File[] _imgArr = path.listFiles(_this);
+		
+
+		for(int i=0;i<_imgArr.length;i++) 
+		{
+			if (_imgArr[i].isDirectory())
+			{
+				arrlist.add(_imgArr[i]);
+				arrlist.addAll(getImageFolders(_imgArr[i], true));
+			}
+		}
+
+		// sorts arrlist using compare-method of Comparator
+		if(sorted) Collections.sort(arrlist,_this);
+		return arrlist ;
+	}
+	
+  	
 
 /**
 	* implemented FilenameFilter-method
