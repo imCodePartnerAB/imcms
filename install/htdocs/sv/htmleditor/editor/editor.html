@@ -442,7 +442,64 @@ document.write('</select>');
 <tr>
 	<td>
 	<SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/editor.html/62 ?>
+<!--
+var onCountAdv = 0;
+if(showAdv){
+	if (showAdv<? sv/htmleditor/editor/editor.html/62/4 ?>Div) onCountAdv++;
+	if (showAdvFontClassDiv) onCountAdv++;
+	if (showAdvFontStyleDiv) onCountAdv++;
+	if (showAdvCodeStringDiv) onCountAdv++;
+	if (showAdv<? sv/htmleditor/editor/editor.html/62/3 ?>Div) onCountAdv++;
+	
+	if (onCountAdv > 1) {
+		document.write('	<b><? sv/htmleditor/editor/editor.html/62/1 ?></b></td>\n');
+		document.write('	</tr>\n');
+		document.write('	<tr>\n');
+		document.write('		<td>\n');
+		document.write('	<sel'+'ect name="advSelector" unselectable="On" onChange="showAdvFunction(this.options(this.selectedIndex).value);" style="width:140">\n');
+		if(showAdv<? sv/htmleditor/editor/editor.html/62/4 ?>Div){
+			document.write('		<option value="modeAdv<? sv/htmleditor/editor/editor.html/62/4 ?>Div"><? sv/htmleditor/editor/editor.html/62/4 ?></option>\n');
+		}
+		if(showAdvFontClassDiv){
+			document.write('		<option value="modeAdvFontClassDiv">Font Cl'+'ass=&quot\; X &quot\;</option>\n');
+		}	
+		if(showAdvFontStyleDiv){
+			document.write('		<option value="modeAdvFontStyleDiv">Font Style=&quot\; X &quot\;</option>\n');
+		}	
+		if(showAdvCodeStringDiv){
+			document.write('		<option value="modeAdvCodeStringDiv"><? sv/htmleditor/editor/editor.html/62/2 ?></option>\n');
+		}	
+		if(showAdv<? sv/htmleditor/editor/editor.html/62/3 ?>Div){
+			document.write('		<option value="modeAdv<? sv/htmleditor/editor/editor.html/62/3 ?>Div"><? sv/htmleditor/editor/editor.html/62/3 ?></option>\n');
+		}
+		document.write('	</sel'+'ect>');
+	} else {
+		document.write('	<sel'+'ect name="advSelector" style="display:none">\n');
+		document.write('		<option value="modeAdv<? sv/htmleditor/editor/editor.html/62/4 ?>Div"><? sv/htmleditor/editor/editor.html/62/4 ?></option>\n');
+		document.write('		<option value="modeAdvFontClassDiv">Font Cl'+'ass=&quot\; X &quot\;</option>\n');
+		document.write('		<option value="modeAdvFontStyleDiv">Font Style=&quot\; X &quot\;</option>\n');
+		document.write('		<option value="modeAdvCodeStringDiv"><? sv/htmleditor/editor/editor.html/62/2 ?></option>\n');
+		document.write('		<option value="modeAdv<? sv/htmleditor/editor/editor.html/62/3 ?>Div"><? sv/htmleditor/editor/editor.html/62/3 ?></option>\n');
+		document.write('	</sel'+'ect>');
+		if(showAdv<? sv/htmleditor/editor/editor.html/62/4 ?>Div) {
+			document.write('<b><? sv/htmleditor/editor/editor.html/62/4 ?></b>');
+			document.getElementById("advHeadingText").innerText = '<? sv/htmleditor/editor/editor.html/62/4 ?>';
+		} else if(showAdvFontClassDiv) {
+			document.write('<b>Font Cl'+'ass=&quot\; X &quot\;</b>');
+			document.getElementById("advHeadingText").innerText = 'Font Cl'+'ass=&quot\; X &quot\;';
+		} else if(showAdvFontStyleDiv) {
+			document.write('<b>Font Style=&quot\; X &quot\;</b>');
+			document.getElementById("advHeadingText").innerText = 'Font Style=&quot\; X &quot\;';
+		} else if(showAdvCodeStringDiv) {
+			document.write('<b>Valfri kod</b>');
+			document.getElementById("advHeadingText").innerText = '<? sv/htmleditor/editor/editor.html/62/2 ?>';
+		} else if(showAdv<? sv/htmleditor/editor/editor.html/62/3 ?>Div) {
+			document.write('<b>Inställningar</b>');
+			document.getElementById("advHeadingText").innerText = '<? sv/htmleditor/editor/editor.html/62/3 ?>';
+		}
+	}
+}
+//-->
 </SCRIPT></td>
 </tr>
 <tr>
@@ -1092,7 +1149,23 @@ function fBlueDn(){
 </tr>
 </table><? sv/htmleditor/editor/editor.html/1019 ?>&nbsp; <span class="imEditHelpLinkActive"><? sv/htmleditor/editor/editor.html/138 ?></span> &nbsp;<? sv/htmleditor/editor/editor.html/1020 ?>
 
-<span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/139 ?></span><? sv/htmleditor/editor/editor.html/140 ?></div>
+<span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/139 ?></span><br><br>
+
+Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
+
+Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
+
+Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
+
+Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.<br><br>
+
+Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
+
+Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.<br><br>
+
+Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
+
+Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</div>
 
 
 <div id="helpTextAllRightDiv" contenteditable="false" unselectable="off" style="position:absolute; left:5; top:80; width:525; height:380; z-index:201; text-align: left; padding:5; visibility:hidden; background-color:#FFFFE0; border: 2px inset #D6D3CE; overflow=auto" class="imEditHelp">
