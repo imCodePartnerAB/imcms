@@ -4,17 +4,12 @@ import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 
-import java.io.IOException;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 
 /**
  * STOP! Before changing anyting in this class, make sure to run (all) the test in class TestDatabaseService.
@@ -22,11 +17,7 @@ import java.io.FileReader;
  * run before and after a change, and that new test is added as soon as a new functionality in this class is added.
  * /Hasse
  */
-public class DatabaseService {
-    final static int MIMER = 0;
-    final static int SQL_SERVER = 1;
-    final static int MY_SQL = 2;
-
+public abstract class DatabaseService {
     private static final char END_OF_COMMAND = ';';
     private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/multipledatabases/";
     private static final String DROP_TABLES = "1.droptables.sql";
@@ -37,50 +28,51 @@ public class DatabaseService {
     private String ADITIONAL_TEST_DATA = "5.insertaditionaltestdata.sql";
 
     private static final String SQL92_TYPE_TIMESTAMP = "TIMESTAMP";
-    private static String SQLSERVER_AND_MYSQL_TIMESTAMP_TYPE = "DATETIME";
-    private static final String TEXT_TYPE_MY_SQL = "TEXT";
-    private String TEXT_TYPE_INTERNATIONAL_SQL_SERVER = "NTEXT";
-    private String TEXT_TYPE_SQL_SERVER = "TEXT";
+    private static String COMMON_TIMESTAMP_TYPE_DATETIME = "DATETIME"; // for example MySQL and SQLServer
 
-    private static Logger log = Logger.getLogger( DatabaseService.class );
-    private SQLProcessor sqlProcessor;
-    SQLProcessor getSQLProcessor() { return sqlProcessor; }
+    SQLProcessor sqlProcessor;
+    private Logger log;
 
-    private int databaseType;
+    /**
+     *  overide this in subclass if needed.
+     * @param commands
+     * @return
+     */
+    ArrayList filterInsertCommands( ArrayList commands ) {
+        // default do nothing, overide in sub classes when needed
+        return commands;
+    }
 
-    public DatabaseService( int databaseType, String hostName, int port, String databaseName, String user, String password ) {
-        this.databaseType = databaseType;
-        String serverUrl = null;
-        String jdbcDriver = null;
-        String serverName = null;
+    /**
+     *  overide this in subclass if needed.
+     * @param commands
+     * @return
+     */
+    ArrayList filterCreateCommands( ArrayList commands ) {
+        // default do nothing, overide in sub classes when needed
+        return commands;
+    }
 
-        String jdbcUrl;
-        switch( databaseType ) {
-            case MIMER:
-                // log.debug( "Creating a 'Mimer' database service");
-                jdbcDriver = "com.mimer.jdbc.Driver";
-                jdbcUrl = "jdbc:mimer://";
-                serverUrl = jdbcUrl + hostName + ":" + port + "/" + databaseName;
-                serverName = "Mimer test server";
-                break;
-            case SQL_SERVER:
-                // log.debug( "Creating a 'SQL Server' database service");
-                jdbcDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
-                jdbcUrl = "jdbc:microsoft:sqlserver://";
-                serverUrl = jdbcUrl + hostName + ":" + port + ";DatabaseName=" + databaseName;
-                serverName = "SQL Server test server";
-                break;
-            case MY_SQL:
-                // log.debug( "Creating a 'My SQL' database service");
-                jdbcDriver = "com.mysql.jdbc.Driver";
-                jdbcUrl = "jdbc:mysql://";
-                serverUrl = jdbcUrl + hostName + ":" + port + "/" + databaseName;
-                serverName = "MySql test server";
-                break;
+    /**
+     * Use this in subclass when filtering create commands if needed.
+     * @param commands
+     * @return
+     */
+    ArrayList changeTimestampToDateTime( ArrayList commands ) {
+        ArrayList modifiedCommands = new ArrayList();
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            String modifiedCommand = command.replaceAll( SQL92_TYPE_TIMESTAMP, COMMON_TIMESTAMP_TYPE_DATETIME );
+            modifiedCommands.add( modifiedCommand );
         }
+        return modifiedCommands;
+    }
 
-        // String jTraceUrl = "jdbc:jtrace:driver=" + jdbcDriver + "&url=" + serverUrl;
+    DatabaseService( Logger log ) {
+        this.log = log;
+    }
 
+    void initConnectionPoolAndSQLProcessor( String serverName, String jdbcDriver, String serverUrl, String user, String password ) {
         int maxConnectionCount = 20;
         try {
             ConnectionPool connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
@@ -91,7 +83,7 @@ public class DatabaseService {
         }
     }
 
-    void initDatabase() {
+    void setupDatabaseWithTablesAndData() {
         try {
             ArrayList commands = readCommandsFromFile( DROP_TABLES );
             executeCommands( commands );
@@ -107,11 +99,7 @@ public class DatabaseService {
             sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
 
             commands = readCommandsFromFile( INSERT_DEFAULT_DATA );
-            switch( databaseType ) {
-                case MY_SQL:
-                    commands = changeCharInCurrentTimestampCast( commands );
-                    break;
-            }
+            commands = filterInsertCommands( commands );
             sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
         } catch( IOException ex ) {
             log.fatal( "Couldn't open a file ", ex );
@@ -119,16 +107,7 @@ public class DatabaseService {
     }
 
     private void executeCreateCommands( ArrayList commands ) {
-        switch( databaseType ) {
-            case SQL_SERVER:
-                commands = changeTimestampToDateTime( commands );
-                commands = changeCHAR8000PlusToTextForSQLServer( commands );
-                break;
-            case MY_SQL:
-                commands = changeTimestampToDateTime( commands );
-                commands = changeCHAR256PlusToTextForMySQL( commands );
-                break;
-        }
+        commands = filterCreateCommands( commands );
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
             //            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
@@ -136,74 +115,9 @@ public class DatabaseService {
         }
     }
 
-    /**
-     * MySQL dosen't have VARCHAR larger than VARCHAR(255). This method replaces the occurences found (this far) in the code
-     * with TEXT type.
-     * @param commands
-     * @return
-     */
-    // todo Denna går att göra generellare, för tillfället implementerar den enbart > 1 000 generellt
-    private ArrayList changeCHAR256PlusToTextForMySQL( ArrayList commands ) {
-        ArrayList modifiedCommands = new ArrayList();
-        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
-            String command = (String)iterator.next();
-            command = command.replaceAll( "VARCHAR\\s*\\(\\s*\\d{4,}\\s*\\)", TEXT_TYPE_MY_SQL); // "VARCHAR ( 1000 )" -> "TEXT"
-            command = command.replaceAll( "NCHAR\\s*VARYING\\s*\\(\\s*\\d{4,}\\s*\\)", TEXT_TYPE_MY_SQL); // "NCHAR VARYING ( 15000 )" -> "TEXT"
-            modifiedCommands.add( command );
-        }
-        return modifiedCommands;
-    }
-
-    /**
-     * SQL Server dosen't support VARCHAR larger than VARCHAR(8000). This method replaces the occurences found (this far) in the code with
-     * with TEXT and NTEXT type..
-     * @param commands
-     * @return
-     */
-    // todo Denna går att göra generellare, för tillfället implementerar den enbart > 10 000 generellt
-    // todo samt det enskillda tillfället på 5000.
-    private ArrayList changeCHAR8000PlusToTextForSQLServer( ArrayList commands ) {
-        ArrayList modifiedCommands = new ArrayList();
-        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
-            String command = (String)iterator.next();
-            // todo: detta borde gå att göra till ett generellt reg exp? för varje tal störren än 255 byt ut mot text?
-            command = command.replaceAll( "VARCHAR\\s*\\(\\s*\\d{5,}\\s*\\)", TEXT_TYPE_SQL_SERVER); // "VARCHAR ( 15000 )" -> "TEXT"
-            command = command.replaceAll( "NCHAR\\s*VARYING\\s*\\(\\s*5000\\s*\\)", TEXT_TYPE_INTERNATIONAL_SQL_SERVER); // "NCHAR VARYING ( 5000 )" -> "TEXT"
-            modifiedCommands.add( command );
-        }
-        return modifiedCommands;
-    }
-
     void createTestData() throws IOException {
         ArrayList commands = readCommandsFromFile( ADITIONAL_TEST_DATA );
         sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
-    }
-
-    private ArrayList changeCharInCurrentTimestampCast( ArrayList commands ) {
-        ArrayList modifiedCommands = new ArrayList();
-        // CAST(CURRENT_TIMESTAMP AS CHAR(80)) is changed to CAST(CURRENT_TIMESTAMP AS CHAR)"
-        String patternStr = "CAST *\\( *CURRENT_TIMESTAMP *AS *CHAR *\\( *[0-9]+ *\\) *\\)";
-        Pattern pattern = Pattern.compile( patternStr, Pattern.CASE_INSENSITIVE );
-        String replacementStr = "CAST(CURRENT_TIMESTAMP AS CHAR)";
-
-        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
-            String command = (String)iterator.next();
-            Matcher matcher = pattern.matcher( command );
-            String modifiedCommand = matcher.replaceAll( replacementStr );
-            modifiedCommands.add( modifiedCommand );
-        }
-
-        return modifiedCommands;
-    }
-
-    private ArrayList changeTimestampToDateTime( ArrayList commands ) {
-        ArrayList modifiedCommands = new ArrayList();
-        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
-            String command = (String)iterator.next();
-            String modifiedCommand = command.replaceAll( SQL92_TYPE_TIMESTAMP, SQLSERVER_AND_MYSQL_TIMESTAMP_TYPE );
-            modifiedCommands.add( modifiedCommand );
-        }
-        return modifiedCommands;
     }
 
     private void executeCommands( ArrayList commands ) {

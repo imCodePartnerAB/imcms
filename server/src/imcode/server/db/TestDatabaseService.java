@@ -8,36 +8,36 @@ import java.io.IOException;
 public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     // You may have to change these for your local installation of the databases
-    static final String DB_HOST = "localhost";
+    private static final String DB_HOST = "localhost";
 
-    static final int SQLSERVER_PORT = 1433;
-    static final String SQLSERVER_DATABASE_NAME = "test";
-    static final String SQLSERVE_DATABASE_USER = "sa";
-    static final String SQLSERVE_DATABASE_PASSWORD = "sa";
+    private static final int SQLSERVER_PORT = 1433;
+    private static final String SQLSERVER_DATABASE_NAME = "test";
+    private static final String SQLSERVE_DATABASE_USER = "sa";
+    private static final String SQLSERVE_DATABASE_PASSWORD = "sa";
 
-    static final int MIMER_PORT = 1360;
-    static final String MIMMER_DATABASE_NAME = "test";
-    static final String MIMMER_DATABASE_USER = "sysadm";
-    static final String MIMMER_DATABASE_PASSWORD = "admin";
+    private static final int MIMER_PORT = 1360;
+    private static final String MIMMER_DATABASE_NAME = "test";
+    private static final String MIMMER_DATABASE_USER = "sysadm";
+    private static final String MIMMER_DATABASE_PASSWORD = "admin";
 
-    static int MYSQL_PORT = 3306;
-    static String MYSQL_DATABASE_NAME = "test";
-    static String MYSQL_DATABASE_USER = "root";
-    static String MYSQL_DATABASE_PASSWORD = "";
+    private static int MYSQL_PORT = 3306;
+    private static String MYSQL_DATABASE_NAME = "test";
+    private static String MYSQL_DATABASE_USER = "root";
+    private static String MYSQL_DATABASE_PASSWORD = "";
 
-    DatabaseService[] databaseServices = null;
+    private DatabaseService[] databaseServices = null;
 
     // If you change anything in the scripts that creates the database
     // you propably have to change some of the following constants.
     private final static int USER_ADMIN_ID = 1;
     private final static int USER_USER_ID = 2;
-    public static final int USER_TEST_ID = 3;
+    private static final int USER_TEST_ID = 3;
     private static final int USER_NEXT_FREE_ID = 4;
     private static final int USER_ID_NON_EXISTING = 2452345;
 
     private static int ROLE_SUPER_ADMIN_ID = 0;
     private static int ROLE_USER_ADMIN_ID = 1;
-    public static final int ROLE_TEST_ID = 3;
+    private static final int ROLE_TEST_ID = 3;
     private final static int ROLE_NEXT_FREE_ID = 4;
 
     private int DOC_NO_OF_DOCS = 5; // 1001 + folowing
@@ -381,22 +381,22 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private static DatabaseService static_initMimer() throws IOException {
-        DatabaseService dbService = new DatabaseService( DatabaseService.MIMER, TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
-        dbService.initDatabase();
+        DatabaseService dbService = new MimerDatabaseService(TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
+        dbService.setupDatabaseWithTablesAndData();
         dbService.createTestData();
         return dbService;
     }
 
     private static DatabaseService static_initSqlServer() throws IOException {
-        DatabaseService dbService = new DatabaseService( DatabaseService.SQL_SERVER, TestDatabaseService.DB_HOST, TestDatabaseService.SQLSERVER_PORT, TestDatabaseService.SQLSERVER_DATABASE_NAME, TestDatabaseService.SQLSERVE_DATABASE_USER, TestDatabaseService.SQLSERVE_DATABASE_PASSWORD );
-        dbService.initDatabase();
+        DatabaseService dbService = new SQLServerDatabaseService( TestDatabaseService.DB_HOST, TestDatabaseService.SQLSERVER_PORT, TestDatabaseService.SQLSERVER_DATABASE_NAME, TestDatabaseService.SQLSERVE_DATABASE_USER, TestDatabaseService.SQLSERVE_DATABASE_PASSWORD );
+        dbService.setupDatabaseWithTablesAndData();
         dbService.createTestData();
         return dbService;
     }
 
     private static DatabaseService static_initMySql() throws IOException {
-        DatabaseService dbService = new DatabaseService( DatabaseService.MY_SQL, TestDatabaseService.DB_HOST, TestDatabaseService.MYSQL_PORT, TestDatabaseService.MYSQL_DATABASE_NAME, TestDatabaseService.MYSQL_DATABASE_USER, TestDatabaseService.MYSQL_DATABASE_PASSWORD );
-        dbService.initDatabase();
+        DatabaseService dbService = new MySQLDatabaseServer( TestDatabaseService.DB_HOST, TestDatabaseService.MYSQL_PORT, TestDatabaseService.MYSQL_DATABASE_NAME, TestDatabaseService.MYSQL_DATABASE_USER, TestDatabaseService.MYSQL_DATABASE_PASSWORD );
+        dbService.setupDatabaseWithTablesAndData();
         dbService.createTestData();
         return dbService;
     }
