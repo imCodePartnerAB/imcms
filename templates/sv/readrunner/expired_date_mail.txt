@@ -1,13 +1,1 @@
--- Detta är ett automatgenererat mail från ReadRunner-BasIQ --
-
-Hej #user_full_name#,
-
-Det är nu mindre än #expiry_date_warning_threshold# dagar kvar innan Din licens för läshjälpmedlet ReadRunner-BasIQ går ut (#expiry_date#).
-Då kommer Du inte längre kunna anpassa Dina egna texter och läsa dem med ReadRunner-BasIQ.
-
-Om Du vill förnya Din licens, Kontakta Din kontaktperson/handläggare.
-
-Ps.
-Du har förbrukat #uses# "Anpassningar" av de #max_uses# som ingår i Din licens.
-Då mindre än #max_uses_warning_threshold# % återstår kommer ett liknande varningsmail skickas till Dig.
-Ds.
+<? sv/readrunner/expired_date_mail.txt/1 ?>

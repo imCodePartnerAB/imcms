@@ -1,1 +1,1 @@
- onload="RRinit();" onkeydown="redirectMouseClick(this);" onContextMenu="return false;" onResize="RRonResize();" 
+ <? sv/readrunner/bodyevents.html.frag/1 ?> 

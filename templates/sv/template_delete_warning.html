@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Varning</title>
+<title><? sv/template_delete_warning.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
@@ -11,8 +11,7 @@
 <body bgcolor="#FFFFFF">
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", "Varning");
+<? sv/template_delete_warning.html/2 ?>
 </script>
 <table border="0" cellpadding="0" cellspacing="0">
 <form>
@@ -24,7 +23,7 @@ imcmsGui("head", "Varning");
 </form>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/template_delete_warning.html/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660">
 <form method="post" action="TemplateChange">
@@ -42,19 +41,19 @@ imcmsGui("mid", null);
 		<td class="imcmsAdmText" nowrap>Dokument &nbsp;</td>
 		<td>
 		<select name="select" size="7">
-		#docs#
+		<? sv/template_delete_warning.html/4 ?>
 		</select></td>
 		<td nowrap>&nbsp; &nbsp;</td>
 		<td class="imcmsAdmText" nowrap>Ny mall &nbsp;</td>
 		<td>
 		<select name="new_template">
-		#templates#
+		<? sv/template_delete_warning.html/5 ?>
 		</select></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td><script>hr("100%",656,"blue");</script></td>
+	<td><script><? sv/template_delete_warning.html/6 ?></script></td>
 </tr>
 <tr>
 	<td align="right">
@@ -64,8 +63,7 @@ imcmsGui("mid", null);
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/template_delete_warning.html/7 ?>
 </script>
 
 </body>

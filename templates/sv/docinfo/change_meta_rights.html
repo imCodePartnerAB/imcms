@@ -3,7 +3,7 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Ändra rättigheter</title>
+<title><? sv/docinfo/change_meta_rights.html/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -12,8 +12,7 @@
 <body bgcolor="#FFFFFF">
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/docinfo/change_meta_rights.html/2 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form name="backForm" action="GetDoc">
@@ -26,23 +25,23 @@ imcmsGui("head", null);
 </form>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/docinfo/change_meta_rights.html/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="SaveMeta">
 <input type="hidden" name="doc_type" value="#doc_type#">
 <input type="hidden" name="parent_meta_id" value="#parent_meta_id#">
 <input type="hidden" name="meta_id" value="#meta_id#">
-<input type="hidden" name="meta_headline" value="#meta_headline#">#checks#
+<input type="hidden" name="meta_headline" value="#meta_headline#"><? sv/docinfo/change_meta_rights.html/4 ?>
 <tr>
-	<td colspan="2"><script>imcHeading("Ändra rättigheter för sida #meta_id#","656");</script></td>
+	<td colspan="2"><script><? sv/docinfo/change_meta_rights.html/5 ?></script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText">Behörighet&nbsp;(Roller)</td>
-	<td class="imcmsAdmText">#roles_rights#</td>
+	<td class="imcmsAdmText"><? sv/docinfo/change_meta_rights.html/6 ?></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Roller utan behörighet</td>
+	<td class="imcmsAdmText"><? sv/docinfo/change_meta_rights.html/7 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -51,18 +50,18 @@ imcmsGui("mid", null);
 	</tr>
 	</table>
 	<select name="roles_no_rights" size="4" multiple>
-		#roles_no_rights#
+		<? sv/docinfo/change_meta_rights.html/8 ?>
 	</select></td>
 </tr>
 <tr>
-	<td colspan="2">&nbsp;<br><script>imcHeading("Definiera begränsade behörigheter","656");</script></td>
+	<td colspan="2">&nbsp;<br><script><? sv/docinfo/change_meta_rights.html/9 ?></script></td>
 </tr>
-#define_sets#
+<? sv/docinfo/change_meta_rights.html/10 ?>
 <tr>
-	<td colspan="2"><script>hr("100%", 656, "blue");</script></td>
+	<td colspan="2"><script><? sv/docinfo/change_meta_rights.html/11 ?></script></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Dela ut</td>
+	<td class="imcmsAdmText"><? sv/docinfo/change_meta_rights.html/12 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
@@ -78,7 +77,7 @@ imcmsGui("mid", null);
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%", 656, "blue");</script></td>
+	<td colspan="2"><script><? sv/docinfo/change_meta_rights.html/13 ?></script></td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
@@ -105,11 +104,10 @@ imcmsGui("mid", null);
 </tr>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/docinfo/change_meta_rights.html/14 ?>
 </script>
 
-<div align="center">#adminMode#</div>
+<div align="center"><? sv/docinfo/change_meta_rights.html/15 ?></div>
 
 </body>
 </html>

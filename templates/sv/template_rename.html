@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Administrera formatmallar / formatgrupper</title>
+<title><? sv/template_rename.html/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -11,14 +11,13 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/template_rename.html/2 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
 <input type="HIDDEN" name="language" value="en">
 <tr>
-	<td colspan="2" class="imcmsAdmText"><b class="white">Formatmallar:</b></td>
+	<td colspan="2" class="imcmsAdmText"><? sv/template_rename.html/3 ?></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -31,7 +30,7 @@ imcmsGui("head", null);
 	<input type="submit" class="imcmsFormBtn" name="show_templates" value="Visa formatmallar"></td>
 </tr>
 <tr>
-	<td colspan="2" class="imcmsAdmText"><b class="white">Formatgrupp:</b></td>
+	<td colspan="2" class="imcmsAdmText"><? sv/template_rename.html/4 ?></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -45,13 +44,13 @@ imcmsGui("head", null);
 </form>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/template_rename.html/5 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateChange" action="TemplateChange" method="post">
 <input type="hidden" name="language" value="#language#">
 <tr>
-	<td colspan="2"><script>imcHeading("Byt namn p&aring; formatmall",656);</script></td>
+	<td colspan="2"><script><? sv/template_rename.html/6 ?></script></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -60,19 +59,19 @@ imcmsGui("mid", null);
 		<td width="80" height="24" class="imcmsAdmText" nowrap>Formatmall &nbsp;</td>
 		<td>
 		<select name="template">
-		#templates#
+		<? sv/template_rename.html/7 ?>
 		</select></td>
 	</tr>
 	<tr>
 		<td height="24" class="imcmsAdmText" nowrap>Nytt namn &nbsp;</td>
 		<td><script>
-writeFormField("TEXT","name",30,255,null,null);
+<? sv/template_rename.html/8 ?>
 </script></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+	<td colspan="2"><script><? sv/template_rename.html/9 ?></script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -82,8 +81,7 @@ writeFormField("TEXT","name",30,255,null,null);
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/template_rename.html/10 ?>
 </script>
 
 </body>

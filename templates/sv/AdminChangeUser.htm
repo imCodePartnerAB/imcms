@@ -5,7 +5,7 @@ Template: AdminChangeUser.htm
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Användare</title>
+<title><? sv/AdminChangeUser.htm/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -43,8 +43,7 @@ function evalEditUser() {
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'searchstring')">
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/AdminChangeUser.htm/2 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="AdminUser" name="abortForm">
@@ -57,36 +56,35 @@ imcmsGui("head", null);
 </form>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/AdminChangeUser.htm/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0" width="400" align="center">
 <form name="user_categoriesForm" action="AdminUser" method="post">
 <tr>
-	<td colspan="2"><script>imcHeading("Ändra användaregenskaper",396);</script></td>
+	<td colspan="2"><script><? sv/AdminChangeUser.htm/4 ?></script></td>
 </tr>
 <tr>
 	<td colspan="2" class="imcmsAdmText">
-	Välj önskad användarkategori och skriv in minst ett tecken i användarens namn och tryck på Visa användare. 
-	Markera sedan den användare vars egenskaper skall ändras</td>
+	<? sv/AdminChangeUser.htm/5 ?></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>
+	<td colspan="2"><script><? sv/AdminChangeUser.htm/6 ?></script></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Användarkategori</td>
+	<td class="imcmsAdmText"><? sv/AdminChangeUser.htm/7 ?></td>
 	<td>
 	<select name="user_categories"  style="WIDTH: 200px">
-		<option value="All_Choice" selected>-- Alla kategorier --</option>	
-		#USER_TYPES#
+		<option value="All_Choice" selected><? sv/AdminChangeUser.htm/8 ?></option>	
+		<? sv/AdminChangeUser.htm/9 ?>
 	</select></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Sök användare</td>
+	<td class="imcmsAdmText"><? sv/AdminChangeUser.htm/10 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><script>
-writeFormField("TEXT","searchstring",20,20,null,"#searchstring#");
+<? sv/AdminChangeUser.htm/11 ?>
 </script></td>
 		<td class="imcmsAdmDim">&nbsp; (Tomt fält visar alla!)</td>
 	</tr>
@@ -94,10 +92,10 @@ writeFormField("TEXT","searchstring",20,20,null,"#searchstring#");
 </tr>
 <tr>
 	<td class="imcmsAdmText">&nbsp;</td>
-	<td><input type="checkbox" name="showall" value="0" #active#> Visa &auml;ven EJ aktiva anv&auml;ndare.</td>
+	<td><input type="checkbox" name="showall" value="0" #active#> <? sv/AdminChangeUser.htm/12 ?></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>
+	<td colspan="2"><script><? sv/AdminChangeUser.htm/13 ?></script></td>
 </tr>	
 <tr>
 	<td class="imcmsAdmText">&nbsp;</td>
@@ -111,7 +109,7 @@ writeFormField("TEXT","searchstring",20,20,null,"#searchstring#");
 </tr>
 </form>
 <tr>
-	<td colspan="2" class="imcmsAdmText">Anv&auml;ndare</td>
+	<td colspan="2" class="imcmsAdmText"><? sv/AdminChangeUser.htm/14 ?></td>
 </tr>
 <form name="argumentForm" action="AdminUser" method="post" target="_top">
 <tr>
@@ -120,7 +118,7 @@ writeFormField("TEXT","searchstring",20,20,null,"#searchstring#");
 	<tr valign="top">
 		<td>
 		<select name="user_Id" size="15" style="width:300">
-			#USERS_MENU#
+			<? sv/AdminChangeUser.htm/15 ?>
 		</select></td>
 		<td>&nbsp;</td>
 		<td>
@@ -131,7 +129,7 @@ writeFormField("TEXT","searchstring",20,20,null,"#searchstring#");
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",396,"blue");</script></td>
+	<td colspan="2"><script><? sv/AdminChangeUser.htm/16 ?></script></td>
 </tr>	
 <tr>
 	<td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" name="GO_BACK" value="Avbryt"></td>
@@ -139,8 +137,7 @@ writeFormField("TEXT","searchstring",20,20,null,"#searchstring#");
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/AdminChangeUser.htm/17 ?>
 </script>
 
 <script language="JavaScript">

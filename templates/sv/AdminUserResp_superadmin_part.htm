@@ -1,8 +1,8 @@
 <tr>
-	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+	<td colspan="2"><script><? sv/AdminUserResp_superadmin_part.htm/1 ?></script></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Aktiverad</td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp_superadmin_part.htm/2 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -17,17 +17,17 @@ if (/\d+/.test(sDate)) document.writeln(" &nbsp; Inläggningsdatum &nbsp; " + sDa
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2">&nbsp;<br><script>imcHeading("Rolltillhörighet",656);</script></td>
+	<td colspan="2">&nbsp;<br><script><? sv/AdminUserResp_superadmin_part.htm/3 ?></script></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Användartyp <b class="red">*</b></td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp_superadmin_part.htm/4 ?></td>
 	<td>
 	<select name="user_type">
-	#USER_TYPES#
+	<? sv/AdminUserResp_superadmin_part.htm/5 ?>
 	</select></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	<td colspan="2"><script><? sv/AdminUserResp_superadmin_part.htm/6 ?></script></td>
 </tr>
 <tr valign="top">
 	<td class="imcmsAdmText" nowrap>
@@ -37,20 +37,20 @@ if (/\d+/.test(sDate)) document.writeln(" &nbsp; Inläggningsdatum &nbsp; " + sDa
 	<tr valign="top">
 		<td>
 		<select name="roles" size="5" multiple onchange="activateUseradmin_roles(); return true;">
-		#ROLES_MENU#
+		<? sv/AdminUserResp_superadmin_part.htm/7 ?>
 		</select></td>
 		<td>&nbsp;</td>
-		<td class="imcmsAdmText" nowrap>Useradmin - Roller</td>
+		<td class="imcmsAdmText" nowrap><? sv/AdminUserResp_superadmin_part.htm/8 ?></td>
 		<td>&nbsp;</td>
 		<td>
 		<select name="useradmin_roles" size="5" multiple>
-		#ROLES_MENU_USERADMIN#
+		<? sv/AdminUserResp_superadmin_part.htm/9 ?>
 		</select></td>
 	</tr>
 	<tr valign="top">
-		<td class="imcmsAdmDim">Välj vilka roller användaren<br>skall tillhöra.</td>
+		<td class="imcmsAdmDim"><? sv/AdminUserResp_superadmin_part.htm/10 ?></td>
 		<td colspan="3">&nbsp;</td>
-		<td class="imcmsAdmDim">Välj vilka roller som kan administreras<br>om användaren har rollen Useradmin.</td>
+		<td class="imcmsAdmDim"><? sv/AdminUserResp_superadmin_part.htm/11 ?></td>
 	</tr>
 	</table></td>
 </tr>

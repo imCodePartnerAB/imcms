@@ -1,1 +1,1 @@
-"Fel: Du har inte angett texten!"
+<? sv/fortunes/text_err_msg.frag/1 ?>

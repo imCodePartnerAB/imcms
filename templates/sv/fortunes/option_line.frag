@@ -1,1 +1,1 @@
-<option value="">-- V&auml;lj Fil --</option> 
+<option value=""><? sv/fortunes/option_line.frag/1 ?></option> 

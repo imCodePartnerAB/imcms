@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Ändra HTML-dokument</title>
+<title><? sv/change_frameset_doc.html/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -11,8 +11,7 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'frame_set')">
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/change_frameset_doc.html/2 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="BackDoc">
@@ -24,24 +23,24 @@ imcmsGui("head", null);
 </form>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/change_frameset_doc.html/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="SaveFrameset">
 <input type="HIDDEN" name="meta_id" value="#getMetaId#">
 <input type="HIDDEN" name="parent_meta_id" value="#getParentMetaId#">
 <tr> 
-	<td><script>imcHeading("Ändra HTML-kod",656);</script></td>
+	<td><script><? sv/change_frameset_doc.html/4 ?></script></td>
 </tr>
 <tr>
-	<td>Måste inledas och avslutas med &lt;HTML&gt; resp. &lt;/HTML&gt;</td>
+	<td><? sv/change_frameset_doc.html/5 ?></td>
 </tr>
 <tr> 
 	<td><textarea name="frame_set" cols="57" rows="16" wrap="virtual" style="width:100%; overflow:auto">
-#frame_set#</textarea></td>
+<? sv/change_frameset_doc.html/6 ?></textarea></td>
 </tr>
 <tr>
-	<td><script>hr("100%",656,"blue");</script></td>
+	<td><script><? sv/change_frameset_doc.html/7 ?></script></td>
 </tr>
 <tr> 
 	<td align="right">
@@ -54,11 +53,10 @@ imcmsGui("mid", null);
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/change_frameset_doc.html/8 ?>
 </script>
 
-<div align="center">#adminMode#</div>
+<div align="center"><? sv/change_frameset_doc.html/9 ?></div>
 
 </body>
 </html>

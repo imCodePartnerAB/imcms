@@ -5,85 +5,13 @@ Template: AdminUserResp.htm
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Lägg till/redigera användare</title>
+<title><? sv/AdminUserResp.htm/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
 
 <script language=javascript>
-<!--
-function evalPrepareAdd() {
-	// Lets check that those fields which are mandatory
-	var valFieldsOk = true;
-	if( document.forms[0].login_name.value == "" ) valFieldsOk = false
-	//if( document.forms[0].password1.value == "" ) valFieldsOk = false
-	//if( document.forms[0].password2.value == "" ) valFieldsOk = false
-	if( document.forms[0].first_name.value == "" ) valFieldsOk = false
-	if( document.forms[0].last_name.value == "" ) valFieldsOk = false	
-	
-	if(!valFieldsOk) {
-		var msg = "Du har inte fyllt i ett obligatoriskt fält! Fyll i alla obligatoriska fält"
-		alert(msg)
-		return false
-	}
-	
-	if(document.forms[0].password1.value != document.forms[0].password2.value){
-		var msg = "Obs! Verifieringen av lösenordet misslyckades!"
-		document.forms[0].password1.value = "" 
-		document.forms[0].password2.value = ""
-		document.forms[0].password1.focus()
-		alert(msg)		
-		return false
-	}
-	var userType
-	userType = document.forms[0].user_type.selectedIndex
-	// Lets check if the user has make a choice
-	if(userType == "-1") {
-		var msg = "Du har inte valt användartyp! Välj en användartyp "
-		alert(msg)
-		return false
-	}
-	
-	var userRole
-	userRole = document.forms[0].roles.selectedIndex
-	if(userRole == "-1") {
-		var msg = "Du har inte valt roll för användaren! Välj vilken/vilka roller "
-		msg += "användaren skall ha."
-		alert(msg)
-		return false
-	}
-
-	// ( only neded for ns4) 
-	if ( document.forms[0].useradmin_roles ){
-		var index = document.forms[0].useradmin_roles.selectedIndex;
-		if ( index > -1 ){
-			var list = document.forms[0].roles;
-			for ( i = 0 ; i < list.length ; i++ ){
-				if ( list.options[i].text == "Useradmin"  &&  !list.options[i].selected ){
-					var msg = "Du har valt roller för useradmin utan att dela ut rollen 'Useradmin' !\n";
-					msg += "Valda roller för Useradmin kommer EJ att sparas!"; 
-					alert(msg); 
-				}
-			}
-		}
-	}
-
-	return true
-}
-
-function activateUseradmin_roles(){
-	if ( document.forms[0].useradmin_roles ){
-		var list = document.forms[0].roles;
-		document.forms[0].useradmin_roles.disabled = true;
-		for ( i = 0 ; i < list.length ; i++ ){
-			if ( list.options[i].text == "Useradmin"  && list.options[i].selected ){
-				document.forms[0].useradmin_roles.disabled = false;
-			}
-		}
-	}
-}
-
-//-->
+<? sv/AdminUserResp.htm/2 ?>
 </script>
 
 </head>
@@ -91,8 +19,7 @@ function activateUseradmin_roles(){
 
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/AdminUserResp.htm/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="AdminUserProps">
@@ -109,113 +36,112 @@ imcmsGui("head", null);
 </tr>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/AdminUserResp.htm/4 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0" width="660" align="center">
 <tr> 
-	<td colspan="2"><script>imcHeading("Lägg till / redigera användare",656);</script></td>
+	<td colspan="2"><script><? sv/AdminUserResp.htm/5 ?></script></td>
 </tr>
 <tr> 
 	<td colspan="2" class="imcmsAdmText">
-	Observera att samtliga obligatoriska fält måste vara ifyllda 
-	för att en användare skall kunna skapas!</td>
+	<? sv/AdminUserResp.htm/6 ?></td>
 </tr>
 <tr> 
-	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	<td colspan="2"><script><? sv/AdminUserResp.htm/7 ?></script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Användarnamn <b class="red">*</b></td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/8 ?></td>
 	<td><script>
-writeFormField("TEXT","login_name",25,50,null,"#LOGIN_NAME#");
+<? sv/AdminUserResp.htm/9 ?>
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText" nowrap>Lösenord <b class="red">*</b> <span class="imcmsAdmDim">(Min 4 - Max 15 tkn)</span> &nbsp;</td>
+	<td class="imcmsAdmText" nowrap><? sv/AdminUserResp.htm/10 ?> <span class="imcmsAdmDim"><? sv/AdminUserResp.htm/11 ?></span> &nbsp;</td>
 	<td> 
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><script>
-writeFormField("PASSWORD","password1",16,15,null,"#PWD1#");
+<? sv/AdminUserResp.htm/12 ?>
 </script></td>
 		<td class="imcmsAdmText" nowrap>&nbsp; Verifiera lösenord <b class="red">*</b> &nbsp;</td>
 		<td><script>
-writeFormField("PASSWORD","password2",16,15,null,"#PWD2#");
+<? sv/AdminUserResp.htm/13 ?>
 </script></td>
 	</tr>
 	</table></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Förnamn <b class="red">*</b></td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/14 ?></td>
 	<td><script>
-writeFormField("TEXT","first_name",25,25,null,"#FIRST_NAME#");
+<? sv/AdminUserResp.htm/15 ?>
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Efternamn <b class="red">*</b></td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/16 ?></td>
 	<td><script>
-writeFormField("TEXT","last_name",25,30,null,"#LAST_NAME#");
+<? sv/AdminUserResp.htm/17 ?>
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Titel</td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/18 ?></td>
 	<td><script>
-writeFormField("TEXT","title",25,30,null,"#TITLE#");
+<? sv/AdminUserResp.htm/19 ?>
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Arbetsplats</td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/20 ?></td>
 	<td><script>
-writeFormField("TEXT","company",25,30,null,"#COMPANY#");
+<? sv/AdminUserResp.htm/21 ?>
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Gatuadress</td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/22 ?></td>
 	<td><script>
-writeFormField("TEXT","address",25,30,null,"#ADDRESS#");
+<? sv/AdminUserResp.htm/23 ?>
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Postnummer / ort</td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/24 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><script>
-writeFormField("TEXT","zip",7,30,null,"#ZIP#");
+<? sv/AdminUserResp.htm/25 ?>
 </script></td>
 		<td>&nbsp;</td>
 		<td><script>
-writeFormField("TEXT","city",25,30,null,"#CITY#");
+<? sv/AdminUserResp.htm/26 ?>
 </script></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Län</td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/27 ?></td>
 	<td><script>
-writeFormField("TEXT","country_council",25,30,null,"#COUNTRY_COUNCIL#");
+<? sv/AdminUserResp.htm/28 ?>
 </script></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Land</td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/29 ?></td>
 	<td><script>
-writeFormField("TEXT","country",25,30,null,"#COUNTRY#");
+<? sv/AdminUserResp.htm/30 ?>
 </script></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	<td colspan="2"><script><? sv/AdminUserResp.htm/31 ?></script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Telefonnummer</td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/32 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>
 	  <select name="phonetype" size="1" >
-			#PHONETYPES_MENU#
+			<? sv/AdminUserResp.htm/33 ?>
 	  </select></td>
 		<td>&nbsp;</td>
 		<td><script>
-writeFormField("TEXT","local_code",16,25,null,"#NUMBER#");
+<? sv/AdminUserResp.htm/34 ?>
 </script></td>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtnSmall" value="Lägg till" name="ok_phones"></td>
@@ -229,7 +155,7 @@ writeFormField("TEXT","local_code",16,25,null,"#NUMBER#");
 	<tr>
 		<td>
 		<select size="1" name="user_phones">
-		#PHONES_MENU#
+		<? sv/AdminUserResp.htm/35 ?>
 		</select></td>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtnSmall" name="edit_phones" value="Ändra"></td>
@@ -239,20 +165,20 @@ writeFormField("TEXT","local_code",16,25,null,"#NUMBER#");
 	</table></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Email</td>
+	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/36 ?></td>
 	<td><script>
-writeFormField("TEXT","email",50,50,null,"#EMAIL#");
+<? sv/AdminUserResp.htm/37 ?>
 </script></td>
 </tr>
-#ADMIN_PART#
+<? sv/AdminUserResp.htm/38 ?>
 <tr>
-	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+	<td colspan="2"><script><? sv/AdminUserResp.htm/39 ?></script></td>
 </tr>
 <tr>
 	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<tr>
-		<td class="imcmsAdmComment"><b class="red">*</b> Innebär att fältet är obligatoriskt</td>
+		<td class="imcmsAdmComment"><? sv/AdminUserResp.htm/40 ?></td>
 		<td align="right">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
@@ -269,8 +195,7 @@ writeFormField("TEXT","email",50,50,null,"#EMAIL#");
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/AdminUserResp.htm/41 ?>
 </script>
 
 </body>

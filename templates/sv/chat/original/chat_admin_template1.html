@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Administrate Metadata</title>
+<title><? sv/chat/original/chat_admin_template1.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_admin.css">
@@ -11,7 +11,7 @@
 <table border="0" cellspacing="0" cellpadding="3" width="500" align="center" bgcolor="#bababa">
 <tr bgcolor="#333366">
 	<td width="10">&nbsp;</td>
-	<th colspan="4" align="left">Administrera chatt</th>     
+	<th colspan="4" align="left"><? sv/chat/original/chat_admin_template1.html/2 ?></th>     
 	<td width="10">&nbsp;</td>
 </tr>
 <tr>
@@ -19,7 +19,7 @@
 </tr>
 <tr>
 	<td>&nbsp;</td>
-	<td colspan="4">Nuvarande mallset är: <b>#CURRENT_TEMPLATE_SET#</b></td>
+	<td colspan="4"><? sv/chat/original/chat_admin_template1.html/3 ?></td>
 	<td>&nbsp;</td>
 </tr>
 <form name="NewTemplate" action="ChatCreator" method="post">
@@ -33,12 +33,12 @@
 </tr>
 <tr>
 	<td>&nbsp;</td>
-	<td colspan="4"><b>Registrera nytt mallset</b></td>
+	<td colspan="4"><? sv/chat/original/chat_admin_template1.html/4 ?></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
-	<td>Välj namn:</td>
+	<td><? sv/chat/original/chat_admin_template1.html/5 ?></td>
 	<td><input name="template_lib_name" size="13" maxlength="50"></td>
 	<td>&nbsp;</td>
 	<td><input type="submit" name="add_templates" value="Nytt mallset"></td>	
@@ -56,15 +56,15 @@
 </tr>
 <tr>
 	<td>&nbsp;</td>
-	<td colspan="4"><b>Ändra mallset</b></td>
+	<td colspan="4"><? sv/chat/original/chat_admin_template1.html/6 ?></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
-	<td>Välj mallset:</td>
+	<td><? sv/chat/original/chat_admin_template1.html/7 ?></td>
 	<td>
 	<select name="new_templateset_name" size="1">
-		#TEMPLATE_LIST#
+		<? sv/chat/original/chat_admin_template1.html/8 ?>
 	</select></td>
 	<td>&nbsp;</td>
 	<td><input type="submit" name="change_templatelib" value="Byta mallset"></td>		
@@ -81,20 +81,20 @@
 </tr>
 <tr>
 	<td>&nbsp;</td>
-	<td colspan="4"><b>Uppdatera mallfil (template) i ett befintligt mallset</b></td>
+	<td colspan="4"><? sv/chat/original/chat_admin_template1.html/9 ?></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
 	<td>&nbsp;</td>
-	<td nowrap>Välj mallset &amp; typ:</td>
+	<td nowrap><? sv/chat/original/chat_admin_template1.html/10 ?></td>
 	<td>
 	<select name="TEMPLATE_NAME">
-		#TEMPLATE_LIST#
+		<? sv/chat/original/chat_admin_template1.html/11 ?>
 	</select></td>
 	<td>
 	<select name="UPLOAD_TYPE">
-		<option value="image">IMAGE</option>
-		<option value="Template" selected>TEMPLATE</option>
+		<option value="image"><? sv/chat/original/chat_admin_template1.html/12 ?></option>
+		<option value="Template" selected><? sv/chat/original/chat_admin_template1.html/13 ?></option>
 	</select></td>
 	<td><input type="submit" name="UPLOAD_CHAT" value="Administrera"></td>
 	<td>&nbsp;</td>

@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Redigera användaruppgifter</title>
+<title><? sv/userprefs_change.htm/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -29,8 +29,7 @@ function evalPrepareAdd() {
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'password1')">
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/userprefs_change.htm/2 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="StartDoc">
@@ -40,7 +39,7 @@ imcmsGui("head", null);
 </form>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/userprefs_change.htm/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="UserChangePrefs" name="UserInfo">
@@ -48,77 +47,77 @@ imcmsGui("mid", null);
 <input type="HIDDEN" name="adminTaskold" value="#ADMIN_TASK#">
 <input type="HIDDEN" name="login_name" value="#LOGIN_NAME#">
 <tr> 
-	<td colspan="2"><script>imcHeading("Redigera användaruppgifter",656);</script></td>
+	<td colspan="2"><script><? sv/userprefs_change.htm/4 ?></script></td>
 </tr>
 <tr> 
-	<td colspan="2">Observera att samtliga obligatoriska fält måste vara ifyllda för att en användare skall kunna skapas! </td>
+	<td colspan="2"><? sv/userprefs_change.htm/5 ?> </td>
 </tr>
 <tr> 
-	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	<td colspan="2"><script><? sv/userprefs_change.htm/6 ?></script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Användarnamn <b class="red">*</b></td>
-	<td>#LOGIN_NAME#</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/7 ?></td>
+	<td><? sv/userprefs_change.htm/8 ?></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Lösenord <b class="red">*</b></td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/9 ?></td>
 	<td><input type="password" name="password1" size="25" value="#PWD1#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Verifiera lösenord <b class="red">*</b></td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/10 ?></td>
 	<td><input type="password" name="password2" size="25" value="#PWD2#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Förnamn <b class="red">*</b></td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/11 ?></td>
 	<td><input type="text" name="first_name" size="25" value="#FIRST_NAME#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Efternamn <b class="red">*</b></td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/12 ?></td>
 	<td><input type="text" name="last_name" size="25" value="#LAST_NAME#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Titel</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/13 ?></td>
 	<td><input type="text" name="title" size="25" value="#TITLE#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Arbetsplats</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/14 ?></td>
 	<td><input type="text" name="company" size="25" value="#COMPANY#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Gatuadress</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/15 ?></td>
 	<td><input type="text" name="address" size="25" value="#ADDRESS#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Postnummer</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/16 ?></td>
 	<td><input type="text" name="zip" size="25" value="#ZIP#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Postnummer ort</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/17 ?></td>
 	<td><input type="text" name="city" size="25" value="#CITY#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Län</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/18 ?></td>
 	<td><input type="text" name="country_council" size="25" value="#COUNTRY_COUNCIL#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Land</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/19 ?></td>
 	<td><input type="text" name="country" size="25" value="#COUNTRY#"></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Email</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/20 ?></td>
 	<td><input type="text" name="email" size="25" value="#EMAIL#"></td>
 </tr>
 <tr> 
 	<td colspan="2">&nbsp;</td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText">Telefonnummer</td>
+	<td class="imcmsAdmText"><? sv/userprefs_change.htm/21 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>
 		<select name="user_phones" multiple size="1">
-			#PHONES_MENU#
+			<? sv/userprefs_change.htm/22 ?>
 		</select></td>
 		<td>&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtnSmall" name="edit_phones" value="Redigera"></td>
@@ -127,10 +126,10 @@ imcmsGui("mid", null);
 </tr>
 <tr> 
 	<td>&nbsp;</td>
-	<td>* Innebär att fältet är obligatoriskt </td>
+	<td><? sv/userprefs_change.htm/23 ?> </td>
 </tr>
 <tr> 
-	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+	<td colspan="2"><script><? sv/userprefs_change.htm/24 ?></script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -147,8 +146,7 @@ imcmsGui("mid", null);
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/userprefs_change.htm/25 ?>
 </script>
 
 </body>

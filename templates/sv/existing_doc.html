@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Länka in befintligt dokument</title>
+<title><? sv/existing_doc.html/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -11,8 +11,7 @@
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'existing_meta_id')">
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/existing_doc.html/2 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="GetExistingDoc">
@@ -26,14 +25,14 @@ imcmsGui("head", null);
 </form>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/existing_doc.html/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="GetExistingDoc">
 <input type="HIDDEN" name="meta_id_value" value="#meta_id#">
 <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
 <tr> 
-	<td><script>imcHeading("Välj befintligt dokument",656);</script></td>
+	<td><script><? sv/existing_doc.html/4 ?></script></td>
 </tr>
 <tr> 
 	<td>
@@ -59,7 +58,7 @@ imcmsGui("mid", null);
 <input type="HIDDEN" name="meta_id_value" value="#meta_id#">
 <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
 <tr> 
-	<td colspan="2"><script>imcHeading("Sök befintliga dokument",656);</script></td>
+	<td colspan="2"><script><? sv/existing_doc.html/5 ?></script></td>
 </tr>
 <tr> 
 	<td colspan="2">
@@ -67,7 +66,7 @@ imcmsGui("mid", null);
 	<tr>
 		<td class="imcmsAdmText">Sökord:&nbsp;&nbsp;</td>
 		<td><script>
-writeFormField("TEXT","searchstring",62,255,360,"#searchstring#");
+<? sv/existing_doc.html/6 ?>
 </script></td>
 		<td>&nbsp;&nbsp;&nbsp;</td>
 		<td><input type="radio" value="and" name="search_prep" #search_prep_check_and#></td>
@@ -78,7 +77,7 @@ writeFormField("TEXT","searchstring",62,255,360,"#searchstring#");
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+	<td colspan="2"><script><? sv/existing_doc.html/7 ?></script></td>
 </tr>
 <tr> 
 	<td colspan="2"> 
@@ -88,38 +87,38 @@ writeFormField("TEXT","searchstring",62,255,360,"#searchstring#");
 		<td width="50%"> 
 		<table border="0" cellspacing="0" cellpadding="1" width="100%">
 		<tr> 
-			<td colspan="2" class="imcmsAdmText" height="22">Inkludera dokument av typen</td>
+			<td colspan="2" class="imcmsAdmText" height="22"><? sv/existing_doc.html/8 ?></td>
 		</tr>
 		<tr> 
-			<td class="imcmsAdmText">Textsida:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/9 ?></td>
 			<td><input type="checkbox" name="doc_type" value="2" #checked_2#></td>
 		</tr>
 		<tr> 
-			<td class="imcmsAdmText">Länk:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/10 ?></td>
 			<td><input type="checkbox" name="doc_type" value="5" #checked_5#></td>
 		</tr>
 		<tr> 
-			<td class="imcmsAdmText">Browserkontroll:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/11 ?></td>
 			<td><input type="checkbox" name="doc_type" value="6" #checked_6#></td>
 		</tr>
 		<tr> 
-			<td class="imcmsAdmText">HTML-dokument:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/12 ?></td>
 			<td><input type="checkbox" name="doc_type" value="7" #checked_7#></td>
 		</tr>
 		<tr> 
-			<td class="imcmsAdmText">Fil:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/13 ?></td>
 			<td><input type="checkbox" name="doc_type" value="8" #checked_8#></td>
 		</tr>
 		<tr>
-			<td class="imcmsAdmText">Anslagstavla dokument:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/14 ?></td>
 			<td><input type="checkbox" name="doc_type" value="104" #checked_104#></td>
 		</tr>
 		<tr>
-			<td class="imcmsAdmText">Chatt dokument:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/15 ?></td>
 			<td><input type="checkbox" name="doc_type" value="103" #checked_103#></td>
 		</tr>
 		<tr>
-			<td class="imcmsAdmText">Konferens dokument:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/16 ?></td>
 			<td><input type="checkbox" name="doc_type" value="102" #checked_102#></td>
 		</tr>
 		</table></td>
@@ -127,26 +126,26 @@ writeFormField("TEXT","searchstring",62,255,360,"#searchstring#");
 		<td width="50%"> 
 		<table border="0" cellspacing="0" cellpadding="1" width="100%">
 		<tr> 
-			<td colspan="2" class="imcmsAdmText" height="22">Inkludera dokument mellan dessa datum</td>
+			<td colspan="2" class="imcmsAdmText" height="22"><? sv/existing_doc.html/17 ?></td>
 		</tr>
 		<tr> 
-			<td class="imcmsAdmText">Start datum:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/18 ?></td>
 			<td><script>
-writeFormField("TEXT","start_date",18,16,95,"#start_date#");
+<? sv/existing_doc.html/19 ?>
 </script></td>
 		</tr>
 		<tr> 
-			<td class="imcmsAdmText">Slut datum:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/20 ?></td>
 			<td><script>
-writeFormField("TEXT","end_date",18,16,95,"#end_date#");
+<? sv/existing_doc.html/21 ?>
 </script></td>
 		</tr>
 		<tr> 
-			<td class="imcmsAdmText">Gäller skapat datum:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/22 ?></td>
 			<td><input type="checkbox" name="include_doc" value="created" #include_check_created#></td>
 		</tr>
 		<tr> 
-			<td class="imcmsAdmText">Gäller ändrat datum:</td>
+			<td class="imcmsAdmText"><? sv/existing_doc.html/23 ?></td>
 			<td><input type="checkbox" name="include_doc" value="changed" #include_check_changed#></td>
 		</tr>
 		</table></td>
@@ -154,7 +153,7 @@ writeFormField("TEXT","end_date",18,16,95,"#end_date#");
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+	<td colspan="2"><script><? sv/existing_doc.html/24 ?></script></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -163,19 +162,17 @@ writeFormField("TEXT","end_date",18,16,95,"#end_date#");
 		<td class="imcmsAdmText" nowrap>Sortera efter &nbsp;</td>
 		<td>
 		<select name="sortBy">
-			#sortBy#
+			<? sv/existing_doc.html/25 ?>
 		</select></td>
 		<td>&nbsp;&nbsp;</td>
 		<td><input type="submit" class="imcmsFormBtn" name="search" value="Sök"></td>
 	</tr>
-	</table><br clear="all">
-	#searchResults#</td>
+	</table><? sv/existing_doc.html/26 ?></td>
 </tr>
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/existing_doc.html/27 ?>
 </script>
 
 </body>

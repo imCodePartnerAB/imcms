@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Ändra bild</title>
+<title><? sv/change_img.html/1 ?></title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -73,8 +73,7 @@ function checkFileName() {
 <body bgcolor="#FFFFFF" onLoad="focusField('ImageUpload','file'); setDef(); openImageHelp();" onUnLoad="closeImageHelp();">
  -->
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/change_img.html/2 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
@@ -106,7 +105,7 @@ imcmsGui("head", null);
 </tr>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/change_img.html/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="ImageUploadForm" action="ImageUpload" enctype="multipart/form-data" method="POST" onSubmit="return (checkFileName()); return false">
@@ -114,22 +113,22 @@ imcmsGui("mid", null);
 <input type="HIDDEN" name="img_no" value="#img_no#">
 <input type="hidden" name="label" value="#label#">
 <tr>
-	<td colspan="2"><script>imcHeading("Lägg till ny bild","656");</script></td>
+	<td colspan="2"><script><? sv/change_img.html/4 ?></script></td>
 </tr>
 <tr>
-	<td>Vald bild</td>
+	<td><? sv/change_img.html/5 ?></td>
 	<td><script>
-writeFormField("FILE","file\" id=\"theFile",54,null,null,null);
+<? sv/change_img.html/6 ?>
 </script></td>
 </tr>
 <tr>
-	<td>Katalog</td>
+	<td><? sv/change_img.html/7 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
 		<td>
 		<select name="folder" size="1">
-			#folders#
+			<? sv/change_img.html/8 ?>
 		</select></td>
 		<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="ok" value="Ladda upp" style="width:110"></td>
 	</tr>
@@ -146,56 +145,42 @@ writeFormField("FILE","file\" id=\"theFile",54,null,null,null);
 <input type="hidden" name="label" value="#label#">
 <tr>
 	<td colspan="2">&nbsp;<br>
-	<script>imcHeading("Redigera bild #img_no# på sida #getMetaId#","656");</script><div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
+	<script><? sv/change_img.html/9 ?></script><div id="theLabel" class="imcmsAdmText"><? sv/change_img.html/10 ?></div></td>
 </tr>
 <tr>
 	<td colspan="2">
 <script language="JavaScript">
-<!--
-var sUrl = "#imgUrl##imgRef#";
-var str  = "";
-if (sUrl.indexOf(".") < 0) {
-	str += "<img src=\"@imcmsimageurllang@/admin/1x1.gif\" width=\"1\" height=\"1\" border=\"0\" style=\"display:none\">";
-} else {
-	str += "<table id=\"imgTable\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"100%\">\n";
-	str += "<tr>\n";
-	str += "	<td align=\"center\" bgcolor=\"#ffffff\">\n";
-	str += "	<img src=\"#imgUrl##imgRef#\" width=\"#imgWidth#\" height=\"#imgHeight#\" border=\"#imgBorder#\"></td>\n";
-	str += "</tr>\n";
-	str += "</table>";
-}
-document.write(str);
-//-->
+<? sv/change_img.html/11 ?>
 </script></td>
 </tr>
 <tr>
-	<td nowrap>Bildsökväg (src)</td>
+	<td nowrap><? sv/change_img.html/12 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
 		<td><script>
-writeFormField("TEXT","imageref",50,255,350,"#imgRef#");
+<? sv/change_img.html/13 ?>
 </script></td>
 		<td align="right"><input type="SUBMIT" class="imcmsFormBtnSmall" name="show_img" value="Förhandsgranska" style="width:110"></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td nowrap>Bildnamn (name)</td>
+	<td nowrap><? sv/change_img.html/14 ?></td>
 	<td><script>
-writeFormField("TEXT","image_name",50,255,350,"#imgName#");
+<? sv/change_img.html/15 ?>
 </script></td>
 </tr>
 <tr>
-	<td nowrap>Format/storlek</td>
+	<td nowrap><? sv/change_img.html/16 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><b>Bredd</b></td>
+		<td><? sv/change_img.html/17 ?></td>
 		<td>&nbsp;</td>
-		<td><b>Höjd</b></td>
+		<td><? sv/change_img.html/18 ?></td>
 		<td>&nbsp;</td>
-		<td><b>Kant</b></td>
+		<td><? sv/change_img.html/19 ?></td>
 		<td colspan="3">&nbsp;</td>
 	<tr>
 		<td height="20">&nbsp;#origW#</td>
@@ -204,98 +189,98 @@ writeFormField("TEXT","image_name",50,255,350,"#imgName#");
 		<td>&nbsp;</td>
 		<td>&nbsp;#imgBorder#</td>
 		<td>&nbsp;</td>
-		<td colspan="2">(Originalstorlek)</td>
+		<td colspan="2"><? sv/change_img.html/20 ?></td>
 	</tr>
 	<tr>
 		<td><script>
-writeFormField("TEXT","image_width",4,4,null,"#imgWidth#");
+<? sv/change_img.html/21 ?>
 </script></td>
 		<td>&nbsp;X&nbsp;</td>
 		<td><script>
-writeFormField("TEXT","image_height",4,4,null,"#imgHeight#");
+<? sv/change_img.html/22 ?>
 </script></td>
 		<td>&nbsp;</td>
 		<td><script>
-writeFormField("TEXT","image_border",4,4,null,"#imgBorder#");
+<? sv/change_img.html/23 ?>
 </script></td>
 		<td>&nbsp;</td>
 		<td><input type="checkbox" name="keepAspectRatio" value="yes" #keep_aspect#></td>
-		<td> Behåll bildens proportioner</td>
+		<td> <? sv/change_img.html/24 ?></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td nowrap>&quot;Luft&quot; kring bilden (h/vspace)</td>
+	<td nowrap><? sv/change_img.html/25 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><script>
-writeFormField("TEXT","v_space",4,4,null,"#imgVerticalSpace#");
+<? sv/change_img.html/26 ?>
 </script></td>
 		<td>&nbsp;</td>
-		<td>px ovan/under</td>
+		<td><? sv/change_img.html/27 ?></td>
 		<td>&nbsp; &nbsp;</td>
 		<td><script>
-writeFormField("TEXT","h_space",4,4,null,"#imgHorizontalSpace#");
+<? sv/change_img.html/28 ?>
 </script></td>
 		<td>&nbsp;</td>
-		<td>px på sidorna</td>
+		<td><? sv/change_img.html/29 ?></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td nowrap>Nästa textfälts placering (align)</td>
+	<td nowrap><? sv/change_img.html/30 ?></td>
 	<td>
 	<select name="image_align" size="1">
-		<option value="none" #none_selected#>Ingen
-		<option value="baseline" #baseline_selected#>Baslinje
-		<option value="top" #top_selected#>Toppen
-		<option value="middle" #middle_selected#>Mitten
-		<option value="bottom" #bottom_selected#>Botten
-		<option value="texttop" #texttop_selected#>Texttoppen
-		<option value="absmiddle" #absmiddle_selected#>Exakt mitten
-		<option value="absbottom" #absbottom_selected#>Längst ner
-		<option value="left" #left_selected#>Bild vänster
-		<option value="right" #right_selected#>Bild höger
+		<option value="none" #none_selected#><? sv/change_img.html/31 ?>
+		<option value="baseline" #baseline_selected#><? sv/change_img.html/32 ?>
+		<option value="top" #top_selected#><? sv/change_img.html/33 ?>
+		<option value="middle" #middle_selected#><? sv/change_img.html/34 ?>
+		<option value="bottom" #bottom_selected#><? sv/change_img.html/35 ?>
+		<option value="texttop" #texttop_selected#><? sv/change_img.html/36 ?>
+		<option value="absmiddle" #absmiddle_selected#><? sv/change_img.html/37 ?>
+		<option value="absbottom" #absbottom_selected#><? sv/change_img.html/38 ?>
+		<option value="left" #left_selected#><? sv/change_img.html/39 ?>
+		<option value="right" #right_selected#><? sv/change_img.html/40 ?>
 	</select></td>
 </tr>
 <tr>
-	<td nowrap>Text i textversion (alt)</td>
+	<td nowrap><? sv/change_img.html/41 ?></td>
 	<td><script>
-writeFormField("TEXT","alt_text",92,255,"100%","#imgAltText#");
+<? sv/change_img.html/42 ?>
 </script></td>
 </tr>
 <tr>
-	<td colspan="2">&nbsp;<br><script>imcHeading("Länkad bild","656");</script></td>
+	<td colspan="2">&nbsp;<br><script><? sv/change_img.html/43 ?></script></td>
 </tr>
 <tr>
-	<td nowrap>Sökväg/URL (href)</td>
+	<td nowrap><? sv/change_img.html/44 ?></td>
 	<td><script>
-writeFormField("TEXT","imageref_link",92,255,"100%","#imgRefLink#");
+<? sv/change_img.html/45 ?>
 </script></td>
 </tr>
 <tr>
-	<td nowrap>Länk öppnas i (target)</td>
+	<td nowrap><? sv/change_img.html/46 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>
 		<select name="target" size="1" onChange="document.forms.imgProp.target_name.value = document.forms.imgProp.target.options[document.forms.imgProp.target.selectedIndex].value">
-			<option value="_top" #top_checked#>Aktuellt fönster
-			<option value="_blank" #blank_checked#>Nytt fönster
-			<option value="_parent" #parent_checked#>Moderram
-			<option value="_self" #self_checked#>Samma ram
-			<option value="_other" #other_checked#>Annan ram 
+			<option value="_top" #top_checked#><? sv/change_img.html/47 ?>
+			<option value="_blank" #blank_checked#><? sv/change_img.html/48 ?>
+			<option value="_parent" #parent_checked#><? sv/change_img.html/49 ?>
+			<option value="_self" #self_checked#><? sv/change_img.html/50 ?>
+			<option value="_other" #other_checked#><? sv/change_img.html/51 ?> 
 		</select></td>
 		<td>&nbsp;&nbsp;</td>
 		<td><script>
-writeFormField("TEXT","target_name",10,20,null,"#target_name#");
+<? sv/change_img.html/52 ?>
 </script></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2"><script>hr("100%", 656, "blue");</script></td>
+	<td colspan="2"><script><? sv/change_img.html/53 ?></script></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -311,8 +296,7 @@ writeFormField("TEXT","target_name",10,20,null,"#target_name#");
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/change_img.html/54 ?>
 </script>
 
 </body>

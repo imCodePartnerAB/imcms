@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Redigera text</title>
+<title><? sv/change_text.html/1 ?></title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -51,8 +51,7 @@ function openLinkEditor() {
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text'); checkMode();">
 
 <script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
+<? sv/change_text.html/2 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="SaveText">
@@ -68,17 +67,17 @@ imcmsGui("head", null);
 </tr>
 </table>
 <script>
-imcmsGui("mid", null);
+<? sv/change_text.html/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
-	<td colspan="2"><script>imcHeading("Redigera text #txt_no# på sida #meta_id#","656");</script><div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
+	<td colspan="2"><script><? sv/change_text.html/4 ?></script><div id="theLabel" class="imcmsAdmText"><? sv/change_text.html/5 ?></div></td>
 </tr>
 <tr>
 	<td colspan="2" class="imcmsAdmForm"><script>
-writeFormField("TEXTAREA","text\" id=\"txtCont",125,18,"100%",null);
+<? sv/change_text.html/6 ?>
 </script>
-#txt#</textarea></td>
+<? sv/change_text.html/7 ?></textarea></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -102,77 +101,25 @@ writeFormField("TEXTAREA","text\" id=\"txtCont",125,18,"100%",null);
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2">&nbsp;<br><script>imcHeading("Övriga funktioner <span class=\"imcmsAdmDim\">(Gäller HTML-format)</span>",656);</script></td>
+	<td colspan="2">&nbsp;<br><script><? sv/change_text.html/8 ?></script></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Byt ut radbrytningar mot &lt;BR&gt;</td>
+	<td class="imcmsAdmText"><? sv/change_text.html/9 ?></td>
 	<td align="right"><input type="button" value="Koda radbrytningar" name="replaceBreakBtn" onclick="replaceBreaks();" width="120" style="width:120" class="imcmsFormBtnSmall"></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText">Skapa en länk med länk-editorn</td>
+	<td class="imcmsAdmText"><? sv/change_text.html/10 ?></td>
 	<td align="right"><input type="button" value="Skapa länk" name="createLinkBtn" onclick="openLinkEditor();" width="120" style="width:120" class="imcmsFormBtnSmall"></td>
 </tr>
 </form>
 </table>
 <script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
+<? sv/change_text.html/11 ?>
 </script>
 
 
 <script language="javascript">
-<!--
-if (isMoz) {
-	document.getElementById("txtCont").style.width    = 656;
-	document.getElementById("txtCont").style.overflow = "auto";
-}
-
-function checkMode() {
-	var f = document.forms[0] ;
-	var elFormatRadio = (f.format_type) ? f.format_type : f.type ;
-	if (elFormatRadio) {
-		var replaceBreakBtn = f.replaceBreakBtn ;
-		var createLinkBtn   = f.createLinkBtn ;
-		if (elFormatRadio[1].checked) { // HTML
-			replaceBreakBtn.disabled = 0 ;
-			createLinkBtn.disabled   = 0 ;
-		} else { // Text
-			replaceBreakBtn.disabled = 1 ;
-			createLinkBtn.disabled   = 1 ;
-		}
-	}
-}
-
-function replaceBreaks() {
-	var f = document.forms[0];
-	var theText = f.text.value;
-	if (!(f.format_type[1].checked == 1)) {
-		if(confirm("Du måste välja HTML läge för att\nlägga in \"Break-taggar\" i texten!\n\nVill du göra detta nu?")){
-			f.format_type[1].checked = 1;
-			doReplaceBreaks();
-		}
-	} else {
-		doReplaceBreaks();
-	}
-}
-
-function doReplaceBreaks() {
-	var f = document.forms[0];
-	var theText = f.text.value;
-	var tempText = theText.toUpperCase();
-	var reFr = (isMoz && !isIE) ? /\n/g : /\r/g;
-	var reTo = (isMoz && !isIE) ? "<BR>\n" : "<BR>\r";
-	if (tempText.indexOf("<BR>") < 0) {
-		theText = theText.replace(reFr,reTo);
-		f.text.value = theText;
-	} else {
-		if (confirm("Du har redan \"<BR>\" i texten!\nRadbrytningar kommer att läggas in\noberoende av dessa, vid varje radslut.\n\nVill du göra det?")) {
-			theText = theText.replace(reFr,reTo);
-			f.text.value = theText;
-		}
-	}
-}
-//-->
+<? sv/change_text.html/12 ?>
 </script>
 </body>
 </html>

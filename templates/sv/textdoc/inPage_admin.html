@@ -39,13 +39,13 @@ function resetTarget() {
 <tr> 
 	<td id="changePageTd21" nowrap>
 	&nbsp;<select name="group" size="1" class="changePageSelect">
-	#getTemplateGroups#
+	<? sv/textdoc/inPage_admin.html/1 ?>
 	</select>
 	<input type="submit" name="change_group" value="&Auml;ndra grupp" onClick="resetTarget()" class="changePageButton" width="80" style="width:80"></td>
 	
 	<td id="changePageTd22" nowrap>
 	&nbsp;<select name="template" size="1" class="changePageSelect">
-		#getTemplates#
+		<? sv/textdoc/inPage_admin.html/2 ?>
 		<option></option>
 	</select>
 	<input type="submit" name="preview" value="Visa mall" onClick="targetNewWindow()" class="changePageButton"></td>
@@ -57,8 +57,7 @@ function resetTarget() {
 	<a href="@documentationurl@/GetDoc?meta_id=87" target="_blank"><img src="@imcmsimageurllang@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan" hspace="2"></a></td>
 </tr>
 <input type="HIDDEN" name="meta_id" value="#getMetaId#">
-#getDocType# 
-#DocMenuNo#  
+<? sv/textdoc/inPage_admin.html/3 ?>  
 </form>
 </table></div>
 
