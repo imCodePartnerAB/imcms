@@ -223,9 +223,9 @@ public class ChatCreator extends ChatBase
 		    // Lets copy the original folders to the new foldernames
 		    FileManager fileObj = new FileManager() ;
 		    File templateSrc = new File(imcref.getExternalTemplateFolder(metaId), "original") ;
-		    File imageSrc = new File(RmiConf.getExternalImageFolder(imcref, metaId+""), "original") ;
+		    File imageSrc = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId), "original") ;
 		    File templateTarget = new File(imcref.getExternalTemplateFolder(metaId), newLibName) ;
-		    File imageTarget = new File(RmiConf.getExternalImageFolder(imcref, metaId+""), newLibName) ;
+		    File imageTarget = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId), newLibName) ;
 
 		    fileObj.copyDirectory(templateSrc, templateTarget) ;
 		    fileObj.copyDirectory(imageSrc, imageTarget) ;

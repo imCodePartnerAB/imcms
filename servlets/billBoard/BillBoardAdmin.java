@@ -156,9 +156,9 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	    FileManager fileObj = new FileManager() ;
 
 	    File templateSrc = new File(imcref.getExternalTemplateFolder(Integer.parseInt(metaId)), "original") ;
-	    File imageSrc = new File(RmiConf.getExternalImageFolder(imcref, metaId), "original") ;
+	    File imageSrc = new File(RmiConf.getImagePathForExternalDocument(imcref, Integer.parseInt(metaId)), "original") ;
 	    File templateTarget = new File(imcref.getExternalTemplateFolder(Integer.parseInt(metaId)), newLibName) ;
-	    File imageTarget = new File(RmiConf.getExternalImageFolder(imcref, metaId), newLibName) ;
+	    File imageTarget = new File(RmiConf.getImagePathForExternalDocument(imcref, Integer.parseInt(metaId)), newLibName) ;
 
 	    fileObj.copyDirectory(templateSrc, templateTarget) ;
 	    fileObj.copyDirectory(imageSrc, imageTarget) ;

@@ -232,8 +232,12 @@ public interface IMCServiceInterface {
     public File getTemplateHome()
 	;
 
-    // get imagehome
+    // get url-path to images
     public String getImageUrl()
+	;
+
+    // get file-path to images
+    public File getImagePath()
 	;
 
     // get starturl

@@ -32,14 +32,31 @@ public class RmiConf implements IMCConstants {
 
 
     /**
-     * Returns the imageHomefolder from the imcserver.cfg file.
-     * Example :D:\apache\
+     * Get the url-path for the images for an external document.
+     * @param imcref The IMCServiceInterface instance.
+     * @param metaId The id for the external document.
+     * @return The url-path to the images for an external document. Ex: ../images/se/
      */
     public static String getExternalImageFolder(IMCServiceInterface imcref, String metaId ) throws IOException {
-	File imageFolder = new File(imcref.getImageUrl()) ;
-	imageFolder = new File(imageFolder, imcref.getLanguage()) ;
-	imageFolder = new File(imageFolder, ""+imcref.getDocType(Integer.parseInt(metaId))) ;
-	return imageFolder.toString() ;
+	return imcref.getImageUrl() + '/' + imcref.getLanguage() + '/'
+	    + imcref.getDocType(Integer.parseInt(metaId)) + '/' ;
     } // end getExternalImageHomeFolder
+
+
+    /**
+     * Get the path to the images for an external document.
+     * @param imcref The IMCServiceInterface instance.
+     * @param metaId The id for the external document.
+     * @return The path to the images for an external document. Example :D:\apache\
+     */
+    public static File getImagePathForExternalDocument(IMCServiceInterface imcref, int metaId ) throws IOException {
+
+	File imageFolder = imcref.getImagePath() ;
+	imageFolder = new File(imageFolder, imcref.getLanguage(""+metaId)) ;
+	imageFolder = new File(imageFolder, ""+imcref.getDocType(metaId)) ;
+
+	return imageFolder ;
+    }
+
 
 } // End class

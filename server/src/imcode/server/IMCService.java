@@ -1532,12 +1532,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-     * Return  imagehome.
+     * Return url-path to images.
      */
     public String getImageUrl() {
 	return m_ImageUrl ;
     }
 
+    /**
+     * Return file-path to images.
+     */
+    public File getImagePath() {
+	return m_ImagePath ;
+    }
 
     /**
      * Return  starturl.
