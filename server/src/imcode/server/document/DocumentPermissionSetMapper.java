@@ -14,20 +14,19 @@ public class DocumentPermissionSetMapper {
      */
     static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "GetTemplateGroupsWithPermissions";
     static final String SPROC_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS = "GetTemplateGroupsWithNewPermissions";
-    private static final String SPROC_SET_DOC_PERMISSION_SET = "SetDocPermissionSet";
+    static final String SPROC_SET_DOC_PERMISSION_SET = "SetDocPermissionSet";
     private static final String SPROC_SET_NEW_DOC_PERMISSION_SET = "SetNewDocPermissionSet";
     static final String SQL_SELECT_PERMISSON_DATA__PREFIX = "SELECT permission_data FROM ";
 
-    private static class PermissionPair {
+    private final static int EDIT_DOCINFO_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCINFO;
+    private final static int EDIT_PERMISSIONS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_PERMISSIONS;
+    final static int EDIT_DOCUMENT_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCUMENT;
 
-        int bit;
-        boolean hasPermission;
-
-        private PermissionPair( int permissionBit, boolean hasPermission ) {
-            this.hasPermission = hasPermission;
-            this.bit = permissionBit;
-        }
-    }
+    final static int EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID = EDIT_DOCUMENT_PERMISSION_ID;
+    private final static int EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES;
+    private final static int EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS;
+    private final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
+    private final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
 
     private Database database;
 
@@ -102,7 +101,7 @@ public class DocumentPermissionSetMapper {
         }
     }
 
-    private void saveRestrictedDocumentPermissionSet( DocumentDomainObject document,
+    public void saveRestrictedDocumentPermissionSet( DocumentDomainObject document,
                                                       DocumentPermissionSetDomainObject documentPermissionSet,
                                                       boolean forNewDocuments ) {
 
@@ -114,6 +113,7 @@ public class DocumentPermissionSetMapper {
 
         if ( document instanceof TextDocumentDomainObject ) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
+            permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID, textDocumentPermissionSet.getEditTexts() ) );
             permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID, textDocumentPermissionSet.getEditImages() ) );
             permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID, textDocumentPermissionSet.getEditMenus() ) );
             permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID, textDocumentPermissionSet.getEditTemplates() ) );
@@ -202,16 +202,6 @@ public class DocumentPermissionSetMapper {
         return table;
     }
 
-    private final static int EDIT_DOCINFO_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCINFO;
-    private final static int EDIT_PERMISSIONS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_PERMISSIONS;
-    final static int EDIT_DOCUMENT_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCUMENT;
-
-    private final static int EDIT_TEXT_DOCUMENT_TEXTS_PERMISSION_ID = EDIT_DOCUMENT_PERMISSION_ID;
-    private final static int EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES;
-    private final static int EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS;
-    private final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
-    private final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
-
     void setDocumentPermissionSetFromBits( DocumentPermissionSetDomainObject documentPermissionSet, int permissionBits ) {
         documentPermissionSet.setEditDocumentInformation( 0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ) );
         documentPermissionSet.setEditPermissions( 0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ) );
@@ -272,6 +262,17 @@ public class DocumentPermissionSetMapper {
             }
         }
         return (TemplateGroupDomainObject[])templateGroups.toArray( new TemplateGroupDomainObject[templateGroups.size()] );
+    }
+
+    private static class PermissionPair {
+
+        int bit;
+        boolean hasPermission;
+
+        private PermissionPair( int permissionBit, boolean hasPermission ) {
+            this.hasPermission = hasPermission;
+            this.bit = permissionBit;
+        }
     }
 
 }
