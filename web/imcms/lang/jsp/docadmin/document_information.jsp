@@ -271,7 +271,7 @@
 		<td>
 		<script language="javascript">
 		if (hasGetElementById) {
-			document.write('<td align="right"><input type="button" id="advanced_button" class="imcmsFormBtn" value="<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
+			document.write('<td align="right"><input type="button" id="advanced_button1" class="imcmsFormBtn" value="<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
 		} else {
 			document.write("&nbsp;");
 		}
@@ -504,7 +504,7 @@
 			<tr>
 				<script language="javascript">
 				if (hasGetElementById) {
-					document.write('<td><input type="button" id="advanced_button" class="imcmsFormBtn" value="<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
+					document.write('<td><input type="button" id="advanced_button2" class="imcmsFormBtn" value="<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
 				}
 				</script>
 				<td><input type="SUBMIT" class="imcmsFormBtn" value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> " name="<%= DocumentComposer.PARAMETER_BUTTON__OK %>"></td>
@@ -558,7 +558,8 @@ function toggleAdvanced() {
 		advancedDisplay = 'none' ;
 	}
 	document.getElementById('advanced').style.display = advancedDisplay ;
-	document.getElementById('advanced_button').value = advancedButtonValue ;
+	document.getElementById('advanced_button1').value = advancedButtonValue ;
+	document.getElementById('advanced_button2').value = advancedButtonValue ;
 	document.cookie = viewCookie ;
 }
 </script>
