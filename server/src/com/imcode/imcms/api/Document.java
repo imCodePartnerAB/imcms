@@ -61,8 +61,7 @@ public class Document {
                     result.put( role.getName(),
                                 documentPermissionSetMapper.createRestrictedPermissionSet( internalDocument,
                                                                                            permissionType,
-                                                                                           securityChecker.getCurrentLoggedInUser()
-                                                                                           .getLanguageIso639_2() ) );
+                                                                                           false ) );
                     break;
                 case IMCConstants.DOC_PERM_SET_READ:
                     result.put( role.getName(), documentPermissionSetMapper.createReadPermissionSet() );
@@ -85,7 +84,7 @@ public class Document {
         Iterator keyIterator = keys.iterator();
         while ( keyIterator.hasNext() ) {
             String roleName = (String)keyIterator.next();
-            DocumentPermissionSetDomainObject documentPermissionSetDO = (DocumentPermissionSetDomainObject)rolesMappedToPermissionsIds.get(
+            TextDocumentPermissionSetDomainObject documentPermissionSetDO = (TextDocumentPermissionSetDomainObject)rolesMappedToPermissionsIds.get(
                     roleName );
             DocumentPermissionSet documentPermissionSet = new DocumentPermissionSet( documentPermissionSetDO );
             result.put( roleName, documentPermissionSet );

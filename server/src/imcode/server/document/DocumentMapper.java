@@ -508,6 +508,13 @@ public class DocumentMapper {
                 int rolePermissionSetId = Integer.parseInt( sprocResult[i][3] );
                 document.setPermissionSetIdForRole( role, rolePermissionSetId );
             }
+
+            DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
+            document.setPermissionSetForRestrictedOne(documentPermissionSetMapper.getPermissionSetRestrictedOne( document )) ;
+            document.setPermissionSetForRestrictedTwo(documentPermissionSetMapper.getPermissionSetRestrictedTwo( document )) ;
+
+            document.setPermissionSetForRestrictedOneForNewDocuments(documentPermissionSetMapper.getPermissionSetRestrictedOneForNewDocuments( document )) ;
+            document.setPermissionSetForRestrictedTwoForNewDocuments(documentPermissionSetMapper.getPermissionSetRestrictedTwoForNewDocuments( document )) ;
         }
         NDC.pop();
         return document;
@@ -920,6 +927,9 @@ public class DocumentMapper {
         updateDocumentRolePermissions( document );
 
         updateDocumentKeywords( document.getId(), document.getKeywords() );
+
+        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets(document) ;
 
         document.saveDocument( this, user );
 

@@ -195,7 +195,7 @@ public class GetExistingDoc extends HttpServlet {
                               Writer out ) throws IOException {
         String[] values;
         int existing_meta_id;
-        user.put( "flags", new Integer( IMCConstants.PERM_DT_TEXT_EDIT_MENUS ) );
+        user.put( "flags", new Integer( IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
 
         // get the seleced existing docs
         values = req.getParameterValues( "existing_meta_id" );

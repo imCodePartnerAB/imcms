@@ -36,7 +36,7 @@ public class SaveSort extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !imcref.checkDocAdminRights( documentId, user, IMCConstants.PERM_DT_TEXT_EDIT_MENUS ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRights( documentId, user, IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );

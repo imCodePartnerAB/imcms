@@ -28,7 +28,7 @@ public class SaveText extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {
                 out.write( output );
@@ -51,7 +51,7 @@ public class SaveText extends HttpServlet {
 
         TextDocumentDomainObject.Text text = new TextDocumentDomainObject.Text( text_string, text_format );
 
-        user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS ) );
+        user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) );
 
         if ( req.getParameter( "ok" ) != null ) {
             DocumentMapper documentMapper = imcref.getDocumentMapper();

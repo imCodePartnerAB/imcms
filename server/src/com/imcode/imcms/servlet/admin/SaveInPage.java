@@ -44,7 +44,7 @@ public class SaveInPage extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Check if user has write rights
-        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_DT_TEXT_CHANGE_TEMPLATE ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) ) {	// Checking to see if user may edit this
             res.setContentType( "text/html" );
 
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
@@ -113,7 +113,7 @@ public class SaveInPage extends HttpServlet {
             res.setContentType( "text/html" );
             Writer out = res.getWriter();
 
-            user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_DT_TEXT_CHANGE_TEMPLATE ) );
+            user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) );
 
             String group = req.getParameter( "group" );
             if ( group != null ) {

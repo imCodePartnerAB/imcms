@@ -93,16 +93,16 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 int user_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
                 int user_perm_set = documentMapper.getUsersPermissionBitsOnDocumentIfRestricted( user_set_id, document );
 
-                textmode = ( flags & PERM_DT_TEXT_EDIT_TEXTS ) != 0
-                           && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_EDIT_TEXTS ) != 0 );
-                imagemode = ( flags & PERM_DT_TEXT_EDIT_IMAGES ) != 0
-                            && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_EDIT_IMAGES ) != 0 );
-                menumode = ( flags & PERM_DT_TEXT_EDIT_MENUS ) != 0
-                           && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_EDIT_MENUS ) != 0 );
-                templatemode = ( flags & PERM_DT_TEXT_CHANGE_TEMPLATE ) != 0
-                               && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_CHANGE_TEMPLATE ) != 0 );
-                includemode = ( flags & PERM_DT_TEXT_EDIT_INCLUDES ) != 0
-                              && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_EDIT_INCLUDES ) != 0 );
+                textmode = ( flags & PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0
+                           && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 );
+                imagemode = ( flags & PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
+                            && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0 );
+                menumode = ( flags & PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0
+                           && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 );
+                templatemode = ( flags & PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
+                               && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0 );
+                includemode = ( flags & PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
+                              && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0 );
             }
 
             TemplateDomainObject documentTemplate = document.getTemplate();

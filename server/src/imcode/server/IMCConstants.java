@@ -20,37 +20,38 @@ public interface IMCConstants {
     public final static int PERM_CREATE_DOCUMENT         = (1 << 3) ; // 8
 
 
+    /* Permissions for restricted permission-sets 1 and 2, only applicable to non-text-documents. */
+
+    public final static int PERM_EDIT_DOCUMENT  = (1 << 16) ; // 65536
+
+    /** Permission to edit the url of an url-document. **/
+    public final static int PERM_EDIT_URL_DOCUMENT             = PERM_EDIT_DOCUMENT ;
+
+    /** Permission to edit the mappings of a browser-document. **/
+    public final static int PERM_EDIT_BROWSER_DOCUMENT         = PERM_EDIT_DOCUMENT ;
+
+    /** Permission to edit a html-document. **/
+    public final static int PERM_EDIT_HTML_DOCUMENT            = PERM_EDIT_DOCUMENT ;
+
+    /** Permission to change content and mime-type for a file. **/
+    public final static int PERM_EDIT_FILE_DOCUMENT            = PERM_EDIT_DOCUMENT ;
+
     /* Permissions for restricted permission-sets 1 and 2, only applicable to text-documents. */
 
     /** Permission to change the texts of a text-document. **/
-    public final static int PERM_DT_TEXT_EDIT_TEXTS      = (1 << 16) ; // 65536
+    public final static int PERM_EDIT_TEXT_DOCUMENT_TEXTS      = PERM_EDIT_DOCUMENT ;
 
     /** Permission to change the images of a text-document. **/
-    public final static int PERM_DT_TEXT_EDIT_IMAGES     = (1 << 17) ; // 131072
+    public final static int PERM_EDIT_TEXT_DOCUMENT_IMAGES     = (1 << 17) ; // 131072
 
     /** Permission to change the menus of a text-document. **/
-    public final static int PERM_DT_TEXT_EDIT_MENUS      = (1 << 18) ; // 262144
+    public final static int PERM_EDIT_TEXT_DOCUMENT_MENUS      = (1 << 18) ; // 262144
 
     /** Permission to change the template of a text-document. **/
-    public final static int PERM_DT_TEXT_CHANGE_TEMPLATE = (1 << 19) ; // 524288
+    public final static int PERM_EDIT_TEXT_DOCUMENT_TEMPLATE = (1 << 19) ; // 524288
 
     /** Permission to change the includes of a text-document. **/
-    public final static int PERM_DT_TEXT_EDIT_INCLUDES   = (1 << 20) ; // 1048576
-
-
-    /* Permissions for restricted permission-sets 1 and 2, only applicable to non-text-documents. */
-
-    /** Permission to edit the url of an url-document. **/
-    public final static int PERM_DT_URL_EDIT             = (1 << 16) ; // 65536
-
-    /** Permission to edit the mappings of a browser-document. **/
-    public final static int PERM_DT_BROWSER_EDIT         = (1 << 16) ; // 65536
-
-    /** Permission to edit a html-document. **/
-    public final static int PERM_DT_HTML_EDIT            = (1 << 16) ; // 65536
-
-    /** Permission to change content and mime-type for a file. **/
-    public final static int PERM_DT_FILE_EDIT            = (1 << 16) ; // 65536
+    public final static int PERM_EDIT_TEXT_DOCUMENT_INCLUDES   = (1 << 20) ; // 1048576
 
 
     /* Document-Permission-sets. */
@@ -98,9 +99,9 @@ public interface IMCConstants {
     final static int PASSWORD_MINIMUM_LENGTH = 4;
 
     final static int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;
-    final static int DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT = PERM_DT_BROWSER_EDIT;
-    final static int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_DT_HTML_EDIT;
-    final static int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_DT_URL_EDIT;
-    final static int DISPATCH_FLAG__EDIT_FILE_DOCUMENT = PERM_DT_FILE_EDIT;
-    final static int DISPATCH_FLAG__EDIT_MENU = PERM_DT_TEXT_EDIT_MENUS;
+    final static int DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT = PERM_EDIT_BROWSER_DOCUMENT;
+    final static int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_EDIT_HTML_DOCUMENT;
+    final static int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_EDIT_URL_DOCUMENT;
+    final static int DISPATCH_FLAG__EDIT_FILE_DOCUMENT = PERM_EDIT_FILE_DOCUMENT;
+    final static int DISPATCH_FLAG__EDIT_MENU = PERM_EDIT_TEXT_DOCUMENT_MENUS;
 }

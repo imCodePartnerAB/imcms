@@ -37,7 +37,7 @@ public class SaveInclude extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Check if user has permission to edit includes for this document
-        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_INCLUDES ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) ) {	// Checking to see if user may edit this
             sendPermissionDenied( imcref, out, meta_id, user );
             return;
         }

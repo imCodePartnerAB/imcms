@@ -4,96 +4,72 @@ import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 
 import java.util.ArrayList;
-
-import org.apache.log4j.Logger;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 public class DocumentPermissionSetMapper {
+
     /**
      * Stored procedure names used in this class
      */
-    private static final String SPROC_GET_PERMISSION_SET = "GetPermissionSet";
-    private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
-    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "getTemplateGroupsWithPermissions";
+    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "GetTemplateGroupsWithPermissions";
+    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS = "GetTemplateGroupsWithNewPermissions";
+    private static final String SPROC_SET_DOC_PERMISSION_SET = "SetDocPermissionSet";
+    private static final String SPROC_SET_NEW_DOC_PERMISSION_SET = "SetNewDocPermissionSet";
 
-    private static class PermissionTuple {
-        int permissionId;
+    private static class PermissionPair {
+
+        int bit;
         boolean hasPermission;
-    }
 
-    /**
-     * @param metaId
-     * @param permissionSetId
-     * @param langPrefix
-     * @return PermissionTuple[]
-     */
-    private static PermissionTuple[] sprocGetPermissionSet( IMCServiceInterface service, int metaId, int permissionSetId, String langPrefix ) {
-        String[] sqlParams = {String.valueOf( metaId ), String.valueOf( permissionSetId ), langPrefix};
-        String[] sqlResult = service.sqlProcedure( DocumentPermissionSetMapper.SPROC_GET_PERMISSION_SET, sqlParams );
-        DocumentPermissionSetMapper.PermissionTuple[] result = new DocumentPermissionSetMapper.PermissionTuple[sqlResult.length / 3];
-        for( int i = 0, r = 0; i < sqlResult.length; i = i + 3, r++ ) {
-            int permissionId = Integer.parseInt( sqlResult[i] );
-            //String permissionDescriptionStr = sqlResult[i + 1];
-            boolean hasPermission = Integer.parseInt( sqlResult[i + 2] ) == 1;
-            result[r] = new DocumentPermissionSetMapper.PermissionTuple();
-            result[r].permissionId = permissionId;
-            result[r].hasPermission = hasPermission;
+        public PermissionPair( int permissionBit, boolean hasPermission ) {
+            this.hasPermission = hasPermission;
+            this.bit = permissionBit;
         }
-        return result;
     }
 
-    private static class DocumentIdEditablePermissionsTuple {
-        boolean hasRights;
-        String documentTypeName;
-    }
-
-    private static DocumentIdEditablePermissionsTuple[] sprocGetDocTypesWithPermissions( IMCServiceInterface service, int metaId, int permissionType, String langPrefix ) {
-        String[] params = new String[]{String.valueOf( metaId ), String.valueOf( permissionType ), langPrefix};
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_DOC_TYPES_WITH_PERMISSIONS, params );
-        int numberOfColumns = 3;
-        DocumentIdEditablePermissionsTuple[] result = new DocumentIdEditablePermissionsTuple[ sprocResult.length/numberOfColumns ];
-        for( int i = 0, k = 0; i < sprocResult.length; i = i+numberOfColumns, k++ ){
-            //int documentTypeId = Integer.parseInt(sprocResult[i]);
-            String documentTypeName = sprocResult[i+1];
-            boolean permission = -1 != Integer.parseInt(sprocResult[i+2]);
-            result[k] = new DocumentIdEditablePermissionsTuple();
-            result[k].hasRights = permission;
-            result[k].documentTypeName = documentTypeName;
+    private int[] sqlGetDocTypesWithPermissions( int metaId,
+                                                 DocumentPermissionSetDomainObject documentPermissionSet ) {
+        String table = "doc_permission_sets_ex";
+        if ( documentPermissionSet.isForNewDocuments() ) {
+            table = "new_" + table;
         }
-        return result;
-    }
-
-    private static class GroupPermissionTuple {
-        String groupName;
-        boolean hasPermission;
-    }
-
-    private static GroupPermissionTuple[] sprocGetTemplateGroupsWithPermissions( IMCServiceInterface service, int metaId, int permissionType ) {
-        String[] params = new String[]{ String.valueOf(metaId), String.valueOf( permissionType ) };
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS, params );
-        int numberOfColumns = 3;
-        GroupPermissionTuple[] result = new GroupPermissionTuple[sprocResult.length/numberOfColumns];
-        for( int i = 0, k=0; i < sprocResult.length; i=i+numberOfColumns, k++) {
-            //String groupId = sprocResult[i];
-            String groupName = sprocResult[i+1];
-            boolean hasPermission = -1 != Integer.parseInt(sprocResult[i+2]);
-            result[k] = new GroupPermissionTuple();
-            result[k].groupName = groupName;
-            result[k].hasPermission = hasPermission;
+        String sqlStr = "SELECT permission_data FROM " + table
+                        + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
+                        + IMCConstants.PERM_CREATE_DOCUMENT;
+        String[] documentTypeIdStrings = service.sqlQuery( sqlStr, new String[]{
+            "" + metaId, "" + documentPermissionSet.getPermissionType()
+        } );
+        int[] documentTypeIds = new int[documentTypeIdStrings.length];
+        for ( int i = 0; i < documentTypeIdStrings.length; i++ ) {
+            documentTypeIds[i] = Integer.parseInt( documentTypeIdStrings[i] );
         }
-        return result;
+        return documentTypeIds;
+    }
+
+    private TemplateGroupDomainObject[] sqlGetTemplateGroupsWithPermissions( int metaId,
+                                                                             DocumentPermissionSetDomainObject documentPermissionSet ) {
+        String[] params = new String[]{
+            String.valueOf( metaId ), String.valueOf( documentPermissionSet.getPermissionType() )
+        };
+        String sproc = documentPermissionSet.isForNewDocuments()
+                       ? SPROC_GET_TEMPLATE_GROUPS_WITH_NEW_PERMISSIONS : SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS;
+        String[][] sprocResult = service.sqlProcedureMulti( sproc, params );
+        List templateGroups = new ArrayList();
+        for ( int i = 0; i < sprocResult.length; i++ ) {
+            int groupId = Integer.parseInt( sprocResult[i][0] );
+            String groupName = sprocResult[i][1];
+            boolean hasPermission = -1 != Integer.parseInt( sprocResult[i][2] );
+            if ( hasPermission ) {
+                TemplateGroupDomainObject templateGroup = new TemplateGroupDomainObject( groupId, groupName );
+                templateGroups.add( templateGroup );
+            }
+        }
+        return (TemplateGroupDomainObject[])templateGroups.toArray( new TemplateGroupDomainObject[templateGroups.size()] );
     }
 
     private IMCServiceInterface service;
-    private static Logger log = Logger.getLogger( DocumentPermissionSetMapper.class );
-
-    private final static int EDIT_HEADLINE_PERMISSON_ID = 1;
-    private final static int EDIT_DOCINFO_PERMISSON_ID = 2;
-    private final static int EDIT_PERMISSIONS_PERMISSON_ID = 4;
-    private final static int EDIT_TEXTS_PERMISSON_ID = 65536;
-    private final static int EDIT_PICTURES_PERMISSON_ID = 131072;
-    private final static int EDIT_MENUES_PERMISSON_ID = 262144;
-    private final static int EDIT_TEMPLATE_PERMISSON_ID = 524288;
-    private final static int EDIT_INCLUDE_PERMISSON_ID = 1048576;
 
     public DocumentPermissionSetMapper( IMCServiceInterface service ) {
         this.service = service;
@@ -103,79 +79,40 @@ public class DocumentPermissionSetMapper {
         DocumentPermissionSetDomainObject result;
         result = new DocumentPermissionSetDomainObject( IMCConstants.DOC_PERM_SET_FULL );
         result.setEditDocumentInformation( true );
-        result.setEditHeadline( true );
-        result.setEditIncludes( true );
-        result.setEditMenus( true );
         result.setEditPermissions( true );
-        result.setEditPictures( true );
-        result.setEditTemplates( true );
-        result.setEditTexts( true );
         return result;
     }
 
-    public DocumentPermissionSetDomainObject createRestrictedPermissionSet( DocumentDomainObject document, int permissionType, String langPrefix ) {
-        DocumentPermissionSetDomainObject result = new DocumentPermissionSetDomainObject( permissionType );
-        DocumentPermissionSetMapper.PermissionTuple[] permissionMapping = sprocGetPermissionSet( service, document.getId(),  permissionType, langPrefix );
-        for( int i = 0; i < permissionMapping.length; i++ ) {
-            switch( permissionMapping[i].permissionId ) {
-                case EDIT_HEADLINE_PERMISSON_ID:
-                    result.setEditHeadline( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_DOCINFO_PERMISSON_ID:
-                    result.setEditDocumentInformation( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_PERMISSIONS_PERMISSON_ID:
-                    result.setEditPermissions( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_TEXTS_PERMISSON_ID:
-                    result.setEditTexts( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_PICTURES_PERMISSON_ID:
-                    result.setEditPictures( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_MENUES_PERMISSON_ID:
-                    if( permissionMapping[i].hasPermission ) {
-                        DocumentIdEditablePermissionsTuple[] names = sprocGetDocTypesWithPermissions( service, document.getId(), permissionType, langPrefix );
-                        ArrayList namesStr = new ArrayList();
-                        for( int k = 0; k < names.length; k++ ) {
-                            if( names[k].hasRights ) {
-                                namesStr.add( names[k].documentTypeName );
-                            }
-                        }
-                        result.setEditMenus( true );
-                        String[] namesStrArr = (String[])namesStr.toArray( new String[ namesStr.size()] );
-                        result.setEditableMenuNames( namesStrArr );
-                    } else {
-                        result.setEditMenus( false );
-                        result.setEditableMenuNames( null );
-                    }
-                    break;
-                case EDIT_TEMPLATE_PERMISSON_ID:
-                    if( permissionMapping[i].hasPermission ) {
-                        GroupPermissionTuple[] names = sprocGetTemplateGroupsWithPermissions( service, document.getId(), permissionType );
-                        ArrayList namesStr = new ArrayList();
-                        for( int k = 0; k < names.length; k++ ) {
-                            if( names[k].hasPermission ) {
-                                namesStr.add( names[k].groupName );
-                            }
-                        }
-                        result.setEditTemplates( true );
-                        String[] namesStrArr = (String[])namesStr.toArray( new String[ namesStr.size()] );
-                        result.setEditableTemplateGroupNames( namesStrArr );
-                    } else {
-                        result.setEditMenus( false );
-                        result.setEditableMenuNames( null );
-                    }
-                    break;
-                case EDIT_INCLUDE_PERMISSON_ID:
-                    result.setEditIncludes( permissionMapping[i].hasPermission );
-                    break;
-                default:
-                    log.warn( "Missing permission_id in createRestrictedPermissionSet()" );
-                    break;
-            }
+    public DocumentPermissionSetDomainObject createRestrictedPermissionSet( DocumentDomainObject document,
+                                                                            int permissionType,
+                                                                            boolean forNewDocuments ) {
+        DocumentPermissionSetDomainObject documentPermissionSet = null;
+        if ( document instanceof TextDocumentDomainObject ) {
+            documentPermissionSet = new TextDocumentPermissionSetDomainObject( permissionType );
+        } else {
+            documentPermissionSet = new DocumentPermissionSetDomainObject( permissionType );
         }
-        return result;
+        documentPermissionSet.setForNewDocuments( forNewDocuments );
+        setDocumentPermissionSetBitsFromDb( document, documentPermissionSet );
+
+        return documentPermissionSet;
+    }
+
+    private void setDocumentPermissionSetBitsFromDb( DocumentDomainObject document,
+                                                     DocumentPermissionSetDomainObject documentPermissionSet ) {
+        String table = "doc_permission_sets";
+        if ( documentPermissionSet.isForNewDocuments() ) {
+            table = "new_" + table;
+        }
+        String sqlStr = "SELECT permission_id FROM " + table + " WHERE meta_id = ? AND set_id = ?";
+        String permissionBitsString = service.sqlQueryStr( sqlStr, new String[]{
+            String.valueOf( document.getId() ), String.valueOf( documentPermissionSet.getPermissionType() )
+        } );
+        int permissionBits = 0;
+        if ( null != permissionBitsString ) {
+            permissionBits = Integer.parseInt( permissionBitsString );
+        }
+        documentPermissionSet.setFromBits( document, this, permissionBits );
     }
 
     public DocumentPermissionSetDomainObject createReadPermissionSet() {
@@ -185,10 +122,162 @@ public class DocumentPermissionSetMapper {
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetRestrictedOne( DocumentDomainObject document ) {
-        return createRestrictedPermissionSet( document, IMCConstants.DOC_PERM_SET_RESTRICTED_1, "en" );
+        return createRestrictedPermissionSet( document, IMCConstants.DOC_PERM_SET_RESTRICTED_1, false );
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwo( DocumentDomainObject document ) {
-        return createRestrictedPermissionSet( document, IMCConstants.DOC_PERM_SET_RESTRICTED_2, "en" );
+        return createRestrictedPermissionSet( document, IMCConstants.DOC_PERM_SET_RESTRICTED_2, false );
     }
+
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedOneForNewDocuments(
+            DocumentDomainObject document ) {
+        return createRestrictedPermissionSet( document, IMCConstants.DOC_PERM_SET_RESTRICTED_1, true );
+    }
+
+    public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwoForNewDocuments(
+            DocumentDomainObject document ) {
+        return createRestrictedPermissionSet( document, IMCConstants.DOC_PERM_SET_RESTRICTED_2, true );
+    }
+
+    public void saveRestrictedDocumentPermissionSets( DocumentDomainObject document ) {
+        saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOne() );
+        saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwo() );
+        saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOneForNewDocuments() );
+        saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwoForNewDocuments() );
+    }
+
+    private void saveRestrictedDocumentPermissionSet( DocumentDomainObject document,
+                                                      DocumentPermissionSetDomainObject documentPermissionSet ) {
+
+        List permissionPairs = new ArrayList( Arrays.asList( new PermissionPair[]{
+            new PermissionPair( EDIT_DOCINFO_PERMISSION_ID, documentPermissionSet.getEditDocumentInformation() ),
+            new PermissionPair( EDIT_PERMISSIONS_PERMISSION_ID, documentPermissionSet.getEditPermissions() ),
+            new PermissionPair( EDIT_DOCUMENT_PERMISSION_ID, documentPermissionSet.getEdit() )
+        } ) );
+
+        if ( documentPermissionSet instanceof TextDocumentPermissionSetDomainObject ) {
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
+            permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID, textDocumentPermissionSet.getEditImages() ) );
+            permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID, textDocumentPermissionSet.getEditMenus() ) );
+            permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID, textDocumentPermissionSet.getEditIncludes() ) );
+
+        }
+
+        int permissionBits = 0;
+        for ( Iterator iterator = permissionPairs.iterator(); iterator.hasNext(); ) {
+            PermissionPair permissionPair = (PermissionPair)iterator.next();
+            if ( permissionPair.hasPermission ) {
+                permissionBits |= permissionPair.bit;
+            }
+        }
+
+        String sproc = documentPermissionSet.isForNewDocuments()
+                       ? SPROC_SET_NEW_DOC_PERMISSION_SET : SPROC_SET_DOC_PERMISSION_SET;
+        service.sqlUpdateProcedure( sproc, new String[]{
+            "" + document.getId(), "" + documentPermissionSet.getPermissionType(), "" + permissionBits
+        } );
+
+
+        sqlSaveAllowedDocumentTypes( documentPermissionSet, document );
+
+        if ( documentPermissionSet instanceof TextDocumentPermissionSetDomainObject ) {
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
+            sqlSaveAllowedTemplateGroups( document, textDocumentPermissionSet );
+        }
+    }
+
+    private void sqlSaveAllowedTemplateGroups( DocumentDomainObject document,
+                                               TextDocumentPermissionSetDomainObject textDocumentPermissionSet ) {
+        String table = getExtendedPermissionsTable( textDocumentPermissionSet );
+        String sqlDeleteAllowedTemplateGroupIds = "DELETE FROM " + table
+                                                  + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
+                                                  + EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID;
+        service.sqlUpdateQuery( sqlDeleteAllowedTemplateGroupIds, new String[]{
+            "" + document.getId(), "" + textDocumentPermissionSet.getPermissionType()
+        } );
+        TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
+        if (null == allowedTemplateGroups) {
+            return ;
+        }
+        String sqlInsertAllowedTemplateGroupId = "INSERT INTO " + table + " VALUES(?,?,"
+                                                 + EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID
+                                                 + ",?)";
+        for ( int i = 0; i < allowedTemplateGroups.length; i++ ) {
+            TemplateGroupDomainObject allowedTemplateGroup = allowedTemplateGroups[i];
+            service.sqlUpdateQuery( sqlInsertAllowedTemplateGroupId, new String[]{
+                "" + document.getId(), "" + textDocumentPermissionSet.getPermissionType(), ""
+                                                                                           + allowedTemplateGroup.getId()
+            } );
+        }
+    }
+
+    private void sqlSaveAllowedDocumentTypes( DocumentPermissionSetDomainObject documentPermissionSet,
+                                              DocumentDomainObject document ) {
+        String table = getExtendedPermissionsTable( documentPermissionSet );
+        String sqlDeleteAllowedDocumentTypeIds = "DELETE FROM " + table
+                                                 + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
+                                                 + IMCConstants.PERM_CREATE_DOCUMENT;
+        service.sqlUpdateQuery( sqlDeleteAllowedDocumentTypeIds, new String[]{
+            "" + document.getId(), "" + documentPermissionSet.getPermissionType()
+        } );
+        int[] allowedDocumentTypeIds = documentPermissionSet.getAllowedDocumentTypeIds();
+        if (null == allowedDocumentTypeIds) {
+            return ;
+        }
+        String sqlInsertCreatableDocumentTypeId = "INSERT INTO " + table + " VALUES(?,?,"
+                                                  + IMCConstants.PERM_CREATE_DOCUMENT
+                                                  + ",?)";
+        for ( int i = 0; i < allowedDocumentTypeIds.length; i++ ) {
+            int creatableDocumentTypeId = allowedDocumentTypeIds[i];
+            service.sqlUpdateQuery( sqlInsertCreatableDocumentTypeId, new String[]{
+                "" + document.getId(), "" + documentPermissionSet.getPermissionType(), "" + creatableDocumentTypeId
+            } );
+        }
+    }
+
+    private String getExtendedPermissionsTable( DocumentPermissionSetDomainObject documentPermissionSet ) {
+        String table = "doc_permission_sets_ex";
+        if ( documentPermissionSet.isForNewDocuments() ) {
+            table = "new_" + table;
+        }
+        return table;
+    }
+
+    private final static int EDIT_DOCINFO_PERMISSION_ID = IMCConstants.PERM_EDIT_DOCINFO;
+    private final static int EDIT_PERMISSIONS_PERMISSION_ID = IMCConstants.PERM_EDIT_PERMISSIONS;
+    private final static int EDIT_DOCUMENT_PERMISSION_ID = IMCConstants.PERM_EDIT_DOCUMENT;
+
+    private final static int EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID = IMCConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES;
+    private final static int EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID = IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS;
+    private final static int EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID = IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE;
+    private final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = IMCConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
+
+    void setTextDocumentPermissionSetFromBits( DocumentDomainObject document,
+                                               TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
+                                               int permissionBits ) {
+        setDocumentPermissionSetFromBits( document, textDocumentPermissionSet, permissionBits );
+        textDocumentPermissionSet.setEditImages( 0 != ( permissionBits & EDIT_TEXT_DOCUMENT_IMAGES_PERMISSION_ID ) );
+        textDocumentPermissionSet.setEditMenus( 0 != ( permissionBits & EDIT_TEXT_DOCUMENT_MENUS_PERMISSION_ID ) );
+        textDocumentPermissionSet.setEditIncludes( 0 != ( permissionBits & EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID ) );
+        textDocumentPermissionSet.setEditTemplates( 0
+                                                    != ( permissionBits & EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID ) );
+
+        if ( 0 != ( permissionBits & EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID ) ) {
+            TemplateGroupDomainObject[] allowedTemplateGroups = sqlGetTemplateGroupsWithPermissions( document.getId(), textDocumentPermissionSet );
+            textDocumentPermissionSet.setAllowedTemplateGroups( allowedTemplateGroups );
+        }
+    }
+
+    void setDocumentPermissionSetFromBits( DocumentDomainObject document,
+                                           DocumentPermissionSetDomainObject documentPermissionSet, int permissionBits ) {
+        documentPermissionSet.setEditDocumentInformation( 0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ) );
+        documentPermissionSet.setEditPermissions( 0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ) );
+        documentPermissionSet.setEdit( 0 != ( permissionBits & EDIT_DOCUMENT_PERMISSION_ID ) );
+
+        if ( 0 != ( permissionBits & IMCConstants.PERM_CREATE_DOCUMENT ) ) {
+            int[] documentTypeIds = sqlGetDocTypesWithPermissions( document.getId(), documentPermissionSet );
+            documentPermissionSet.setAllowedDocumentTypeIds( documentTypeIds );
+        }
+    }
+
 }
