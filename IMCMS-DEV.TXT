@@ -45,7 +45,15 @@ CVS:
 
     Learn the cvs 'add', 'remove', 'update', 'commit',
     'diff', 'status', and 'log'-commands.
+
+    If something isn't in the CVS, it doesn't exist.
     
+    This means that any work you do that you don't put
+    in the CVS is wasted.
+    
+    Therefore, make sure that everything you work on
+    is in the CVS!
+
 
 Database-changes:
 
@@ -116,6 +124,13 @@ Documentation (API):
     +--------------+
     
 
+HTTP
+
+    We use HTTP/1.1, described in RFC 2616.
+
+    Learn how HTTP works, and how to use it.
+
+
 Javascript and DHTML:
 
     Only to be used when it makes a page better.
@@ -126,6 +141,25 @@ Javascript and DHTML:
     It's a convenience for the user, and works without it.
     
 
+Language-dependent Content:
+
+    Never hard-code anything that is dependent on
+    language/locale/time/currency/characters/word direction/platform.
+    
+    Always check what
+    language/locale/time/currency/character set/word direction/platform
+    the user/imCMS wants or uses.
+    
+    If you have to hard-code something,
+    (like when supplying a default).
+    Make sure to use a known common and safe standard.
+    
+    Safe standards:
+    For languages, this means the default-language set in imCMS.
+    For locales, this probably depends on the default-language.
+    For character sets, this is Unicode/UTF-8.
+    For others, ask, and find out.
+
 Logging:
 
     Learn how Log4J works, and how to use it.
@@ -135,7 +169,7 @@ Logging:
     logging statements in.
     
 
-Names
+Names/Paths
 
     For Java-code, follow the Java Programming Guidelines.
 
@@ -164,6 +198,20 @@ Names
     When we make it possible to store the tables in separate
     files, we'll use the extension '.tab'.
 
+    Never hard-code a path if possible.
+    Single known filenames are probably OK,
+    but should be kept in String constants (final static String).
+    
+    Use java.io.File to represent paths wherever possible,
+    not java.lang.String.
+    To combine two paths, use 'new File(file, path)'
+    
+    Make sure all paths will work on any computer and platform.
+    This means that all paths and files are case sensitive.
+    Therefore, keep everything lowercase, and make sure they
+    aren't referring to files only on your computer.
+    Use '/' as file-separator whenever specifying a path.
+
 
 Servlets and JSP:
 
@@ -186,3 +234,15 @@ SQL:
     SQL-code anywhere but in a Stored Procedure,
     that SQL-code should be replaced with a call 
     to a Stored Procedure or a View.
+
+Standards to follow:
+
+    For language-abbreviations, we use ISO-639.
+    For country-abbreviations, we use country TLDs.
+    
+    For content, we support browsers Netscape 4 and upwards,
+    and Internet Explorer 4 and upwards,
+
+    We must try our hardest to use and follow the standards set up by
+    the World Wide Web Consortium, (http://www.w3.org/),
+    for XHTML/HTML 4.01, as well as other standards.
