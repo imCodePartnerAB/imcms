@@ -23,10 +23,10 @@ Version 1.11.0:
     * Fixed a bug making it impossible to delete a text-document with more than one menu. (Bug 2585)
     * HTML is now removed from text-fields before indexing, so a search for "foo bar"
       will now also find "<em>foo</em> bar". (Bug 2593)
-    * Changed swedish name of text-document, "Ny sida" to "Textsida".
+    * Changed swedish name of text-document, "Ny sida" to "Textsida". (Bug 1496)
     * Image-preview in old image archive was broken. (Bug 2628)
     * Submitting the form several times (i.e. by double-clicking) when creating a new document no longer results
-      in an error message and several documents created. (Bug 2607) 
+      in an error message and several documents created. (Bug 2607)
 
     Of interest to template creators:
 
