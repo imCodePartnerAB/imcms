@@ -407,6 +407,22 @@
       </filterset>
     </copy>
 
+   <copy todir="${admintemplates}/sections">
+      <fileset dir="templates/${srclanguage}/sections"/>
+      <filterset>
+	<filter token="loginurl" value="${loginurl}"/>
+	<filter token="imageurl" value="${imageurl}"/>
+      </filterset>
+    </copy>
+    
+    <copy todir="${admintemplates}/search">
+      <fileset dir="templates/${srclanguage}/search"/>
+      <filterset>
+	<filter token="loginurl" value="${loginurl}"/>
+	<filter token="imageurl" value="${imageurl}"/>
+      </filterset>
+    </copy>
+
     <copy todir="${admintemplates}">
       <fileset dir="templates/${srclanguage}">
 	<patternset>
