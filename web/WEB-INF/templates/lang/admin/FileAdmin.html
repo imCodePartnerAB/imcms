@@ -46,7 +46,7 @@ var pat = "(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)$)|(\\.LOG)";
 	/* isEditFile - editable file types (change in "FileAdmin_edit.jsp" too) */
 var pae = "\\.(HTML?|CSS|JS|VBS|TXT|FRAG)$";
 	/* isDir */
-var isDirectoryPattern = "(\\\\|\\.)$";
+var isDirectoryPattern = "(/|\\.|\\\\)$";
 	/* isSysFold */
 var pas = "webapps|[\\.]{2}";
 	/* isHiddenFold */
@@ -54,7 +54,7 @@ var pao = "WEB-INF";
 	/* isHtmlFile */
 var pah = "\\.html?$";
 	/* isStatFile */
-var par = "\\\\stats\\\\.+\\.html?";
+var par = "(/|\\\\)stats(/|\\\\).+\\.html?";
 
 function checkFileType(iside, doReset) {
 	if (!(isMac && ie)) {

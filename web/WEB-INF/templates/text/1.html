@@ -44,7 +44,13 @@ LI { padding-bottom:5; }
 		
 		'?><?imcms:image
 		no='1' label='Bild 1'?><?imcms:text
-		no='2' label='<br>Text 2'?><?imcms:include
+		no='2' label='<br>Text 2'?><?imcms:menu
+		no='1' label='<br><br>Meny 1 (punktlista)'?>
+		
+		<ul><?imcms:menuloop?>
+			<li style="padding-bottom:5">#menuitemlink##menuitemheadline##/menuitemlink#<?/imcms:menuloop?>
+		</ul>
+		<?/imcms:menu?><?imcms:include
 		
 		url="http://www.imcms.net/servlet/GetDoc?meta_id=1240&template=imcmsDemoContent"?></td>
 		
