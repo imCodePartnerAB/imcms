@@ -9,12 +9,13 @@ var hasDocumentLayers = (document.layers) ? 1 : 0;
 var hasDocumentAll    = (document.all) ? 1 : 0;
 var hasGetElementById = (document.getElementById) ? 1 : 0;
 
-var isGecko   = inStr(ua,'Gecko');
-var isOpera   = inStr(ua,'Opera');
-var isWindows = inStr(platf,'Win32');
-var isMac     = inStr(platf,'Mac');
+var isGecko   = inStr(ua,"Gecko");
+var isOpera   = inStr(ua,"Opera");
+var isSafari  = inStr(ua,"Safari");
+var isWindows = inStr(platf,"Win32");
+var isMac     = inStr(platf,"Mac");
 
-var isIE55    = (isWindows && hasDocumentAll && hasGetElementById && (inStr(ua,'MSIE 5.5') || inStr(ua,'MSIE 6.0') || inStr(ua,'MSIE 6.5') || inStr(ua,'MSIE 7.0')) && !isOpera) ? 1 : 0;
+var isIE55    = (isWindows && hasDocumentAll && hasGetElementById && (inStr(ua,"MSIE 5.5") || inStr(ua,"MSIE 6.0") || inStr(ua,"MSIE 6.5") || inStr(ua,"MSIE 7.0")) && !isOpera) ? 1 : 0;
 
 function inStr(str,val,cas) {
 	var ret;
@@ -33,12 +34,13 @@ function inStr(str,val,cas) {
  ******************************************************************************************* */
 
 function singleclicked() {
-    if (!('clicked' in this)) {
-        this.clicked = 1;
-        return true;
-    } else {
-        return false ;
-    }
+	if (isMac && isSafari) return true ;
+	if (!("clicked" in this)) {
+		this.clicked = 1;
+		return true;
+	} else {
+		return false ;
+	}
 }
 
 function focusField(theFormName, theElementName) {
