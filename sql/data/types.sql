@@ -7,7 +7,7 @@ INSERT INTO languages VALUES('eng','eng','English')
 INSERT INTO lang_prefixes VALUES(1,'swe')
 INSERT INTO lang_prefixes VALUES(2,'eng')
 
-INSERT INTO doc_types VALUES(2, 'swe', 'Ny sida')
+INSERT INTO doc_types VALUES(2, 'swe', 'Textsida')
 INSERT INTO doc_types VALUES(5, 'swe', 'Extern länk')
 INSERT INTO doc_types VALUES(6, 'swe', 'Browserkontroll')
 INSERT INTO doc_types VALUES(7, 'swe', 'HTML-dokument')

@@ -144,7 +144,7 @@ WHERE  (to_meta_id IN
 
 -- 040916 Lennart Å
 
-update doc_types set type='Ny sida' where doc_type=2 and lang_prefix='swe'
+update doc_types set type='Textsida' where doc_type=2 and lang_prefix='swe'
 update doc_types set type='Extern länk' where doc_type=5 and lang_prefix='swe'
 update display_name set display_name='Sidans typ' where sort_by_id=3 and lang_id=1 
 
