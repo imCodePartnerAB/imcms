@@ -395,7 +395,7 @@ GO
 
 CREATE PROCEDURE C_FindMetaId
 /*
-This function is used by servlet ConfAdd to check if the meta_id argument
+This function is used by servlet ChatAdd to check if the meta_id argument
 already exists in the database. Thas because a db can be used from
 different servers, and a meta_id can be used twice to be added in the 
 database

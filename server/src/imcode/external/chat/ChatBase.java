@@ -1,6 +1,5 @@
 package imcode.external.chat;
 
-import imcode.external.diverse.RmiConf;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
@@ -80,7 +79,6 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         appender.doAppend( getLoggingEvent( msg ) );
     }
 
-    //peter keep
     protected Chat createChat( int metaId ) {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
@@ -123,7 +121,6 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         return myChat;
     }
 
-    //peter keep
     protected static String createOptionCode( Vector selected, Vector data ) {
         StringBuffer buff = new StringBuffer( "" );
         for ( int i = 0; i < data.size(); i += 2 ) {
@@ -142,7 +139,6 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         return buff.toString();
     }
 
-    //peter keep
     protected static String createOptionCode( String selected, Vector data ) {
         StringBuffer buff = new StringBuffer( "" );
         for ( int i = 0; i < data.size(); i += 2 ) {
@@ -158,7 +154,6 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         return buff.toString();
     }
 
-    //peter keep
     protected static String createRadioButton( String buttonName, Vector data, String selected ) {
         StringBuffer buff = new StringBuffer( "" );
         ;

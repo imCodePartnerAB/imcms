@@ -10,7 +10,6 @@ import imcode.external.diverse.*;
 import imcode.external.chat.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
-import org.apache.log4j.Logger;
 
 //obs här ska det byggas om rejält
 //har dock haft problem med att jag får olika servletContext
@@ -56,7 +55,6 @@ public class ChatCreator extends ChatBase {
             return;
         }
 
-        //peter jobbar här
         Chat myChat = (Chat) session.getAttribute("myChat");
         if (myChat == null) {
             myChat = createChat( getMetaId(req));
@@ -215,7 +213,11 @@ public class ChatCreator extends ChatBase {
                              UserDomainObject user, HttpServletResponse res ) throws IOException {
         log("okChat");
 
-        imcref.sqlUpdateProcedure("C_AddNewChat", new String[]{"" + metaId, myChat.getChatName(), "3"});
+        String result = imcref.sqlProcedureStr("C_FindMetaId",  new String[]{ ""+metaId } );
+        boolean chatDoesNotExist = result.equals("1");
+        if( chatDoesNotExist ) {
+            imcref.sqlUpdateProcedure("C_AddNewChat", new String[]{"" + metaId, myChat.getChatName(), "3"});
+        }
 
         imcref.sqlUpdateProcedure("C_Delete_MsgTypes", new String[]{"" + metaId});
 
@@ -358,7 +360,6 @@ public class ChatCreator extends ChatBase {
         return imcref.getTemplateFromSubDirectoryOfDirectory( HTML_TEMPLATES_BUTTON, user, null, "103", getTemplateSetDirectoryName( metaId));
     }
 
-    //peter keep
     private Vector createTaggs(Chat chat, UserDomainObject user) {
 
         Vector bv = new Vector();
