@@ -39,7 +39,11 @@ class MenuParser {
     }
 
     private MenuDomainObject getMenuByIndex( int id ) {
-        return (MenuDomainObject)menus.get( new Integer( id ) );
+        MenuDomainObject menu = (MenuDomainObject)menus.get( new Integer( id ) );
+        if (null == menu) {
+            menu = new MenuDomainObject();
+        }
+        return menu;
     }
 
     private String getMenuModePrefix( int menuIndex, List parseTags ) {
