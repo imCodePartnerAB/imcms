@@ -115,8 +115,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_SetSessionCounterDate( databaseService );
             test_sproc_SectionGetAll( databaseService );
             test_sproc_SectionGetAllCount( databaseService );
+            test_sproc_SectionCount( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_SectionCount( DatabaseService databaseService ) {
+        assertEquals( 1, databaseService.sproc_SectionCount( SECTION_TEST_ID ) );
     }
 
     private void test_sproc_SectionGetAllCount( DatabaseService databaseService ) {
@@ -492,7 +497,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     public void test_sproc_SectionDelete() {
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService databaseService = databaseServices[i];
-            assertEquals( 1, databaseService.sproc_SectionDelete( SECTION_TEST_ID ) );
+            assertEquals( 2, databaseService.sproc_SectionDelete( SECTION_TEST_ID ) );
         }
     }
 
@@ -525,8 +530,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
         }
     }
-    // Below is helper functions to more than one test.
 
+    public void test_sproc_SectionAddCrossref() {
+        DatabaseService.Table_meta_section metaSectionData = new DatabaseService.Table_meta_section();
+        metaSectionData.meta_id = DOC_TEST_SECOND_ID;
+        metaSectionData.section_id = SECTION_TEST_ID;
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals(1, databaseService.sproc_SectionAddCrossref(metaSectionData) );
+        }
+    }
+
+    // Below is helper functions to more than one test.
     private static DatabaseService.Table_users static_createDummyUser() {
         DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", 0, DOC_ID_FIRST_PAGE, 0, 1, 1, 1, new Timestamp( new java.util.Date().getTime() ) );
         return user;

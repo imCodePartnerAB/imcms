@@ -49,4 +49,5 @@ INSERT INTO new_doc_permission_sets VALUES(9001,1,8);
 INSERT INTO new_doc_permission_sets_ex VALUES(9001,1,8,2);
 
 INSERT INTO sections VALUES(1,'TestSection');
+INSERT INTO meta_section VALUES(9001,1);
 

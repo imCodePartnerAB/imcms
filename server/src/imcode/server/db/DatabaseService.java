@@ -1238,7 +1238,7 @@ public abstract class DatabaseService {
         private int to_meta_id;
         String meta_headline;
 
-        public MoreThanOneTable_meta_browser_docs( ResultSet rs ) throws SQLException {
+        MoreThanOneTable_meta_browser_docs( ResultSet rs ) throws SQLException {
             to_meta_id = rs.getInt( "to_meta_id" );
             meta_headline = rs.getString( "meta_headline" );
         }
@@ -1637,7 +1637,7 @@ public abstract class DatabaseService {
         private int meta_id;
         private int class_id;
 
-        public Table_meta_classification( ResultSet rs ) throws SQLException {
+        Table_meta_classification( ResultSet rs ) throws SQLException {
             meta_id = rs.getInt( "meta_id" );
             class_id = rs.getInt( "class_id" );
         }
@@ -1665,10 +1665,12 @@ public abstract class DatabaseService {
     }
 
     static class Table_meta_section {
-        private int meta_id;
-        private int section_id;
+        int meta_id;
+        int section_id;
 
-        public Table_meta_section( ResultSet rs ) throws SQLException {
+        Table_meta_section() {}
+
+        Table_meta_section( ResultSet rs ) throws SQLException {
             meta_id = rs.getInt( "meta_id" );
             section_id = rs.getInt( "section_id" );
         }
@@ -1870,7 +1872,7 @@ public abstract class DatabaseService {
         private String user_prefix;
         private String language;
 
-        public Table_languages( ResultSet rs ) throws SQLException {
+        Table_languages( ResultSet rs ) throws SQLException {
             lang_prefix = rs.getString( "lang_prefix" );
             user_prefix = rs.getString( "user_prefix" );
             language = rs.getString( "language" );
@@ -1898,7 +1900,7 @@ public abstract class DatabaseService {
         private int lang_id;
         String lang_prefix;
 
-        public Table_lang_prefixes( ResultSet rs ) throws SQLException {
+        Table_lang_prefixes( ResultSet rs ) throws SQLException {
             lang_id = rs.getInt( "lang_id" );
             lang_prefix = rs.getString( "lang_prefix" );
         }
@@ -1934,7 +1936,7 @@ public abstract class DatabaseService {
         private int lang_id;
         private String language;
 
-        public MoreThanOneTable_langprefixes_language( ResultSet rs ) throws SQLException {
+        MoreThanOneTable_langprefixes_language( ResultSet rs ) throws SQLException {
             lang_id = rs.getInt( "lang_id" );
             language = rs.getString( "language" );
         }
@@ -1956,7 +1958,7 @@ public abstract class DatabaseService {
         private int template_id;
         private String simple_name;
 
-        public Table_templates( ResultSet rs ) throws SQLException {
+        Table_templates( ResultSet rs ) throws SQLException {
             template_id = rs.getInt( "template_id" );
             simple_name = rs.getString( "simple_name" );
         }
@@ -2017,7 +2019,7 @@ public abstract class DatabaseService {
         private int role_id;
         private String role_name;
 
-        public PartOfTable_roles( ResultSet rs ) throws SQLException {
+        PartOfTable_roles( ResultSet rs ) throws SQLException {
             role_id = rs.getInt( "role_id" );
             role_name = rs.getString( "role_name" );
         }
@@ -2039,7 +2041,7 @@ public abstract class DatabaseService {
         private String first_name;
         private String last_name;
 
-        public PartOfTable_users( ResultSet rs ) throws SQLException {
+        PartOfTable_users( ResultSet rs ) throws SQLException {
             user_id = rs.getInt( "user_id" );
             first_name = rs.getString( "first_name" );
             last_name = rs.getString( "last_name" );
@@ -2115,10 +2117,9 @@ public abstract class DatabaseService {
         int section_id;
         String section_name;
 
-        public Table_section() {
-        }
+        Table_section() {}
 
-        public Table_section( ResultSet rs ) throws SQLException {
+        Table_section( ResultSet rs ) throws SQLException {
             section_id = rs.getInt( "section_id" );
             section_name = rs.getString( "section_name" );
         }
@@ -2153,6 +2154,20 @@ public abstract class DatabaseService {
             }
         } );
         return (Table_section_count[])queryResult.toArray( new Table_section_count[queryResult.size()] );
+    }
+
+    /**
+     * Gets the number of docs that is connected to that section_id
+    */
+    int sproc_SectionCount( int section_id ) {
+        String sql = "select count(meta_id) AS meta_id_count from meta_section where section_id= ? ";
+        Object[] paramValues = new Object[]{ new Integer( section_id )};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer(rs.getInt("meta_id_count"));
+            }
+        } );
+        return ((Integer)queryResult.get(0)).intValue();
     }
 
     int sproc_SectionDelete( int section_id ) {
@@ -2238,5 +2253,24 @@ public abstract class DatabaseService {
         String sql = " INSERT INTO sections ( section_id, section_name ) VALUES (?,?)";
         Object[] paramValues = new Object[]{new Integer( tableData.section_id ), tableData.section_name};
         return transaction.executeUpdate( sql, paramValues );
+    }
+
+    /**
+     * Lets insert the crossreferences but first we deleta all oldones for this meta_id
+     * @return
+     */
+    int sproc_SectionAddCrossref( Table_meta_section tableData ) {
+        SQLProcessor.SQLTransaction transaction = sqlProcessor.startTransaction();
+        int rowCount = 0;
+        try {
+            rowCount = deleteFrom_meta_section( transaction, new Integer( tableData.meta_id ) );
+            rowCount += insertInto_meta_section( transaction, tableData );
+            transaction.commit();
+        }
+        catch( SQLException ex ) {
+            transaction.rollback();
+            log.warn("Failed in sproc_SectionAddCrossref", ex );
+        }
+        return rowCount;
     }
 }
