@@ -11,6 +11,8 @@ import java.util.*;
 import imcode.server.* ;
 import java.text.Collator ;
 import java.text.SimpleDateFormat ;
+import java.net.URL ;
+import java.net.MalformedURLException ;
 
 import imcode.util.log.* ;
 
@@ -308,22 +310,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    dbc.getConnection() ;
 	    dbc.createStatement() ;
 
-	    String lang_prefix = null ;
-	    // Get the users language prefix
-	    dbc.setTrim(true) ;
-	    String sqlStr = "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id") ;	// Find language
-	    dbc.setSQLString(sqlStr);
-	    Vector data = (Vector)dbc.executeQuery() ;
-	    if ( data.size() > 0 ) {
-		lang_prefix = data.elementAt(0).toString() ;
-	    } else {
-		dbc.closeConnection() ;
-		log.log(Log.ERROR, "parsePage: user "+user_id+" has nonexistent language "+user.getInt("lang_id")) ;
-		return ("No language!").getBytes("8859_1") ;
-	    }
-	    //dbc.createStatement() ;
-	    dbc.clearResultSet() ;
-	    dbc.setTrim(false) ;
+	    String lang_prefix  = user.getLangPrefix() ;	// Find language
 
 	    String[] sqlAry = {
 		meta_id_str,
@@ -393,6 +380,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    log.log(Log.WILD, "Got templateinfo. TemplateId: "+template_id, null) ;
 
 	    Vector doc_types_vec = null ;
+	    String sqlStr = null ;
 	    if (menumode) {
 		// I'll retrieve a list of all doc-types the user may create.
 		sqlStr = "GetDocTypesForUser (?,?,?)" ;
@@ -457,7 +445,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	    // Get the images from the db
 	    // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
-	    //					0                                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
+	    //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
 
 	    sqlStr = "select date_modified, meta_headline, meta_image from meta where meta_id = " + meta_id ;
 	    dbc.setSQLString(sqlStr);
@@ -507,15 +495,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    Perl5Substitution emphasize_substitution = new Perl5Substitution(emphasize_string) ;
 
 	    Properties tags = new Properties() ;	// A properties object to hold the results from the db...
+	    HashMap textMap = new HashMap() ;
+	    HashMap imageMap = new HashMap() ;
 
 	    //log.log(Log.WILD, "Processing texts.", null) ;
-	    if ( textmode ) {	// Textmode
-		Iterator it = texts.iterator() ;
-		while ( it.hasNext() ) {
-		    String key = (String)it.next() ;
-		    String txt_no = (String)it.next() ;
-		    String txt_type = (String)it.next() ;
-		    String value = (String)it.next() ;
+	    Iterator it = texts.iterator() ;
+	    while ( it.hasNext() ) {
+		String key = (String)it.next() ;
+		String txt_no = (String)it.next() ;
+		String txt_type = (String)it.next() ;
+		String value = (String)it.next() ;
+		if ( textmode ) {	// Textmode
 		    if ( value.length()>0 ) {
 			// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 			value = "<img src=\""
@@ -534,22 +524,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			    + m_ImageFolder
 			    + "txt.gif\" border=\"0\"></a>" ;
 			tags.setProperty(key,value) ;
+			textMap.put(txt_no,value);
 		    }
-		}
-	    } else {	// Not Textmode
-		Iterator it = texts.iterator() ;
-		while ( it.hasNext() ) {
-		    String key = (String)it.next() ;
-		    String txt_no = (String)it.next() ;
-		    String txt_type = (String)it.next() ;
-		    String value = (String)it.next() ;
-
+		} else {	// Not Textmode
 		    if (emp!=null) {
 			value = emphasizeString(value,emp,emphasize_substitution,patMat) ;
 		    }
-
+		    
 		    if ( value.length()>0 ) {
 			tags.setProperty(key,value) ;
+			textMap.put(txt_no,value) ;
 		    }
 		}
 	    }
@@ -623,6 +607,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			value.append("<a href=\"ChangeImage?meta_id="+meta_id+"&img="+imgnumber+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>") ;
 		    }
 		    tags.setProperty(imgtag,value.toString()) ;
+		    imageMap.put(imgnumber,value.toString()) ;
 		}
 	    }
 
@@ -633,7 +618,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	      These LinkedLists will in turn each hold one Properties for each item in each menu.
 	      These Properties will hold the tags, and the corresponding data, that will go in each menuitem.
 	    */
-	    HashMap menus = new HashMap () ;	// Map to contain all all the menus on the page.
+	    HashMap menus = new HashMap () ;	// Map to contain all the menus on the page.
 	    LinkedList currentMenu = null ;
 	    int old_menu = -1 ;
 	    java.util.Date now = new java.util.Date() ;
@@ -668,9 +653,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		String child_meta_headline       = (String)childIt.next() ; // The headline of the child.
 		String child_meta_text           = (String)childIt.next() ; // The subtext for the child.
 		String child_meta_image          = (String)childIt.next() ; // An optional imageurl for this document.
-		String child_frame_name          = (String)childIt.next() ; // An optional imageurl for this document.
+		String child_frame_name          = (String)childIt.next() ; // The target fram for this document. Supposed to be replaced by 'target'.
 		String child_activated_date_time = (String)childIt.next() ; // The datetime the document is activated.
-		String child_archived_date_time  = (String)childIt.next() ; // The datetime the document is activated.
+		String child_archived_date_time  = (String)childIt.next() ; // The datetime the document is archived.
 		String child_admin               = (String)childIt.next() ; // "0" if the user may admin it.
 		String child_filename            = (String)childIt.next() ; // The filename, if it is a file-doc.
 
@@ -995,7 +980,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	    MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution(menus,menumode,tags) ;
 	    HashTagSubstitution hashtagsubstitution = new HashTagSubstitution(tags,numberedtags) ;
-	    ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution(user,meta_id,included_docs,includemode,includelevel) ;
+	    ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution(user,meta_id,included_docs,includemode,includelevel,textMap, imageMap) ;
 
 	    LinkedList parse = new LinkedList() ;
 	    perl5util.split(parse,"/<!-(-\\/?)IMSCRIPT-->/i",template) ;
@@ -1047,21 +1032,21 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 		// Parse the hashtags
 		nextbit = org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,hashtagsubstitution,nextbit,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
-
+		
 		// So, append the result from this loop-iteration to the result.
 		result.append(nextbit) ;
 	    } // end while (pit.hasNext()) // End of the main parseloop
-
+	    
 	    String returnresult = result.toString() ;
-
+	    
 	    /*
 	      So, it is here i shall have to put my magical markupemphasizing code.
 	      First, i'll split the html (returnresult) on html-tags, and then go through every non-tag part and parse it for keywords to emphasize,
 	      and then i'll puzzle it together again. Whe-hey. This will be fun. Not to mention fast. Oh yes, siree.
 	    */
-	    if (emp!=null) {
-		StringBuffer emphasized_result = new StringBuffer(returnresult.length()) ;
-		PatternMatcherInput emp_input = new PatternMatcherInput(returnresult) ;
+	    if (emp!=null) { // If we have something to emphasize...
+		StringBuffer emphasized_result = new StringBuffer(returnresult.length()) ; // A StringBuffer to hold the result
+		PatternMatcherInput emp_input = new PatternMatcherInput(returnresult) ;    // A PatternMatcherInput to match on
 		int last_html_offset = 0 ;
 		int current_html_offset = 0 ;
 		String non_html_tag_string = null ;
@@ -1075,20 +1060,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		    // for each string to emphasize
 		    emphasized_result.append(non_html_tag_string) ;
 		    emphasized_result.append(html_tag_string) ;
-		}
+		} // while 
 		non_html_tag_string = result.substring(last_html_offset) ;
 		non_html_tag_string = emphasizeString(non_html_tag_string,emp,emphasize_substitution,patMat) ;
 		emphasized_result.append(non_html_tag_string) ;
 		returnresult = emphasized_result.toString() ;
 	    }
-
 	    return returnresult.getBytes("8859_1") ;
 	} catch (RuntimeException ex) {
 	    log.log(Log.ERROR, "Error occurred during parsing.",ex ) ;
 	    return ex.toString().getBytes("8859_1") ;
 	}
     }
-
+    
     private String emphasizeString(String str,
 				   String[] emp,
 				   Substitution emphasize_substitution,
@@ -1303,10 +1287,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     protected class ImcmsTagSubstitution implements Substitution {
 
 	User user ;
-	int implicitInclude = 1 ;
+	int implicitIncludeNumber = 1 ;
+	int implicitTextNumber = 1 ;
+	int implicitImageNumber = 1 ;
 	int meta_id ;
 	boolean includemode ;
 	int includelevel ;
+	Map textMap ;
+	Map imageMap ;
 
 	private final Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
@@ -1319,87 +1307,171 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	   @param includemode    Whether to include the admin-template instead of the included document.
 	   @param includelevel   The number of levels of recursion we've gone through.
 	**/
-	ImcmsTagSubstitution (User user, int meta_id, List included_list, boolean includemode, int includelevel) {
+	ImcmsTagSubstitution (User user, int meta_id, List included_list, boolean includemode, int includelevel, Map textMap, Map imageMap) {
 	    this.user = user ;
 	    this.meta_id = meta_id ;
 	    this.includemode = includemode ;
 	    this.includelevel = includelevel ;
+	    this.textMap = textMap ;
+	    this.imageMap = imageMap ;
 	    for (Iterator i = included_list.iterator(); i.hasNext() ;) {
 		included_docs.put(i.next(), i.next()) ;
 	    }
 	}
 
-	public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
-	    String tagname = matres.group(1) ;
-	    if (!"include".equals(tagname)) {
-		sb.append(matres.group(0)) ;
-		return ;
-	    }
-	    String tagattributes = matres.group(2) ;
-	    PatternMatcherInput pminput = new PatternMatcherInput(tagattributes) ;
+	/**
+	   Handle a <?imcms:include ...?> tag
+
+	   @param attributes The attributes of the include tag
+	   @param patMat     A pattern matcher.
+	**/
+	public String tagInclude (Properties attributes, PatternMatcher patMat) {
 	    int no = 0 ;
-	    while(patMat.contains(pminput,IMCMS_TAG_ATTRIBUTES_PATTERN)) {
-		MatchResult attribute_matres = patMat.getMatch() ;
-		String imcmstagattributename = attribute_matres.group(1) ;
-		String imcmstagattributevalue = attribute_matres.group(3) ;
-		if ("file".equals(imcmstagattributename)) {
-		    try {
-			sb.append(fileCache.getCachedFileString(new File(m_IncludePath, imcmstagattributevalue))) ;
-		    }
-		    catch (IOException ignored) {}
-		    return ;
-		} else if ("document".equals(imcmstagattributename)) {
-		    try {
-			if (includelevel>0) {
-			    int included_meta_id = Integer.parseInt(imcmstagattributevalue) ;
-			    String document = new String(parsePage(included_meta_id,user,-1,includelevel-1),"8859_1") ;
-			    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-			    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-			    sb.append(document) ;
-			}
-		    }
-		    catch (NumberFormatException ignored) {}
-		    catch (IOException ignored) {}
-		    return ;
-		} else if ("no".equals(imcmstagattributename)) {
-		    try {
-			no = Integer.parseInt(imcmstagattributevalue) ;
-			break;
-		    }
-		    catch (NumberFormatException ignored) {}
+	    String attributevalue ;
+	    log.log(Log.DEBUG, "Found include tag with attributes "+attributes) ;
+
+	    if (null != (attributevalue = attributes.getProperty("no"))) { 	    // If we have the attribute no="number"...
+		// Set the number of this include-tag
+		try {
+		    no = Integer.parseInt(attributevalue) ; // Then set the number wanted
 		}
-	    }
-	    if (no == 0) {
-		no = implicitInclude++ ;
+		catch (NumberFormatException ex) {
+		    return "" ;
+		}
+	    } else if (null != (attributevalue = attributes.getProperty("file"))) { // If we have the attribute file="filename"...
+		// Fetch a file from the disk
+		try {
+		    return fileCache.getCachedFileString(new File(m_IncludePath, attributevalue)) ; // Get a file from the include directory
+		} catch (IOException ignored) {}
+		return "" ;
+	    } else if (null != (attributevalue = attributes.getProperty("document"))) { // If we have the attribute document="meta-id"
+		try {
+		    if (includelevel>0) {
+			int included_meta_id = Integer.parseInt(attributevalue) ;
+			// Recursively parse the wanted page.
+			String document = new String(parsePage(included_meta_id,user,-1,includelevel-1),"8859_1") ;
+			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+			return document ;
+		    }
+		}
+		catch (NumberFormatException ignored) {}
+		catch (IOException ignored) {}
+		return "" ;
+	    } else if (null != (attributevalue = attributes.getProperty("url"))) { // If we have an attribute of the form url="url:url"
+		try {
+		    URL url = new URL(attributevalue) ;
+		    if (url.getProtocol().equalsIgnoreCase("file")) { // Make sure we don't have to defend against file://urls...
+			return "" ;
+		    }
+		    InputStreamReader urlInput = new InputStreamReader(url.openConnection().getInputStream()) ;
+		    int charsRead = -1 ;
+		    final int URL_BUFFER_LEN = 16384 ;
+		    char[] buffer = new char[URL_BUFFER_LEN] ;
+		    StringBuffer urlResult = new StringBuffer() ;
+		    while (-1 != (charsRead = urlInput.read(buffer,0,URL_BUFFER_LEN))) {
+			urlResult.append(buffer,0,charsRead) ;
+		    }
+		    return urlResult.toString() ;
+		} catch (MalformedURLException ex) {
+		    return "<!-- imcms:include failed: "+ex+" -->" ;
+		} catch (IOException ex) {
+		    return "<!-- imcms:include failed: "+ex+" -->" ;
+		}
+	    } else { // If we have none of the attributes no, file, or document
+		no = implicitIncludeNumber++ ; // Implicitly use the next number.
 	    }
 	    try {
 		if (includemode) {
 		    String included_meta_id_str = (String)included_docs.get(String.valueOf(no)) ;
-		    sb.append(imcode.util.Parser.parseDoc(fileCache.getCachedFileString(new File(m_TemplateHome, user.getLangPrefix()+"/admin/change_include.html")),
-							  new String[] {
-							      "#meta_id#",         String.valueOf(meta_id),
-							      "#servlet_url#",     m_ServletUrl,
-							      "#include_id#",      String.valueOf(no),
-							      "#include_meta_id#", included_meta_id_str == null ? "" : included_meta_id_str
-							  }
-							  )) ;
-		} else {
-		    if (includelevel>0) {
+		    return imcode.util.Parser.parseDoc(fileCache.getCachedFileString(new File(m_TemplateHome, user.getLangPrefix()+"/admin/change_include.html")),
+						       new String[] {
+							   "#meta_id#",         String.valueOf(meta_id),
+							   "#servlet_url#",     m_ServletUrl,
+							   "#include_id#",      String.valueOf(no),
+							   "#include_meta_id#", included_meta_id_str == null ? "" : included_meta_id_str
+						       }
+						       ) ;
+		} else if (includelevel>0) {
 			int included_meta_id = Integer.parseInt((String)included_docs.get(String.valueOf(no))) ;
 			String document = new String(parsePage(included_meta_id,user,-1,includelevel-1),"8859_1") ;
 			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
 			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-			sb.append(document) ;
-		    }
+			return document ;
 		}
+	    } catch (IOException ignored) {}
+	    return "" ;
+	}
+
+	/**
+	   Handle a <?imcms:text ...?> tag
+
+	   @param attributes The attributes of the text tag
+	   @param patMat     A pattern matcher.
+	**/
+	public String tagText (Properties attributes, PatternMatcher patMat) {
+	    // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
+	    log.log(Log.DEBUG, "Found text tag with attributes "+attributes) ;
+	    String noStr = attributes.getProperty("no") ;
+	    String result = null ;
+	    if (null != noStr) {
+		result = (String)textMap.get(noStr) ;
+	    } else {
+		result = (String)textMap.get(String.valueOf(implicitTextNumber++)) ;
 	    }
-	    catch (NumberFormatException ignored) {}
-	    catch (IOException ignored) {}
+	    if (result == null) {
+		result = "" ;
+	    }
+	    return result ;
+	}
+
+	/**
+	   Handle a <?imcms:image ...?> tag
+
+	   @param attributes The attributes of the image tag
+	   @param patMat     A pattern matcher.
+	**/
+	public String tagImage (Properties attributes, PatternMatcher patMat) {
+	    // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
+	    log.log(Log.DEBUG, "Found image tag with attributes "+attributes) ;
+	    String noStr = attributes.getProperty("no") ;
+	    String result = null ;
+	    if (null != noStr) {
+		result = (String)imageMap.get(noStr) ;
+	    } else {
+		result = (String)imageMap.get(String.valueOf(implicitImageNumber++)) ;
+	    }
+	    if (result == null) {
+		result = "" ;
+	    }
+	    return result ;
+	}
+
+	public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
+	    String tagname = matres.group(1) ;
+	    String tagattributes = matres.group(2) ;
+	    Properties attributes = new Properties() ;
+	    PatternMatcherInput pminput = new PatternMatcherInput(tagattributes) ;
+	    while(patMat.contains(pminput,IMCMS_TAG_ATTRIBUTES_PATTERN)) {
+		MatchResult attribute_matres = patMat.getMatch() ;
+		attributes.setProperty(attribute_matres.group(1), attribute_matres.group(3)) ;
+	    }
+	    String result ;
+	    if ("text".equals(tagname)) {
+		result = tagText(attributes, patMat) ;
+	    } else if ("image".equals(tagname)) {
+		result = tagImage(attributes, patMat) ;
+	    } else if ("include".equals(tagname)) {
+		result = tagInclude(attributes, patMat) ;
+	    } else {
+		result = matres.group(0) ;
+	    }
+	    sb.append(result) ;
 	}
     }
 
     protected class HashTagSubstitution implements Substitution {
-
+	
 	Properties tags ;
 	Properties numberedtags ;
 
@@ -1413,7 +1485,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
 	    sb.append(hashTagHandler(patMat,patComp,tags,numberedtags)) ;
 	}
-
+	    
     }
 
 
@@ -1452,7 +1524,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    while ( (d = sb.charAt(sbindex++)) != '\n' && d != '\r' ) {	// Read a line
 		tmpsb.append(d) ;
 	    }
-	    menu_rows[foo] = tmpsb.toString()+"\r\n" ;	// Store the line away... Note that "\r\n" is the standard html (,http, and dos) end-of-line.
+	    menu_rows[foo] = tmpsb.toString()+"\r\n" ;	// Store the line away... Note that "\r\n" is the standard html (as well as http and dos) end-of-line.
 	    tmpsb.setLength(0) ;						// Clear the stringbuffer
 	}
 	log.log(Log.WILD, "Read the "+menu_param[1]+" rows of the menu") ;
@@ -1786,34 +1858,34 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * <p>Save template -> text_docs, sort
      */
-    public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc){
-		String sqlStr = "" ;
+    public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc) {
+	String sqlStr = "" ;
 
-		DBConnect dbc = new DBConnect(m_conPool) ;
-		dbc.getConnection() ;
-
-
-		sqlStr  = "update text_docs\n" ;
-		sqlStr += "set template_id= "  + doc.getString("template") ;
-		sqlStr += ", group_id= " + doc.getString("group_id") ;
-		sqlStr += " where meta_id = " + meta_id ;
-		dbc.setSQLString(sqlStr) ;
-		dbc.createStatement() ;
-		dbc.executeUpdateQuery() ;
+	DBConnect dbc = new DBConnect(m_conPool) ;
+	dbc.getConnection() ;
 
 
+	sqlStr  = "update text_docs\n" ;
+	sqlStr += "set template_id= "  + doc.getString("template") ;
+	sqlStr += ", group_id= " + doc.getString("group_id") ;
+	sqlStr += " where meta_id = " + meta_id ;
+	dbc.setSQLString(sqlStr) ;
+	dbc.createStatement() ;
+	dbc.executeUpdateQuery() ;
 
-		//close connection
-		dbc.closeConnection() ;
-		dbc = null ;
 
 
-		this.updateLogs("Text docs  [" + meta_id + "] updated by user: [" +
+	//close connection
+	dbc.closeConnection() ;
+	dbc = null ;
+
+
+	this.updateLogs("Text docs  [" + meta_id + "] updated by user: [" +
 			user.getString("first_name").trim() + " " +
 			user.getString("last_name").trim() + "]") ;
 
 
-	}
+    }
 
     /**
      * <p>Delete a doc and all data related.
