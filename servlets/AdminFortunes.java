@@ -198,7 +198,16 @@ public class AdminFortunes extends Administrator {
 		while ( line!=null && !(line.length()<=12) )
 		{
 			String fullLine = line.replace('#',' ');
-			int stop = fullLine.indexOf("<BR>") == -1 ? fullLine.length() : fullLine.indexOf("<BR>");
+			int stop = fullLine.length();
+			
+			if (fullLine.indexOf("<BR>") != -1 )
+			{
+				stop = fullLine.indexOf("<BR>");
+			}
+			if (fullLine.indexOf("<br>") != -1 )
+			{
+				stop = fullLine.indexOf("<br>");
+			}
 			
 			options = options + "<option value=\""  + row + "\" > " + fullLine.substring(0,stop) + "</option>";
 			lines.put( new Integer(row) , fullLine );

@@ -158,7 +158,15 @@ public class AdminFortuneFile extends Administrator {
 				{
 					Integer row = (Integer)rowIt.next();
 				//	out.println(" lines2: " + lines.get(row) + "<br>" );
-					options = options + "<option value=\""  + row + "\" > " + lines.get(row) + "</option>";
+				String fullLine = (String)lines.get(row);
+					
+			int stop = fullLine.length();
+			if (fullLine.indexOf("<BR>") != -1 ){	stop = fullLine.indexOf("<BR>");}
+			if (fullLine.indexOf("<br>") != -1 ){	stop = fullLine.indexOf("<br>");}
+			
+			options = options + "<option value=\""  + row + "\" > " + fullLine.substring(0,stop) + "</option>";
+		
+				//	options = options + "<option value=\""  + row + "\" > " + lines.get(row) + "</option>";
 				}
 			}	
 		
@@ -190,7 +198,15 @@ public class AdminFortuneFile extends Administrator {
 				{
 					//out.println(" lines2: " + lines.get(rowIt.next()) + "<br>" );
 					Integer rad = (Integer)rowIt.next();
-					options = options + "<option value=\""  + rad + "\" > " + lines.get(rad) + "</option>";
+					String fullLine = (String)lines.get(rad);
+									
+							int stop = fullLine.length();
+							if (fullLine.indexOf("<BR>") != -1 ){	stop = fullLine.indexOf("<BR>");}
+							if (fullLine.indexOf("<br>") != -1 ){	stop = fullLine.indexOf("<br>");}
+							
+							options = options + "<option value=\""  + row + "\" > " + fullLine.substring(0,stop) + "</option>";
+					
+					//options = options + "<option value=\""  + rad + "\" > " + lines.get(rad) + "</option>";
 				}
 			}	
 		
@@ -222,8 +238,17 @@ public class AdminFortuneFile extends Administrator {
 				while(rowIt.hasNext())
 				{
 					Integer row = (Integer)rowIt.next();
+					
+					String fullLine = (String)lines.get(row);
+									
+							int stop = fullLine.length();
+							if (fullLine.indexOf("<BR>") != -1 ){	stop = fullLine.indexOf("<BR>");}
+							if (fullLine.indexOf("<br>") != -1 ){	stop = fullLine.indexOf("<br>");}
+							
+							options = options + "<option value=\""  + row + "\" > " + fullLine.substring(0,stop) + "</option>";
+					
 				//	out.println(" lines: " + lines.get(row) + "<br>" );
-					options = options + "<option value=\""  + row + "\" > " + lines.get(row) + "</option>";
+					//options = options + "<option value=\""  + row + "\" > " + lines.get(row) + "</option>";
 				}
 				
 				
@@ -246,7 +271,11 @@ public class AdminFortuneFile extends Administrator {
 				while ( line!=null && !(line.length()<=12) )
 				{
 					String fullLine = line.replace('#',' ');
-					options = options + "<option value=\""  + row + "\" > " + fullLine + "</option>";
+					int stop = fullLine.length();
+					if (fullLine.indexOf("<BR>") != -1 ){	stop = fullLine.indexOf("<BR>");}
+					if (fullLine.indexOf("<br>") != -1 ){	stop = fullLine.indexOf("<br>");}
+			
+					options = options + "<option value=\""  + row + "\" > " + fullLine.substring(0,stop) + "</option>";
 					lines.put( new Integer(row) , fullLine );
 					line = readFile.readLine();
 					row++;
