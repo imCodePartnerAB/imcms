@@ -27,9 +27,11 @@ public class ChatControl extends ChatBase
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 	private final String HTML_TEMPLATE = "theChat.htm";
-	private final String SETTINGS_TEMPLATE = "ChatSettings.htm" ;
+	private final String SETTINGS_TEMPLATE = "chat_settings.html" ;
 	private final static String ADMIN_GET_RID_OF_A_SESSION = "Chat_Admin_End_A_Session.htm";
 	private final static String ADMIN_BUTTON = "Chat_Admin_Button.htm";
+	private final static String SETTINGS_BUTTON = "chat_settings_button.html";
+
 	//OBS OBS OBS har inte fixat kontroll om det är administratör eller användare
 	//för det är ju lite mera knappar och metoder som ska med om det är en admin
 	//tex en knapp för att kicka ut användare
@@ -40,16 +42,10 @@ public class ChatControl extends ChatBase
 	/**
 	doGet
 	*/
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException
-	{
-		//ok lets load the page for first time
-		VariableManager vm = new VariableManager() ;
-		Html htm = new Html() ;		
+	public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
 		
 		// Lets validate the session, e.g has the user logged in to Janus?
-		if (super.checkSession(req,res) == false)
-		{
+		if (super.checkSession(req,res) == false){
 			log("RETURN super.checksession");
 			return ;
 		}	
@@ -59,21 +55,18 @@ public class ChatControl extends ChatBase
 
 		// Lets get the standard SESSION parameters and validate them
 		Properties params = this.getSessionParameters(req) ;
-		if (super.checkParameters(req, res, params) == false)
-		{			
+		if (super.checkParameters(req, res, params) == false){			
 			log("RETURN the checkParameters == false");
 			return ;
 		}
 		// Lets get the user object
 		imcode.server.User user = super.getUserObj(req,res) ;
-		if(user == null)
-		{
+		if(user == null){
 			log("RETURN usern is null");
 			return ;
 		}
 
-		if ( !isUserAuthorized( req, res, user ) )
-		{
+		if ( !isUserAuthorized( req, res, user ) ){
 			log("RETURN user is not authorized");
 			return;
 		}
@@ -89,16 +82,15 @@ public class ChatControl extends ChatBase
 		int meta_Id = Integer.parseInt( metaId );
 		
 		//lets get the chatmember 
-		ChatMember myMember = (ChatMember) session.getValue("theChatMember");
-		if (myMember == null)
-		{
+		ChatMember myMember = (ChatMember) session.getAttribute("theChatMember");
+		if (myMember == null){
 			log("myMember was null so return");
 			return;
-		}		
+		}	
+		log(myMember.toString());	
 		//lets get the Chat
 		Chat myChat = myMember.getMyParent();
-		if (myChat == null)
-		{
+		if (myChat == null){
 			log("myChat was null so return");
 			return;
 		}
@@ -109,26 +101,23 @@ public class ChatControl extends ChatBase
 			
 		//lets get the room
 		ChatGroup myGroup = myMember.getMyGroup();
-		if (myGroup == null)
-		{
+		if (myGroup == null){
 			log("myGroup was null so return");
 			return;
 		}
 		
 		//lets get the userlangue if we dont have it OBS must fix this somwhere else
-		String userLangId = (String) session.getValue("chatUserLangue");
-		if (userLangId == null)
-		{
+		String userLangId = (String) session.getAttribute("chatUserLangue");
+		if (userLangId == null){
 			//we dont have it so we have to get it from somwhere
 			//OBS OBS temp solution
 			userLangId = "1";
 		}
 
 		//ok lets se if the user wants the change setting page
-		if (req.getParameter("settings")!= null)
-		{	
+		if (req.getParameter("settings")!= null){	
 			//ok we have to fix this method
-			this.createSettingsPage(req,res,session,chatPoolServer,metaId, servletHome, user);
+			this.createSettingsPage(req,res,session,chatPoolServer,metaId, servletHome, user, myMember);
 			return;
 		}//end 
 
@@ -136,16 +125,15 @@ public class ChatControl extends ChatBase
 		String chatRoom = myGroup.getGroupName();
 		String alias = myMember.getName();
 		String selected = (req.getParameter("msgTypes") == null ? "" : req.getParameter("msgTypes").trim());
-			
-		String msgTypes = htm.createHtmlCode("ID_OPTION", selected, myChat.getMsgTypes() ) ;
+
+		String msgTypes = createOptionCode(selected, myChat.getMsgTypes() );
 
 		//let's get all the users in this room, for the selectList		
 		StringBuffer group_members = new StringBuffer("");
 		Iterator iter = myGroup.getAllGroupMembers();
 		String selectMemb = (req.getParameter("recipient") == null ? "0" :  req.getParameter("recipient").trim());
 		int selNr = Integer.parseInt(selectMemb);		
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()){
 			ChatMember tempMember = (ChatMember) iter.next();
 			String sel = "";
 			if(tempMember.getUserId() == selNr)sel = " selected";
@@ -155,8 +143,7 @@ public class ChatControl extends ChatBase
 		//ok lets get all names of chatGroups
 		StringBuffer chat_rooms = new StringBuffer("");
 		Enumeration enum = myChat.getAllChatGroups();	
-		while (enum.hasMoreElements())
-		{
+		while (enum.hasMoreElements()){
 			ChatGroup tempGroup = (ChatGroup) enum.nextElement();
 			chat_rooms.append("<option value=\""+ tempGroup.getGroupId() +"\">" +tempGroup.getGroupName()+"</option>\n" );	
 		}
@@ -166,36 +153,50 @@ public class ChatControl extends ChatBase
 		String chatAdminLink =  "";
 		File templateLib = super.getExternalTemplateFolder(req) ;
 		
-		if(userHasAdminRights( imcServer, meta_Id, user ))
-		{
-			//lets get the kickout button
-			//log("chatName = "+chatName);
+		if(userHasAdminRights( imcServer, meta_Id, user )){
 			chatAdminLink = createAdminButton(req, ADMIN_BUTTON,metaId,chatName);						
 			//lets set up the kick out button OBS fixa detta
 			adminButtonKickOut = createAdminButton(req, ADMIN_GET_RID_OF_A_SESSION,metaId,"");						
 		}
 		
 		//lets set up the page to send
-
+		Vector tags = new Vector();
 		//lets add all the needed tags 
-		vm.addProperty("chatName",chatName);
-		vm.addProperty("alias", alias ) ;	
-		vm.addProperty("chatRoom", chatRoom ) ;	
-		vm.addProperty("MSG_PREFIX", msgTypes ) ;
-		vm.addProperty("MSG_RECIVER", group_members.toString() ) ;
-		vm.addProperty("CHAT_ROOMS", chat_rooms.toString() ) ;
-
+		tags.add("#chatName#");				tags.add( chatName );
+		tags.add("#alias#");				tags.add( alias ) ;	
+		tags.add("#chatRoom#");				tags.add( chatRoom ) ;	
+		tags.add("#MSG_PREFIX#");			tags.add( msgTypes ) ;
+		tags.add("#MSG_RECIVER#");			tags.add( group_members.toString() ) ;
+		tags.add("#CHAT_ROOMS#");			tags.add( chat_rooms.toString() ) ;
+		tags.add("#CHAT_ADMIN_LINK#");		tags.add( chatAdminLink );
+		tags.add("#CHAT_ADMIN_DISCUSSION#");tags.add( adminButtonKickOut  );
+		tags.add("#SETTINGS#");				tags.add( settingsButton(req, myChat));
 		
-		vm.addProperty("CHAT_ADMIN_LINK", chatAdminLink );
-		vm.addProperty("CHAT_ADMIN_DISCUSSION", adminButtonKickOut  );
-
-		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-		//log("ChatControl doGet klar");
-
+		this.sendHtml(req,res,tags, HTML_TEMPLATE, null) ;
+		log("ChatControl doGet klar");
 		return;
-
 	} //**** end doGet ***** end doGet ***** end doGet ******
-
+	
+	
+	private String settingsButton(HttpServletRequest req, imcode.external.chat.Chat chat)throws ServletException, IOException {
+		if (chat.settingsPage() ) {
+			String host = req.getHeader("Host") ;
+			String imcServer = Utility.getDomainPref("userserver",host) ;
+			String chatserver = Utility.getDomainPref("chat_server",host) ;
+			int metaId = chat.getChatId();
+			return IMCServiceRMI.parseExternalDoc(imcServer,null, SETTINGS_BUTTON , "se", "103", getTemplateLibName(chatserver,metaId+""));
+		}else {
+			return "&nbsp;";
+		}
+	}
+	/*
+	public String getTemplateButtonHtml(HttpServletRequest req,String metaId) throws ServletException, IOException {
+		String host = req.getHeader("Host") ;
+		String imcServer = Utility.getDomainPref("userserver",host) ;
+		String chatserver = Utility.getDomainPref("chat_server",host) ;
+		return IMCServiceRMI.parseExternalDoc(imcServer,null, HTML_TEMPLATES_BUTTON , "se", "103", getTemplateLibName(chatserver,metaId));
+	}
+	*/
 	
 	//doPost
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -204,8 +205,7 @@ public class ChatControl extends ChatBase
 		//log("doPost start");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
-		if (super.checkSession(req,res) == false)
-		{
+		if (super.checkSession(req,res) == false){
 			log("super.check session return");
 			return ;
 		}
@@ -215,20 +215,17 @@ public class ChatControl extends ChatBase
 		
 		// Lets get the standard SESSION parameters and validate them
 		Properties params = this.getSessionParameters(req) ;
-		if (super.checkParameters(req, res, params) == false)
-		{
+		if (super.checkParameters(req, res, params) == false){
 			log("super.checkparams return");			
 			return ;
 		}
 		// Lets get the user object
 		imcode.server.User user = super.getUserObj(req,res) ;
-		if (user == null)
-		{
+		if (user == null){
 			log("user is null return");
 			return ;
 		}
-		if ( !isUserAuthorized( req, res, user ) )
-		{
+		if ( !isUserAuthorized( req, res, user ) ){
 			log("user is not autorized return");
 			return;
 		}
@@ -247,88 +244,70 @@ public class ChatControl extends ChatBase
 		//*** *** ok lets handle the useCases *** ***
 		
 		//lets get the Chat ChatGroup and ChatMember  
-		ChatMember myMember = (ChatMember) session.getValue("theChatMember");
-		if (myMember == null)
-		{
+		ChatMember myMember = (ChatMember) session.getAttribute("theChatMember");
+		if (myMember == null){
 			log("RETURN myMember is null");
 			return;
 		}
+		log(myMember.toString());
 		Chat myChat = myMember.getMyParent();
-		if (myChat == null)
-		{
+		if (myChat == null){
 			log("RETURN myChat is null");
 			return;
 		}
 		
 		ChatGroup myGroup = myMember.getMyGroup();
-		if(myGroup == null)
-		{
+		if(myGroup == null){
 			log("RETURN myGroup is null");
 			return;
 		}
-
-
 		
-		if (req.getParameter("sendMsg") != null)
-		{//**** ok the user wants to send a message ****
-			//log("*** start sendMsg ***");
-			
+		if (req.getParameter("sendMsg") != null){//**** ok the user wants to send a message ****
+			log("*** start sendMsg ***");
 			String senderName = myMember.getName();
 
 			//lets get the message and all the needed params add it into the msgpool
 			String newMessage = (req.getParameter("msg") == null ? "" : req.getParameter("msg").trim());
-			if (newMessage.length() != 0)
-			{	
+			if (newMessage.length() != 0){	
 				//lets get rid all html tags
 				newMessage = HTMLConv.toHTMLSpecial(newMessage);
-				//log("newMessage: "+newMessage);
+				
 				//lets get the recipient 0 = alla 
-				String recieverNrStr = (req.getParameter("recipient") == null ? "" :  req.getParameter("recipient").trim());
-				//	log("recieverNrStr = "+recieverNrStr);
-				if(recieverNrStr.length() == 0) recieverNrStr = "0"; //it was empty, lets send it too all
-
+				String recieverNrStr = (req.getParameter("recipient") == null ? "0" :  req.getParameter("recipient").trim());
+			
 				//lets get the messageType fore the message 0 = inget
-				String msgTypeNrStr = (req.getParameter("msgTypes") == null ? "" : req.getParameter("msgTypes").trim());
-				//	log("msgTypeNrStr = "+msgTypeNrStr);
-				if(msgTypeNrStr.length() == 0) msgTypeNrStr = "0";
+				String msgTypeNrStr = (req.getParameter("msgTypes") == null ? "0" : req.getParameter("msgTypes").trim());
+				
 				//ok lets parse those to int
 				int recieverNr, msgTypeNr;
-				try
-				{
+				try	{
 					recieverNr = Integer.parseInt(recieverNrStr);
 					msgTypeNr = Integer.parseInt(msgTypeNrStr);
 
-				}catch (NumberFormatException nfe)
-				{
+				}catch (NumberFormatException nfe){
 					log("NumberFormatException while try to send msg");
 					recieverNr = 0;
 					msgTypeNr = 0;
 				}
 								
 				String msgTypeStr = ""; //the msgType in text
-				if (msgTypeNr != 0)
-				{
+				if (msgTypeNr != 0)	{
 					Vector vect = myChat.getMsgTypes();
-					for(int i = 0; i < vect.size(); i +=2)
-					{
+					for(int i = 0; i < vect.size(); i +=2){
 						String st = (String) vect.get(i);
-						if (st.equals(Integer.toString(msgTypeNr)))
-						{
+						if (st.equals(Integer.toString(msgTypeNr))){
 							msgTypeStr = (String) vect.get(i+1);
 							break;
 						}
 					}					
 				}
 				String recieverStr = "Alla"; //the receiver in text FIX ugly
-				if (recieverNr != 0)
-				{
+				if (recieverNr != 0){
 					boolean found = false;
 					Iterator iter = myGroup.getAllGroupMembers();
-					while (iter.hasNext() && !found)
-					{
+					while (iter.hasNext() && !found){
 						ChatMember memb = (ChatMember)iter.next();
-						if (recieverNr == memb.getUserId())
-						{
+						if (recieverNr == memb.getUserId())	{
 							recieverStr = memb.getName();
 							found = true;
 						}
@@ -336,22 +315,19 @@ public class ChatControl extends ChatBase
 				}
 				
 				//lets see if it was a private msg to all then wee dont send it
-				if (msgTypeNr == 101 && recieverNr == 0)
-				{
+				if (msgTypeNr == 101 && recieverNr == 0) {
 					doGet(req,res);
 					return;
-				}else
-				{
+				}else{
 					int senderNr = myMember.getUserId();
 					String senderStr = myMember.getName();
 					String theDateTime = (super.getDateToday() +" : "+ super.getTimeNow());	
 					
 					ChatMsg newChatMsg = new ChatMsg(newMessage,recieverStr,recieverNr,msgTypeNr,msgTypeStr,senderStr,senderNr,theDateTime );
-					//log("ChatMsg = "+newChatMsg.getMessage());
+					log("ChatMsg = "+newChatMsg.getMessage());
 					//ok now lets send it "boolean addNewMsg(ChatMsg msg)"
 					myMember.addNewChatMsg(newChatMsg);
-					//log("antal msg = "+myGroup.getNoOffMessages());	
-					//log("ok msg has been sent");
+					log("ok msg has been sent");
 					
 					//ok lets log the message
 					this.logItToDisc(newChatMsg, myMember);
@@ -372,8 +348,7 @@ public class ChatControl extends ChatBase
 		//*** the user wants too change chat room *****
 		
 				
-		if (req.getParameter("changeRoom") != null)
-		{
+		if (req.getParameter("changeRoom") != null)	{
 			//log("*** start changeRoom ***");
 			//ok lets get the "new room number"
 			String roomNrStr = (req.getParameter("newRooms") == null ? "" : req.getParameter("newRooms").trim()); 
@@ -428,8 +403,7 @@ public class ChatControl extends ChatBase
 			myMember.addNewChatMsg(newEnterMsg);
 			
 			//lets update the session
-			session.putValue("theRoom", mewGroup);
-			session.putValue("currentRoomId", roomNrStr);
+			session.setAttribute("theRoom", mewGroup);
 
 			//ok lets build the page in doGet
 			//log("*** end changeRoom ***");	
@@ -442,14 +416,10 @@ public class ChatControl extends ChatBase
 		//*****   the user want to change settings    *****
 		
 		
-		if (req.getParameter("controlOK") != null || req.getParameter("fontInc")!= null ||
-													req.getParameter("fontDec")!= null)
-		{
+		if (req.getParameter("controlOK") != null || req.getParameter("fontInc")!= null ||req.getParameter("fontDec")!= null){
 			//log("*** start changeParams ***");
 			//lets collect the new settings
-			Hashtable hash = super.prepareChatBoardSettings(myChat, req, true);
-			session.putValue("ChatBoardHashTable", hash);
-			
+			super.prepareChatBoardSettings(myMember, req, true);
 			//log("*** end changeParams ***");
 			doGet(req, res);
 			return;
@@ -464,14 +434,31 @@ public class ChatControl extends ChatBase
 		
 		
 		//ok the user wants to logOut so lets send the user to the start page
-		if (req.getParameter("logOut") != null)
-		{
-			//log("*** start logOut ***");
+		if (req.getParameter("logOut") != null){
+			log("*** start logOut ***");
+			myMember = (ChatMember)session.getAttribute("theChatMember");
+			myChat = myMember.getMyParent();
+			myGroup = myMember.getMyGroup();
+			
+			String theDateTime = ChatBase.getDateToday() +" : "+ ChatBase.getTimeNow();
+					
+			String senderName = myMember.getName();
+			String libName = super.getTemplateLibName(confPoolServer,myChat.getChatId()+"");
+			String leave_msg = IMCServiceRMI.parseExternalDoc(imcServer,new Vector(), "leave_msg.html","se", "103", libName);
+			
+			ChatMsg newLeaveMsg = new ChatMsg(	leave_msg,"",
+											ChatBase.CHAT_ENTER_LEAVE_INT,
+											ChatBase.CHAT_ENTER_LEAVE_INT,"",
+											senderName, -1, theDateTime);
+			//lets send the message									   
+			myGroup.addNewMsg(newLeaveMsg);
+			int senderNr = myMember.getUserId();
+			myGroup.removeGroupMember(myMember);
+			myChat.removeChatMember(senderNr);
+			
 			super.cleanUpSessionParams(session);
-			log("lets get rid of the user");
 			String lastPage = user.getString("last_page");
-			if(lastPage.equals("1001"))
-			{
+			if(lastPage.equals("1001"))	{
 				lastPage = RmiConf.getLoginUrl(host);
 			}
 			//log("*** end logOut ***");
@@ -503,13 +490,16 @@ public class ChatControl extends ChatBase
 				return;
 			}
 			
+			ChatMember memb = myChat.getChatMember(idNr) ;
+			if (memb != null) {
+				int senderNr = memb.getUserId();
+				myGroup.removeGroupMember(memb);
+				myChat.removeChatMember(senderNr);
+			}
+			//System.out.println(memb.getUserId()+"");
 			//ok now we have the id number, so now lets clean up his session
 			ChatBindingListener.getKickoutSession(idNr);
-			
-//			ChatMember memb = (ChatMember)kickOut.getValue("theChatMember");
-			//log("=========="+memb.getUserId());
-//			super.cleanUpSessionParams(kickOut);
-			//log("*** end kickOut ***");
+		
 			doGet(req, res);
 			return;
 		}//end kickout		
@@ -522,82 +512,121 @@ public class ChatControl extends ChatBase
 	//this method will create an usersettings page
 	//
 	public synchronized void createSettingsPage(HttpServletRequest req, HttpServletResponse res, HttpSession session,
-									String chatPoolServer, String metaId, String servletHome, imcode.server.User user)
+									String chatPoolServer, String metaId, String servletHome, imcode.server.User user, ChatMember member)
 									throws ServletException, IOException
 	{
-		//log("*** start createSettingsPage ***");
-		VariableManager vm = new VariableManager() ;
-
-	        File templetUrl =	super.getExternalTemplateFolder(req);
-		//HtmlGenerator generator = new HtmlGenerator(templetUrl,HTML_LINE);
-		
-		Html htm = new Html() ;
+		log("*** start createSettingsPage ***");
+		String host = req.getHeader("Host") ;
+		String imcServer = Utility.getDomainPref("userserver",host) ;
+		Vector vect = new Vector();
+	    File templetUrl =	super.getExternalTemplateFolder(req);
+		Hashtable hash = member.getProperties();
+		if (hash == null) {
+			hash = new Hashtable();
+		}
+		boolean bool;
 		String[] arr;
 		if (true)//(checkboxText == null)
 		{			
 			//we dont have them so we have to get them from db
 			RmiConf rmi = new RmiConf(user);
 			arr = rmi.execSqlProcedure(chatPoolServer, "C_GetChatParameters "+ metaId );		
-			if (arr.length < 8)
-			{
+			if (arr.length != 7)	{
 				log("arrayen var för liten så return");
+				log(""+arr.length);
 				return;
 			}
-			vm.addProperty("",	""	); 
+		
 			String reload = "";
-			if(arr[2].equals("3"))
-			{
-			//	vm.addProperty("",	""	); 
-				HtmlGenerator linkHtmlObj = new HtmlGenerator( templetUrl, "checkbox_reload.html" );
-				reload = linkHtmlObj.createHtmlString( vm, req );
+			if(arr[1].equals("3")){
+				bool = ((Boolean)hash.get("reloadBoolean")).booleanValue();
+				log(""+bool);
+				Vector tempV = new Vector();
+				tempV.add("#checked#");
+				if (bool) {
+					tempV.add("checked");
+				}else {
+					tempV.add("");
+				}
+				reload = IMCServiceRMI.parseExternalDoc(imcServer,tempV, "checkbox_reload.html" , "se", "103", templetUrl.getName());
 			}
+			
 			String entrance = "";
-			if(arr[3].equals("3"))
-			{
-			//	vm.addProperty("",	""	); 
-				HtmlGenerator linkHtmlObj = new HtmlGenerator( templetUrl, "checkbox_entrance.html" );
-				entrance = linkHtmlObj.createHtmlString( vm, req );
+			if(arr[2].equals("3")){
+				bool = ((Boolean)hash.get("inOutBoolean")).booleanValue();log(""+bool);
+				Vector tempV = new Vector();
+				tempV.add("#checked#");
+				if (bool) {
+					tempV.add("checked");
+				}else {
+					tempV.add("");
+				}
+				entrance = IMCServiceRMI.parseExternalDoc(imcServer,tempV, "checkbox_entrance.html" , "se", "103", templetUrl.getName());
 			}
 			String privat = "";
-			if(arr[4].equals("3"))
-			{
-			//	vm.addProperty("",	""	); 
-				HtmlGenerator linkHtmlObj = new HtmlGenerator( templetUrl, "checkbox_private.html" );
-				privat = linkHtmlObj.createHtmlString( vm, req );
+			if(arr[3].equals("3")){
+				bool = ((Boolean)hash.get("privateMsgBoolean")).booleanValue();log(""+bool);
+				Vector tempV = new Vector();
+				tempV.add("#checked#");
+				if (bool) {
+					tempV.add("checked");
+				}else {
+					tempV.add("");
+				}
+				privat = IMCServiceRMI.parseExternalDoc(imcServer,tempV, "checkbox_private.html" , "se", "103", templetUrl.getName());
 			}
 			String publik = "";
-			if(arr[5].equals("3"))
-			{
-			//	vm.addProperty("",	""	); 
-				HtmlGenerator linkHtmlObj = new HtmlGenerator( templetUrl, "checkbox_public.html" );
-				publik = linkHtmlObj.createHtmlString( vm, req );
+			if(arr[4].equals("3")){
+				bool = ((Boolean)hash.get("publicMsgBoolean")).booleanValue();log(""+bool);
+				Vector tempV = new Vector();
+				tempV.add("#checked#");
+				if (bool) {
+					tempV.add("checked");
+				}else {
+					tempV.add("");
+				}
+				publik = IMCServiceRMI.parseExternalDoc(imcServer,tempV, "checkbox_public.html" , "se", "103", templetUrl.getName());
 			}
 			String datetime = "";
-			if(arr[6].equals("3"))
-			{
-			//	vm.addProperty("",	""	); 
-				HtmlGenerator linkHtmlObj = new HtmlGenerator( templetUrl, "checkbox_datetime.html" );
-				datetime = linkHtmlObj.createHtmlString( vm, req );
+			if(arr[5].equals("3")){
+				bool = ((Boolean)hash.get("dateTimeBoolean")).booleanValue();
+				log("dateTimeBoolean "+bool);
+				Vector tempV = new Vector();
+				tempV.add("#checked#");
+				if (bool) {
+					tempV.add("checked");
+				}else {
+					tempV.add("");
+				}
+				datetime = IMCServiceRMI.parseExternalDoc(imcServer,tempV, "checkbox_datetime.html" , "se", "103", templetUrl.getName());
 			}
 			String font = "";
-			if(arr[7].equals("3"))
-			{
-			//	vm.addProperty("",	""	); 
-				HtmlGenerator linkHtmlObj = new HtmlGenerator( templetUrl, "buttons_font.html" );
-				font = linkHtmlObj.createHtmlString( vm, req );
+			if(arr[6].equals("3")){
+				Integer mark = (Integer)hash.get("fontSizeInteger");
+				int e = 3;
+				if (mark != null) {
+					e = mark.intValue();
+				}				
+				Vector tempV = new Vector();
+				for(int i=1;i<8;i++) {
+					tempV.add("#"+i+"#");
+					if (i==e) {
+						tempV.add("checked");
+					}else {
+						tempV.add("");
+					}
+				}				
+				font = IMCServiceRMI.parseExternalDoc(imcServer,tempV, "buttons_font.html" , "se", "103", templetUrl.getName());
 			}
 			
-			
-			vm.addProperty("reload",	reload	); 
-			vm.addProperty("entrance",	entrance); 
-			vm.addProperty("private",	privat	); 
-			vm.addProperty("public",	publik	); 			
-			vm.addProperty("datetime",	datetime); 
-			vm.addProperty("font",		font	); 			
+			vect.add("#reload#");		vect.add(reload); 
+			vect.add("#entrance#");		vect.add(entrance); 
+			vect.add("#private#");		vect.add(privat); 
+			vect.add("#public#");		vect.add(publik); 			
+			vect.add("#datetime#");		vect.add(datetime); 
+			vect.add("#font#");			vect.add(font); 			
 		}
-		
-		//log("*** end createSettingsPage ***");
-		this.sendHtml(req,res,vm, "chat_settings.html") ;
+		this.sendHtml(req,res,vect, SETTINGS_TEMPLATE, null) ;
 		return;
 	}//end createSettingsPage
 	

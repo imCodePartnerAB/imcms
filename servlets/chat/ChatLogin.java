@@ -7,24 +7,8 @@ import imcode.external.diverse.*;
 import imcode.external.chat.*;
 import imcode.util.* ;
 
-/**
- * The class used to generate login pages, and administrate users page
- * <pre>
-  TEMPLATES: The following html files and fragments are used by this servlet.
 
- 	Conf_admin_user.htm : Used to generate a selection list of users
-  Conf_admin_user_resp.htm : Used to administrate a user
- 	Conf_Login.htm : Html file used to prompt the user for username / password (usermode)
- 	Conf_Add_User.htm : Html file used to add a new user (adminmode)
- 	Conf_Login_Error.htm : Html file used to generate a login failure. (adminmode)
- </pre>
- * @author  Rickard Larsson
- * @version 1.0
- * Date : 2000-06-16
- */
-
-public class ChatLogin extends ChatBase 
-{
+public class ChatLogin extends ChatBase {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
@@ -32,10 +16,8 @@ public class ChatLogin extends ChatBase
 	String LOGIN_ERROR_HTML = "Chat_Error.htm";
 	String ADD_USER_TEMPLATE = "Chat_Add_User.htm";
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException
-	{
-		//log("start doGet");
+	public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
+		log("start doGet");
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 		HttpSession session = req.getSession(true);
@@ -52,13 +34,11 @@ public class ChatLogin extends ChatBase
 		if(user == null) return ;
 		
 		String metaId = params.getProperty("META_ID");
-		int meta_Id = Integer.parseInt( metaId );			
-		if ( !isUserAuthorized( req, res, meta_Id, user ) )
-		{
+		int meta_id = Integer.parseInt( metaId );			
+		if ( !isUserAuthorized( req, res, meta_id, user ) )	{
 			log("user not Authorized");
 			return;
 		}	
-		
 		
 		//ok lets get the chat
 		imcode.external.chat.Chat myChat = (imcode.external.chat.Chat)myContext.getAttribute("theChat"+metaId);
@@ -69,40 +49,18 @@ public class ChatLogin extends ChatBase
 		String chatPoolServer = Utility.getDomainPref("chat_server",host) ;
 
 		RmiConf rmi = new RmiConf(user) ;
-		String loginType = (req.getParameter("login_type")==null) ? "" : (req.getParameter("login_type")) ;
+		String loginType = req.getParameter("login_type")==null?"":req.getParameter("login_type");
 		
-		
-		if ( myChat == null )
-		{
-			//we have to create the chat
-						
-			//h鄝ta msgTypes with metaId testMetaID
-			String sqlQ = "C_GetTheMsgTypes " + metaId;
-			String[][] msgTypes = rmi.execProcedureMulti(chatPoolServer,sqlQ);
-			Vector theMsgTypesV = super.convert2Vector(msgTypes);
-			
-			//get parameters from db
-			String getParamsSql = "C_GetChatParameters "+metaId;
-			String[] param = rmi.execSqlProcedure(chatPoolServer, "C_GetChatParameters '"+ metaId  + "' ");	
-							
-			Properties chatParams = super.getChatParams(param);
-			String[] chatData = rmi.execSqlProcedure(chatPoolServer, "C_GetChatNameAndPerm '"+ metaId  + "' ");	
-			chatParams.setProperty("chatName",chatData[0]);
-			chatParams.setProperty("permission",chatData[1]);
-			
-			String[] types = rmi.execSqlProcedure(chatPoolServer, "C_GetChatAutoTypes '"+ metaId  + "' ");
-			
-			//create a new chat object 				
-			myChat = new Chat(meta_Id, theMsgTypesV,chatParams, types);
-				
-			//ok lets create all the groups
-			String[][] roomIdNr = rmi.execProcedureMulti(chatPoolServer, "C_GetRooms " + metaId) ;
-			for(int i=0; i<roomIdNr.length;i++)
-			{
-				//log(roomIdNr[i][0]);
-				myChat.createNewChatGroup(Integer.parseInt(roomIdNr[i][0]), roomIdNr[i][1]);
-			}  
+		if ( myChat == null ){
+			log("OBS m廛te skapa en ny Chat");
+			myChat = createChat(req, user, meta_id);		 
 			myContext.setAttribute("theChat"+metaId,myChat);
+			session.setAttribute("myChat",myChat);
+		}
+		
+		if (session.getAttribute("theChatMember")!= null) {
+			res.sendRedirect("ChatViewer");
+			return;
 		}
 
 		//**** sets up the different loginpages  ****
@@ -111,90 +69,63 @@ public class ChatLogin extends ChatBase
 		int userIdInt = Integer.parseInt(userIdStr);
 		
 		//lets get the authorization types for this chat
-		String[] roles = myChat.getAuthorizations();
+		Vector rolV = myChat.getAuthorizations();
+		//String[] roles = new String[3];
 		//ok lets setup the booleans for the loginpage		
 		boolean loggedOnOk = false;
 		boolean aliasBol = false;
 		boolean imCmsRegBol = false;
 		boolean selfRegBol = false;
 		//sets up the booleans
-		Vector rolV = super.convert2Vector(roles);
+		//Vector rolV = super.convert2Vector(roles);
 		aliasBol 	= rolV.contains("1");
 		imCmsRegBol = rolV.contains("3");
-		if (imCmsRegBol)
-		{
+		if (imCmsRegBol){
 			selfRegBol = rolV.contains("2");
 		}
 		
-		//ok lets se if the user realy has loged in or if its a "User"
-		if(userIdInt != 98)//obs 2 = Conferense users
-		{
+		//ok lets se if the user realy has loged in or if its a "User"	obs 2 = Conferense users
+		if(userIdInt != 98){
 			loggedOnOk = true;
 		}
-		
-		//log("loggedOnOk = "+loggedOnOk);
-		//log("aliasBol ="+aliasBol);
-		//log("imCmsRegBol ="+imCmsRegBol);
-		//log("selfRegBol ="+selfRegBol);
-		
-		
-		if (aliasBol && !imCmsRegBol)
-		{//only alias login
+	
+		if (aliasBol && !imCmsRegBol){//only alias login
 			//log("alt 1");
 			LOGIN_HTML = "CLogin1.htm";
-		}else if ( !aliasBol && imCmsRegBol )
-		{//only registred imcms users
-			if(loggedOnOk)
-			{//ok the user has loged in so lets fill in he's name
+		}else if ( !aliasBol && imCmsRegBol ){//only registred imcms users
+			if(loggedOnOk){//ok the user has loged in so lets fill in he's name
 				//log("alt 2");
 				LOGIN_HTML = "CLogin2.htm";
-			}else
-			{
+			}else{
 				//log("alt 3");
 				LOGIN_HTML = "CLogin3.htm";
 			}			
-		}
-		else
-		{
-			if (loggedOnOk)
-			{
+		}else{
+			if (loggedOnOk)	{
 				//log("alt 5");
 				LOGIN_HTML = "CLogin5.htm" ;
-			}else
-			{
+			}else{
 				//log("alt 4");
 				LOGIN_HTML = "CLogin4.htm" ;
 			}
 			
 		}
-		
-		
-		//log("TEMLPLATE = "+LOGIN_HTML);
-		//log("selfRegBol = "+selfRegBol);
 
 //		LOGIN_HTML = "CLogin3.htm";
 		String selfRegLink = "";
-		if(selfRegBol)
-		{
-			if (!loggedOnOk)
-			{
+		if(selfRegBol){
+			if (!loggedOnOk){
 				selfRegLink="<a href=\"#SERVLET_URL#ChatLogin?login_type=ADD_USER\">Registrera dig!</a>";
 			}
 		}
-		
-		//log("\n\n\n"+user+"\n\n\n");
-		
-		//obs m廛tefixas senare vilken mal som ska visas
+	
+		//obs m廛tefixas senare vilken mall som ska visas
 
-		//*** end different login pages ****
-		
-		
-		
+		//*** end different login pages ****		
 		
 		// ******** ADD USER PAGE *********
 		// Lets generate the adduser page
-		if(loginType.equalsIgnoreCase("ADD_USER"))
-		{
+		if(loginType.equalsIgnoreCase("ADD_USER")){
 			//String htmlPage = rmi.getLoginPage(imcServer) ;
 
 			// Lets build the Responsepage to the loginpage
@@ -202,40 +133,30 @@ public class ChatLogin extends ChatBase
 			Vector userInfoV = new Vector(20) ; // a vector, bigger than the amount fields
 			vm = this.addUserInfo(vm,userInfoV) ;
 			vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
-			sendHtml(req,res,vm, ADD_USER_TEMPLATE) ;
+			//	sendHtml(req,res,vm, ADD_USER_TEMPLATE) ;
+			sendHtml(req,res,new Vector(), ADD_USER_TEMPLATE,null) ;
 			return ;
 		}//end ADD USER PAGE
 
 
 		// ********** LOGIN PAGE *********
 		// Lets build the Responsepage to the loginpage
-		VariableManager vm = new VariableManager() ;
-		Html htm = new Html();
-
-		
+				
 		//get chatname
 		String chatName = myChat.getChatName();
 
 		//Get all the rooms for the intended chat
-		Enumeration enum = myChat.getAllChatGroups();
-		Vector roomsV = new Vector();
-		while (enum.hasMoreElements())
-		{
-			ChatGroup tempGroup = (ChatGroup)enum.nextElement();
-			roomsV.addElement(Integer.toString(tempGroup.getGroupId()));
-			roomsV.addElement(tempGroup.getGroupName());
-		}
+		Vector roomsV = myChat.getAllChatGroupsIdAndNameV();
 		
 		//get the users username
 		String userName = user.getString("login_name");
-
-		vm.addProperty("CHAT_SELFREG_LINK", selfRegLink );
-		vm.addProperty("userName",userName);
-		vm.addProperty("chatName",chatName);	
-		vm.addProperty("rooms", htm.createHtmlCode("ID_OPTION","", roomsV) ) ;
-		vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
-		vm.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req, res ) );
-		sendHtml(req,res,vm, LOGIN_HTML) ;
+		Vector tags = new Vector();
+		tags.add("#CHAT_SELFREG_LINK#"); 	tags.add(selfRegLink);
+		tags.add("#userName#"); 			tags.add(userName);
+		tags.add("#chatName#");				tags.add(chatName);	
+		tags.add("#rooms#");				tags.add( createOptionCode("", roomsV) ) ;
+		tags.add("#IMAGE_URL#");			tags.add(this.getExternalImageFolder( req, res ) );
+		sendHtml(req,res,tags, LOGIN_HTML,null) ;
 		
 		//log("end doGet");
 		return ;
@@ -244,10 +165,8 @@ public class ChatLogin extends ChatBase
 
 
 
-	public void doPost(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException
-	{
-		//log("start doPost");
+	public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
+		log("start doPost");
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 		HttpSession session = req.getSession(true);
@@ -269,10 +188,9 @@ public class ChatLogin extends ChatBase
 		RmiConf rmi = new RmiConf(user) ;
 
 		String metaId =	 params.getProperty("META_ID");
-		int meta_Id = Integer.parseInt( metaId );
+		int meta_id = Integer.parseInt( metaId );
 
-		if ( !isUserAuthorized( req, res, meta_Id, user ) )
-		{
+		if ( !isUserAuthorized( req, res, meta_id, user ) )	{
 			return;
 		}
 				
@@ -281,16 +199,14 @@ public class ChatLogin extends ChatBase
 
 		// ************* ADD USER TO imCMS db (SELFREGISTRATION) **************
 		//ok the usecase is to add a new user to imcms db so lets do it
-		if(req.getParameter("saveNewUser")!= null )
-		{
+		if(req.getParameter("saveNewUser")!= null )	{
 			log("Now runs add_user") ;
 
 			// Lets get the parameters from html page and validate them
 			Properties newUserParams = this.getNewUserParameters(req) ;
 
 			// Properties userParams = this.getNewUserParameters2(req) ;
-			if( this.checkUserParameters(newUserParams) == false)
-			{
+			if( this.checkUserParameters(newUserParams) == false){
 				log("checkUserParameters(newUserParams) == false so return");
 				return ;
 			}
@@ -310,10 +226,8 @@ public class ChatLogin extends ChatBase
 			String userNameExists[] = rmi.execJanusSqlProcedure(imcServer, "FindUserName '" + userName + "'") ;
 			//log("SQL fr嶓a:" + "FindUserName '" + userName + "'") ;
 
-			if(userNameExists != null )
-			{
-				if(userNameExists.length > 0 )
-				{
+			if(userNameExists != null )	{
+				if(userNameExists.length > 0 )	{
 					String header = "ChatLogin servlet." ;
 					ChatError err = new ChatError(req,res,header,56, LOGIN_ERROR_HTML ) ;
 					return ;
@@ -322,8 +236,7 @@ public class ChatLogin extends ChatBase
 
 			// Lets get the new UserId for the new user
 			String newUserId = rmi.execJanusSqlProcedureStr(imcServer, "GetHighestUserId" ) ;
-			if(newUserId == null)
-			{
+			if(newUserId == null){
 				log("newUserId == null so return");
 				return ;
 			}
@@ -366,10 +279,8 @@ public class ChatLogin extends ChatBase
 			String langPrefix = rmi.execJanusSqlProcedureStr(imcServer, langsql ) ;
 			//log( "LangPrefix: " + langPrefix) ;
 
-			if(sqlAnswer != null )
-			{
-				for(int i = 0; i<sqlAnswer.length; i+=2)
-				{
+			if(sqlAnswer != null )	{
+				for(int i = 0; i<sqlAnswer.length; i+=2){
 					String aRoleId = sqlAnswer[i].toString() ;
 					// Lets check that the role id is still valid to use against
 					// the host system
@@ -378,8 +289,7 @@ public class ChatLogin extends ChatBase
 					// log("RoleCheckSQL: " + sqlCheckSproc) ;
 					String found = rmi.execJanusSqlProcedureStr(imcServer, sqlCheckSproc) ;
 					//log("FoundRoleCheckSQL: " + found) ;
-					if (found != null )
-					{
+					if (found != null )	{
 						String addRoleSql = "AddUserRole " + newUserId + ", " + aRoleId ;
 						//log("AddRoleSQL: " + addRoleSql) ;
 						rmi.execJanusSqlUpdateProcedure(imcServer, addRoleSql) ;
@@ -393,25 +303,18 @@ public class ChatLogin extends ChatBase
 
 			String usersRoles[] = rmi.execJanusSqlProcedure(imcServer, "GetUserRolesIDs " + userId ) ;
 			// log("SQL fr嶓a:" + "GetUserRolesIDs " + userId) ;
-			if(usersRoles != null )
-			{
+			if(usersRoles != null )	{
 
-				for(int i = 0; i<usersRoles.length; i+=2)
-				{
+				for(int i = 0; i<usersRoles.length; i+=2){
 					// Late change, fix so the superadminrole wont be copied to the new user
-					if(!usersRoles[i].toString().equals("1"))
-					{
+					if(!usersRoles[i].toString().equals("1")){
 						String addRoleSql = "AddUserRole " + newUserId + ", " + usersRoles[i].toString() ;
 						rmi.execJanusSqlUpdateProcedure(imcServer, addRoleSql) ;
-					}
-					else
-					{
+					}else{
 						// log("Superadmin rollen kom inte med!") ;
 					}
 				}
-			}
-			else
-			{  // nothing came back from getUserRoles
+			}else{  // nothing came back from getUserRoles
 				String header = "ConfLogin servlet." ;
 				ChatError err = new ChatError(req,res,header,58 ) ;
 				log(header + err.getErrorMsg()) ;
@@ -432,8 +335,7 @@ public class ChatLogin extends ChatBase
 		log("chatAlias: " + chatAlias);
 		
 		//*********logs a user into imcms *****
-		if(req.getParameter("loginToImCms")!=null)
-		{
+		if(req.getParameter("loginToImCms")!=null){
 			//ok lets se if there is any user whith this id and pw
 			log("Ok, nu f顤s闥er vi verifiera logga in!") ;
 			Properties lparams = this.getLoginParams(req ,res) ;
@@ -467,7 +369,7 @@ public class ChatLogin extends ChatBase
 			user.setField("last_page",oldUser.getString("last_page"));
 			user.addObject("history",(Vector)oldUser.getObject("history"));
 						
-			session.putValue("logon.isDone", user );
+			session.setAttribute("logon.isDone", user );
 			chatAlias = null;
 			
 		}//end loginToImCms
@@ -477,92 +379,66 @@ public class ChatLogin extends ChatBase
 		
 		log("req.getParameter(login) = "+ req.getParameter("login"));
 
-		if (req.getParameter("loginAlias") != null ||req.getParameter("loginUserName") != null)
-		{
+		if (req.getParameter("loginAlias") != null ||req.getParameter("loginUserName") != null)	{
 			log("ok lets get the chat");
 			//check if the intended chat already exists ServletContext
 			ServletContext  myContext = getServletContext();
 			Chat theChat =  (Chat) myContext.getAttribute("theChat"+metaId);
 			
-			if ( theChat == null )
-			{
-				//should newer happens
-						
-				//h鄝ta msgTypes with metaId testMetaID
-				String sqlQ = "C_GetTheMsgTypes " + metaId;
-				String[][] msgTypes = rmi.execProcedureMulti(chatPoolServer,sqlQ);
-				Vector theMsgTypesV = super.convert2Vector(msgTypes);
-				
-				//get parameters from db
-				String getParamsSql = "C_GetChatParameters "+metaId;
-				String[] param = rmi.execSqlProcedure(chatPoolServer, "C_GetChatParameters '"+ metaId  + "' ");	
-								
-				Properties chatParams = super.getChatParams(param);
-				String[] chatData = rmi.execSqlProcedure(chatPoolServer, "C_GetChatNameAndPerm '"+ metaId  + "' ");	
-				chatParams.setProperty("chatName",chatData[0]);
-				chatParams.setProperty("permission",chatData[1]);
-				
-				String[] types = rmi.execSqlProcedure(chatPoolServer, "C_GetChatAutoTypes '"+ metaId  + "' ");
-				
-				//create a new chat object 				
-				theChat = new Chat(meta_Id, theMsgTypesV,chatParams, types);
-				
-				//ok lets create all the groups
-				String[][] roomIdNr = rmi.execProcedureMulti(chatPoolServer, "C_GetRooms " + metaId) ;
-				for(int i=0; i<roomIdNr.length;i++)
-				{
-					log(roomIdNr[i][0]);
-					theChat.createNewChatGroup(Integer.parseInt(roomIdNr[i][0]), roomIdNr[i][1]);
-				}  
+			if ( theChat == null ){
+				theChat = createChat(req, user, meta_id);
 				myContext.setAttribute("theChat"+metaId,theChat);
+				session.setAttribute("myChat",theChat);
 			}
 			
 			//ok lets create the chatmember obj
 			imcode.external.chat.ChatMember myMember = theChat.createChatMember();
-			if (req.getParameter("loginAlias") != null)
-			{
-				myMember.setName("Alias: "+chatAlias);
-			}else
-			{
+			if (req.getParameter("loginAlias") != null)	{
+				//ok we need to  see if the name alreadi is in use, and if so send error				
+				if (theChat.hasMemberName("Alias: "+chatAlias)) {
+				//	System.out.println("中中中中中中中中夕n use fix");
+				}else {			
+					myMember.setName("Alias: "+chatAlias);
+				}
+			}else{
 				myMember.setName(user.getString("login_name"));
 			}
 			myMember.setIPNr(req.getRemoteHost());
 			//lets get the rooom
 			String currentRoomId = req.getParameter("rooms");
 			int roomNr;
-			try
-			{
+			try{
 				roomNr = Integer.parseInt(currentRoomId);
-			}catch(NumberFormatException nfe)
-			{
+			}catch(NumberFormatException nfe){
 				log("the room was null so return");
 				return;
 			}
+			
 			ChatGroup myGroup = theChat.getChatGroup(roomNr);
 			myGroup.addNewGroupMember(myMember);
-
-			//ok lets add a enter msg
-			String theDateTime = (super.getDateToday() +" : "+ super.getTimeNow());
-			ChatMsg newEnterMsg = new ChatMsg(ENTER_MSG, "", CHAT_ENTER_LEAVE_INT,
-						CHAT_ENTER_LEAVE_INT,"", myMember.getName(), -1, theDateTime.trim());
-			myGroup.addNewMsg(newEnterMsg);	
 			
-			//ok lets prepare the settings for chat
-			Hashtable hash = super.prepareChatBoardSettings(theChat, req, false);
-			session.putValue("ChatBoardHashTable", hash );
-					
-			session.putValue("currentRoomId",currentRoomId);			
-			session.putValue("theChatMember",myMember);
-			//redirect to chatViewer
-			String url = MetaInfo.getServletPath(req) ;
-			url += "ChatViewer" ;
+			//ok lets add a enter msg
+			String libName = super.getTemplateLibName(chatPoolServer,theChat.getChatId()+"");
+			String enter_msg = IMCServiceRMI.parseExternalDoc(imcServer,new Vector(), "enter_msg.html","se", "103", libName);
+			String theDateTime = (super.getDateToday() +" : "+ super.getTimeNow());
+			ChatMsg newEnterMsg = new ChatMsg(enter_msg, "", CHAT_ENTER_LEAVE_INT,
+						CHAT_ENTER_LEAVE_INT,"", myMember.getName(), myMember.getUserId(), theDateTime.trim());
+			myGroup.addNewMsg(newEnterMsg);	
+			log(myMember.toString());		
+			session.setAttribute("theChatMember",myMember);
+			super.prepareChatBoardSettings(myMember, req, false);
+			
+			//lets redirect to ChatViewer
+			String url = MetaInfo.getServletPath(req) +  "ChatViewer"  ;
+			log(url);
 			res.sendRedirect(url) ;
-
 			return ;
 		}
 		log("end doPost");
 		return;
 	}//end doPost
+	
+
 	
 	
 
@@ -570,8 +446,7 @@ public class ChatLogin extends ChatBase
 	/**
 	Collects the registration parameters from the request object
 	**/
-	private Properties getNewUserParameters( HttpServletRequest req) throws ServletException, IOException
-	{
+	private Properties getNewUserParameters( HttpServletRequest req) throws ServletException, IOException{
 
 		Properties userInfo = new Properties() ;
 		// Lets get the parameters we know we are supposed to get from the request object

@@ -16,19 +16,15 @@ public class ChatViewer extends ChatBase {
 
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-	String HTML_TEMPLATE ;
+	private final static String HTML_TEMPLATE = "Chat_Frameset.htm" ;
 
 
-	public void doPost(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException
-	{
-		//	log("doPost");
+	public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
+		log("doPost");
 		doGet(req,res);
 	}
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException
-	{
+	public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
 		HttpSession session = req.getSession(true);
 		ServletContext myContext = getServletContext();
 		
@@ -38,8 +34,7 @@ public class ChatViewer extends ChatBase {
 		// Lets get the standard SESSION parameters and validate them
 		Properties params = super.getSessionParameters(req) ;
 
-		if (super.checkParameters(req, res, params) == false)
-		{
+		if (super.checkParameters(req, res, params) == false){
 			log("checkParameters == false so return");
 			return;
 		}
@@ -48,8 +43,7 @@ public class ChatViewer extends ChatBase {
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 
-		if ( !isUserAuthorized( req, res, user ) )
-		{
+		if ( !isUserAuthorized( req, res, user ) ){
 			return;
 		}
 		String metaId = params.getProperty("META_ID") ;		
@@ -61,74 +55,50 @@ public class ChatViewer extends ChatBase {
 		String paramStr = metaInfo.passMeta(params) ;
 		
 		//lets clean up some in the session just incase
-		session.removeValue("checkBoxTextarr"); //ska tas bort
-		session.removeValue("chatParams");
-		session.removeValue("chatChecked");
+		session.removeAttribute("checkBoxTextarr"); //ska tas bort
+		session.removeAttribute("chatParams");
+		session.removeAttribute("chatChecked");
 
 		//ok lets get the chat from the session
 		Chat chat = (Chat) myContext.getAttribute("theChat"+metaId);
-		if (chat == null)
-		{
+		if (chat == null){
 			log("the chat was null so we will return");
 			return;
 		}
 
 		//lets crete the ChatMember object and add it to the session if there isnt anyone
-		ChatMember myMember = (ChatMember) session.getValue("theChatMember");
-		if (myMember == null)
-		{
+		ChatMember myMember = (ChatMember) session.getAttribute("theChatMember");
+		if (myMember == null){
 			log("there wasn't any member so return");
 		}
 
 		//ok lets see if we have room
 		ChatGroup myGroup = myMember.getMyGroup();
-		if (myGroup == null)
-		{
+		if (myGroup == null){
 			log("there wasn't any group so return");
 		}
 	
 		//ok lets see if we have an bindingListener
-		if (session.getValue("chatBinding") == null)
-		{
-			session.putValue("chatBinding",new ChatBindingListener());
+		if (session.getAttribute("chatBinding") == null){
+			session.setAttribute("chatBinding",new ChatBindingListener());
 			
 		}
-		//ChatBindingListener nisse = (ChatBindingListener)session.getValue("chatBinding");
-	
-		//log("req.getRequestedSessionId() = "+req.getRequestedSessionId());
-
+		
 		// Lets build the Responsepage
-		VariableManager vm = new VariableManager() ;
-		vm.addProperty("CHAT_MESSAGES", servletHome + "ChatBoard?" + paramStr);
-
-		vm.addProperty("CHAT_CONTROL", servletHome + "ChatControl?" + paramStr ) ;
-		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-		//log("Nu är ChatViewer klar") ;
+		Vector tags = new Vector();
+		tags.add("#CHAT_MESSAGES#");tags.add(servletHome + "ChatBoard?" + paramStr);
+		tags.add("#CHAT_CONTROL#"); tags.add(servletHome + "ChatControl?" + paramStr ) ;
+		this.sendHtml(req,res,tags, HTML_TEMPLATE,null) ;
+		log("Nu är ChatViewer klar") ;
 		return ;
-
 	}//end doGet
 
-
-
-	/**
-	Detects paths and filenames.
-	*/
-
-	public void init(ServletConfig config) throws ServletException
-	{
-
-		super.init(config);
-		HTML_TEMPLATE = "Chat_Frameset.htm" ;
-	}
 
 	/**
 	Log function, will work for both servletexec and Apache
 	**/
-
-	public void log( String str)
-	{
+	public void log( String str){
 		super.log("ChatViewer: " + str) ;
-	//	System.out.println("ChatViewer: " + str );
 	}
 
 } // End of class

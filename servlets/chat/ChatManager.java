@@ -1,4 +1,7 @@
 
+
+//PETER FET-OMSKRIVER NU I DENNA
+
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -9,42 +12,37 @@ import imcode.util.* ;
 //första gången vi kommer hit har vi doGet parametern  action=new
 // 
 
-public class ChatManager extends ChatBase
-{
+public class ChatManager extends ChatBase{
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-	String HTML_TEMPLATE ;
-
-	/**
-	The GET method creates the html page when this side has been
-	redirected from somewhere else.
-	**/
-
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException
-	{
-
+	
+	
+	public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
+		
+		log("startar doGet");
+		RequestDispatcher myDispatcher = req.getRequestDispatcher("StartDoc");
+		
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 
 		// Lets get the standard parameters and validate them
 		Properties params = super.getParameters(req) ;
-		if (super.checkParameters(req, res, params) == false) return ;
+		//if (super.checkParameters(req, res, params) == false) return ;
 
 		// Lets get an user object
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 
 		int testMetaId = Integer.parseInt( params.getProperty("META_ID") );
-		if ( !isUserAuthorized( req, res, testMetaId, user ) )
-		{
+		
+		if ( !isUserAuthorized( req, res, testMetaId, user ) ){		
 			return;
 		}
 
 		String action = req.getParameter("action") ;
-		//log("ChatManager is in action...") ;
-		if(action == null)
-		{
+		
+		if(action == null){
+			//OBS FIXA FELMEDELANDENA
 			action = "" ;
 			String header = "ChatManager servlet. " ;
 			ChatError err = new ChatError(req,res,header,3) ;
@@ -53,28 +51,25 @@ public class ChatManager extends ChatBase
 		}
 
 		// ********* NEW ********
-		//i'ts here we end up when we creates a new chatlink
+		//it's here we end up when we creates a new chatlink
 		if(action.equalsIgnoreCase("NEW"))
 		{
 			//log("Lets add a chat");
 			HttpSession session = req.getSession(false) ;
-			if (session != null)
-			{
+			if (session != null){
 				// log("Ok nu sätter vi metavärdena");
-				session.putValue("Chat.meta_id", params.getProperty("META_ID")) ;
-				session.putValue("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-				session.putValue("Chat.cookie_id", params.getProperty("COOKIE_ID")) ;
+				session.setAttribute("Chat.meta_id", params.getProperty("META_ID")) ;
+				session.setAttribute("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
 			}
-
-			String url = MetaInfo.getServletPath(req) + "ChatCreator?action=NEW" ;
-			//log("Redirect till:" + url) ;
-			res.sendRedirect(url) ;
+			
+			req.setAttribute("action","NEW");
+			myDispatcher = req.getRequestDispatcher("ChatCreator");
+			myDispatcher.forward(req,res);
 			return ;
 		}
 
 		// ********* VIEW ********
-		if(action.equalsIgnoreCase("VIEW"))
-		{
+		if(action.equalsIgnoreCase("VIEW")){
 
 			// Lets get userparameters
 			Properties userParams = super.getUserParameters(user) ;
@@ -85,44 +80,33 @@ public class ChatManager extends ChatBase
 			// Lets detect which type of user we got
 			String userType = userParams.getProperty("USER_TYPE") ;
 			String loginType = userParams.getProperty("LOGIN_TYPE") ;
-				//log("Usertype:" + userType) ;
-				//log("loginType:" + userType) ;
-
-			// We got 3 usertypes: 0= specialusers, 1=normal, 2=confernce
-			// We got 3 logintypes: "Extern"=web users, "ip_access"= people from a certain ip nbr
-			
-			// and "verify" = people who has logged into the system
-			
+						
 			// Lets store  the standard metavalues in his session object
-				HttpSession session = req.getSession(false) ;
-				if (session != null)
-				{
-					// log("Ok nu sätter vi metavärdena");
-					session.putValue("Chat.meta_id", params.getProperty("META_ID")) ;
-					session.putValue("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-					session.putValue("Chat.cookie_id", params.getProperty("COOKIE_ID")) ;
-					session.putValue("Chat.viewedDiscList", new Properties()) ;
-					//log("OK, nu sätter vi viewedDiscList") ;
-				}
-
-String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
-				//log("Redirect till:" + loginPage) ;
-				res.sendRedirect(loginPage) ;
-				return ;
+			HttpSession session = req.getSession(false) ;
+			if (session != null){
+				// log("Ok nu sätter vi metavärdena");
+				session.setAttribute("Chat.meta_id", params.getProperty("META_ID")) ;
+				session.setAttribute("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
+			}
+				
+			req.setAttribute("login_type","login");
+			myDispatcher = req.getRequestDispatcher("ChatLogin");
+			myDispatcher.forward(req,res);
+			return ;
 		
 		} // End of View
 
 		// ********* CHANGE ********
-		if(action.equalsIgnoreCase("CHANGE"))
-		{
-			MetaInfo mInfo = new MetaInfo() ;
-			String url = MetaInfo.getServletPath(req) + "ChangeExternalDoc2?"
-				+ mInfo.passMeta(params) + "&metadata=meta" ;
-			//log("Redirects to:" + url) ;
-			res.sendRedirect(url) ;
+		if(action.equalsIgnoreCase("CHANGE")){
+			req.setAttribute("metadata","meta");
+			myDispatcher = req.getRequestDispatcher("ChangeExternalDoc2");
+			myDispatcher.forward(req,res);
 			return ;
 		} // End if
 
+
+
+//************** följande metoder behöver kollas över om de fungerar eller inte *****************
 		// ********* STATISTICS OBS. NOT USED IN PROGRAM, ONLY FOR TEST ********
 		if(action.equalsIgnoreCase("STATISTICS"))
 		{
@@ -172,15 +156,9 @@ String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 	public static String[][] getStatistics (String confServer,String sproc)
 	throws ServletException, IOException
 	{
-
 		String[][] arr = RmiConf.execProcedureMulti(confServer,sproc) ;
 		//log("AdminStatistics sql: " + arr.length) ;
 		return arr ;
 	}
-
-
-
-
-
 
 } // End of class

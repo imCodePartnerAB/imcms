@@ -85,7 +85,8 @@ public class ChatHelp extends ChatBase
 			}
 
 			//if( params.getProperty("HELP_SPEC").equalsIgnoreCase("SPEC") ) file = ADMIN_TEMPLATE2 ;
-			this.sendHtml(req,res,vm, file) ;
+//			this.sendHtml(req,res,vm, file) ;
+			this.sendHtml(req,res,new Vector(), file, null) ;
 			return ;
 
 		}

@@ -23,7 +23,7 @@ public class ChatBindingListener implements HttpSessionBindingListener
 	{
 		HttpSession session = event.getSession();
 		
-		ChatMember member = (ChatMember) session.getValue("theChatMember");
+		ChatMember member = (ChatMember) session.getAttribute("theChatMember");
 		int idNr = member.getUserId();
 		_sessions.put(Integer.toString(idNr), session);
 		//System.out.println("ok value bound");	
@@ -33,10 +33,10 @@ public class ChatBindingListener implements HttpSessionBindingListener
 	{
 		HttpSession session = event.getSession();
 		
-		if (session.getValue("theChatMember") != null)
+		if (session.getAttribute("theChatMember") != null)
 		{
 			//System.out.println("ok we have the member so lets rock");
-			ChatMember myMember = (ChatMember)session.getValue("theChatMember");
+			ChatMember myMember = (ChatMember)session.getAttribute("theChatMember");
 			Chat myChat = myMember.getMyParent();
 			ChatGroup myGroup = myMember.getMyGroup();
 			
@@ -67,7 +67,11 @@ public class ChatBindingListener implements HttpSessionBindingListener
 		HttpSession session = (HttpSession)_sessions.get(Integer.toString(memberNr));
 		if (session != null)
 		{
-			session.invalidate();
+			try {
+				session.invalidate();
+			}catch(IllegalStateException ie) {
+				//do nothing be happy
+			}
 		}else
 		{
 			System.out.println("something got wrong, when kick out");
