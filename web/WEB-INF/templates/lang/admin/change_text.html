@@ -13,7 +13,7 @@ function openEditor(metaId,txtNr) {
 	if(isIE55) {
 		var sLabel = document.getElementById("theLabel").innerText;
 		sLabel = sLabel.replace(/^\s*(.*)\s*$/g, "$1");
-		var sUrl = "$contextPath/imcms/$language/htmleditor/editor.html?meta_id=" + metaId + "&txt=" + txtNr + "&label=" + sLabel;
+		var sUrl = "$contextPath/imcms/$language/htmleditor/editor.jsp?meta_id=" + metaId + "&txt=" + txtNr + "&label=" + sLabel;
 		var iWidth = 680;
 		var iHeight = 495;
 		var sMenu = 0;
@@ -48,6 +48,17 @@ function openLinkEditor() {
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text'); checkMode();">
 
+<div id="theLabel" style="display:none"><i>#label#</i></div>
+
+<script language="JavaScript">
+<!--
+if(isIE55) {
+	openEditor("#meta_id#","#txt_no#") ;
+	document.location = "AdminDoc?meta_id=#meta_id#&flags=65536" ;
+}
+//-->
+</script>
+
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
 
@@ -68,7 +79,7 @@ function openLinkEditor() {
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <tr>
-	<td colspan="2">#gui_heading( "<? templates/sv/change_text.html/4/1 ?>" )<div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
+	<td colspan="2">#gui_heading( "<? templates/sv/change_text.html/4/1 ?>" )<div class="imcmsAdmText"><i>#label#</i></div></td>
 </tr>
 <tr>
 	<td colspan="2" class="imcmsAdmForm"><textarea name="text" id="txtCont" cols="125" rows="18" style="overflow: auto; width: 100%" wrap="virtual">

@@ -1,6 +1,9 @@
 <%@page contentType="text/javascript"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-<vel:velocity>
+<vel:velocity><%
+if (true == false) {
+	%><script><%
+} %>
 /* **********************************
  *   By: Tommy Ullberg, imCode
  *   www.imcode.com
@@ -221,16 +224,9 @@ var showAdv = 0;
  ******************************************************************************************* */
 
 	/* ***** ENABLE DIRECT TEXTEDIT - NO ChangeText PAGE: *****
-			* FIXED:
-			*   When you save, you will go directly to "Text-mode" again.
-			*   No copying to ChangeText and press [OK].
-			*   But you still need to open the editor from ChangText...
-			* NOT READY YET:
-			*   If this option is set - there will be no middle-step with the "change_text.html" page.
-			*   All text-fields will be opened directly in the editor when possible.
-			*   NOTE! When this is ready and in use - set "directEditViaChangeText = 0" below */
-	var directEditEnabled       = 1;
-	var directEditViaChangeText = 1;
+			* DISABLED FUNCTIONS - DO NOT ALTER */
+	var directEditEnabled       = 0;
+	var directEditViaChangeText = 0;
 
 
 	/* Modal(Modeless) Dialog Window (no parent.opener) NOT READY YET! */
@@ -265,10 +261,10 @@ var showAdv = 0;
 	var showHelpSubjectBtn = 1;
 
 	/* Confirm when saving (save and close) */
-	var confirmSave = 1;
+	var confirmSave = 0;
 
 	/* Confirm when closing (no save) */
-	var confirmClose = 1;
+	var confirmClose = 0;
 
 
 /* Admin settings (if there are a parameter "?admin=1" in ChangeText mode) */
@@ -296,7 +292,10 @@ if (isAdmin) {
 	showSaveBtn = 1;
 	showHelpFullBtn = 1;
 	showHelpSubjectBtn = 1;
-}
+}<%
+if (true == false) {
+	%></script><%
+} %>
 </vel:velocity>
 
 

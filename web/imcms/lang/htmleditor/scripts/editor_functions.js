@@ -45,7 +45,8 @@ var tableInfoWindow;
 function init() {
 	//alert(document.frames['changeTextFrame'].document.forms[0]);
 	document.getElementById("javascriptDisabled").style.display = "none";
-	var textToEdit = ((directEditEnabled && !directEditViaChangeText) || isModal) ? document.frames['changeTextFrame'].document.forms[0].text.value : parent.opener.document.forms[0].text.value;
+	//var textToEdit = ((directEditEnabled && !directEditViaChangeText) || isModal) ? document.frames['changeTextFrame'].document.forms[0].text.value : parent.opener.document.forms[0].text.value;
+	var textToEdit = theSavedCodeDiv.innerHTML ;
 
 	/* fix links and other paths */
 	textToEdit = fixOnLoad(textToEdit);
@@ -178,25 +179,20 @@ var arrTwoBreakAfterElements = new Array('</P>','</BLOCKQUOTE>');
 var timer;
 
 function doSend() {
+	var f = document.forms.saveForm ;
 	var doSave = (confirmSave) ? 0 : 1;
 	if (confirmSave) {
 		doSave = confirm('<? install/htdocs/sv/htmleditor/scripts/editor_functions.js/1 ?>');
 	}
 	if (doSave) {
-		var editedCode            = editorDiv.innerHTML;
-		theSavedCodeDiv.innerHTML = editedCode;
-		editedCode                = fixHTML(editedCode);
-		editedCode                = replaceParagraphs(editedCode);
-		if (directEditEnabled) {
-			document.frames['changeTextFrame'].document.forms[0].text.value = editedCode;
-			document.frames['changeTextFrame'].document.forms[0].format_type[1].checked = 1;
-			//document.frames['changeTextFrame'].document.forms[0].target = '_parent';
-			document.frames['changeTextFrame'].document.forms[0].ok.click();
-			timer = setInterval("checkSaved()", 100);
-		} else {
-			parent.opener.document.forms[0].text.value = editedCode;
-			parent.opener.document.forms[0].format_type[1].checked = 1;
-		}
+		var editedCode            = editorDiv.innerHTML ;
+		var originalCode          = theOriginalCodeDiv.innerHTML ;
+		theSavedCodeDiv.innerHTML = editedCode ;
+		editedCode                = fixHTML(editedCode) ;
+		editedCode                = replaceParagraphs(editedCode) ;
+		f.orgContent.value        = originalCode ;
+		f.txtContent.value        = editedCode ;
+		f.submit() ;
 	}
 }
 
