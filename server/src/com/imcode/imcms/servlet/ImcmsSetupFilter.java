@@ -21,26 +21,31 @@ public class ImcmsSetupFilter implements Filter {
 
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
 
-        HttpSession session = ( (HttpServletRequest)request ).getSession( true );
-        UserDomainObject user = (UserDomainObject)session.getAttribute( LOGGED_IN_USER );
+        HttpSession session = ((HttpServletRequest) request).getSession( true );
 
-        if ( user == null ) {
+        if (session.isNew()) {
+            IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+            service.incrementSessionCounter();
+        }
+
+        UserDomainObject user = (UserDomainObject) session.getAttribute( LOGGED_IN_USER );
+        if (user == null) {
             String ip = request.getRemoteAddr();
             user = getUserUserOrIpLoggedInUser( ip );
             session.setAttribute( LOGGED_IN_USER, user );
         }
-        user.setCurrentContextPath(((HttpServletRequest)request).getContextPath()) ;
+        user.setCurrentContextPath( ((HttpServletRequest) request).getContextPath() );
 
         initRequestWithApi( user, request );
 
-        NDC.setMaxDepth(0);
-        String contextPath = ((HttpServletRequest)request).getContextPath() ;
+        NDC.setMaxDepth( 0 );
+        String contextPath = ((HttpServletRequest) request).getContextPath();
         if (!"".equals( contextPath )) {
             NDC.push( contextPath );
         }
-        NDC.push(StringUtils.substringAfterLast(((HttpServletRequest)request).getRequestURI(), "/")) ;
+        NDC.push( StringUtils.substringAfterLast( ((HttpServletRequest) request).getRequestURI(), "/" ) );
         chain.doFilter( request, response );
-        NDC.setMaxDepth(0);
+        NDC.setMaxDepth( 0 );
     }
 
     private void initRequestWithApi( UserDomainObject currentUser, ServletRequest request ) {
@@ -49,7 +54,7 @@ public class ImcmsSetupFilter implements Filter {
         IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
         imcmsSystem = new DefaultContentManagementSystem( service, currentUser );
         request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
-        NDC.pop() ;
+        NDC.pop();
     }
 
     public void init( FilterConfig config ) throws ServletException {
@@ -78,7 +83,7 @@ public class ImcmsSetupFilter implements Filter {
 
         String user_data[] = imcref.sqlQuery( sqlStr, new String[]{"" + ip, "" + ip} );
 
-        if ( user_data.length > 0 ) {
+        if (user_data.length > 0) {
             user = imcref.verifyUser( user_data[0], user_data[1] );
             user.setLoginType( "ip_access" );
         } else {

@@ -8,9 +8,7 @@ import imcode.server.parser.ParserParameters ;
 import imcode.server.user.*;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.db.ConnectionPool;
@@ -79,6 +77,8 @@ public interface IMCServiceInterface {
     // get external template folder
     File getExternalTemplateFolder(int meta_id, UserDomainObject user)
 	;
+
+    void incrementSessionCounter();
 
     // set session counter
     void setSessionCounter(int value)  ;

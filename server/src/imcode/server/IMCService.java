@@ -3,7 +3,6 @@ package imcode.server;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.SqlHelpers;
 import imcode.server.document.*;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.parser.ParserParameters;
@@ -23,7 +22,6 @@ import org.apache.oro.text.perl.Perl5Util;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.Collator;
 import java.text.DateFormat;
@@ -252,9 +250,6 @@ final public class IMCService implements IMCServiceInterface {
         UserDomainObject user = externalizedImcmsAuthAndMapper.getUser( login );
         if ( userAuthenticates ) {
             result = user;
-            if ( "user".equalsIgnoreCase( user.getLoginName() ) ) {
-                incrementSessionCounter();
-            }
             mainLog.info( "->User '" + login + "' successfully logged in." );
         } else if ( null == user ) {
             mainLog.info( "->User '" + login + "' failed to log in: User not found." );
@@ -268,7 +263,7 @@ final public class IMCService implements IMCServiceInterface {
         return result;
     }
 
-    private void incrementSessionCounter() {
+    public void incrementSessionCounter() {
         sqlUpdateProcedure( "IncSessionCounter", new String[0] );
         sessionCounter = getSessionCounterFromDb();
     }
@@ -511,10 +506,6 @@ final public class IMCService implements IMCServiceInterface {
      * @param params    The parameters of the procedure
      */
     public String[] sqlProcedure( String procedure, String[] params ) {
-        return sqlProcedure( procedure, params, true );
-    }
-
-    private String[] sqlProcedure( String procedure, String[] params, boolean trim ) {
         return SqlHelpers.sqlProcedure( m_conPool, procedure, params );
     }
 
