@@ -19,9 +19,6 @@ import java.text.* ;
 
 public class GetExistingDoc extends HttpServlet {
 
-
-
-
         /**
          * init()
          */
@@ -46,13 +43,18 @@ public class GetExistingDoc extends HttpServlet {
         res.setContentType("text/html");
         ServletOutputStream out = res.getOutputStream();
 
-        // get meta_id
-        int meta_id = Integer.parseInt(req.getParameter("meta_id_value")) ;
+        // Lets get the meta_id for the page were adding stuff to
+        String tmpMetaIdS =  req.getParameter("meta_id_value");
+        //log("MetaIDValue: " + tmpS) ;
 
-        // get submit
-        values = req.getParameterValues("submit") ;
-        if (values != null)
-            submit_name = values[0] ;
+        int meta_id = 0 ;
+        log("Meta_ID: " + meta_id) ;
+        try {
+          meta_id = Integer.parseInt(tmpMetaIdS) ;
+        } catch (NumberFormatException exc) {
+          log("No meta id could be found. Check the template") ;
+          return ;
+        }
 
         // Get the session
         HttpSession session = req.getSession(true);
