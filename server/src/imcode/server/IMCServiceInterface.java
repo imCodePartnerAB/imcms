@@ -73,19 +73,18 @@ public interface IMCServiceInterface extends java.rmi.Remote {
 	throws java.rmi.RemoteException ;
 
 	// delete childs
-	void deleteChilds(int meta_id,int menu,imcode.server.User user,String childsThisMenu[])
+    void deleteChilds(int meta_id,int menu,imcode.server.User user,String childsThisMenu[])
 	throws java.rmi.RemoteException ;
 
 	// archive childs
-	void archiveChilds(int meta_id,imcode.server.User user,String childsThisMenu[])
-	throws java.rmi.RemoteException ;
+    void archiveChilds(int meta_id,imcode.server.User user,String childsThisMenu[])
+	    throws java.rmi.RemoteException ;
+    
+    /** Copy documents and insert them in a new textdocument and menu **/
+    void copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu) throws java.rmi.RemoteException ;
 
 	// save textdoc
 	public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc)
-	throws java.rmi.RemoteException ;
-
-	// Save a new browser doc
-	void saveNewBrowserDoc(int meta_id,imcode.server.User user,imcode.server.Table doc)
 	throws java.rmi.RemoteException ;
 
 	// Check if browser doc

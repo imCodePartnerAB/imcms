@@ -241,16 +241,6 @@ public class IMCServiceRMI {
 		}
 	}
 
-	public static void saveUrl( String server, int meta_id, User user, Table doc ) throws IOException {
-		IMCServiceInterface imc = getInterface( server ) ;
-		try {
-			imc.saveUrl(meta_id,user,doc) ;
-		} catch ( IOException ex ) {
-			imc = renewInterface(server) ;
-			imc.saveUrl(meta_id,user,doc) ;
-		}
-	}
-
 	public static String[] sqlProcedure( String server, String procedure ) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
 		try {
@@ -375,15 +365,6 @@ public class IMCServiceRMI {
 			imc.saveManualSort(meta_id,user,childs,sort_no) ;
 		}
 	}
-	public static void saveNewBrowserDoc( String server, int meta_id, User user, Table doc ) throws IOException {
-		IMCServiceInterface imc = getInterface( server ) ;
-		try {
-			imc.saveNewBrowserDoc(meta_id,user,doc) ;
-		} catch ( IOException ex ) {
-			imc = renewInterface(server) ;
-			imc.saveNewBrowserDoc(meta_id,user,doc) ;
-		}
-	}
 
 	public static String sqlQueryStr( String server, String sqlQuery ) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
@@ -440,6 +421,17 @@ public class IMCServiceRMI {
 			imc.archiveChilds(meta_id,user,childsThisMenu) ;
 		}
 	}
+
+	public static void copyDocs( String server, int meta_id, int doc_menu_no,  User user, String[] childsThisMenu) throws IOException {
+		IMCServiceInterface imc = getInterface( server ) ;
+		try {
+			imc.copyDocs(meta_id,doc_menu_no,user,childsThisMenu) ;
+		} catch ( IOException ex ) {
+			imc = renewInterface(server) ;
+			imc.copyDocs(meta_id,doc_menu_no,user,childsThisMenu) ;
+		}
+	}
+
 	public static Vector searchDocs( String server, int meta_id, User user, String question_str, String search_type, String string_match, String search_area ) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
 		try {
@@ -595,16 +587,6 @@ public class IMCServiceRMI {
 		} catch ( IOException ex ) {
 			imc = renewInterface(server) ;
 			return imc.getDocType(meta_id) ;
-		}
-	}
-
-	public static int getNoOfTxt ( String server, int meta_id, User user ) throws IOException {
-		IMCServiceInterface imc = getInterface( server ) ;
-		try {
-			return imc.getNoOfTxt(meta_id,user) ;
-		} catch ( IOException ex ) {
-			imc = renewInterface(server) ;
-			return imc.getNoOfTxt(meta_id,user) ;
 		}
 	}
 

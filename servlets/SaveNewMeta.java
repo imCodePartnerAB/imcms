@@ -169,13 +169,13 @@ public class SaveNewMeta extends HttpServlet {
 			Enumeration propkeys = metaprops.propertyNames() ;
 
 	// Lets get the new meta id from db
-			String sqlStr =	"select max(meta_id)+1 from meta\n" ;
-			String meta_id = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
+			//String sqlStr =	"select max(meta_id)+1 from meta\n" ;
+			//String meta_id = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
 			// log ("OK 1") ;
 
 	// Lets build the sql statement to add a new meta id
-		sqlStr = "insert into meta (meta_id,doc_type,activate,classification" ;
-			String sqlStr2 =")\nvalues ("+meta_id+","+doc_type+",0,''" ;
+		String sqlStr = "insert into meta (doc_type,activate,classification" ;
+			String sqlStr2 =")\nvalues ("+doc_type+",0,''" ;
 			while ( propkeys.hasMoreElements() ) {
 				String temp = (String)propkeys.nextElement() ;
 				String val = metaprops.getProperty(temp) ;
@@ -187,6 +187,8 @@ public class SaveNewMeta extends HttpServlet {
 			}
 			sqlStr += sqlStr2 + ")" ;
 			IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+			String meta_id = IMCServiceRMI.sqlQueryStr(imcserver,"select @@IDENTITY") ;
+
 			// log ("OK 2") ;
 
 			// Save the classifications to the db

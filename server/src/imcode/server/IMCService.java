@@ -251,7 +251,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
     }
 
     public byte[] parsePage (int meta_id, User user, int flags) throws IOException {
-	return parsePage(meta_id,user,flags,2) ;
+	return parsePage(meta_id,user,flags,1) ;
     }
 
     public byte[] parsePage (int meta_id, User user, int flags, int includelevel) throws IOException {
@@ -1945,7 +1945,21 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	dbc = null ;
     }
 
+    public void copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu) {
 
+	if (childsThisMenu != null && childsThisMenu.length > 0) {
+	    StringBuffer childs = new StringBuffer("CopyDocs '"+childsThisMenu[0]) ;
+
+	    for (int i=1; i<childsThisMenu.length; ++i) {
+		childs.append(",").append(childsThisMenu[i]) ;
+	    }
+
+	    childs.append("',"+meta_id+","+doc_menu_no) ;
+	    sqlUpdateProcedure(childs.toString()) ;
+
+	}
+
+    }
 
     /**
      * <p>Archive childs for a menu.
@@ -1980,88 +1994,6 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	dbc.closeConnection() ;
 	dbc = null ;
     }
-
-    /**
-     * <p>Save a new browser doc.
-     */
-    public void saveNewBrowserDoc(int meta_id,imcode.server.User user,imcode.server.Table doc) {
-	String sqlStr = "" ;
-	String browsers[] = {"ns3_pc","ns4_pc","ns5_pc","msie3_pc","msie4_pc","msie5_pc","other_pc",
-			     "ns3_mac","ns4_mac","ns5_mac","msie3_mac","msie4_mac","msie5_mac","other_mac"} ;
-	int to_meta_id  ;
-
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.getConnection() ;
-
-	for ( int i = 0 ; i < browsers.length ; i++ ) {
-	    to_meta_id = doc.getInt(browsers[i]) ;
-
-	    //if (to_meta_id != -1)
-	    sqlStr  = "insert into browser_docs(meta_id,to_meta_id,browser)\n" ;
-	    sqlStr += "values(" + meta_id + "," + to_meta_id ;
-	    sqlStr += ",'" + browsers[i] + "')";
-
-	    dbc.setSQLString(sqlStr) ;
-	    dbc.createStatement() ;
-	    dbc.executeUpdateQuery() ;
-	    //}
-	}
-
-	this.activateChild(meta_id,user) ;
-
-	this.updateLogs("Browser doc created by user: [" +
-			user.getString("first_name").trim() + " " +
-			user.getString("last_name").trim() + "]") ;
-
-	//close connection
-	dbc.closeConnection() ;
-	dbc = null ;
-
-
-    }
-
-
-    /**
-     * <p>Save a browser doc.
-     */
-    /*
-      public void saveBrowserDoc(int meta_id,imcode.server.User user,imcode.server.Table doc) {
-      String sqlStr = "" ;
-      String browsers[] = {"ns3_pc","ns4_pc","ns5_pc","msie3_pc","msie4_pc","msie5_pc","other_pc",
-      "ns3_mac","ns4_mac","ns5_mac","msie3_mac","msie4_mac","msie5_mac","other_mac"} ;
-      String to_meta_id = "" ;
-
-      DBConnect dbc = new DBConnect(m_conPool) ;
-      dbc.getConnection() ;
-
-
-      for ( int i = 0 ; i < browsers.length ; i++ ) {
-      to_meta_id = doc.getString(browsers[i]) ;
-
-
-      if ( to_meta_id != null ) {
-      sqlStr  = "update browser_docs\n" ;
-      sqlStr += "set to_meta_id = " + Integer.parseInt(to_meta_id) + "\n";
-      sqlStr += "where meta_id = " + meta_id + " and " ;
-      sqlStr += "browser = '" + browsers[i]  + "'";
-
-
-      dbc.setSQLString(sqlStr) ;
-      dbc.createStatement() ;
-      dbc.executeUpdateQuery() ;
-      }
-      }
-
-
-      this.updateLogs("Browser doc updated by user: [" +
-      user.getString("first_name").trim() + " " +
-      user.getString("last_name").trim() + "]") ;
-
-      //close connection
-      dbc.closeConnection() ;
-      dbc = null ;
-      }
-    */
 
     /**
      * <p>Check if browser doc.                                                                     *
@@ -2691,8 +2623,8 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
     }
 
     /**
-     * <p>InActivate child from child-table.
-     */
+       Deactivate (sigh) child from child-table.
+    **/
     public void inActiveChild(int meta_id,imcode.server.User user) {
 
 	String sqlStr = "" ;

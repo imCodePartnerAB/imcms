@@ -109,11 +109,17 @@ public class SaveSort extends HttpServlet {
 				IMCServiceRMI.saveManualSort( imcserver,meta_id,user,childs,sort_no ) ;
 			}
 		} else if( req.getParameter("delete")!=null ) {
-			if( childsThisMenu != null )
-				IMCServiceRMI.deleteChilds( imcserver,meta_id,doc_menu_no,user,childsThisMenu ) ;
+		    if( childsThisMenu != null ) {
+			IMCServiceRMI.deleteChilds( imcserver,meta_id,doc_menu_no,user,childsThisMenu ) ;
+		    }
 		} else if( req.getParameter("archive")!=null ) {
-			if( childsThisMenu != null )
-				IMCServiceRMI.archiveChilds( imcserver,meta_id,user,childsThisMenu ) ;
+		    if( childsThisMenu != null ) {
+			IMCServiceRMI.archiveChilds( imcserver,meta_id,user,childsThisMenu ) ;
+		    }
+		} else if( req.getParameter("copy")!=null ) {
+		    if( childsThisMenu != null ) {
+			IMCServiceRMI.copyDocs( imcserver,meta_id,doc_menu_no,user,childsThisMenu ) ;
+		    }
 		}
 
 //		htmlStr = IMCServiceRMI.interpretTemplate( imcserver,meta_id,user ) ;

@@ -64,7 +64,6 @@ CLASSES = AddDoc.class \
           AdminRoles.class \
           AdminSystemInfo.class \
           AdminUser.class \
-          AdminUserPhones.class \
           AdminUserProps.class \
           Administrator.class \
           ErrorMessageGenerator.class \
