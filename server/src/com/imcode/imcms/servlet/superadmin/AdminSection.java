@@ -33,7 +33,7 @@ public class AdminSection extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser(req);
 
         //lets see if its a super admin we got otherwise get rid of him fast
-        if (imcref.checkAdminRights(user) == false) {
+        if (user.isSuperAdmin() == false) {
             log("the user wasn't a administrator so lets get rid of him");
             res.sendRedirect("StartDoc");
             return;
@@ -53,7 +53,7 @@ public class AdminSection extends Administrator {
 
         //lets see if its a super admin we got outherwise get rid of him fast
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (imcref.checkAdminRights(user) == false) {
+        if (user.isSuperAdmin() == false) {
             log("the user wasn't a administrator so lets get rid of him");
             res.sendRedirect("StartDoc");
             return;

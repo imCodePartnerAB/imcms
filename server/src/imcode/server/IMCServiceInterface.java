@@ -15,8 +15,6 @@ import imcode.util.net.SMTP;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.VelocityContext;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * Interface for the Imcode Net Server.
  */
@@ -181,8 +179,6 @@ public interface IMCServiceInterface {
     public List getPollList(String pollListName);
 
     public void setPollList(String pollListName, List pollList) throws IOException ;
-
-    public boolean checkAdminRights(UserDomainObject user) ;
 
     public int getSessionCounter();
 

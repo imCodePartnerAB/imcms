@@ -26,7 +26,7 @@ public class FileAdmin extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req ) ;
-        if ( !imcref.checkAdminRights( user ) ) {
+        if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
             return;
         }
@@ -68,7 +68,7 @@ public class FileAdmin extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req ) ;
-        if ( !imcref.checkAdminRights( user ) ) {
+        if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
             return;
         }

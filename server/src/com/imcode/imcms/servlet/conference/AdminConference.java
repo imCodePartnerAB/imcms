@@ -68,7 +68,7 @@ public class AdminConference extends Administrator {
 
         // Lets verify that the user who tries to add a new user is an admin
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        if (imcref.checkAdminRights(user) == false) {
+        if (user.isSuperAdmin() == false) {
             sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 2, response );
             return ;
         }

@@ -17,7 +17,7 @@ public class TemplateAdd extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !imcref.checkAdminRights( user ) ) {
+        if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
             return;
         }
@@ -67,7 +67,7 @@ public class TemplateAdd extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !imcref.checkAdminRights( user ) ) {
+        if ( !user.isSuperAdmin() ) {
             Utility.redirectToStartDocument( req, res );
             return;
         }

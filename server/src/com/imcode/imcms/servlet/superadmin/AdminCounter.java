@@ -36,7 +36,7 @@ public class AdminCounter extends Administrator {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (!imcref.checkAdminRights(user)) {
+        if (!user.isSuperAdmin()) {
             String header = "Error in AdminCounter.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+ "<BR>";

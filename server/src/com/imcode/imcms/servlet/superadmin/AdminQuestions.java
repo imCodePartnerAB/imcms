@@ -39,7 +39,7 @@ public class AdminQuestions extends Administrator implements imcode.server.IMCCo
         // Lets verify that the user who tries to admin a fortune is an admin
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (imcref.checkAdminRights(user) == false) {
+        if (user.isSuperAdmin() == false) {
             String header = "Error in AdminQuestions.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";

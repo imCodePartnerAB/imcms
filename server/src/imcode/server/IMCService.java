@@ -773,25 +773,6 @@ final public class IMCService implements IMCServiceInterface {
     }
 
     /**
-     * CheckAdminRights, returns true if the user is an superadmin. Only an superadmin
-     * is allowed to create new users
-     * False if the user isn't an administrator.
-     * 1 = administrator
-     * 0 = superadministrator
-     */
-    public boolean checkAdminRights( imcode.server.user.UserDomainObject user ) {
-        String[][] roles = sqlProcedureMulti( "CheckAdminRights", new String[]{"" + user.getId()} );
-
-        for ( int i = 0; i < roles.length; i++ ) {
-            String roleId = roles[i][1];
-            if ( roleId.equalsIgnoreCase( "0" ) ) {
-                return true;
-            }
-        }
-        return false;
-    } // checkAdminRights
-
-    /**
      * checkDocAdminRights
      */
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {

@@ -26,7 +26,7 @@ public class AdminDeleteDoc extends Administrator {
         // Lets verify that this user is an admin
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (imcref.checkAdminRights(user) == false) {
+        if (user.isSuperAdmin() == false) {
             String header = "Error in AdminCounter.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+ "<br>";
@@ -47,7 +47,7 @@ public class AdminDeleteDoc extends Administrator {
         // Lets check if the user is an admin, otherwise throw him out.
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (imcref.checkAdminRights(user) == false) {
+        if (user.isSuperAdmin() == false) {
             String header = "Error in AdminCounter.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+"<br>";

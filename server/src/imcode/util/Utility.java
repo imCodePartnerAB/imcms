@@ -9,10 +9,7 @@ import org.apache.velocity.VelocityContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.Date;
 import java.util.StringTokenizer;
 
@@ -114,15 +111,6 @@ public class Utility {
 
     public static void setDefaultHtmlContentType( HttpServletResponse res ) {
         res.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
-    }
-
-    public static String evaluateVelocity( Reader templateReader, HttpServletRequest request ) throws Exception {
-        UserDomainObject user = getLoggedOnUser( request );
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-        VelocityContext context = service.getVelocityContext( user );
-        StringWriter out = new StringWriter();
-        service.getVelocityEngine( user ).evaluate( context, out, "velocity", templateReader );
-        return out.toString();
     }
 
     public static void redirectToStartDocument( HttpServletRequest req, HttpServletResponse res ) throws IOException {

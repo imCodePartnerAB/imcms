@@ -67,7 +67,7 @@ public class ChatAdmin extends Administrator {
 
         // Lets verify that the user who tries to add a new user is an admin
         UserDomainObject user = Utility.getLoggedOnUser(request);
-        if (!imcref.checkAdminRights(user)) {
+        if (!user.isSuperAdmin()) {
             sendErrorMessage(imcref, eMailServerMaster, user, ERROR_HEADER, 2, response);
             return;
         }

@@ -64,7 +64,7 @@ public class AdminCategories extends HttpServlet {
         // Lets verify that the user who tries to add a new user is an admin
         IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (service.checkAdminRights( user ) == false) {
+        if (!user.isSuperAdmin()) {
             String header = "Error in AdminCategories. ";
             Properties langproperties = service.getLanguageProperties(user);
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";

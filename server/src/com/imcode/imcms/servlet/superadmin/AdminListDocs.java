@@ -75,7 +75,7 @@ public class AdminListDocs extends Administrator {
         // Lets verify that the user who tries to add a new user is an admin
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        if ( imcref.checkAdminRights( user ) == false ) {
+        if ( user.isSuperAdmin() == false ) {
             return;
         }
 
@@ -106,7 +106,7 @@ public class AdminListDocs extends Administrator {
 
         // Lets check if the user is an admin, otherwise throw him out.
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        if ( !imcref.checkAdminRights( user ) ) {
+        if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminListDocs. ";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";

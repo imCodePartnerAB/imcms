@@ -54,7 +54,7 @@
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1001 ?>&nbsp;</td>
 	<td><input type="text" name="<%= DocumentComposer.PARAMETER__URL_DOC__URL %>" size="62" maxlength="255"
-                value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getUrlDocumentUrl(), "" )) %>"></td>
+                value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getUrl(), "" )) %>"></td>
 </tr>
 <tr>
 	<td colspan="2">

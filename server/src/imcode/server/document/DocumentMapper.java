@@ -841,7 +841,7 @@ public class DocumentMapper {
         String sqlUrlDocsInsertStr = makeSqlInsertString( "url_docs", urlDocumentColumns );
 
         service.sqlUpdateQuery( sqlUrlDocsInsertStr, new String[]{
-            "" + document.getId(), "", "", document.getUrlDocumentUrl(), "", ""
+            "" + document.getId(), "", "", document.getUrl(), "", ""
         } );
     }
 
@@ -1692,7 +1692,7 @@ public class DocumentMapper {
 
     void saveUrlDocument( UrlDocumentDomainObject urlDocument ) {
         String sqlStr = "UPDATE url_docs SET url_ref = ? WHERE meta_id = ?";
-        service.sqlUpdateQuery( sqlStr, new String[]{urlDocument.getUrlDocumentUrl(), "" + urlDocument.getId()} );
+        service.sqlUpdateQuery( sqlStr, new String[]{urlDocument.getUrl(), "" + urlDocument.getId()} );
     }
 
     void saveFileDocument( FileDocumentDomainObject fileDocument ) {

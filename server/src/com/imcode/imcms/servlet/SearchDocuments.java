@@ -26,7 +26,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Search documents
@@ -34,16 +33,16 @@ import java.util.Vector;
 public class SearchDocuments extends HttpServlet {
 
     //the templates we uses as default they are stored in template/admin/original folder
-    private final static String SEARCH_PAGE_TEMPLATE = "search_documents.html";
-    private final static String HIT_PAGE_TEMPLATE = "search_result.html";
-    private final static String NO_HIT_PAGE_TEMPLATE = "search_result_no_hit.html";
-    private final static String HIT_LINE_TEMPLATE = "search_result_list.html";
+    private final static String SEARCH_PAGE_TEMPLATE = "search/search_documents.html";
+    private final static String HIT_PAGE_TEMPLATE = "search/search_result.html";
+    private final static String NO_HIT_PAGE_TEMPLATE = "search/search_result_no_hit.html";
+    private final static String HIT_LINE_TEMPLATE = "search/search_result_list.html";
 
-    private final static String NAV_NEXT_BUTTON = "search_nav_next.html";
-    private final static String NAV_PREV_BUTTON = "search_nav_prev.html";
-    private final static String NAV_ACTIVE = "search_nav_active.html";
-    private final static String NAV_INACTIVE = "search_nav_inactive.html";
-    private final static String NAV_AHREF = "search_nav_ahref.html";
+    private final static String NAV_NEXT_BUTTON = "search/search_nav_next.html";
+    private final static String NAV_PREV_BUTTON = "search/search_nav_prev.html";
+    private final static String NAV_ACTIVE = "search/search_nav_active.html";
+    private final static String NAV_INACTIVE = "search/search_nav_inactive.html";
+    private final static String NAV_AHREF = "search/search_nav_ahref.html";
 
     private final static Logger log = Logger.getLogger( com.imcode.imcms.servlet.SearchDocuments.class.getName() );
 
@@ -174,26 +173,15 @@ public class SearchDocuments extends HttpServlet {
         //ok lets see what folder to get the search-templates from.
         // @show = parameter with the folder name. If we get no parameter lets use folder original.
         String oneRecHtmlSrc, resultHtmlSrc, noHitHtmlStr, returnStr;
-        String show = req.getParameter( "show" );
 
-        String langPrefix = user.getLanguageIso639_2();
-        String templatePath = langPrefix + "/admin/search/";
-
-        if ( show == null ) {
-            show = "original"; // default folder for search-templates
-        }
-
-        String nextTextTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_NEXT_BUTTON, user, null );
-        String prevTextTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_PREV_BUTTON, user, null );
-        String activeTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_ACTIVE, user, null );
-        String inActiveTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_INACTIVE, user, null );
-        String ahrefTemplate = imcref.getTemplate( templatePath + show + "/" + NAV_AHREF, user, null );
-        oneRecHtmlSrc = imcref.getTemplate( templatePath + show + "/" + HIT_LINE_TEMPLATE, user, null );
-        resultHtmlSrc = imcref.getTemplate( templatePath + show + "/" + HIT_PAGE_TEMPLATE, user, null );
-        noHitHtmlStr = imcref.getTemplate( templatePath + show + "/" + NO_HIT_PAGE_TEMPLATE, user, null );
-        //Fix kolla att ingen mall är null om så returnera alla hitts i en lång lista
-
-
+        String nextTextTemplate = imcref.getAdminTemplate( NAV_NEXT_BUTTON, user, null );
+        String prevTextTemplate = imcref.getAdminTemplate( NAV_PREV_BUTTON, user, null );
+        String activeTemplate = imcref.getAdminTemplate( NAV_ACTIVE, user, null );
+        String inActiveTemplate = imcref.getAdminTemplate( NAV_INACTIVE, user, null );
+        String ahrefTemplate = imcref.getAdminTemplate( NAV_AHREF, user, null );
+        oneRecHtmlSrc = imcref.getAdminTemplate( HIT_LINE_TEMPLATE, user, null );
+        resultHtmlSrc = imcref.getAdminTemplate( HIT_PAGE_TEMPLATE, user, null );
+        noHitHtmlStr = imcref.getAdminTemplate( NO_HIT_PAGE_TEMPLATE, user, null );
 
         //lets set up the <-prev- 1 2 .. -next-> stuff
         boolean nextButtonOn = false;
@@ -258,7 +246,7 @@ public class SearchDocuments extends HttpServlet {
         if ( buff.length() == 0 ) {
             buff.append( noHitHtmlStr );
         }
-        Vector tags = new Vector();
+        List tags = new ArrayList();
         tags.add( "#search_list#" );
         tags.add( buff.toString() );
         tags.add( "#nrhits#" );
@@ -290,7 +278,6 @@ public class SearchDocuments extends HttpServlet {
         out.print( returnStr );
         out.flush();
         out.close();
-        return;
     } // End of doPost
 
     private DocumentDomainObject[] searchDocuments( String searchString,
@@ -325,15 +312,9 @@ public class SearchDocuments extends HttpServlet {
         //ok lets see what folder to get the search-templates from.
         // @show = parameter with the folder name. If we get no parameter lets use folder original.
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        String langPrefix = user.getLanguageIso639_2();
-        String templatePath = langPrefix + "/admin/search/";
-        String show = req.getParameter( "show" );
-        if ( show == null ) {
-            show = "original"; // default folder for search-templates
-        }
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String templateStr = imcref.getTemplate( templatePath + show + "/" + SEARCH_PAGE_TEMPLATE, user, null );
+        String templateStr = imcref.getAdminTemplate( SEARCH_PAGE_TEMPLATE, user, null );
 
 
         //the no_of_hits list
@@ -356,7 +337,7 @@ public class SearchDocuments extends HttpServlet {
         String section_option_list = "";
         selected = req.getParameter( "section" );
         if ( all_sections != null ) {
-            Vector onlyTemp = new Vector();
+            List onlyTemp = new ArrayList();
             for ( int i = 0; i < all_sections.length; i++ ) {
 
                 onlyTemp.add( all_sections[i] );
@@ -368,7 +349,7 @@ public class SearchDocuments extends HttpServlet {
         //	String originalSearchString = req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
 
         // Lets get the html file we use as template
-        Vector tags = new Vector();
+        List tags = new ArrayList();
         tags.add( "#search_hit_list#" );
         tags.add( "" );
         tags.add( "#section_list#" );
@@ -381,7 +362,6 @@ public class SearchDocuments extends HttpServlet {
         out.print( Parser.parseDoc( templateStr, (String[])tags.toArray( new String[tags.size()] ) ) );
         out.flush();
         out.close();
-        return;
     } // End of doGet
 
     private static StringBuffer parseSearchResults( String oneRecHtmlSrc,

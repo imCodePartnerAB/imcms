@@ -48,7 +48,7 @@ public class AdminRoles extends Administrator {
         // Lets verify that the user who tries to add a new user is an admin
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( imcref.checkAdminRights( user ) == false ) {
+        if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoles.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
@@ -92,7 +92,7 @@ public class AdminRoles extends Administrator {
         // Lets check if the user is an admin, otherwise throw him out.
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( imcref.checkAdminRights( user ) == false ) {
+        if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoles.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";

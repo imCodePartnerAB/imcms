@@ -116,7 +116,7 @@ public class AdminUser extends Administrator {
         boolean isUseradmin = user.isUserAdmin();
 
         // check if user is a Superadmin, adminRole = 1
-        boolean isSuperadmin = imcref.checkAdminRights( user );
+        boolean isSuperadmin = user.isSuperAdmin();
 
         // Lets check if the user is an admin, otherwise throw him out.
         if ( !isSuperadmin && !isUseradmin ) {
@@ -165,7 +165,7 @@ public class AdminUser extends Administrator {
             // Lets check if the user has right to do changes
             // only if he is an superadmin, useradmin or if he try to change his own values
             // otherwise throw him out.
-            if ( imcref.checkAdminRights( user ) == false && !useradmin && !userToChangeId.equals( "" + user.getId() ) ) {
+            if ( user.isSuperAdmin() == false && !useradmin && !userToChangeId.equals( "" + user.getId() ) ) {
                 String header = "Error in AdminUser, change user.";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";

@@ -18,6 +18,6 @@ public class UrlDocument extends Document {
 
     public String getUrl() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        return ((UrlDocumentDomainObject)internalDocument).getUrlDocumentUrl();
+        return ((UrlDocumentDomainObject)internalDocument).getUrl();
     }
 }

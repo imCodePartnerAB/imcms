@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
+
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
     private class LazilyLoadedTextDocumentAttributes implements Serializable, Cloneable {
@@ -141,6 +143,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this.getLazilyLoadedTextDocumentAttributes().images = images;
     }
 
+    /** @return Map<Integer, {@link TextDocumentDomainObject.Image} **/
     public Map getImages() {
         return Collections.unmodifiableMap( getLazilyLoadedTextDocumentAttributes().images );
     }
@@ -237,7 +240,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         }
 
         /**
-         * Equivalent to getMenuText()
+         * Equivalent to getText()
          */
         public String toString() {
             return getText();

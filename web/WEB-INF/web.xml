@@ -554,8 +554,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.UrlDocTest</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.UrlDocTest</servlet-class>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.LinkCheck</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.LinkCheck</servlet-class>
     </servlet>
 
     <servlet>
@@ -1104,8 +1104,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.UrlDocTest</servlet-name>
-        <url-pattern>/servlet/UrlDocTest</url-pattern>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.LinkCheck</servlet-name>
+        <url-pattern>/servlet/LinkCheck</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

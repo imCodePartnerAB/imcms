@@ -48,7 +48,7 @@ public class AdminManager extends Administrator {
         Vector vec = new Vector();
         String html_admin_part;
 
-        if (imcref.checkAdminRights(user)) {
+        if (user.isSuperAdmin()) {
             html_admin_part = imcref.getAdminTemplate( HTML_ADMINTASK, user, vec ); // if superadmin
         } else { //if user is useradmin
             html_admin_part = imcref.getAdminTemplate( HTML_USERADMINTASK, user, vec ); //if useradmin
@@ -87,8 +87,8 @@ public class AdminManager extends Administrator {
             url += "AdminSystemInfo";
         } else if (whichButton.equalsIgnoreCase("AdminRoles")) {
             url += "AdminRoles";
-        } else if (whichButton.equalsIgnoreCase("UrlDocTest")) {
-            url += "UrlDocTest";
+        } else if (whichButton.equalsIgnoreCase("LinkCheck")) {
+            url += "LinkCheck";
         } else if (whichButton.equalsIgnoreCase("MetaAdmin")) {
             url += "MetaAdmin";
         } else if (whichButton.equalsIgnoreCase("FileAdmin")) {

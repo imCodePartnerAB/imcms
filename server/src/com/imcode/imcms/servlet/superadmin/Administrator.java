@@ -61,7 +61,7 @@ public class Administrator extends HttpServlet {
     public static boolean checkAdminRights(HttpServletRequest req) {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        return imcref.checkAdminRights( user );
+        return user.isSuperAdmin();
     }
 
     /**

@@ -30,7 +30,7 @@ public class AdminFortunes extends Administrator {
 
         // Lets verify that the user who tries to admin a fortune is an admin
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (imcref.checkAdminRights(user) == false) {
+        if (user.isSuperAdmin() == false) {
             String header = "Error in AdminFortunes.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+"<br>";

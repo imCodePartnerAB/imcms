@@ -56,7 +56,6 @@ public class AdminUserProps extends Administrator {
         if ( req.getParameter( "ADD_USER" ) != null ) {
 
             // Lets check if the user is an admin, otherwise throw him out.
-            //if (imcref.checkAdminRights(user) == false) {
             if ( !user.isSuperAdmin() && !user.isUserAdmin() ) {
                 showErrorPageUserNotAnAdministrator( req, res, imcref, user );
                 return;
@@ -76,7 +75,7 @@ public class AdminUserProps extends Administrator {
             // Lets check if the user has right to do changes
             // only if he is an superadmin, useradmin or if he try to change his own values
             // otherwise throw him out.
-            if ( imcref.checkAdminRights( user ) == false && !user.isUserAdmin()
+            if ( user.isSuperAdmin() == false && !user.isUserAdmin()
                  && !userToChangeId.equals( "" + user.getId() ) ) {
                 showErrorPageUserHasNoRightsToChangeUserValues( req, res, imcref, user );
                 return;
@@ -544,7 +543,7 @@ public class AdminUserProps extends Administrator {
                 adminTask = "";
             }
 
-            if ( imcref.checkAdminRights( user ) == false && !user.isUserAdmin()
+            if ( user.isSuperAdmin() == false && !user.isUserAdmin()
                  && !userToChangeId.equals( "" + user.getId() ) ) {
                 String header = "Error in AdminUserProps.";
                 Properties langproperties = imcref.getLanguageProperties( user );

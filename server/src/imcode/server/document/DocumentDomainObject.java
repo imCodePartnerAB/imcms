@@ -1,6 +1,8 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
+import com.imcode.imcms.api.NoPermissionException;
+import com.imcode.imcms.api.Document;
 import imcode.server.ApplicationServer;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -519,5 +521,27 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 return clone;
             }
         }
+    }
+
+    public abstract static class Comparator implements java.util.Comparator {
+
+        public int compare( Object o1, Object o2 ) {
+            final DocumentDomainObject d1 = (DocumentDomainObject)o1;
+            final DocumentDomainObject d2 = (DocumentDomainObject)o2;
+            try {
+                return compareDocuments( d1, d2 );
+            } catch ( NullPointerException npe ) {
+                throw new NullPointerException( "Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.") ;
+            }
+        }
+
+        protected abstract int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) ;
+
+        public final static DocumentDomainObject.Comparator ID = new DocumentDomainObject.Comparator() {
+            protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
+                return d1.getId() - d2.getId();
+            }
+        };
+
     }
 }

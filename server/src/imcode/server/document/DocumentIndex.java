@@ -8,16 +8,14 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.lucene.analysis.*;
-import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -37,6 +35,25 @@ public class DocumentIndex {
 
     private File dir;
     private IndexWriter indexWriter;
+
+    private static final String FIELD__META_ID = "meta_id";
+    private static final String FIELD__META_HEADLINE = "meta_headline";
+    private static final String FIELD__META_TEXT = "meta_text";
+    public static final String FIELD__DOC_TYPE_ID = "doc_type_id";
+    private static final String FIELD__SECTION = "section";
+    private static final String FIELD__CREATED_DATETIME = "created_datetime";
+    private static final String FIELD__MODIFIED_DATETIME = "modified_datetime";
+    private static final String FIELD__ACTIVATED_DATETIME = "activated_datetime";
+    private static final String FIELD__PUBLICATION_START_DATETIME = "publication_start_datetime";
+    private static final String FIELD__PUBLICATION_END_DATETIME = "publication_end_datetime";
+    private static final String FIELD__ARCHIVED_DATETIME = "archived_datetime";
+    private static final String FIELD__STATUS = "status";
+    public static final String FIELD__TEXT = "text";
+    private static final String FIELD__CATEGORY_ID = "category_id";
+    private static final String FIELD__KEYWORD = "keyword";
+    private static final String FIELD__PARENT_ID = "parent_id";
+    private static final String FIELD__PARENT_MENU_ID = "parent_menu_id";
+    public static final String FIELD__IMAGE_LINK_URL = "image_link_url";
 
     public DocumentIndex( File dir ) {
         this.dir = dir;
@@ -119,8 +136,8 @@ public class DocumentIndex {
 
     public Query parseLucene( String queryString ) throws ParseException {
         Query query = MultiFieldQueryParser.parse( queryString,
-                                         new String[] {"meta_headline", "meta_text", "text", "keyword"},
-                                         new WhitespaceLowerCaseAnalyzer() );
+                                                   new String[]{"meta_headline", "meta_text", "text", "keyword"},
+                                                   new LowerCaseLetterAnalyzer() );
         return query;
     }
 
@@ -145,7 +162,7 @@ public class DocumentIndex {
 
     private void openIndexWriter( final boolean createIndex ) throws IOException {
         if ( null == indexWriter ) {
-            indexWriter = new IndexWriter( dir, new WhitespaceLowerCaseAnalyzer(), createIndex );
+            indexWriter = new IndexWriter( dir, new LowerCaseLetterAnalyzer(), createIndex );
         }
     }
 
@@ -181,60 +198,71 @@ public class DocumentIndex {
         Document indexDocument = new Document();
 
         int documentId = document.getId();
-        indexDocument.add( Field.Keyword( "meta_id", "" + documentId ) );
-        indexDocument.add( Field.UnStored( "meta_headline", document.getHeadline() ) );
-        indexDocument.add( Field.UnStored( "meta_text", document.getMenuText() ) );
-        indexDocument.add( unStoredKeyword( "doc_type_id", "" + document.getDocumentTypeId() ) );
+        indexDocument.add( Field.Keyword( FIELD__META_ID, "" + documentId ) );
+        indexDocument.add( Field.UnStored( FIELD__META_HEADLINE, document.getHeadline() ) );
+        indexDocument.add( Field.UnStored( FIELD__META_TEXT, document.getMenuText() ) );
+        indexDocument.add( unStoredKeyword( FIELD__DOC_TYPE_ID, "" + document.getDocumentTypeId() ) );
         SectionDomainObject[] sections = document.getSections();
         for ( int i = 0; i < sections.length; i++ ) {
             SectionDomainObject section = sections[i];
-            indexDocument.add( unStoredKeyword( "section", section.getName() ) );
+            indexDocument.add( unStoredKeyword( FIELD__SECTION, section.getName() ) );
         }
         if ( null != document.getCreatedDatetime() ) {
             try {
-                indexDocument.add( unStoredKeyword( "created_datetime", document.getCreatedDatetime() ) );
+                indexDocument.add( unStoredKeyword( FIELD__CREATED_DATETIME, document.getCreatedDatetime() ) );
             } catch ( RuntimeException re ) {
                 log.warn( "Indexing document " + documentId, re );
             }
         }
 
-        addDateField( documentId, indexDocument, "modified_datetime", document.getModifiedDatetime() );
-        addDateField( documentId, indexDocument, "activated_datetime", document.getPublicationStartDatetime() );
-        addDateField( documentId, indexDocument, "publication_start_datetime", document.getPublicationStartDatetime() );
-        addDateField( documentId, indexDocument, "publication_end_datetime", document.getPublicationEndDatetime() );
-        addDateField( documentId, indexDocument, "archived_datetime", document.getArchivedDatetime() );
+        addDateField( documentId, indexDocument, FIELD__MODIFIED_DATETIME, document.getModifiedDatetime() );
+        addDateField( documentId, indexDocument, FIELD__ACTIVATED_DATETIME, document.getPublicationStartDatetime() );
+        addDateField( documentId, indexDocument, FIELD__PUBLICATION_START_DATETIME, document.getPublicationStartDatetime() );
+        addDateField( documentId, indexDocument, FIELD__PUBLICATION_END_DATETIME, document.getPublicationEndDatetime() );
+        addDateField( documentId, indexDocument, FIELD__ARCHIVED_DATETIME, document.getArchivedDatetime() );
 
-        indexDocument.add( unStoredKeyword( "status", "" + document.getStatus() ) );
+        indexDocument.add( unStoredKeyword( FIELD__STATUS, "" + document.getStatus() ) );
 
-        Iterator textsIterator = ApplicationServer.getIMCServiceInterface().getDocumentMapper()
-                .getTexts( documentId ).entrySet().iterator();
-        while ( textsIterator.hasNext() ) {
-            Map.Entry textEntry = (Map.Entry)textsIterator.next();
-            String textIndexString = (String)textEntry.getKey();
-            TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)textEntry.getValue();
-            indexDocument.add( Field.UnStored( "text", text.getText() ) );
-            indexDocument.add( Field.UnStored( "text" + textIndexString, text.getText() ) );
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        if ( document instanceof TextDocumentDomainObject ) {
+            TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document ;
+            Iterator textsIterator = textDocument.getTexts().entrySet().iterator() ;
+            while ( textsIterator.hasNext() ) {
+                Map.Entry textEntry = (Map.Entry)textsIterator.next();
+                Integer textIndex = (Integer)textEntry.getKey();
+                TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)textEntry.getValue();
+                indexDocument.add( Field.UnStored( FIELD__TEXT, text.getText() ) );
+                indexDocument.add( Field.UnStored( FIELD__TEXT + textIndex, text.getText() ) );
+            }
+
+            Iterator imagesIterator = textDocument.getImages().values().iterator() ;
+            while ( imagesIterator.hasNext() ) {
+                TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)imagesIterator.next() ;
+                String imageLinkUrl = image.getLinkUrl();
+                if (null != imageLinkUrl && imageLinkUrl.length() > 0) {
+                    indexDocument.add( unStoredKeyword( FIELD__IMAGE_LINK_URL, imageLinkUrl )) ;
+                }
+            }
         }
 
         CategoryDomainObject[] categories = document.getCategories();
         for ( int i = 0; i < categories.length; i++ ) {
             CategoryDomainObject category = categories[i];
-            indexDocument.add( unStoredKeyword( "category_id", "" + category.getId() ) );
+            indexDocument.add( unStoredKeyword( FIELD__CATEGORY_ID, "" + category.getId() ) );
         }
 
         String[] documentKeywords = document.getKeywords();
         for ( int i = 0; i < documentKeywords.length; i++ ) {
             String documentKeyword = documentKeywords[i];
-            indexDocument.add( unStoredKeyword( "keyword", documentKeyword ) );
+            indexDocument.add( unStoredKeyword( FIELD__KEYWORD, documentKeyword ) );
         }
 
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         String[][] parentDocumentAndMenuIds = documentMapper.getParentDocumentAndMenuIdsForDocument( document );
         for ( int i = 0; i < parentDocumentAndMenuIds.length; i++ ) {
             String parentId = parentDocumentAndMenuIds[i][0];
             String menuId = parentDocumentAndMenuIds[i][1];
-            indexDocument.add( unStoredKeyword( "parent_id", parentId ) );
-            indexDocument.add( unStoredKeyword( "parent_menu_id", parentId + "_" + menuId ) );
+            indexDocument.add( unStoredKeyword( FIELD__PARENT_ID, parentId ) );
+            indexDocument.add( unStoredKeyword( FIELD__PARENT_MENU_ID, parentId + "_" + menuId ) );
         }
 
         return indexDocument;
@@ -277,28 +305,25 @@ public class DocumentIndex {
         return truncatedDate;
     }
 
-    private class WhitespaceLowerCaseAnalyzer extends Analyzer {
+    private static class LowerCaseLetterAnalyzer extends Analyzer {
 
         public TokenStream tokenStream( String fieldName, Reader reader ) {
 
-            Tokenizer tokenizer ;
-            if ( "section".equals(fieldName) || "keyword".equals( fieldName ) ) {
-                tokenizer = new NullTokenizer( reader ) ;
+            if ( FIELD__SECTION.equals( fieldName ) || FIELD__KEYWORD.equals( fieldName ) ) {
+                return new LowerCaseFilter( new NullTokenizer( reader ) );
             } else {
-                tokenizer = new WhitespaceTokenizer( reader );
+                return new LowerCaseTokenizer( reader );
             }
-
-            return new LowerCaseFilter( tokenizer ) ;
         }
 
-        private class NullTokenizer extends CharTokenizer {
+        private static class NullTokenizer extends CharTokenizer {
 
             private NullTokenizer( Reader reader ) {
                 super( reader );
             }
 
             protected boolean isTokenChar( char c ) {
-                return true ;
+                return true;
             }
         }
 

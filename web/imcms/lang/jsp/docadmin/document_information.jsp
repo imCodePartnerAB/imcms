@@ -60,7 +60,6 @@
 
 <link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
 
-
 </head>
 <body bgcolor="#FFFFFF" onLoad="document.getElementsByName('<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>').item(0).focus()">
 #gui_outer_start()

@@ -18,7 +18,7 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
 
     private String urlDocumentUrl = "";
 
-    public String getUrlDocumentUrl() {
+    public String getUrl() {
         return urlDocumentUrl;
     }
 

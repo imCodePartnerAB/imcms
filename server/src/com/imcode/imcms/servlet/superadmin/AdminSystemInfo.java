@@ -61,7 +61,7 @@ public class AdminSystemInfo extends Administrator {
 
         // Lets check if the user is an admin, otherwise throw him out.
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (imcref.checkAdminRights(user) == false) {
+        if (user.isSuperAdmin() == false) {
             String header = "Error in AdminSystemInfo. ";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
