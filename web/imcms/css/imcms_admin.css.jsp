@@ -23,8 +23,9 @@ boolean isIE  = re.match("/(MSIE 4|MSIE 5|MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) 
 boolean isGecko = re.match("/Gecko/i", uAgent) ;
 boolean isNS  = re.match("/Mozilla/i", uAgent) && !isGecko && !isIE ;
 
-String BORDER_COLOR_NORMAL   = "#668DB6 #000000 #000000 #668DB6" ;
-String BORDER_COLOR_DISABLED = "#DAE4EF #999999 #999999 #DAE4EF" ;
+String BORDER_COLOR_NORMAL     = "#668DB6 #000000 #000000 #668DB6" ;
+String BORDER_COLOR_NORMAL_ACT = "#000000 #668DB6 #668DB6 #000000" ;
+String BORDER_COLOR_DISABLED   = "#DAE4EF #999999 #999999 #DAE4EF" ;
 
 if (isGecko) {
 	BORDER_COLOR_NORMAL   = "#466D96 #333333 #333333 #466D96" ;
@@ -101,7 +102,7 @@ if (false) {
 
 if (isNS) { %>
 
-.imcmsFormBtn, .imcmsFormBtnDisabled, .imcmsAdmTable TD .imcmsFormBtn {
+.imcmsFormBtn, .imcmsFormBtnActive, .imcmsFormBtnDisabled, .imcmsAdmTable TD .imcmsFormBtn {
 	font-size: 12px;
 	font-family: Tahoma, Arial, sans-serif;
 	color: #ffffff;
@@ -126,6 +127,17 @@ if (isNS) { %>
 	cursor:pointer;
 	height:24;
 	padding: 2 8; }
+
+.imcmsFormBtnActive {
+	background-color: #30669D;
+	color: #ffffff;
+	font: 11px Tahoma, Arial, sans-serif;
+	border: 2px inset #668DB6;
+	border-color: <%= BORDER_COLOR_NORMAL_ACT %>;
+	cursor:hand;
+	cursor:pointer;
+	height:24;
+	padding: 3 8 1 8; }
 
 .imcmsFormBtnDisabled {
 	background-color: #B8C6D5;

@@ -8,7 +8,11 @@
                  imcode.util.Html,
                  org.apache.commons.collections.Transformer,
                  imcode.util.LocalizedMessage"%>
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
+
+boolean fromEditor = (request.getParameter("editor_image") != null && request.getParameter("editor_image").equals("true")) ;
+
+%>
 <vel:velocity>
 <html>
 <head>
@@ -20,7 +24,12 @@
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="focusField(0,'text')">
+<body bgcolor="#FFFFFF" onLoad="focusField(0,'text')"<%
+	if (fromEditor) {
+		%> style="overflow:auto;" scroll="auto"<%
+	} %>>
+
+
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <%
@@ -28,6 +37,7 @@
 %>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="ImageBrowse" method="POST" enctype="multipart/form-data">
+<input type="hidden" name="editor_image" value="<%= request.getParameter("editor_image") %>">
 <input type="HIDDEN" name="<%= ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER %>" value="<%=HttpSessionUtils.getSessionAttributeNameFromRequest(request, ImageBrowser.REQUEST_ATTRIBUTE_OR_PARAMETER__IMAGE_BROWSER)%>">
 <% if (null != imageBrowsePage.getLabel() ) { %><input type="HIDDEN" name="<%= ImageBrowse.REQUEST_PARAMETER__LABEL %>" value="<%=imageBrowsePage.getLabel()%>"><% } %>
 <tr>
