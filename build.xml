@@ -424,7 +424,6 @@
 	  depends="init"
 	  description="Creates some empty directories necessary for imCMS.">
     <mkdir dir="${includes}"/>
-    <mkdir dir="${fortunes}"/>
     <mkdir dir="${uploads}"/>
     <mkdir dir="${logs}"/>
   </target>
@@ -611,7 +610,13 @@
 
 
   <!-- Copies the files for the 'fortune'-plugin. -->
-  <target name="fortune" depends="init,fortune-templates"/>
+  <target name="fortune" depends="init,fortune-templates">
+    <mkdir dir="${fortunes}"/>
+
+    <!-- Create empty files needed by fortune -->
+    <touch file="${fortunes}/questions.txt"/>
+    <touch file="${fortunes}/quotes.txt"/>
+  </target>
 
 
   <!-- The fortune-templates.-->
