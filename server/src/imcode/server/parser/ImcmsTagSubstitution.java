@@ -684,6 +684,8 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             result = tagLanguage( attributes );
         } else if ( "documentcategories".equals( tagname ) ) {
             result = tagCategories( attributes );
+        } else if ( "contextpath".equals( tagname ) ) {
+            result = tagContextPath();
         } else {
             result = matres.group( 0 );
         }
@@ -700,6 +702,10 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             }
         }
         sb.append( result );
+    }
+
+    private String tagContextPath() {
+        return documentRequest.getHttpServletRequest().getContextPath() ;
     }
 
 }
