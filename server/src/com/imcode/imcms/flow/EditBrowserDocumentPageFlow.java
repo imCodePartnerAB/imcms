@@ -15,9 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.imcode.imcms.servlet.WebComponent;
-import com.imcode.imcms.servlet.admin.AdminDoc;
-
 public class EditBrowserDocumentPageFlow extends EditDocumentPageFlow {
 
     public final static String REQUEST_PARAMETER__BROWSERS = "browsers";
@@ -27,8 +24,8 @@ public class EditBrowserDocumentPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_ATTRIBUTE__ADDED_BROWSERS = "addedBrowsers";
 
     public EditBrowserDocumentPageFlow( BrowserDocumentDomainObject document,
-                                        WebComponent.DispatchCommand returnCommand,
-                                        AdminDoc.SaveEditedDocumentCommand saveDocumentCommand ) {
+                                        DispatchCommand returnCommand,
+                                        SaveDocumentCommand saveDocumentCommand ) {
         super( document, returnCommand, saveDocumentCommand );
     }
 

@@ -1,9 +1,10 @@
 package imcode.server.document.textdocument;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 
 public class TreeSortKeyDomainObject implements Comparable {
 

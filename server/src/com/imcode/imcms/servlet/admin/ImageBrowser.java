@@ -2,17 +2,11 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.servlet.WebComponent;
 import imcode.util.HttpSessionUtils;
-import imcode.util.MultipartHttpServletRequest;
-import imcode.util.FileUtility;
-import imcode.server.ApplicationServer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.File;
-
-import org.apache.commons.lang.StringUtils;
 
 public class ImageBrowser extends WebComponent {
 

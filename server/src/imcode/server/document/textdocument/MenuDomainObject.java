@@ -7,9 +7,9 @@
 package imcode.server.document.textdocument;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.SetUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.SetUtils;
+import org.apache.commons.collections.Transformer;
 
 import java.util.*;
 

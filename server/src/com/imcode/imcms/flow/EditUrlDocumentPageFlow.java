@@ -9,14 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import com.imcode.imcms.servlet.WebComponent;
-
 public class EditUrlDocumentPageFlow extends EditDocumentPageFlow {
 
     private final static String URL_I15D_PAGE__URLDOC = "/jsp/docadmin/url_document.jsp";
     public static final String REQUEST_PARAMETER__URL_DOC__URL = "url";
 
-    public EditUrlDocumentPageFlow( UrlDocumentDomainObject document, WebComponent.DispatchCommand returnCommand,
+    public EditUrlDocumentPageFlow( UrlDocumentDomainObject document, DispatchCommand returnCommand,
                                     SaveDocumentCommand saveDocumentCommand ) {
         super( document, returnCommand, saveDocumentCommand );
     }

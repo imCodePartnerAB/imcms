@@ -1,6 +1,5 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.document.DocumentDomainObject;
 
 import javax.servlet.ServletException;
@@ -16,7 +15,7 @@ public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
 
     protected CreateDocumentPageFlow( DocumentDomainObject document,
                                       SaveDocumentCommand saveDocumentCommand,
-                                      WebComponent.DispatchCommand returnCommand ) {
+                                      DispatchCommand returnCommand ) {
         super(returnCommand, saveDocumentCommand);
         editDocumentInformationPageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
     }

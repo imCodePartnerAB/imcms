@@ -1,7 +1,5 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.servlet.WebComponent;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,10 +9,8 @@ public class CreateDocumentWithEditPageFlow extends CreateDocumentPageFlow {
 
     private EditDocumentPageFlow editDocumentPageFlow;
 
-    public CreateDocumentWithEditPageFlow( EditDocumentPageFlow editDocumentPageFlow,
-                                           SaveDocumentCommand saveDocumentCommand,
-                                           WebComponent.DispatchCommand returnCommand ) {
-        super( editDocumentPageFlow.getDocument(), saveDocumentCommand, returnCommand );
+    public CreateDocumentWithEditPageFlow( EditDocumentPageFlow editDocumentPageFlow ) {
+        super( editDocumentPageFlow.getDocument(), editDocumentPageFlow.saveDocumentCommand, editDocumentPageFlow.returnCommand );
         this.editDocumentPageFlow = editDocumentPageFlow;
     }
 

@@ -1,7 +1,6 @@
 package com.imcode.imcms.flow;
 
 import com.imcode.imcms.servlet.GetDoc;
-import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.document.FormerExternalDocumentDomainObject;
 
 import javax.servlet.ServletException;
@@ -13,7 +12,7 @@ public class CreateFormerExternalDocumentPageFlow extends CreateDocumentPageFlow
 
     public CreateFormerExternalDocumentPageFlow( FormerExternalDocumentDomainObject document,
                                                  SaveDocumentCommand saveNewDocumentCommand,
-                                                 WebComponent.DispatchCommand returnCommand ) {
+                                                 DispatchCommand returnCommand ) {
         super( document, saveNewDocumentCommand, returnCommand );
     }
 

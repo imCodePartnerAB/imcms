@@ -3,8 +3,8 @@ package imcode.server.document.textdocument;
 import imcode.server.ApplicationServer;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.DocumentVisitor;
+import imcode.server.document.TemplateDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import java.io.Serializable;

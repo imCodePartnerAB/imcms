@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.DocumentFinder;
-import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
@@ -14,10 +13,10 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.*;
-import org.apache.commons.fileupload.FileItem;
+import imcode.util.ImageData;
+import imcode.util.ImageParser;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
@@ -109,7 +108,7 @@ public class ChangeImage extends HttpServlet {
                 image.setUrl( "../servlet/GetDoc?meta_id="+document.getId() );
             }
         };
-        WebComponent.DispatchCommand returnToImageEditPageCommand = new WebComponent.DispatchCommand() {
+        DispatchCommand returnToImageEditPageCommand = new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
@@ -122,7 +121,7 @@ public class ChangeImage extends HttpServlet {
                                    final ImageDomainObject image, final HttpServletRequest request,
                                    final HttpServletResponse response ) throws IOException, ServletException {
         ImageBrowser imageBrowser = new ImageBrowser();
-        imageBrowser.setCancelCommand( new WebComponent.DispatchCommand() {
+        imageBrowser.setCancelCommand( new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
@@ -140,7 +139,7 @@ public class ChangeImage extends HttpServlet {
                                   final ImageDomainObject image, final HttpServletRequest request,
                                   final HttpServletResponse response ) throws IOException, ServletException {
         DocumentFinder documentFinder = new DocumentFinder();
-        documentFinder.setCancelCommand( new DocumentFinder.DispatchCommand() {
+        documentFinder.setCancelCommand( new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }

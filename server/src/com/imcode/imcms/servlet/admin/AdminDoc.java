@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.GetDoc;
-import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.*;
 import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
@@ -307,7 +306,7 @@ public class AdminDoc extends HttpServlet {
         return htmlStr;
     }
 
-    public static class RedirectToDocumentCommand implements WebComponent.DispatchCommand {
+    private static class RedirectToDocumentCommand implements DispatchCommand {
 
         private final DocumentDomainObject document;
 
@@ -320,7 +319,7 @@ public class AdminDoc extends HttpServlet {
         }
     }
 
-    public static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
+    private static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
 
         public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
             ApplicationServer.getIMCServiceInterface().getDocumentMapper().saveDocument( document, user );

@@ -10,6 +10,7 @@ import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,8 +20,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 import java.util.Vector;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Save document sorting (date,name,manual)

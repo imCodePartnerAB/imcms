@@ -2,6 +2,8 @@ package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.servlet.admin.UserFinder;
 import com.imcode.imcms.servlet.WebComponent;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.DispatchCommand;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
@@ -45,7 +47,7 @@ public class AdminUser extends Administrator {
                 gotoChangeUser( request, response, user, selectedUser );
             }
         } );
-        userFinder.setCancelCommand( new WebComponent.DispatchCommand() {
+        userFinder.setCancelCommand( new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 request.getRequestDispatcher( "AdminManager" ).forward( request, response );
             }

@@ -1,6 +1,5 @@
 package imcode.server.document;
 
-import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.LanguageMapper;
 import imcode.server.WebAppGlobalConstants;
@@ -14,6 +13,7 @@ import imcode.util.DateConstants;
 import imcode.util.IdNamePair;
 import imcode.util.InputStreamSource;
 import imcode.util.poll.PollHandlingSystem;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.log4j.NDC;
@@ -68,16 +68,8 @@ public class DocumentMapper {
 
     private boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
                                                              DocumentDomainObject parent ) {
-        if ( userIsSuperAdminOrFullAdminOnDocument( user, parent ) ) {
-            return true;
-        } else if ( userHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, parent ) ) {
-            int userPermissionSetId = getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
-            Integer[] documentTypeIds = getDocumentTypeIdsCreatableByRestrictedPermissionSetIdOnDocument( userPermissionSetId, parent );
-            if ( Arrays.asList( documentTypeIds ).contains( new Integer( documentTypeId ) ) ) {
-                return true;
-            }
-        }
-        return false;
+        TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)getUsersMostPrivilegedPermissionSetOnDocument( user, parent ) ;
+        return ArrayUtils.contains( documentPermissionSet.getAllowedDocumentTypeIds(), documentTypeId ) ;
     }
 
     private boolean userIsSuperAdminOrFullAdminOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
@@ -99,20 +91,6 @@ public class DocumentMapper {
             }
         }
         return user_permission_set;
-    }
-
-    private Integer[] getDocumentTypeIdsCreatableByRestrictedPermissionSetIdOnDocument( int restrictedPermissionSetId,
-                                                                                        DocumentDomainObject document ) {
-        String sqlStr = "SELECT permission_data FROM doc_permission_sets_ex\n"
-                        + "WHERE meta_id = ? AND set_id = ? AND permission_id = " + IMCConstants.PERM_CREATE_DOCUMENT;
-        String[] documentTypeIdStrings = service.sqlQuery( sqlStr, new String[]{
-            "" + document.getId(), "" + restrictedPermissionSetId
-        } );
-        Integer[] documentTypeIds = new Integer[documentTypeIdStrings.length];
-        for ( int i = 0; i < documentTypeIdStrings.length; i++ ) {
-            documentTypeIds[i] = Integer.valueOf( documentTypeIdStrings[i] );
-        }
-        return documentTypeIds;
     }
 
     public DocumentPermissionSetDomainObject getUsersMostPrivilegedPermissionSetOnDocument( UserDomainObject user,

@@ -1,6 +1,5 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.document.DocumentDomainObject;
 
 import javax.servlet.ServletException;
@@ -14,7 +13,7 @@ public abstract class EditDocumentPageFlow extends DocumentPageFlow {
     public final static String URL_I15D_PAGE__PREFIX = "/imcms/";
     public static final String PAGE__EDIT = "edit";
 
-    protected EditDocumentPageFlow( final DocumentDomainObject document, WebComponent.DispatchCommand returnCommand,
+    protected EditDocumentPageFlow( final DocumentDomainObject document, DispatchCommand returnCommand,
                                     SaveDocumentCommand saveDocumentCommand ) {
         super( returnCommand, saveDocumentCommand );
         this.document = document ;

@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.flow.DispatchCommand;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,10 +21,6 @@ public class WebComponent {
 
     public void setCancelCommand( DispatchCommand cancelCommand ) {
         this.cancelCommand = cancelCommand;
-    }
-
-    public interface DispatchCommand {
-        public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
     }
 
 }

@@ -3,8 +3,8 @@ package imcode.server.document;
 import imcode.server.ApplicationServer;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DocumentPermissionSetDomainObject implements Serializable {
 

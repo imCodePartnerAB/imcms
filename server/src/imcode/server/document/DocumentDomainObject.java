@@ -5,11 +5,10 @@ import imcode.server.ApplicationServer;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
-
-import org.apache.log4j.Logger;
 
 /**
  * Stores info about a document. *

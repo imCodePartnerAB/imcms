@@ -2,11 +2,10 @@ package imcode.server.document;
 
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.io.File;
 import java.util.*;
-
-import org.apache.commons.lang.ArrayUtils;
 
 public class TemplateMapper {
 

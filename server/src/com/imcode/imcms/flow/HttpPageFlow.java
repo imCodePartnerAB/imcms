@@ -1,6 +1,5 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.servlet.WebComponent;
 import imcode.util.HttpSessionUtils;
 
 import javax.servlet.ServletException;
@@ -16,9 +15,9 @@ public abstract class HttpPageFlow implements Serializable {
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
     public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW = "flow";
 
-    protected WebComponent.DispatchCommand returnCommand;
+    protected DispatchCommand returnCommand;
 
-    protected HttpPageFlow( WebComponent.DispatchCommand returnCommand ) {
+    protected HttpPageFlow( DispatchCommand returnCommand ) {
         this.returnCommand = returnCommand;
     }
 

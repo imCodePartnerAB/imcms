@@ -10,14 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import com.imcode.imcms.servlet.WebComponent;
-
 public class EditHtmlDocumentPageFlow extends EditDocumentPageFlow {
 
     private final static String URL_I15D_PAGE__HTMLDOC = "/jsp/docadmin/html_document.jsp";
     public static final String REQUEST_PARAMETER__HTML_DOC__HTML = "html";
 
-    public EditHtmlDocumentPageFlow( HtmlDocumentDomainObject document, WebComponent.DispatchCommand returnCommand,
+    public EditHtmlDocumentPageFlow( HtmlDocumentDomainObject document, DispatchCommand returnCommand,
                                      SaveDocumentCommand saveDocumentCommand ) {
         super( document, returnCommand, saveDocumentCommand );
     }

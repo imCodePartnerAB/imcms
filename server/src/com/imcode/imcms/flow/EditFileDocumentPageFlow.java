@@ -19,8 +19,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.imcode.imcms.servlet.WebComponent;
-
 public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
     private ServletContext servletContext;
@@ -31,7 +29,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     private static final String URL_I15D_PAGE__FILEDOC = "/jsp/docadmin/file_document.jsp";
 
     public EditFileDocumentPageFlow( FileDocumentDomainObject document, ServletContext servletContext,
-                                     WebComponent.DispatchCommand returnCommand,
+                                     DispatchCommand returnCommand,
                                      SaveDocumentCommand saveDocumentCommand ) {
         super( document, returnCommand, saveDocumentCommand );
         this.servletContext = servletContext;

@@ -3,18 +3,16 @@ package com.imcode.imcms.flow;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
 import java.io.IOException;
-
-import com.imcode.imcms.servlet.WebComponent;
 
 public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
 
     public CreateTextDocumentPageFlow( TextDocumentDomainObject document,
                                        SaveDocumentCommand saveNewDocumentCommand,
-                                       WebComponent.DispatchCommand returnCommand ) {
+                                       DispatchCommand returnCommand ) {
         super( document, saveNewDocumentCommand, returnCommand );
     }
 

@@ -9,13 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import com.imcode.imcms.servlet.WebComponent;
-
 public abstract class DocumentPageFlow extends HttpPageFlow {
 
     protected CreateDocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
 
-    protected DocumentPageFlow( WebComponent.DispatchCommand returnCommand,
+    protected DocumentPageFlow( DispatchCommand returnCommand,
                        SaveDocumentCommand saveDocumentCommand ) {
         super( returnCommand );
         this.saveDocumentCommand = saveDocumentCommand;
