@@ -26,7 +26,7 @@ AS
 		@max_uses_warning_threshold    INT      Percentage threshold at which the user will be warned about expiry.
 		@expiry_date                   DATETIME The last date the user may use readrunner.
 		@expiry_date_warning_threshold INT      Threshold of days before expire_date at which the user will be warned about expiry.
-	        @expiry_date_warning_sent      INT      Whether a expiry-date-warning has been sent or not.
+        @expiry_date_warning_sent      INT      Whether a expiry-date-warning has been sent or not.
 **/
 DELETE FROM readrunner_user_data WHERE user_id = @user_id
 

@@ -87,7 +87,7 @@ public class GetDoc extends HttpServlet {
 	HttpSession session = req.getSession(true) ;
 	Object done = session.getAttribute("logon.isDone");  // marker object
 	imcode.server.User user = (imcode.server.User)done ;
-//System.out.println( "User-Agent = " + req.getHeader( "User-Agent" )); -- use this for test User-Agent value for browsers
+//System.out.println( "User-Agent = " + req.getHeader( "User-Agent" )); // use this for test User-Agent value for browsers
 	if (done == null) {
 	    // Check the name and password for validity
 	    String ip = req.getRemoteAddr( ) ;

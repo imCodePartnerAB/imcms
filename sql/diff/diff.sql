@@ -479,8 +479,102 @@ INSERT INTO browsers (browser_id, name, user_agent, value) VALUES (@temp +4, 'Wi
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES (@temp +5, 'Netscape 7','Mozilla%/5;%netscape/7%',4)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES (@temp +6, 'Windows Netscape 7','Mozilla/5%(%win%netscape/7%',5)
 
-GO
 --2002-11-20
+GO
+
+
+CREATE TABLE [dbo].[readrunner_user_data] (
+	[user_id] [int] NOT NULL ,
+	[uses] [int] NULL ,
+	[max_uses] [int] NULL ,
+	[max_uses_warning_threshold] [int] NULL ,
+	[expiry_date] [datetime] NULL ,
+	[expiry_date_warning_threshold] [int] NULL ,
+	[expiry_date_warning_sent] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
+	 PRIMARY KEY  CLUSTERED 
+	(
+		[user_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
+	CONSTRAINT [DF_readrunner_user_data_expiry_date_warning_sent] DEFAULT (0) FOR [expiry_date_warning_sent]
+
+-- 2002-12-16
+GO
+
+
+/*
+  All user will have the role Users. Lets insert role ( Users ) for all user that
+  not already have it. 	
+*/
+declare @role_id int
+declare @user_id int
+declare @count int
+
+select @role_id = role_id from roles
+where role_name like 'Users'
+
+declare posCursor  Cursor scroll 
+for select user_id from users 
+open posCursor
+fetch next from posCursor 
+into @user_id
+while @@fetch_status = 0
+begin
+	select  @count = count(*) from user_roles_crossref where user_id = @user_id and role_id = @role_id
+	if @count < 1 begin
+		insert into user_roles_crossref 
+		values (@user_id, @role_id)
+	end
+
+	fetch next from posCursor 
+  	into @user_id
+end 
+close posCursor
+deallocate posCursor
+
+-- 2002-12-18
+GO
+
+
+
+CREATE TABLE [dbo].[useradmin_role_crossref] (
+	[user_id] [int] NOT NULL ,
+	[role_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[useradmin_role_crossref] WITH NOCHECK ADD 
+	CONSTRAINT [PK_useradmin_role_crossref] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[role_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[useradmin_role_crossref] ADD 
+	CONSTRAINT [FK_useradmin_role_crossref_roles] FOREIGN KEY 
+	(
+		[role_id]
+	) REFERENCES [dbo].[roles] (
+		[role_id]
+	),
+	CONSTRAINT [FK_useradmin_role_crossref_users] FOREIGN KEY 
+	(
+		[user_id]
+	) REFERENCES [dbo].[users] (
+		[user_id]
+	)
+	
+-- 2002-12-19	
+GO
+
+
 
 print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
 

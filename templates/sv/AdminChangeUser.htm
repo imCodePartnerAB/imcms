@@ -1,3 +1,4 @@
+
 <html>
 <head>
 <title>Ändra användaregenskaper</title>
@@ -27,6 +28,14 @@ function evalEditUser() {
 		return true
 }
 
+function evalShowUser() {
+	if ( document.user_categoriesForm.searchstring.value.length < 1 ) {
+		alert ( " Skriv in minst ett tecken i användarnamnet som du vill visa ")
+		return false
+	}else 
+		return true
+}
+
 function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
@@ -45,8 +54,7 @@ function openHelp(id){
   </tr>
   <tr bgcolor="#bababa"> 
 	<td width="5%">&nbsp;</td>
-	<td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Markera 
-	  den anv&auml;ndare vars egenskaper skall &auml;ndras</font></td>
+	<td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Välj önskad användarkategori och skriv in minst ett tecken i användarens namn och tryck på Visa anv&auml;ndare. Markera sedan den anv&auml;ndare vars egenskaper skall &auml;ndras</font></td>
 	<td width="5%">&nbsp;</td>
   </tr>
   <tr bgcolor="#bababa"> 
@@ -57,16 +65,19 @@ function openHelp(id){
   <tr bgcolor="#bababa"> 
 	<td width="5%">&nbsp;</td>
 	<td width="90%"> 
-	  <form method="get" action="AdminUser" name="user_categoriesForm">
+	  <form method="post" action="AdminUser" name="user_categoriesForm">
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Anv&auml;ndarkategori: 
 		<br>
-		<select name="user_categories">
+		<select name="user_categories" style="WIDTH: 200px">
+			<option value="All_Choice" selected>-- Alla kategorier --</option>	
            #USER_TYPES#
           
         </select>
 		<br>
 		<br>
-		<input type="submit" name="showUsers" value="Visa anv&auml;ndare" >
+		<input type="text" name="searchstring" size="15" maxlength="20"> (Ange minst ett tecken!)
+		<br><br>
+		<input type="submit" name="showUsers" value="Visa anv&auml;ndare" onClick="if(evalShowUser()==false) return false; return true;">
 		</font> 
 	  </form>
 	</td>
@@ -86,7 +97,7 @@ function openHelp(id){
 	<td width="5%" height="24">&nbsp;</td>
 	<td width="90%" height="24"> 
 	  <form method="post" action="AdminUser" name="argumentForm" target="_top">
-		<select name="user_Id" size="5">
+		<select name="user_Id" size="5" style="WIDTH: 200px">
           #USERS_MENU#
         </select>
 		<br>

@@ -13,7 +13,8 @@ public class AdminManager extends Administrator {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
     String HTML_TEMPLATE ;
-
+	String HTML_ADMINTASK;
+	String HTML_USERADMINTASK;
     /**
        The GET method creates the html page when this side has been
        redirected from somewhere else.
@@ -38,7 +39,7 @@ public class AdminManager extends Administrator {
 	}
 
 	// Lets verify that the user who tries to add a new user is an admin
-	if (imcref.checkAdminRights(user) == false) {
+	if (imcref.checkAdminRights(user) == false && imcref.checkUserAdminrole ( user.getUserId(), 2 )== false) {
 	    String header = "Error in AdminManager." ;
 	    String msg = "The user is not an administrator."+ "<BR>" ;
 	    this.log(header + msg) ;
@@ -53,6 +54,19 @@ public class AdminManager extends Administrator {
 	// Lets generate the html page
 	VariableManager vm = new VariableManager() ;
 	vm.addProperty("STATUS","..." ) ;
+	
+	// lets parse and return the html_admin_part
+	Vector vec = new Vector();
+	String html_admin_part;
+	
+	if (imcref.checkAdminRights(user) ){
+		html_admin_part = imcref.parseDoc( vec, HTML_ADMINTASK,   user.getLangPrefix() ); // if superadmin
+	}else{ //if user is useradmin
+		html_admin_part = imcref.parseDoc( vec, HTML_USERADMINTASK,   user.getLangPrefix() ); //if useradmin
+	}
+	
+	vm.addProperty("ADMIN_TASK", html_admin_part);
+		
 	super.sendHtml(req, res, vm, HTML_TEMPLATE) ;
 
     } // End doGet
@@ -124,6 +138,8 @@ public class AdminManager extends Administrator {
 
 	super.init(config);
 	HTML_TEMPLATE = "AdminManager.htm" ;
+	HTML_ADMINTASK = "AdminManager_adminTask_element.htm";
+	HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";
 	this.log("Initializing AdminManager") ;
     }
 

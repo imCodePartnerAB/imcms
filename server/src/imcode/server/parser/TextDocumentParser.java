@@ -452,7 +452,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    tags.setProperty("#readrunner_quote_substitution_count#","#readrunner_quote_substitution_count#");
 
 	    // Give the user a row of buttons if he is privileged enough.
-	    if ( serverObject.checkDocAdminRights(meta_id,user) && flags >= 0 ) {
+	    if ( ( serverObject.checkDocAdminRights(meta_id,user) || serverObject.checkUserAdminrole( user.getUserId(), 2 ) ) && flags >= 0 ) {
 		tags.setProperty("#adminMode#",serverObject.getMenuButtons(meta_id,user)) ;
 	    }
 

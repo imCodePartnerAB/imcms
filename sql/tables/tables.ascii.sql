@@ -318,6 +318,12 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[users]') a
 drop table [dbo].[users]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[useradmin_role_crossref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[useradmin_role_crossref]
+GO
+
+
+
 exec sp_fulltext_database N'enable' 
 
 GO
@@ -719,6 +725,36 @@ CREATE TABLE [dbo].[users] (
 	[create_date] [smalldatetime] NOT NULL 
 ) ON [PRIMARY]
 GO
+
+CREATE TABLE [dbo].[useradmin_role_crossref] (
+	[user_id] [int] NOT NULL ,
+	[role_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[useradmin_role_crossref] WITH NOCHECK ADD 
+	CONSTRAINT [PK_useradmin_role_crossref] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[role_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[useradmin_role_crossref] ADD 
+	CONSTRAINT [FK_useradmin_role_crossref_roles] FOREIGN KEY 
+	(
+		[role_id]
+	) REFERENCES [dbo].[roles] (
+		[role_id]
+	),
+	CONSTRAINT [FK_useradmin_role_crossref_users] FOREIGN KEY 
+	(
+		[user_id]
+	) REFERENCES [dbo].[users] (
+		[user_id]
+	)
+GO
+
 
 ALTER TABLE [dbo].[display_name] WITH NOCHECK ADD 
 	CONSTRAINT [PK_display_name] PRIMARY KEY  CLUSTERED 

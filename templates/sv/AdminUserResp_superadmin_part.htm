@@ -1,0 +1,58 @@
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="3"><hr></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Aktiverad:</font></td>
+	<td><font size="2">&nbsp;</font></td>
+	<td><font size="2"><input type="checkbox" name="active" value="#ACTIVE#" #ACTIVE_FLAG#></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Inläggningsdatum:</font></td>
+	<td><font size="2">&nbsp;</font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#USER_CREATE_DATE#</font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td height="22">&nbsp;</td>
+	<td valign="top"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användartyp: </font></td>
+	<td valign="bottom"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">*</font></td>
+	<td valign="bottom"><font face="Verdana, Arial, Helvetica, sans-serif">
+	<select name="user_type">
+	#USER_TYPES#
+	</select></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="5">&nbsp;</td>
+</tr>
+<tr valign="top">
+	<td>&nbsp;</td>
+	<td colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användarens Roller: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</font><br><br>
+	<font size="1" face="Verdana, Arial, Helvetica, sans-serif">Välj vilka roller som användaren skall tillhöra. </font></td>
+	<td><font size="2">
+	<select name="roles" size="5" multiple onchange="activateUseradmin_roles(); return false;">
+	#ROLES_MENU#
+	</select></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="5">&nbsp;</td>
+</tr>
+<tr valign="top">
+	<td>&nbsp;</td>
+	<td colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Useradmin - Roller </font><br><br>
+	<font size="1" face="Verdana, Arial, Helvetica, sans-serif">Välj vilka roller som kan administreras om användaren har rollen useradmin: </font></td>
+	<td><font size="2">
+	<select name="useradmin_roles" size="5" multiple>
+	#ROLES_MENU_USERADMIN#
+	</select></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="5">&nbsp;</td>
+</tr>

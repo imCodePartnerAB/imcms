@@ -12,13 +12,25 @@ public class User extends Hashtable {
 
     /** Good stuff **/
     private int userId ;
-    private String loginName ;
-    private String password ;
-    private String firstName = "" ;
-    private String lastName  = "" ;
-    private boolean active ;
-    private String langPrefix ;
-    private String emailAddress = "" ;
+    private String loginName ;		//char 15
+    private String password ;		//char 15
+    private String firstName;		//char 25
+    private String lastName;		//char 30
+	private String title;			//char 30
+	private String company;			//char 30
+	private String address;			//char 40
+	private String city;			//char 30
+	private String zip;				//char 15
+	private String country;			//char 30
+	private String country_council;	//char 30
+	private String emailAddress;	//chat 50
+	private int lang_id;			//int
+	private int user_type;			//int
+    private boolean active ;		//int
+	private String create_date;		//smalldatetime
+	
+    private String langPrefix;
+    
     private int template_group = -1 ;
     private String loginType ;
 
@@ -30,7 +42,7 @@ public class User extends Hashtable {
     }
 
     /**
-       get user-id
+       set user-id
     **/
     public void setUserId(int userId) {
 	this.userId = userId ;
@@ -87,19 +99,175 @@ public class User extends Hashtable {
     }
 
     /**
-       set last name
+       get last name
     **/
     public String getLastName() {
 	return this.lastName ;
     }
 
     /**
-       get last name
+       set last name
     **/
     public void setLastName(String lastName) {
 	this.lastName = lastName ;
     }
+	
+	
+	/**
+		set title
+	**/
+	public void setTitle(String title){
+		this.title = title;
+	}
+	
+	/**
+		get title
+	**/
+	public String getTitle(){
+		return this.title;
+	}
+	
+	/**
+		set company
+	**/
+	public void setCompany(String company){
+		this.company = company;
+	}
+	
+	/**
+		get company
+	**/
+	public String getCompany(){
+		return this.company;
+	}
+	
+	/**
+		set address
+	**/
+	public void setAddress(String address){
+		this.address = address;
+	}
+	
+	/**
+		get address
+	**/
+	public String getAddress(){
+		return this.address;
+	}
+	
+	
+	/**
+		set city
+	**/
+	public void setCity(String city){
+		this.city = city;
+	}
+	
+	/**
+		get city
+	**/
+	public String getCity(){
+		return this.city;
+	}
+	
+	
+	/**
+		set zip
+	**/
+	public void setZip(String zip){
+		this.zip = zip;
+	}
+	
+	/**
+		get zip
+	**/
+	public String getZip(){
+		return this.zip;
+	}
+	
+	/**
+		set country
+	**/
+	public void setCountry(String country){
+		this.country = country;
+	}
+	
+	/**
+		get country
+	**/
+	public String getCountry(){
+		return this.country;
+	}
+	
+	/**
+		set country_council
+	**/
+	public void setCountryCouncil(String country_council){
+		this.country_council = country_council;
+	}
+	
+	/**
+		get county_council
+	**/
+	public String getCountryCouncil(){
+		return this.country_council;
+	}
+	
+	
+	
+	/**
+	      Return the users e-mail address
+	**/
+	public String getEmailAddress() {
+		return this.emailAddress ;
+	}
+	
+	/**
+	     Set the users e-mail address
+	**/
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress ;
+	}
+	
+	
+	/**
+       get lang_id
+    **/
+    public int getLangId() {
+		return this.userId ;
+    }
 
+    /**
+       set lang_id
+    **/
+    public void setLangId(int lang_id) {
+		this.lang_id = lang_id ;
+    }
+	
+	
+	/**
+       set user_type
+    **/
+    public void setUserType(int user_type) {
+		this.user_type = user_type ;
+    }
+	
+	/**
+       get user_type
+    **/
+    public int getUserType() {
+		return this.user_type ;
+    }
+
+  	
+	
+	/**
+       Set whether the user is allowed to log in
+    **/
+    public void setActive(boolean active) {
+	this.active = active ;
+    }
+	
     /**
        Check whether the user is allowed to log in
     **/
@@ -108,26 +276,22 @@ public class User extends Hashtable {
     }
 
     /**
-       Set whether the user is allowed to log in
+       set create_date
     **/
-    public void setActive(boolean active) {
-	this.active = active ;
+    public void setCreateDate(String create_date) {
+		this.create_date = create_date ;
+    }
+	
+	/**
+       get create_date
+    **/
+    public String getCreateDate() {
+		return this.create_date ;
     }
 
-    /**
-       Return the users e-mail address
-    **/
-    public String getEmailAddress() {
-	return this.emailAddress ;
-    }
+	
 
-    /**
-       Set the users e-mail address
-    **/
-    public void setEmailAddress(String emailAddress) {
-	this.emailAddress = emailAddress ;
-    }
-
+   
     /**
        set template group
     **/

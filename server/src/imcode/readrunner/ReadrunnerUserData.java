@@ -102,4 +102,5 @@ public class ReadrunnerUserData {
     public void setExpiryDateWarningThreshold(int expiryDateWarningThreshold) {
 	this.expiryDateWarningThreshold = expiryDateWarningThreshold ;
     }
+	
 }

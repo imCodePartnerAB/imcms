@@ -1,3 +1,4 @@
+
 <html>
 <head>
 <title>Lägg till/redigera användare</title>
@@ -10,20 +11,20 @@ function evalPrepareAdd() {
 	//if( document.forms[0].password1.value == "" ) valFieldsOk = false
 	//if( document.forms[0].password2.value == "" ) valFieldsOk = false
 	if( document.forms[0].first_name.value == "" ) valFieldsOk = false
-	if( document.forms[0].last_name.value == "" ) valFieldsOk = false
-
+	if( document.forms[0].last_name.value == "" ) valFieldsOk = false	
+	
 	if(!valFieldsOk) {
 		var msg = "Du har inte fyllt i ett obligatoriskt fält! Fyll i alla obligatoriska fält"
 		alert(msg)
 		return false
 	}
-
+	
 	if(document.forms[0].password1.value != document.forms[0].password2.value){
 		var msg = "Obs! Verifieringen av lösenordet misslyckades!"
-		document.forms[0].password1.value = ""
+		document.forms[0].password1.value = "" 
 		document.forms[0].password2.value = ""
 		document.forms[0].password1.focus()
-		alert(msg)
+		alert(msg)		
 		return false
 	}
 	var userType
@@ -34,7 +35,7 @@ function evalPrepareAdd() {
 		alert(msg)
 		return false
 	}
-
+	
 	var userRole
 	userRole = document.forms[0].roles.selectedIndex
 	if(userRole == "-1") {
@@ -49,16 +50,32 @@ function evalPrepareAdd() {
 function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
+
+function activateUseradmin_roles(){	 
+	var list = document.forms[0].roles;
+	for ( i = 0 ; i < list.length ; i++ ){
+		document.forms[0].useradmin_roles.disabled = (list.options[i].text == "Useradmin"  && list.options[i].selected)? 0 : 1;
+	}
+}
+
+function init() {
+		document.forms[0].useradmin_roles.disabled = true
+}
+
 //-->
 </script>
 </head>
-<body bgcolor="#ffffff">
+<body bgcolor="#ffffff" onload="activateUseradmin_roles(); return true">
 
 
-<form method="POST" action="AdminUserProps">
+<form method="post" action="AdminUserProps">
 <input type="HIDDEN" name="CURR_USER_ID" value="#CURR_USER_ID#">
 <input type="HIDDEN" name="adminTask" value="#ADMIN_TASK#">
 <input type="HIDDEN" name="phone_id" value="#PHONE_ID#">
+<input type="HIDDEN" name="go_back" value="#BACK#">
+<input type="HIDDEN" name="new_pwd1" value="#NEW_PWD1#">
+<input type="HIDDEN" name="new_pwd2" value="#NEW_PWD2#">
+
 <table width="550" border="0" cellspacing="0" bgcolor="#bababa">
 <tr bgcolor="#333366">
 	<td width="5%">&nbsp;</td>
@@ -208,48 +225,9 @@ function openHelp(id){
 	<td><font size="2"><input name="email" size="25" value="#EMAIL#"></font></td>
 	<td>&nbsp;</td>
 </tr>
-<tr>
-	<td>&nbsp;</td>
-	<td colspan="3"><hr></td>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Aktiverad:</font></td>
-	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2"><input type="checkbox" name="active" value="#ACTIVE#" #ACTIVE_FLAG#></font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Inläggningsdatum:</font></td>
-	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#USER_CREATE_DATE#</font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td height="22">&nbsp;</td>
-	<td valign="top"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användartyp: </font></td>
-	<td valign="bottom"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">*</font></td>
-	<td valign="bottom"><font face="Verdana, Arial, Helvetica, sans-serif">
-	<select name="user_type">
-	#USER_TYPES#
-	</select></font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Roller: </font></td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">*</font></td>
-	<td><font size="2">
-	<select name="roles" size="5" multiple>
-	#ROLES_MENU#
-	</select></font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="5">&nbsp;</td>
-</tr>
+
+	#ADMIN_PART#
+
 <tr>
 	<td>&nbsp;</td>
 	<td width="449" colspan="3"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
@@ -264,13 +242,10 @@ function openHelp(id){
 <tr>
 	<td>&nbsp;</td>
 	<td colspan="3">
-	  <input type="submit" name="SAVE_USER" value="Spara" onClick="if(evalPrepareAdd()==false)return false; return true;">
-	  <input type="submit" name="RESET_FORM" value="Återställ">
-	  <input type="submit" name="GO_BACK" value="Avbryt">
-	  &nbsp;
-	  <a href="GetDoc?meta_id=71" target="_blank" onClick="openHelp('71'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-	  <input type="submit" name="READRUNNER_SETTINGS" value="Readrunner-inställningar">
-	</td>
+	<input type="submit" name="SAVE_USER" value="Spara" onClick="if(evalPrepareAdd()==false)return false; return true;">
+	<input type="submit" name="RESET_FORM" value="Återställ">
+	<input type="submit" name="GO_BACK" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=71" target="_blank" onClick="openHelp('71'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+	<input type="submit" name="READRUNNER_SETTINGS" value="Readrunner-inställningar"></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
@@ -281,3 +256,4 @@ function openHelp(id){
 <p></p>
 </body>
 </html>
+

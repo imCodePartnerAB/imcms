@@ -17,6 +17,7 @@ public class Parser {
 		if ( doc == null ) {
 			return doc ;
 		}
+		
 		StringBuffer sb = new StringBuffer(doc) ;
 		int length ;
 		for ( int i = 0; i<tags.length ; i++ ) {

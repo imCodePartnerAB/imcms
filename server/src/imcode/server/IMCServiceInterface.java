@@ -21,6 +21,11 @@ public interface IMCServiceInterface {
     imcode.server.User getUserById(int userId)
 	;
 
+	
+    /** Check if a user has a special admin role **/
+	public boolean checkUserAdminrole ( int userId, int adminRole ) 
+	;	
+
     /**
        Save a text field
     **/

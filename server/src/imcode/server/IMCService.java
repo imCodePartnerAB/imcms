@@ -139,11 +139,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     public int getSessionCounter() {
-	return m_SessionCounter ;
+		return m_SessionCounter ;
     }
 
     public String getSessionCounterDate() {
-	return m_SessionCounterDate ;
+		return m_SessionCounterDate ;
     }
 
     /**
@@ -151,93 +151,166 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public imcode.server.User verifyUser(String login, String password) {
 
-	login = login.trim() ;
+		login = login.trim() ;
 
-	User user = null ;
-	String[] user_data = sqlProcedure("GetUserByLogin", new String[] { login } ) ;
+		User user = null ;
+		String[] user_data = sqlProcedure("GetUserByLogin ", new String[] { login } ) ;
 
-	/*
-	  The columns are:
+		/*
+		  The columns are:
+		  	0 user_id,
+			1 login_name,
+			2 login_password,
+			3 first_name,
+			4 last_name,
+			5 title,
+			6 company,
+			7 address,
+			8 city,
+			9 zip,
+			10 country,
+			11 county_council,
+			12 email,
+			13 lang_id
+			14 lang_prefix,
+			15 user_type,
+			16 active,
+			17 create_date
+		*/
 
-	  user_id,login_name,login_password,first_name
-	  0       1          2              3
-	  last_name,email,lang_prefix,active
-	  4         5     6           7
-	*/
+		// if resultSet > 0 a user is found
+		if ( user_data.length > 0 ) {
 
-	// if resultSet > 0 a user is found
-	if ( user_data.length > 0 ) {
+		    user = new User() ;
+			
+				/* user object 
+				private int userId ;			
+		    	private String loginName ;		//char 15
+		    	private String password ;		//char 15
+		    	private String firstName;		//char 25
+			    private String lastName;		//char 30
+				private String title;			//char 30
+				private String company;			//char 30
+				private String address;			//char 40
+				private String city;			//char 30
+				private String zip;				//char 15
+				private String country;			//char 30
+				private String county_council;	//char 30
+				private String emailAddress;	//chat 50
+				private int lang_id;			
+				private int user_type;			
+			    private boolean active ;		//int
+				private Date create_date;		//smalldatetime
+				
+			    private String langPrefix;
+			    
+			    private int template_group = -1 ;
+			    private String loginType ;
+				
+				
+			*/
 
-	    user = new User() ;
+		    user.setUserId       	( Integer.parseInt( user_data[0]  ) ) ;
+		    user.setLoginName    	( user_data[1] ) ;
+		    user.setPassword     	( user_data[2].trim() ) ;
+		    user.setFirstName    	( user_data[3] ) ;
+		    user.setLastName     	( user_data[4] ) ;
+			user.setTitle	     	( user_data[5] ) ;
+			user.setCompany		 	( user_data[6] ) ;
+			user.setAddress      	( user_data[7] ) ;
+			user.setCity         	( user_data[8] ) ;
+			user.setZip          	( user_data[9] ) ;
+			user.setCountry      	( user_data[10] ) ;
+			user.setCountryCouncil 	( user_data[11] ) ;
+			user.setEmailAddress 	( user_data[12] ) ;
+			user.setLangId       	( Integer.parseInt( user_data[13] ) ) ;
+			user.setUserType     	( Integer.parseInt( user_data[15] ) ) ;
+		    user.setActive       	( 0 != Integer.parseInt( user_data[16] ) ) ;
+		    user.setCreateDate   	( user_data[17] ) ;
+		    user.setLangPrefix   	( user_data[14] ) ;
+			
+		    String login_password_from_db = user.getPassword() ;
+		    String login_password_from_form = password ;
 
-	    user.setUserId       ( Integer.parseInt( user_data[0]  ) ) ;
-	    user.setLoginName    ( user_data[1] ) ;
-	    user.setPassword     ( user_data[2].trim() ) ;
-	    user.setFirstName    ( user_data[3] ) ;
-	    user.setLastName     ( user_data[4] ) ;
-	    user.setEmailAddress ( user_data[5] ) ;
-	    user.setLangPrefix   ( user_data[6] ) ;
-	    user.setActive       ( 0 != Integer.parseInt( user_data[7] ) ) ;
+		    if ( login_password_from_db.equals(login_password_from_form) && user.isActive()){
+				this.updateLogs("->User " + login + " succesfully logged in.") ;
+		    } else if (!user.isActive() ) {
+				this.updateLogs("->User " + (login) + " tried to logged in: User deleted!") ;
+				return null ;
+		    } else {
+				this.updateLogs("->User " + (login) + " tried to logged in: Wrong password!") ;
+				return null ;
+		    }
 
-	    String login_password_from_db = user.getPassword() ;
-	    String login_password_from_form = password ;
+		} else {
+		    this.updateLogs("->User " + (login) + " tried to logged in: User not found!") ;
+		    return null ;
+		}
 
-	    if ( login_password_from_db.equals(login_password_from_form) && user.isActive())
-		this.updateLogs("->User " + login + " succesfully logged in.") ;
-	    else if (!user.isActive() ) {
-		this.updateLogs("->User " + (login) + " tried to logged in: User deleted!") ;
-		return null ;
-	    } else {
-		this.updateLogs("->User " + (login) + " tried to logged in: Wrong password!") ;
-		return null ;
-	    }
-
-	} else {
-	    this.updateLogs("->User " + (login) + " tried to logged in: User not found!") ;
-	    return null ;
+		return user ;
 	}
-
-	return user ;
-    }
 
     /**
        @return An object representing the user with the given id.
     **/
     public User getUserById(int userId) {
+	
+		String[] user_data = sqlProcedure("GetUserInfo ", new String[] { ""+userId } ) ;
+		
+		user_data = sqlProcedure("GetUserByLogin ", new String[] { user_data[1] } ) ;	
+		
 
-	/*
-	  The columns are:
+		// if resultSet > 0 a user is found
+		if ( user_data.length > 0 ) {
+		
+			User user = new User() ;
 
-	  user_id,login_name,login_password,first_name
-	  0       1          2              3
-	  last_name,email,active,lang_prefix
-	  4         12    18     20
-	*/
-	String[] user_data = sqlProcedure("GetUserInfo", new String[] { ""+userId } ) ;
+		    user.setUserId       ( Integer.parseInt( user_data[0]  ) ) ;
+		    user.setLoginName    ( user_data[1] ) ;
+		    user.setPassword     ( user_data[2].trim() ) ;
+		    user.setFirstName    ( user_data[3] ) ;
+		    user.setLastName     ( user_data[4] ) ;
+			user.setTitle	     ( user_data[5] ) ;
+			user.setCompany		 ( user_data[6] ) ;
+			user.setAddress      ( user_data[7] ) ;
+			user.setCity         ( user_data[8] ) ;
+			user.setZip          ( user_data[9] ) ;
+			user.setCountry      ( user_data[10] ) ;
+			user.setCountryCouncil( user_data[11] ) ;
+			user.setEmailAddress ( user_data[12] ) ;
+			user.setLangId       ( Integer.parseInt( user_data[13] ) ) ;
+			user.setUserType     ( Integer.parseInt( user_data[15] ) ) ;
+		    user.setActive       ( 0 != Integer.parseInt( user_data[16] ) ) ;
+		    user.setCreateDate   ( user_data[17] ) ;
+		    user.setLangPrefix   ( user_data[14] ) ;
 
-	// if resultSet > 0 a user is found
-	if ( user_data.length > 0 ) {
-
-	    User user = new User() ;
-
-	    user.setUserId       ( Integer.parseInt( user_data[0]  ) ) ;
-	    user.setLoginName    ( user_data[1] ) ;
-	    user.setPassword     ( user_data[2].trim() ) ;
-	    user.setFirstName    ( user_data[3] ) ;
-	    user.setLastName     ( user_data[4] ) ;
-	    user.setEmailAddress ( user_data[12] ) ;
-	    user.setActive       ( 0 != Integer.parseInt( user_data[18] ) ) ;
-	    user.setLangPrefix   ( user_data[20] ) ;
-
-	    return user ;
-	} else {
-	    // No user with that id.
-	    return null ;
-	}
+		    return user ;
+		
+		} else {
+	    	// No user with that id.
+	   		 return null ;
+		}
     }
+	
+	// Fixme! public bolean addUser(User user) save a user in db
+	//		  public bolean updateUser(User user) save a user in db
+	
+	
+	//Check if user has a special adminRole
+	public boolean checkUserAdminrole ( int userId, int adminRole ) {
+		String[] adminrole = sqlProcedure("checkUserAdminrole ", new String[] {"" + userId, "" + adminRole });
+		if ( adminrole.length > 0 ){
+			if ( (""+adminRole).equals(adminrole[0]) ){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 
     public String parsePage (DocumentRequest documentRequest, int flags,ParserParameters paramsToParse) throws IOException {
-	return textDocParser.parsePage(documentRequest,flags,1,paramsToParse) ;
+		return textDocParser.parsePage(documentRequest,flags,1,paramsToParse) ;
     }
 
     /**
@@ -290,9 +363,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	String doctypeStr = sqlQueryStr("select type from doc_types where doc_type = "+doc_type) ;
 	tags.put("doc_type",doctypeStr) ;
-
-	if ( checkAdminRights(user) ) {
-	    tags.put("superadmin",superadmin.toString()) ;
+	
+	// if user is superadmin or useradmin lets add superadmin button
+	if ( checkAdminRights(user) || 	checkUserAdminrole( user.getUserId(), 2 ) ) {
+		tags.put("superadmin",superadmin.toString()) ;
 	} else {
 	    tags.put("superadmin","") ;
 	}
@@ -2836,6 +2910,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    null != rrUserData.getExpiryDate()
 	    ? new SimpleDateFormat("yyyy-MM-dd").format(rrUserData.getExpiryDate())
 	    : null ;
+	
+	String temp[] = {""+userId,
+			       ""+rrUserData.getUses(),
+			       ""+rrUserData.getMaxUses(),
+			       ""+rrUserData.getMaxUsesWarningThreshold(),
+			       expiryDateString,
+			       ""+rrUserData.getExpiryDateWarningThreshold(),
+				   ""+rrUserData.getExpiryDateWarningSent()
+	};
+	for (int i = 0 ; i < temp.length ; i++ ){	
+	System.out.println("temp[]= " + temp[i]);
+	}	
 
 	sqlUpdateProcedure("SetReadrunnerUserDataForUser",
 			   new String[] {
