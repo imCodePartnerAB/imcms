@@ -153,7 +153,7 @@ public class GetExistingDoc extends HttpServlet {
 
             // Lets fix the sortby list, first get the displaytexts from the database
              String[] sortOrder = IMCServiceRMI.sqlProcedure(imcserver,  "SortOrder_GetExistingDocs '" + langPrefix + "'") ;
-             Vector sortOrderV = this.convert2Vector(sortOrder) ;
+             Vector sortOrderV = new Vector(Arrays.asList(sortOrder)) ;
              Hashtable sortOrderHash  = this.convert2Hashtable(sortOrder) ;
              if (sortOrderHash.containsKey(sortBy) == false)
              {
@@ -189,15 +189,14 @@ public class GetExistingDoc extends HttpServlet {
 
             //------------------------------------------------------------------
             // parse searchString, replaces SPACE with RETURN and EMPTY with RETURN
-            Character char13 = new Character((char)(13));
             while (searchString.indexOf(" ") != -1)
             {
                 int spaceIndex = searchString.indexOf(" ");
                 searchString = searchString.substring(0, spaceIndex)
-                + char13 + searchString.substring(spaceIndex+1, searchString.length());
+                + "\r" + searchString.substring(spaceIndex+1, searchString.length());
             }
             if(searchString.equals(""))
-                searchString = "" + char13;
+                searchString = "\r";
 
             // FIXME: Maximum number of hits is 1000.
             sqlString = "SearchDocs " + userId + ",'" + searchString + "', '" + searchPrep + "', '" + doctype + "', " + fromDoc + ", " + "1000" + ", '" + sortBy + "', " + includeDocStr + ", '1'";
@@ -372,7 +371,7 @@ public class GetExistingDoc extends HttpServlet {
                     String doc_type = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
 
                     // Add the document in menu if user is admin for the document OR the document is shared.
-                    if ((req.getParameter("addExistingDocs")!=null) && user_doc_types.contains(doc_type) && ("1".equals(shared) || IMCServiceRMI.checkDocAdminRights(imcserver,existing_meta_id,user))) {
+                    if (user_doc_types.contains(doc_type) && IMCServiceRMI.checkUserDocSharePermission(imcserver,user,meta_id)/*("1".equals(shared) || IMCServiceRMI.checkDocAdminRights(imcserver,existing_meta_id,user))*/) {
                         IMCServiceRMI.addExistingDoc(imcserver,meta_id,user,existing_meta_id,doc_menu_no) ;
                     }
 
@@ -413,22 +412,6 @@ public class GetExistingDoc extends HttpServlet {
         return vector ;
     }
 
-         /**
-          * * Local helpmehtod
-         * Convert array to vector
-         */
-
-    private static Vector convert2Vector(String[] arr) {
-        if(arr == null)
-          return new Vector() ;
-
-        Vector v = new Vector(arr.length) ;
-        for(int i = 0; i<arr.length; i++)
-            v.add(arr[i]) ;
-        return v ;
-    }
-
-
     /**
      * Local helpmehtod
     * Takes an array as argument and creates an hashtable the information.
@@ -454,14 +437,13 @@ public class GetExistingDoc extends HttpServlet {
 
     private static String createDocTypeString(String[] docTypes) {
         StringBuffer doctype = new StringBuffer() ;
-        if(docTypes == null)
-              docTypes = new String[0] ;
-
-        for(int k = 0; k < docTypes.length; k++) {
-           doctype.append( docTypes[k] ) ;
-           if(k != docTypes.length - 1)
-              doctype.append( ", ") ;
-        }
+        if(docTypes != null && docTypes.length > 0) {
+	    doctype.append(docTypes[0]) ;
+	    
+	    for(int k = 1; k < docTypes.length; k++) {
+		doctype.append( "," ).append( docTypes[k] ) ;
+	    }
+	}
         return doctype.toString() ;
     }
 
