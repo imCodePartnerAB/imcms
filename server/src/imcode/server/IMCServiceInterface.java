@@ -41,10 +41,6 @@ public interface IMCServiceInterface extends java.rmi.Remote {
 
 	byte[] parsePage(int meta_id, imcode.server.User user, int flags) throws java.io.IOException ;
 
-	// Save a url
-	void saveUrl(int meta_id,imcode.server.User user,imcode.server.Table doc)
-	throws java.rmi.RemoteException ;
-
 
 /*	// Save a doc
 	int saveNewDoc(int meta_id,imcode.server.User user,imcode.server.Table doc,int doc_menu_no,
@@ -202,19 +198,6 @@ public interface IMCServiceInterface extends java.rmi.Remote {
 	String  parseDoc(String htmlStr,java.util.Vector variables,java.util.Vector data)
 	throws java.rmi.RemoteException ;
 
-	// Insert new texts
-/*	void insertNewTexts(int meta_id,imcode.server.User user,int no_of_txt)
-	throws java.rmi.RemoteException ;
-*/
-	// get number of textfields
-	int getNoOfTxt(int meta_id,imcode.server.User user)
-	throws java.rmi.RemoteException ;
-
-
-/*	// Insert new images
-	void insertNewImages(int meta_id,imcode.server.User user,int no_of_img)
-	throws java.rmi.RemoteException ;
-*/
 	// get external template folder
 	String getExternalTemplateFolder(int meta_id)
 	throws java.rmi.RemoteException ;

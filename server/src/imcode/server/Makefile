@@ -9,6 +9,7 @@ SOURCE  = \
         User.java \
         IMCPoolInterface.java \
         IMCPool.java \
+        IMCConstants.java \
         IMCServiceInterface.java \
         IMCService.java \
         ImcServer.java \

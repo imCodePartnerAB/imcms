@@ -3,8 +3,6 @@ package imcode.server ;
 import java.util.* ;
 
 public class User extends Hashtable {
-	//Hashtable userTable = new Hashtable(10,0.5f) ;
-	boolean admin_mode = false ;
 	int archive_mode = 0 ;
 	String browser_info[] = new String[3] ;
 	String browser_str = "" ;
@@ -61,37 +59,6 @@ public class User extends Hashtable {
 		put(fieldName,fieldData) ;
 	}
 
-	// toggle admin mode
-	public void toggleAdminMode() {
-		admin_mode = ! admin_mode ;
-		if (admin_mode)
-			put("admin_mode","1") ;
-		else
-			put("admin_mode","0") ;
-	}
-
-	// admin off
-	public void adminModeOff() {
-		put("admin_mode","0") ;
-	}
-
-
-	// admin on
-	public void adminModeOn() {
-		put("admin_mode","1") ;
-	}
-
-
-	// archive off
-	public void archiveOff() {
-		put("archive_mode","0") ;
-	}
-
-	// archive on
-	public void archiveOn() {
-		put("archive_mode","1") ;
-	}
-
 
 	// set last_meta_id
 	public void setLastMetaId(int last_meta_id) {
@@ -113,7 +80,14 @@ public class User extends Hashtable {
 		return Integer.parseInt( (String) get("lang_id") ) ;
 	}
 
-
+    /**
+       Return the users lang_prefix
+       Wonderful, no?
+       Just imagine how long we have made do without this.
+    **/
+	public String getLangPrefix() {
+	    return (String) get("lang_prefix") ;
+	}
 
 	// set browser_info
 	public void setBrowserInfo(String type,String version,String plattform) {
