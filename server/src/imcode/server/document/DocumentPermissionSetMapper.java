@@ -3,6 +3,8 @@ package imcode.server.document;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
+import imcode.server.db.DatabaseCommand;
+import imcode.server.db.DatabaseConnection;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -31,8 +33,6 @@ public class DocumentPermissionSetMapper {
                                                                        + "       AND dpse.permission_id = 524288\n"
                                                                        + "ORDER  BY group_name";
 
-    static final String SPROC_SET_DOC_PERMISSION_SET = "SetDocPermissionSet";
-    private static final String SPROC_SET_NEW_DOC_PERMISSION_SET = "SetNewDocPermissionSet";
     static final String SQL_SELECT_PERMISSON_DATA__PREFIX = "SELECT permission_data FROM ";
 
     private final static int EDIT_DOCINFO_PERMISSION_ID = ImcmsConstants.PERM_EDIT_DOCINFO;
@@ -47,6 +47,8 @@ public class DocumentPermissionSetMapper {
 
     private Database database;
     private ImcmsServices services;
+    public static final String TABLE_NEW_DOC_PERMISSION_SETS = "new_doc_permission_sets";
+    public static final String TABLE_DOC_PERMISSION_SETS = "doc_permission_sets";
 
     public DocumentPermissionSetMapper( Database service, ImcmsServices services ) {
         this.database = service;
@@ -121,9 +123,9 @@ public class DocumentPermissionSetMapper {
         }
     }
 
-    public void saveRestrictedDocumentPermissionSet( DocumentDomainObject document,
-                                                     DocumentPermissionSetDomainObject documentPermissionSet,
-                                                     boolean forNewDocuments ) {
+    public void saveRestrictedDocumentPermissionSet( final DocumentDomainObject document,
+                                                     final DocumentPermissionSetDomainObject documentPermissionSet,
+                                                     final boolean forNewDocuments ) {
 
         List permissionPairs = new ArrayList( Arrays.asList( new PermissionPair[]{
              new PermissionPair( EDIT_DOCINFO_PERMISSION_ID, documentPermissionSet.getEditDocumentInformation() ),
@@ -149,14 +151,20 @@ public class DocumentPermissionSetMapper {
             }
         }
 
-        sqlDeleteFromExtendedPermissionsTable( document, documentPermissionSet, forNewDocuments );
-
-        String sproc = forNewDocuments
-                        ? SPROC_SET_NEW_DOC_PERMISSION_SET : SPROC_SET_DOC_PERMISSION_SET;
-        database.sqlUpdateProcedure( sproc, new String[]{
-                                                     "" + document.getId(), "" + documentPermissionSet.getTypeId(),
-                                                     "" + permissionBits
-                                             } );
+        final int permissionBits1 = permissionBits;
+        database.executeTransaction( new DatabaseCommand() {
+            public void executeOn( DatabaseConnection connection ) {
+                sqlDeleteFromExtendedPermissionsTable( document, documentPermissionSet, forNewDocuments, connection );
+                String tableName = forNewDocuments ? TABLE_NEW_DOC_PERMISSION_SETS : TABLE_DOC_PERMISSION_SETS ;
+                connection.executeUpdate( "DELETE FROM "+tableName+"\n"
+                                               + "WHERE meta_id = ?\n"
+                                               + "AND  set_id = ?",
+                        new String[] {"" + document.getId(), "" + documentPermissionSet.getTypeId()} );
+                connection.executeUpdate( "INSERT INTO "+tableName+" (meta_id, set_id, permission_id)\n"
+                                               + "VALUES (?,?,?)", new String[] {"" + document.getId(), "" + documentPermissionSet.getTypeId(),
+                                                                           "" + permissionBits1} );
+            }
+        } );
 
         if ( document instanceof TextDocumentDomainObject ) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
@@ -188,11 +196,11 @@ public class DocumentPermissionSetMapper {
 
     private void sqlDeleteFromExtendedPermissionsTable( DocumentDomainObject document,
                                                         DocumentPermissionSetDomainObject documentPermissionSet,
-                                                        boolean forNewDocuments ) {
+                                                        boolean forNewDocuments, DatabaseConnection connection ) {
         String table = getExtendedPermissionsTable( forNewDocuments );
         String sqlDelete = "DELETE FROM " + table
                            + " WHERE meta_id = ? AND set_id = ?";
-        database.sqlUpdateQuery( sqlDelete, new String[]{
+        connection.executeUpdate( sqlDelete, new String[]{
                                                  "" + document.getId(), "" + documentPermissionSet.getTypeId()
                                          } );
     }

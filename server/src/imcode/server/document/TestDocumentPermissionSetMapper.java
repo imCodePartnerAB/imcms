@@ -30,10 +30,10 @@ public class TestDocumentPermissionSetMapper extends TestCase {
 
     public void testSaveRestrictedTextDocumentPermissionSet() {
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSet( textDocument, textDocumentPermissionSet, false );
-        database.assertCalled( new MockDatabase.EqualsWithParameterSqlCallPredicate( DocumentPermissionSetMapper.SPROC_SET_DOC_PERMISSION_SET, "0"));
+        database.assertCalled( new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate( DocumentPermissionSetMapper.TABLE_DOC_PERMISSION_SETS, "0"));
         textDocumentPermissionSet.setEditTexts( true );
         documentPermissionSetMapper.saveRestrictedDocumentPermissionSet( textDocument, textDocumentPermissionSet, false );
-        database.assertCalled( new MockDatabase.EqualsWithParameterSqlCallPredicate( DocumentPermissionSetMapper.SPROC_SET_DOC_PERMISSION_SET, ""+DocumentPermissionSetMapper.EDIT_DOCUMENT_PERMISSION_ID));
+        database.assertCalled( new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate( DocumentPermissionSetMapper.TABLE_DOC_PERMISSION_SETS, ""+DocumentPermissionSetMapper.EDIT_DOCUMENT_PERMISSION_ID));
     }
 
 }

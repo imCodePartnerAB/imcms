@@ -109,9 +109,9 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             String whereClause = "menu_id NOT IN (" + sqlInMenuIds + ")";
             String sqlDeleteUnusedMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?) AND "
                     + whereClause;
-            connection.executeUpdateQuery( sqlDeleteUnusedMenuItems, new String[]{"" + textDocument.getId()} );
+            connection.executeUpdate( sqlDeleteUnusedMenuItems, new String[]{"" + textDocument.getId()} );
             String sqlDeleteUnusedMenus = "DELETE FROM menus WHERE meta_id = ? AND " + whereClause;
-            connection.executeUpdateQuery( sqlDeleteUnusedMenus, new String[]{"" + textDocument.getId()});
+            connection.executeUpdate( sqlDeleteUnusedMenus, new String[]{"" + textDocument.getId()});
         }
     }
 
@@ -131,13 +131,13 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                                          Integer menuIndex ) {
         deleteTextDocumentMenuItems(connection, textDocument, menuIndex);
         String sqlDeleteMenu = "DELETE FROM menus WHERE meta_id = ? AND menu_index = ?";
-        connection.executeUpdateQuery( sqlDeleteMenu, new String[]{"" + textDocument.getId(), "" + menuIndex} );
+        connection.executeUpdate( sqlDeleteMenu, new String[]{"" + textDocument.getId(), "" + menuIndex} );
     }
 
     private void deleteTextDocumentMenuItems( DatabaseConnection connection, TextDocumentDomainObject textDocument,
                                               Integer menuIndex ) {
         String sqlDeleteMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
-        connection.executeUpdateQuery( sqlDeleteMenuItems, new String[]{"" + textDocument.getId(),
+        connection.executeUpdate( sqlDeleteMenuItems, new String[]{"" + textDocument.getId(),
                                                                                     "" + menuIndex} );
     }
 
@@ -211,16 +211,17 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                     "" + menuItem.getSortKey().intValue(),
                     "" + menuItem.getTreeSortKey()
                 };
-        connection.executeUpdateQuery( sqlInsertMenuItem, parameters);
+        connection.executeUpdate( sqlInsertMenuItem, parameters);
     }
 
     private void sqlInsertMenu( DatabaseConnection connection, TextDocumentDomainObject textDocument, int menuIndex,
                                 MenuDomainObject menu ) {
-        String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?) SELECT @@IDENTITY";
+        String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?)";
         String[] parameters = new String[]{
                     "" + textDocument.getId(), "" + menuIndex, "" + menu.getSortOrder()
                 };
-        int menuId = Integer.parseInt( connection.executeUpdateAndSelectString( sqlInsertMenu, parameters ) );
+
+        int menuId = connection.executeUpdateAndGetGeneratedKey( sqlInsertMenu, parameters ).intValue();
         menu.setId( menuId );
     }
 

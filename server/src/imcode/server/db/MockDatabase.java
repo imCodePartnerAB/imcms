@@ -5,6 +5,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -208,23 +209,6 @@ public class MockDatabase implements Database {
         }
     }
 
-    public static class ProcedureSqlCallPredicate extends SqlCallPredicate {
-
-        String procedureName;
-
-        public ProcedureSqlCallPredicate( String procedureName ) {
-            this.procedureName = procedureName;
-        }
-
-        boolean evaluateSqlCall( SqlCall sqlCall ) {
-            return procedureName.equalsIgnoreCase( sqlCall.getString() );
-        }
-
-        String getFailureMessage() {
-            return "procedure with name " + procedureName;
-        }
-    }
-
     public static class UpdateTableSqlCallPredicate extends SqlCallPredicate {
 
         private String tableName;
@@ -386,12 +370,8 @@ public class MockDatabase implements Database {
             return (Number)database.getResultForSqlCall( sql, parameters ) ;
         }
 
-        public String executeUpdateAndSelectString( String sql, String[] parameters ) {
-            return null;  // TODO
-        }
-
-        public void executeUpdateQuery( String sql, String[] parameters ) {
-            // TODO
+        public void executeUpdate( String sql, String[] parameters ) {
+            database.sqlUpdateQuery( sql, parameters );
         }
     }
 }

@@ -4,6 +4,8 @@ import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import imcode.server.*;
 import imcode.server.db.Database;
+import imcode.server.db.DatabaseCommand;
+import imcode.server.db.DatabaseConnection;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -42,8 +44,6 @@ public class DocumentMapper {
     // todo make sure all these is only used in one sprocMethod
     private static final String SPROC_GET_TEXT = "GetText";
     private static final String SQL_GET_ALL_SECTIONS = "SELECT section_id, section_name FROM sections";
-    private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
-    static final String SPROC_SET_PERMISSION_SET_ID_FOR_ROLE_ON_DOCUMENT = "SetRoleDocPermissionSetId";
 
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
@@ -91,6 +91,8 @@ public class DocumentMapper {
                                                          + "where m.meta_id=ms.meta_id\n"
                                                          + "and m.meta_id=?\n"
                                                          + "and ms.section_id=s.section_id";
+    public static final String SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID = "DELETE FROM roles_rights WHERE role_id = ? AND meta_id = ?";
+    public static final String SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID = "INSERT INTO roles_rights (role_id, meta_id, set_id) VALUES(?,?,?)";
 
     public DocumentMapper( ImcmsServices services, Database database,
                            ImcmsAuthenticatorAndUserAndRoleMapper userRegistry,
@@ -516,9 +518,9 @@ public class DocumentMapper {
         };
 
         String sqlPlaceHolders = "?" + StringUtils.repeat( ",?", metaColumnNames.length - 1 );
-        String sqlStr = "INSERT INTO meta (" + StringUtils.join( metaColumnNames, "," ) + ") VALUES ("
+        final String sqlStr = "INSERT INTO meta (" + StringUtils.join( metaColumnNames, "," ) + ") VALUES ("
                         + sqlPlaceHolders
-                        + ") SELECT @@IDENTITY";
+                        + ")";
         List sqlColumnValues = new ArrayList();
         sqlColumnValues.add( document.getDocumentTypeId() + "" );
         sqlColumnValues.add( document.getHeadline() );
@@ -540,9 +542,14 @@ public class DocumentMapper {
         sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationStartDatetime() ) );
         sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationEndDatetime() ) );
 
-        String metaIdStr = database.sqlQueryStr( sqlStr, (String[])sqlColumnValues.toArray( new String[sqlColumnValues.size()] ) );
-        final int metaId = Integer.parseInt( metaIdStr );
-        return metaId;
+        final String[] params = (String[])sqlColumnValues.toArray( new String[sqlColumnValues.size()] );
+        final Number[] metaId = new Number[1];
+        database.executeTransaction( new DatabaseCommand() {
+            public void executeOn( DatabaseConnection connection ) {
+                metaId[0] = connection.executeUpdateAndGetGeneratedKey( sqlStr, params ) ;
+            }
+        } );
+        return metaId[0].intValue();
     }
 
     private String makeSqlStringFromBoolean( final boolean bool ) {
@@ -606,8 +613,11 @@ public class DocumentMapper {
 
             if ( null == oldDocument
                  || user.canSetPermissionSetIdForRoleOnDocument( permissionSetId, role, oldDocument ) ) {
-                database.sqlUpdateProcedure( SPROC_SET_PERMISSION_SET_ID_FOR_ROLE_ON_DOCUMENT, new String[]{
-                    "" + role.getId(), "" + document.getId(), "" + permissionSetId} );
+                database.sqlUpdateQuery( SQL_DELETE_ROLE_DOCUMENT_PERMISSION_SET_ID, new String[] {"" + role.getId(), "" + document.getId()} ) ;
+                if ( DocumentPermissionSetDomainObject.TYPE_ID__NONE != permissionSetId ) {
+                    database.sqlUpdateQuery( SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID, new String[]{
+                        "" + role.getId(), "" + document.getId(), "" + permissionSetId} );
+                }
             }
         }
     }
@@ -963,20 +973,6 @@ public class DocumentMapper {
         database.sqlUpdateProcedure( "DocumentDelete", new String[]{"" + document.getId()} );
         document.accept( new DocumentDeletingVisitor() );
         invalidateDocument( document );
-    }
-
-    public IdNamePair[] getCreatableDocumentTypeIdsAndNamesInUsersLanguage( DocumentDomainObject document,
-                                                                            UserDomainObject user ) {
-        String[][] sqlRows = database.sqlProcedureMulti( SPROC_GET_DOC_TYPES_FOR_USER, new String[]{
-            "" + document.getId(), "" + user.getId(),
-            user.getLanguageIso639_2()
-        } );
-        IdNamePair[] idNamePairs = new IdNamePair[sqlRows.length];
-        for ( int i = 0; i < sqlRows.length; i++ ) {
-            String[] sqlRow = sqlRows[i];
-            idNamePairs[i] = new IdNamePair( Integer.parseInt( sqlRow[0] ), sqlRow[1] );
-        }
-        return idNamePairs;
     }
 
     public Map getAllDocumentTypeIdsAndNamesInUsersLanguage( UserDomainObject user ) {

@@ -1,7 +1,6 @@
 <%@ page import="imcode.server.Imcms,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
-                 imcode.util.IdNamePair,
                  org.apache.commons.lang.ArrayUtils,
                  org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.document.*,

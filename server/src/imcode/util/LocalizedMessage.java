@@ -16,6 +16,10 @@ public class LocalizedMessage implements Serializable {
 
     public String toLocalizedString(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser( request );
+        return toLocalizedString( user );
+    }
+
+    public String toLocalizedString( UserDomainObject user ) {
         return Imcms.getServices().getLanguageProperties( user ).getProperty( languageKey ) ;
     }
 }

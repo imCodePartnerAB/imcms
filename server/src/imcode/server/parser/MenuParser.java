@@ -2,20 +2,18 @@ package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
-import imcode.util.Html;
-import imcode.util.IdNamePair;
-import imcode.util.Utility;
+import imcode.util.*;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.oro.text.regex.PatternMatcher;
 import org.apache.oro.text.regex.StringSubstitution;
 import org.apache.oro.text.regex.Substitution;
@@ -93,35 +91,27 @@ class MenuParser {
         DocumentDomainObject document = parserParameters.getDocumentRequest().getDocument();
 
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-        IdNamePair[] docTypes = parserParameters.getDocumentRequest().getServices().getDocumentMapper().getCreatableDocumentTypeIdsAndNamesInUsersLanguage( document, user );
-        Map docTypesMap = new HashMap();
-        for ( int i = 0; i < docTypes.length; i++ ) {
-            IdNamePair docType = docTypes[i];
-            docTypesMap.put( new Integer( docType.getId() ), docType );
-        }
+        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
+        int[] allowedDocumentTypeIds = permissionSet.getAllowedDocumentTypeIds();
 
-        String existing_doc_name = parserParameters.getDocumentRequest().getServices().getAdminTemplate( "textdoc/existing_doc_name.html", parserParameters.getDocumentRequest().getUser(), null );
-        docTypesMap.put( new Integer( EXISTING_DOCTYPE_ID ), new IdNamePair( EXISTING_DOCTYPE_ID, existing_doc_name ) );
-
-        final int[] docTypeIdsOrder = {
-            DocumentTypeDomainObject.TEXT_ID,
-            EXISTING_DOCTYPE_ID,
-            DocumentTypeDomainObject.URL_ID,
-            DocumentTypeDomainObject.FILE_ID,
-            DocumentTypeDomainObject.BROWSER_ID,
-            DocumentTypeDomainObject.HTML_ID,
-            DocumentTypeDomainObject.CHAT_ID,
-            DocumentTypeDomainObject.BILLBOARD_ID,
-            DocumentTypeDomainObject.CONFERENCE_ID,
+        final DocumentTypeDomainObject[] docTypeIdsOrder = {
+            DocumentTypeDomainObject.TEXT,
+            new DocumentTypeDomainObject( EXISTING_DOCTYPE_ID, new LocalizedMessage( "templates/sv/textdoc/existing_doc_name.html/1" ) ),
+            DocumentTypeDomainObject.URL,
+            DocumentTypeDomainObject.FILE,
+            DocumentTypeDomainObject.BROWSER,
+            DocumentTypeDomainObject.HTML,
+            DocumentTypeDomainObject.CHAT,
+            DocumentTypeDomainObject.BILLBOARD,
+            DocumentTypeDomainObject.CONFERENCE,
         };
 
         StringBuffer documentTypesHtmlOptionList = new StringBuffer();
         for ( int i = 0; i < docTypeIdsOrder.length; i++ ) {
-            int docTypeId = docTypeIdsOrder[i];
-            IdNamePair temp = (IdNamePair)docTypesMap.get( new Integer( docTypeId ) );
-            if ( null != temp ) {
-                int documentTypeId = temp.getId();
-                String documentTypeName = temp.getName();
+            DocumentTypeDomainObject documentType = docTypeIdsOrder[i];
+            int documentTypeId = documentType.getId();
+            if ( EXISTING_DOCTYPE_ID == documentTypeId || ArrayUtils.contains( allowedDocumentTypeIds, documentTypeId ) ) {
+                String documentTypeName = documentType.getName().toLocalizedString( user ) ;
                 documentTypesHtmlOptionList.append( "<option value=\"" + documentTypeId + "\">" + documentTypeName
                                                     + "</option>" );
             }

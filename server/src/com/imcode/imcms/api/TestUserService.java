@@ -52,7 +52,7 @@ public class TestUserService extends TestCase {
     public void testNonAdminCantCreateUser() throws SaveException, NoPermissionException {
         User user = userService.createNewUser( "test", "test" ) ;
         user.addRole( new Role( RoleDomainObject.SUPERADMIN ));
-        database.addExpectedSqlCall( new MockDatabase.ProcedureSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SPROC_GET_HIGHEST_USER_ID ), ""+HIGHEST_USER_ID+1 );
+        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SPROC_GET_HIGHEST_USER_ID ), ""+HIGHEST_USER_ID+1 );
         try {
             userService.saveUser( user );
             fail() ;

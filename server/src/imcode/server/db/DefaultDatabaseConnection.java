@@ -12,29 +12,11 @@ public class DefaultDatabaseConnection implements DatabaseConnection {
         this.connection = connection;
     }
 
-    public void executeUpdateQuery( String sql, String[] parameters ) {
+    public void executeUpdate( String sql, String[] parameters ) {
         try {
             PreparedStatement preparedStatement = this.connection.prepareStatement( sql );
             setPreparedStatementParameters( preparedStatement, parameters );
             preparedStatement.executeUpdate();
-        } catch ( SQLException se ) {
-            throw new UnhandledException( se );
-        }
-    }
-
-    public String executeUpdateAndSelectString( String sql, String[] parameters ) {
-        try {
-            PreparedStatement preparedStatement = this.connection.prepareStatement( sql );
-            setPreparedStatementParameters( preparedStatement, parameters );
-            preparedStatement.execute();
-            String result = null ;
-            if (preparedStatement.getMoreResults()) {
-                ResultSet resultSet = preparedStatement.getResultSet();
-                if (resultSet.next()) {
-                    result = resultSet.getString( 1 ) ;
-                }
-            }
-            return result ;
         } catch ( SQLException se ) {
             throw new UnhandledException( se );
         }

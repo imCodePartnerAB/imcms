@@ -12,3 +12,8 @@ DROP PROCEDURE SystemMessageGet
 DROP PROCEDURE WebMasterGet
 
 -- 2005-02-28 Kreiger
+
+DROP PROCEDURE GetDocTypesForUser
+DROP PROCEDURE SetRoleDocPermissionSetId
+
+-- 2005-03-01 Kreiger
