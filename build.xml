@@ -73,6 +73,7 @@
 
   <property name="dist-sql"        value="${dist}/imcms.sql"/>
   <property name="sprocs-sql"      value="${dist}/sprocs.sql"/>
+  <property name="help-sql"        value="${dist}/help.sql"/>
 
 
   <!-- Where to install imCMS -->
@@ -256,6 +257,7 @@
     <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
       <fileset dir="sql/sprocs"/>
     </cat>
+    <copy file="sql/help/help.sql" tofile="${help-sql}" filtering="true"/>
   </target>
 
 
