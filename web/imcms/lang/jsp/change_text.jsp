@@ -48,8 +48,8 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 	<tr>
 		<td><input type="SUBMIT" value="Back" name="cancel" class="imcmsFormBtn"></td><%
 		if (isHtmlAreaSupported && showModeEditor) { %>
-		<td style="color:#ffffff;" nowrap>&nbsp; &nbsp; <? install/htdocs/sv/htmleditor/editor/editor.jsp/3000 ?> &nbsp;</td>
-		<td><%
+		<td style="color:#ffffff;" nowrap><span id="editorOpenText" style="display:none">&nbsp; &nbsp; <? install/htdocs/sv/htmleditor/editor/editor.jsp/3000 ?> &nbsp;</span></td>
+		<td><span id="editorOpenBtn" style="display:none"><%
 			if (getCookie("imcms_hide_editor", request).equals("true")) { %>
 		<button id="editorOnOffBtn0" onClick="toggleEditorOnOff(0); return false"
 			class="imcmsFormBtn" style="width:40"><? global/off ?></button>
@@ -60,7 +60,7 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 			class="imcmsFormBtn" style="width:40; display:none"><? global/off ?></button>
 		<button id="editorOnOffBtn1" onClick="toggleEditorOnOff(1); return false"
 			class="imcmsFormBtnActive" style="width:40;"><? global/on ?></button><%
-			} %></td><%
+			} %></span></td><%
 		} %>
 	</tr>
 	</table></td>
@@ -112,11 +112,11 @@ boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true
 			&nbsp;<u>H</u>TML&nbsp;</label>&nbsp;</td><%
 		}
 		if (isHtmlAreaSupported && showModeEditor) { %>
-			<td><input type="RADIO" name="format_type" id="format_type2" value="1" <%
+			<td><input type="RADIO" name="format_type" id="format_type2" style="display:none" value="1" <%
 			%>onClick="showHideHtmlArea(true);"<%
 			%><%= (imcmsModeHtml && showEditorCookie) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
-			<label for="format_type2" accesskey="<%= isMac ? "D" : "E" %>" title="Editor (<%= isMac ? "Ctrl" : "Alt" %> + <%= isMac ? "D" : "E" %>)">
+			<label for="format_type2" id="format_type2_label" style="display:none" accesskey="<%= isMac ? "D" : "E" %>" title="Editor (<%= isMac ? "Ctrl" : "Alt" %> + <%= isMac ? "D" : "E" %>)">
 			&nbsp;<%= isMac ? "E<u>d</u>itor" : "<u>E</u>ditor" %>&nbsp;</label>&nbsp;</td><%
 		} %>
 		</tr>
@@ -169,6 +169,13 @@ function checkMode() {
 	} else if (f.format_type.length == 2 && !f.format_type[0].checked && !f.format_type[1].checked) {
 		f.format_type[0].checked = true ;
 	}
+}
+
+if (document.getElementById) {
+	document.getElementById("editorOpenText").style.display     = "block" ;
+	document.getElementById("editorOpenBtn").style.display      = "block" ;
+	document.getElementById("format_type2").style.display       = "block" ;
+	document.getElementById("format_type2_label").style.display = "inline" ;
 }
 //-->
 </script>
