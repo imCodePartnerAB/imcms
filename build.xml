@@ -25,6 +25,8 @@
   <property name="texttemplates"  value="${templates}/text"/>
   <property name="demotemplates"  value="${texttemplates}/demo"/>
 
+  <property name="debug" value="on"/>
+
   <property file="build.properties"/>
 
   <property name="servleturl"     value="/${webappname}/servlet"/>
@@ -34,6 +36,15 @@
 
   <property name="wardist" value="${webappname}.war"/>
   <property name="webapproot" value="${deployroot}/${webappname}"/>
+
+  <target name="init"
+          description="Handy target for anything to depend on."
+	  if="fail">
+    <fail>
+      Edit build.properties!
+    </fail>
+
+  </target>
 
   <target name="dist"
           depends="build"
@@ -65,12 +76,12 @@
   </target>
 
   <target name="server"
-	  depends="dir"
+	  depends="init,dir"
           description="Builds the server and utility classes.">
 
     <echo> Building the server and the utility classes. </echo>
     <mkdir dir="${classes}"/>
-    <javac srcdir="server/src" destdir="${classes}">
+    <javac srcdir="server/src" destdir="${classes}" debug="${debug}">
       <classpath>
         <pathelement path="${classes}"/>
 	  <fileset dir="install/lib">
@@ -84,7 +95,7 @@
   </target>
 
   <target name="servlets" 
-          depends="server"
+          depends="init,server"
           description="Builds the servlets.">
 
     <echo> Building the servlets. </echo>
@@ -92,7 +103,8 @@
     <javac srcdir="servlets"
            destdir="${classes}"
            includes="*.java"
-           classpath="${classes}">
+           classpath="${classes}"
+	   debug="${debug}">
 
       <classpath>
         <pathelement path="${classes}"/>
@@ -107,7 +119,7 @@
   </target>
 
   <target name="libraries"
-          depends="dir"
+          depends="init,dir"
 	  description="Copies the jar-files.">
 
     <copy todir="${lib}">
@@ -117,6 +129,7 @@
   </target>
 
   <target name="conf"
+          depends="init"
           description="Builds the config-directory.">
     <copy todir="${conf}">
       <fileset dir="install/conf">
@@ -146,6 +159,7 @@
   </target>
 
   <target name="web"
+          depends="init"
           description="Creates the public web">
     <mkdir dir="${images}"/>
     <mkdir dir="${login}"/>
@@ -181,7 +195,7 @@
   </target>
 
   <target name="templates"
-          depends="dir"
+          depends="init,dir"
 	  description="Copies the templates.">
 
     <mkdir dir="${admintemplates}"/>
@@ -238,6 +252,7 @@
   </target>
 
   <target name="dir"
+          depends="init"
           description="Creates some empty directories necessary for imCMS.">
     <mkdir dir="${includes}"/>
     <mkdir dir="${uploads}"/>
