@@ -7,10 +7,11 @@ import java.net.* ;
 import org.apache.oro.text.regex.* ;
 import imcode.server.* ;
 import imcode.util.* ;
+import java.text.DateFormatSymbols;
 
 import org.apache.log4j.Category;
 
-public class ImcmsTagSubstitution implements Substitution {
+public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
@@ -296,8 +297,10 @@ public class ImcmsTagSubstitution implements Substitution {
 
     **/
     public String tagDatetime (Properties attributes) {
-		String format =  attributes.getProperty("format") ;
+		String format =  attributes.getProperty("format") == null ? DATETIME_FORMAT_STD : attributes.getProperty("format") ;
 		String type	  =  attributes.getProperty("type")	;
+		String lang	  =  attributes.getProperty("lang")	;
+		
 		Date date = null;
 		
 		if (type != null) {
@@ -321,12 +324,13 @@ public class ImcmsTagSubstitution implements Substitution {
 		}
 				
 		java.text.SimpleDateFormat formatter;
-		if (format == null){
-			formatter = new java.text.SimpleDateFormat();
-		}else{
+		if (lang == null){
+		
 			formatter = new java.text.SimpleDateFormat(format);
+		}else{
+			formatter = new java.text.SimpleDateFormat(format, new Locale(lang,""));
 		}
-
+		
 		try{
 			return formatter.format(date);
 		}catch(IllegalArgumentException ex){
