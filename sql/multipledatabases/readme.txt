@@ -1,16 +1,20 @@
-Skripten i denna katalog körs av klassen DatabaseService när man instantierar denna.
-Se den klassen för att se vilka databaser som stödjs.
+Skripten i denna katalog körs av klassen DatabaseService när man anropar metoderna
+initDatabase() respektive createTestData();
+
+Se klassen DatabaseService för att se vilka databaser som stödjs.
 (I skrivandets stund är det SQLServer, Mimer och MySQL)
 
 Vid förändring av skripen i denna katalog, se till att validera innehållet mot SQL 92/99 i möjligaste mån,
 http://developer.mimer.com/validator/parser92/index.tml
 http://developer.mimer.com/validator/parser92/index.tml
-Se även till att alla tester genom testklassen TestDatabaseService fortsätter att gå att köra.
+Se även till att alla tester genom testklassen TestDatabaseService även fortsättningsvis gå att köra.
 
 För att kunna skapa DatabaseService objectet behöver man en tom databas.
 Se respektive databasleverantörs instruktioner för hur man gör detta.
 Mimer: Kör ett skript med kommandot CREATE DATABANK innan create.sql skriptet körs. Se mimer.sql.
-Räcker med att köra när databasen är nyskapat, en gång.
+Räcker med att köra detta en gång när databasen är nyskapat.
+
+Nedan listat förändringar som är gjorda jämfört med den tidigare SQL Server databasen.
 
 Kvar att undersöka/göra
 * Default värden satta till NULL är borttagna

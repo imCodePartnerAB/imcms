@@ -356,22 +356,22 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private static DatabaseService static_initMimer() throws IOException {
         DatabaseService dbService = new DatabaseService( DatabaseService.MIMER, TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
-        dbService.initializeDatabase();
-        dbService.initTestData();
+        dbService.initDatabase();
+        dbService.createTestData();
         return dbService;
     }
 
     private static DatabaseService static_initSqlServer() throws IOException {
         DatabaseService dbService = new DatabaseService( DatabaseService.SQL_SERVER, TestDatabaseService.DB_HOST, TestDatabaseService.SQLSERVER_PORT, TestDatabaseService.SQLSERVER_DATABASE_NAME, TestDatabaseService.SQLSERVE_DATABASE_USER, TestDatabaseService.SQLSERVE_DATABASE_PASSWORD );
-        dbService.initializeDatabase();
-        dbService.initTestData();
+        dbService.initDatabase();
+        dbService.createTestData();
         return dbService;
     }
 
     private static DatabaseService static_initMySql() throws IOException {
         DatabaseService dbService = new DatabaseService( DatabaseService.MY_SQL, TestDatabaseService.DB_HOST, TestDatabaseService.MYSQL_PORT, TestDatabaseService.MYSQL_DATABASE_NAME, TestDatabaseService.MYSQL_DATABASE_USER, TestDatabaseService.MYSQL_DATABASE_PASSWORD );
-        dbService.initializeDatabase();
-        dbService.initTestData();
+        dbService.initDatabase();
+        dbService.createTestData();
         return dbService;
     }
 }

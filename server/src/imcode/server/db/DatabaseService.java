@@ -90,7 +90,7 @@ public class DatabaseService {
         }
     }
 
-    void initializeDatabase() {
+    void initDatabase() {
         try {
             ArrayList commands = readCommandsFromFile( DROP_TABLES );
             executeCommands( commands );
@@ -160,7 +160,7 @@ public class DatabaseService {
         return modifiedCommands;
     }
 
-    void initTestData() throws IOException {
+    void createTestData() throws IOException {
         ArrayList commands = readCommandsFromFile( ADITIONAL_TEST_DATA );
         sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
     }
