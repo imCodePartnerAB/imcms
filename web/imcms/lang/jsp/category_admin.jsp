@@ -3,31 +3,13 @@
                  imcode.server.document.CategoryDomainObject"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
-<html>
-<head>
-    <title><? global/administer ?> <? templates/sv/AdminManager_adminTask_element.htm/17 ?></title>
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-    <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-</head>
 
-<body onLoad="focusField(1,'template')">
-#gui_outer_start()
-#gui_head("<? global/administer ?> <? templates/sv/AdminManager_adminTask_element.htm/17 ?>")
-#gui_head_help_and_back_buttons( "124"  "AdminManager" "" "" )
+#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/17 ?>" "AdminManager" "back" 124 "focusField(1,'template')" )
 
-<%
-    AdminCategories.FormData formData = (AdminCategories.FormData)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
-    StringBuffer messageToUser = new StringBuffer("");
-    CategoryDomainObject categoryToEdit = formData.getCategoryToEdit() ;
-%>
-
-<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<table  width="400">
 <form name="head" action="AdminCategories" method="post">
     <tr>
-        <td>&nbsp;</td>
-    </tr>
-    <tr>
-        <td colspan="2" class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category_type ?>:</b></td>
+        <td colspan="2" class="imcmsAdmText"><b class="lighterBlue"><? install/htdocs/sv/jsp/category_admin/category_type ?>:</b></td>
     </tr>
     <tr>
     <td colspan="2">
@@ -36,7 +18,7 @@
         <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__DELETE_CATEGORY_TYPE %>" value="<? global/remove ?>"></td>
     </tr>
     <tr>
-    <td colspan="2" class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category ?>:</b></td>
+    <td colspan="2" class="imcmsAdmText"><b class="lighterBlue"><? install/htdocs/sv/jsp/category_admin/category ?>:</b></td>
     </tr>
     <tr>
     <td colspan="2">
@@ -44,10 +26,17 @@
         <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__EDIT_CATEGORY %>" value="<? global/edit ?>">
         <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__DELETE_CATEGORY %>" value="<? global/remove ?>">
         <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__VIEW_CATEGORY %>" value="<? global/view ?>">
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
 </form>
 </table>
 
-#gui_mid()
+<%
+    AdminCategories.FormData formData = (AdminCategories.FormData)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
+    StringBuffer messageToUser = new StringBuffer("");
+    CategoryDomainObject categoryToEdit = formData.getCategoryToEdit() ;
+%>
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="main" action="AdminCategories" method="post">

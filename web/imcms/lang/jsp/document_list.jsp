@@ -26,13 +26,13 @@
         <input type="submit" class="imcmsFormBtn" name="<%= ListDocuments.PARAMETER_BUTTON__LIST %>" value="<? imcms/lang/jsp/document_list.jsp/2002 ?>">
     </form>
     <% if (null != formData.documentsIterator) { %>
-        <table width="450">
+        <table width="600">
             <tr>
-                <th><? web/imcms/lang/jsp/heading_type ?></th>
-                <th><? web/imcms/lang/jsp/heading_adminlink ?></th>
-                <th><? web/imcms/lang/jsp/heading_references ?></th>
-                <th><? web/imcms/lang/jsp/heading_status ?></th>
-                <th><? imcms/lang/jsp/document_list.jsp/heading_child_documents ?></th>
+                <th align="left"><? web/imcms/lang/jsp/heading_type ?></th>
+                <th align="left"><? web/imcms/lang/jsp/heading_adminlink ?></th>
+                <th align="left"><? web/imcms/lang/jsp/heading_references ?></th>
+                <th align="left"><? web/imcms/lang/jsp/heading_status ?></th>
+                <th align="left"><? imcms/lang/jsp/document_list.jsp/heading_child_documents ?></th>
             </tr>
             <% DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
             UserDomainObject user = Utility.getLoggedOnUser(request);
