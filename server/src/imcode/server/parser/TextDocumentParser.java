@@ -331,7 +331,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#externalparam#", extparam_value );
 
             // Give the user a row of buttons if he is privileged enough.
-            if ( ( service.getDocumentMapper().hasEditPermission( user, document ) || service.checkUserAdminrole( user.getUserId(), 2 ) ) && flags >= 0 ) {
+            if ( ( service.getDocumentMapper().userHasMoreThanReadPermissionOnDocument( user, document ) || service.checkUserAdminrole( user.getUserId(), 2 ) ) && flags >= 0 ) {
                 tags.setProperty( "#adminMode#", service.getMenuButtons( meta_id, user ) );
             }
 

@@ -324,10 +324,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return new String[0][];  // TODO
     }
 
-    public boolean checkUserDocSharePermission( UserDomainObject user, int meta_id ) {
-      return false;
-   }
-
     public String getFortune( String path ) throws IOException {
       return null;
    }

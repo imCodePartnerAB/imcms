@@ -101,7 +101,7 @@ public class DocumentService {
     public void saveChanges( Document document ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
         securityChecker.hasEditPermission( document );
         try {
-            documentMapper.saveDocument( document.getInternal() );
+            documentMapper.saveDocument( document.getInternal(), securityChecker.getCurrentLoggedInUser() );
         } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
             throw new MaxCategoriesOfTypeExceededException( e );
         }

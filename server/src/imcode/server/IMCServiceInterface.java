@@ -200,8 +200,6 @@ public interface IMCServiceInterface {
 
     public String[][] getDocumentTypesInList(String langPrefixStr)  ;
 
-    public boolean checkUserDocSharePermission(UserDomainObject user, int meta_id)  ;
-
     public String getFortune(String path) throws IOException ;
 
     public String getSearchTemplate(String path) throws IOException ;

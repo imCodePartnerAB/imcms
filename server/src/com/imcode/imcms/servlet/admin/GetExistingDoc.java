@@ -225,8 +225,10 @@ public class GetExistingDoc extends HttpServlet {
 
                 int doc_type = DocumentMapper.sqlGetDocTypeFromMeta( imcref, existing_meta_id );
 
+                DocumentMapper documentMapper = imcref.getDocumentMapper();
+                DocumentDomainObject existingDocument = documentMapper.getDocument( existing_meta_id );
                 // Add the document in menu if user is admin for the document OR the document is shared.
-                boolean sharePermission = imcref.checkUserDocSharePermission( user, existing_meta_id );
+                boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToMenu( user, existingDocument );
                 if ( user_doc_types.contains( "" + doc_type ) && sharePermission ) {
                     try {
                         imcref.addExistingDoc( meta_id, user, existing_meta_id, doc_menu_no );

@@ -422,4 +422,8 @@ public class UserDomainObject extends Hashtable {
         result = 29 * result + userId;
         return result;
     }
+
+    public boolean isSuperAdmin() {
+        return hasRole( RoleDomainObject.SUPERADMIN ) ;
+    }
 }

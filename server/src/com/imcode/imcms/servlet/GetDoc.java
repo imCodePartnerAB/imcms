@@ -143,7 +143,7 @@ public class GetDoc extends HttpServlet {
             return null;
         }
 
-        if ( !document.isPublished() && !documentMapper.hasEditPermission( user, document ) ) {
+        if ( !document.isPublished() && !documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
             return imcref.getAdminTemplate( NO_ACTIVE_DOCUMENT_URL, user, null );
         }
 

@@ -300,10 +300,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         service.sqlUpdateProcedure( SPROC_DEL_PHONE_NR, sprocParameters );
     }
 
-    public boolean hasSuperAdminRole( UserDomainObject user ) {
-        return user.hasRole( RoleDomainObject.SUPERADMIN );
-    }
-
     public synchronized void addRole( String roleName ) {
         RoleDomainObject role = getRoleByName( roleName );
         boolean roleExists = null != role;

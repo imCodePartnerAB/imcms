@@ -7,15 +7,14 @@ import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
-import imcode.util.Utility;
 import imcode.util.InputStreamSource;
+import imcode.util.Utility;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -118,6 +117,52 @@ public class DocumentMapper {
         }
         //ok were set, lets update db
         sqlInsertTemplateInfoIntoTextDocs( imcref, meta_id, temp );
+    }
+
+    public boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
+                                                            DocumentDomainObject parent ) {
+        if ( userIsSuperAdminOrFullAdminOnDocument( user, parent ) ) {
+            return true ;
+        } else if ( userHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_RESTRICTED_2, parent ) ) {
+            int userPermissionSetId = getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
+            Integer[] documentTypeIds = getDocumentTypeIdsCreatableByRestrictedPermissionSetIdOnDocument( userPermissionSetId, parent );
+            if ( Arrays.asList( documentTypeIds ).contains( new Integer( documentTypeId ) ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean userIsSuperAdminOrFullAdminOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
+        return user.isSuperAdmin() || userHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_FULL, parent );
+    }
+
+    private Integer[] getDocumentTypeIdsCreatableByRestrictedPermissionSetIdOnDocument( int restrictedPermissionSetId,
+                                                                                        DocumentDomainObject document ) {
+        String sqlStr = "SELECT permission_data FROM doc_permission_sets_ex\n"
+                        + "WHERE meta_id = ? AND set_id = ? AND permission_id = " + IMCConstants.PERM_CREATE_DOCUMENT;
+        String[] documentTypeIdStrings = service.sqlQuery( sqlStr, new String[]{
+            "" + document.getId(), "" + restrictedPermissionSetId
+        } );
+        Integer[] documentTypeIds = new Integer[documentTypeIdStrings.length];
+        for ( int i = 0; i < documentTypeIdStrings.length; i++ ) {
+            documentTypeIds[i] = Integer.valueOf( documentTypeIdStrings[i] );
+        }
+        return documentTypeIds;
+    }
+
+    private int getUsersMostPrivilegedPermissionSetIdOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
+        Map rolesMappedToPermissionSetIds = parent.getRolesMappedToPermissionSetIds();
+        RoleDomainObject[] usersRoles = user.getRoles();
+        int mostPrivilegedPermissionSetIdFoundYet = IMCConstants.DOC_PERM_SET_NONE;
+        for ( int i = 0; i < usersRoles.length; i++ ) {
+            RoleDomainObject usersRole = usersRoles[i];
+            int permissionSetId = ( (Integer)rolesMappedToPermissionSetIds.get( usersRole ) ).intValue();
+            if ( permissionSetId < mostPrivilegedPermissionSetIdFoundYet ) {
+                mostPrivilegedPermissionSetIdFoundYet = permissionSetId;
+            }
+        }
+        return mostPrivilegedPermissionSetIdFoundYet;
     }
 
     /**
@@ -395,19 +440,19 @@ public class DocumentMapper {
             document.setMimeType( mime );
             document.setInputStreamSource( new InputStreamSource() {
                 public InputStream getInputStream() throws IOException {
-                    return new FileInputStream( getUploadedFile( document )) ;
+                    return new FileInputStream( getUploadedFile( document ) );
                 }
             } );
         }
     }
 
     private File getUploadedFile( final FileDocumentDomainObject document ) {
-        File file = new File( service.getFilePath(), ""+document.getId() );
-        if (!file.exists()) {
+        File file = new File( service.getFilePath(), "" + document.getId() );
+        if ( !file.exists() ) {
             // FIXME: deprecated
-            file = new File( service.getFilePath(), ""+document.getId()+"_se" );
+            file = new File( service.getFilePath(), "" + document.getId() + "_se" );
         }
-        return file ;
+        return file;
     }
 
     public void initBrowserDocument( BrowserDocumentDomainObject document ) {
@@ -539,29 +584,31 @@ public class DocumentMapper {
     public boolean hasPermissionToSearchDocument( UserDomainObject searchingUser, DocumentDomainObject document ) {
         boolean searchingUserHasPermissionToFindDocument = false;
         if ( document.isSearchDisabled() ) {
-            if ( searchingUser.hasRole( RoleDomainObject.SUPERADMIN ) ) {
+            if ( searchingUser.isSuperAdmin() ) {
                 searchingUserHasPermissionToFindDocument = true;
             }
         } else {
             if ( document.isPublished() ) {
-                searchingUserHasPermissionToFindDocument = hasAtLeastDocumentReadPermission( searchingUser, document );
+                searchingUserHasPermissionToFindDocument = userHasAtLeastDocumentReadPermission( searchingUser, document );
             } else {
-                searchingUserHasPermissionToFindDocument = hasEditPermission( searchingUser, document );
+                searchingUserHasPermissionToFindDocument = userHasMoreThanReadPermissionOnDocument( searchingUser, document );
             }
         }
         return searchingUserHasPermissionToFindDocument;
     }
 
-    public boolean hasAtLeastDocumentReadPermission( UserDomainObject user, DocumentDomainObject document ) {
-        return userIsSuperAdminOrHasAtLeastPermissionSetId( document, user, IMCConstants.DOC_PERM_SET_READ );
+    public boolean userHasAtLeastDocumentReadPermission( UserDomainObject user, DocumentDomainObject document ) {
+        return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_READ, document );
     }
 
-    public boolean hasEditPermission( UserDomainObject user, DocumentDomainObject document ) {
-        return userIsSuperAdminOrHasAtLeastPermissionSetId( document, user, IMCConstants.DOC_PERM_SET_RESTRICTED_2 );
+    public boolean userHasMoreThanReadPermissionOnDocument( UserDomainObject user, DocumentDomainObject document ) {
+        return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_RESTRICTED_2, document );
     }
 
-    public boolean hasSharePermission( UserDomainObject user, int documentId ) {
-        return service.checkUserDocSharePermission( user, documentId );
+    public boolean userHasPermissionToAddDocumentToMenu( UserDomainObject user, DocumentDomainObject document ) {
+        return user.isSuperAdmin()
+            || userHasMoreThanReadPermissionOnDocument( user, document )
+            || document.isLinkableByOtherUsers() ;
     }
 
     public void indexDocument( DocumentDomainObject document ) {
@@ -580,8 +627,12 @@ public class DocumentMapper {
         sprocDeleteInclude( service, includingMetaId, includeIndex );
     }
 
-    public void saveNewDocument( DocumentDomainObject document )
+    public void saveNewDocument( DocumentDomainObject document, UserDomainObject user )
             throws MaxCategoryDomainObjectsOfTypeExceededException, IOException {
+
+        if (!userHasMoreThanReadPermissionOnDocument( user, document )) {
+            return ; // TODO: More specific check needed. Throw exception ?
+        }
 
         int newMetaId = sqlInsertIntoMeta( document );
 
@@ -589,7 +640,7 @@ public class DocumentMapper {
 
         document.saveNewDocument( this );
 
-        saveDocument( document );
+        saveDocument( document, user );
     }
 
     private void saveFile( FileDocumentDomainObject newFileDocument ) {
@@ -725,7 +776,11 @@ public class DocumentMapper {
         return bool ? "1" : "0";
     }
 
-    public void saveDocument( DocumentDomainObject document ) throws MaxCategoryDomainObjectsOfTypeExceededException {
+    public void saveDocument( DocumentDomainObject document, UserDomainObject user ) throws MaxCategoryDomainObjectsOfTypeExceededException {
+
+        if (!userHasMoreThanReadPermissionOnDocument( user, document )) {
+            return ; // TODO: More specific check needed. Throw exception ?
+        }
 
         checkMaxDocumentCategoriesOfType( document );
 
@@ -1329,25 +1384,25 @@ public class DocumentMapper {
         return textMap;
     }
 
-    private boolean userIsSuperAdminOrHasAtLeastPermissionSetId( DocumentDomainObject document, UserDomainObject user,
-                                                                 int leastPrivilegedPermissionSetIdWanted ) {
+    private boolean userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
+                                                                           int leastPrivilegedPermissionSetIdWanted,
+                                                                           DocumentDomainObject document ) {
+        return user.isSuperAdmin()
+               || userHasAtLeastPermissionSetIdOnDocument( user, leastPrivilegedPermissionSetIdWanted, document );
+    }
+
+    private boolean userHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
+                                                             int leastPrivilegedPermissionSetIdWanted,
+                                                             DocumentDomainObject document ) {
         boolean result = false;
-
-        boolean userHasSuperAdminRole = imcmsAAUM.hasSuperAdminRole( user );
-
-        if ( userHasSuperAdminRole ) {
-            result = true;
-        } else {
-
-            RoleDomainObject[] userRoles = user.getRoles();
-            Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds();
-            for ( int i = 0; i < userRoles.length; i++ ) {
-                RoleDomainObject userRole = userRoles[i];
-                Integer permissionSetIdForUserRole = (Integer)rolesMappedToPermissionSetIds.get( userRole );
-                if ( permissionSetIdForUserRole.intValue() <= leastPrivilegedPermissionSetIdWanted ) {
-                    result = true;
-                    break;
-                }
+        RoleDomainObject[] userRoles = user.getRoles();
+        Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds();
+        for ( int i = 0; i < userRoles.length; i++ ) {
+            RoleDomainObject userRole = userRoles[i];
+            Integer permissionSetIdForUserRole = (Integer)rolesMappedToPermissionSetIds.get( userRole );
+            if ( permissionSetIdForUserRole.intValue() <= leastPrivilegedPermissionSetIdWanted ) {
+                result = true;
+                break;
             }
         }
         return result;
@@ -1471,7 +1526,7 @@ public class DocumentMapper {
 
     public void saveNewDocumentAndAddToMenu( DocumentDomainObject newDocument, UserDomainObject user,
                                              DocumentComposer.NewDocumentParentInformation newDocumentParentInformation ) throws IOException, MaxCategoryDomainObjectsOfTypeExceededException, DocumentAlreadyInMenuException {
-        saveNewDocument( newDocument );
+        saveNewDocument( newDocument, user );
         addDocumentToMenu( user, newDocumentParentInformation.parentId,
                            newDocumentParentInformation.parentMenuNumber,
                            newDocument.getId() );

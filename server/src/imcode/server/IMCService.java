@@ -543,7 +543,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt( childsThisMenu[i])) ;
             document.setArchivedDatetime( now );
             try {
-                documentMapper.saveDocument( document );
+                documentMapper.saveDocument( document, user );
             } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
                 throw new RuntimeException( e ) ;
             }
@@ -933,7 +933,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * checkDocAdminRights
      */
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user ) {
-        return documentMapper.hasEditPermission( user, documentMapper.getDocument( meta_id ) );
+        return documentMapper.userHasMoreThanReadPermissionOnDocument( user, documentMapper.getDocument( meta_id ) );
     }
 
     /**
@@ -1307,11 +1307,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String[][] getDocumentTypesInList( String langPrefixStr ) {
         return sqlProcedureMulti( "GetDocTypes", new String[]{langPrefixStr} );
-    }
-
-    public boolean checkUserDocSharePermission( UserDomainObject user, int meta_id ) {
-        return sqlProcedure( "CheckUserDocSharePermission", new String[]{"" + user.getUserId(), "" + meta_id} ).length
-               > 0;
     }
 
     /**

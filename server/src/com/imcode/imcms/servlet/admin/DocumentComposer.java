@@ -139,7 +139,8 @@ public class DocumentComposer extends HttpServlet {
         }
 
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        DocumentMapper documentMapper = service.getDocumentMapper();
 
         try {
             // TODO: Replace this rats-nest of dispatching with a bunch of Application Controllers a la Fowler,
@@ -150,14 +151,14 @@ public class DocumentComposer extends HttpServlet {
                 action = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );
                 request.setAttribute( REQUEST_ATTR_OR_PARAM__ACTION, action );
                 String imageUrl = AdminDoc.getImageUri( request );
-                if (null != request.getParameter( ImageBrowse.PARAMETER_BUTTON__OK)) {
+                if ( null != request.getParameter( ImageBrowse.PARAMETER_BUTTON__OK ) ) {
                     document.setMenuImage( imageUrl );
                 }
             }
 
             if ( ACTION__CREATE_NEW_DOCUMENT.equalsIgnoreCase( action ) ) {
                 DocumentDomainObject parentDocument = documentMapper.getDocument( newDocumentParentInformation.parentId );
-                DocumentDomainObject newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument );
+                DocumentDomainObject newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument, user );
                 newDocument.setHeadline( "" );
                 newDocument.setMenuText( "" );
                 newDocument.setMenuImage( "" );
@@ -165,98 +166,104 @@ public class DocumentComposer extends HttpServlet {
                 newDocument.setPublicationStartDatetime( new Date() );
                 newDocument.setArchivedDatetime( null );
                 newDocument.setPublicationEndDatetime( null );
-                newDocument.setCreator( user );
+
                 addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
                 forwardToDocinfoPage( request, response, user );
-            } else if ( ACTION__PROCESS_NEW_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
-                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-                    processNewDocumentInformation( newDocumentParentInformation, request, response, user );
-                } else {
-                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
-                }
-            } else if ( ACTION__CREATE_NEW_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
-                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-
-                    UrlDocumentDomainObject newUrlDocument = (UrlDocumentDomainObject)document;
-                    newUrlDocument.setUrlDocumentUrl( request.getParameter( PARAMETER__URL_DOC__URL ) );
-                    newUrlDocument.setTarget( getTargetFromRequest( request ) );
-                    saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newUrlDocument, newDocumentParentInformation, user, request );
-                }
-                redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
-            } else if ( ACTION__CREATE_NEW_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
-                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-                    HtmlDocumentDomainObject newHtmlDocument = (HtmlDocumentDomainObject)document;
-                    newHtmlDocument.setHtmlDocumentHtml( request.getParameter( PARAMETER__HTML_DOC__HTML ) );
-                    saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newHtmlDocument, newDocumentParentInformation, user, request );
-                }
-                redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
-            } else if ( ACTION__CREATE_NEW_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
-                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-                    FileDocumentDomainObject newFileDocument = (FileDocumentDomainObject)document;
-                    final FileItem fileItem = request.getParameterFileItem( PARAMETER__FILE_DOC__FILE );
-                    newFileDocument.setFilename( fileItem.getName() );
-                    newFileDocument.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
-                    newFileDocument.setMimeType( getMimeTypeFromRequest( request ) );
-                    saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newFileDocument, newDocumentParentInformation, user, request );
-                }
-                redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
-            } else if ( ACTION__CREATE_NEW_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
-                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-                    BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
-                    saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newBrowserDocument, newDocumentParentInformation, user, request );
-                }
-                redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
-            } else if ( ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
-                forwardToBrowserDocumentComposer( request, response );
-            } else if ( ACTION__PROCESS_EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
-                documentMapper.saveDocument( document );
-                redirectToDocument( response, document );
-            } else if ( ACTION__EDIT_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
-                forwardToFileDocumentPage( request, response, user );
-            } else if ( ACTION__PROCESS_EDITED_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
-                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-                    FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
-                    final FileItem fileItem = request.getParameterFileItem( PARAMETER__FILE_DOC__FILE );
-                    String fileName = fileItem.getName();
-                    if ( !"".equals( fileName ) ) {
-                        fileDocument.setFilename( fileName );
-                        if ( 0 != fileItem.getSize() ) {
-                            fileDocument.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
-                        }
+            } else if ( null != document
+                        && documentMapper.userHasMoreThanReadPermissionOnDocument( user, document )
+                    // FIXME: Needs more specific check for "edit"-permission.
+            ) {
+                if ( ACTION__PROCESS_NEW_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
+                    if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                        processNewDocumentInformation( newDocumentParentInformation, request, response, user );
+                    } else {
+                        redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
                     }
-                    fileDocument.setMimeType( getMimeTypeFromRequest( request ) );
-                    documentMapper.saveDocument( fileDocument );
+                } else if ( ACTION__CREATE_NEW_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+
+                        UrlDocumentDomainObject newUrlDocument = (UrlDocumentDomainObject)document;
+                        newUrlDocument.setUrlDocumentUrl( request.getParameter( PARAMETER__URL_DOC__URL ) );
+                        newUrlDocument.setTarget( getTargetFromRequest( request ) );
+                        saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newUrlDocument, newDocumentParentInformation, user, request );
+                    }
+                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+                } else if ( ACTION__CREATE_NEW_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                        HtmlDocumentDomainObject newHtmlDocument = (HtmlDocumentDomainObject)document;
+                        newHtmlDocument.setHtmlDocumentHtml( request.getParameter( PARAMETER__HTML_DOC__HTML ) );
+                        saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newHtmlDocument, newDocumentParentInformation, user, request );
+                    }
+                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+                } else if ( ACTION__CREATE_NEW_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                        FileDocumentDomainObject newFileDocument = (FileDocumentDomainObject)document;
+                        final FileItem fileItem = request.getParameterFileItem( PARAMETER__FILE_DOC__FILE );
+                        newFileDocument.setFilename( fileItem.getName() );
+                        newFileDocument.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
+                        newFileDocument.setMimeType( getMimeTypeFromRequest( request ) );
+                        saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newFileDocument, newDocumentParentInformation, user, request );
+                    }
+                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+                } else if ( ACTION__CREATE_NEW_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                        BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
+                        saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newBrowserDocument, newDocumentParentInformation, user, request );
+                    }
+                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
+                } else if ( ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    forwardToBrowserDocumentComposer( request, response );
+                } else if ( ACTION__PROCESS_EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    documentMapper.saveDocument( document, user );
+                    redirectToDocument( response, document );
+                } else if ( ACTION__EDIT_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    forwardToFileDocumentPage( request, response, user );
+                } else if ( ACTION__PROCESS_EDITED_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                        FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
+                        final FileItem fileItem = request.getParameterFileItem( PARAMETER__FILE_DOC__FILE );
+                        String fileName = fileItem.getName();
+                        if ( !"".equals( fileName ) ) {
+                            fileDocument.setFilename( fileName );
+                            if ( 0 != fileItem.getSize() ) {
+                                fileDocument.setInputStreamSource( new FileItemInputStreamSource( fileItem ) );
+                            }
+                        }
+                        fileDocument.setMimeType( getMimeTypeFromRequest( request ) );
+                        documentMapper.saveDocument( fileDocument, user );
+                    }
+                    redirectToDocument( response, document );
+                } else if ( ACTION__EDIT_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    forwardToHtmlDocumentPage( request, response, user );
+                } else if ( ACTION__PROCESS_EDITED_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                        HtmlDocumentDomainObject htmlDocument = (HtmlDocumentDomainObject)document;
+                        htmlDocument.setHtmlDocumentHtml( request.getParameter( PARAMETER__HTML_DOC__HTML ) );
+                        documentMapper.saveDocument( htmlDocument, user );
+                    }
+                    redirectToDocument( response, document );
+                } else if ( ACTION__EDIT_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    forwardToUrlDocumentPage( request, response, user );
+                } else if ( ACTION__PROCESS_EDITED_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
+                    if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                        UrlDocumentDomainObject urlDocument = (UrlDocumentDomainObject)document;
+                        urlDocument.setTarget( getTargetFromRequest( request ) );
+                        String url = request.getParameter( PARAMETER__URL_DOC__URL );
+                        urlDocument.setUrlDocumentUrl( url );
+                        documentMapper.saveDocument( urlDocument, user );
+                    }
+                    redirectToDocument( response, document );
+                } else if ( ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
+                    forwardToDocinfoPage( request, response, user );
+                } else if ( ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
+                    if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
+                        setDocumentAttributesFromRequestParameters( document, request );
+                        documentMapper.saveDocument( document, user );
+                    }
+                    redirectToDocument( response, document );
                 }
-                redirectToDocument( response, document );
-            } else if ( ACTION__EDIT_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
-                forwardToHtmlDocumentPage( request, response, user );
-            } else if ( ACTION__PROCESS_EDITED_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
-                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-                    HtmlDocumentDomainObject htmlDocument = (HtmlDocumentDomainObject)document;
-                    htmlDocument.setHtmlDocumentHtml( request.getParameter( PARAMETER__HTML_DOC__HTML ) );
-                    documentMapper.saveDocument( htmlDocument );
-                }
-                redirectToDocument( response, document );
-            } else if ( ACTION__EDIT_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
-                forwardToUrlDocumentPage( request, response, user );
-            } else if ( ACTION__PROCESS_EDITED_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
-                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-                    UrlDocumentDomainObject urlDocument = (UrlDocumentDomainObject)document;
-                    urlDocument.setTarget( getTargetFromRequest( request ) );
-                    String url = request.getParameter( PARAMETER__URL_DOC__URL );
-                    urlDocument.setUrlDocumentUrl( url );
-                    documentMapper.saveDocument( urlDocument );
-                }
-                redirectToDocument( response, document );
-            } else if ( ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
-                forwardToDocinfoPage( request, response, user );
-            } else if ( ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
-                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
-                    setDocumentAttributesFromRequestParameters( document, request );
-                    documentMapper.saveDocument( document );
-                }
-                redirectToDocument( response, document );
             }
+
         } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
             throw new ServletException( e );
         }
@@ -332,7 +339,13 @@ public class DocumentComposer extends HttpServlet {
         newDocument.processNewDocumentInformation( this, newDocumentParentInformation, user, request, response );
     }
 
-    private DocumentDomainObject createDocumentOfTypeFromParent( int documentTypeId, final DocumentDomainObject parent ) throws ServletException {
+    private DocumentDomainObject createDocumentOfTypeFromParent( int documentTypeId, final DocumentDomainObject parent,
+                                                                 UserDomainObject user ) throws ServletException {
+        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        DocumentMapper documentMapper = service.getDocumentMapper();
+        if ( !documentMapper.userCanCreateDocumentOfTypeIdFromParent( user, documentTypeId, parent ) ) {
+            return null;
+        }
         DocumentDomainObject newDocument;
         try {
             if ( DocumentDomainObject.DOCTYPE_TEXT == documentTypeId ) {
@@ -345,6 +358,9 @@ public class DocumentComposer extends HttpServlet {
         } catch ( CloneNotSupportedException e ) {
             throw new ServletException( e );
         }
+        newDocument.setCreator( user );
+        newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
+
         return newDocument;
     }
 

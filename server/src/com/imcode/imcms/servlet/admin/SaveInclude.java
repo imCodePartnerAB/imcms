@@ -3,9 +3,9 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
-import imcode.server.user.UserDomainObject;
-import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Category;
 
@@ -45,36 +45,44 @@ public class SaveInclude extends HttpServlet {
         String included_meta_id = req.getParameter( "include_meta_id" );
         String include_id = req.getParameter( "include_id" );
 
-        if (included_meta_id != null && include_id != null) {
+        if ( included_meta_id != null && include_id != null ) {
             included_meta_id = included_meta_id.trim();
             include_id = include_id.trim();
-            if ("".equals( included_meta_id )) {
+            if ( "".equals( included_meta_id ) ) {
                 DocumentMapper.sprocDeleteInclude( imcref, meta_id, Integer.parseInt( include_id ) );
-                mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on [" + meta_id_str + "] removed by user: [" + user.getFullName() + "]" );
+                mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on ["
+                              + meta_id_str
+                              + "] removed by user: ["
+                              + user.getFullName()
+                              + "]" );
             } else {
                 try {
                     int included_meta_id_int = Integer.parseInt( included_meta_id );
 
                     String[] docTypeStrArr = imcref.sqlProcedure( "GetDocType", new String[]{included_meta_id} );
                     int docType = Integer.parseInt( docTypeStrArr[0] );
-                    if ( null == docTypeStrArr || 0 == docTypeStrArr.length || DocumentDomainObject.DOCTYPE_TEXT != docType ) {
+                    if ( null == docTypeStrArr || 0 == docTypeStrArr.length
+                         || DocumentDomainObject.DOCTYPE_TEXT != docType ) {
                         sendBadId( imcref, out, meta_id, user );
                         return;
                     }
 
+                    DocumentMapper documentMapper = imcref.getDocumentMapper();
                     // Make sure the user has permission to share the included document
-                    if ( imcref.checkUserDocSharePermission( user, included_meta_id_int ) ) {
+                    DocumentDomainObject includedDocument = documentMapper.getDocument( included_meta_id_int );
+                    if ( documentMapper.userHasPermissionToAddDocumentToMenu( user, includedDocument ) ) {
                         DocumentMapper.sprocSetInclude( imcref, meta_id, Integer.parseInt( include_id ), included_meta_id_int );
-                        mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on [" + meta_id_str + "] changed to [" + included_meta_id + "]  by user: [" + user.getFullName() + "]" );
+                        mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id
+                                      + "] on ["
+                                      + meta_id_str
+                                      + "] changed to ["
+                                      + included_meta_id
+                                      + "]  by user: ["
+                                      + user.getFullName()
+                                      + "]" );
                     } else {
-                        // Make sure the user has permission to share the included document
-                        if (imcref.checkUserDocSharePermission( user, included_meta_id_int )) {
-                            imcref.sqlUpdateProcedure( "SetInclude", new String[]{meta_id_str, include_id, included_meta_id} );
-                            mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on [" + meta_id_str + "] changed to [" + included_meta_id + "]  by user: [" + user.getFullName() + "]" );
-                        } else {
-                            sendPermissionDenied( imcref, out, meta_id, user );
-                            return;
-                        }
+                        sendPermissionDenied( imcref, out, meta_id, user );
+                        return;
                     }
                 } catch ( NumberFormatException ignored ) {
                     sendBadId( imcref, out, meta_id, user );

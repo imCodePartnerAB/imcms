@@ -44,7 +44,7 @@ public class SecurityChecker {
     }
 
     void hasEditPermission( int documentId ) throws NoPermissionException {
-        if( !docMapper.hasEditPermission( accessingUser, docMapper.getDocument( documentId ) ) ) {
+        if( !docMapper.userHasMoreThanReadPermissionOnDocument( accessingUser, docMapper.getDocument( documentId ) ) ) {
             throw new NoPermissionException("The logged in user does not have permission to edit document " + documentId );
         };
     }
@@ -58,7 +58,7 @@ public class SecurityChecker {
     }
 
     void hasAtLeastDocumentReadPermission( Document document ) throws NoPermissionException {
-        if (!docMapper.hasAtLeastDocumentReadPermission( accessingUser, document.getInternal() )) {
+        if (!docMapper.userHasAtLeastDocumentReadPermission( accessingUser, document.getInternal() )) {
             throw new NoPermissionException("The logged in user does not have permission to access document "+document.getId()) ;
         }
     }
@@ -68,7 +68,7 @@ public class SecurityChecker {
     }
 
     void hasSharePermission( Document document ) throws NoPermissionException {
-        if (!docMapper.hasSharePermission(accessingUser, document.getId())) {
+        if (!docMapper.userHasPermissionToAddDocumentToMenu(accessingUser, document.getInternal())) {
             throw new NoPermissionException("The logged in user does not have permission to share document "+document.getId()) ;
         }
     }
