@@ -2077,19 +2077,49 @@ public abstract class DatabaseService {
         return (PartOfTable_users[])queryResult.toArray( new PartOfTable_users[queryResult.size()] );
     }
 
+    int sproc_StartDocGet() {
+        Integer type_id = new Integer( 0 );
+        return Integer.parseInt( selectFrom_sys_data( type_id ) );
+    }
+
     // todo: döp om sysdata_value så man förstår vad detta är för något...
     int sproc_GetCurrentSessionCounter() {
         Integer type_id = new Integer( 1 );
-        return Integer.parseInt( getSysdata( type_id ) );
+        return Integer.parseInt( selectFrom_sys_data( type_id ) );
     }
 
     // todo: returnera date objekt i stället? Ändra typen i databasen?
     String sproc_GetCurrentSessionCounterDate() {
         Integer type_id = new Integer( 2 );
-        return getSysdata( type_id );
+        return selectFrom_sys_data( type_id );
     }
 
-    private String getSysdata( Integer type_id ) {
+    String sproc_SystemMessageGet() {
+        Integer type_id = new Integer( 3 );
+        return selectFrom_sys_data( type_id );
+    }
+
+    String sproc_ServerMasterGet_name() {
+        Integer type_id = new Integer( 4 );
+        return selectFrom_sys_data( type_id );
+    }
+
+    String sproc_ServerMasterGet_email() {
+        Integer type_id = new Integer( 5 );
+        return selectFrom_sys_data( type_id );
+    }
+
+    String sproc_WebMasterGet_name() {
+        Integer type_id = new Integer( 6 );
+        return selectFrom_sys_data( type_id );
+    }
+
+    String sproc_WebMasterGet_email() {
+        Integer type_id = new Integer( 7 );
+        return selectFrom_sys_data( type_id );
+    }
+
+    private String selectFrom_sys_data( Integer type_id ) {
         String sql = " SELECT sysdata_value FROM sys_data WHERE type_id  = ? ";
         Object[] paramValues = new Object[]{type_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
@@ -2315,4 +2345,6 @@ public abstract class DatabaseService {
         }
         return rowCount;
     }
+
+
 }

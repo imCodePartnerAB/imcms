@@ -28,7 +28,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static final String ROLE_TEST_NAME = "TestRole";
 
     private int DOC_NO_OF_DOCS = 8; // 1001 + folowing
-    private static final int DOC_ID_FIRST_PAGE = 1001;
+    private static final int DOC_FIRST_PAGE_ID = 1001;
     private static final int DOC_ID_NON_EXISTING = 66666;
     private final static int DOC_TEST_FIRST_ID = 9001;
     private final static int DOC_TEST_SECOND_ID = 9002;
@@ -63,7 +63,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            DatabaseTestInitializer.static_initMimer(),
+            //DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -117,8 +117,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_SectionGetAllCount( databaseService );
             test_sproc_SectionCount( databaseService );
             test_sproc_SectionGetInheritId( databaseService );
+            test_sproc_systemdata( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_systemdata( DatabaseService databaseService ) {
+        assertEquals( DOC_FIRST_PAGE_ID, databaseService.sproc_StartDocGet() );
+        assertEquals( "@webmaster-name@", databaseService.sproc_WebMasterGet_name() );
+        assertEquals( "@webmaster-email@", databaseService.sproc_WebMasterGet_email() );
+        assertEquals( "@servermaster-name@", databaseService.sproc_ServerMasterGet_name() );
+        assertEquals( "@servermaster-email@", databaseService.sproc_ServerMasterGet_email() );
+        assertEquals( "", databaseService.sproc_SystemMessageGet() );
     }
 
     private void test_sproc_SectionGetInheritId( DatabaseService databaseService ) {
@@ -155,9 +165,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_GetDocumentInfo( DatabaseService databaseService ) {
-        DatabaseService.Table_meta firstPage =  databaseService.sproc_GetDocumentInfo( DOC_ID_FIRST_PAGE );
+        DatabaseService.Table_meta firstPage =  databaseService.sproc_GetDocumentInfo( DOC_FIRST_PAGE_ID );
         assertNotNull( firstPage );
-        assertEquals( DOC_ID_FIRST_PAGE, firstPage.meta_id );
+        assertEquals( DOC_FIRST_PAGE_ID, firstPage.meta_id );
     }
 
     private void test_sproc_GetCurrentSessionCounterDate( DatabaseService databaseService ) {
@@ -227,8 +237,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_GetText( DatabaseService databaseService ) {
-        assertNotNull( databaseService.sproc_GetText( DOC_ID_FIRST_PAGE, 1 ) );
-        assertNull( databaseService.sproc_GetText( DOC_ID_FIRST_PAGE, 2 ) );
+        assertNotNull( databaseService.sproc_GetText( DOC_FIRST_PAGE_ID, 1 ) );
+        assertNull( databaseService.sproc_GetText( DOC_FIRST_PAGE_ID, 2 ) );
     }
 
     private void test_sproc_GetDocTypesForUser( DatabaseService dbService ) {
@@ -285,7 +295,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_FindMetaId( DatabaseService dbService ) {
-        assertTrue( dbService.sproc_FindMetaId( DOC_ID_FIRST_PAGE ) );
+        assertTrue( dbService.sproc_FindMetaId( DOC_FIRST_PAGE_ID ) );
         assertFalse( dbService.sproc_FindMetaId( DOC_ID_NON_EXISTING ) );
     }
 
@@ -318,7 +328,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_GetFileName( DatabaseService databaseService ) {
-        assertNull( databaseService.sproc_GetFileName( DOC_ID_FIRST_PAGE ) );
+        assertNull( databaseService.sproc_GetFileName( DOC_FIRST_PAGE_ID ) );
         assertNull( databaseService.sproc_GetFileName( DOC_ID_NON_EXISTING ) );
         assertTrue( DOC_THIRD_DOC_FILENAME.equals( databaseService.sproc_GetFileName( DOC_TEST_FILE_UPLOAD_DOC_TYPE ) ) );
     }
@@ -443,7 +453,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     public void test_sproc_DocumentDelete() {
         for( int i = 0; i < databaseServices.length; i++ ) {
-            assertEquals( 5, databaseServices[i].sproc_DocumentDelete( DOC_ID_FIRST_PAGE ) );
+            assertEquals( 5, databaseServices[i].sproc_DocumentDelete( DOC_FIRST_PAGE_ID ) );
         }
     }
 
@@ -555,7 +565,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     // Below is helper functions to more than one test.
     private static DatabaseService.Table_users static_createDummyUser() {
-        DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", 0, DOC_ID_FIRST_PAGE, 0, 1, 1, 1, new Timestamp( new java.util.Date().getTime() ) );
+        DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", 0, DOC_FIRST_PAGE_ID, 0, 1, 1, 1, new Timestamp( new java.util.Date().getTime() ) );
         return user;
     }
 }

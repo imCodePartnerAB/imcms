@@ -117,7 +117,6 @@ shop_getshoppingitemsfororder.prc
 shop_getshoppingorderforuserbyid.prc
 shop_getshoppingordersforuser.prc
 sortorder_getexistingdocs.prc
-startdocget.prc
 startdocset.prc
 systemmessageget.prc
 systemmessageset.prc
