@@ -105,7 +105,6 @@ public class ConfReply extends Conference {
 			sqlQ += ", " + ascSortOrder ;
 			//	log("Sql quest: " + sqlQ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
-			log( "här är jag oxså" );
 			this.doGet(req, res) ;
 			return ;
 		}

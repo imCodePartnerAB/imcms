@@ -69,7 +69,6 @@ public class AdminConference extends Administrator {
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
 
         // lets get ready for errors
-        //ErrorMessageGenerator errroMessage = null;
         String deafultLanguagePrefix = IMCServiceRMI.getLanguage( imcserver );
 
         // Lets validate the session

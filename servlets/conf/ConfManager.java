@@ -7,7 +7,7 @@ import imcode.util.* ;
 
 public class ConfManager extends Conference {
 	String HTML_TEMPLATE ;
-	
+
 	/**
 		The GET method creates the html page when this side has been
 		redirected from somewhere else.
@@ -15,23 +15,23 @@ public class ConfManager extends Conference {
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 		throws ServletException, IOException {
-	
+
 	// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
-	 
+
   // Lets get the standard parameters and validate them
     Properties params = super.getParameters(req) ;
     if (super.checkParameters(req, res, params) == false) return ;
-		
-	// Lets get an user object  
+
+	// Lets get an user object
 	  imcode.server.User user = super.getUserObj(req,res) ;
 	  if(user == null) return ;
-	  
+
 	  int testMetaId = Integer.parseInt( params.getProperty("META_ID") );
 	  if ( !isUserAuthorized( req, res, testMetaId, user ) ) {
 	  	return;
 	  }
-		  
+
 	 	String action = req.getParameter("action") ;
 		//log("ConfManager is in action...") ;
 	 	if(action == null) {
@@ -41,7 +41,7 @@ public class ConfManager extends Conference {
 	 		log(header + err.getErrorMsg()) ;
 	 		return ;
     }
-   
+
    	// ********* NEW ********
 	  if(action.equalsIgnoreCase("NEW")) {
 	  	log("Lets add a conference");
@@ -52,18 +52,18 @@ public class ConfManager extends Conference {
 	  		session.putValue("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
 	  		session.putValue("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
 	  	}
-		
+
 			String url = MetaInfo.getServletPath(req) + "ConfCreator?action=NEW" ;
 			//log("Redirect till:" + url) ;
 			res.sendRedirect(url) ;
 			return ;
 		}
-	 	 
-	 // ********* VIEW ********			
+
+	 // ********* VIEW ********
 	  if(action.equalsIgnoreCase("VIEW")) {
 
-	// Lets get userparameters  
-			Properties userParams = super.getUserParameters(user) ;  	
+	// Lets get userparameters
+			Properties userParams = super.getUserParameters(user) ;
 			String metaId = params.getProperty("META_ID") ;
 			String userId = userParams.getProperty("USER_ID") ;
 			RmiConf rmi = new RmiConf(user) ;
@@ -89,7 +89,7 @@ public class ConfManager extends Conference {
 					session.putValue("Conference.viewedDiscList", new Properties()) ;
           log("OK, nu sätter vi viewedDiscList") ;
         }
-				
+
 				String loginPage = MetaInfo.getServletPath(req) + "ConfLogin?login_type=login" ;
 				//log("Redirect till:" + loginPage) ;
 				res.sendRedirect(loginPage) ;
@@ -105,17 +105,17 @@ public class ConfManager extends Conference {
 
 
 	 		return ;
-	 	} // End of View 	
+	 	} // End of View
 
 		// ********* CHANGE ********
 	   if(action.equalsIgnoreCase("CHANGE")) {
 		 		MetaInfo mInfo = new MetaInfo() ;
 				String url = MetaInfo.getServletPath(req) + "ChangeExternalDoc2?"
-					 + mInfo.passMeta(params) + "&metadata=meta" ; 
+					 + mInfo.passMeta(params) + "&metadata=meta" ;
 	   		//this.log("Redirects to:" + url) ;
  	 			res.sendRedirect(url) ;
-				return ; 
-	    } // End if	
+				return ;
+	    } // End if
 
     // ********* STATISTICS OBS. NOT USED IN PROGRAM, ONLY FOR TEST ********
 	   if(action.equalsIgnoreCase("STATISTICS")) {
@@ -147,14 +147,14 @@ public class ConfManager extends Conference {
 
 } // End doGet
 
-	
+
 /**
 	Log function, will work for both servletexec and Apache
 **/
 
 public void log( String str) {
 			super.log(str) ;
-		  System.out.println("ConfManager: " + str ) ;	
+		  System.out.println("ConfManager: " + str ) ;
 	}
 
 /**

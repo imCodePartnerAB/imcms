@@ -331,7 +331,7 @@ public class Conference extends HttpServlet {
 					return true ;
 			}
 			return false ;
-		} catch (ServletException e) {
+		} catch (IOException e) {
 			this.log("An error occured in CheckAdminRights") ;
 			this.log(e.getMessage() ) ;
 		}
