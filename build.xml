@@ -105,7 +105,6 @@
 
     <property name="srcincludes"              value="${basedir}/MANIFEST.TXT"/>
 
-
     <!-- Where to install imCMS -->
     <property name="webapproot"               value="${deployroot}/${webappname}"/>
 
@@ -213,7 +212,8 @@
         <filter token="javascripturl"       value="${javascripturl}"/>
         <filter token="jspurl"              value="${jspurl}"/>
 
-        <filter token="documentationurl"    value="http://${documentation-host}/${versionnumber}/servlet"/>
+        <filter token="documentationwebappurl"    value="http://${documentation-host}/${versionnumber}"/>
+        <filter token="documentationurl"          value="http://${documentation-host}/${versionnumber}/servlet"/>
 
         <filter token="readrunnerurl"       value="${readrunnerurl}"/>
         <filter token="readrunnerimagesurl" value="${readrunnerimagesurl}"/>

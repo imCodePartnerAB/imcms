@@ -46,7 +46,7 @@ INSERT INTO text_docs
 INSERT INTO roles_rights
  VALUES (2,1001,3)
 INSERT INTO texts
- VALUES( 1001, 1, '<h2>imCode imCMS</h2><br><a href="@loginurl@/"><? sql/newdb.sql/2 ?>!</a><br><a href="@servleturl@/SearchDocuments"><? sql/newdb.sql/4 ?></a><br><br><a href="@documentationurl@/"><? sql/newdb.sql/5 ?></a><br><br><a href="@apiuri@/"><? sql/newdb.sql/6 ?></a><br>',1)
+ VALUES( 1001, 1, '<h2>imCode imCMS</h2><br><a href="@loginurl@/"><? sql/newdb.sql/2 ?>!</a><br><a href="@servleturl@/SearchDocuments"><? sql/newdb.sql/4 ?></a><br><br><a href="@documentationwebappurl@/"><? sql/newdb.sql/5 ?></a><br><br><a href="@apiuri@/"><? sql/newdb.sql/6 ?></a><br>',1)
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (1001,100,29,0,0,0,3,'','_blank','','top','','','imCMSpower.gif','http://www.imcms.net')
 
