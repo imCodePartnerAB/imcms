@@ -583,7 +583,7 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean canAddDocumentToAnyMenu( DocumentDomainObject document ) {
-        return canAccess( document ) || document.isLinkableByOtherUsers();
+        return canEdit( document ) || document.isLinkableByOtherUsers();
     }
 
     public boolean canSearchFor( DocumentDomainObject document ) {

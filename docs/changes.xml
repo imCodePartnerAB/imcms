@@ -2,7 +2,17 @@
 
 <changeset version="2.1.0">
 
-    <changes importance="high" for="administrators">
+     <changes importance="high" for="users">
+         <change>
+            <p>
+                Only read permission on a document was required to add it to a menu.
+                Now at least restricted 2 is required.
+            </p>
+             <bug id="2895"/>
+         </change>
+     </changes>
+
+     <changes importance="high" for="administrators">
         <change>
             <p>
                 Fixed a security hole that could let an attacker overwrite any file in the system.
