@@ -13,12 +13,14 @@
                  imcode.server.document.DocumentDomainObject,
                  org.apache.commons.lang.ArrayUtils,
                  imcode.util.ToStringPairArrayTransformer,
-                 java.util.Set"%>
+                 java.util.Set,
+                 imcode.server.user.UserDomainObject"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;
     int[] statusIds = searchDocumentsPage.getStatusIds() ;
-    String IMG_PATH  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
+    UserDomainObject user = Utility.getLoggedOnUser( request );
+    String IMG_PATH  = request.getContextPath()+"/imcms/"+user.getLanguageIso639_2()+"/images/admin/" ;
 %>
 
 <%!
@@ -60,6 +62,7 @@
                 <td colspan="4"><img src="<%= IMG_PATH %>/1x1_cccccc.gif" width="100%" height="1" vspace="8"></td>
             </tr>
         <% } %>
+        <% if (!user.isDefaultUser()) { %>
         <tr>
             <td height="20"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/3 ?></td>
 
@@ -91,6 +94,7 @@
             <td colspan="4"><img src="<%= IMG_PATH %>/1x1_cccccc.gif"
             width="100%" height="1" vspace="8"></td>
         </tr>
+        <% } %>
         <tr>
 
             <td height="24"><? global/Date ?></td>
