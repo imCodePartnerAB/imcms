@@ -26,7 +26,6 @@ is passed as an invisible parameter.
 </p>
 
 <h3>Exeption handling in jsp-pages</h3>
-- NotLoggedInException, NoPermissionException and other.
 <p>
 If the user that is accessing the page doesn't have the right permissions a NoPermissionException is thrown from the methods.
 There are two normal ways to handle this. <BR>
