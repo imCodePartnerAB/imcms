@@ -3,8 +3,76 @@
 <title>Ladda upp ny mall</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
+<SCRIPT LANGUAGE="JavaScript">
 <!--
+var platf = navigator.platform;
+var ua = navigator.userAgent;
+
+var ns = (document.layers) ? 1 : 0;
+var ie = (document.all) ? 1 : 0;
+var moz = (document.getElementById) ? 1 : 0;
+
+var isGecko = inStr(ua,'Gecko');
+var isOpera = inStr(ua,'Opera');
+var isWindows = inStr(platf,'Win32');
+var isMac = inStr(platf,'Mac');
+
+var ie55 = (isWindows && ie && moz && (inStr(ua,'MSIE 5.5') || inStr(ua,'MSIE 6.0') || inStr(ua,'MSIE 6.5') || inStr(ua,'MSIE 7.0')) && !isOpera) ? 1 : 0;
+
+function inStr(str,val,cas) {
+	var ret;
+	if (cas) { /* Case sensitive */
+		ret = (str.indexOf(val) != -1) ? true : false;
+	} else { /* Not Case sensitive */
+		str = str.toUpperCase();
+		val = val.toUpperCase();
+		ret = (str.indexOf(val) != -1) ? true : false;
+	}
+	return ret;
+}
+
+
+function checkForName() {
+	var theFile = document.forms.TemplateAdd.file.value;
+	var sFileName = '';
+	var re0 = /.(html?)$/gi;
+	var re1 = /(\w+)\.(\w+)$/i;
+	var re2 = /\"/g;
+	sFileName = theFile.replace(re2, '');
+	if (regExpTest(sFileName,re0)) {
+		sFileName = sFileName.replace(re1, "$1");
+		if (isMac && ie) {
+			arrFileName = sFileName.split("\/");
+		} else if (isMac && moz) {
+			arrFileName = sFileName.split(":");
+		} else if (!isMac) {
+			arrFileName = sFileName.split("\\");
+		}
+		sFileName = arrFileName[arrFileName.length-1];
+		if (!/[:;\/\.\\]+/gi.test(sFileName)) {
+			document.forms.TemplateAdd.name.value = sFileName;
+			document.forms.TemplateAdd.overwrite.checked = 1;
+		}
+	}
+}
+
+function regExpTest(what,pattern) {
+	var blnRetVal = (pattern.test(what)) ? true : false;
+	return blnRetVal;
+}
+
+function setSize() {
+	if (moz) {
+		document.getElementById("sfile").style.width = 400;
+		document.getElementById("sname").style.width = 200;
+	}
+}
+
+if (moz) {
+	window.onload = setSize;
+}
+
+
 function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
@@ -12,82 +80,83 @@ function openHelp(id){
 </SCRIPT>
 
 </head>
-
 <body bgcolor="#FFFFFF">
-<form method="post" action="TemplateAdd" enctype="multipart/form-data">
-  <table width="40%" border="0" cellspacing="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> 
-		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><b>Ladda 
-		  upp ny mall</b></font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
+
+
+<form name="TemplateAdd" method="post" action="TemplateAdd" enctype="multipart/form-data">
+<input type="HIDDEN" name="language" value="#language#">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
+	<b>Ladda upp ny mall</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr> 
+  <td width="5%">&nbsp;</td>
+  <td colspan="2">
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ange&nbsp;mallfil:&nbsp;&nbsp;</font></td>
+		<td><input id="sfile" type="file" name="file" size="35"></td>
 	</tr>
-	<tr bgcolor="#bababa">
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">V&auml;lj&nbsp;namn:&nbsp;&nbsp;</font></td>
+		<td>
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input id="sname" type="text" name="name"></td>
+			<td>&nbsp;</td>
+			<td nowrap>
+			<script language="JavaScript">
+			<!--
+			if (moz || ns) {
+				document.write('<input type="button" style="width:120; height:18; cursor:hand; font: 10px Verdana,Geneva,sans-serif; color:#000099;" onClick="checkForName()" value="&laquo\;&nbsp\;Kopiera&nbsp\;filnamnet">');
+			}
+			//-->
+			</script></td>
+		</tr>
+		</table></td>
 	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> 
-		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ange mallfil: 
-		  </font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="file" name="file">
-		  </font></p>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">V&auml;lj 
-		namn: </font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		<input type="text" name="name">
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> 
-		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Skriv 
-		  &ouml;ver existerande: </font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="checkbox" name="overwrite">
-		  </font></p>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Tilldela 
-		till grupper: <br>
-		<font size="1">(Valfritt, men en mall m&aring;ste tilldelas till en grupp 
-		f&ouml;r att kunna anv&auml;ndas. Du kan &auml;ven tilldela mallen till 
-		en grupp senare.)</font></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		</font></td>
-	  <td valign="baseline"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		<select name="templategroup" size="5" multiple>
-			#templategroups#
-		
-   		</select>
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> 
-		<input type="submit" name="ok" value="Ladda upp">
-		<input type="submit" name="cancel" value="Tillbaka">
-		<input type="HIDDEN" name="language" value="#language#">&nbsp; <a href="GetDoc?meta_id=22" target="_blank" onClick="openHelp('22'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-  </table>
+	</table></td>
+  <td width="5%">&nbsp;</td>
+</tr>
+<tr> 
+  <td width="5%">&nbsp;</td>
+  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+	Skriv &ouml;ver existerande:</font> <input type="checkbox" name="overwrite"></td>
+  <td width="5%">&nbsp;</td>
+</tr>
+<tr> 
+  <td width="5%">&nbsp;</td>
+  <td>
+	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+	Tilldela till grupper:<br>
+	<font size="1">(Valfritt, men en mall m&aring;ste tilldelas till en grupp 
+	f&ouml;r att kunna anv&auml;ndas. Du kan &auml;ven tilldela mallen till 
+	en grupp senare.)</font></font></td>
+  <td>
+	<select name="templategroup" size="5" multiple>
+	#templategroups#
+	</select></td>
+  <td width="5%">&nbsp;</td>
+</tr>
+<tr> 
+  <td width="5%">&nbsp;</td>
+  <td colspan="2"><hr>
+	<input type="submit" name="ok" value="Ladda upp">
+	<input type="submit" name="cancel" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=22" target="_blank" onClick="openHelp('22'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+  </td>
+  <td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
 </form>
+
 </body>
 </html>
