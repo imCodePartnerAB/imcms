@@ -366,11 +366,12 @@ public class DocumentMapper {
             return null;
         }
     }
-/**
- * @deprecated Use getCategoryById instead?
- * @param categoryId
- * @return
- */
+
+    /**
+     * @param categoryId
+     * @return
+     * @deprecated Use getCategoryById instead?
+     */
     public CategoryDomainObject getCategory( int categoryId ) {
         String sqlQuery = "SELECT categories.name, categories.description, category_types.name, categories.image \n" +
                           "FROM categories\n" + "JOIN category_types\n"
@@ -430,7 +431,7 @@ public class DocumentMapper {
 
     public CategoryTypeDomainObject getCategoryTypeById( int categoryTypeId ) {
         String sqlStr = "select name, max_choices  from category_types where category_type_id = ? ";
-        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{""+categoryTypeId} );
+        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{"" + categoryTypeId} );
 
         if ( null == sqlResult || 0 == sqlResult.length ) {
             return null;
@@ -441,34 +442,39 @@ public class DocumentMapper {
         }
     }
 
-    public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType){
-        String sqlstr = "delete from category_types where category_type_id = ?" ;
-        service.sqlUpdateQuery(sqlstr, new String[] {categoryType.getId()+""});
+    public void deleteCategoryTypeFromDb( CategoryTypeDomainObject categoryType ) {
+        String sqlstr = "delete from category_types where category_type_id = ?";
+        service.sqlUpdateQuery( sqlstr, new String[]{categoryType.getId() + ""} );
     }
 
-    public void addCategoryTypeToDb(String name, int max_choices){
+    public void addCategoryTypeToDb( String name, int max_choices ) {
         String sqlstr = "insert into category_types (name, max_choices) values(?,?)";
-        service.sqlUpdateQuery(sqlstr, new String[] {name,  max_choices+""});
+        service.sqlUpdateQuery( sqlstr, new String[]{name, max_choices + ""} );
     }
 
-    public void updateCategoryType(CategoryTypeDomainObject categoryType) {
+    public void updateCategoryType( CategoryTypeDomainObject categoryType ) {
         String sqlstr = "update category_types set name= ?, max_choices= ?  where category_type_id = ? ";
-        service.sqlUpdateQuery(sqlstr, new String[] {categoryType.getName(), categoryType.getMaxChoices()+"", categoryType.getId()+""} );
+        service.sqlUpdateQuery( sqlstr, new String[]{
+            categoryType.getName(), categoryType.getMaxChoices() + "", categoryType.getId() + ""
+        } );
     }
 
-    public void addCategoryToDb(CategoryTypeDomainObject categoryType, String name, String description, String image) {
+    public void addCategoryToDb( CategoryTypeDomainObject categoryType, String name, String description, String image ) {
         String sqlstr = "insert into categories  (category_type_id, name, description, image) values(?,?,?,?)";
-        service.sqlUpdateQuery(sqlstr, new String[] {categoryType.getId()+"", name, description, image });
-    }
-    
-    public void updateCategory(CategoryDomainObject category){
-        String sqlstr = "update categories set category_type_id = ?, name= ?, description = ?, image = ?  where category_id = ? ";
-        service.sqlUpdateQuery(sqlstr, new String[] {category.getType().getId()+"", category.getName(), category.getDescription(), category.getImage(), category.getId()+"" } );
+        service.sqlUpdateQuery( sqlstr, new String[]{categoryType.getId() + "", name, description, image} );
     }
 
-    public void deleteCategoryFromDb(CategoryDomainObject category) {
+    public void updateCategory( CategoryDomainObject category ) {
+        String sqlstr = "update categories set category_type_id = ?, name= ?, description = ?, image = ?  where category_id = ? ";
+        service.sqlUpdateQuery( sqlstr, new String[]{
+            category.getType().getId() + "", category.getName(), category.getDescription(), category.getImage(),
+            category.getId() + ""
+        } );
+    }
+
+    public void deleteCategoryFromDb( CategoryDomainObject category ) {
         String sqlstr = "delete from categories where category_id = ?";
-        service.sqlUpdateQuery(sqlstr, new String[] {category.getId()+""});
+        service.sqlUpdateQuery( sqlstr, new String[]{category.getId() + ""} );
     }
 
     public String getKeywordsAsOneString( int meta_id ) {
@@ -614,7 +620,7 @@ public class DocumentMapper {
 
     public Map getIncludedDocuments( DocumentDomainObject textDocument ) {
         Map result = new HashMap();
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper() ;
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         String[] includedMetaIds = documentMapper.sprocGetIncludes( textDocument.getId() );
         for ( int i = 0; i < includedMetaIds.length; i += 2 ) {
             int include_id = Integer.parseInt( includedMetaIds[i] );
@@ -626,9 +632,9 @@ public class DocumentMapper {
 
     public MenuItemDomainObject[] getMenuItemsForDocument( int parentId, int menuIndex ) {
         DocumentDomainObject parent = getDocument( parentId );
-        int sortOrder = getSortOrderOfDocument( parentId );
+        int sortOrder = getSortOrderOfMenu( parentId, menuIndex );
         String orderBy = getSortOrderAsSqlOrderBy( sortOrder );
-        String sqlStr = "select to_meta_id, menu_index, manual_sort_order, tree_sort_index from childs,menus where childs.menu_id = menus.menu_id AND menus.meta_id = ? and menu_index = ? order by "
+        String sqlStr = "select to_meta_id, menu_index, manual_sort_order, tree_sort_index from childs,menus,meta where childs.menu_id = menus.menu_id AND menus.meta_id = ? AND childs.to_meta_id = meta.meta_id AND menu_index = ? order by "
                         + orderBy;
         String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + parentId, "" + menuIndex} );
         MenuItemDomainObject[] menuItems = new MenuItemDomainObject[sqlResult.length];
@@ -833,7 +839,7 @@ public class DocumentMapper {
                                 } );
 
         updateTextDocumentTexts( textDocument );
-        updateTextDocumentImages( textDocument,user );
+        updateTextDocumentImages( textDocument, user );
     }
 
     void saveNewUrlDocument( UrlDocumentDomainObject document ) {
@@ -955,10 +961,10 @@ public class DocumentMapper {
                                 new String[]{"" + document.getId(), "" + categoryId} );
     }
 
-    public String[] getAllDocumentsOfOneCategory(CategoryDomainObject category) {
+    public String[] getAllDocumentsOfOneCategory( CategoryDomainObject category ) {
 
         String sqlstr = "select meta_id from document_categories where category_id = ? ";
-        String[] res = service.sqlQuery(sqlstr, new String[] {category.getId()+""});
+        String[] res = service.sqlQuery( sqlstr, new String[]{category.getId() + ""} );
 
         return res;
     }
@@ -968,9 +974,9 @@ public class DocumentMapper {
                                 new String[]{"" + document.getId()} );
     }
 
-    public void deleteOneCategoryFromDocument( DocumentDomainObject document, CategoryDomainObject category) {
-        service.sqlUpdateQuery("DELETE FROM document_categories WHERE meta_id = ? and category_id = ?",
-                                new String[] {document.getId()+"", category.getId()+""} );
+    public void deleteOneCategoryFromDocument( DocumentDomainObject document, CategoryDomainObject category ) {
+        service.sqlUpdateQuery( "DELETE FROM document_categories WHERE meta_id = ? and category_id = ?",
+                                new String[]{document.getId() + "", category.getId() + ""} );
     }
 
     private void sqlUpdateMeta( DocumentDomainObject document ) {
@@ -1263,8 +1269,10 @@ public class DocumentMapper {
         return orderBy;
     }
 
-    private int getSortOrderOfDocument( int documentId ) {
-        return Integer.parseInt( sqlSelectTemplateInfoFromTextDocs( service, String.valueOf( documentId ) )[1] );
+    private int getSortOrderOfMenu( int documentId, int menuIndex ) {
+        String temp = service.sqlQueryStr( "SELECT sort_order FROM menus WHERE meta_id = ? ANd menu_index = ?",
+                                           new String[]{"" + documentId, "" + menuIndex } );
+        return Integer.parseInt( temp );
     }
 
     private void inheritClassifications( int from_parentId, int to_newMetaId ) {
@@ -1722,7 +1730,7 @@ public class DocumentMapper {
         } );
 
         updateTextDocumentTexts( textDocument );
-        updateTextDocumentImages( textDocument,user );
+        updateTextDocumentImages( textDocument, user );
     }
 
     private void updateTextDocumentTexts( TextDocumentDomainObject textDocument ) {
@@ -1732,15 +1740,15 @@ public class DocumentMapper {
 
     private void updateTextDocumentImages( TextDocumentDomainObject textDocument, UserDomainObject user ) {
         deleteTextDocumentImages( textDocument );
-        insertTextDocumentImages( textDocument,user );
+        insertTextDocumentImages( textDocument, user );
     }
 
     private void insertTextDocumentImages( TextDocumentDomainObject textDocument, UserDomainObject user ) {
-        Map images = textDocument.getImages() ;
+        Map images = textDocument.getImages();
         for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
             Integer imageIndex = (Integer)iterator.next();
-            TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)images.get(imageIndex) ;
-            saveDocumentImage( textDocument.getId(), imageIndex.intValue(), image, user);
+            TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)images.get( imageIndex );
+            saveDocumentImage( textDocument.getId(), imageIndex.intValue(), image, user );
         }
     }
 

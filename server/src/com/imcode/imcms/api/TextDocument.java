@@ -325,12 +325,19 @@ public class TextDocument extends Document {
 
         public Document[] getDocuments() {
             MenuItemDomainObject[] menuItemDomainObjects = documentMapper.getMenuItemsForDocument(internalDocument.getId(), internalMenu.getMenuIndex());
-            Document[] documents = new Document[menuItemDomainObjects.length];
+            List documentList = new ArrayList() ;
             for (int i = 0; i < menuItemDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemDomainObjects[i];
-                documents[i] = documentService.createDocumentOfSubtype(menuItemDomainObject.getDocument());
+                DocumentDomainObject documentDomainObject = menuItemDomainObject.getDocument();
+                boolean documentIsVisibleInMenu = (documentDomainObject.isPublishedAndNotArchived()
+                                    && documentMapper.userHasAtLeastDocumentReadPermission( securityChecker.getCurrentLoggedInUser(), documentDomainObject ))
+                                                  || documentMapper.userHasMoreThanReadPermissionOnDocument(securityChecker.getCurrentLoggedInUser(), documentDomainObject );
+                if (documentIsVisibleInMenu) {
+                    Document document = documentService.createDocumentOfSubtype(documentDomainObject);
+                    documentList.add(document);
+                }
             }
-            return documents;
+            return (Document[])documentList.toArray( new Document[documentList.size()]);
         }
     }
 }
