@@ -420,4 +420,18 @@ public class DatabaseService {
         Object[] paramValues = new Object[]{ new Integer( userData.userId ), userData.loginName, userData.password, userData.firstName, userData.lastName, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.emailAddress, new Integer( userData.external ), new Integer(1001), new Integer(0), new Integer(userData.langId), new Integer(userData.userType), new Integer( userData.active ), userData.createDate };
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
+
+    int sproc_getHighestUserId() {
+        String sql = "SELECT MAX(user_id) FROM users";
+        Object[] paramValues = null;
+        SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int id = rs.getInt(1);
+                return new Integer( id );
+            }
+        };
+        ArrayList result = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
+        Integer id =  (Integer)(result.get(0));
+        return id.intValue() + 1;
+    }
 }

@@ -83,6 +83,15 @@ public class TestDatabaseService_NoneModifyingTests extends Log4JConfiguredTestC
         assertEquals( mimerTemplatesInGroupTwo.length, mySQLTemplatesInGroupTwo.length );
     }
 
+    public void testGetHighestUserId() {
+        int mimerUserMax = mimer.sproc_getHighestUserId();
+        int sqlServerUserMax = sqlServer.sproc_getHighestUserId();
+        int mySqlUserMax = mySql.sproc_getHighestUserId();
+        assertEquals( 3, mimerUserMax );
+        assertEquals( mimerUserMax, sqlServerUserMax );
+        assertEquals( mimerUserMax, mySqlUserMax );
+    }
+
     private void initMimer() {
         mimer = new DatabaseService( DatabaseService.MIMER, TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
         mimer.initializeDatabase();
