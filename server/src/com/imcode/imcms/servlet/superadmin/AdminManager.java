@@ -140,8 +140,7 @@ public class AdminManager extends Administrator {
 
         DocumentDomainObject[] documentsFound = index.search( booleanQuery, loggedOnUser );
 
-        addNewNotApprovedDocumentsToList( booleanQuery, documents_new, index, loggedOnUser );
-        addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_modified );
+        addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_modified, documents_new );
 
         AdminManagerSubreport newDocumentsSubreport = createNewDocumentsSubreport( documents_new );
         AdminManagerSubreport modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documents_modified );
@@ -179,6 +178,9 @@ public class AdminManager extends Administrator {
 
             newDocumentsAdminManagerPage.addSubreport( newDocumentsSubreport );
 
+            modifiedDocumentsSubreport.setMaxDocumentCount( 0 );
+            newDocumentsAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
+
             adminManagerPage = newDocumentsAdminManagerPage;
 
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_REMINDERS ) ) {
@@ -189,9 +191,6 @@ public class AdminManager extends Administrator {
 
             documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
             reminderAdminManagerPage.addSubreport( documentsArchivedWithinOneWeekSubreport );
-
-            modifiedDocumentsSubreport.setMaxDocumentCount( 0 );
-            reminderAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
 
             documentsUnpublishedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
             reminderAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
@@ -362,42 +361,48 @@ public class AdminManager extends Administrator {
     private void addFoundDocumentsToCorrespondingList( DocumentDomainObject[] documentsFound,
                                                        List documents_archived_less_then_one_week,
                                                        List documents_publication_end_less_then_one_week,
-                                                       List documents_not_changed_in_six_month, List documents_changed ) {
+                                                       List documents_not_changed_in_six_month, List modifiedDocuments,
+                                                       List newDocuments ) {
         Date now = new Date();
         Date oneWeekAhead = getDate( +7 );
+        Date oneWeekAgo = getDate(-7) ;
         Date sixMonthAgo = getDate( -182 );
 
         for ( int i = 0; i < documentsFound.length; i++ ) {
-            if ( null != documents_archived_less_then_one_week && null != documentsFound[i].getArchivedDatetime()
-                 && documentsFound[i].getArchivedDatetime().after( now )
-                 && documentsFound[i].getArchivedDatetime().before( oneWeekAhead ) ) {
-                documents_archived_less_then_one_week.add( documentsFound[i] );
+            DocumentDomainObject document = documentsFound[i];
+
+            Date archivedDatetime = document.getArchivedDatetime();
+            Date publicationEndDatetime = document.getPublicationEndDatetime();
+            Date modifiedDatetime = document.getModifiedDatetime();
+            Date createdDatetime = document.getCreatedDatetime();
+
+            if ( null != archivedDatetime
+                 && archivedDatetime.after( now )
+                 && archivedDatetime.before( oneWeekAhead ) ) {
+                documents_archived_less_then_one_week.add( document );
             }
 
-            if ( null != documents_publication_end_less_then_one_week
-                 && null != documentsFound[i].getPublicationEndDatetime()
-                 && documentsFound[i].getPublicationEndDatetime().after( now )
-                 && documentsFound[i].getPublicationEndDatetime().before( oneWeekAhead ) ) {
-                documents_publication_end_less_then_one_week.add( documentsFound[i] );
+            if ( null != publicationEndDatetime
+                 && publicationEndDatetime.after( now )
+                 && publicationEndDatetime.before( oneWeekAhead ) ) {
+                documents_publication_end_less_then_one_week.add( document );
             }
 
-            if ( null != documents_not_changed_in_six_month && null != documentsFound[i].getModifiedDatetime()
-                 && documentsFound[i].getModifiedDatetime().before( sixMonthAgo ) ) {
-                documents_not_changed_in_six_month.add( documentsFound[i] );
+            if ( modifiedDatetime.before( sixMonthAgo ) ) {
+                documents_not_changed_in_six_month.add( document );
             }
 
-            if ( null != documents_changed && null != documentsFound[i].getModifiedDatetime()
-                 && documentsFound[i].getModifiedDatetime().after( documentsFound[i].getCreatedDatetime() ) ) {
-                documents_changed.add( documentsFound[i] );
+            boolean createdInPastWeek = createdDatetime.after( oneWeekAgo );
+            if (createdInPastWeek) {
+                newDocuments.add( document );
             }
+
+            boolean modifiedInPastWeek = modifiedDatetime.after( oneWeekAgo );
+            if ( modifiedInPastWeek && !createdInPastWeek ) {
+                modifiedDocuments.add( document );
+            }
+
         }
-    }
-
-    private void addNewNotApprovedDocumentsToList( BooleanQuery booleanQuery, List documents_new, DocumentIndex index,
-                                                   UserDomainObject loggedOnUser ) {
-        Query query = new TermQuery( new Term( DocumentIndex.FIELD__STATUS, DocumentDomainObject.STATUS_NEW + "" ) );
-        booleanQuery.add( query, true, false );
-        documents_new.addAll( Arrays.asList( index.search( booleanQuery, loggedOnUser ) ) );
     }
 
     public static ChainableReversibleNullComparator getComparator( String sortorder ) {
