@@ -63,14 +63,14 @@ drop table [dbo].[C_templates]
 GO
 
 CREATE TABLE [dbo].[C_authorization_types] (
-	[authorization_type] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[authorization_type] [varchar] (50)  NOT NULL ,
 	[authorization_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[C_chat] (
 	[meta_id] [int] NOT NULL ,
-	[name] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[name] [varchar] (255)  NULL ,
 	[permType] [int] NULL 
 ) ON [PRIMARY]
 GO
@@ -113,13 +113,13 @@ GO
 
 CREATE TABLE [dbo].[C_msg_type] (
 	[msg_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[msg_string] [varchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[msg_string] [varchar] (25)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[C_room] (
 	[room_id] [int] NOT NULL ,
-	[room_name] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[room_name] [varchar] (255)  NULL ,
 	[meta_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -127,13 +127,13 @@ GO
 CREATE TABLE [dbo].[C_selfreg_roles] (
 	[selfreg_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[role_id] [int] NULL ,
-	[role_name] [char] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[role_name] [char] (25)  NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[C_templates] (
 	[template_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[template_lib] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[template_lib] [varchar] (50)  NOT NULL 
 ) ON [PRIMARY]
 GO
 

@@ -107,8 +107,8 @@ GO
 
 CREATE TABLE [dbo].[A_conf_users] (
 	[user_id] [int] NOT NULL ,
-	[first_name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[last_name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[first_name] [varchar] (50)  NULL ,
+	[last_name] [varchar] (50)  NULL ,
 	[last_login_date_OLD] [datetime] NULL ,
 	[replies_order_OLD] [int] NOT NULL 
 ) ON [PRIMARY]
@@ -125,8 +125,8 @@ GO
 
 CREATE TABLE [dbo].[A_conference] (
 	[meta_id] [int] NOT NULL ,
-	[name] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[sort_type] [char] (1) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[name] [varchar] (255)  NULL ,
+	[sort_type] [char] (1)  NULL 
 ) ON [PRIMARY]
 GO
 
@@ -143,8 +143,8 @@ GO
 CREATE TABLE [dbo].[A_forum] (
 	[forum_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[archive_time] [int] NOT NULL ,
-	[forum_name] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[archive_mode] [char] (1) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[forum_name] [varchar] (255)  NULL ,
+	[archive_mode] [char] (1)  NOT NULL ,
 	[discs_to_show] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -154,8 +154,8 @@ CREATE TABLE [dbo].[A_replies] (
 	[user_id] [int] NULL ,
 	[parent_id] [int] NULL ,
 	[create_date] [datetime] NULL ,
-	[headline] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[text] [text] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[headline] [varchar] (255)  NULL ,
+	[text] [text]  NULL ,
 	[reply_level] [int] NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -163,13 +163,13 @@ GO
 CREATE TABLE [dbo].[A_selfreg_roles] (
 	[selfreg_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[role_id] [int] NULL ,
-	[role_name] [char] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+	[role_name] [char] (25)  NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[A_templates] (
 	[template_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[template_lib] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+	[template_lib] [varchar] (50)  NOT NULL 
 ) ON [PRIMARY]
 GO
 
