@@ -35,7 +35,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    // Very good. Very good. Know something? NO SOUP FOR YOU!
 	    HTML_TAG_PATTERN = patComp.compile("<[^>]+?>",Perl5Compiler.READ_ONLY_MASK) ;
 
-	    IMCMS_TAG_PATTERN = patComp.compile("<\\?imcms:(\\w+)(.*?)\\?>", Perl5Compiler.READ_ONLY_MASK) ;
+	    IMCMS_TAG_PATTERN = patComp.compile("<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.READ_ONLY_MASK) ;
 	    TR_START_PATTERN = patComp.compile("^(\\<tr[^>]*?\\>)",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	    TR_STOP_PATTERN = patComp.compile("(\\<\\/tr\\>)\\s*$",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	    TD_START_PATTERN = patComp.compile("^(\\<td[^>]*?\\>)",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
@@ -708,7 +708,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    imcode.server.parser.MapSubstitution temptagsmapsubstitution = new imcode.server.parser.MapSubstitution(temptags, false) ;
 
 	    try {
-		char[] charbuffer = new char[4096] ;
 		StringBuffer templatebuffer = new StringBuffer() ;
 		Enumeration propenum = toload.propertyNames() ;
 		while ( propenum.hasMoreElements() ) {

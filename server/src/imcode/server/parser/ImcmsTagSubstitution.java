@@ -95,6 +95,14 @@ public class ImcmsTagSubstitution implements Substitution {
     }
 
     /**
+       Handle a <?imcms:meta-id?> tag.
+
+    **/
+    public String tagMetaId () {
+	return ""+meta_id ;
+    }
+
+    /**
        Handle a <?imcms:include ...?> tag
 
        @param attributes The attributes of the include tag
@@ -259,6 +267,8 @@ public class ImcmsTagSubstitution implements Substitution {
 	    result = tagImage(attributes, patMat) ;
 	} else if ("include".equals(tagname)) {
 	    result = tagInclude(attributes, patMat) ;
+	} else if ("meta-id".equals(tagname)) {
+	    result = tagMetaId() ;
 	} else {
 	    result = matres.group(0) ;
 	}
