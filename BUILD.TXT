@@ -9,15 +9,14 @@ Prerequisites:
 
 Building:
     * Copy "build.properties.template" to "build.properties".
-      Edit "build.properties" and insert the proper values 
+      Edit "build.properties" and insert the proper values
       for your deployroot, your database connection,
       your imCMS-preferences, and your build-preferences.
 
     * Run "ant dist" (or just "ant", since "dist" is the default) in this directory.
       This will build imCMS in the "build"-directory
-      and generate a file named "imcms.war" in this directory.
-
-      This will also generate a file named "imcms.sql" in the "dist"-directory.
+      and generate a file named "imcms.war" in the "dist" directory.
+      This will also generate sql-scripts in the "build/WEB-INF/sql"-directory.
 
       (For more possible ant-targets, run "ant -projecthelp".)
 

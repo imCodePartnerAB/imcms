@@ -40,7 +40,8 @@ Setting up the database:
       See "tomcat/webapps/imcms/WEB-INF/sql/create_db-<version>.sql" for a simple script to use.
 
     * To set up the imCMS-database run the sql script
-      "tomcat/webapps/imcms/WEB-INF/sql/imcms-<version>.sql" on the empty database.
+      run "tomcat/webapps/imcms/WEB-INF/sql/imcms-<version>-<language>.sql" on the empty database,
+      where <language> is your preferred default language.
 
 
 Setting up imCMS:

@@ -280,7 +280,8 @@
         <mkdir dir="${tmp}" />
 
         <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
-        <cat destfile="${tmp}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
+
+        <cat destfile="${tmp}/imcms.sql" orderby="path" filtering="true">
             <fileset file="sql/tables/tables.ascii.sql"/>
             <fileset  dir="sql/sprocs" includes="*.prc" />
 
@@ -311,12 +312,29 @@
             <fileset dir="sql/diff" includes="diff-*.sql"/>
         </copy>
 
+        <antcall target="sql-lang">
+            <param name="buildlanguage" value="swe"/>
+        </antcall>
+
+        <antcall target="sql-lang">
+            <param name="buildlanguage" value="eng"/>
+        </antcall>
+
+    </target>
+
+
+    <target name="sql-lang">
+
         <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
-        <imtranslate bundle="imcms" bundlelanguage="${defaultlanguage}"
+
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${sql}" filtering="true">
-            <fileset file="${tmp}/imcms${versionfilesuffix}.sql"/>
+            <fileset file="${tmp}/imcms.sql"/>
         </imtranslate>
+
+        <move file="${sql}/imcms.sql" tofile="${sql}/imcms${versionfilesuffix}-${buildlanguage}.sql"/>
+
     </target>
 
 

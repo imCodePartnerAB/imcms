@@ -1,7 +1,9 @@
 Version 1.10.1:
 
-    * Fixed exception and possible menu-deletion when readding an already existing document
-      to a menu sorted by "manual" order. (Bug 2443)  
+    * Fixed exception and possible menu-deletion when trying to readd an already existing document
+      to a menu sorted by "manual" order. (Bug 2443)
+
+    * Included both english and swedish sql scripts in the distribution.
 
 
 Version 1.10.0:
