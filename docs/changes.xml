@@ -123,6 +123,7 @@
                 containing class <class>DateTextFieldTextDocumentComparator</class>,
                 contributed by Anders Flodell and Pontus Amberg at Vetenskapsrådet.
             </p>
+            <bug id="2897"/>
         </change>
         <change>
             <p>
