@@ -461,3 +461,14 @@ INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'uk','Change include')
 
 -- 2001-09-28 
+
+CREATE PROCEDURE GetTemplateId
+ @aTemplatename varchar(80)
+ AS
+
+SELECT template_id
+FROM templates
+WHERE simple_name = @aTemplatename
+GO
+
+-- 2001-10-08
