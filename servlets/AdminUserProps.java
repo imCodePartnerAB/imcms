@@ -135,6 +135,7 @@ public class AdminUserProps extends Administrator {
 		}
 		
 		Vector vec = new Vector() ;		// hold tags and values to parse html page
+		res.setContentType("text/html"); // set content type
 		Writer out = res.getWriter();	// to write out html page
 				
 	//	VariableManager vm = new VariableManager() ;
@@ -292,12 +293,9 @@ public class AdminUserProps extends Administrator {
 		//System.out.println("selected= " + selected);		
 
     	String phones = htm.createHtmlCode("ID_OPTION", selected , phonesV ) ;
-		
-		    	
-    	res.setContentType("text/html");
-
+    	
+		res.setContentType("text/html"); // set content type
     	Writer out = res.getWriter();
-
     	
     	Vector vec = new Vector() ;
     
@@ -815,7 +813,7 @@ public class AdminUserProps extends Administrator {
 		}else{
 			userName = req.getParameter("email");
 			params.setProperty("login_name", userName);
-			msg = "The username(email) already exists, please change email."+ "<BR>" ;
+			msg = "The username or email already exists, please change."+ "<BR>" ;
 		}
 		
 	    if( ! UserHandler.checkExistingUserName(imcref, params ) ) {
@@ -974,7 +972,7 @@ public class AdminUserProps extends Administrator {
 			if ( ! userToChange.getEmailAddress().equalsIgnoreCase(currentLogin) ) {
 				newLogin = currentLogin;
 			}
-			msg = "The username(email) already exists, please change email."+ "<BR>" ;
+			msg = "The username or email already exists, please change."+ "<BR>" ;
 		}
 		
 		// check that the changed login name don´t already exists 
@@ -983,7 +981,6 @@ public class AdminUserProps extends Administrator {
 		    if(userNameExists != null ) {
 				if(userNameExists.length > 0 ) {
 				    String header = "Error in AdminUserProps." ;
-				    msg = "The username(email) already exists, please change email."+ "<BR>" ;
 				    this.log(header + msg) ;
 				    AdminError err = new AdminError(req,res,header,msg) ;
 				    return ;
@@ -1680,7 +1677,7 @@ public class AdminUserProps extends Administrator {
 				vec_admin_part.add("");
 			}
 			
-			vec_admin_part.add("#USER_CREATE_DATE#"); 	vec_admin_part.add(" ");
+			vec_admin_part.add("#USER_CREATE_DATE#"); 	vec_admin_part.add("&nbsp;");
 			vec_admin_part.add("#USER_TYPES#");  		vec_admin_part.add(user_type) ;
 			vec_admin_part.add("#ROLES_MENU#");			vec_admin_part.add(rolesMenuStr);
 			vec_admin_part.add("#ROLES_MENU_USERADMIN#");
