@@ -114,7 +114,7 @@ var ns4 = (document.layers) ? 1 : 0;
 var ns6 = (document.getElementById) ? 1 : 0;
 var moz = (document.getElementById) ? 1 : 0;
 
-var arrTheFieldValues = new Array("<? install/htdocs/imcms/html/link_editor.jsp/3001 ?>", "http:/\/", "<? install/htdocs/imcms/html/link_editor.html/3002 ?>", "<? install/htdocs/imcms/html/link_editor.html/3003 ?>", "<? install/htdocs/imcms/html/link_editor.html/3003 ?>", "ftp:/\/");
+var arrTheFieldValues = new Array("<? install/htdocs/imcms/html/link_editor.jsp/3001 ?>", "http:/\/", "<? install/htdocs/imcms/html/link_editor.jsp/3002 ?>", "<? install/htdocs/imcms/html/link_editor.jsp/3003 ?>", "<? install/htdocs/imcms/html/link_editor.jsp/3003 ?>", "ftp:/\/");
 var defValDesc = "<? install/htdocs/imcms/html/link_editor.jsp/3004 ?>";
 
 function changeLinkType(what) {
