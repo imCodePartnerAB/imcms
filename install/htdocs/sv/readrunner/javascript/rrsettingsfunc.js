@@ -54,9 +54,10 @@ function getParam(attrib) {
 function startRR() {
 	var f = document.forms.form1;
 	var iMetaId = f.MetaId.value;
+	var sTempl = (unescape(getParam('template')) != '') ? '&template=' + unescape(getParam('template')) : '';
 	var sNoPausStop = (!f.cbp2.checked || parseFloat(f.p2.value) == 0) ? '&readrunner_no_stops=1' : '';
 	var sNoPausSep = (!f.cbp3.checked || parseFloat(f.p3.value) == 0) ? '&readrunner_no_separators=1' : '';
-	if (parseInt(iMetaId) > 1000) top.location.href = '@servleturl@/GetDoc?meta_id=' + iMetaId + sNoPausStop + sNoPausSep;
+	if (parseInt(iMetaId) > 1000) document.location.href = '@servleturl@/GetDoc?meta_id=' + iMetaId + sTempl + sNoPausStop + sNoPausSep;
 }
 
 
@@ -64,14 +65,14 @@ function startRR() {
  *           Default Settings          *
  ************************************* */
 
-var iDefaultSpeed = 30;
+var iDefaultSpeed = 10;
 var bDefaultPausRow = 1;
-var iDefaultPausRow = 0.5;
+var iDefaultPausRow = 0.4;
 var bDefaultPausStop = 1;
-var iDefaultPausStop = 0.5;
+var iDefaultPausStop = 0.4;
 var bDefaultPausDiv = 1;
-var iDefaultPausDiv = 0.5;
-var bDefaultPausScroll = 0;
+var iDefaultPausDiv = 0.4;
+var bDefaultPausScroll = 1;
 var iDefaultPausScroll = 0.8;
 
 
@@ -88,6 +89,10 @@ function RRsetDefaultSettings() {
 	f.p3.value = iDefaultPausDiv;
 	f.cbp4.checked = bDefaultPausScroll;
 	f.p4.value = iDefaultPausScroll;
+	
+	if (active11Td) form11Click(active11Td);
+	if (active12Td) form12Click(active12Td);
+	
 	RRgetCookies(); // set values from cookie if exists
 }
 
@@ -154,7 +159,7 @@ function RRsaveSettings(what) {
  ************************************* */
 
 function setCookie(name, value) {
-	var RRpath = '@rooturl@';
+	var RRpath = '/';
 	var today = new Date();
 	var expire = new Date();
 	expire.setTime(today.getTime() + 1000*60*60*24*365); // 365 days
@@ -195,9 +200,7 @@ function RRgetCookies() {
 		arrColorTextRadio = f.RRcolorText;
 		for (var i = 0; i < arrColorTextRadio.length; i++) {
 			if (i == sColorTextRadioValue) {
-				//arrColorTextRadio[i].checked = 1;
 				form11Click('form11' + (i + 1));
-				//alert('form11Click\(\'form11' + (i + 1)+'\)';
 			}
 		}
 		
@@ -205,9 +208,7 @@ function RRgetCookies() {
 		arrColorWormRadio = f.RRcolorWorm;
 		for (var i = 0; i < arrColorWormRadio.length; i++) {
 			if (i == sColorWormRadioValue) {
-				//arrColorWormRadio[i].checked = 1;
 				form12Click('form12' + (i + 1));
-				//alert('form12Click(\'form12' + (i + 1)+')';
 			}
 		}
 		
@@ -224,9 +225,7 @@ function RRgetCookies() {
 		arrOpacityLevelRadio = f.RRopacityLevel;
 		for (var i = 0; i < arrOpacityLevelRadio.length; i++) {
 			if (i == sOpacityLevelRadioValue) {
-				//arrOpacityLevelRadio[i].checked = 1;
 				form13Click('form13' + (i + 1));
-				//alert('form13Click(\'form13' + (i + 1)+')';
 			}
 		}
 		//f.RRopacityLevel.selectedIndex = (arrSettings[8] >= 0) ? arrSettings[8] : 0;

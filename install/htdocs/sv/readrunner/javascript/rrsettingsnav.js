@@ -5,9 +5,9 @@ var moz = (document.getElementById) ? 1 : 0;
 
 
 var activeTd = '';
-var active11Td = 'form111';
-var active12Td = 'form121';
-var active13Td = 'form131';
+var active11Td = 'form112';
+var active12Td = 'form123';
+var active13Td = 'form138';
 
 
 /* ***** Layers in use (short form) / Settings ***** */

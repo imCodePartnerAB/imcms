@@ -6,7 +6,7 @@
 <DIV ID="RRwaitDiv" style="position:absolute; left:0; top:190; width:770; height:200; z-index:1000; filter:alpha(Opacity=60); display:none">
 <table border="0" cellpadding="0" cellspacing="0" width="770" height="200">
 <tr>
-	<td align="center"><img src="images/1x1.gif" width="1" height="50"><br>
+	<td align="center"><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="50"><br>
 	<table border="0" cellpadding="0" cellspacing="0" width="400" style="border: 3px groove #c00000">
 	<tr>
 		<td align="center" height="200" style="font: bold 56px/66px Verdana; background-color:#f0f0f0; color:#c00000">&nbsp;&nbsp;Vänta...</td>
@@ -29,10 +29,10 @@
 <input type="hidden" name="blnHidePanel" value="0">
 <input type="hidden" name="blnPattern" value="0">
 <input type="hidden" name="blnOpacity" value="1">
-<input type="hidden" name="RRopacityLevel" value="0">
+<input type="hidden" name="RRopacityLevel" value="0.750">
 <input type="hidden" name="RRcolorBg" value="255,255,255">
 <input type="hidden" name="RRcolorText" value="0,0,0">
-<input type="hidden" name="RRcolorWorm" value="153,204,255">
+<input type="hidden" name="RRcolorWorm" value="153,204,153">
 <input type="checkbox" name="cbp1" value="1" style="display:none" checked>
 <input type="hidden" name="p1" value="1.0">
 <input type="checkbox" name="cbp2" value="1" style="display:none" checked>
@@ -41,8 +41,8 @@
 <input type="hidden" name="p3" value="0.5">
 <input type="checkbox" name="cbp4" value="1" style="display:none">
 <input type="hidden" name="p4" value="0">
-<input type="hidden" name="RRspeed0" value="30">
-<input type="hidden" name="RRspeed" value="30">
+<input type="hidden" name="RRspeed0" value="10">
+<input type="hidden" name="RRspeed" value="10">
 </form>
 <map name="RRposArrows"><!-- from top-left clockwise -->
 	<area href="javascript://movePanel" alt="" shape="poly" coords="0,0,12,0,14,14,0,12" 

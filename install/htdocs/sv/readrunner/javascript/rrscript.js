@@ -68,7 +68,7 @@ function enableMouseClick(){
 	document.all.RRwaitDiv.style.display = 'none';
 }
 function RRinit() {
-	if (document.URL.indexOf('flags') == -1) {
+	if (document.URL.indexOf('flags') == -1 || document.URL.indexOf('SaveText') == -1) {
 		var itemX,itemY
 		preloadImages();
 		
@@ -370,7 +370,7 @@ function RRcheckButton() {
 
 var bDefaultSaveSpeed = 1;
 var bDefaultSaveSettings = 1;
-var iDefaultSpeed = 30;
+var iDefaultSpeed = 10;
 var bDefaultPausRow = 1;
 var iDefaultPausRow = 0.5;
 var bDefaultPausStop = 1;
@@ -468,7 +468,7 @@ function getCookie(Name) {
 
 
 /* *************************************
- *            SPEED SLIDER             *
+ *                SPEED                *
  ************************************* */
 
 var avWordLen = 5.34; // average chr/words
@@ -750,15 +750,7 @@ function RRmoveIt(x,y) {
 var RRpageWidth,RRpageHeight
 
 function RRpanelInit() {
-	if (sPos == '4' || sPos == '8') { // vertical panel
-		iObjW = 62;
-		iObjH = 116;
-		document.getElementById("RRpanelDiv").innerHTML = '';
-		document.getElementById("RRpanelDiv").style.display = 'none';
-		document.getElementById("RRpanelStandingDiv").style.display = 'block';
-		document.getElementById("RRpanelStandingDiv").innerHTML = '<table border="0" cellpadding="0" cellspacing="0" style="border-left: 1px solid black; border-bottom: 1px solid black; filter: progid:DXImageTransform.Microsoft.Gradient(StartColorStr=#ffFFFFFF, EndColorStr=#ffEEEEEE, GradientType=0)"><tr><td align="center"><img name="eyeBtn" src="@readrunnerimagesurl@/btn_eye_anim.gif" width="35" height="35" alt="" border="0" usemap="#RRposArrows" onMouseOver="eyeOver()" onMouseOut="eyeOut()"></td></tr><tr><td><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="2"></td></tr><tr><td align="center"><div id="RRpanelBtn" style="display:block"><table border="0" cellpadding="0" cellspacing="0"><tr><td><input type="image" name="stop" id="stop2" title="Stoppa" value="Stop" onClick="RRstop()" disabled src="@readrunnerimagesurl@/btn_panel_stopp.gif" width="57" height="13" alt="" border="0" hspace="2"></td></tr><tr><td><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="2"></td></tr><tr><td><input type="image" name="start" id="start" title="Starta" value="Go!" onClick="RRdisableBtn(\'start\'); RRplay()" disabled src="@readrunnerimagesurl@/btn_panel_start.gif" width="57" height="13" alt="" border="0" hspace="2"></td></tr><tr><td><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="2"></td></tr><tr><td><input type="image" name="RRmenu" id="RRmenu" onClick="RRopenSettings(); return false" src="@readrunnerimagesurl@/btn_panel_meny.gif" width="57" height="13" alt="" border="0" hspace="2"></td></tr></table></div><div id="RRpanelTxt" style="width:61; height:43; font: 10px/12px Verdana, sans-serif; display:none; text-align:center"></div></td></tr><tr><td><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="2"></td></tr><tr><td align="center"><input type="image" onClick="RRopenHelp(); return false" src="@readrunnerimagesurl@/btn_panel_help.gif" width="34" height="33" alt="" border="0"></td></tr></table>';
-		RRpanelObj = new RRmakeObj('RRpanelStandingDiv');
-	} else { // horizontal panel
+	if (sPos == '2' || sPos == '6') { // horizontal panel
 		iObjW = 249;
 		iObjH = 36;
 		document.getElementById("RRpanelStandingDiv").innerHTML = '';
@@ -766,6 +758,14 @@ function RRpanelInit() {
 		document.getElementById("RRpanelDiv").style.display = 'block';
 		document.getElementById("RRpanelDiv").innerHTML = '<table border="0" cellpadding="0" cellspacing="0" style="border-left: 1px solid black; border-bottom: 1px solid black; filter: progid:DXImageTransform.Microsoft.Gradient(StartColorStr=#ffFFFFFF, EndColorStr=#ffEEEEEE, GradientType=1)"><tr><td><img name="eyeBtn" src="@readrunnerimagesurl@/btn_eye_anim.gif" width="35" height="35" alt="" border="0" usemap="#RRposArrows" onMouseOver="eyeOver()" onMouseOut="eyeOut()"></td><td><img src="@readrunnerimagesurl@/1x1.gif" width="2" height="1"></td><td><div id="RRpanelBtn" style="display:block"><table border="0" cellpadding="0" cellspacing="0"><tr><td><input type="image" name="stop" id="stop" title="Stoppa" value="Stop" onClick="RRstop()" disabled src="@readrunnerimagesurl@/btn_panel_stopp.gif" width="57" height="13" alt="" border="0"></td><td><img src="@readrunnerimagesurl@/1x1.gif" width="2" height="1"></td><td><input type="image" name="start" id="start" disabled title="Starta" value="Go!" onClick="RRdisableBtn(\'start\'); RRplay()" src="@readrunnerimagesurl@/btn_panel_start.gif" width="57" height="13" alt="" border="0"></td><td><img src="@readrunnerimagesurl@/1x1.gif" width="2" height="1"></td><td><input type="image" name="RRmenu" id="RRmenu" onClick="RRopenSettings(); return false" src="@readrunnerimagesurl@/btn_panel_meny.gif" width="57" height="13" alt="" border="0"></td></tr></table></div><div id="RRpanelTxt" style="width:175; font: 10px/12px Verdana, sans-serif; display:none; text-align:center"></div></td><td><img src="@readrunnerimagesurl@/1x1.gif" width="2" height="1"></td><td><input type="image" onClick="RRopenHelp(); return false" src="@readrunnerimagesurl@/btn_panel_help.gif" width="34" height="33" alt="" border="0"></td></tr></table>';
 		RRpanelObj = new RRmakeObj('RRpanelDiv');
+	} else { // vertical panel
+		iObjW = 62;
+		iObjH = 116;
+		document.getElementById("RRpanelDiv").innerHTML = '';
+		document.getElementById("RRpanelDiv").style.display = 'none';
+		document.getElementById("RRpanelStandingDiv").style.display = 'block';
+		document.getElementById("RRpanelStandingDiv").innerHTML = '<table border="0" cellpadding="0" cellspacing="0" style="border-left: 1px solid black; border-bottom: 1px solid black; filter: progid:DXImageTransform.Microsoft.Gradient(StartColorStr=#ffFFFFFF, EndColorStr=#ffEEEEEE, GradientType=0)"><tr><td align="center"><img name="eyeBtn" src="@readrunnerimagesurl@/btn_eye_anim.gif" width="35" height="35" alt="" border="0" usemap="#RRposArrows" onMouseOver="eyeOver()" onMouseOut="eyeOut()"></td></tr><tr><td><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="2"></td></tr><tr><td align="center"><div id="RRpanelBtn" style="display:block"><table border="0" cellpadding="0" cellspacing="0"><tr><td><input type="image" name="stop" id="stop2" title="Stoppa" value="Stop" onClick="RRstop()" disabled src="@readrunnerimagesurl@/btn_panel_stopp.gif" width="57" height="13" alt="" border="0" hspace="2"></td></tr><tr><td><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="2"></td></tr><tr><td><input type="image" name="start" id="start" title="Starta" value="Go!" onClick="RRdisableBtn(\'start\'); RRplay()" disabled src="@readrunnerimagesurl@/btn_panel_start.gif" width="57" height="13" alt="" border="0" hspace="2"></td></tr><tr><td><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="2"></td></tr><tr><td><input type="image" name="RRmenu" id="RRmenu" onClick="RRopenSettings(); return false" src="@readrunnerimagesurl@/btn_panel_meny.gif" width="57" height="13" alt="" border="0" hspace="2"></td></tr></table></div><div id="RRpanelTxt" style="width:61; height:43; font: 10px/12px Verdana, sans-serif; display:none; text-align:center"></div></td></tr><tr><td><img src="@readrunnerimagesurl@/1x1.gif" width="1" height="2"></td></tr><tr><td align="center"><input type="image" onClick="RRopenHelp(); return false" src="@readrunnerimagesurl@/btn_panel_help.gif" width="34" height="33" alt="" border="0"></td></tr></table>';
+		RRpanelObj = new RRmakeObj('RRpanelStandingDiv');
 	}
 	RRpageWidth = document.body.offsetWidth - 4;
 	RRpageHeight = document.body.offsetHeight - 4;
@@ -781,7 +781,7 @@ function RRcheckIt() {
 	var X_right = document.body.scrollLeft + RRpageWidth - (iObjW + iObjOffsetX + 16);
 	var Y_top = document.body.scrollTop + iObjOffsetY;
 	var Y_mid = ((RRpageHeight - iObjH) / 2) + document.body.scrollTop;
-	var Y_bottom = document.body.scrollTop + RRpageHeight - (iObjH + iObjOffsetY);
+	var Y_bottom = document.body.scrollTop + RRpageHeight - (iObjH + iObjOffsetY - 4);
 	switch(sPos) {
 		case "1": // TL
 			RRpanelObj.RRmoveIt(X_left,Y_top);
@@ -833,7 +833,7 @@ function RRpanelPrintHTML(txt) {
 		var elTxt = document.getElementById("RRpanelTxt");
 		elBtn.style.display = 'none';
 		elTxt.style.display = 'block';
-		elTxt.innerHTML = (sPos == '4' || sPos == '8') ? arrTxt[parseInt(txt) + 1] : arrTxt[txt];
+		elTxt.innerHTML = (sPos == '2' || sPos == '6') ? arrTxt[txt] : arrTxt[parseInt(txt) + 1];
 		/*var theText = eval('sTxt' + txt + sLetter);
 		alert(theText);
 		elTxt.innerHTML = 'sTxt' + txt + sLetter;*/
@@ -849,7 +849,8 @@ function RRpanelPrintHTML(txt) {
 
 function RRopenSettings() {
 	var iMetaId = unescape(getParam('meta_id'));
-	document.location = '@readrunnerurl@/readrunner.html?meta_id=' + iMetaId;
+	var sTempl = (unescape(getParam('template')) != '') ? '&template=' + unescape(getParam('template')) : '';
+	document.location = '@readrunnerurl@/readrunner.html?meta_id=' + iMetaId + sTempl;
 }
 
 function RRopenHelp() {

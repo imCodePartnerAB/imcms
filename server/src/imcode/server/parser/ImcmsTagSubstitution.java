@@ -39,10 +39,13 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    HTML_PREBODY_PATTERN = patComp.compile("^.*?<[Bb][Oo][Dd][Yy].*?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	    HTML_POSTBODY_PATTERN = patComp.compile("<\\/[Bb][Oo][Dd][Yy]>.*$", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 
-	    READRUNNER_FILTER_STOPSEP_PATTERN = patComp.compile("([^\\s].*?(?:[.?!,:;\\\\/-]\\B\\S*\\s*|\\s*$))" , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-	    READRUNNER_FILTER_STOP_PATTERN = patComp.compile("([^\\s].*?(?:[.?!]\\B\\S*\\s*|\\s*$))" , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-	    READRUNNER_FILTER_SEP_PATTERN = patComp.compile("([^\\s].*?(?:[,:;\\\\/-]\\B\\S*\\s*|\\s*$))" , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-	    READRUNNER_FILTER_PATTERN = patComp.compile("([^\\s].*?)\\s*$" , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    final String READRUNNER_PATTERN_START = "([^\\s](?:.*?" ;
+	    final String READRUNNER_PATTERN_END = "\\B\\S*|.*\\S))\\s*$?" ;
+
+	    READRUNNER_FILTER_STOPSEP_PATTERN = patComp.compile(READRUNNER_PATTERN_START+"[.?!,:;\\\\/-]"+READRUNNER_PATTERN_END , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    READRUNNER_FILTER_STOP_PATTERN    = patComp.compile(READRUNNER_PATTERN_START+"[.?!]"+READRUNNER_PATTERN_END, Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    READRUNNER_FILTER_SEP_PATTERN     = patComp.compile(READRUNNER_PATTERN_START+"[,:;\\\\/-]"+READRUNNER_PATTERN_END, Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    READRUNNER_FILTER_PATTERN         = patComp.compile("([^\\s].*?)\\s*$" , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 
 	    HTML_TAG_PATTERN = patComp.compile("<[^>]+?>",Perl5Compiler.READ_ONLY_MASK) ;
 	    HTML_ESCAPE_HIDE_PATTERN = patComp.compile("(&#?\\w+;)",Perl5Compiler.READ_ONLY_MASK) ;
@@ -471,6 +474,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	linebreakTags.add("h5") ;
 	linebreakTags.add("h6") ;
 	linebreakTags.add("br") ;
+	linebreakTags.add("ul") ;
+	linebreakTags.add("ol") ;
+	linebreakTags.add("li") ;
 	linebreakTags.add("div") ;
 
 	List secondtaglist = new ArrayList() ;
@@ -499,8 +505,6 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
 	// Set up a buffer for storing the result
 	StringBuffer resultBuffer = new StringBuffer() ;
-
-	resultBuffer.append("<div id='RR1'>") ;
 
 	// Loop through all parts, html-tags and not.
 	for (Iterator i = secondtaglist.iterator(); i.hasNext() ; ) {
@@ -548,7 +552,11 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    }
 	    resultBuffer.append(part) ;
 	}
-	resultBuffer.append("</div>") ;
+
+	if (resultBuffer.length()>0) {
+	    resultBuffer.insert(0,"<div id='RR1'>") ;
+	    resultBuffer.append("</div>") ;
+	}
 
 	return resultBuffer.toString() ;
     }
