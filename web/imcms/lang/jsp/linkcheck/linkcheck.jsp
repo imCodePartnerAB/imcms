@@ -28,29 +28,33 @@
 </div>
 </form>
 <% if (doCheckLinks) { %>
-<vel:velocity>
-    <table border="0" cellspacing="2" cellpadding="2">
-        <tr align="left">
-            <td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
-            <td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
-            <td><b><? web/imcms/lang/jsp/heading_references ?></b></td>
-            <td><b><? web/imcms/lang/jsp/heading_status ?></b></td>
-            <td><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_url ?></b></td>
-            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_found ?></b></td>
-            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></b></td>
-            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
-        </tr>
-</vel:velocity>
         <%  UserDomainObject user = Utility.getLoggedOnUser( request ) ;
             Iterator linksIterator = (Iterator)linkCheckPage.getLinksIterator() ;
             while ( linksIterator.hasNext() ) {
-                out.flush();
-                LinkCheck.Link link = (LinkCheck.Link)linksIterator.next();
-                if ( link.isOk() && linkCheckPage.isBrokenOnly() ) {
-                    continue;
-                }
-                DocumentDomainObject document = link.getDocument() ;
-                %><tr>
+        %>
+                <vel:velocity>
+                    <table border="0" cellspacing="2" cellpadding="2" width="100%">
+                        <tr align="left">
+                            <td><b><? web/imcms/lang/jsp/heading_type ?></b></td>
+                            <td><b><? web/imcms/lang/jsp/heading_adminlink ?></b></td>
+                            <td><b><? web/imcms/lang/jsp/heading_references ?></b></td>
+                            <td><b><? web/imcms/lang/jsp/heading_status ?></b></td>
+                            <td><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_url ?></b></td>
+                            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_found ?></b></td>
+                            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_host_reachable ?></b></td>
+                            <td align="center" style="width: 5em;"><b><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
+                        </tr>
+                </vel:velocity>
+                <%
+                for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
+                    out.flush();
+                    LinkCheck.Link link = (LinkCheck.Link)linksIterator.next();
+                    if ( link.isOk() && linkCheckPage.isBrokenOnly() ) {
+                        --i ;
+                        continue;
+                    }
+                    DocumentDomainObject document = link.getDocument() ;
+                    %><tr>
                         <% if (link instanceof LinkCheck.UrlDocumentLink) {
                             LinkCheck.UrlDocumentLink urlDocumentLink = (LinkCheck.UrlDocumentLink)link ;
                             DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument();
@@ -96,11 +100,11 @@
 										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isOk() ) ? "1" : "0" %>.gif"></td>
 										</vel:velocity>
                     <% out.flush(); %>
-                </tr><%
-            }
-    %></table><%
-         }
-        %>
+                </tr>
+                <% } %>
+            <% } %>
+        </table>
+    <% } %>
 <vel:velocity>
 
 
