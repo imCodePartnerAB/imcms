@@ -42,6 +42,7 @@ public class ChangeImage extends HttpServlet {
 	    return ;
 	}
 
+	res.setContentType("text/html");
         res.getOutputStream().print(ImageBrowse.getPage(req,res)) ;
 	return ;
     }
