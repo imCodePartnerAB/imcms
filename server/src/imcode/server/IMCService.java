@@ -6708,7 +6708,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		dbc.closeConnection() ;
 		dbc = null ;
 
-		File f = new File(m_TemplateHome  + "/text/" + new_template_id + ".html") ;
+		File f = new File(m_TemplateHome, "text/" + new_template_id + ".html") ;
 
 		//		if (!f.exists())
 		//			overwrite = true ;
