@@ -4,6 +4,8 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.util.FileInputStreamSource;
 
+import java.io.File;
+
 class DocumentInitializingVisitor extends DocumentVisitor {
 
     ImcmsServices service = Imcms.getServices();
@@ -31,7 +33,14 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             file.setFilename( sqlRow[1] );
             file.setMimeType( sqlRow[2] );
             file.setCreatedAsImage( 0 != Integer.parseInt( sqlRow[3] ) );
-            file.setInputStreamSource( new FileInputStreamSource( DocumentStoringVisitor.getFileForFileDocument( document.getId(), fileId ) ) );
+            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocument( document.getId(), fileId );
+            if (!fileForFileDocument.exists()) {
+                File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(), fileForFileDocument.getName()+"_se") ;
+                if (oldlyNamedFileForFileDocument.exists()) {
+                    fileForFileDocument = oldlyNamedFileForFileDocument ;
+                }
+            }
+            file.setInputStreamSource( new FileInputStreamSource( fileForFileDocument ) );
             document.addFile( fileId, file );
             boolean isDefaultFile = 0 != Integer.parseInt( sqlRow[4] );
             if ( isDefaultFile ) {

@@ -1279,22 +1279,22 @@ public class DocumentMapper {
     private static class FileDocumentFileFilter implements FileFilter {
         protected final FileDocumentDomainObject fileDocument;
 
-        private FileDocumentFileFilter(FileDocumentDomainObject fileDocument) {
+        protected FileDocumentFileFilter(FileDocumentDomainObject fileDocument) {
             this.fileDocument = fileDocument;
         }
 
         public boolean accept(File file) {
             String filename = file.getName();
             Perl5Util perl5Util = new Perl5Util();
-            if (perl5Util.match("/(\\d+)(?:\\.(.*))?/", filename)) {
+            if (perl5Util.match("/(\\d+)(?:_se|\\.(.*))?/", filename)) {
                 String idStr = perl5Util.group(1);
                 String variantName = FileUtility.unescapeFilename(StringUtils.defaultString(perl5Util.group(2)));
-                return accept(Integer.parseInt(idStr), variantName) ;
+                return accept(file, Integer.parseInt(idStr), variantName) ;
             }
             return false ;
         }
 
-        public boolean accept(int fileDocumentId, String fileId) {
+        public boolean accept( File file, int fileDocumentId, String fileId ) {
             if (fileDocumentId == fileDocument.getId()) {
                 return true ;
             }
@@ -1308,8 +1308,10 @@ public class DocumentMapper {
             super(fileDocument) ;
         }
 
-        public boolean accept(int fileDocumentId, String fileId) {
-            return super.accept(fileDocumentId, fileId) && null == fileDocument.getFile(fileId) ;
+        public boolean accept( File file, int fileDocumentId, String fileId ) {
+            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocument( fileDocumentId, fileId));
+            boolean fileDocumentHasFile = null != fileDocument.getFile( fileId ) ;
+            return super.accept( file, fileDocumentId, fileId) && (!correctFileForFileDocumentFile || !fileDocumentHasFile) ;
         }
     }
 
