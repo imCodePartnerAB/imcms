@@ -25,14 +25,17 @@ public class AddDoc extends HttpServlet {
     /**
        doPost()
     */
-    public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doPost ( HttpServletRequest encodedrequest, HttpServletResponse res ) throws ServletException, IOException {
+	EncodedHttpServletRequest req = new EncodedHttpServletRequest(encodedrequest) ;
+	req.setCharacterEncoding("UTF-8") ;
+
 	String host				= req.getHeader("Host") ;
 	String imcserver			= imcode.util.Utility.getDomainPref("adminserver",host) ;
 	String start_url	= imcode.util.Utility.getDomainPref( "start_url",host ) ;
 
 	imcode.server.User user ;
 
-	res.setContentType ( "text/html" );
+	res.setContentType ( "text/html; charset=UTF-8" );
 	Writer out = res.getWriter ( );
 	String meta_id = req.getParameter ( "meta_id" ) ;
 	int meta_id_int = Integer.parseInt(meta_id) ;
@@ -314,7 +317,7 @@ public class AddDoc extends HttpServlet {
 
 	//**************** section index word stuff *****************
 	//lets get the section stuff from db
-	String[] parent_section = IMCServiceRMI.sqlProcedure(imcserver,"SectionGetInheritId "+meta_id) ;
+	String[] parent_section = IMCServiceRMI.sqlProcedure(imcserver,"get_inherit_section_id "+meta_id) ;
 	//lets add the stuff that ceep track of the inherit section id and name
 	if (parent_section == null || parent_section.length < 2 ) {
 	    vec.add("#current_section_id#") ;	vec.add("-1") ;
@@ -325,7 +328,7 @@ public class AddDoc extends HttpServlet {
 	}
 
 	//lets build the option list used when the admin whants to breake the inherit chain
-	String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver,"SectionGetAll") ;
+	String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver,"get_all_sections") ;
 	Vector onlyTemp = new Vector();
 	String option_list = "";
 	String selected = "-1";
