@@ -82,7 +82,7 @@ public class DocumentComposer extends HttpServlet {
             String parentInfoAttributeName = getSessionAttributeNameFromRequest(request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
             String sessionAttributeName = getSessionAttributeNameFromRequest(request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
             String originalAction = request.getParameter(PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION);
-            String returningUrl = DocumentComposer.class.getName() + "?" + PARAMETER__RETURNING_FROM_IMAGE_BROWSE + "=" + "true" + "&" + REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME + "=" + parentInfoAttributeName +"&" + REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME + "=" + sessionAttributeName + "&" + PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION + "=" + originalAction;
+            String returningUrl = "DocumentComposer?" + PARAMETER__RETURNING_FROM_IMAGE_BROWSE + "=" + "true" + "&" + REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME + "=" + parentInfoAttributeName +"&" + REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME + "=" + sessionAttributeName + "&" + PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION + "=" + originalAction;
             request.getRequestDispatcher("ImageBrowse?" + ImageBrowse.PARAMETER__CALLER + "=" + java.net.URLEncoder.encode(returningUrl)).forward(request, response);
             return;
         }
