@@ -1,3 +1,13 @@
+SET QUOTED_IDENTIFIER OFF
+GO
+SET ANSI_NULLS ON
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserByLogin]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[GetUserByLogin]
+GO
+
+
 CREATE PROCEDURE GetUserByLogin @login varchar(15) AS
 /**
 	Get data for a user by his login_name. Used for login.
@@ -26,3 +36,11 @@ SELECT  user_id,
 FROM users, lang_prefixes
 WHERE login_name = @login
 AND users.lang_id = lang_prefixes.lang_id
+
+
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+SET ANSI_NULLS ON
+GO
+

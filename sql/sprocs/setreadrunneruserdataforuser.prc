@@ -1,3 +1,13 @@
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetReadrunnerUserDataForUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SetReadrunnerUserDataForUser]
+GO
+
+
 CREATE PROCEDURE SetReadrunnerUserDataForUser
 	@user_id                       INT,
 	@uses                          INT,
@@ -27,3 +37,11 @@ VALUES(
 	@expiry_date,
 	@expiry_date_warning_threshold
 )
+
+
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+SET ANSI_NULLS ON
+GO
+

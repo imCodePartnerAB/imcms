@@ -1,3 +1,13 @@
+SET QUOTED_IDENTIFIER OFF
+GO
+SET ANSI_NULLS ON
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetReadrunnerUserDataForUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[GetReadrunnerUserDataForUser]
+GO
+
+
 CREATE PROCEDURE GetReadrunnerUserDataForUser @user_id INT AS
 /**
 	Return readrunner-user-data for one user.
@@ -21,3 +31,11 @@ FROM
 	readrunner_user_data
 WHERE
 	user_id = @user_id
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
