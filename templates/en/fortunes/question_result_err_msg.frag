@@ -1,0 +1,1 @@
+Det finns ingen statistik att visa.
