@@ -11,7 +11,7 @@
                  imcode.server.Imcms,
                  java.util.HashMap"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-
+<jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.superadmin.AdminManagerSubReportListItemBean" scope="request" />
 <%! String IMG_PATH;
    String TAB_TO_SHOW;
    String LIST_TYPE;
@@ -25,16 +25,6 @@
 
     IMG_PATH  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
     TAB_TO_SHOW = "new";
-%><%!
-
-    String formatDatetime(Date datetime) {
-        if (null == datetime) {
-            return "" ;
-        }
-        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"+DateConstants.TIME_NO_SECONDS_FORMAT_STRING ) ;
-        return dateFormat.format(datetime) ;
-    }
-
 %>
 
 <%@ include file="gui_tabs.jsp" %>
@@ -104,8 +94,12 @@
       boolean expand = false;
       for (int i = 0; i < documents_new.size(); i++) {
         expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_new.get(i); %>
-         <%@include file="admin_manager_inc_list_item.jsp"%>
+        document = (DocumentDomainObject) documents_new.get(i);
+   %>
+    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
+    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
+    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
+    <jsp:include page="admin_manager_inc_list_item.jsp"/>
     <!-- / list item -->
   <% } %>
 

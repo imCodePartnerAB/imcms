@@ -320,17 +320,7 @@ public class AdminManager extends Administrator {
             this.expand_listMap = expand_listMap;
             this.subreports = subreports;
             documentFinder = new DocumentFinder( new AdminManagerSearchPage( this ) );
-            documentFinder.addExtraSearchResultColumn( new DocumentFinder.SearchResultColumn() {
-                public String render( DocumentDomainObject document, HttpServletRequest request ) {
-                    DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING ) ;
-                    String formattedDatetime = dateFormat.format( document.getModifiedDatetime() );
-                    return StringEscapeUtils.escapeHtml( formattedDatetime ).replaceAll( " ", "&nbsp;" ) ;
-                }
-
-                public LocalizedMessage getName() {
-                    return new LocalizedMessage( "global/changed" );
-                }
-            } );
+            documentFinder.addExtraSearchResultColumn( new ModifiedDateSearchResultColumn() );
         }
 
         public String getHtml_admin_part() {
@@ -382,6 +372,19 @@ public class AdminManager extends Administrator {
         public DocumentFinder getDocumentFinder() {
             return documentFinder;
         }
+
+        private static class ModifiedDateSearchResultColumn implements DocumentFinder.SearchResultColumn {
+
+            public String render( DocumentDomainObject document, HttpServletRequest request ) {
+                DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING ) ;
+                String formattedDatetime = dateFormat.format( document.getModifiedDatetime() );
+                return StringEscapeUtils.escapeHtml( formattedDatetime ).replaceAll( " ", "&nbsp;" ) ;
+            }
+
+            public LocalizedMessage getName() {
+                return new LocalizedMessage( "global/modified" );
+            }
+        }
     }
 
     public static class AdminManagerSubreport {
@@ -419,15 +422,6 @@ public class AdminManager extends Administrator {
         public int getHits_per_page() {
             return hits_per_page;
         }
-    }
-
-    public String formatDatetime( Date datetime ) {
-        if ( null == datetime ) {
-            return "";
-        }
-        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"
-                                                      + DateConstants.TIME_NO_SECONDS_FORMAT_STRING );
-        return dateFormat.format( datetime );
     }
 
     private Date getDate( int days ) {

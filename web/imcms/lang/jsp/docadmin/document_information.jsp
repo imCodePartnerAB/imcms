@@ -40,15 +40,7 @@
 
 %><%!
 
-String formatDatetimeWithParentheses(Date datetime) {
-    if (null == datetime) {
-        return "" ;
-    }
-    DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING+"'&nbsp;'"+DateConstants.TIME_NO_SECONDS_FORMAT_STRING ) ;
-    return "("+dateFormat.format(datetime)+")" ;
-}
-
-String formatDate(Date date) {
+    String formatDate(Date date) {
     if (null == date) {
         return "" ;
     }
@@ -232,7 +224,7 @@ function checkFocus() {
 				<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
 				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
 				value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>"></td>
-				<td>&nbsp;<%= formatDatetimeWithParentheses( publicationStartDatetime ) %></td>
+				<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationStartDatetime ) %>)</td>
 			</tr>
 			</table></td>
 		</tr>
@@ -252,7 +244,7 @@ function checkFocus() {
 				<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
 				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 				value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>"></td>
-				<td>&nbsp;<%= formatDatetimeWithParentheses( archivedDatetime ) %></td>
+				<td>&nbsp;(<%= Utility.formatHtmlDatetime( archivedDatetime ) %>)</td>
 			</tr>
 			</table></td>
 		</tr>
@@ -272,7 +264,7 @@ function checkFocus() {
 				<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
 				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
 				value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>"></td>
-				<td>&nbsp;<%= formatDatetimeWithParentheses( publicationEndDatetime ) %></td>
+				<td>&nbsp;(<%= Utility.formatHtmlDatetime( publicationEndDatetime ) %>)</td>
 			</tr>
 			</table></td>
 		</tr>
@@ -497,7 +489,7 @@ function checkFocus() {
 		</table></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? global/changed ?></td>
+		<td class="imcmsAdmText"><? global/modified ?></td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>

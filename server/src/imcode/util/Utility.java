@@ -24,8 +24,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.text.*;
 
 public class Utility {
 
@@ -238,6 +237,15 @@ public class Utility {
             documentPathPrefix = "/servlet/GetDoc?meta_id=" ;
         }
         return request.getContextPath() + documentPathPrefix + document.getId() ;
+    }
+
+    public static String formatHtmlDatetime( Date datetime ) {
+        if ( null == datetime ) {
+            return "";
+        }
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"
+                                                      + DateConstants.TIME_NO_SECONDS_FORMAT_STRING );
+        return dateFormat.format( datetime );
     }
 
 }

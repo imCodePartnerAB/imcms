@@ -8,7 +8,7 @@
                  imcode.server.Imcms,
                  java.util.*"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-
+<jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.superadmin.AdminManagerSubReportListItemBean" scope="request" />
 <%! private String IMG_PATH;
     private String TAB_TO_SHOW;
     private String LIST_TYPE;
@@ -28,20 +28,7 @@
 
     IMG_PATH  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin" ;
     TAB_TO_SHOW = "summary";
-%><%!
-
-
-
-String formatDatetime(Date datetime) {
-    if (null == datetime) {
-        return "" ;
-    }
-    DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"+DateConstants.TIME_NO_SECONDS_FORMAT_STRING ) ;
-    return dateFormat.format(datetime) ;
-}
-
 %>
-
 <%@ include file="gui_tabs.jsp" %>
 
 <%
@@ -108,8 +95,13 @@ String formatDatetime(Date datetime) {
       boolean expand = false;
       for (int i = 0; i < documents_new.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
         expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_new.get(i); %>
-         <%@include file="admin_manager_inc_list_item.jsp"%>
+        document = (DocumentDomainObject) documents_new.get(i);
+   %>
+    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
+    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
+    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
+
+    <jsp:include page="admin_manager_inc_list_item.jsp"/>
     <!-- / list item -->
   <% } %>
 </table>
@@ -134,8 +126,13 @@ String formatDatetime(Date datetime) {
    <%
        for (int i = 0; i < documents_changed.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
         expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ;
-        document = (DocumentDomainObject) documents_changed.get(i); %>
-         <%@include file="admin_manager_inc_list_item.jsp"%>
+        document = (DocumentDomainObject) documents_changed.get(i);
+   %>
+    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
+    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
+    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
+
+    <jsp:include page="admin_manager_inc_list_item.jsp"/>
     <!-- / list item -->
   <% } %>
 </table>
@@ -158,8 +155,13 @@ String formatDatetime(Date datetime) {
     <!-- list item that will be unpublished-->
    <% for (int i = 0; i < documents_publication_end_less_then_one_week.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
         expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_publication_end_less_then_one_week.get(i); %>
-         <%@include file="admin_manager_inc_list_item.jsp"%>
+        document = (DocumentDomainObject) documents_publication_end_less_then_one_week.get(i);
+   %>
+    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
+    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
+    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
+
+    <jsp:include page="admin_manager_inc_list_item.jsp"/>
     <!-- / list item -->
   <% } %>
 </table>
@@ -183,8 +185,13 @@ String formatDatetime(Date datetime) {
     <!-- list item that will be archived-->
    <% for (int i = 0; i < documents_archived_less_then_one_week.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
         expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_archived_less_then_one_week.get(i); %>
-         <%@include file="admin_manager_inc_list_item.jsp"%>
+        document = (DocumentDomainObject) documents_archived_less_then_one_week.get(i);
+   %>
+    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
+    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
+    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
+
+    <jsp:include page="admin_manager_inc_list_item.jsp"/>
     <!-- / list item -->
   <% } %>
 </table>
@@ -207,8 +214,13 @@ String formatDatetime(Date datetime) {
     <!-- list item not modified in the last 6 month-->
    <% for (int i = 0; i < documents_not_changed_in_six_month.size() && i < AdminManager.DEFAULT_DOCUMENTS_PER_LIST; i++) {
         expand = i < 2 || expand_listMap.get(LIST_TYPE).toString().equals("expand") ? true : false;
-        document = (DocumentDomainObject) documents_not_changed_in_six_month.get(i); %>
-         <%@include file="admin_manager_inc_list_item.jsp"%>
+        document = (DocumentDomainObject) documents_not_changed_in_six_month.get(i);
+   %>
+    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
+    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
+    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
+
+    <jsp:include page="admin_manager_inc_list_item.jsp"/>
     <!-- / list item -->
   <% } %>
 </table>
@@ -227,4 +239,3 @@ String formatDatetime(Date datetime) {
 #gui_end_of_page()
 
 </vel:velocity>
-

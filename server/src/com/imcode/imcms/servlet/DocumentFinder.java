@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 public class DocumentFinder extends WebComponent {
@@ -108,7 +109,7 @@ public class DocumentFinder extends WebComponent {
                              HttpServletResponse response ) throws IOException, ServletException;
     }
 
-    public interface SearchResultColumn {
+    public interface SearchResultColumn extends Serializable {
 
         String render( DocumentDomainObject document, HttpServletRequest request ) ;
 

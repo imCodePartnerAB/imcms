@@ -44,6 +44,8 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__START_DATE = "start_date";
     public static final String REQUEST_PARAMETER__END_DATE = "end_date";
     public static final String REQUEST_PARAMETER__SORT_ORDER = "sort_order";
+    public static final String REQUEST_PARAMETER__STATUS_ID = "status_id";
+
 
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
@@ -65,8 +67,6 @@ public class SearchDocumentsPage extends OkCancelPage {
     private boolean searchButtonPressed;
 
     DocumentFinder documentFinder;
-
-    public static final String REQUEST_PARAMETER__STATUS_ID = "status";
 
     public static final int USER_DOCUMENTS_RESTRICTION__NONE = 0;
     public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER = 1;
