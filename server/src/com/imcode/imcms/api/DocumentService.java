@@ -233,4 +233,9 @@ public class DocumentService {
             throw new SearchException( e );
         }
     }
+
+    public SearchQuery parseLuceneSearchQuery( String query ) throws BadQueryException {
+        return new LuceneParsedQuery( query ) ;
+    }
+
 }
