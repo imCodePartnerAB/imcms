@@ -190,6 +190,11 @@
 	  <exclude name="index.html"/>
 	</patternset>
       </fileset>
+      <filterset>
+        <filter token="servleturl" value="${servleturl}"/>
+        <filter token="loginurl" value="${loginurl}"/>
+        <filter token="imageurl" value="${imageurl}"/>
+      </filterset>
     </copy>
 
   </target>
