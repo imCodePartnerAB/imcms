@@ -426,14 +426,14 @@ INSERT INTO A_replies (user_id, parent_id, create_date, headline, text, reply_le
 VALUES ( @user_id, @theDiscussionId, @toDay, @headline, @text, @reply_level )
 /* Lets increment the discussions counter */
 Declare @nbrOfRepliesInDisc int
-SELECT @nbrOfRepliesInDisc  = max(count_replies) + 1 FROM discussion
+SELECT @nbrOfRepliesInDisc  = max(count_replies) + 1 FROM A_discussion
 WHERE A_discussion.discussion_id = @theDiscussionId
 UPDATE A_discussion 
 SET count_replies =  @nbrOfRepliesInDisc
 WHERE A_discussion.discussion_id = @theDiscussionId
--- Lets update the discussions lastModified date 
+/*Lets update the discussions lastModified date*/
+ 
 EXEC A_UpdateDiscussionModifyDate @theDiscussionId
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
