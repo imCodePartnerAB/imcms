@@ -9,12 +9,12 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-class MySQLDatabaseServer extends DatabaseService {
+public class MySQLDatabaseService extends DatabaseService {
 
     private static final String TEXT_TYPE_MY_SQL = "TEXT";
 
-    public MySQLDatabaseServer( String hostName, int port, String databaseName, String user, String password, File filePath ) {
-        super( filePath, Logger.getLogger( MySQLDatabaseServer.class ) );
+    public MySQLDatabaseService( String hostName, Integer port, String databaseName, String user, String password ) {
+        super( Logger.getLogger( MySQLDatabaseService.class ) );
         // log.debug( "Creating a 'My SQL' database service");
         String jdbcDriver = "com.mysql.jdbc.Driver";
         String jdbcUrl = "jdbc:mysql://";

@@ -12,8 +12,9 @@ deployroot =
 
 # Database parameters for the main database.
 
-db-driver = com.microsoft.jdbc.sqlserver.SQLServerDriver
-db-url = jdbc:microsoft:sqlserver://
+db-service-class = imcode.server.db.MySQLDatabaseService
+#db-service-class = imcode.server.db.MimerDatabaseService
+#db-service-class = imcode.server.db.MSSQLDatabaseService
 db-host = 
 db-port = 1433
 db-name = 

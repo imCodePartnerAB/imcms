@@ -1,12 +1,12 @@
 package imcode.server;
 
 import imcode.util.Prefs;
-import imcode.server.db.ConnectionPool;
-import imcode.server.db.ConnectionPoolForNonPoolingDriver;
+import imcode.server.db.*;
 // import imcode.server.db.InetPoolManager;
 import org.apache.log4j.Category;
 
 import java.io.IOException;
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -18,9 +18,6 @@ import java.util.StringTokenizer;
  *@author     kreiger
  */
 public class ApplicationServer {
-    private final static String CVS_REV = "$Revision$";
-    private final static String CVS_DATE = "$Date$";
-
     private final static String CONFIG_FILE = "ImcServer.cfg";
 
     private final Hashtable serverObjects = new Hashtable();
@@ -71,10 +68,10 @@ public class ApplicationServer {
                 Class objClass = Class.forName( classname );
 
                 // Let's find the constructor that takes an "InetPoolManager" and a Properties.
-                Constructor objConstructor = objClass.getConstructor( new Class[]{ConnectionPool.class, Properties.class} );
+                Constructor objConstructor = objClass.getConstructor( new Class[]{DatabaseService.class, Properties.class} );
 
-                ConnectionPool dbConnectionManager = createDBConnectionMananger( servername, serverprops );
-                Object[] paramArr = {dbConnectionManager, serverprops};
+                DatabaseService databaseService = createDBConnectionMananger( servername, serverprops );
+                Object[] paramArr = {databaseService, serverprops};
 
                 // Invoke Constructor(InetPoolManager, Properties) on class
                 Object o = objConstructor.newInstance( paramArr );
@@ -98,11 +95,11 @@ public class ApplicationServer {
         log.info( "imcmsd running..." );
     }
 
-    private ConnectionPool createDBConnectionMananger( String servername, Properties props ) {
-        ConnectionPool result = null;
+    private DatabaseService createDBConnectionMananger( String servername, Properties props ) {
 
-        String jdbcDriver = props.getProperty( "JdbcDriver" );
-        String jdbcUrl = props.getProperty( "Url" );
+        DatabaseService result = null;
+
+        String databaseServiceClass = props.getProperty( "DatabaseServiceClass" );
         String host = props.getProperty( "Host" );
         String databaseName = props.getProperty( "DatabaseName" );
         String port = props.getProperty( "Port" );
@@ -111,8 +108,7 @@ public class ApplicationServer {
         int maxConnectionCount = Integer.parseInt(props.getProperty( "MaxConnectionCount" ));
 
         log.debug( "Properties values for server '" + servername + "':");
-        log.debug( "JdbcDriver=" + jdbcDriver );
-        log.debug( "JdbcUrl=" + jdbcUrl );
+        log.debug( "DatabaseServiceClass=" + databaseServiceClass );
         log.debug( "host=" + host );
         log.debug( "DatabaseName=" + databaseName );
         log.debug( "Port=" + port );
@@ -122,22 +118,12 @@ public class ApplicationServer {
 
         try {
 
-            /* To use the old, commersical pooled driver uncomment this code, and comment out the other code following */
-            /*
-            result = new InetPoolManager( servername, ""+maxConnectionCount,
-                                      host, port, databaseName,
-                                      user, password, "30");
-            */
-            String serverUrl = jdbcUrl + host + ":" + port + ";DatabaseName=" + databaseName;
-
-            result = new ConnectionPoolForNonPoolingDriver( servername, jdbcDriver, serverUrl, user, password, maxConnectionCount );
-            result.testConnectionAndLoggResultToTheErrorLog();
-
-
+            Class databaseClass = Class.forName(databaseServiceClass);
+            Constructor objConstructor = databaseClass.getConstructor( new Class[]{String.class, Integer.class, String.class, String.class, String.class } );
+            result = (DatabaseService)objConstructor.newInstance( new Object[]{ host, new Integer(port), databaseName, user, password });
         } catch( Exception ex ) {
             log.fatal( "Failed to create database connection pool");
-            log.fatal( "Url = " + jdbcUrl );
-            log.fatal( "Driver = " +jdbcDriver );
+            log.fatal( "DatabaseServiceClass = " +databaseServiceClass );
             log.fatal( "", ex );
         }
 

@@ -4,10 +4,10 @@ import java.io.File ;
 
 import org.apache.log4j.Logger;
 
-class MimerDatabaseService extends DatabaseService {
+public class MimerDatabaseService extends DatabaseService {
 
-    public MimerDatabaseService( String hostName, int port, String databaseName, String user, String password, File filePath ) {
-        super( filePath, Logger.getLogger( MimerDatabaseService.class ) );
+    public MimerDatabaseService( String hostName, Integer port, String databaseName, String user, String password ) {
+        super( Logger.getLogger( MimerDatabaseService.class ) );
 
         // log.debug( "Creating a 'Mimer' database service");
         String jdbcDriver = "com.mimer.jdbc.Driver";

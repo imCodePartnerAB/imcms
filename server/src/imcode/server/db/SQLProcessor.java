@@ -204,4 +204,8 @@ public class SQLProcessor {
             // Swallow
         }
     }
+
+    public ConnectionPool getConnectionPool() {
+        return connectionPool;
+    }
 }

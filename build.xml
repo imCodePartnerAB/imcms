@@ -112,8 +112,7 @@
 	<filter token="readrunnercssurl"    value="${readrunnercssurl}"/>
 	<filter token="readrunnerjsurl"     value="${readrunnerjsurl}"/>
 
-	<filter token="db-driver"           value="${db-driver}"/>
-	<filter token="db-url"              value="${db-url}"/>
+	<filter token="db-service-class"    value="${db-service-class}"/>
 	<filter token="db-host"             value="${db-host}"/>
 	<filter token="db-port"             value="${db-port}"/>
 	<filter token="db-name"             value="${db-name}"/>

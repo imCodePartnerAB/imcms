@@ -3,6 +3,7 @@ package imcode.server;
 import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.DBConnect;
+import imcode.server.db.DatabaseService;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DatabaseAccessor;
@@ -28,11 +29,11 @@ import java.util.*;
  Made final, since only a complete and utter moron would want to extend it.
  **/
 final public class IMCService implements IMCServiceInterface, IMCConstants {
-
     public ConnectionPool getConnectionPool() {
         return m_conPool;
     }
 
+    private DatabaseService m_databaseService;
     private final ConnectionPool m_conPool; // inet pool of connections
     private TextDocumentParser textDocParser;
 
@@ -70,9 +71,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Contructs an IMCService object.
      */
-    public IMCService( ConnectionPool conPool, Properties props ) {
+    public IMCService( DatabaseService databaseService, Properties props ) {
         super();
-        m_conPool = conPool;
+        m_databaseService = databaseService;
+        m_conPool = databaseService.getConnectionPool();
         initMemberFields( props );
         initAuthenticatorsAndUserAndRoleMappers( props );
         initDocumentMapper();

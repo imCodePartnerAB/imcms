@@ -30,8 +30,13 @@ public abstract class DatabaseService {
 
     SQLProcessor sqlProcessor;
     private Logger log;
-    private File filePath;
 
+    /**
+     * @deprecated Use the methods on this class directly instead
+     */
+    public ConnectionPool getConnectionPool() {
+        return sqlProcessor.getConnectionPool();
+    }
     /**
      *  overide this in subclass if needed.
      * @param commands
@@ -67,8 +72,7 @@ public abstract class DatabaseService {
         return modifiedCommands;
     }
 
-    DatabaseService( File filePath, Logger log ) {
-        this.filePath = filePath;
+    DatabaseService( Logger log ) {
         this.log = log;
     }
 
@@ -83,22 +87,22 @@ public abstract class DatabaseService {
         }
     }
 
-    void setupDatabaseWithTablesAndData() {
+    void setupDatabaseWithTablesAndData( File pathToScriptFiles ) {
         try {
-            ArrayList commands = readCommandsFromFile( DROP_TABLES );
+            ArrayList commands = readCommandsFromFile( new File( pathToScriptFiles, DROP_TABLES ) );
             executeCommands( commands );
 
-            commands = readCommandsFromFile( CREATE_TABLES );
+            commands = readCommandsFromFile( new File( pathToScriptFiles, CREATE_TABLES ) );
             executeCreateCommands( commands );
 
             // I tried to use batchUpdate but for the current Mimer driver that only works for SELECT, INSERT, UPDATE,
             // and DELETE operations and this method is also used for create table and drop table commands. /Hasse
             // sqlProcessor.executeBatchUpdate( con, (String[])commands.toArray( new String[commands.size()] ) );
 
-            commands = readCommandsFromFile( INSERT_TYPE_DATA );
+            commands = readCommandsFromFile( new File( pathToScriptFiles, INSERT_TYPE_DATA ) );
             sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
 
-            commands = readCommandsFromFile( INSERT_DEFAULT_DATA );
+            commands = readCommandsFromFile( new File( pathToScriptFiles, INSERT_DEFAULT_DATA ) );
             commands = filterInsertCommands( commands );
             sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
         } catch( IOException ex ) {
@@ -115,8 +119,8 @@ public abstract class DatabaseService {
         }
     }
 
-    void createTestData() throws IOException {
-        ArrayList commands = readCommandsFromFile( ADITIONAL_TEST_DATA );
+    void createTestData( File pathToScriptFiles ) throws IOException {
+        ArrayList commands = readCommandsFromFile( new File( pathToScriptFiles,  ADITIONAL_TEST_DATA ) );
         sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
     }
 
@@ -132,9 +136,7 @@ public abstract class DatabaseService {
         // sqlProcessor.executeBatchUpdate( con, (String[])commands.toArray( new String[commands.size()] ) );
     }
 
-    private ArrayList readCommandsFromFile( String fileName ) throws IOException {
-        File sqlScriptingFile = new File( filePath, fileName );
-
+    private ArrayList readCommandsFromFile( File sqlScriptingFile ) throws IOException {
         BufferedReader reader = new BufferedReader( new FileReader( sqlScriptingFile ) );
         StringBuffer commandBuff = new StringBuffer();
         ArrayList commands = new ArrayList();
