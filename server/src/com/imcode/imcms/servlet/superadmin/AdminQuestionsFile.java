@@ -2,6 +2,8 @@ package com.imcode.imcms.servlet.superadmin;
 
 import java.io.*;
 import java.util.*;
+import java.text.*;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -11,12 +13,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.util.*;
 import imcode.util.fortune.*;
 
-import java.text.*;
-
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-
-public class AdminQuestionsFile extends Administrator implements imcode.server.IMCConstants {
+public class AdminQuestionsFile extends Administrator {
 
     private final static String ADMIN_TEMPLATE = "admin_questions_file.html";
     private final static String DATE_ERROR = "date_err_msg.frag";

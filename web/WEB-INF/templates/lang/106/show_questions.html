@@ -1,62 +1,31 @@
 <html>
-
 <head>
-
-<title><? templates/sv/fortunes/show_questions.html/1 ?></title>
-
-
-
+<title><? templates/sv/fortunes/show_questions.html/2 ?></title>
+    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 </head>
+<body>
 
-<body bgcolor="#FFFFFF">
+#gui_outer_start()
+#gui_head( "<? templates/sv/fortunes/show_questions.html/2 ?>" )
+#gui_head_help_and_back_buttons( 100  "AdminQuestionsFile" "back" "back" )
+#gui_mid()
 
 <form method="post" action="AdminQuestionsFile" name="AdminQuestionsFile">
-
-  <table width="300" border="0" cellspacing="0">
-    <tr bgcolor="#333366"> 
-      <td width="1%">&nbsp;</td>
-      <td colspan="2" > 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/fortunes/show_questions.html/2 ?> </font></b></div>
-      </td>
-      <td width="1%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="1%">&nbsp;</td>
-      <td colspan="2" align="center" > 
-        <hr>
-      </td>
-      <td width="1%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="1%">&nbsp;</td>
-      <td colspan="2" > 
+  <table>
+    <tr>
+      <td colspan="2" >
         <select name="AdminFile" size="5" multiple>
           #options#
         </select>
       </td>
-      <td width="1%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="1%">&nbsp;</td>
-      <td align="left" >
-        <input type="submit" name="back" value="<? templates/sv/fortunes/show_questions.html/2001 ?>">
-      </td>
-      <td align="right" > <a href="@documentationurl@/GetDoc?meta_id=100" target="_blank"><img src="$contextPath/imcms/$language/images/admin/btn_help_round.gif" width="17" height="22" border="0" alt="<? templates/sv/fortunes/show_questions.html/2002 ?>"></a>
-      </td>
-      <td width="1%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="1%">&nbsp;</td>
-      <td colspan="2" >&nbsp;</td>
-      <td width="1%">&nbsp;</td>
     </tr>
   </table>
+</form>
 
-  
-
-  </form>
+#gui_bottom()
+#gui_outer_end()
 
 </body>
-
 </html>
 
