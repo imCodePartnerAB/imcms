@@ -8,19 +8,23 @@ use LWP::Simple ;
 use Term::ProgressBar ;
 
 my $AB                    = '/usr/sbin/ab' ;
-my $benchmark_seconds     = 10 ;
-my $min_concurrency       = 1 ;
-my $max_concurrency       = 20 ;
+my $benchmark_seconds     = 30 ;
+my $min_concurrency       = 5 ;
+my $max_concurrency       = 5 ;
 my $concurrency_increment = 1 ;
 my $verbosity             = 1 ;
+my $benchmark_count_per_url = 1 + ( ($max_concurrency - $min_concurrency) / $concurrency_increment ) ;
 
-my $dir = '.' ;
 my %inputfiles ;
 my $benchmark_count = 0 ;
+my $dir = my $origdir = shift ;
+@ARGV or die "Usage: $0 <dir> <file-with-lines-of-whitespace-separated-name-and-url-pairs> [ another-file ... ]\n" ;
 
 while (<>) {
-    push @{ $inputfiles{$ARGV} }, $_ ;
-    $benchmark_count += ( $max_concurrency / $concurrency_increment ) ;
+    my ( $name, $url ) = /^(\S+)\s+(\S+)/ ;
+    get $url or die "Failed to get $url" ;
+    push @{ $inputfiles{$ARGV} }, { name => $name, url => $url } ;
+    $benchmark_count += $benchmark_count_per_url ;
 }
 
 my $progressbar = Term::ProgressBar->new(
@@ -34,21 +38,15 @@ my $benchmarks_run = 0 ;
 
 foreach my $inputfile ( keys %inputfiles ) {
 
-    $dir = "$inputfile-results" ;
     while ( -e $dir ) {
-        $dir =~ s/$|\.(\d+)$/ '.'.(($1 || 0) + 1) /e ;
+        $dir =~ s/^\Q$origdir\E(?:\-(\d+))?$/ "$origdir-".(($1 || 0) + 1) /e ;
     }
     mkdir $dir or die "Could not mkdir: $!\n" ;
 
     my @inputlines = @{ $inputfiles{$inputfile} } ;
 
     foreach my $line (@inputlines) {
-        my ( $name, $url ) = $line =~ /^(\S+)\s+(\S+)/ ;
-        unless ( get $url) {
-            warn "Failed to get $url" ;
-            next ;
-        }
-
+        my ($name, $url) = ($line->{name}, $line->{url}) ;
         $progressbar->message(
             "Benchmarking $name for $benchmark_seconds seconds per benchmark."
         ) ;
