@@ -69,7 +69,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 			String filename=totalFile.substring(index+1);
 			index = filename.lastIndexOf(".");
 			String name=filename.substring(0,index);
-			if ( ( !name.endsWith("current") ) && ( !name.endsWith("statistics") ) && ( !name.endsWith("poll") ) )	{
+			if ( ( !name.endsWith("current") ) && ( !name.endsWith("stat") ) && ( !name.endsWith("poll") ) )	{
 				options = options + "<option value=\""  + name + "\" > " + name + "</option>";
 			}			
 		}
