@@ -1,0 +1,51 @@
+<html>
+<head>
+<title>Create Conference</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<center>
+<table width="400" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+      <td><font face="Verdana, Arial, Helvetica, sans-serif" size="3">CONFERENCE DATA</font><br>
+        <img src="#IMAGE_URL#blueline.gif" width="365" height="8"></td>
+  </tr>
+</table>
+<form method="post" action="#SERVLET_URL#ConfCreator" name="CreateForum">
+    <table width="400" border="0" cellpadding="0" cellspacing="0">
+      <tr> 
+        <td width="36%"> 
+          <input type="hidden" name="action" value="ADD_CONF">
+          <input type="hidden" name="conference_name" value="Conference">
+        </td>
+        <td width="64%" nowrap>&nbsp;</td>
+      </tr>
+      <tr> 
+        <td width="36%"><font face="Verdana, Arial, Helvetica, sans-serif" size="3">FORUM</font></td>
+        <td width="64%" nowrap>&nbsp; </td>
+      </tr>
+      <tr> 
+        <td width="36%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Name of Forum:</font><font face="Verdana, Arial, Helvetica, sans-serif" size="3"> 
+          </font></td>
+        <td width="64%" nowrap> 
+          <input type="text" name="forum_name" maxlength="255" size="30" value="Forum">
+        </td>
+      </tr>
+      <tr> 
+        <td width="36%">&nbsp;</td>
+        <td width="64%" nowrap>&nbsp;</td>
+      </tr>
+      <tr> 
+        <td width="36%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">CREATE A
+          CONFERENCE</font></td>
+        <td width="64%" nowrap> 
+          <input type="submit" name="submit" value="OK">
+        </td>
+      </tr>
+    </table>
+</form>
+</center>
+<p>&nbsp; </p>
+</body>
+</html>

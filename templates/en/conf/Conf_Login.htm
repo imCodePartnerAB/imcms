@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Konferens - logga in</TITLE>
+<SCRIPT language=VBScript>
+<!-- Little Code
+Sub Document_onKeyPress()
+if (window.event.keyCode = 13) Then
+call IEkeyDown(13)
+End If
+End Sub
+// which finishes here -->
+</SCRIPT>
+
+<SCRIPT language=JavaScript1.2>
+<!-- Original:  Ronnie T. Moore -->
+<!-- Web Site:  The JavaScript Source -->
+
+<!-- This script and many more are available free online at -->
+<!-- The JavaScript Source!! http://javascript.internet.com -->
+
+<!-- Begin
+var nextfield = "login_name"; // name of first box on page
+netscape = "";
+ver = navigator.appVersion; len = ver.length;
+for(iln = 0; iln < len; iln++) if (ver.charAt(iln) == "(") break;
+netscape = (ver.charAt(iln+1).toUpperCase() != "C");
+
+function keyDown(DnEvents) { // handles keypress
+// determines whether Netscape or Internet Explorer
+	k = (netscape) ? DnEvents.which : window.event.keyCode;
+	//window.status = k;
+	if (k == 13) { // enter key pressed
+		if (nextfield == 'done') {
+		 	document.forms[0].submit();
+		 	return true; // submit, we finished all fields
+		}	
+	else { // we're not done yet, send focus to next box
+		eval('document.forms[0].' + nextfield + '.focus()');
+		return false;
+    }
+}
+}
+
+function IEkeyDown(k) { // handles keypress
+	//window.status = 'IE RETURN'
+		if (nextfield == 'done') {
+		 	document.forms[0].submit();	
+		 	return true; // submit, we finished all fields
+		} else { // we're not done yet, send focus to next box
+		eval("document.forms[0]." + nextfield + ".focus()");
+		return false;
+    }
+}
+
+
+if (window.document.captureEvents!=null) 
+                            window.document.captureEvents(Event.KEYPRESS);
+ window.document.onkeypress = keyDown;
+
+//  End -->
+</SCRIPT>
+
+<META content="text/html; charset=iso-8859-1" http-equiv=Content-Type>
+<META content="MSHTML 5.00.2920.0" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff>
+<FORM action=#SERVLET_URL#ConfLogin method=post name=loginForm>
+  <table width="234" border="1" cellspacing="0" cellpadding="0" align="center" bordercolor="#003399">
+    <tr bgcolor="#FFFFFF"> 
+      
+      <td width="137"> 
+        <table align=center border=0 cellpadding=4 cellspacing=0 width=230>
+          <tbody> 
+          <tr> 
+            <td colspan=2 valign="top"><font 
+      face="Verdana, Arial, Helvetica, sans-serif" size=3><br>
+              <input name=login_type type=hidden value=login>
+              </font></td>
+          </tr>
+          <tr> 
+            <td width=144><font face="Verdana, Arial, Helvetica, sans-serif" 
+      size=2>Username</font> </td>
+            <td width=134> 
+              <div align="right"> 
+                <input maxlength=15 name=login_name 
+      onFocus="nextfield = 'password'" size=15>
+              </div>
+            </td>
+          </tr>
+          <tr> 
+            <td width=144><font face="Verdana, Arial, Helvetica, sans-serif" 
+      size=2>Password </font></td>
+            <td width=134> 
+              <div align="right"> 
+                <input maxlength=15 name=password onFocus="nextfield ='done'" 
+      size=15 type=password>
+              </div>
+            </td>
+          </tr>
+          <tr align="right"> 
+            <td colspan="2"> 
+              <div align="right"> 
+                <input type="image" border="0" name="done" src="#IMAGE_URL#login_knapp.gif"> 
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"><!--<a href="UserChangePrefs">Change password and personal information?</a>
+			<br>
+        <a href="/servlet/PasswordMailReminder">Forgotten your password?</a>-->
+			</td>
+          </tr>
+          </tbody> 
+        </table>
+      </td>
+    </tr>
+  </table>
+  </FORM>
+<FORM action=#SERVLET_URL#ConfLogin method=get name="SendMailServlet">
+  <TABLE border=0 cellPadding=2 cellSpacing=0 width=450 align=center>
+    <TBODY> 
+    <TR vAlign=center> 
+      <TD vAlign=top> 
+       <!-- <p><FONT 
+      face="Verdana, Arial, Helvetica, sans-serif" size=2>New user?<br>
+          Contact the <a href="Conf_Mail">System Administrator</a> to register yourself</FONT></p>-->
+        <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Questions or comments? Contact <a href="mailto:robert.hall@imcode.com">System Administrator.</a></font></p>
+        <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Link to <a href="http://www.imcode.com">imCode
+          Home Page</a> (visit us for more imCMS/imConf info).</font> </p>
+        </TD>
+    </TR>
+    </TBODY>
+  </TABLE>
+</FORM>
+<P>
+  <SCRIPT language=JavaScript1.2>
+<!--
+
+document.forms[0].elements[1].focus();
+//-->
+</SCRIPT>
+</P>
+</BODY></HTML>

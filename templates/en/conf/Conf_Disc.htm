@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>ConfSet</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<table width="105%" cellpadding="0" cellspacing="0" border="0">
+  <tr> 
+    <td width="285" valign="middle" bgcolor="#333999" height="20"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;<b>FORUM: 
+      #CURRENT_FORUM_NAME#</b></font> </td>
+  </tr>
+  <tr> 
+    <td width="285" height="2"><img src="#IMAGE_URL#1pix.gif" width=1" height="3"></td>
+  </tr>
+</table>
+<table width="105%" cellpadding="0" cellspacing="0" border="0">
+  <tr> 
+    <td width="10" height="23" valign="top">&nbsp; </td>
+    <td width="237" height="23" valign="top"> 
+      <form method="post" action="#SERVLET_URL#ConfDisc">
+        <input type="hidden" name="ADD" value="ADD">
+        <input type="image" border="0" name="submit" src="#IMAGE_URL#nydisk.gif" >
+      </form>
+      
+    </td>
+    <td width="242" height="23" valign="top"> 
+      <form method="post" action="#SERVLET_URL#ConfDisc" target=_ConfDiscViewFrame>
+        <input type="image" border="0" name="UPDATE" src="#IMAGE_URL#uppdat.gif" >
+        <input type="hidden" name="UPDATE" value="UPDATE">
+      </form></td>
+    <td width="227" height="23" valign="top">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="10" height="23" valign="top">&nbsp;</td>
+    <td height="23" valign="top" colspan="3"><b><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CURRENT CONTRIBUTIONS</font> </b></td>
+  </tr>
+  <tr> 
+    <td width="10" height="23" valign="top">&nbsp;</td>
+    <td height="23" width ="300" valign="top" colspan="3"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#A_HREF_LIST# 
+      </font></td>
+  </tr>
+  <tr> 
+    <td width="10" height="23" valign="top"> <img src="#IMAGE_URL#1pix.gif" width="3" height="1"> 
+    </td>
+    <td width="237" height="23" valign="top"> 
+      <form method="post" action="#SERVLET_URL#ConfDisc" target="_parent">
+        <div align="left"> 
+          <input type="image" border="0" name="NEXT" src="#IMAGE_URL#tidigare.gif">
+          <input type="hidden" name="NEXT" value="NEXT">
+        </div>
+      </form>
+    </td>
+    <td width="242" height="23" valign="top"> 
+      <form method="post" action="#SERVLET_URL#ConfDisc" target="_parent">
+        <div align="left"> 
+          <input type="image" border="0" name="PREVIOUS" src="#IMAGE_URL#senare.gif" >
+        </div>
+      </form>
+      <div align="left"> 
+        <input type="hidden" name="PREVIOUS" value="PREVIOUS">
+      </div>
+    </td>
+    <td width=227 height="23" valign="top">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="10" height="23" valign="top">&nbsp;</td>
+    <td height="23" valign="top" colspan="3"> 
+      <div align="center"><a href="#SERVLET_URL#ConfAdmin?ADMIN_TYPE=discussion" target="_ConfDiscFrame">#CONF_ADMIN_LINK#</a>&nbsp;&nbsp; 
+      </div>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
