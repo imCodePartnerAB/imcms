@@ -389,6 +389,7 @@ public interface IMCServiceInterface extends java.rmi.Remote {
    public String getLanguage(String lang_id)
 	throws java.rmi.RemoteException ;
 
+
     public SystemData getSystemData()     throws java.rmi.RemoteException ;
 
     public void setSystemData(SystemData sd)     throws java.rmi.RemoteException ;

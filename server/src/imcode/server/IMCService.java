@@ -46,7 +46,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
     final static Pattern OBSOLETE_MENU_PATTERN = patCache.getPattern("[\\r\\n]\\s*menu\\s+no=(\\d+)\\s+rows=(\\d+)\\s+table_col=(\\d+)\\s*",Perl5Compiler.READ_ONLY_MASK) ;
     //                                                                newline  ws menu ws no=123456 ws rows=123456 ws table_col=123456 ws
-    
+
     final static Pattern OBSOLETE_MENU_ROW_PATTERN = patCache.getPattern("[^\\n\\r]*(?:\\r\\n|\\n|\\r)",Perl5Compiler.READ_ONLY_MASK) ;
     //                                                                    nonewline* newline
 
@@ -57,7 +57,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
     //                                                                123456#
 
     final static Pattern MENU_PATTERN = patCache.getPattern("<\\?imcms:menu(?:\\s+no=\"(\\d+)\")?\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-    
+
     final static Pattern MENULOOP_PATTERN = patCache.getPattern("<\\?imcms:menuloop\\?>(.*?)<\\?\\/imcms:menuloop\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 
     final static Pattern MENUITEM_PATTERN = patCache.getPattern("<\\?imcms:menuitem\\?>(.*?)<\\?\\/imcms:menuitem\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
@@ -80,7 +80,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
     SimpleDateFormat dateparser = new SimpleDateFormat("yyyy-MM-ddHH:mm") ;
 
     SimpleDateFormat SQL_DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd") ;
-    
+
     Log log = Log.getLog("server") ;
 
 
@@ -147,7 +147,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		log.log(Log.INFO, "TemplateCount: "+m_NoOfTemplates) ;
 	}
 
-    
+
 
 	/**
 	* <p>Get me page _id.
@@ -443,7 +443,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		String txt_no = (String)it.next() ;
 		String txt_type = (String)it.next() ;
 		String value = (String)it.next() ;
-		
+
 		if (emp!=null) {
 		    // for each string to emphasize
 		    for (int i = 0 ; i < emp.length ; ++i) {
@@ -834,7 +834,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    if (doc_types_vec != null && doc_types_vec.size() > 0) {
 		doc_types_sb.append("<option value=\"0\">"+existing_doc_name+"</option>") ;
 	    }
-			
+
 	    // List of files to load, and tags to parse them into
 	    toload.setProperty("addDoc",m_TemplateHome + lang_prefix + "/admin/add_doc.html") ;
 	    toload.setProperty("saveSortStart",m_TemplateHome + lang_prefix + "/admin/sort_order.html") ;
@@ -855,13 +855,13 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	//log.log(Log.WILD,"Loading template-files.",null) ;
 
 	MapSubstitution temptagsmapsubstitution = new MapSubstitution(temptags, false) ;
-	
+
 	try {
 	    char[] charbuffer = new char[4096] ;
 	    StringBuffer templatebuffer = new StringBuffer() ;
 	    Enumeration propenum = toload.propertyNames() ;
 	    while ( propenum.hasMoreElements() ) {
-		
+
 		String filetag = (String)propenum.nextElement() ;
 		String templatebufferfilename = toload.getProperty(filetag) ;
 		String templatebufferstring = getCachedFileString(templatebufferfilename) ;
@@ -955,7 +955,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	} // end while (pit.hasNext())
 	time = (System.currentTimeMillis()-time) ;
 	String returnresult = result.toString() ;
-	
+
 	log.log(Log.DEBUG, ""+meta_id+": "+(System.currentTimeMillis()-totaltime)+" Txt: "+texttime+" Img: "+imagetime+" Mnu: "+menutime+" Prs: "+time+" Mnuprs: "+menuparsetime+" OMnuprs: "+oldmenutime+" Tgs: "+tagtime) ;
 	return returnresult.getBytes("8859_1") ;
 	} catch (RuntimeException ex) {
@@ -1061,7 +1061,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		    if (!mitit.hasNext()) {
 			mitit = menuitemtemplatelist.iterator() ;
 		    }
-	    
+
 		    String menuitemtemplate = (String)mitit.next() ;
 		    Properties menuitemprops = (Properties)mit.next() ;
 		    // Now i need to replace all tags in this template.
@@ -1092,7 +1092,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
 	Map map ;
 	boolean removeNulls ;
-	
+
 	public MapSubstitution() {
 
 	}
@@ -1125,7 +1125,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	}
 
     }
-	
+
     /**
        Fetch a file from the cache, if loaded during the latest 30 seconds.
      */
@@ -1175,7 +1175,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	}
 
     }
-    
+
 
     private LinkedList getMenuById(Map menus, int id) {
 	return (LinkedList)menus.get(new Integer(id)) ;
@@ -1200,7 +1200,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	int menurowsindex = sbindex ;   // We'll store away the index of the start of the menu.
 	sbindex = reindex ;
 	// Now we'll read each row... so we'll need some storagespace...
-	String[] menu_rows = new String[menu_param[1]] ;	//Allocate an array to hold the menurows								
+	String[] menu_rows = new String[menu_param[1]] ;	//Allocate an array to hold the menurows
 	StringBuffer tmpsb = new StringBuffer() ;
 	// for each row in the template...
 	for ( int foo=0 ; foo<menu_param[1] ; ++foo ) {
@@ -1337,7 +1337,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		lang_prefix = data.elementAt(0).toString() ;
 	    }
 	    dbc.clearResultSet() ;
-	    
+
 	    // Find out what permissions the user has
 	    sqlStr = "GetUserPermissionSet (?,?)" ;
 	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getInt("user_id"))} ;
@@ -1345,11 +1345,11 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    Vector permissions = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
 	    dbc.closeConnection() ;
-	    
+
 	    if (permissions.size() == 0) {
 		return "" ;
 	    }
-	    
+
 	    StringBuffer tempbuffer = null ;
 	    StringBuffer templatebuffer = null ;
 	    StringBuffer superadmin = null ;
@@ -1363,40 +1363,40 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		tempbuffer = new StringBuffer(getCachedFileString(tempbuffer_filename)) ;
 		templatebuffer = new StringBuffer(getCachedFileString(templatebuffer_filename)) ;
 		superadmin = new StringBuffer(getCachedFileString(superadmin_filename)) ;
-		
+
 	    } catch(IOException e) {
 		log.log(Log.ERROR, "An error occurred reading adminbuttonfile", e );
 		return null ;
 	    }
-	    
+
 	    int user_permission_set_id = Integer.parseInt((String)permissions.elementAt(0)) ;
 	    int user_permission_set = Integer.parseInt((String)permissions.elementAt(1)) ;
-	    
+
 	    // Replace #getMetaId# with meta_id
 	    String doctype = dbc.sqlQueryStr("select type from doc_types where doc_type = "+doc_type) ;
-	    
+
 	    imcode.util.AdminButtonParser doc_tags = new imcode.util.AdminButtonParser(m_TemplateHome + lang_prefix + "/admin/adminbuttons/adminbutton"+doc_type+"_", ".html",user_permission_set_id,user_permission_set) ;
-	    
+
 	    doc_tags.put("getMetaId",meta_id) ;
-	    
+
 	    imcode.util.Parser.parseTags(tempbuffer,'#'," <>\n\r\t",(Map)doc_tags,true,1) ;
-	    
+
 	    imcode.util.AdminButtonParser tags = new imcode.util.AdminButtonParser(m_TemplateHome + lang_prefix + "/admin/adminbuttons/adminbutton_", ".html",user_permission_set_id,user_permission_set) ;
-	    
+
 	    tags.put("getMetaId",meta_id) ;
 	    tags.put("doc_buttons",tempbuffer.toString()) ;
 	    tags.put("doc_type",doctype) ;
-	    
+
 	    Vector temp = (Vector)dbc.sqlQuery("select user_id from user_roles_crossref where role_id = 0 and user_id = "+user.getInt("user_id")) ;
-	    
+
 	    if ( temp.size() > 0 ) {
 		tags.put("superadmin",superadmin.toString()) ;
 	    } else {
 		tags.put("superadmin","") ;
 	    }
-	    
+
 	    imcode.util.Parser.parseTags(templatebuffer,'#'," <>\n\r\t",(Map)tags,true,1) ;
-	    
+
 	    return templatebuffer.toString() ;
 	} catch ( RuntimeException ex ) {
 	    log.log(Log.ERROR,"Error occurred while parsing the adminbuttons.",ex) ;
@@ -1410,7 +1410,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
     public String getMenuButtons(int meta_id, User user) {
 	return getMenuButtons(String.valueOf(meta_id),user) ;
     }
-    
+
     protected StringBuffer loadFile(String file) {
 	StringBuffer tempbuffer = new StringBuffer() ;
 	try {
@@ -5659,7 +5659,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 				dbc.clearResultSet() ;
 			}
 
-	
+
 		} else {
 			sqlStr  = "select distinct meta_id,meta_headline,meta_text from meta where " ;
 			sqlStr += "classification = '" + question_str + "'";
@@ -5715,7 +5715,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 				    //	m_ExDoc[i].getDocName(),m_ExDoc[i].getParamStr()) ;
 				    external_doc = m_ExDoc[i] ;
 				}
-		} 
+		}
 		//close connection
 		dbc.closeConnection() ;
 		dbc = null ;
@@ -6030,7 +6030,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	Parse doc replace variables with data , use template
 	*/
 	public String parseDoc(java.util.Vector variables,String admin_template_name,
-			    
+
 		String lang_prefix) {
 		int v_start ;
 		String temp_str1 = "" ;
@@ -6790,10 +6790,10 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		StringBuffer str = new StringBuffer() ;
 		BufferedReader fr = null;
 		String suffix = null;
-		String[] suffixList = 
+		String[] suffixList =
 			{"jpg","jpeg","gif","png","html","htm"};
-		
-		for(int i=0;i<=5;i++) 
+
+		for(int i=0;i<=5;i++)
 			{ // Looking for a template with one of six suffixes
 				String path = m_TemplateHome + "/text/demo/" + template_id + "." + suffixList[i];
 				File fileObj = new File(path);
@@ -6813,7 +6813,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 							}
 				} // end IF
 			} // end FOR
-		
+
 		char[] buffer = new char[4096] ;
 		try {
 			int read ;
@@ -6828,11 +6828,11 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		}
 
 
-		
+
 		return new Object[] {suffix , str.toString().getBytes("8859_1")} ; //return the buffer
 
-			
-	
+
+
 
 }
 
@@ -6915,7 +6915,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	public int saveDemoTemplate(int template_id,byte [] data, String suffix) {
 
 		// save template demo
-		
+
 		// See if there are templete_id:s with other file-formats and delete them
 		// WARNING: Uggly Code
 			String[] suffixes = {"jpg","jpeg","gif","png","htm","html"};
@@ -6926,7 +6926,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 			// doesn't always delete the file, made sure the right template is
 			// shown using the file-date & time in getDemoTemplate
 			}
-		
+
 		try {
 			FileOutputStream fw = new FileOutputStream(m_TemplateHome  + "/text/demo/" + template_id + "." + suffix) ;
 			fw.write(data) ;
@@ -7101,7 +7101,9 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
   /**
 	* 	<p>Return  language. Returns the langprefix from the db. Takes a lang id
-		as argument. Will return null if something goes wrong
+		as argument. Will return null if something goes wrong.
+                Example: If the language id number for swedish is 1. then the call
+                myObject.getLanguage("1") will return 'se'
 	*/
 	public String getLanguage(String lang_id) {
 		return sqlProcedureStr("GetLangPrefixFromId " + lang_id) ;
@@ -7142,7 +7144,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	return sysData ;
     }
 
-    
+
     public void setSystemData (SystemData sd) {
 	sysData = sd ;
 	String sqlStr = "WebMasterSet '"+sd.getWebMaster()+"','"+sd.getWebMasterAddress()+"'" ;

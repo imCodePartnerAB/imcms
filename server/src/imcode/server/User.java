@@ -28,8 +28,8 @@ public class User extends Hashtable {
 
 	// add object
 	public void addObject(String fieldName,Vector object) {
-		put(fieldName,object) ;	
-	}	
+		put(fieldName,object) ;
+	}
 
 	// get object
 	public Object getObject(String fieldName) {
@@ -107,6 +107,13 @@ public class User extends Hashtable {
 	public String getBrowserStr() {
 		return browser_str ;
 	}
+
+      	// get the users preferred language id
+	public int getLangId() {
+		return Integer.parseInt( (String) get("lang_id") ) ;
+	}
+
+
 
 	// set browser_info
 	public void setBrowserInfo(String type,String version,String plattform) {
