@@ -1,7 +1,7 @@
 <html>
 
 <head>
-<title>Admin</title>
+<title>Ändra bild</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <SCRIPT LANGUAGE="JavaScript">
@@ -61,8 +61,8 @@ function openHelp(id){
 						<br>
 						</form>
 				<form name="imgbr" action="ImageBrowse">
-				
-          <input type="submit" name="browse_images" value="Bildarkiv">
+				<input type="submit" name="browse_images" value="Bildarkiv">
+          
          		<INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
         		<INPUT TYPE="HIDDEN" NAME="img_no" VALUE="#img_no#">
           
@@ -71,20 +71,17 @@ function openHelp(id){
 						<center>
 							<table border="1" align="center" width="450" cellpadding="3" cellspacing="0">
 								<tr bgcolor="#333366">
-									<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Ändra bilddata</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> </font></b></td>
-								</tr>
-								<tr bgcolor="#333366">
-									<td valign="middle" colspan="2">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">MetaId</font><font color="#FFFFFF">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">#getMetaId#</font></font></td>
+									<td colspan="2">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>Bild #img_no#, dokument #getMetaId#</b></font></td>
 								</tr>
 								<tr>
 									<td colspan="2" align="center"><img src="#imgUrl##imgRef#" width="#imgWidth#" height="#imgHeight#" border="#imgBorder#"></td>
 								</tr>
 								<tr>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bild&nbsp;#img_no#</font></td>
+									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">#label#</font></td>
 									<td bgcolor="#BABABA" valign="middle">&nbsp;&nbsp; 
                   <input type="TEXT" name="imageref" value="#imgRef#" size="40" maxlength="255">
-                  <br>
-										&nbsp;&nbsp;&nbsp;<input type="SUBMIT" value="Förhandsgranska bilden" name="show_img">
+		  <br>
+		  &nbsp;&nbsp;&nbsp;<input type="SUBMIT" value="Förhandsgranska bilden" name="show_img">
                   <font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                   </font></td>
 								</tr>

@@ -346,12 +346,26 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    result = "" ;
 	}
 	String finalresult = result ;
+	// FIXME: Remove this html-crap.
+	String redbar = "<img src=\""+imageUrl+"red.gif\" border=\"0\">" ;
+
+	String label = attributes.getProperty("label","") ;
+	String labelparam = "" ;
+	if (!"".equals(label)) {
+	    labelparam = "&label="+java.net.URLEncoder.encode(label) ;
+	    label = redbar+label ;
+	}
 	if (imageMode && "".equals(result)) { // If imageMode, and no data in the db-field.
 	    // FIXME: Remove this html-crap.
-	    finalresult = "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"bild.gif\" border=\"0\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
+	    finalresult = label +
+		"<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+labelparam+"\">" +
+		"<img src=\""+imageUrl+"bild.gif\" border=\"0\">" +
+		"<img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
 	} else if (imageMode) {               // If imageMode, with data in the db-field.
 	    // FIXME: Remove this html-crap.
-	    finalresult += "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
+	    finalresult = label + finalresult +
+		"<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+labelparam+"\">" +
+		"<img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
 	} else if(!"".equals(result)) {                              // Else, if we have something other than the empty string...
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
