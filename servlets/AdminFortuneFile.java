@@ -3,6 +3,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
+import imcode.server.* ;
 import imcode.util.* ;
 
 
@@ -74,7 +75,8 @@ public class AdminFortuneFile extends Administrator {
 				String fullLine = ((String)lines.get(row)).trim();
 				String date1 = fullLine.substring(0,6);
 				String date2 = fullLine.substring(7,13);
-				String text = fullLine.substring(14);
+				String text = HTMLConv.toHTML(fullLine.substring(14));
+				
 				//out.println(date1 + "#" + date2 + "#" + text + "#" + "<br>");
 				fileW.write(date1 + "#" + date2 + "#" + text + "#" );
 				fileW.newLine();	
@@ -276,6 +278,8 @@ public class AdminFortuneFile extends Administrator {
 		
 		
    } 
+   
+  
    
    public boolean checkDate(String date)
    {
