@@ -87,7 +87,6 @@ public class GetDoc extends HttpServlet {
 	HttpSession session = req.getSession(true) ;
 	Object done = session.getAttribute("logon.isDone");  // marker object
 	imcode.server.User user = (imcode.server.User)done ;
-//System.out.println( "User-Agent = " + req.getHeader( "User-Agent" )); // use this for test User-Agent value for browsers
 	if (done == null) {
 	    // Check the name and password for validity
 	    String ip = req.getRemoteAddr( ) ;
@@ -134,33 +133,34 @@ public class GetDoc extends HttpServlet {
  	}
 	try {
 	    documentRequest = new DocumentRequest(imcref,req.getRemoteAddr(),session.getId(), user,meta_id,referringDocument) ;
-		revisits = new Revisits() ;
+	    documentRequest.setUserAgent(req.getHeader("User-agent")) ;
+	    revisits = new Revisits() ;
 
-		Cookie[] cookies = req.getCookies() ;
+	    Cookie[] cookies = req.getCookies() ;
 
-		// Find cookies and put in hash.
-		Hashtable cookieHash = new Hashtable() ;
+	    // Find cookies and put in hash.
+	    Hashtable cookieHash = new Hashtable() ;
 
-		for (int i = 0; cookies != null && i < cookies.length; ++i) {
-			Cookie currentCookie=cookies[i] ;
-			cookieHash.put(currentCookie.getName(), currentCookie.getValue()) ;
-		}
+	    for (int i = 0; cookies != null && i < cookies.length; ++i) {
+		Cookie currentCookie=cookies[i] ;
+		cookieHash.put(currentCookie.getName(), currentCookie.getValue()) ;
+	    }
 
-		if (cookieHash.get("imVisits")==null)
+	    if (cookieHash.get("imVisits")==null)
 		{
-			Date now = new Date() ;
-			long lNow = now.getTime() ;
-			String sNow = "" + lNow ;
-			Cookie resCookie = new Cookie("imVisits", session.getId() + sNow) ;
-			resCookie.setMaxAge(31500000) ;
-			resCookie.setPath("/") ;
-			res.addCookie(resCookie) ;
-			revisits.setRevisitsId(session.getId()) ;
-			revisits.setRevisitsDate(sNow) ;
+		    Date now = new Date() ;
+		    long lNow = now.getTime() ;
+		    String sNow = "" + lNow ;
+		    Cookie resCookie = new Cookie("imVisits", session.getId() + sNow) ;
+		    resCookie.setMaxAge(31500000) ;
+		    resCookie.setPath("/") ;
+		    res.addCookie(resCookie) ;
+		    revisits.setRevisitsId(session.getId()) ;
+		    revisits.setRevisitsDate(sNow) ;
 		}else{
-			revisits.setRevisitsId(cookieHash.get("imVisits").toString()) ;
+		    revisits.setRevisitsId(cookieHash.get("imVisits").toString()) ;
 		}
-		documentRequest.setRevisits(revisits) ;
+	    documentRequest.setRevisits(revisits) ;
 
 	    doc_type = documentRequest.getDocument().getDocumentType() ;
 	} catch (IndexOutOfBoundsException ex) {

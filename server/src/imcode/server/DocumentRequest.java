@@ -9,13 +9,14 @@ public class DocumentRequest {
 
     private String   remoteAddr ;
     private String   sessionId ;
+    private String   userAgent ;
 
     private User     user ;
     private Document document ;
     private Document referrer ;
 
     private IMCServiceInterface serverObject ;
-	private  Revisits            revisits ;
+    private  Revisits            revisits ;
 
     public DocumentRequest(IMCServiceInterface serverObject, String remoteAddr, String sessionId, User user, int metaId, Document referrer) {
 	this.serverObject = serverObject ;
@@ -29,12 +30,12 @@ public class DocumentRequest {
     public IMCServiceInterface getServerObject() {
 	return this.serverObject ;
     }
-    
-	public void setRevisits(Revisits revisits) {
+
+    public void setRevisits(Revisits revisits) {
 	this.revisits= revisits;
     }
-	
-	public Revisits getRevisits() {
+
+    public Revisits getRevisits() {
 	return this.revisits ;
     }
 
@@ -56,5 +57,13 @@ public class DocumentRequest {
 
     public Document getReferrer() {
 	return referrer ;
+    }
+
+    public void setUserAgent(String userAgent) {
+	this.userAgent = userAgent ;
+    }
+
+    public String getUserAgent() {
+	return this.userAgent ;
     }
 }

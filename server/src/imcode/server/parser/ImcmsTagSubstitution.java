@@ -68,10 +68,10 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private ParserParameters parserParameters ;
 
     private ReadrunnerFilter readrunnerFilter ;
-	
-	private IMCServiceInterface serverObject;  
-	
-	
+
+    private IMCServiceInterface serverObject;
+
+
     public ImcmsTagSubstitution (TextDocumentParser textdocparser, DocumentRequest documentRequest,
 				 File templatepath,
 				 List included_list, boolean includemode, int includelevel, File includepath,
@@ -157,8 +157,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    // Fetch a file from the disk
 	    try {
 		return fileCache.getCachedFileString(new File(includePath, attributevalue)) ; // Get a file from the include directory
-	    } catch (IOException ignored) {}
-	    return "" ;
+	    } catch (IOException ex) {
+		return "<!-- imcms:include file failed: "+ex+" -->" ;
+	    }
 	} else if (null != (attributevalue = attributes.getProperty("document"))) { // If we have the attribute document="meta-id"
 	    try {
 		if (includeLevel>0) {
@@ -168,6 +169,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 										  documentRequest.getRemoteAddr(),
 										  documentRequest.getSessionId(),
 										  documentRequest.getUser(), included_meta_id, document) ;
+		    includedDocumentRequest.setUserAgent(documentRequest.getUserAgent()) ;
 		    String documentStr = textDocParser.parsePage(includedDocumentRequest,-1,includeLevel-1,paramsToParse) ;
 		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
 		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
@@ -175,11 +177,11 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		}
 	    }
 	    catch (NumberFormatException ex) {
-		return "<!-- imcms:include failed: "+ex+" -->" ;
+		return "<!-- imcms:include document failed: "+ex+" -->" ;
 	    } catch (IOException ex) {
-		return "<!-- imcms:include failed: "+ex+" -->" ;
+		return "<!-- imcms:include document failed: "+ex+" -->" ;
 	    } catch (RuntimeException ex) {
-		return "<!-- imcms:include failed: "+ex+" -->" ;
+		return "<!-- imcms:include document failed: "+ex+" -->" ;
 	    }
 	    return "" ;
 	} else if (null != (attributevalue = attributes.getProperty("url"))) { // If we have an attribute of the form url="url:url"
@@ -188,10 +190,11 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		URL url = new URL(urlStr) ;
 		String urlProtocol = url.getProtocol() ;
 		if ("file".equalsIgnoreCase(urlProtocol)) { // Make sure we don't have to defend against file://urls...
-		    return "<!-- imcms:include failed: file-url not allowed -->" ;
+		    return "<!-- imcms:include url failed: file-url not allowed -->" ;
 		}
 		String sessionId = documentRequest.getSessionId() ;
 		URLConnection urlConnection = url.openConnection() ;
+		urlConnection.setRequestProperty("User-Agent",documentRequest.getUserAgent()) ;
 		if (null != attributes.getProperty("sendsessionid")) {
 		    urlConnection.setRequestProperty("Cookie","JSESSIONID="+sessionId) ;
 		}
@@ -205,11 +208,11 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		}
 		return urlResult.toString() ;
 	    } catch (MalformedURLException ex) {
-		return "<!-- imcms:include failed: "+ex+" -->" ;
+		return "<!-- imcms:include url failed: "+ex+" -->" ;
 	    } catch (IOException ex) {
-		return "<!-- imcms:include failed: "+ex+" -->" ;
+		return "<!-- imcms:include url failed: "+ex+" -->" ;
 	    } catch (RuntimeException ex) {
-		return "<!-- imcms:include failed: "+ex+" -->" ;
+		return "<!-- imcms:include url failed: "+ex+" -->" ;
 	    }
 	} else { // If we have none of the attributes no, file, url, or document
 	    no = implicitIncludeNumber++ ; // Implicitly use the next number.
@@ -310,16 +313,6 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    }
 	}
 
-/*	if (!"".equals(result)) { // Else, we're not in textmode, and do we have something other than the empty string?
-	    String tempAtt = null ;
-	    if ((tempAtt = attributes.getProperty("pre")) != null) {
-		finalresult = tempAtt + finalresult ;
-	    }
-	    if ((tempAtt = attributes.getProperty("post")) != null) {
-		finalresult = finalresult + tempAtt ;
-	    }
-	}
-*/
 	return finalresult ;
     }
 
@@ -383,16 +376,6 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    }
 	}
 
-/*	if(!"".equals(result)) { // Else, if we have something other than the empty string...
-	    String tempAtt = null ;
-	    if ((tempAtt = attributes.getProperty("pre")) != null) {
-			finalresult = tempAtt + finalresult ;   // Prepend the contents of the 'pre'-attribute.
-	    }
-	    if ((tempAtt = attributes.getProperty("post")) != null) {
-			finalresult = finalresult + tempAtt ;   // Append the contents of the 'post'-attribute.
-	    }
-	}
-*/
 	return finalresult ;
     }
 
@@ -439,119 +422,117 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	}
 
 	try {
-		if (null == date) {
-			return "" ; // There was no date of the requested type (activated/archived?)
-		} else {
-	    	return formatter.format(date);
-		}
+	    if (null == date) {
+		return "" ; // There was no date of the requested type (activated/archived?)
+	    } else {
+		return formatter.format(date);
+	    }
 	} catch (IllegalArgumentException ex) {
 	    return "<!-- imcms:datetime failed: "+ex.getMessage()+" -->";
 	}
     }
-	
-	
-	
-	
-	/**
+
+
+
+
+    /**
        Handle a <?imcms:user get='xxxxxxx'?> tag.
 
     **/
-	public String tagUser(Properties attributes) {
-	
-		String attrib = attributes.getProperty("get");
-		String result = "";
-	 	User user = documentRequest.getUser();	
-		if (  attrib != null && !"".equals(attrib) ){
-	
-			if ( attrib.equals("firstname") ) {
-				result = user.getFirstName();
-			}else if ( attrib.equals("lastname") ) {
-				result = user.getLastName() ;
-			}else if ( attrib.equals("company") ) {
-				result = user.getCompany();
-			}else if ( attrib.equals("address") ) {
-				result = user.getAddress() ;
-			}else if ( attrib.equals("zip") ) {
-				result = user.getZip() ;
-			}else if ( attrib.equals("city") ) {
-				result = user.getCity() ;
-			}else if ( attrib.equals("workphone") ) {	 
-				int userId = documentRequest.getUser().getUserId() ;
-				String [][] phoneNbr = serverObject.sqlProcedureMulti("GetUserPhoneNumbers " + userId) ;
-		    	if ( phoneNbr != null ){
-					for (int i=0; i < phoneNbr.length; i++) {
-						if ( ("2").equals( phoneNbr[i][3] ) ){
-							result = phoneNbr[i][1];
-						}
-					}
-				}
-			}else if ( attrib.equals("mobilephone") ) {		
-				int userId = documentRequest.getUser().getUserId() ;
-				String [][] phoneNbr = serverObject.sqlProcedureMulti("GetUserPhoneNumbers " + userId) ;
-				if ( phoneNbr != null ){
-					for (int i=0; i < phoneNbr.length; i++) {
-						if ( ("3").equals( phoneNbr[i][3] ) ){
-							result = phoneNbr[i][1];
-						}
-					}
-				}
-			}else if ( attrib.equals("email") ) {		
-				result = user.getEmailAddress() ; 
+    public String tagUser(Properties attributes) {
+
+	String attrib = attributes.getProperty("get");
+	String result = "";
+	User user = documentRequest.getUser();
+	if (  attrib != null && !"".equals(attrib) ){
+
+	    if ( attrib.equals("firstname") ) {
+		result = user.getFirstName();
+	    }else if ( attrib.equals("lastname") ) {
+		result = user.getLastName() ;
+	    }else if ( attrib.equals("company") ) {
+		result = user.getCompany();
+	    }else if ( attrib.equals("address") ) {
+		result = user.getAddress() ;
+	    }else if ( attrib.equals("zip") ) {
+		result = user.getZip() ;
+	    }else if ( attrib.equals("city") ) {
+		result = user.getCity() ;
+	    }else if ( attrib.equals("workphone") ) {
+		int userId = documentRequest.getUser().getUserId() ;
+		String [][] phoneNbr = serverObject.sqlProcedureMulti("GetUserPhoneNumbers " + userId) ;
+		if ( phoneNbr != null ){
+		    for (int i=0; i < phoneNbr.length; i++) {
+			if ( ("2").equals( phoneNbr[i][3] ) ){
+			    result = phoneNbr[i][1];
 			}
+		    }
 		}
-			
-		return result;	
+	    }else if ( attrib.equals("mobilephone") ) {
+		int userId = documentRequest.getUser().getUserId() ;
+		String [][] phoneNbr = serverObject.sqlProcedureMulti("GetUserPhoneNumbers " + userId) ;
+		if ( phoneNbr != null ){
+		    for (int i=0; i < phoneNbr.length; i++) {
+			if ( ("3").equals( phoneNbr[i][3] ) ){
+			    result = phoneNbr[i][1];
+			}
+		    }
+		}
+	    }else if ( attrib.equals("email") ) {
+		result = user.getEmailAddress() ;
+	    }
+	}
+
+	return result;
     }
-	
-	
+
+
 
     public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {
-		String tagname = matres.group(1) ;
-		String tagattributes = matres.group(2) ;
-		Properties attributes = new Properties() ;
-		PatternMatcherInput pminput = new PatternMatcherInput(tagattributes) ;
-		while(patMat.contains(pminput,IMCMS_TAG_ATTRIBUTES_PATTERN)) {
-	    	MatchResult attribute_matres = patMat.getMatch() ;
-	    	attributes.setProperty(attribute_matres.group(1), attribute_matres.group(3)) ;
-		}
-		String result ;
+	String tagname = matres.group(1) ;
+	String tagattributes = matres.group(2) ;
+	Properties attributes = new Properties() ;
+	PatternMatcherInput pminput = new PatternMatcherInput(tagattributes) ;
+	while(patMat.contains(pminput,IMCMS_TAG_ATTRIBUTES_PATTERN)) {
+	    MatchResult attribute_matres = patMat.getMatch() ;
+	    attributes.setProperty(attribute_matres.group(1), attribute_matres.group(3)) ;
+	}
+	String result ;
 
-		// FIXME: This is quickly growing ugly.
-		// A better solution would be a class per tag (TagHandler's if you will),
-		// with a known interface, looked up through some HashMap.
-		// JSP already fixes this with tag-libs.
-		if ("text".equals(tagname)) {
-		    result = tagText(attributes, patMat) ;
-		} else if ("image".equals(tagname)) {
-		    result = tagImage(attributes, patMat) ;
-		} else if ("include".equals(tagname)) {
-		    result = tagInclude(attributes, patMat) ;
-		} else if ("metaid".equals(tagname)) {
-		    result = tagMetaId() ;
-		} else if ("datetime".equals(tagname)) {
-		    result = tagDatetime(attributes) ;
-		} else if ("section".equals(tagname)) {
-		    result= tagSection() ;
-		} else if ("user".equals(tagname)) {
-		    result= tagUser(attributes) ;
-		} else {
-		    result = matres.group(0) ;
-		}
-	
-		/* If result equals something other than the empty string we have to 
-		   handel pre and post attributes		
-		*/
-		
-		if (!"".equals(result)) { 
-		    String tempAtt = null ;
-			if ((tempAtt = attributes.getProperty("pre")) != null) {
-				result = tempAtt + result ;
-		    }
-		    if ((tempAtt = attributes.getProperty("post")) != null) {
-				result = result + tempAtt ;
-		    }
-		}
-		sb.append(result) ;
+	/* FIXME: This is quickly growing ugly.
+	   A better solution would be a class per tag (TagHandler's if you will),
+	   with a known interface, looked up through some HashMap.
+	   JSP already fixes this with tag-libs. */
+	if ("text".equals(tagname)) {
+	    result = tagText(attributes, patMat) ;
+	} else if ("image".equals(tagname)) {
+	    result = tagImage(attributes, patMat) ;
+	} else if ("include".equals(tagname)) {
+	    result = tagInclude(attributes, patMat) ;
+	} else if ("metaid".equals(tagname)) {
+	    result = tagMetaId() ;
+	} else if ("datetime".equals(tagname)) {
+	    result = tagDatetime(attributes) ;
+	} else if ("section".equals(tagname)) {
+	    result= tagSection() ;
+	} else if ("user".equals(tagname)) {
+	    result= tagUser(attributes) ;
+	} else {
+	    result = matres.group(0) ;
+	}
+
+	/* If result equals something other than the empty string we have to
+	   handle pre and post attributes */
+	if (!"".equals(result)) {
+	    String tempAtt = null ;
+	    if ((tempAtt = attributes.getProperty("pre")) != null) {
+		result = tempAtt + result ;
+	    }
+	    if ((tempAtt = attributes.getProperty("post")) != null) {
+		result = result + tempAtt ;
+	    }
+	}
+	sb.append(result) ;
     }
 
 }
