@@ -26,9 +26,9 @@ function AddLink()
                 AddStr = '';
                 DisplayURL = DaLink.substr(0,I) + DaLink.substr(I+7,DaLink.length);
                 }
-              document.NewMsgForm.ADDTEXT.value = document.NewMsgForm.ADDTEXT.value + ' <L>'  + DaLink  + '</L> ' ;
-			  document.forms[0].ADDTEXT.focus();
+              document.forms[0].ADDTEXT.value = document.forms[0].ADDTEXT.value + ' <L>'  + DaLink  + '</L> ' ;
             }
+			document.forms[0].ADDTEXT.focus();
         }
 
        function DoPreview()
