@@ -507,7 +507,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		String value = (String)it.next() ;
 		if ( textmode ) {	// Textmode
 		    if ( value.length()>0 ) {
-			// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 			value = "<img src=\""
 			    + m_ImageFolder
 			    + "red.gif\" border=\"0\">&nbsp;"
@@ -606,9 +605,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 			value.append("<a href=\"ChangeImage?meta_id="+meta_id+"&img="+imgnumber+"\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>") ;
 		    }
-		    tags.setProperty(imgtag,value.toString()) ;
-		    imageMap.put(imgnumber,value.toString()) ;
 		}
+		log.log(Log.WILD, "Storing link '"+value.toString()+"' to image number '"+imgnumber+"'") ;
+		tags.setProperty(imgtag,value.toString()) ;
+		imageMap.put(imgnumber,value.toString()) ;
 	    }
 
 	    /*
@@ -980,7 +980,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	    MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution(menus,menumode,tags) ;
 	    HashTagSubstitution hashtagsubstitution = new HashTagSubstitution(tags,numberedtags) ;
-	    ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution(user,meta_id,included_docs,includemode,includelevel,textMap, imageMap) ;
+	    ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution(user,meta_id,included_docs,includemode,includelevel,textMap,textmode,imageMap,imagemode) ;
 
 	    LinkedList parse = new LinkedList() ;
 	    perl5util.split(parse,"/<!-(-\\/?)IMSCRIPT-->/i",template) ;
@@ -1291,10 +1291,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	int implicitTextNumber = 1 ;
 	int implicitImageNumber = 1 ;
 	int meta_id ;
-	boolean includemode ;
+	boolean includeMode ;
 	int includelevel ;
 	Map textMap ;
+	boolean textMode ;
 	Map imageMap ;
+	boolean imageMode ;
 
 	private final Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
@@ -1307,13 +1309,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	   @param includemode    Whether to include the admin-template instead of the included document.
 	   @param includelevel   The number of levels of recursion we've gone through.
 	**/
-	ImcmsTagSubstitution (User user, int meta_id, List included_list, boolean includemode, int includelevel, Map textMap, Map imageMap) {
+	ImcmsTagSubstitution (User user, int meta_id, List included_list, boolean includemode, int includelevel, Map textMap, boolean textmode, Map imageMap, boolean imagemode) {
 	    this.user = user ;
 	    this.meta_id = meta_id ;
-	    this.includemode = includemode ;
+	    this.includeMode = includemode ;
 	    this.includelevel = includelevel ;
 	    this.textMap = textMap ;
+	    this.textMode = textmode ;
 	    this.imageMap = imageMap ;
+	    this.imageMode = imagemode ;
 	    for (Iterator i = included_list.iterator(); i.hasNext() ;) {
 		included_docs.put(i.next(), i.next()) ;
 	    }
@@ -1355,8 +1359,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			return document ;
 		    }
 		}
-		catch (NumberFormatException ignored) {}
-		catch (IOException ignored) {}
+		catch (NumberFormatException ex) {
+		    return "<!-- imcms:include failed: "+ex+" -->" ;
+		} catch (IOException ex) {
+		    return "<!-- imcms:include failed: "+ex+" -->" ;
+		} catch (RuntimeException ex) {
+		    return "<!-- imcms:include failed: "+ex+" -->" ;
+		}
 		return "" ;
 	    } else if (null != (attributevalue = attributes.getProperty("url"))) { // If we have an attribute of the form url="url:url"
 		try {
@@ -1377,12 +1386,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		    return "<!-- imcms:include failed: "+ex+" -->" ;
 		} catch (IOException ex) {
 		    return "<!-- imcms:include failed: "+ex+" -->" ;
+		} catch (RuntimeException ex) {
+		    return "<!-- imcms:include failed: "+ex+" -->" ;
 		}
 	    } else { // If we have none of the attributes no, file, or document
 		no = implicitIncludeNumber++ ; // Implicitly use the next number.
 	    }
 	    try {
-		if (includemode) {
+		if (includeMode) {
 		    String included_meta_id_str = (String)included_docs.get(String.valueOf(no)) ;
 		    return imcode.util.Parser.parseDoc(fileCache.getCachedFileString(new File(m_TemplateHome, user.getLangPrefix()+"/admin/change_include.html")),
 						       new String[] {
@@ -1399,7 +1410,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
 			return document ;
 		}
-	    } catch (IOException ignored) {}
+	    } catch (IOException ex) {
+		return "<!-- imcms:include failed: "+ex+" -->" ;
+	    }
 	    return "" ;
 	}
 
@@ -1417,10 +1430,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    if (null != noStr) {
 		result = (String)textMap.get(noStr) ;
 	    } else {
-		result = (String)textMap.get(String.valueOf(implicitTextNumber++)) ;
+		result = (String)textMap.get(noStr = String.valueOf(implicitTextNumber++)) ;
 	    }
-	    if (result == null) {
-		result = "" ;
+	    if (result == null || "".equals(result)) {
+		if (textMode) {
+		    result = "<img src=\""+m_ImageFolder+"red.gif\" border=\"0\">&nbsp;<a href=\""+m_ServletUrl+"ChangeText?meta_id="+meta_id+"&txt="+noStr+"&type=1\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>" ;
+		} else {
+		    result = "" ;
+		}
+		log.log(Log.DEBUG, "Empty texttag in textmode '"+textMode+"' replaced by "+result) ;
 	    }
 	    return result ;
 	}
@@ -1439,10 +1457,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    if (null != noStr) {
 		result = (String)imageMap.get(noStr) ;
 	    } else {
-		result = (String)imageMap.get(String.valueOf(implicitImageNumber++)) ;
+		result = (String)imageMap.get(noStr = String.valueOf(implicitImageNumber++)) ;
 	    }
-	    if (result == null) {
-		result = "" ;
+	    if (result == null || "".equals(result)) {
+		if (imageMode) {
+		    result = "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+m_ImageFolder+"bild.gif\" border=\"0\"><img src=\""+m_ImageFolder+"txt.gif\" border=\"0\"></a>" ;
+		} else {
+		    result = "" ;
+		}
+		log.log(Log.DEBUG, "Empty imagetag in imagemode '"+imageMode+"' replaced by "+result) ;
 	    }
 	    return result ;
 	}

@@ -42,11 +42,11 @@ public class DBConnect {
     public void getConnection() {
 	try {
 	    con = conPool.getConnection();
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    // We already logged in conPool.getConnection
 	    //log.log(Log.WARNING, "Failed to get connection.", ex) ;
 	    imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
-	    log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   		
+	    log.log( Log.WARNING, "Exception occured while getting connection.",ex );	   		
 	}
     }
     
@@ -54,7 +54,7 @@ public class DBConnect {
     public void createStatement() {
 	try {
 	    stmt = con.createStatement();						  // Create statement 
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    log.log(Log.WARNING, "Failed to create SQL statement.", ex) ;
 	}
     }
@@ -90,7 +90,7 @@ public class DBConnect {
 	    rs.close() ;
 	    stmt.close() ;
 
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
 	    log.log(Log.WARNING, "Failed to execute query: {"+eol+strSQLString+eol+"}", ex) ;
 	}
@@ -106,7 +106,7 @@ public class DBConnect {
 	try {
 	    con.setCatalog(catalog);
 	    result = executeQuery() ;
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    log.log(Log.WARNING, "Failed to set catalog to "+catalog+" and execute query.", ex) ;
 	}
 	return result ;
@@ -120,7 +120,7 @@ public class DBConnect {
 	try {
 	    stmt.executeUpdate(strSQLString);
 	    stmt.close() ;
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
     	    log.log(Log.WARNING, "Failed to execute update: {"+eol+strSQLString+eol+"}", ex) ;
 	}
@@ -133,7 +133,13 @@ public class DBConnect {
 
 	Vector results = new Vector() ;
 	try {
+	    if (cs == null) {
+		throw new NullPointerException("DBConnect.executeProcedure() cs == null") ;
+	    }
 	    rs   = cs.executeQuery() ;
+	    if (rs == null) {
+		throw new NullPointerException("DBConnect.executeProcedure() rs == null") ;
+	    }
 	    rsmd = rs.getMetaData() ;
 	    columnCount = rsmd.getColumnCount() ;
 
@@ -144,6 +150,9 @@ public class DBConnect {
 	    while ( rs.next() ) {
 		for ( int i = 1 ; i <= columnCount; i++ ) {
 		    String s = rs.getString(i) ;
+		    if (s == null) {
+			s = "" ;
+		    }
 		    if ( trimStr )
 			results.addElement(s.trim()) ;
 		    else
@@ -153,7 +162,7 @@ public class DBConnect {
 
 	    rs.close() ;
 	    cs.close() ;
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
 	    log.log(Log.WARNING, "Failed to execute procedure: {"+eol+strProcedure+eol+"}", ex) ;
 	}
@@ -169,7 +178,7 @@ public class DBConnect {
 	try {
 	    cs.executeUpdate() ;
 	    cs.close() ;
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
     	    log.log(Log.WARNING, "Failed to execute updateprocedure: {"+eol+strProcedure+eol+"}", ex) ;
 	}
@@ -198,7 +207,7 @@ public class DBConnect {
     public void closeConnection() {
 	try {
 	    con.close() ;
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
     	    log.log(Log.WARNING, "Failed to close connection.", ex) ;	    
 	}
 	con = null ;
@@ -224,11 +233,17 @@ public class DBConnect {
      * <p>Set procedure.
      */
     public void setProcedure(String procedure,String param) {
+	if (procedure == null) {
+	    throw new NullPointerException("DBConnect.setProcedure() procedure == null") ;
+	}
+	if (param == null) {
+	    throw new NullPointerException("DBConnect.setProcedure() param == null") ;
+	}
 	strProcedure = "{call " + procedure + " (?)}" ;
 	try {
 	    cs = con.prepareCall(strProcedure) ;
 	    cs.setString(1,param) ;
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
     	    log.log(Log.WARNING, "Failed to prepare procedure: {"+eol+procedure+" "+param+eol+"}", ex) ;
 	}
@@ -238,13 +253,22 @@ public class DBConnect {
      * <p>Set procedure.
      */
     public void setProcedure(String procedure,String params[]) {
+	if (procedure == null) {
+	    throw new NullPointerException("DBConnect.setProcedure() procedure == null") ;
+	}
+	if (params == null) {
+	    throw new NullPointerException("DBConnect.setProcedure() param == null") ;
+	}
 	strProcedure = "{call " + procedure + "}" ;
 	try {
 	    cs = con.prepareCall(strProcedure) ;
 	    for ( int i=0 ; i<params.length ; ++i ) {
+		if (params[i] == null) {
+		    throw new NullPointerException("DBConnect.setProcedure() params["+i+"] == null") ;
+		}
 		cs.setString(i+1,params[i]) ;
 	    }
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
 	    String paramstr = "" ;
 	    for ( int i=0 ; i<params.length ; ) {
@@ -342,7 +366,7 @@ public class DBConnect {
 		String parm = (String)it.next() ;
 		cs.setString(++i,parm) ;
 	    }
-	} catch (SQLException ex) {
+	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
 	    String paramstr = "" ;
 	    Iterator it = params.iterator() ;
