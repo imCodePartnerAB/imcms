@@ -1,17 +1,18 @@
 <%@ page import="com.imcode.imcms.WebAppConstants,
-                 com.imcode.imcms.UserMapper,
-                 com.imcode.imcms.User,
+                 com.imcode.imcms.UserMapperBean,
+                 com.imcode.imcms.UserBean,
                  java.util.*,
                  javax.servlet.http.HttpServletResponse,
                  javax.servlet.ServletException,
-                 java.io.IOException"%>
+                 java.io.IOException,
+                 com.imcode.imcms.NoPermissionException"%>
 <%!
    private final static String ACTION_SAVE_USER = "SAVE_USER" ;
    private final static String ACTION_CANCEL = "CANCEL" ;
 
    private final static String FORM_SELECT_ROLES = "roles" ;
 
-   private final static String SERVLET_ADMIN_USER = "/servlet/AdminUser" ;
+   private final static String SERVLET_ADMIN_USER_URL = "/servlet/AdminUser" ;
    private final static String MY_LOCATION_URL = "/adminuser/changeexternaluser.jsp" ;
 
    private static boolean buttonPressed (HttpServletRequest request, String buttonName) {
@@ -20,25 +21,28 @@
    }
 
    private static void redirectToAdminUser (HttpServletRequest request,
-                                           HttpServletResponse response) throws javax.servlet.ServletException, IOException {
-      String url = request.getContextPath() + SERVLET_ADMIN_USER;
+                                           HttpServletResponse response) throws IOException {
+      String url = request.getContextPath() + SERVLET_ADMIN_USER_URL;
       response.sendRedirect( url );
    }
 
+   private static void updateUserRoles( HttpServletRequest request, UserMapperBean userMapper, UserBean user ) throws NoPermissionException {
+      String[] roleNames = request.getParameterValues(FORM_SELECT_ROLES) ;
+      userMapper.setUserRoles(user,roleNames) ;
+   }
 %>
 
 <%
-   UserMapper  userMapper = (UserMapper)request.getAttribute( WebAppConstants.USER_MAPPER_ATTRIBUTE_NAME );
+   UserMapperBean  userMapper = (UserMapperBean)request.getAttribute( WebAppConstants.USER_MAPPER_ATTRIBUTE_NAME );
 
    String userLoginName = request.getParameter( WebAppConstants.USER_LOGIN_NAME );
-   User user = userMapper.getUser( userLoginName );
+   UserBean user = userMapper.getUser( userLoginName );
 
    if ( buttonPressed(request, ACTION_CANCEL) ) {
       redirectToAdminUser(request,response) ;
       return ;
    } else if ( buttonPressed(request, ACTION_SAVE_USER) ) {
-      String[] roleNames = request.getParameterValues(FORM_SELECT_ROLES) ;
-      userMapper.setUserRoles(user,roleNames) ;
+      updateUserRoles( request, userMapper, user );
       redirectToAdminUser(request,response) ;
       return ;
    }

@@ -7,21 +7,22 @@ Akut
    - dokument, ändra textdokument (akut?)
 
 Snarast
-- Flytta servlet och globala config parametrarna till web.xml
 - Gå igenom koden och ta bort alla depricated SQL grejer
 - Gå igenom hela koden och flytta alla användning av User relaterade saker till samma ställe(n)
 - Bestäm en strategi hur bilbord, chat etc ska behandlas vid förändringar.
-- Strängkonstanter i hela programmet
-- lägg in automatisk körning av testen vid buil i ant
-- upgradering av junit och ant
+- Lägg in automatisk körning av testen vid build i ant
 - Gå igenom och ta bort alla stored procedures som inte används.
 - Rensa upp i cvs strukturen, ett källkodsträd.
 - Gå igenom alla FIXME och TODO
+- Flytta inloggningen och alla djävla "logon.isDone" till filtret
 
 Eventuellt
 - Testa SSL och LDAP
+- Ordna sökvägarna och mappningar via web.xml filen
 
 Skulle vara bra när som helst
+- Strängkonstanter i hela programmet
+- Flytta servlet och globala config parametrarna till web.xml
 - Gå igenom koden och ta bort all kod som inte används. Använd verktyg
 - Gå igenom koden och se till att trådsäkra alla anrop av typen där det sker två SQL androp efter varandra utan att det är skyddat
 - Döp om GetAllRoles, och/eller ändra på anropen till denna så att de inte förutsätter att "users" rollen ej kommer med

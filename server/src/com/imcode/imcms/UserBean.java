@@ -1,13 +1,13 @@
 package com.imcode.imcms;
 
-class UserImpl implements User {
+public class UserBean {
    private imcode.server.user.User internalUser;
 
   imcode.server.user.User getInternalUser() {
      return internalUser;
   }
 
-   public UserImpl( imcode.server.user.User internalUser ) {
+   public UserBean( imcode.server.user.User internalUser ) {
       this.internalUser = internalUser;
    }
 
@@ -69,5 +69,9 @@ class UserImpl implements User {
 
    public boolean isActive() {
       return internalUser.isActive();
+   }
+
+   public String toString() {
+      return getLoginName() ;
    }
 }

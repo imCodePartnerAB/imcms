@@ -25,6 +25,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    private static final String SPROC_GET_USER_INFO = "GetUserInfo ";
    private static final String SPROC_GET_USER_PHONE_NUMBERS = "GetUserPhoneNumbers ";
    private static final String SPROC_GET_USER_BY_LOGIN = "GetUserByLogin";
+   private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
+
 
    private IMCServiceInterface service;
    final static String ALWAYS_EXISTING_USERS_ROLE = "Users";
@@ -214,7 +216,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       String userIdStr = String.valueOf( user.getUserId() );
       addRole( roleName );
       log.debug( "Trying to assign role " + roleName + " to user " + user.getLoginName() );
-      String rolesIdStr = service.sqlProcedureStr( SPROC_GET_ROLE_ID_BY_ROLE_NAME, new String[]{roleName} );
+      String rolesIdStr = sprocCallGetRoleId( roleName );
       service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{userIdStr, rolesIdStr} );
    }
 
@@ -243,5 +245,23 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
    private void removeAllRoles( User user ) {
       service.sqlUpdateProcedure( SPROC_DEL_USER_ROLES, new String[] { ""+user.getUserId(), "-1" }) ;
+   }
+
+   public User[] getAllUsersWithRole( String roleName ) {
+      String rolesIdStr = sprocCallGetRoleId( roleName );
+      String[] usersWithRole = service.sqlProcedure(SPROC_GET_USERS_WHO_BELONGS_TO_ROLE, new String[] {rolesIdStr} );
+      User[] result = new User[usersWithRole.length / 2];
+
+      for( int i = 0; i < result.length; i++ ) {
+         String userIdStr = usersWithRole[i*2];
+         User user = getUser(Integer.parseInt(userIdStr)) ;
+         result[i] = user ;
+      }
+      return result;
+   }
+
+   private String sprocCallGetRoleId( String roleName ) {
+      String rolesIdStr = service.sqlProcedureStr( SPROC_GET_ROLE_ID_BY_ROLE_NAME, new String[]{roleName} );
+      return rolesIdStr;
    }
 }
