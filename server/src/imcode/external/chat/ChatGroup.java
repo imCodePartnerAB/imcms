@@ -136,6 +136,12 @@ public class ChatGroup
 	protected ListIterator getMessages(ChatMsg lastMsg, int nrOfOldOnes)
 	{
 		return _msgPool.getMessages(lastMsg, nrOfOldOnes);
+		
+	}
+	
+	public String toString()
+	{
+		return "Group: " + _name + " GroupId: " + _groupId;
 	}
 
 
