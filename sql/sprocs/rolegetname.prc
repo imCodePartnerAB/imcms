@@ -15,7 +15,7 @@ AS
 This function is when an administrator tries to add a new roleName.  
 The system searches for the rolename and returns the the id it exists otherwize -1
 */
-DECLARE @returnStr char(25)
+DECLARE @returnStr varchar(25)
 SELECT  @returnStr = r.role_name
 FROM roles r
 WHERE r.role_id = @roleId

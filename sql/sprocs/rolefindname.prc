@@ -9,7 +9,7 @@ GO
 
 
 CREATE PROCEDURE RoleFindName
- @newRoleName char(25)
+ @newRoleName varchar(25)
 AS
 /*
 This function is when an administrator tries to add a new roleName.  

@@ -9,7 +9,7 @@ GO
 
 
 CREATE PROCEDURE RoleAddNew
- @newRoleName char(25)
+ @newRoleName varchar(25)
 /* Adds a new role */
 AS
 DECLARE @newRoleId int

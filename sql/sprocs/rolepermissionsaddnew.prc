@@ -9,7 +9,7 @@ GO
 
 
 CREATE PROCEDURE RolePermissionsAddNew
- @newRoleName char(25), @permissions int
+ @newRoleName varchar(25), @permissions int
 /* Adds a new role */
 AS
 DECLARE @newRoleId int
