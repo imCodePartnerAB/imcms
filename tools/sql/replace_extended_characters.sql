@@ -1,4 +1,9 @@
+/*
+Change extended characters in column texts.text, meta.meta_headline and meta.meta_text
+where meta_id > 1000
+*/
 
+-- table texts
 create table #tmptexts (
 
 	meta_id int not null,
@@ -151,6 +156,7 @@ deallocate posCursor
 drop table #tmptexts
 
 
+-- table meta
 create table #tmpmeta(
 
 	meta_id int not null,
