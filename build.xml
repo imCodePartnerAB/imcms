@@ -228,11 +228,11 @@
   <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
     <taskdef name="cat" classname="Cat" classpath="tools"/>
     <cat destfile="${dist-sql}" orderby="path">
-      <fileset dir="sql/index"/>
       <fileset dir="sql/tables" includes="tables.ascii.sql"/>
       <fileset dir="sql/sprocs"/>
       <fileset dir="sql/data" includes="types.sql"/>
       <fileset dir="sql/data" includes="newdb.sql"/>
+	<fileset dir="sql/index"/>
     </cat>
     <cat destfile="${sprocs-sql}" orderby="path">
       <fileset dir="sql/sprocs"/>
