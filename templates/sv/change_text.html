@@ -15,7 +15,7 @@ function openEditor(metaId,txtNr) {
 	if(isIE55) {
 		var sLabel = document.getElementById("theLabel").innerText;
 		sLabel = sLabel.replace(/^\s*(.*)\s*$/g, "$1");
-		var sUrl = "/htmleditor/editor.html?meta_id=" + metaId + "&txt=" + txtNr + "&label=" + sLabel;
+		var sUrl = "@rooturl@/htmleditor/editor.html?meta_id=" + metaId + "&txt=" + txtNr + "&label=" + sLabel;
 		var iWidth = 680;
 		var iHeight = 495;
 		var sMenu = 0;
