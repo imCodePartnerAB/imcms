@@ -11,16 +11,12 @@
 <body>
 
 #gui_outer_start()
-#gui_head( "<? global/imcms_administration ?>" )
+#gui_head( "<? templates/sv/AdminIpAccess.htm/1 ?>" )
 #gui_head_help_and_back_buttons( 14  "AdminManager" "abortForm" "CANCEL" )
 #gui_mid()
 
 <table cellpadding="2" width="400" align="center">
 <form method="post" action="AdminIpAccess" name="argumentForm">
-<tr>
-    <td>#gui_heading( "<? templates/sv/AdminIpAccess.htm/1 ?>" )</td>
-</tr>
-
 <tr>
     <td><? templates/sv/AdminIpAccess.htm/3 ?></td>
 </tr>
