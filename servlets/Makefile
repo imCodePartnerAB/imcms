@@ -1,4 +1,5 @@
-CLASSPATH = /usr/local/java/jakarta-oro-2.0.2-dev-2.jar:/usr/local/java/jdbc2_0-stdext.jar:/usr/local/java/Opta2000.jar:/usr/local/java/JSDK2.0/lib/jsdk.jar:/home/kreiger/imCMS/1.3/server/classes:/usr/local/java/jcchart400K.jar:.:diagram/:conf/
+CLASSPATH = 	/usr/local/java/jakarta-oro-2.0.2-dev-2.jar:/usr/local/java/jdbc2_0-stdext.jar:/usr/local/java/Opta2000.jar:/usr/local/java/JSDK2.0/lib/jsdk.jar:/home/kreiger/imCMS1.3/1.3/server/classes:/usr/local/java/jcchart400K.jar:.:diagram/:conf/
+
 COMPILER = javac
 VM = java
 COPTIONS = -g -deprecation
@@ -14,6 +15,7 @@ CLASSES = AddDoc.class \
           FileAdmin.class \
           GetDoc.class \
           GetExistingDoc.class \
+          GetImages.class \    
           ImageBrowse.class \
           ImageUpload.class \
           LastRequest.class \
@@ -35,7 +37,7 @@ CLASSES = AddDoc.class \
           SaveSort.class \
           SaveText.class \
           SaveUrlDoc.class \
-          SearchDocs.class \
+          SearchDocuments.class \
           ShowDiagram.class \
           StartDoc.class \
           TemplateAdd.class \
