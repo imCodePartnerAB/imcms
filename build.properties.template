@@ -29,7 +29,7 @@ db-port = 1433
 db-name =
 db-user =
 db-pass =
-db-maxconnections = 20
+db-maxconnections = 100
 
 
 # SMB-authentication-parameters

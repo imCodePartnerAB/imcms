@@ -10,93 +10,84 @@ import java.util.Date;
 import org.xml.sax.SAXException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Hasse
- * Date: 2004-mar-08
- * Time: 18:23:08
- * To change this template use File | Settings | File Templates.
+ * /* To generate the pages to measure:
+ * Run createPerformanceTestData.jsp witch is found in imcms/test
+ * and change the constanst for the page id:s below.
  */
+
 public class TestPerfomance extends TestCase {
-//    private static String HOST_URI = "http://localhost:8080/1_8-BRANCH";
+
+    /*
+    private static int HELLO_WORLD_TEXT_PAGE_ID = 1002;
+    private static int TEXT_PAGE_WITH_TWO_SMALL_TEXTS_ID = 1003;
+    private static int TEXT_PAGE_WITH_ONE_LARGER_TEXT_ID = 1004;
+    private static int TEXT_PAGE_WITH_THREE_INCLUDES_ID = 1005;
+
+    private final static String HOST = "http://localhost:8080/";
+    private final static String WEBAPP = "1_8-BRANCH";
+    private static String ROOT_URI = HOST + WEBAPP;
     private static String GET_DOC_PATH = "/servlet/GetDoc?meta_id=";
-    private String URL_TO_HELLOWORLD_HTML_PAGE = HOST_URI + "/imcms/test/helloworld.html";
-
-
-    /* To generate the pages to measure.
-     * Go to the API samples page and find the link at the bottom createPerformanceTestData.jsp
-     * Run that page and fill in the numbers below.
+    private String URL_TO_HELLOWORLD_HTML_PAGE = ROOT_URI + "/imcms/test/helloworld.html";
     */
-    // Volvo RATATOSK
-    private static String HOST_URI = "http://localhost:8080/imcms";
+
     private static int HELLO_WORLD_TEXT_PAGE_ID = 2090;
-    private static int TEXT_PAGE_WITH_SOME_TEXTS_ID = 2091;
-    private static int TEXT_PAGE_WITH_ONE_INCLUDE_ID = 2093;
+    private static int TEXT_PAGE_WITH_TWO_SMALL_TEXTS_ID = 2091;
+    private static int TEXT_PAGE_WITH_ONE_LARGER_TEXT_ID = 2092;
     private static int TEXT_PAGE_WITH_THREE_INCLUDES_ID = 2094;
 
-/*
-    private static int HELLO_WORLD_TEXT_PAGE_ID = 1002;
-    private static int TEXT_PAGE_WITH_SOME_TEXTS_ID = 1003;
-    private static int TEXT_PAGE_WITH_ONE_INCLUDE_ID = 1005;
-    private static int TEXT_PAGE_WITH_THREE_INCLUDES_ID = 1006;
-*/
-    public void testAllPerformance() throws IOException, SAXException {
-        getPageTimedTestAndDisplayResult( "Hello world html page ", URL_TO_HELLOWORLD_HTML_PAGE );
-        runTimedPageRetrieval("Textdocument (" + HELLO_WORLD_TEXT_PAGE_ID + ") \'Hello World\' Page [ms] :  ", HELLO_WORLD_TEXT_PAGE_ID);
-        runTimedPageRetrieval("Textdocument (" + TEXT_PAGE_WITH_SOME_TEXTS_ID + ") with some texts [ms] :   ", TEXT_PAGE_WITH_SOME_TEXTS_ID);
-        runTimedPageRetrieval("Textdocument (" + TEXT_PAGE_WITH_ONE_INCLUDE_ID + ") with one include [ms] : ", TEXT_PAGE_WITH_ONE_INCLUDE_ID);
-        runTimedPageRetrieval("Textdocument (" + TEXT_PAGE_WITH_THREE_INCLUDES_ID + ") with three includes [ms] :   ", TEXT_PAGE_WITH_THREE_INCLUDES_ID);
+    private final static String HOST = "http://localhost:8080/";
+    private final static String WEBAPP = "imcms";
+    private static String ROOT_URI = HOST + WEBAPP;
+    private static String GET_DOC_PATH = "/servlet/GetDoc?meta_id=";
+    private String URL_TO_HELLOWORLD_HTML_PAGE = ROOT_URI + "/imcms/test/helloworld.html";
+
+    private static final long noTestRuns = 30;
+
+    public void testRunTestAsUserUser() throws IOException, SAXException {
+        WebConversation wc = logOnUserUser();
+        helloWorldHtmlPage( wc );
+        textDocumentHelloWorld( wc );
+        textPageWithTwoSmallTexts( wc );
+        //textPageWithOneLargerText( wc );
+        textPageWithTreeIncludes( wc );
     }
 
-    public void testAllMultipleTimesToSeeImprovmentsOverTime() throws IOException, SAXException {
-        for( int i = 0; i < 10 ; i++ ) {
-            testAllPerformance();
-        }
+    public void helloWorldHtmlPage( WebConversation wc ) throws IOException, SAXException {
+        runRepeatingTestsAndPrintResult( "testHelloWorldHtmlPage", URL_TO_HELLOWORLD_HTML_PAGE, true, wc );
     }
 
-    public void testConcurrentPageRetrievalsMultipleTimesToSePerformanceImprovmentOverTime() throws InterruptedException {
-        for( int i = 0; i < 100 ; i++ ) {
-            testConcurrentPageRetrievals();
-        }
+    public void textDocumentHelloWorld( WebConversation wc ) throws IOException, SAXException {
+        runRepeatingTestsAndPrintResult( "testTextDocumentHelloWorld", getDocUrl( HELLO_WORLD_TEXT_PAGE_ID ), true, wc );
     }
 
-    public void testMultipleTimedRetrievalsOfTextPageWithThreeIncludes() throws IOException, SAXException {
-        int count = 30;
-        long total = testMultipleTimedRetrievalsOfTextPageWithThreeIncludes( count );
-        System.out.println("Average [ms] : " + total/count );
+    public void textPageWithTwoSmallTexts( WebConversation wc ) throws IOException, SAXException {
+        runRepeatingTestsAndPrintResult( "testTextPageWithTwoSmallTexts", getDocUrl( TEXT_PAGE_WITH_TWO_SMALL_TEXTS_ID ), true, wc );
     }
 
-    public void testConcurrentPageRetrievals() throws InterruptedException {
+    public void textPageWithOneLargerText( WebConversation wc ) throws IOException, SAXException {
+        runRepeatingTestsAndPrintResult( "testTextPageWithOneLargerText", getDocUrl( TEXT_PAGE_WITH_ONE_LARGER_TEXT_ID ), true, wc );
+    }
+
+    public void textPageWithTreeIncludes( WebConversation wc ) throws IOException, SAXException {
+        runRepeatingTestsAndPrintResult( "testTextPageWithThreeIncludes", getDocUrl( TEXT_PAGE_WITH_THREE_INCLUDES_ID ), true, wc );
+    }
+
+    public void testConcurrentTreeIncludes() throws InterruptedException {
         final int noOfConcurrentThreads = 5;
-        final int noOfTestsInEachThread = 1;
-        long totalTime = testConcurrentPageRetrievals( noOfConcurrentThreads, noOfTestsInEachThread );
-        System.out.println("Average [ms] " + totalTime/noOfTestsInEachThread/noOfConcurrentThreads );
-    }
-
-    public void testMultipleConcurrentPageRetrievals() throws InterruptedException {
-        final int noOfConcurrentThreads = 5;
-        final int noOfTestsInEachThread = 1;
-        final int noRuns = 4;
-        for( int i = 0; i < noRuns ; i++ ) {
-            int timeForOneRun = 0;
-            timeForOneRun += testConcurrentPageRetrievals( noOfConcurrentThreads, noOfTestsInEachThread );
-            System.out.println("Average [ms] " + timeForOneRun/noOfTestsInEachThread/noOfConcurrentThreads );
+        System.out.println( "" + noOfConcurrentThreads + " concurrent threads, testing a page with 3 includes" );
+        int timeForOneRun = 0;
+        while(true) {
+            timeForOneRun += testConcurrentPageRetrievals( noOfConcurrentThreads );
         }
+        //printAverage( timeForOneRun / noOfConcurrentThreads / noTestRuns );
     }
 
-    private static long testMultipleTimedRetrievalsOfTextPageWithThreeIncludes( int count ) throws IOException, SAXException {
-        long total = 0;
-        for( int i = 0; i < count ; i++ ) {
-            total += runTimedPageRetrieval("Textdocument (" + TEXT_PAGE_WITH_THREE_INCLUDES_ID + ") with three includes [ms] :  ", TEXT_PAGE_WITH_THREE_INCLUDES_ID);
-        }
-        return total;
-    }
-
-    private static long testConcurrentPageRetrievals( final int noOfConcurrentThreads, final int noOfTestsInEachThread ) throws InterruptedException {
+    private long testConcurrentPageRetrievals( final int noOfConcurrentThreads ) throws InterruptedException {
 
         Thread[] clientReads = new Thread[noOfConcurrentThreads];
         PerformanceTestRunner[] performanceTestRunners = new PerformanceTestRunner[noOfConcurrentThreads];
         for (int i = 0; i < clientReads.length; i++) {
-            performanceTestRunners[i] =  new PerformanceTestRunner( noOfTestsInEachThread );
+            performanceTestRunners[i] = new PerformanceTestRunner();
             clientReads[i] = new Thread( performanceTestRunners[i] );
             clientReads[i].start();
         }
@@ -110,41 +101,74 @@ public class TestPerfomance extends TestCase {
         return totalTime;
     }
 
-    private static class PerformanceTestRunner implements Runnable {
+    private class PerformanceTestRunner implements Runnable {
         long totalTime;
-        int count;
-
-        PerformanceTestRunner( int count ) {
-            this.count = count;
-        }
 
         public void run() {
             try {
-                totalTime += testMultipleTimedRetrievalsOfTextPageWithThreeIncludes(count);
+                WebConversation wc = logOnUserUser();
+                totalTime += runRepeatingTestsAndPrintResult( "testTextPageWithThreeIncludes", getDocUrl( TEXT_PAGE_WITH_THREE_INCLUDES_ID ), false, wc );
             } catch (Exception e) {
-                System.out.println("" + e + e.getMessage());
+                System.out.println( "" + e + e.getMessage() );
             }
         }
     }
 
-    private static long runTimedPageRetrieval(String testDescription, int documentId ) throws IOException, SAXException {
-        String getDoc1001 = HOST_URI + GET_DOC_PATH + documentId;
-        return getPageTimedTestAndDisplayResult(testDescription, getDoc1001);
+
+    public void setUp() throws IOException, SAXException {
+        System.out.print( "Running some load to get the server acting like it's been running for a while." );
+        for (int i = 0; i < 100; i++) {
+            if( i%10 == 0 ) {
+                System.out.print( "." );
+            }
+            WebConversation wc = logOnUserUser();
+            getPageTimedTest( wc, getDocUrl( TEXT_PAGE_WITH_THREE_INCLUDES_ID ) );
+        }
+        System.out.println( "Finished setting up." );
     }
 
-    private static long getPageTimedTestAndDisplayResult(String testDescription, String url) throws IOException, SAXException {
-        long time = getPageTimedTest(url);
-        System.out.println( testDescription + time );
+
+    private long runRepeatingTestsAndPrintResult( String heading, String url, boolean printResult, WebConversation wc ) throws IOException, SAXException {
+        if (printResult) {
+            System.out.println( url );
+            System.out.println( heading );
+        }
+        long totalTime = 0;
+        for (int i = 0; i < noTestRuns; i++) {
+            totalTime += getPageTimedTestAndPrintResult( wc, url );
+        }
+        if (printResult) {
+            printAverage( totalTime / noTestRuns );
+        }
+        return totalTime;
+    }
+
+    private long getPageTimedTestAndPrintResult( WebConversation wc, String url ) throws IOException, SAXException {
+        long time = getPageTimedTest( wc, url );
+        System.out.println( time );
         return time;
     }
 
-    private static long getPageTimedTest(String url) throws IOException, SAXException {
-        WebConversation wc = new WebConversation();
+    private static long getPageTimedTest( WebConversation wc, String url ) throws IOException, SAXException {
         Date start = new Date();
-        WebResponse resp = wc.getResponse(url);
+        WebResponse resp = wc.getResponse( url );
         Date end = new Date();
         long delta = end.getTime() - start.getTime();
         assertFalse( url, "The page is missing!".equalsIgnoreCase( resp.getTitle() ) );
         return delta;
     }
+
+    private static void printAverage( long averageTime ) {
+        System.out.println( "Average " + averageTime + " [ms]\n" );
+    }
+
+    private static String getDocUrl( int documentId ) {
+        return ROOT_URI + GET_DOC_PATH + documentId;
+    }
+
+    private WebConversation logOnUserUser() {
+        WebConversation wc = new WebConversation();
+        return wc;
+    }
+
 }

@@ -399,8 +399,7 @@ public class DocumentMapper {
 
             document.setKeywords( getKeywords( metaId ) );
 
-            String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS,
-                                                         new String[]{String.valueOf( document.getId() ), "-1"} );
+            String[] sprocResult = sprocGetUserRolesDocPermissions( document );
 
             int noOfColumns = 4;
             for ( int i = 0, k = 0; i < sprocResult.length; i = i + noOfColumns, k++ ) {
@@ -413,6 +412,12 @@ public class DocumentMapper {
         }
         NDC.pop();
         return document;
+    }
+
+    private String[] sprocGetUserRolesDocPermissions( DocumentDomainObject document ) {
+        String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS,
+                                                     new String[]{String.valueOf( document.getId() ), "-1"} );
+        return sprocResult;
     }
 
     void initTextDocument( TextDocumentDomainObject document ) {
@@ -1243,7 +1248,7 @@ public class DocumentMapper {
 
     private DocumentDomainObject getDocumentFromDb( int metaId ) {
 
-        String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, new String[]{String.valueOf( metaId )} );
+        String[] result = sprocGetDocumentInfo( metaId );
 
         if ( 0 == result.length ) {
             return null;
@@ -1251,6 +1256,11 @@ public class DocumentMapper {
         DocumentDomainObject document = getDocumentFromSqlResultRow( result );
 
         return document;
+    }
+
+    private String[] sprocGetDocumentInfo( int metaId ) {
+        String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, new String[]{String.valueOf( metaId )} );
+        return result;
     }
 
     private DocumentDomainObject getDocumentFromSqlResultRow( String[] result ) {

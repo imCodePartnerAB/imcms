@@ -27,18 +27,6 @@
         textDocumentWithLargerText.setHtmlTextField(1,largeHtmlText );
         documentService.saveChanges(textDocumentWithLargerText);
 
-        for( int i = 0; i< 1000; i++ ) {
-            TextDocument bulkdata = documentService.createNewTextDocument(parentId,1);
-            bulkdata.setHeadline("A text document with larger text");
-            bulkdata.setHtmlTextField(1,largeHtmlText );
-            documentService.saveChanges(bulkdata);
-        }
-
-        TextDocument textDocumentWithOneInclude = documentService.createNewTextDocument( parentId, 1 );
-        textDocumentWithOneInclude.setHeadline("Text document with one include");
-        textDocumentWithOneInclude.setInclude( 1, textDocumentWithSomeTexts );
-        documentService.saveChanges(textDocumentWithOneInclude);
-
         TextDocument textDocumentWithTreeIncludes = documentService.createNewTextDocument( parentId, 1 );
         textDocumentWithTreeIncludes.setHeadline("Text document with three includes");
         textDocumentWithTreeIncludes.setInclude(1, helloWorldTextDocument );
@@ -50,7 +38,6 @@
             'HelloWorld' document id = <%=helloWorldTextDocument.getId()%><br>
             Text document with some texts id = <%=textDocumentWithSomeTexts.getId()%><br>
             Text document with a larger text = <%=textDocumentWithLargerText.getId()%><br>
-            Text document with one include id = <%=textDocumentWithOneInclude.getId()%><br>
             Text document with tree includes id = <%=textDocumentWithTreeIncludes.getId()%><br>
          <%
     } else {
