@@ -381,7 +381,17 @@ function toggleFontSize() {
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td height="30" nowrap><span class="imHeading" onDblClick="toggleFontSize(this)">
-			&nbsp;<? sv/jsp/FileAdmin_edit.jsp/1002 ?> &nbsp; </span></td>
+			&nbsp;<%
+			if (isReadonly) {
+				%><? sv/jsp/FileAdmin_edit.jsp/1002/1 ?> <%
+			} else {
+				%><? sv/jsp/FileAdmin_edit.jsp/1002/2 ?> <%
+			}
+			if (isTempl) {
+				%><? sv/jsp/FileAdmin_edit.jsp/1002/3 ?><%
+			} else {
+				%><? sv/jsp/FileAdmin_edit.jsp/1002/4 ?><%
+			} %> &nbsp; </span></td>
 
 			<td nowrap><span class="imFilename">
 &quot;<%
