@@ -23,7 +23,6 @@ import java.util.*;
  * <p/>
  * Html template in use:
  * AdminListDocs.html
- * AdminListDocs_doclList.html
  * Error.html
  * <p/>
  * Html parstags in use:
