@@ -106,6 +106,9 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
 	String href = "GetDoc"+(getFilename() == null || getFilename().length() == 0 ? "" : "/"+java.net.URLEncoder.encode(getFilename()))+"?meta_id="+getMetaId()+(template!=null ? "&template="+java.net.URLEncoder.encode(template) : "");
 	String a_href = "<a href=\""+href+(!"_self".equals(getTarget()) ? "\" target=\""+getTarget() : "")+"\">" ;
 
+	tags.setProperty("#menuitemlinkonly#", a_href ) ;
+	tags.setProperty("#/menuitemlinkonly#", "</a>") ;
+
 	if ( getParentMenu().isMenuMode() ) {
 	    if (getParentMenu().getSortOrder() == MENU_SORT_BY_MANUAL_ORDER) {
 		a_href = "<input type=\"text\" name=\""+getMetaId()+"\" value=\""+getSortKey()+"\" size=\"4\" maxlength=\"4\">" + a_href ;
