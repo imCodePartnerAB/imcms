@@ -22,7 +22,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static final int ROLE_TEST_ID = 3;
     private final static int ROLE_NEXT_FREE_ID = 4;
 
-    private int DOC_NO_OF_DOCS = 5; // 1001 + folowing
+    private int DOC_NO_OF_DOCS = 8; // 1001 + folowing
     private static final int DOC_ID_FIRST_PAGE = 1001;
     private static final int DOC_ID_NON_EXISTING = 66666;
     private final static int DOC_TEST_FIRST_ID = 9001;

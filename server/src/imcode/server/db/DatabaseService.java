@@ -1274,7 +1274,7 @@ public abstract class DatabaseService {
     }
 
     private int addToTable_meta( SQLProcessor.SQLTransaction transaction, Table_meta tableData ) throws SQLException {
-        String sql = "INSERT INTO META (meta_id, description, doc_type, meta_headline, meta_text, meta_image, owner_id, " +
+        String sql = "INSERT INTO meta (meta_id, description, doc_type, meta_headline, meta_text, meta_image, owner_id, " +
             "permissions, shared, expand, show_meta, help_text_id, archive, status_id, lang_prefix, classification, " +
             "date_created, date_modified, sort_position, menu_position, disable_search, target, frame_name, activate, " +
             "activated_datetime, archived_datetime) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";

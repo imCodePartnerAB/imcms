@@ -163,15 +163,15 @@ INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(15,'MS Wor
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(16,'MS Excel-document','application/vnd.ms-excel','en');
 INSERT INTO mime_types (mime_id, mime_name, mime, lang_prefix) VALUES(17,'MS Powerpoint-document','application/vnd.ms-powerpoint','en');
 
-INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (1, 'meta_headline');
-INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (2, 'meta_id');
-INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (3, 'doc_type');
-INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (4, 'date_modified');
-INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (5, 'date_created');
-INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (6, 'date_archived');
-INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (7, 'date_activated');
-INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (8, 'meta_text');
-INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (9, 'archive');
+INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (1, 'meta_headline');
+INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (2, 'meta_id');
+INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (3, 'doc_type');
+INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (4, 'date_modified');
+INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (5, 'date_created');
+INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (6, 'date_archived');
+INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (7, 'date_activated');
+INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (8, 'meta_text');
+INSERT INTO sort_by ( sort_by_id, sort_by_type ) VALUES (9, 'archive');
 
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(1,1,'Rubrik');
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(1,2,'Meta headline');
