@@ -92,9 +92,16 @@ public class Html {
     
     public static String createHtmlCode(String format, String selected, Vector data ) {
         String htmlStr = "" ;
+		
+		/*
+		<select name="roomList">
+<option value=" ">hgdj</option>
+<option value=" ">htfs</option>
+
+</select>*/
         
         if (format.equalsIgnoreCase("ID_OPTION")) {
-            for( int i = 0 ; i < data.size() ; i+=2) {
+            for( int i = 0 ; i < data.size() ; i+=2 ) {
                 htmlStr += "<option value=\"" + data.elementAt(i).toString() + "\"" ;
                 if (selected != null)
                     if (data.elementAt(i).toString().equals(selected))
@@ -112,6 +119,34 @@ public class Html {
         }
         return htmlStr ;
     }
+	
+	public static String createRadioButton(String buttonName,Vector data,String selected )
+	{
+		String htmlStr = "" ;
+
+	/*
+		<input type="radio" name="reload" value="1">
+		<input type="radio" name="reload" value="2">
+		<input type="radio" name="reload" value="3" checked>
+	*/
+
+		for( int i = 0 ; i < data.size() ; i++)
+		{
+			htmlStr += "<input type=\"radio\" name=\"" + buttonName + "\" value=\"" ;
+			htmlStr += data.elementAt(i).toString() + "\"" ;
+			if (selected != null)
+			{
+				if (data.elementAt(i).toString().equals(selected))	
+				{
+					htmlStr += " checked " ;
+				}
+			}	
+
+			htmlStr += ">\n" ;
+		}
+
+		return htmlStr ;
+	}
          /*
           
                  if (format.indexOf("TABLE") !=-1) {
