@@ -513,6 +513,10 @@ public class UserDomainObject extends Hashtable {
         return Imcms.getServices().getDocumentMapper().userHasMoreThanReadPermissionOnDocument( this, document );
     }
 
+    public boolean canAccess( DocumentDomainObject document ) {
+        return Imcms.getServices().getDocumentMapper().userHasAtLeastDocumentReadPermission( this, document );
+    }
+
     public String toString() {
         return "(user " + id + " \"" + getLazilyLoadedUserAttributes().loginName + "\")";
     }

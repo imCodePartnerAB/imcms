@@ -147,7 +147,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void setImages( Map images ) {
-        this.getLazilyLoadedTextDocumentAttributes().images = images;
+        this.getLazilyLoadedTextDocumentAttributes().images = new TreeMap(images);
     }
 
     public void setTemplate( TemplateDomainObject v ) {
@@ -181,17 +181,17 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         private int templateGroupId;
         private int defaultTemplateIdForRestrictedPermissionSetOne;
         private int defaultTemplateIdForRestrictedPermissionSetTwo;
-        private Map texts = new HashMap();
-        private Map images = new HashMap();
-        private Map includes = new HashMap();
-        private Map menus = new HashMap();
+        private TreeMap texts = new TreeMap();
+        private TreeMap images = new TreeMap();
+        private TreeMap includes = new TreeMap();
+        private TreeMap menus = new TreeMap();
 
         public Object clone() throws CloneNotSupportedException {
             LazilyLoadedTextDocumentAttributes clone = (LazilyLoadedTextDocumentAttributes)super.clone();
-            clone.texts = new HashMap( texts );
-            clone.images = new HashMap( images );
-            clone.includes = new HashMap( includes );
-            clone.menus = new HashMap( menus );
+            clone.texts = (TreeMap)texts.clone();
+            clone.images = (TreeMap)images.clone();
+            clone.includes = (TreeMap)includes.clone();
+            clone.menus = (TreeMap)menus.clone();
             return clone;
         }
     }

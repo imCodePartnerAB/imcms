@@ -23,7 +23,7 @@ import java.util.List;
 class DirectoryIndex implements DocumentIndex {
 
     private File directory;
-    private IndexDocumentAdapter indexDocumentAdapter = new IndexDocumentAdapter();
+    private IndexDocumentFactory indexDocumentFactory = new IndexDocumentFactory();
 
     private final static int INDEXING_LOG_PERIOD__MILLISECONDS = 10 * 1000;
     private boolean inconsistent;
@@ -122,7 +122,7 @@ class DirectoryIndex implements DocumentIndex {
     }
 
     private void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
-        Document indexDocument = indexDocumentAdapter.createIndexDocument( document );
+        Document indexDocument = indexDocumentFactory.createIndexDocument( document );
         indexWriter.addDocument( indexDocument );
     }
 

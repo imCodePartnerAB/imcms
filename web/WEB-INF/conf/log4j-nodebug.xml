@@ -65,6 +65,8 @@
       <appender-ref ref="WEBAPPERROR"/>
   </category>
 
+  <category name="org.apache" additivity="false"/>
+
   <!-- Set up the errorlog with priority 'info' -->
   <root>
     <priority value="info"/>

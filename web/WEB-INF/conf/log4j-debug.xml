@@ -93,6 +93,8 @@
       <appender-ref ref="WEBAPPERROR"/>
   </category>
 
+  <category name="org.apache" additivity="false"/>
+
   <!-- Set up the errorlog with priority 'debug' -->
   <root>
     <priority value="debug"/>

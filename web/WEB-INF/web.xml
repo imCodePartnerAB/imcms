@@ -513,6 +513,11 @@
         <servlet-class>com.imcode.imcms.servlet.Version</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.XmlDoc</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.XmlDoc</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>RD</servlet-name>
         <url-pattern>/RD/*</url-pattern>
@@ -1001,6 +1006,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.Version</servlet-name>
         <url-pattern>/servlet/Version</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.XmlDoc</servlet-name>
+        <url-pattern>/servlet/XmlDoc</url-pattern>
     </servlet-mapping>
 
     <session-config>

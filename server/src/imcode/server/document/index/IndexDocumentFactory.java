@@ -18,9 +18,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-class IndexDocumentAdapter {
+class IndexDocumentFactory {
 
-    private final static Logger log = Logger.getLogger( IndexDocumentAdapter.class.getName() );
+    private final static Logger log = Logger.getLogger( IndexDocumentFactory.class.getName() );
 
     public Document createIndexDocument( DocumentDomainObject document ) {
         Document indexDocument = new Document();

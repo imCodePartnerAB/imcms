@@ -38,7 +38,7 @@ public class MainInitServlet extends HttpServlet {
     }
 
     private void configureLogging( File confPath ) {
-        DOMConfigurator.configureAndWatch( new File( confPath, "log4j.xml" ).toString() );
+        DOMConfigurator.configure( new File( confPath, "log4j.xml" ).toString() );
         Logger log = Logger.getLogger( MainInitServlet.class );
         log.info( "Logging started" );
         logPlatformInfo( this.getServletContext(), log );

@@ -32,11 +32,7 @@ public class Document {
         return contentManagementSystem.getSecurityChecker();
     }
 
-    public int getId() throws NoPermissionException {
-        //securityChecker.userHasAtLeastDocumentReadPermission(this);
-        // Dont check permissions on this, its used when we check permissions
-        // and we get at stack overflow situation.
-        // and the document id is no secret anyway?
+    public int getId() {
         return internalDocument.getId();
     }
 
