@@ -108,7 +108,7 @@ public class DocumentPermissionSetMapper {
         if ( null != permissionBitsString ) {
             permissionBits = Integer.parseInt( permissionBitsString );
         }
-        documentPermissionSet.setFromBits( document, this, permissionBits );
+        documentPermissionSet.setFromBits( document, this, permissionBits, forNewDocuments );
     }
 
     private String getPermissionsTable( boolean forNewDocuments ) {
