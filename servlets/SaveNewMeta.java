@@ -337,9 +337,9 @@ public class SaveNewMeta extends HttpServlet {
 
 	 // TEXT DOCUMENT
 			} else if (doc_type.equals("2")) {
-				sqlStr = "select template_id, sort_order from text_docs where meta_id = " + parent_meta_id ;
+				sqlStr = "select template_id, sort_order,group_id from text_docs where meta_id = " + parent_meta_id ;
 				String temp[] = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
-				sqlStr = "insert into text_docs (meta_id,template_id,sort_order) values ("+meta_id+","+temp[0]+","+temp[1]+")" ;
+				sqlStr = "insert into text_docs (meta_id,template_id,sort_order,group_id) values ("+meta_id+","+temp[0]+","+temp[1]+","+temp[2]+")" ;
 				IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 
 		/* This stuff is supposed to be unused when the new interface is implemented
@@ -366,8 +366,15 @@ public class SaveNewMeta extends HttpServlet {
 	  // default were creating html texts.
 				String copyMetaFlag = (req.getParameter("copyMetaHeader")==null) ? "0" : (req.getParameter("copyMetaHeader")) ;
 				if( copyMetaFlag.equals("1") && doc_type.equals("2") ) {
+				    String [] vp = {
+					"'",	"''"
+				    } ;
 					String mHeadline = metaprops.getProperty("meta_headline") ;
 					String mText = metaprops.getProperty("meta_text") ;
+
+					mHeadline = Parser.parseDoc(mHeadline,vp) ;
+					mText = Parser.parseDoc(mText,vp) ;
+
 					sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id +", 1, '" + mHeadline + "', 1)" ;
 					IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 					sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id +", 2, '" + mText + "', 1)" ;
