@@ -109,7 +109,7 @@ public class DocumentMapper {
             throw re;
         }
 
-        indexDocument( menuDocument );
+        touchDocument( menuDocument );
         indexDocument( documentToBeAdded );
 
         service.updateLogs( "Link from [" + menuDocument.getId() + "] in menu [" + menuIndex + "] to ["
@@ -266,35 +266,45 @@ public class DocumentMapper {
         sqlUpdateModifiedDate( service, newMetaId, nowDateTime );
         sqlUpdateDocType( service, newMetaId, documentType );
 
-        try {
-            addDocumentToMenu( user, getDocument( parentId ), parentMenuNumber, getDocument( newMetaId ) );
-            // update parents modfied date because it has gotten an new link
-            sqlUpdateModifiedDate( service, parentId, nowDateTime );
-        } catch ( DocumentAlreadyInMenuException e ) {
-            // ok, the document alredy exists in that menu.
-        }
         return newMetaId;
     }
 
+    /**
+    * @deprecated Use {@link DocumentDomainObject#clone()} or {@link DocumentDomainObject#fromDocumentTypeId(int)} and  {@link #saveNewDocument(imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)}.
+    */
     public synchronized TextDocumentDomainObject createNewTextDocument( UserDomainObject user, int parentId,
                                                                         int documentType, int parentMenuNumber ) {
         int newMetaId = createNewMeta( parentId, parentMenuNumber, documentType, user );
 
-        touchDocument( getDocument( parentId ) );
+        DocumentDomainObject newDocument = getDocument( newMetaId );
+        try {
+            addDocumentToMenu( user, getDocument( parentId ), parentMenuNumber, newDocument );
+        } catch ( DocumentAlreadyInMenuException e ) {
+            // ok, the document alredy exists in that menu.
+        }
+
         DocumentMapper.copyTemplateData( service, user, String.valueOf( parentId ), String.valueOf( newMetaId ) );
         DocumentMapper.sqlUpdateDocumentActivated( service, newMetaId, true );
 
         return (TextDocumentDomainObject)getDocument( newMetaId );
     }
 
+    /**
+    * @deprecated Use {@link DocumentDomainObject#clone()} or {@link DocumentDomainObject#fromDocumentTypeId(int)} and  {@link #saveNewDocument(imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)}.
+    */
     public UrlDocumentDomainObject createNewUrlDocument( UserDomainObject user, int parentId, int parentMenuNumber,
                                                          int documentType, String urlRef, String target ) {
         int newMetaId = createNewMeta( parentId, parentMenuNumber, documentType, user );
 
-        DocumentDomainObject document = getDocument( newMetaId );
-        touchDocument( document );
+        DocumentDomainObject newDocument = getDocument( newMetaId );
+        try {
+            addDocumentToMenu( user, getDocument( parentId ), parentMenuNumber, newDocument );
+        } catch ( DocumentAlreadyInMenuException e ) {
+            // ok, the document alredy exists in that menu.
+        }
+
         insertIntoUrlDocs( service, newMetaId, urlRef, target );
-        return (UrlDocumentDomainObject)document;
+        return (UrlDocumentDomainObject)newDocument;
     }
 
     /**
