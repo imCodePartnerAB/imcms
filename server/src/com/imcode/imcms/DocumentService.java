@@ -14,9 +14,15 @@ public class DocumentService {
         this.documentPermissionSetMapper = documentPermissionSetMapper;
     }
 
-    public Document getDocument( int metaId ) throws NoPermissionException {
-        securityChecker.hasDocumentRights( metaId );
-        imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument( metaId );
+    /**
+     *
+     * @param documentId The id number of the document requested, also somtimes known as "meta_id"
+     * @return The document
+     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     */
+    public Document getDocument( int documentId ) throws NoPermissionException {
+        securityChecker.hasDocumentRights( documentId );
+        imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument( documentId );
         Document result = new TextDocument( securityChecker, doc, documentMapper, documentPermissionSetMapper );
 
         return result;

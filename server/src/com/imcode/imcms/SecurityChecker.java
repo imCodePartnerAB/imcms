@@ -19,7 +19,7 @@ class SecurityChecker {
     private boolean isSuperAdmin;
     private boolean isUserAdmin;
 
-    public SecurityChecker( DocumentMapper docMapper, UserDomainObject accessor, String[] accessorRoles ) {
+    SecurityChecker( DocumentMapper docMapper, UserDomainObject accessor, String[] accessorRoles ) {
         this.docMapper = docMapper;
         this.accessingUser = accessor;
         this.accessorRoles = new HashSet( Arrays.asList( accessorRoles ) );
@@ -28,25 +28,17 @@ class SecurityChecker {
         isUserAdmin = this.accessorRoles.contains( USER_ADMIN );
     }
 
-    public void loggedIn() throws NoPermissionException {
+    void loggedIn() throws NoPermissionException {
         if( null == accessingUser ) {
             throw new NoPermissionException( "User not logged in" );
         }
     }
 
-    public void isSuperAdmin() throws NoPermissionException {
+    void isSuperAdmin() throws NoPermissionException {
         if( !isSuperAdmin ) {
             throw new NoPermissionException( "User is not " + SUPERADMIN_ROLE );
         }
     }
-
-    /*
-    public void isUserAdmin() throws NoPermissionException {
-        if( !isUserAdmin ) {
-            throw new NoPermissionException( "User is not " + USER_ADMIN );
-        }
-    }
-    */
 
     void isSuperAdminOrIsUserAdminOrIsSameUser( User userBean ) throws NoPermissionException {
         boolean isSameUser = userBean.getLoginName().equalsIgnoreCase( accessingUser.getLoginName() );
@@ -55,17 +47,17 @@ class SecurityChecker {
         }
     }
 
-    public void hasEditPermission( DocumentDomainObject document ) throws NoPermissionException  {
+    void hasEditPermission( DocumentDomainObject document ) throws NoPermissionException  {
         if( !docMapper.hasAdminPermissions( document, accessingUser ) ) {
             throw new NoPermissionException("The logged in user does not have permission to edit internalDocument: " + document.getMetaId() );
         };
     }
 
-    public imcode.server.user.UserDomainObject getAccessingUser() {
+    UserDomainObject getAccessingUser() {
         return accessingUser;
     }
 
-    public void hasDocumentRights( int metaId ) throws NoPermissionException {
+    void hasDocumentRights( int metaId ) throws NoPermissionException {
         // todo
     }
 }

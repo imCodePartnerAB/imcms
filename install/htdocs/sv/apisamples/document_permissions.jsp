@@ -18,12 +18,12 @@ To learn more about these, and what can be specified about them, see <a href="do
 <br>
 Every document has a mapping of permissions to roles.<br>
 This is a map of the format (RoleName,DocumentPermissionSet)<br><br>
-<% int metaId = 1001; %>
-This is the mapping for document <%= metaId %>:<br>
+<% int documentId = 1001; %>
+This is the mapping for document <%= documentId %>:<br>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentService documentMapper = imcmsSystem.getDocumentService();
-    Document doc = documentMapper.getDocument(metaId);
+    Document doc = documentMapper.getDocument(documentId);
     Map permissionsMap = doc.getAllRolesMappedToPermissions();
     Set roles = permissionsMap.keySet();
     Iterator roleIteratore = roles.iterator();

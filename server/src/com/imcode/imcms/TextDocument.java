@@ -12,7 +12,7 @@ public class TextDocument extends Document {
 
     public TextDocument.TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
         securityChecker.hasEditPermission( internalDocument );
-        IMCText imcmsText = internalDocumentMapper.getTextField( internalDocument, textFieldIndexInDocument ) ;
+        IMCText imcmsText = dockumentMapper.getTextField( internalDocument, textFieldIndexInDocument ) ;
         TextDocument.TextField textField = new TextDocument.TextField(imcmsText) ;
         return textField;
     }
@@ -29,7 +29,7 @@ public class TextDocument extends Document {
 
     private void setTextField( int textFieldIndexInDocument, String newText, int textType ) {
         IMCText imcmsText = new IMCText( newText, textType );
-        this.internalDocumentMapper.saveText(
+        this.dockumentMapper.saveText(
             imcmsText,
             internalDocument.getMetaId(),
             textFieldIndexInDocument,

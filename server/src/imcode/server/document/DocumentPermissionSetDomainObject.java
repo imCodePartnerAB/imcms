@@ -9,32 +9,28 @@ public class DocumentPermissionSetDomainObject {
     public static final String READ = "Read";
     public static final String NONE = "None";
 
+    final static int FULL_ID = 0;
+    final static int RESTRICTED_1_ID = 1;
+    final static int RESTRICTED_2_ID = 2;
+    final static int READ_ID = 3;
+
     int permissionType = IMCConstants.DOC_PERM_SET_NONE;
     private boolean editHeadline;
     private boolean editDocumentInformation;
     private boolean editPermissions;
     private boolean editTexts;
-    private boolean etidPictures;
     private boolean editMenues;
     private boolean editTemplates;
     private boolean editIncludes;
     private boolean editPictures;
+    private DocumentDomainObject document;
 
-    public DocumentPermissionSetDomainObject( int permissionType ) {
-        this( permissionType, false, false, false, false, false, false, false, false, false );
-    }
+    private String[] editMenuesNames;
+    private String[] editTemplatesNames;
 
-    private DocumentPermissionSetDomainObject( int permissionType, boolean changeDocumentInformation, boolean changeAdvancedDocumentInformation, boolean changePermissionsForRoles, boolean changeText, boolean changeImages, boolean changeMenues, boolean changeTemplates, boolean changeIncludes, boolean editPictures ) {
+    public DocumentPermissionSetDomainObject( DocumentDomainObject document, int permissionType ) {
         this.permissionType = permissionType;
-        this.editHeadline = changeDocumentInformation;
-        this.editDocumentInformation = changeAdvancedDocumentInformation;
-        this.editPermissions = changePermissionsForRoles;
-        this.editTexts = changeText;
-        this.etidPictures = changeImages;
-        this.editMenues = changeMenues;
-        this.editTemplates = changeTemplates;
-        this.editIncludes = changeIncludes;
-        this.editPictures = editPictures;
+        this.document = document;
     }
 
     public int getPermissionType() {
@@ -67,20 +63,6 @@ public class DocumentPermissionSetDomainObject {
         return result;
     }
 
-    protected Object clone() throws CloneNotSupportedException {
-        DocumentPermissionSetDomainObject clone = (DocumentPermissionSetDomainObject)super.clone();
-        clone.permissionType = this.permissionType;
-        clone.editHeadline = this.editHeadline;
-        clone.editDocumentInformation = this.editDocumentInformation;
-        clone.editPermissions = this.editPermissions;
-        clone.editTexts = this.editTexts;
-        clone.etidPictures = this.etidPictures;
-        clone.editMenues = this.editMenues;
-        clone.editTemplates = this.editTemplates;
-        clone.editIncludes = this.editIncludes;
-        return clone;
-    }
-
     public String toString() {
         StringBuffer buff = new StringBuffer();
         buff.append( getName() + " ("  );
@@ -94,6 +76,10 @@ public class DocumentPermissionSetDomainObject {
         buff.append( "editTexts=" + editTexts );
         buff.append( ")" );
         return buff.toString();
+    }
+
+    DocumentDomainObject getDocument() {
+        return document;
     }
 
     public boolean getEditHeadline() {
@@ -128,6 +114,14 @@ public class DocumentPermissionSetDomainObject {
         return editPictures;
     }
 
+    public String[] getEditableTamplateNames() {
+        return editTemplatesNames;
+    }
+
+    public String[] getEditableMenuNames() {
+        return editMenuesNames;
+    }
+
     void setPermissionType( int permissionType ) {
         this.permissionType = permissionType;
     }
@@ -148,10 +142,6 @@ public class DocumentPermissionSetDomainObject {
         this.editTexts = editTexts;
     }
 
-    void setEtidPictures( boolean etidPictures ) {
-        this.etidPictures = etidPictures;
-    }
-
     void setEditMenues( boolean editMenues ) {
         this.editMenues = editMenues;
     }
@@ -166,5 +156,13 @@ public class DocumentPermissionSetDomainObject {
 
     void setEditPictures( boolean editPictures ) {
         this.editPictures = editPictures;
+    }
+
+    void setEditableMenuNames( String[] names ) {
+        this.editMenuesNames = names;
+    }
+
+    void setEditableTemplateNames( String[] names ) {
+        this.editTemplatesNames = names;
     }
 }

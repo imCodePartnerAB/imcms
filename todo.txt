@@ -1,12 +1,16 @@
+
+
 Christoffer:
 - Säkerheten och *.jsp sidor. Ska vi lägga loginfilter på alla *.jsp sidor? Eller *.*, går det?
 - Namnen på paket och "Den inloggade användaren"
 
 Hasse
-- Ta bort metaId från APi:et
+- Språkparameter i API:et där det behövs. Javas inbyggda?
 - Gå igenom så att det sker säkerhetskollar på samtliga metoder
 - Rita på något sätt paket-beroende trädet
 - Fixa inloggningen på sampe sidorna
+- "Stored procedures, A stored procedure is written using Transact-SQL (T-SQL). T-SQL is a subset of ANSI SQL-92 that has extensions to the Standard. T-SQL includes variables, conditional logic, loops and flow control."
+PostgreSQL är open source och stödjer stored procedures
 
 Hillar, prioritera
 (?) Inloggningschecken till filtret

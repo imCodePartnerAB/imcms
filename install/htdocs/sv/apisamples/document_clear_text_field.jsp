@@ -4,8 +4,8 @@
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentService documentMapper = imcmsSystem.getDocumentService();
-    int metaId = 1001 ;
-    TextDocument document = (TextDocument)documentMapper.getDocument(metaId) ;
+    int documentId = 1001 ;
+    TextDocument document = (TextDocument)documentMapper.getDocument(documentId) ;
 
     int textFieldIndexInDocument = 1;
     String newHtmlText = "";
@@ -17,6 +17,6 @@
 %>
 
 <p>
-This page has now changed the first and second fileds in the page <%=metaId%>.<br>
-You can watch the changes by clicking on this link <a href="../servlet/GetDoc?meta_id=1001">document <%=metaId%></a>
+This page has now changed the first and second fileds in the page <%=documentId%>.<br>
+You can watch the changes by clicking on this link <a href="../servlet/GetDoc?meta_id=1001">document <%=documentId%></a>
 </p>

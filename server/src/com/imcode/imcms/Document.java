@@ -13,14 +13,14 @@ import java.util.Set;
 public class Document {
     SecurityChecker securityChecker;
     DocumentDomainObject internalDocument;
-    DocumentMapper internalDocumentMapper;
-    DocumentPermissionSetMapper internalDocumentPermissionSetMapper;
+    DocumentMapper dockumentMapper;
+    DocumentPermissionSetMapper documentPermissionMapper;
 
     public Document( SecurityChecker securityChecker, DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
         this.securityChecker = securityChecker;
         this.internalDocument = document;
-        this.internalDocumentMapper = documentMapper;
-        this.internalDocumentPermissionSetMapper = permissionSetMapper;
+        this.dockumentMapper = documentMapper;
+        this.documentPermissionMapper = permissionSetMapper;
     }
 
     /**
@@ -28,7 +28,7 @@ public class Document {
      */
     public Map getAllRolesMappedToPermissions() throws NoPermissionException {
         securityChecker.hasEditPermission( internalDocument );
-        Map rolesMappedToPermissionsIds = internalDocumentPermissionSetMapper.getAllRolesMappedToPermissions( internalDocument );
+        Map rolesMappedToPermissionsIds = documentPermissionMapper.getAllRolesMappedToPermissions( internalDocument );
         Map result = wrapDomainObjectsInMap( rolesMappedToPermissionsIds );
         return result;
     }
@@ -46,4 +46,15 @@ public class Document {
         return result;
     }
 
+    public DocumentPermissionSet getPermissionSetRestrictedTwo() {
+        DocumentPermissionSetDomainObject restrictedTwo = documentPermissionMapper.getPermissionSetRestrictedTwo( internalDocument );
+        DocumentPermissionSet result = new DocumentPermissionSet( restrictedTwo );
+        return result;
+    }
+
+    public DocumentPermissionSet getPermissionSetRestrictedOne() {
+        DocumentPermissionSetDomainObject restrictedOne = documentPermissionMapper.getPermissionSetRestrictedOne( internalDocument );
+        DocumentPermissionSet result = new DocumentPermissionSet( restrictedOne );
+        return result;
+    }
 }

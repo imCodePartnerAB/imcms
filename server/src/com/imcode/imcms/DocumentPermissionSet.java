@@ -39,19 +39,19 @@ public class DocumentPermissionSet {
         return internalDocPermSet.getEditTexts();
     }
 
-    public boolean getEditMenues() {
-        return internalDocPermSet.getEditMenues();
-    }
-
-    public boolean getEditTemplates() {
-        return internalDocPermSet.getEditTemplates();
-    }
-
     public boolean getEditIncludes() {
         return internalDocPermSet.getEditIncludes();
     }
 
     public boolean getEditPictures() {
         return internalDocPermSet.getEditPictures();
+    }
+
+    public String[] getEditableTamplateNames() {
+        return internalDocPermSet.getEditableTamplateNames();
+    }
+
+    public String[] getEditableMenuNames() {
+        return internalDocPermSet.getEditableMenuNames();
     }
 }
