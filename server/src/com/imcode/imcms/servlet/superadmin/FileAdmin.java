@@ -4,9 +4,9 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
+import imcode.util.FileUtility;
 import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
-import imcode.util.FileUtility;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.lang.StringUtils;
@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
-import java.text.DecimalFormat;
 
 public class FileAdmin extends HttpServlet {
 
@@ -749,7 +748,8 @@ public class FileAdmin extends HttpServlet {
         Arrays.sort(filelist, getFileComparator());
 
         for ( int i = 0; null != filelist && i < filelist.length; i++ ) {
-            String formatedFileSize = getFormatedFileSize(filelist[i]);
+
+            String formatedFileSize = Utility.getHumanReadableSize( filelist[i].length(), " ");
             String fileNameAndSize = filelist[i].getName() + " [" + formatedFileSize + "]";
             optionlist.append( "<option value=\"" ).append( filelist[i].getName() ).append( "\">" ).append( fileNameAndSize ).append( "</option>" );
         }
@@ -784,26 +784,5 @@ public class FileAdmin extends HttpServlet {
             }
         };
     }
-
-    private String getFormatedFileSize(File file ) {
-
-        String sSize = file.length() + " b" ;
-        try {
-            double dFileSize = (double) file.length() ;
-            DecimalFormat df = new DecimalFormat("#.0") ;
-            if (dFileSize >= (1024 * 1024)) {
-                dFileSize = dFileSize / (1024 * 1024) ;
-                sSize  = df.format(dFileSize).replaceAll(",", ".") + " MB" ;
-            } else if (dFileSize >= 1024) {
-                dFileSize = dFileSize / 1024 ;
-                sSize  = df.format(dFileSize).replaceAll(",", ".") + " kB" ;
-            }
-        } catch ( NumberFormatException ex ) {
-            // ignore
-        }
-        return sSize;
-    }
-
-
 
 }
