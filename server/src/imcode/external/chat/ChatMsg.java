@@ -83,7 +83,18 @@ public class ChatMsg
 		return _reciever;
 
 	}
+	
+	public String getRecieverStr()
+	{
+		return _recieverStr;
 
+	}
+	
+	public String getMsgTypeStr()
+	{
+		return _msgTypeStr;
+	}
+	
 	public String getSender()
 	{
 		return _sender;
