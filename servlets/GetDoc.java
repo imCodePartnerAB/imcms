@@ -165,9 +165,11 @@ public class GetDoc extends HttpServlet {
 				value = "" ;
 			}
 			session.putValue("browser_id",value) ;
-			IMCServiceRMI.incCounter(imcserver) ;
-			IMCServiceRMI.sqlUpdateProcedure( imcserver, "IncSessionCounter" ) ;
-
+			if ( !( user.getString("login_name").equals("user") && user.getString("login_password").equals("user") && req.getParameter("no_count")!=null)) {
+				//ok its not user user whith param no_count so lets increment the sessioncounter
+				IMCServiceRMI.incCounter(imcserver) ;
+				IMCServiceRMI.sqlUpdateProcedure( imcserver, "IncSessionCounter" ) ;
+			}
 			// No logon.isDone means he hasn't logged in.
 			// Save the request URL as the true target and redirect to the login page.
 			//log (HttpUtils.getRequestURL(req).toString()+"?"+req.getQueryString()) ;
