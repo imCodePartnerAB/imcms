@@ -420,7 +420,11 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	}
 
 	try {
-	    return formatter.format(date);
+		if (null == date) {
+			return "" ; // There was no date of the requested type (activated/archived?)
+		} else {
+	    	return formatter.format(date);
+		}
 	} catch (IllegalArgumentException ex) {
 	    return "<!-- imcms:datetime failed: "+ex.getMessage()+" -->";
 	}
