@@ -5,6 +5,10 @@ import imcode.server.test.Log4JConfiguredTestCase;
 import java.sql.Timestamp;
 
 public class TestDatabaseService extends Log4JConfiguredTestCase {
+
+    private final boolean testMimer = true;  // because it is so slow to test this database we need sometimes to turn those tests off.
+
+
     static final String DB_HOST = "localhost";
 
     static final int SQLSERVER_PORT = 1433;
@@ -25,8 +29,6 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private DatabaseService sqlServer;
     private DatabaseService mimer;
     private DatabaseService mySql;
-
-    private final boolean testMimer = true;  // because it is so slow to test this database we need sometimes to turn those tests off.
 
     protected void setUp() {
         mySql = static_initMySql();
@@ -176,6 +178,21 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         if( testMimer ) {
             static_test_sproc_phoneNbrAdd( mimer, user );
         }
+    }
+
+    public void test_sproc_DelPhoneNr() {
+        static_test_sproc_DelPhoneNr( sqlServer );
+        static_test_sproc_DelPhoneNr( mySql );
+        if( testMimer ) static_test_sproc_DelPhoneNr( sqlServer );
+    }
+
+    private void static_test_sproc_DelPhoneNr( DatabaseService dbService ) {
+        int rowCount = dbService.sproc_DelPhoneNr( 2 );
+        assertEquals( 0, rowCount );
+        dbService.sproc_phoneNbrAdd( 2, "9887655", 0 );
+        dbService.sproc_phoneNbrAdd( 2, "123456", 1 );
+        rowCount = dbService.sproc_DelPhoneNr( 2 );
+        assertEquals( 2, rowCount );
     }
 
     private void static_test_sproc_phoneNbrAdd( DatabaseService dbService, DatabaseService.Table_users user ) {

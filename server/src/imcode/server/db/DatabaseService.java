@@ -551,7 +551,7 @@ public class DatabaseService {
         } );
     }
 
-    // todo döp om denna till, userExists eller nåt
+    // todo döp om denna till, userExists eller nåt och ändra signaturen
     /**
      * Because different databses treats upper/lower case differently this method makes a
      * ignoreCases  match.
@@ -571,5 +571,13 @@ public class DatabaseService {
         } else {
             return (String)queryResult.get(0);
         }
+    }
+
+    // todo döp om till deleteAllPhonenumbers eller nåt
+    // todo klumpa ihop med delete userses?
+    int sproc_DelPhoneNr( int user_id ) {
+        String sql = " DELETE FROM phones WHERE user_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( user_id ) };
+        return sqlProcessor.executeUpdate( sql, paramValues );
     }
 }
