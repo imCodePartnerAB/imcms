@@ -1,5 +1,5 @@
 -- diff.sql
--- 
+--
 
 print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
 
@@ -8,21 +8,21 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CheckDocSh
 drop procedure [CheckDocSharePermissionForUser]
 
 
-SET QUOTED_IDENTIFIER  OFF    
-SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER  OFF
+SET ANSI_NULLS  OFF
 GO
 
 -- Add columns for default-templates to text-docs.
 
-alter table text_docs 
+alter table text_docs
 add default_template_1 INT DEFAULT -1 NOT NULL
 
-alter table text_docs 
+alter table text_docs
 add default_template_2 INT DEFAULT -1 NOT NULL
 
 GO
-SET QUOTED_IDENTIFIER OFF 
-SET ANSI_NULLS ON 
+SET QUOTED_IDENTIFIER OFF
+SET ANSI_NULLS ON
 GO
 -- 2001-09-26
 
@@ -33,21 +33,21 @@ INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) 
 -- 2001-10-08
 
 
--- Add proper fields for activated and archived date-times. 
-ALTER TABLE meta ADD activated_datetime DATETIME 
-ALTER TABLE meta ADD archived_datetime DATETIME  
+-- Add proper fields for activated and archived date-times.
+ALTER TABLE meta ADD activated_datetime DATETIME
+ALTER TABLE meta ADD archived_datetime DATETIME
 
--- Migrate the old ugly fields to the new nice ones 
-UPDATE meta SET activated_datetime = NULLIF(activated_date+' '+activated_time,'') 
-UPDATE meta SET archived_datetime = NULLIF(archived_date+' '+archived_time,'')  
+-- Migrate the old ugly fields to the new nice ones
+UPDATE meta SET activated_datetime = NULLIF(activated_date+' '+activated_time,'')
+UPDATE meta SET archived_datetime = NULLIF(archived_date+' '+archived_time,'')
 
--- Drop the old bastards. 
-ALTER TABLE meta DROP COLUMN activated_date 
-ALTER TABLE meta DROP COLUMN activated_time 
-ALTER TABLE meta DROP COLUMN archived_date 
-ALTER TABLE meta DROP COLUMN archived_time 
- 
-GO 
+-- Drop the old bastards.
+ALTER TABLE meta DROP COLUMN activated_date
+ALTER TABLE meta DROP COLUMN activated_time
+ALTER TABLE meta DROP COLUMN archived_date
+ALTER TABLE meta DROP COLUMN archived_time
+
+GO
 
 -- 2001-11-15
 --here is the release of v1_5_0-pre8
@@ -99,7 +99,7 @@ CREATE NONCLUSTERED INDEX IX_texts ON dbo.texts
 	) ON [PRIMARY]
 GO
 ALTER TABLE dbo.texts ADD CONSTRAINT
-	PK_texts PRIMARY KEY CLUSTERED 
+	PK_texts PRIMARY KEY CLUSTERED
 	(
 	counter
 	) ON [PRIMARY]
@@ -126,39 +126,39 @@ COMMIT
 --*** *** start of creating tables *** ***
 CREATE TABLE [meta_section] (
 	[meta_id] [int] NOT NULL ,
-	[section_id] [int] NOT NULL 
+	[section_id] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [meta_section] WITH NOCHECK ADD 
-	CONSTRAINT [PK_meta_section] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [meta_section] WITH NOCHECK ADD
+	CONSTRAINT [PK_meta_section] PRIMARY KEY  CLUSTERED
 	(
 		[meta_id],
 		[section_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
 CREATE TABLE [sections] (
 	[section_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[section_name] [varchar] (50)  NOT NULL 
+	[section_name] [varchar] (50)  NOT NULL
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [sections] WITH NOCHECK ADD 
-	CONSTRAINT [PK_section] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [sections] WITH NOCHECK ADD
+	CONSTRAINT [PK_section] PRIMARY KEY  CLUSTERED
 	(
 		[section_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [meta_section] ADD 
-	CONSTRAINT [FK_meta_section_meta] FOREIGN KEY 
+ALTER TABLE [meta_section] ADD
+	CONSTRAINT [FK_meta_section_meta] FOREIGN KEY
 	(
 		[meta_id]
 	) REFERENCES [meta] (
 		[meta_id]
 	),
-	CONSTRAINT [FK_meta_section_section] FOREIGN KEY 
+	CONSTRAINT [FK_meta_section_section] FOREIGN KEY
 	(
 		[section_id]
 	) REFERENCES [sections] (
@@ -171,56 +171,56 @@ GO
 
 -- The following changes the column 'text' in the table 'texts' from type 'text' to type 'ntext'.
 
-BEGIN TRANSACTION 
-SET QUOTED_IDENTIFIER ON 
-SET TRANSACTION ISOLATION LEVEL SERIALIZABLE 
-SET ARITHABORT ON 
-SET NUMERIC_ROUNDABORT OFF 
-SET CONCAT_NULL_YIELDS_NULL ON 
-SET ANSI_NULLS ON 
-SET ANSI_PADDING ON 
-SET ANSI_WARNINGS ON 
-COMMIT 
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
 
-BEGIN TRANSACTION 
-ALTER TABLE dbo.texts 	
-DROP CONSTRAINT FK_texts_meta 
-COMMIT 
+BEGIN TRANSACTION
+ALTER TABLE dbo.texts
+DROP CONSTRAINT FK_texts_meta
+COMMIT
 
-BEGIN TRANSACTION 
+BEGIN TRANSACTION
 CREATE TABLE dbo.Tmp_texts ( meta_id int NOT NULL,
-				name int NOT NULL, 	
-				text ntext NOT NULL, 	
-				type int NULL, 	
-				counter int NOT NULL IDENTITY (1, 1) 	) 
+				name int NOT NULL,
+				text ntext NOT NULL,
+				type int NULL,
+				counter int NOT NULL IDENTITY (1, 1) 	)
 				ON [PRIMARY]
-			 	TEXTIMAGE_ON [PRIMARY] 
-SET IDENTITY_INSERT dbo.Tmp_texts ON 
+			 	TEXTIMAGE_ON [PRIMARY]
+SET IDENTITY_INSERT dbo.Tmp_texts ON
 
 IF EXISTS(SELECT * FROM dbo.texts)
  	EXEC('INSERT INTO dbo.Tmp_texts (meta_id, name, text, type, counter)
- 		SELECT meta_id, name, text, type, counter FROM dbo.texts TABLOCKX') 
-	SET IDENTITY_INSERT dbo.Tmp_texts OFF 
-	DROP TABLE dbo.texts 
-	EXECUTE sp_rename N'dbo.Tmp_texts', N'texts', 'OBJECT' 
-	ALTER TABLE dbo.texts 
-		ADD CONSTRAINT 	PK_texts PRIMARY KEY CLUSTERED ( counter ) ON [PRIMARY]  
-		CREATE NONCLUSTERED INDEX IX_texts ON dbo.texts ( meta_id ) ON [PRIMARY] 
-	
-	ALTER TABLE dbo.texts 
-		WITH NOCHECK ADD CONSTRAINT FK_texts_meta 
-		FOREIGN KEY ( meta_id ) 
+ 		SELECT meta_id, name, text, type, counter FROM dbo.texts TABLOCKX')
+	SET IDENTITY_INSERT dbo.Tmp_texts OFF
+	DROP TABLE dbo.texts
+	EXECUTE sp_rename N'dbo.Tmp_texts', N'texts', 'OBJECT'
+	ALTER TABLE dbo.texts
+		ADD CONSTRAINT 	PK_texts PRIMARY KEY CLUSTERED ( counter ) ON [PRIMARY]
+		CREATE NONCLUSTERED INDEX IX_texts ON dbo.texts ( meta_id ) ON [PRIMARY]
+
+	ALTER TABLE dbo.texts
+		WITH NOCHECK ADD CONSTRAINT FK_texts_meta
+		FOREIGN KEY ( meta_id )
 		REFERENCES dbo.meta ( meta_id )
-COMMIT 
+COMMIT
 --
 -- 2002-02-08
 --
 
 --renamed all the procedures to handle the section stuff
 
-SET QUOTED_IDENTIFIER OFF 
+SET QUOTED_IDENTIFIER OFF
 GO
-SET ANSI_NULLS OFF 
+SET ANSI_NULLS OFF
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[add_section]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -267,9 +267,9 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[get_inheri
 drop procedure [dbo].[get_inherit_section_id]
 GO
 
-SET QUOTED_IDENTIFIER OFF 
+SET QUOTED_IDENTIFIER OFF
 GO
-SET ANSI_NULLS ON 
+SET ANSI_NULLS ON
 GO
 
 --2002-02-11
@@ -277,7 +277,7 @@ GO
 
 -- set type=1 (html) on every helptext to have html-escaped on the way out from db
 GO
-update texts 
+update texts
 set type = 1
 where meta_id < 1001
 GO
@@ -285,31 +285,31 @@ GO
 
 
 -- Changed the lang prefix uk to en
-update roles_permissions 
+update roles_permissions
 set lang_prefix='en'
 where lang_prefix='uk'
 
-update doc_permissions 
+update doc_permissions
 set lang_prefix='en'
 where lang_prefix='uk'
 
-update permissions 
+update permissions
 set lang_prefix='en'
 where lang_prefix='uk'
 
-update doc_types 
+update doc_types
 set lang_prefix='en'
 where lang_prefix='uk'
 
-update user_types 
+update user_types
 set lang_prefix='en'
 where lang_prefix='uk'
 
-update languages 
+update languages
 set lang_prefix='en'
 where lang_prefix='uk'
 
-update languages 
+update languages
 set user_prefix='en'
 where user_prefix='uk'
 GO
@@ -332,7 +332,7 @@ GO
 
 
 
---Update mime_types 
+--Update mime_types
 --
 DELETE FROM mime_types WHERE mime_id < 17
 
@@ -490,18 +490,18 @@ CREATE TABLE [dbo].[readrunner_user_data] (
 	[max_uses_warning_threshold] [int] NULL ,
 	[expiry_date] [datetime] NULL ,
 	[expiry_date_warning_threshold] [int] NULL ,
-	[expiry_date_warning_sent] [int] NOT NULL 
+	[expiry_date_warning_sent] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
-	 PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD
+	 PRIMARY KEY  CLUSTERED
 	(
 		[user_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
+ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD
 	CONSTRAINT [DF_readrunner_user_data_expiry_date_warning_sent] DEFAULT (0) FOR [expiry_date_warning_sent]
 
 -- 2002-12-16
@@ -510,7 +510,7 @@ GO
 
 /*
   All user will have the role Users. Lets insert role ( Users ) for all user that
-  not already have it. 	
+  not already have it.
 */
 declare @role_id int
 declare @user_id int
@@ -519,22 +519,22 @@ declare @count int
 select @role_id = role_id from roles
 where role_name like 'Users'
 
-declare posCursor  Cursor scroll 
-for select user_id from users 
+declare posCursor  Cursor scroll
+for select user_id from users
 open posCursor
-fetch next from posCursor 
+fetch next from posCursor
 into @user_id
 while @@fetch_status = 0
 begin
 	select  @count = count(*) from user_roles_crossref where user_id = @user_id and role_id = @role_id
 	if @count < 1 begin
-		insert into user_roles_crossref 
+		insert into user_roles_crossref
 		values (@user_id, @role_id)
 	end
 
-	fetch next from posCursor 
+	fetch next from posCursor
   	into @user_id
-end 
+end
 close posCursor
 deallocate posCursor
 
@@ -545,33 +545,33 @@ GO
 
 CREATE TABLE [dbo].[useradmin_role_crossref] (
 	[user_id] [int] NOT NULL ,
-	[role_id] [int] NOT NULL 
+	[role_id] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[useradmin_role_crossref] WITH NOCHECK ADD 
-	CONSTRAINT [PK_useradmin_role_crossref] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[useradmin_role_crossref] WITH NOCHECK ADD
+	CONSTRAINT [PK_useradmin_role_crossref] PRIMARY KEY  CLUSTERED
 	(
 		[user_id],
 		[role_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[useradmin_role_crossref] ADD 
-	CONSTRAINT [FK_useradmin_role_crossref_roles] FOREIGN KEY 
+ALTER TABLE [dbo].[useradmin_role_crossref] ADD
+	CONSTRAINT [FK_useradmin_role_crossref_roles] FOREIGN KEY
 	(
 		[role_id]
 	) REFERENCES [dbo].[roles] (
 		[role_id]
 	),
-	CONSTRAINT [FK_useradmin_role_crossref_users] FOREIGN KEY 
+	CONSTRAINT [FK_useradmin_role_crossref_users] FOREIGN KEY
 	(
 		[user_id]
 	) REFERENCES [dbo].[users] (
 		[user_id]
 	)
-	
--- 2002-12-19	
+
+-- 2002-12-19
 GO
 
 
@@ -579,11 +579,11 @@ GO
 /*
    den 9 januari 2003 17:44:40
    Application: MS SQLEM - Data Tools
-   
-   New column admin_role in table roles and 
+
+   New column admin_role in table roles and
    one new role : Useradmin
    admin_role values: Superadmin = 1
-   					  Useradmin = 2	
+   					  Useradmin = 2
 */
 
 
@@ -601,11 +601,11 @@ BEGIN TRANSACTION
 	WHERE role_id = 0
 
 	DECLARE @maxId int
-	SELECT @maxId = max(role_id) FROM roles  
-	
-	INSERT INTO roles 
-	VALUES ( @maxId+1, 'Useradmin', 0, 2 ) 
-	
+	SELECT @maxId = max(role_id) FROM roles
+
+	INSERT INTO roles
+	VALUES ( @maxId+1, 'Useradmin', 0, 2 )
+
 GO
 COMMIT
 SET QUOTED_IDENTIFIER OFF
@@ -615,7 +615,7 @@ SET QUOTED_IDENTIFIER OFF
 
 /*
 	den 14 januari 2003 12:52:04
-	Create table phonetypes and insert values	
+	Create table phonetypes and insert values
 */
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phonetypes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[phonetypes]
@@ -624,20 +624,20 @@ GO
 CREATE TABLE [dbo].[phonetypes] (
 	[phonetype_id] [int] NOT NULL ,
 	[typename] [varchar] (12) NOT NULL ,
-	[lang_id] [int] NOT NULL 
+	[lang_id] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[phonetypes] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phonetypes] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[phonetypes] WITH NOCHECK ADD
+	CONSTRAINT [PK_phonetypes] PRIMARY KEY  CLUSTERED
 	(
 		[phonetype_id],
 		[lang_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[phonetypes] ADD 
-	CONSTRAINT [FK_phonetypes_lang_prefixes] FOREIGN KEY 
+ALTER TABLE [dbo].[phonetypes] ADD
+	CONSTRAINT [FK_phonetypes_lang_prefixes] FOREIGN KEY
 	(
 		[lang_id]
 	) REFERENCES [dbo].[lang_prefixes] (
@@ -660,9 +660,9 @@ GO
 
 
 /*
-   den 14 januari 2003 
-   On table phones, 
-   add column phonetype_id int default 0 ( default typename = Other ) 
+   den 14 januari 2003
+   On table phones,
+   add column phonetype_id int default 0 ( default typename = Other )
 */
 
 BEGIN TRANSACTION
@@ -683,7 +683,7 @@ GO
 COMMIT
 
 
-/* 
+/*
 	On table phones,
 	Change type for column phones.number från char(25) to varchar(25)
  */
@@ -716,7 +716,7 @@ GO
 EXECUTE sp_rename N'dbo.Tmp_phones', N'phones', 'OBJECT'
 GO
 ALTER TABLE dbo.phones ADD CONSTRAINT
-	PK_phones PRIMARY KEY NONCLUSTERED 
+	PK_phones PRIMARY KEY NONCLUSTERED
 	(
 	phone_id,
 	user_id
@@ -748,10 +748,10 @@ declare @area_code varchar(8)
 declare @number varchar(25)
 
 
-declare posCursor  Cursor scroll 
-for select phone_id from phones 
+declare posCursor  Cursor scroll
+for select phone_id from phones
 open posCursor
-fetch next from posCursor 
+fetch next from posCursor
 into @phone_id
 while @@fetch_status = 0
 begin
@@ -761,9 +761,9 @@ begin
 	update phones set number = ltrim(ltrim(@country_code)+' '+ltrim(@area_code)+' '+ltrim(@number))
 	where phone_id = @phone_id
 
-	fetch next from posCursor 
+	fetch next from posCursor
   	into @phone_id
-end 
+end
 close posCursor
 deallocate posCursor
 GO
@@ -865,7 +865,7 @@ GO
 EXECUTE sp_rename N'dbo.Tmp_users', N'users', 'OBJECT'
 GO
 ALTER TABLE dbo.users ADD CONSTRAINT
-	PK_users PRIMARY KEY NONCLUSTERED 
+	PK_users PRIMARY KEY NONCLUSTERED
 	(
 	user_id
 	) ON [PRIMARY]
@@ -923,14 +923,14 @@ CREATE TABLE [dbo].[user_flags] (
 	[name] [varchar] (64) NOT NULL ,
 	[type] [int] NOT NULL ,
 	[description] [varchar] (256) NOT NULL ,
-	CONSTRAINT [PK_user_flags] PRIMARY KEY  CLUSTERED 
+	CONSTRAINT [PK_user_flags] PRIMARY KEY  CLUSTERED
 	(
 		[user_flag_id]
 	)  ON [PRIMARY] ,
-	CONSTRAINT [IX_user_flags] UNIQUE  NONCLUSTERED 
+	CONSTRAINT [IX_user_flags] UNIQUE  NONCLUSTERED
 	(
 		[name]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
@@ -938,18 +938,18 @@ GO
 CREATE TABLE [dbo].[user_flags_crossref] (
 	[user_id] [int] NOT NULL ,
 	[user_flag_id] [int] NOT NULL ,
-	CONSTRAINT [PK_user_flags_crossref] PRIMARY KEY  CLUSTERED 
+	CONSTRAINT [PK_user_flags_crossref] PRIMARY KEY  CLUSTERED
 	(
 		[user_id],
 		[user_flag_id]
 	)  ON [PRIMARY] ,
-	CONSTRAINT [FK_user_flags_crossref_user_flags] FOREIGN KEY 
+	CONSTRAINT [FK_user_flags_crossref_user_flags] FOREIGN KEY
 	(
 		[user_flag_id]
 	) REFERENCES [dbo].[user_flags] (
 		[user_flag_id]
 	),
-	CONSTRAINT [FK_user_flags_crossref_users] FOREIGN KEY 
+	CONSTRAINT [FK_user_flags_crossref_users] FOREIGN KEY
 	(
 		[user_id]
 	) REFERENCES [dbo].[users] (
@@ -963,7 +963,7 @@ GO
 CREATE TABLE [dbo].[shopping_order_item_descriptions] (
 	[item_id] [int] NOT NULL ,
 	[number] [int] NOT NULL ,
-	[description] [varchar] (100) COLLATE Finnish_Swedish_CI_AS NOT NULL 
+	[description] [varchar] (100) COLLATE Finnish_Swedish_CI_AS NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -971,41 +971,41 @@ CREATE TABLE [dbo].[shopping_order_items] (
 	[item_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[order_id] [int] NOT NULL ,
 	[quantity] [int] NOT NULL ,
-	[price] [money] NOT NULL 
+	[price] [money] NOT NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[shopping_orders] (
 	[order_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[order_datetime] [datetime] NOT NULL ,
-	[user_id] [int] NOT NULL 
+	[user_id] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[shopping_order_item_descriptions] WITH NOCHECK ADD 
-	CONSTRAINT [PK_shopping_order_item_descriptions] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[shopping_order_item_descriptions] WITH NOCHECK ADD
+	CONSTRAINT [PK_shopping_order_item_descriptions] PRIMARY KEY  CLUSTERED
 	(
 		[item_id],
 		[number]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[shopping_order_items] WITH NOCHECK ADD 
-	CONSTRAINT [PK_shopping_order_items] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[shopping_order_items] WITH NOCHECK ADD
+	CONSTRAINT [PK_shopping_order_items] PRIMARY KEY  CLUSTERED
 	(
 		[item_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[shopping_orders] WITH NOCHECK ADD 
-	CONSTRAINT [PK_shopping_orders] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[shopping_orders] WITH NOCHECK ADD
+	CONSTRAINT [PK_shopping_orders] PRIMARY KEY  CLUSTERED
 	(
 		[order_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[shopping_order_item_descriptions] ADD 
-	CONSTRAINT [FK_shopping_order_item_descriptions_shopping_order_items] FOREIGN KEY 
+ALTER TABLE [dbo].[shopping_order_item_descriptions] ADD
+	CONSTRAINT [FK_shopping_order_item_descriptions_shopping_order_items] FOREIGN KEY
 	(
 		[item_id]
 	) REFERENCES [dbo].[shopping_order_items] (
@@ -1013,8 +1013,8 @@ ALTER TABLE [dbo].[shopping_order_item_descriptions] ADD
 	)
 GO
 
-ALTER TABLE [dbo].[shopping_order_items] ADD 
-	CONSTRAINT [FK_shopping_order_items_shopping_orders] FOREIGN KEY 
+ALTER TABLE [dbo].[shopping_order_items] ADD
+	CONSTRAINT [FK_shopping_order_items_shopping_orders] FOREIGN KEY
 	(
 		[order_id]
 	) REFERENCES [dbo].[shopping_orders] (
@@ -1032,7 +1032,7 @@ CREATE TABLE [dbo].[poll_answers] (
 	[text_id] [int] NOT NULL ,
 	[option_number] [int] NOT NULL ,
 	[answer_count] [int] NOT NULL ,
-	[option_point] [int] NULL 
+	[option_point] [int] NULL
 ) ON [PRIMARY]
 GO
 
@@ -1040,7 +1040,7 @@ CREATE TABLE [dbo].[poll_questions] (
 	[id] [int] IDENTITY (1, 1) NOT NULL ,
 	[poll_id] [int] NOT NULL ,
 	[question_number] [int] NOT NULL ,
-	[text_id] [int] NOT NULL 
+	[text_id] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -1054,66 +1054,66 @@ CREATE TABLE [dbo].[polls] (
 	[hide_result] [bit] NOT NULL ,
 	[confirmation_text] [int] NULL ,
 	[email_recipients] [int] NULL ,
-	[result_template] [int] NULL 
+	[result_template] [int] NULL
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[poll_answers] WITH NOCHECK ADD 
-	CONSTRAINT [PK_poll_answers] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[poll_answers] WITH NOCHECK ADD
+	CONSTRAINT [PK_poll_answers] PRIMARY KEY  CLUSTERED
 	(
 		[id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[poll_questions] WITH NOCHECK ADD 
-	CONSTRAINT [PK_poll_questions] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[poll_questions] WITH NOCHECK ADD
+	CONSTRAINT [PK_poll_questions] PRIMARY KEY  CLUSTERED
 	(
 		[id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[polls] WITH NOCHECK ADD 
-	CONSTRAINT [PK_polls] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[polls] WITH NOCHECK ADD
+	CONSTRAINT [PK_polls] PRIMARY KEY  CLUSTERED
 	(
 		[id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[poll_answers] WITH NOCHECK ADD 
+ALTER TABLE [dbo].[poll_answers] WITH NOCHECK ADD
 	CONSTRAINT [DF_poll_answers_ans_count] DEFAULT (0) FOR [answer_count],
-	CONSTRAINT [IX_poll_answers] UNIQUE  NONCLUSTERED 
+	CONSTRAINT [IX_poll_answers] UNIQUE  NONCLUSTERED
 	(
 		[question_id],
 		[text_id]
 	)  ON [PRIMARY] ,
-	CONSTRAINT [IX_poll_answers_1] UNIQUE  NONCLUSTERED 
+	CONSTRAINT [IX_poll_answers_1] UNIQUE  NONCLUSTERED
 	(
 		[question_id],
 		[option_number]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[poll_questions] WITH NOCHECK ADD 
-	CONSTRAINT [IX_poll_questions] UNIQUE  NONCLUSTERED 
+ALTER TABLE [dbo].[poll_questions] WITH NOCHECK ADD
+	CONSTRAINT [IX_poll_questions] UNIQUE  NONCLUSTERED
 	(
 		[poll_id],
 		[question_number]
 	)  ON [PRIMARY] ,
-	CONSTRAINT [IX_poll_questions_1] UNIQUE  NONCLUSTERED 
+	CONSTRAINT [IX_poll_questions_1] UNIQUE  NONCLUSTERED
 	(
 		[poll_id],
 		[text_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[polls] WITH NOCHECK ADD 
+ALTER TABLE [dbo].[polls] WITH NOCHECK ADD
 	CONSTRAINT [DF_polls_popup_freq] DEFAULT (0) FOR [popup_freq],
 	CONSTRAINT [DF_polls_enable_cookie] DEFAULT (0) FOR [set_cookie],
 	CONSTRAINT [DF_polls_showresult] DEFAULT (0) FOR [hide_result]
 GO
 
-ALTER TABLE [dbo].[poll_answers] ADD 
-	CONSTRAINT [FK_poll_answers_poll_questions] FOREIGN KEY 
+ALTER TABLE [dbo].[poll_answers] ADD
+	CONSTRAINT [FK_poll_answers_poll_questions] FOREIGN KEY
 	(
 		[question_id]
 	) REFERENCES [dbo].[poll_questions] (
@@ -1121,8 +1121,8 @@ ALTER TABLE [dbo].[poll_answers] ADD
 	)
 GO
 
-ALTER TABLE [dbo].[poll_questions] ADD 
-	CONSTRAINT [FK_poll_questions_polls] FOREIGN KEY 
+ALTER TABLE [dbo].[poll_questions] ADD
+	CONSTRAINT [FK_poll_questions_polls] FOREIGN KEY
 	(
 		[poll_id]
 	) REFERENCES [dbo].[polls] (
@@ -1146,7 +1146,7 @@ INSERT INTO templates ( template_id , template_name , simple_name , lang_prefix 
 	values (@poll_form_templateId,'poll_form_template.html','poll_form_template','se',0,0,0)
 INSERT INTO templates_cref(group_id, template_id)
 	values (@example_groupId, @poll_form_templateId)
-	
+
 --lets add default example template and then connect it to a templategroup
 declare @poll_result_default_templateId int
 select @poll_result_default_templateId = max(template_id)+1 from templates
@@ -1239,7 +1239,7 @@ GO
 EXECUTE sp_rename N'dbo.Tmp_polls', N'polls', 'OBJECT'
 GO
 ALTER TABLE dbo.polls ADD CONSTRAINT
-	PK_polls PRIMARY KEY CLUSTERED 
+	PK_polls PRIMARY KEY CLUSTERED
 	(
 	id
 	) ON [PRIMARY]
@@ -1285,7 +1285,7 @@ COMMIT
 
 CREATE TABLE [dbo].[category_types] (
 	[category_type_id] [int] NOT NULL ,
-	[name] [varchar] (50) NULL 
+	[name] [varchar] (50) NULL
 ) ON [PRIMARY]
 GO
 
@@ -1293,40 +1293,40 @@ CREATE TABLE [dbo].[categories] (
 	[category_id] [int] NOT NULL ,
 	[category_type_id] [int] NULL ,
 	[name] [varchar] (50) NULL ,
-	[description] [varchar] (500) NULL 
+	[description] [varchar] (500) NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[document_categories] (
 	[meta_id] [int] NOT NULL ,
-	[category_id] [int] NOT NULL 
+	[category_id] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[category_types] WITH NOCHECK ADD 
-	 PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[category_types] WITH NOCHECK ADD
+	 PRIMARY KEY  CLUSTERED
 	(
 		[category_type_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[categories] WITH NOCHECK ADD 
-	 PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[categories] WITH NOCHECK ADD
+	 PRIMARY KEY  CLUSTERED
 	(
 		[category_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[document_categories] WITH NOCHECK ADD 
-	 PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[document_categories] WITH NOCHECK ADD
+	 PRIMARY KEY  CLUSTERED
 	(
 		[meta_id],
 		[category_id]
-	)  ON [PRIMARY] 
+	)  ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[categories] ADD 
-	 FOREIGN KEY 
+ALTER TABLE [dbo].[categories] ADD
+	 FOREIGN KEY
 	(
 		[category_type_id]
 	) REFERENCES [dbo].[category_types] (
@@ -1334,8 +1334,8 @@ ALTER TABLE [dbo].[categories] ADD
 	)
 GO
 
-ALTER TABLE [dbo].[document_categories] ADD 
-	 FOREIGN KEY 
+ALTER TABLE [dbo].[document_categories] ADD
+	 FOREIGN KEY
 	(
 		[meta_id]
 	) REFERENCES [dbo].[meta] (
@@ -1344,6 +1344,48 @@ ALTER TABLE [dbo].[document_categories] ADD
 GO
 
 -- 2003-10-20 Kreiger
+
+ALTER TABLE meta ADD publisher_id INT NULL
+
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.browser_docs
+	DROP CONSTRAINT FK_browser_docs_meta
+GO
+ALTER TABLE dbo.meta ADD CONSTRAINT
+	FK_meta_users FOREIGN KEY
+	(
+	publisher_id
+	) REFERENCES dbo.users
+	(
+	user_id
+	)
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.browser_docs WITH NOCHECK ADD CONSTRAINT
+	FK_browser_docs_meta FOREIGN KEY
+	(
+	meta_id
+	) REFERENCES dbo.meta
+	(
+	meta_id
+	)
+GO
+COMMIT
+
+-- 2003-10-22 Hasse
 
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '
