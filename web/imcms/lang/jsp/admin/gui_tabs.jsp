@@ -48,7 +48,7 @@ private String getTabs( String[][] tabTextsLinks, int actTabIdx, HttpServletRequ
 
 private String createNavBar( String text, String url, String pos, boolean thisAct, boolean nextAct, int width,
                              HttpServletRequest request ) {
-    String IMG_PATH  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
+    String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
 	String sRet, topImg, midRightImg, sClass, sEvent ;
 	int btnH, totH, row1height, row2height, midRightImgW, itype ;
 	pos = pos.toUpperCase() ;
@@ -93,13 +93,13 @@ private String createNavBar( String text, String url, String pos, boolean thisAc
 	row2height = btnH - row1height ;
 	sRet = "" ;
 	if (pos.equals("START")) {
-		sRet += "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" background=\"" + IMG_PATH + "/tabs/nav_bg_line" + itype + ".gif\">\n" ;
+		sRet += "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" background=\"" + imagesPath + "/tabs/nav_bg_line" + itype + ".gif\">\n" ;
 		sRet += "<tr>\n" ;
 		sRet += "	<td>\n" ;
 		sRet += "	<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n" ;
 		sRet += "	<tr>\n" ;
 		if (width > 0) {
-			sRet += "		<td><img src=\"" + IMG_PATH + "/tabs/1x1.gif\" width=\"" + width + "\" height=\"1\"></td>\n" ;
+			sRet += "		<td><img src=\"" + imagesPath + "/tabs/1x1.gif\" width=\"" + width + "\" height=\"1\"></td>\n" ;
 		}
 	}
 	if (!pos.equals("START") && !pos.equals("END")) {
@@ -107,12 +107,12 @@ private String createNavBar( String text, String url, String pos, boolean thisAc
 		sRet += "		<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" height=\"" + totH + "\">\n" ;
 		sRet += "		<tr>\n" ;
 		if (pos.equals("L") && thisAct) {
-			sRet += "			<td rowspan=\"2\"><img src=\"" + IMG_PATH + "/tabs/nav_left_act" + itype + ".gif\" width=\"5\" height=\"" + totH + "\"></td>\n" ;
+			sRet += "			<td rowspan=\"2\"><img src=\"" + imagesPath + "/tabs/nav_left_act" + itype + ".gif\" width=\"5\" height=\"" + totH + "\"></td>\n" ;
 		} else if (pos.equals("L")) {
-			sRet += "			<td rowspan=\"2\"><img src=\"" + IMG_PATH + "/tabs/nav_left_inact" + itype + ".gif\" width=\"5\" height=\"" + totH + "\"></td>\n" ;
+			sRet += "			<td rowspan=\"2\"><img src=\"" + imagesPath + "/tabs/nav_left_inact" + itype + ".gif\" width=\"5\" height=\"" + totH + "\"></td>\n" ;
 		}
-		sRet += "			<td height=\"" + row1height + "\"><img src=\"" + IMG_PATH + "/tabs/" + topImg + "\" width=\"" + width + "\" height=\"" + row1height + "\"></td>\n" ;
-		sRet += "			<td rowspan=\"2\"><img src=\"" + IMG_PATH + "/tabs/" + midRightImg + "\" width=\"" + midRightImgW + "\" height=\"" + totH + "\"></td>\n" ;
+		sRet += "			<td height=\"" + row1height + "\"><img src=\"" + imagesPath + "/tabs/" + topImg + "\" width=\"" + width + "\" height=\"" + row1height + "\"></td>\n" ;
+		sRet += "			<td rowspan=\"2\"><img src=\"" + imagesPath + "/tabs/" + midRightImg + "\" width=\"" + midRightImgW + "\" height=\"" + totH + "\"></td>\n" ;
 		sRet += "		</tr>\n" ;
 		sRet += "		<tr>\n" ;
 		sRet += "			<td height=\"" + row2height + "\" align=\"center\" bgcolor=\"" + (thisAct ? COLOR_ACT : COLOR_INACT) + "\" class=\"" + sClass + "\"" + sEvent + ">" ;
@@ -123,7 +123,7 @@ private String createNavBar( String text, String url, String pos, boolean thisAc
 	if (pos.equals("END")) {
 		sRet += "	</tr>\n" ;
 		sRet += "	</table></td>\n" ;
-		sRet += "	<td><img src=\"" + IMG_PATH + "/tabs/1x1.gif\" width=\"1\" height=\"1\"></td>\n" ;
+		sRet += "	<td><img src=\"" + imagesPath + "/tabs/1x1.gif\" width=\"1\" height=\"1\"></td>\n" ;
 		sRet += "</tr>\n" ;
 		sRet += "</table>" ;
 	}

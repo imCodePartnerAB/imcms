@@ -105,11 +105,13 @@
 <jsp:include page="../search_documents_form.jsp" />
 
 <jsp:include page="../search_documents_results.jsp" />
+</form>
+
 </td>
 
 </tr>
 </table>
-</form>
+
 #gui_end_of_page()
 
 </vel:velocity>

@@ -10,10 +10,11 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
-import org.apache.commons.collections.*;
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.index.Term;
@@ -46,12 +47,11 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__SORT_ORDER = "sort_order";
     public static final String REQUEST_PARAMETER__STATUS_ID = "status_id";
 
-
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
 
     private String queryString;
-    private Set sections = new HashSet() ;
+    private Set sections = new HashSet();
     private int[] statusIds;
     private int userDocumentsRestriction;
     private int dateTypeRestriction;
@@ -94,18 +94,23 @@ public class SearchDocumentsPage extends OkCancelPage {
             }
         }
 
-        try {
-            sections.clear();
-            int[] sectionIds = Utility.getParameterInts( request, REQUEST_PARAMETER__SECTION_ID ) ;
-            for ( int i = 0; i < sectionIds.length; i++ ) {
-                int sectionId = sectionIds[i];
-                SectionDomainObject section = documentMapper.getSectionById( sectionId );
-                sections.add(section) ;
-            }
-        } catch ( NumberFormatException nfe ) {
-        }
+        firstDocumentIndex = Math.max( 0, NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX ) ) );
 
-        statusIds = Utility.getParameterInts( request, REQUEST_PARAMETER__STATUS_ID );
+        boolean gotNewFirstDocumentIndex = Utility.parameterIsSet( request, REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX );
+        if ( !gotNewFirstDocumentIndex ) {
+            try {
+                sections.clear();
+                int[] sectionIds = Utility.getParameterInts( request, REQUEST_PARAMETER__SECTION_ID );
+                for ( int i = 0; i < sectionIds.length; i++ ) {
+                    int sectionId = sectionIds[i];
+                    SectionDomainObject section = documentMapper.getSectionById( sectionId );
+                    sections.add( section );
+                }
+            } catch ( NumberFormatException nfe ) {
+            }
+
+            statusIds = Utility.getParameterInts( request, REQUEST_PARAMETER__STATUS_ID );
+        }
 
         String userDocumentsRestrictionParameter = request.getParameter( REQUEST_PARAMETER__PERMISSION );
         if ( null != userDocumentsRestrictionParameter ) {
@@ -131,19 +136,18 @@ public class SearchDocumentsPage extends OkCancelPage {
             } catch ( java.text.ParseException ignored ) {}
         }
 
-        sortOrder = request.getParameter( REQUEST_PARAMETER__SORT_ORDER ) ;
-        if (null != sortOrder) {
-            Comparator documentComparator = AdminManager.getComparator(sortOrder) ;
-            documentFinder.setDocumentComparator(documentComparator) ;
+        sortOrder = request.getParameter( REQUEST_PARAMETER__SORT_ORDER );
+        if ( null != sortOrder ) {
+            Comparator documentComparator = AdminManager.getComparator( sortOrder );
+            documentFinder.setDocumentComparator( documentComparator );
         }
 
         try {
             documentsPerPage = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE ) );
-        } catch (NumberFormatException ignored) {}
+        } catch ( NumberFormatException ignored ) {}
         if ( documentsPerPage <= 0 ) {
             documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
         }
-        firstDocumentIndex = Math.max( 0, NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX ) ) );
         queryString = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__QUERY_STRING ) );
         searchButtonPressed = null != request.getParameter( REQUEST_PARAMETER__SEARCH_BUTTON );
 
@@ -172,7 +176,7 @@ public class SearchDocumentsPage extends OkCancelPage {
                 SectionDomainObject section = (SectionDomainObject)iterator.next();
                 sectionQueries.add( new TermQuery( new Term( DocumentIndex.FIELD__SECTION, section.getName().toLowerCase() ) ), false, false );
             }
-            newQuery.add( sectionQueries, true, false ) ;
+            newQuery.add( sectionQueries, true, false );
         }
 
         BooleanQuery statusQueries = new BooleanQuery();
@@ -195,10 +199,9 @@ public class SearchDocumentsPage extends OkCancelPage {
             newQuery.add( publishedByUserQuery, true, false );
         }
 
-
         if ( null != startDate ) {
-            String dateField ;
-            switch (dateTypeRestriction) {
+            String dateField;
+            switch ( dateTypeRestriction ) {
                 case DATE_TYPE__PUBLICATION_END:
                     dateField = DocumentIndex.FIELD__PUBLICATION_END_DATETIME;
                     break;
@@ -241,7 +244,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     }
 
     protected void dispatchOther( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        DocumentDomainObject documentSelectedForEditing = null ;
+        DocumentDomainObject documentSelectedForEditing = null;
         try {
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             documentSelectedForEditing = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );
@@ -261,7 +264,7 @@ public class SearchDocumentsPage extends OkCancelPage {
                                               DocumentDomainObject documentSelectedForEditing ) throws IOException, ServletException {
         DispatchCommand returnCommand = new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                documentFinder.forwardWithPage( request, response, SearchDocumentsPage.this);
+                documentFinder.forwardWithPage( request, response, SearchDocumentsPage.this );
             }
         };
         EditDocumentInformationPageFlow editDocumentInformationPageFlow = new EditDocumentInformationPageFlow( documentSelectedForEditing, returnCommand, new DocumentMapper.SaveEditedDocumentCommand() );
@@ -277,7 +280,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     }
 
     private MultiMap getParameterMap( HttpServletRequest request ) {
-        MultiMap parameters = new MultiHashMap() ;
+        MultiMap parameters = new MultiHashMap();
         String pageSessionNameFromRequest = Page.getPageSessionNameFromRequest( request );
         if ( null != pageSessionNameFromRequest ) {
             parameters.put( Page.IN_REQUEST, pageSessionNameFromRequest );

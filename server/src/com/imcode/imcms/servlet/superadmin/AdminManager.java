@@ -206,15 +206,21 @@ public class AdminManager extends Administrator {
 
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SEARCH ) ) {
 
-            DocumentFinder documentFinder = new DocumentFinder( new AdminManagerSearchPage() );
-            documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
-            documentFinder.forward( req, res );
+            AdminManagerPage searchAdminManagerPage = new AdminManagerPage() {
+                public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
+                    DocumentFinder documentFinder = new DocumentFinder( new AdminManagerSearchPage(this) );
+                    documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
+                    documentFinder.forward( request, response );
+                }
+            };
+            searchAdminManagerPage.setName( "search" );
+            searchAdminManagerPage.setTabName( "search" );
+            searchAdminManagerPage.setHeading( new LocalizedMessage( "<? global/Search ?>" ) );
+            adminManagerPage = searchAdminManagerPage ;
         }
 
-        if (!res.isCommitted()) {
-            adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
-            adminManagerPage.forward( req, res, loggedOnUser );
-        }
+        adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
+        adminManagerPage.forward( req, res, loggedOnUser );
     }
 
     private AdminManagerSubreport createModifiedDocumentsSubreport( List documents_modified ) {
@@ -328,9 +334,13 @@ public class AdminManager extends Administrator {
 
 
         public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
-            request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+            putInRequest( request );
             String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/admin_manager.jsp";
             request.getRequestDispatcher( forwardPath ).forward( request, response );
+        }
+
+        public void putInRequest( HttpServletRequest request ) {
+            request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
         }
 
     }

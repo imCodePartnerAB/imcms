@@ -12,6 +12,7 @@
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE) ;
+    String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
 %>
 
 <%@ include file="gui_tabs.jsp" %>
@@ -69,6 +70,7 @@
 #gui_mid_tabs1()
 <%= tabString %>
 #gui_mid_tabs2()
+<% if (!"search".equals(adminManagerPage.getTabName())) { %>
     <form method="GET" name="subreport" action="AdminManager">
     <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>">
         <%
@@ -80,6 +82,33 @@
           }
         %>
     </form>
+<% } else { %>
+
+<table border="0" cellspacing="0" cellpadding="2" width="656" align="center">
+
+<tr>
+    <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
+</tr>
+<tr>
+    <td colspan="2" height="22"><span class="imcmsAdmHeading"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/1 ?></span></td>
+</tr>
+<tr>
+    <td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
+</tr>
+<tr>
+<td colspan="2">
+
+<form method="GET" action="SearchDocuments">
+<input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__FROMPAGE %>" value="<%= AdminManager.PAGE_SEARCH %>">
+<jsp:include page="../search_documents_form.jsp" />
+
+<jsp:include page="../search_documents_results.jsp" />
+</form>
+
+</td>
+
+</tr>
+<% } %>
 
 </table>
 
