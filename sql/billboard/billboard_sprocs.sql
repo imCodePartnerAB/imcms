@@ -130,6 +130,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetTempl
 drop procedure [dbo].[B_GetTemplateLib]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_GetTime]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[B_GetTime]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[B_LinkSectionToBillBoard]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[B_LinkSectionToBillBoard]
 GO
@@ -1018,6 +1022,24 @@ AND b.meta_id = @meta_id
 SELECT @returnVal =  ISNULL(@returnVal, 'Original') 
 SELECT @returnVal AS 'TemplateLib'
 
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+
+
+
+/****** Object:  Stored Procedure dbo.GetTime    Script Date: 2000-10-27 17:39:27 ******/
+CREATE PROCEDURE B_GetTime AS
+
+SELECT SUBSTRING( CONVERT(char(10),GETDATE(),20),1, 20) AS 'Now'
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
