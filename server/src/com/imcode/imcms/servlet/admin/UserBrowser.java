@@ -75,7 +75,7 @@ public class UserBrowser extends HttpServlet {
 
     private UserDomainObject[] getUsersWithUseradminPermissibleRoles(ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole, UserDomainObject loggedOnUser, UserDomainObject[] users) {
         List userList = new ArrayList();
-        RoleDomainObject[] useradminPermissibleRoles = userMapperAndRole.getUseradminPermissibleRoles( loggedOnUser.getId() );
+        RoleDomainObject[] useradminPermissibleRoles = userMapperAndRole.getUseradminPermissibleRoles( loggedOnUser );
         for( int i=0; i < users.length; i++){
             for( int k=0; k < useradminPermissibleRoles.length; k++){
                 if( users[i].hasRole( useradminPermissibleRoles[k] ) ){
