@@ -56,6 +56,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static final int LANG_ID_ENGLAND = 2;
     private static final String LANG_PREFIX_ENGLAND = "en";
     private String USER_TEST_LOGIN_NAME = "TestUser";
+    private static final int SECTION_TEST_ID = 1;
+    private static final String SECTION_TEST_NAME = "TestSection";
 
     protected void setUp() throws IOException {
         databaseServices = new DatabaseService[]{
@@ -111,8 +113,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_getLanguages( databaseService );
             test_sproc_SetSessionCounterValue( databaseService );
             test_sproc_SetSessionCounterDate( databaseService );
+            test_sproc_SectionGetAll( databaseService );
+            test_sproc_SectionGetAllCount( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_SectionGetAllCount( DatabaseService databaseService ) {
+        assertEquals( 1, databaseService.sproc_SectionGetAllCount().length );
+    }
+
+    private void test_sproc_SectionGetAll( DatabaseService databaseService ) {
+        assertEquals( 1, databaseService.sproc_SectionGetAll().length );
     }
 
     private void test_sproc_SetSessionCounterDate( DatabaseService databaseService ) {
@@ -401,11 +413,11 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             dbService.sproc_AddNewuser( user );
 
             dbService.sproc_ChangeUserActiveStatus( USER_TEST_ID, false );
-            DatabaseService.Table_users modifiedUser = dbService.getFromTable_users( new Integer( USER_TEST_ID ) );
+            DatabaseService.Table_users modifiedUser = dbService.selectFrom_users( new Integer( USER_TEST_ID ) );
             assertEquals( 0, modifiedUser.active );
 
             dbService.sproc_ChangeUserActiveStatus( USER_TEST_ID, true );
-            DatabaseService.Table_users modifiedUser2 = dbService.getFromTable_users( new Integer( USER_TEST_ID ) );
+            DatabaseService.Table_users modifiedUser2 = dbService.selectFrom_users( new Integer( USER_TEST_ID ) );
             assertEquals( 1, modifiedUser2.active );
         }
     }
@@ -477,6 +489,42 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
+    public void test_sproc_SectionDelete() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 1, databaseService.sproc_SectionDelete( SECTION_TEST_ID ) );
+        }
+    }
+
+    public void test_sproc_SectionChangeName() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            DatabaseService.Table_section sectionData = new DatabaseService.Table_section();
+            sectionData.section_id = SECTION_TEST_ID;
+            String newSectionName = "NewSectionName";
+            sectionData.section_name = newSectionName;
+            assertEquals( 1, databaseService.sproc_SectionChangeName(sectionData) );
+            assertEquals( newSectionName, databaseService.sproc_SectionGetAll()[0].section_name );
+        }
+    }
+
+    public void test_sproc_SectionAdd() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            DatabaseService.Table_section sectionData = new DatabaseService.Table_section();
+
+            sectionData.section_id = SECTION_TEST_ID;
+            sectionData.section_name = SECTION_TEST_NAME;
+            assertEquals( 1, databaseService.sproc_SectionAdd( sectionData ) );
+
+            sectionData.section_id = 2;
+            sectionData.section_name = "apsmdåöasd,adsf'adsfhsdfg";
+            assertEquals( 1, databaseService.sproc_SectionAdd( sectionData ) );
+
+            assertEquals( 2, databaseService.sproc_SectionGetAll().length );
+
+        }
+    }
     // Below is helper functions to more than one test.
 
     private static DatabaseService.Table_users static_createDummyUser() {

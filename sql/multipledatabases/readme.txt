@@ -99,14 +99,9 @@ roleupdatename.prc
 roleupdatepermissions.prc
 searchdocs.prc
 searchdocsindex.prc
-sectionadd.prc
 sectionaddcrossref.prc
 sectionchangeanddeletecrossref.prc
-sectionchangename.prc
 sectioncount.prc
-sectiondelete.prc
-sectiongetall.prc
-sectiongetallcount.prc
 sectiongetinheritid.prc
 servermasterget.prc
 servermasterset.prc
