@@ -19,10 +19,9 @@
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'new_browsers')">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head("<? global/imcms_administration ?>")
+
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="BrowserDocumentComposer">
 <tr>
@@ -31,9 +30,8 @@ imcmsGui("head", null);
     <td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2002 ?>" title="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(46)"></td>
 </tr>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660">
 <%
     DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
@@ -115,10 +113,9 @@ imcmsGui("mid", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 <script language="JavaScript">
 <!--

@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.*;
 import java.text.Collator;
 
+import org.apache.velocity.app.VelocityEngine;
+
 class MockIMCServiceInterface extends MockObject implements IMCServiceInterface {
 
    private final ExpectationList sqlProcedureCalls = new ExpectationList( "sqlProcedureCalls" );
@@ -327,6 +329,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     }
 
     public Collator getDefaultLanguageCollator() {
+        return null;  // TODO
+    }
+
+    public VelocityEngine getVelocityEngine( UserDomainObject user ) {
         return null;  // TODO
     }
 

@@ -62,10 +62,9 @@
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="document.getElementsByName('<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>').item(0).focus()">
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head("<? global/imcms_administration ?>")
+
 <form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
@@ -74,9 +73,8 @@ imcmsGui("head", null);
     <td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2002 ?>" title="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(77)"></td>
 </tr>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
         <input type="hidden"
             name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
@@ -505,10 +503,9 @@ imcmsGui("mid", null);
 </tr>
 </table>
 </form>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 <%
     if (editingExistingDocument) {
         String adminButtons = service.getAdminButtons( user, document) ;

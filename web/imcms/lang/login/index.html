@@ -10,10 +10,9 @@
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'name')">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", "<? templates/login/index.html/2 ?>");
-</script>
+#gui_outer_start()
+#gui_head( "<? templates/login/index.html/2 ?>" )
+
 <table border="0" cellspacing="0" cellpadding="0" width="310">
 <form>
 <tr>
@@ -30,9 +29,7 @@ imcmsGui("head", "<? templates/login/index.html/2 ?>");
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="310">
 <tr>
 	<td colspan="2" nowrap><span class="imcmsAdmText">
@@ -74,10 +71,7 @@ imcmsGui("mid", null);
 	</table></td>
 </tr>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
-
+#gui_bottom()
+#gui_outer_end()
 </body>
 </html>

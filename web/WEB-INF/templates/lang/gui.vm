@@ -153,8 +153,12 @@
         <td class="imcmsAdmTable">
 #end
 
-#macro( gui_hr $color )
-#if( 'blue' == $color ) #set( $color = '20568d' ) #end
+#macro( gui_hr $wantedcolor )
+#if( 'blue' == $wantedcolor )
+    #set( $color = '20568d' )
+#else
+    #set( $color = $wantedcolor )
+#end
 <img src="@imcmsimageurl@/admin/1x1_${color}.gif" width="100%" height="1" vspace="8">
 #end
 

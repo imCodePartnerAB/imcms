@@ -72,6 +72,8 @@ final public class IMCService implements IMCServiceInterface {
     private Properties langproperties_swe;
     private Properties langproperties_eng;
 
+    private VelocityEngine velocityEngine;
+
     static {
         mainLog.info( "Main log started." );
     }
@@ -645,7 +647,6 @@ final public class IMCService implements IMCServiceInterface {
             VelocityEngine velocity = createVelocityEngine( user );
 
             VelocityContext context = new VelocityContext();
-            context.put("lang", user.getLanguageIso639_2()) ;
             StringWriter stringWriter = new StringWriter();
             velocity.mergeTemplate( path, WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252, context, stringWriter );
             String result = stringWriter.toString() ;
@@ -662,6 +663,7 @@ final public class IMCService implements IMCServiceInterface {
         VelocityEngine velocity = new VelocityEngine();
         velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath.getCanonicalPath() );
         velocity.setProperty( VelocityEngine.VM_LIBRARY, user.getLanguageIso639_2()+"/gui.vm");
+        velocity.setProperty( VelocityEngine.VM_LIBRARY_AUTORELOAD, "true");
         velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem" );
         velocity.setProperty( "runtime.log.logsystem.log4j.category", "velocity");
         velocity.init();
@@ -1312,6 +1314,17 @@ final public class IMCService implements IMCServiceInterface {
             return Collator.getInstance( new Locale( LanguageMapper.convert639_2to639_1( defaultLanguageAsIso639_2 ) ) );
         } catch ( LanguageMapper.LanguageNotSupportedException e ) {
             throw new RuntimeException( e );
+        }
+    }
+
+    public VelocityEngine getVelocityEngine(UserDomainObject user) {
+        try {
+            if (velocityEngine == null) {
+                velocityEngine = createVelocityEngine( user ) ;
+            }
+            return velocityEngine ;
+        } catch ( Exception e ) {
+            throw new RuntimeException( e ) ;
         }
     }
 

@@ -14,10 +14,9 @@
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text')">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head("<? global/imcms_administration ?>")
+
 
 <%
     ImageBrowse.FormData imageBrowseFormData;
@@ -35,9 +34,8 @@ imcmsGui("head", null);
     <td><input type="button" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2002 ?>" title="<? install/htdocs/sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
 </tr>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <% if (null != imageBrowseFormData.getImageNumber()) { %>
 <tr>
@@ -104,10 +102,9 @@ imcmsGui("mid", null);
 </tr>
 </table>
 </form>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 <div align="center" id="previewDiv"><%=imageBrowseFormData.getImagePreview()%></div>
 

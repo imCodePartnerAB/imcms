@@ -8,7 +8,6 @@ import imcode.server.IMCService;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.commons.lang.StringUtils;
 

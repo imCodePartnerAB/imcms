@@ -14,10 +14,9 @@
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head("<? global/imcms_administration ?>")
+
 <%
     AdminCategories.FormData formData = (AdminCategories.FormData)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
     StringBuffer messageToUser = new StringBuffer("");
@@ -49,9 +48,8 @@ imcmsGui("head", null);
     </tr>
 </form>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="main" action="AdminCategories" method="post">
 <%
@@ -366,10 +364,9 @@ imcmsGui("mid", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 </body>
 </html>

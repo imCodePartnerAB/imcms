@@ -14,10 +14,9 @@
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'frame_set')">
 
-<script>
-imcmsGui("outer_start", null);
-imcmsGui("head", null);
-</script>
+#gui_outer_start()
+#gui_head("<? global/imcms_administration ?>")
+
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="DocumentComposer">
 <tr>
@@ -27,9 +26,8 @@ imcmsGui("head", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("mid", null);
-</script>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="DocumentComposer">
 <%
@@ -73,10 +71,9 @@ imcmsGui("mid", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("bottom", null);
-imcmsGui("outer_end", null);
-</script>
+#gui_bottom()
+#gui_outer_end()
+
 
 </body>
 </html>

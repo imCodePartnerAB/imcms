@@ -10,10 +10,9 @@
 </head>
 <body bgcolor="#FFFFFF" marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" class="imcmsAdmBgCont" style="border:0; margin:0" onLoad="focusField(1,'createLinkDesc')">
 
-<script>
-imcmsGui("outer_start_noshade", "MAX");
-imcmsGui("head_noshade", null);
-</script>
+#gui_outer_start_noshade()
+#gui_head_noshade("<? global/imcms_administration ?>")
+
 <table border="0" cellspacing="0" cellpadding="0">
 <form>
 <tr>
@@ -21,9 +20,8 @@ imcmsGui("head_noshade", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("mid_noshade", null);
-</script>
+#gui_mid_noshade()
+
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <form name="createLinkForm" onSubmit="return false">
 <tr>
@@ -103,10 +101,9 @@ imcmsGui("mid_noshade", null);
 </tr>
 </form>
 </table>
-<script>
-imcmsGui("bottom_noshade", null);
-imcmsGui("outer_end_noshade", null);
-</script>
+#gui_bottom_noshade()
+#gui_outer_end_noshade()
+
 
 <script language="javascript">
 <!--
