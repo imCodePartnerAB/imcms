@@ -26,3 +26,7 @@ ALTER TABLE fileupload_docs ADD created_as_image INT NOT NULL DEFAULT 0
 DROP PROCEDURE InsertText
 
 -- 2004-07-05 Kreiger
+
+UPDATE phonetypes SET typename = 'Bostad' WHERE phonetype_id = 1 AND lang_id = 1
+
+-- 2004-08-24 Lennart
