@@ -450,6 +450,9 @@
 	</patternset>
       </fileset>
     </copy>
+	<copy todir="${css}">
+		<fileset dir="install/htdocs/css"/>
+	</copy>
 
   </target>
 
