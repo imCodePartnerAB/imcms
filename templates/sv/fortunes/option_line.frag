@@ -1,1 +1,1 @@
-<option value="">-- V&auml;lj Rad --</option>
+<option value="">-- V&auml;lj Fil --</option> 
