@@ -1,4 +1,4 @@
-Upgrade imCMS from version 1.8.1-RELEASE to 1.8.2-RELEASE
+Upgrade imCMS from version 1.8.4-RELEASE to 1.9.0-RELEASE
 
 - Stop the imcms webapp
 
@@ -6,9 +6,10 @@ Upgrade imCMS from version 1.8.1-RELEASE to 1.8.2-RELEASE
 
 - Backup the imcms webapp directory
 
-- Run sql script "diff-1.8.1-1.8.2.sql" on imCMS database
+- Run the sql diff scripts appropriate for your versions, i.e. if you have a 1.8.4 version installed and
+  want's to upgrade to the 1.9 release, run the "diff-1.8.4-1.9.0.sql" on imCMS database.
 
-- Run sql script "imcms-sprocs-1.8.2.sql" on imCMS database
+- Run sql script "imcms-sprocs-1.9.0.sql" on imCMS database
 
 - Stop tomcat engine
 
@@ -19,7 +20,8 @@ Upgrade imCMS from version 1.8.1-RELEASE to 1.8.2-RELEASE
 - Install the new imCMS version according to "Installing imCMS:" and
     "Setting up imCMS:" in file "INSTALL.TXT"
 
-- From the imcms-backup, restore all user data from the following directories:
+- From the imcms-backup, restore all user data from the following directories, you may need to merge changes
+  if nessesary:
     - /css
     - /images
     - /javascript
