@@ -1,11 +1,17 @@
 package imcode.server.db;
 
+import org.apache.log4j.Logger;
+
 import java.sql.*;
 import java.io.*;
 import java.util.Vector;
 import java.util.Iterator;
 
 public class Database {
+    final static int MIMER = 0;
+    final static int SQL_SERVER = 1;
+    //final static int MY_SQL = 2;
+
     private static final char END_OF_COMMAND = ';';
     private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/";
     private static final String DROP_TABLES = "tables/drop.new.sql";
@@ -13,36 +19,128 @@ public class Database {
     private static final String ADD_TYPE_DATA = "data/types.new.sql";
     private static final String INSERT_NEW_DATA = "data/newdb.new.sql";
 
-    public static void main( String[] args ) throws Exception {
-        Database accessor = new Database();
-        accessor.initializeDatabase( SQL_SERVER );
-        accessor.initializeDatabase( MIMER );
-    }
-
-    void initializeDatabase( int serverType ) throws Exception {
-        executeCommandsFromFile( serverType, DROP_TABLES );
-        executeCommandsFromFile( serverType, CREATE_TABLES );
-        executeCommandsFromFile( serverType, ADD_TYPE_DATA );
-        executeCommandsFromFile( serverType, INSERT_NEW_DATA );
-    }
-
-    private final static int MIMER = 0;
-    private final static int SQL_SERVER = 1;
-    private final static int MY_SQL = 2;
     private static String SQL92_TYPE_TIMESTAMP = "timestamp";
     private static String SQL_SERVER_TIMESTAMP_TYPE = "datetime";
 
+    public static void main( String[] args ) throws Exception {
+
+        Database sqlServer = new Database( SQL_SERVER );
+//        sqlServer.initializeDatabase();
+        String resultSqlServer = sqlServer.test_sproc_getallroles();
+
+        Database mimer = new Database(MIMER);
+//        mimer.initializeDatabase();
+        String resultMimer = mimer.test_sproc_getallroles();
+
+        compare( resultSqlServer, resultMimer );
+    }
+
+    private static void compare( String sqlServer, String mimer ) {
+        boolean equals = sqlServer.equals(mimer);
+        if( equals ) {
+            System.out.println( "ok" );
+        } else {
+            System.out.println( "Warning, not same result!" );
+            System.out.println( "SqlServer: " + sqlServer );
+            System.out.println( "Mimer    : " + mimer );
+        }
+    }
+
+    private String test_sproc_getallroles() {
+        String result = "";
+        Role[] roles = sproc_getallroles();
+        for( int i = 0; i < roles.length; i++ ) {
+            Role role = roles[i];
+            result += "" + role.getId() + ", " + role.getName();
+        }
+        return result;
+    }
+
+    private static Logger log = Logger.getLogger( Database.class );
+
     private ConnectionPool connectionPool;
     private SQLProcessor sqlProcessor = new SQLProcessor();
+    private int databaseType;
 
-    private void executeCommandsFromFile( int databaseServer, String fileName ) throws Exception {
+    public Database( int databaseType ) {
+        this.databaseType = databaseType;
+        initConnectionPool( databaseType );
+    }
+
+    class Role {
+        private int id;
+        private String name;
+
+        public Role( int id, String name ) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    // todo: rename to getallrolesexcept users
+    public Role[] sproc_getallroles() {
+        String sprocMethodName = "getallroles()";
+        String select = "SELECT role_id, role_name ";
+        String from = "FROM roles ";
+        String orderBy = "ORDER BY role_name";
+        String sql = select + from + orderBy;
+
+        Vector roles = new Vector();
+        ResultSet rs = null;
+        Object[] values = null;
+
+        Connection conn = null;
+        try {
+            conn = connectionPool.getConnection();
+            rs = sqlProcessor.executeQuery( conn, sql, values );
+            while( rs.next() ) {
+                int id = rs.getInt( "role_id" );
+                String name = rs.getString( "role_name" );
+                if( !name.equalsIgnoreCase( "users" )) {
+                    roles.add( new Role( id, name ));
+                }
+            }
+        } catch( SQLException ex ) {
+            log.fatal( sprocMethodName + " could not get a connection", ex );
+        } finally {
+            closeConnection( conn );
+        }
+        return (Role[])roles.toArray( new Role[roles.size()]);
+    }
+
+    private void closeConnection( Connection conn ) {
+        try {
+            if( conn != null ) {
+                conn.close();
+            }
+        } catch( SQLException ex ) {
+            // Swallow
+        }
+    }
+
+    void initializeDatabase() throws Exception {
+        executeCommandsFromFile( DROP_TABLES );
+        executeCommandsFromFile( CREATE_TABLES );
+        executeCommandsFromFile( ADD_TYPE_DATA );
+        executeCommandsFromFile( INSERT_NEW_DATA );
+    }
+
+    private void executeCommandsFromFile( String fileName ) throws Exception {
         Vector commands = readCommandsFromFile( fileName );
 
-        if( databaseServer == SQL_SERVER ) {
+        if( databaseType == SQL_SERVER ) {
             commands = changeSQLSpecificDateTimeDataType( commands );
         }
 
-        executeCommands( databaseServer, commands );
+        executeCommands( commands );
     }
 
     private Vector changeSQLSpecificDateTimeDataType( Vector commands ) {
@@ -55,8 +153,8 @@ public class Database {
         return modifiedCommands;
     }
 
-    private void executeCommands( int databaseServer, Vector commands ) throws Exception {
-        Connection conn = getConnectionPool( databaseServer );
+    private void executeCommands( Vector commands ) throws Exception {
+        Connection conn = connectionPool.getConnection();
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
             System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
@@ -88,7 +186,7 @@ public class Database {
         return commands;
     }
 
-    private Connection getConnectionPool( int databaseServer ) throws Exception {
+    private void initConnectionPool( int databaseServer ) {
         String serverUrl = null;
         String jdbcDriver = null;
         String user = null;
@@ -110,9 +208,12 @@ public class Database {
         }
 
         int maxConnectionCount = 20;
-        connectionPool = new ConnectionPoolForNonPoolingDriver( "", jdbcDriver, serverUrl, user, password, maxConnectionCount );
-        Connection conn = connectionPool.getConnection();
-        return conn;
+        try {
+            connectionPool = new ConnectionPoolForNonPoolingDriver( "", jdbcDriver, serverUrl, user, password, maxConnectionCount );
+        }
+        catch( Exception ex ) {
+            log.fatal("Couldn't initialize connection pool", ex );
+        }
     }
 
     private static String static_changeSQLServerTimestampType( String createCommand ) {
