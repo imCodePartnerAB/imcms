@@ -88,9 +88,9 @@ public class WriterLogger implements LogListener, LogLevels, Runnable  {
 	    trace = null ;
 	}
 	String log = ""+dateFormat.format(event.getTime())+levelNames[event.getLevel()]+"("+event.getLog().getName()+") "+event.getMessage()+(obj!=null?" Obj: "+obj:"")+(trace!=null?" Trace: "+trace:"")+EOL ;
-	synchronized (cache) { // Make sure nothing is written to the cache while flushing it.
+	//synchronized (cache) { // Make sure nothing is written to the cache while flushing it.
 	    cache.append(log) ;
-	}
+	    //}
 	// Log immediately if necessary.
 	if (event.getLevel()<=flushLevel || cache.length()>logsize ) {
 	    timer.interrupt() ;
@@ -118,17 +118,18 @@ public class WriterLogger implements LogListener, LogLevels, Runnable  {
      */
     public void flush() {
 	if (cache.length() > 0) { // Is there anything to log in the cache?
-	    synchronized (cache) { // Make sure nothing is written to the cache while flushing it.
+	    //synchronized (cache) { // Make sure nothing is written to the cache while flushing it.
+	    String cache_str = cache.toString() ;
 		try {
-		    out.write(cache.toString()) ;
+		    out.write(cache_str) ;
 		    out.flush() ;
 		} catch (IOException ex) {
 		    System.err.println(ex) ;               // If we failed to log, let's make it known through standard error instead.
 		    System.err.println("Failed to log:") ;
-		    System.err.println(cache.toString()) ;
+		    System.err.println(cache_str) ;
 		}
 		cache.setLength(0) ; // Clear out the cache.
-	    }
+		//}
 	}
     }
 
