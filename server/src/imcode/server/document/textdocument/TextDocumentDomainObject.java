@@ -31,7 +31,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public DocumentTypeDomainObject getDocumentType() {
-        return DOCTYPE_TEXT ;
+        return DocumentTypeDomainObject.TEXT ;
     }
 
     private TreeMap deepCloneMenus() throws CloneNotSupportedException {

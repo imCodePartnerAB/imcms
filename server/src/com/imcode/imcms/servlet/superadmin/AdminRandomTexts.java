@@ -8,6 +8,7 @@ import javax.servlet.http.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.util.*;
 import imcode.util.fortune.*;
 
@@ -66,7 +67,7 @@ public class AdminRandomTexts extends Administrator {
         values.add("#options#");
         values.add(options.toString());
 
-        out.write(imcref.getTemplateFromDirectory( HTML_TEMPLATE, user, values, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + ""));
+        out.write(imcref.getTemplateFromDirectory( HTML_TEMPLATE, user, values, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + ""));
 
     } // End doGet
 
@@ -129,7 +130,7 @@ public class AdminRandomTexts extends Administrator {
             values.add(buff.toString());
 
             UserDomainObject user = Utility.getLoggedOnUser(req);
-            out.write(imcref.getTemplateFromDirectory( HTML_TEMPLATE_ADMIN, user, values, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + ""));
+            out.write(imcref.getTemplateFromDirectory( HTML_TEMPLATE_ADMIN, user, values, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + ""));
             session.setAttribute("lines", lines);
             return;
         }

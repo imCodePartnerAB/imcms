@@ -9,7 +9,7 @@ package imcode.server.document;
 public class ConferenceDocumentDomainObject extends FormerExternalDocumentDomainObject {
 
     public DocumentTypeDomainObject getDocumentType() {
-        return DOCTYPE_CONFERENCE;
+        return DocumentTypeDomainObject.CONFERENCE;
     }
 
 }

@@ -2,6 +2,7 @@ package imcode.server.document;
 
 import imcode.server.db.MockDatabase;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.MockImcmsServices;
 import junit.framework.TestCase;
 
 public class TestDocumentPermissionSetMapper extends TestCase {
@@ -15,7 +16,7 @@ public class TestDocumentPermissionSetMapper extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         database = new MockDatabase();
-        documentPermissionSetMapper = new DocumentPermissionSetMapper( database );
+        documentPermissionSetMapper = new DocumentPermissionSetMapper( database, new MockImcmsServices() );
         textDocument = new TextDocumentDomainObject();
         textDocumentPermissionSet = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
     }

@@ -107,9 +107,9 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 		<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_new ?>
 		<select name="<%= AdminManager.REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION %>"><%
 			DocumentTypeDomainObject[] documentTypes = {
-				DocumentDomainObject.DOCTYPE_TEXT,
-				DocumentDomainObject.DOCTYPE_URL,
-				DocumentDomainObject.DOCTYPE_FILE,
+				DocumentTypeDomainObject.TEXT,
+				DocumentTypeDomainObject.URL,
+				DocumentTypeDomainObject.FILE,
 			} ;
 
 			for ( int i = 0; i < documentTypes.length; i++ ) {

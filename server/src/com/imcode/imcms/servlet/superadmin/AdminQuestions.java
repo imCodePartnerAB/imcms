@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.fortune.DateRange;
@@ -78,7 +79,7 @@ public class AdminQuestions extends Administrator implements imcode.server.Imcms
         values.add("#options#");
         values.add(options.toString());
 
-        String parsed = imcref.getTemplateFromDirectory( ADMIN_QUESTION, user, values, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "");
+        String parsed = imcref.getTemplateFromDirectory( ADMIN_QUESTION, user, values, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "");
         out.write(parsed);
 
     } // End doGet
@@ -143,19 +144,19 @@ public class AdminQuestions extends Administrator implements imcode.server.Imcms
                 values.add("#options#");
                 values.add(buff.toString());
 
-                String parsed = imcref.getTemplateFromDirectory( QUESTION_RESULT, user, values, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "");
+                String parsed = imcref.getTemplateFromDirectory( QUESTION_RESULT, user, values, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "");
                 out.print(parsed);
 
                 session.setAttribute("results", list);
                 return;
             } catch (NoSuchElementException ex) {
                 StringBuffer buff2 = new StringBuffer("<option>");
-                buff.append(imcref.getTemplateFromDirectory( RESULT_ERR_MSG, user, null, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + ""));
+                buff.append(imcref.getTemplateFromDirectory( RESULT_ERR_MSG, user, null, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + ""));
                 buff2.append("</option>");
                 Vector values = new Vector();
                 values.add("#options#");
                 values.add(buff2.toString());
-                String parsed = imcref.getTemplateFromDirectory( QUESTION_RESULT, user, values, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "");
+                String parsed = imcref.getTemplateFromDirectory( QUESTION_RESULT, user, values, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "");
                 out.print(parsed);
                 return;
             }
@@ -193,7 +194,7 @@ public class AdminQuestions extends Administrator implements imcode.server.Imcms
             values.add(buff.toString());
 
 
-            String parsed = imcref.getTemplateFromDirectory( ADMIN_QUESTION_FILE, user, values, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "");
+            String parsed = imcref.getTemplateFromDirectory( ADMIN_QUESTION_FILE, user, values, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "");
             out.print(parsed);
 
             session.setAttribute("lines", lines);

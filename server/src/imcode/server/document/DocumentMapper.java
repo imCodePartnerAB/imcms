@@ -89,7 +89,7 @@ public class DocumentMapper {
         }
         DocumentDomainObject newDocument;
         try {
-            if ( DocumentDomainObject.DOCTYPE_ID_TEXT == documentTypeId ) {
+            if ( DocumentTypeDomainObject.TEXT_ID == documentTypeId ) {
                 newDocument = (DocumentDomainObject)parent.clone();
                 TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject)newDocument;
                 newTextDocument.removeAllTexts();
@@ -968,15 +968,6 @@ public class DocumentMapper {
             allDocumentTypeIdsAndNamesInUsersLanguage.put( documentTypeId, documentTypeNameInUsersLanguage );
         }
         return allDocumentTypeIdsAndNamesInUsersLanguage;
-    }
-
-    public int[] getAllDocumentTypeIds() {
-        String[] documentTypeIdStrings = database.sqlQuery( "SELECT DISTINCT doc_type FROM doc_types", new String[0] );
-        int[] documentTypeIds = new int[documentTypeIdStrings.length];
-        for ( int i = 0; i < documentTypeIdStrings.length; i++ ) {
-            documentTypeIds[i] = Integer.parseInt( documentTypeIdStrings[i] );
-        }
-        return documentTypeIds;
     }
 
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument( DocumentDomainObject document ) {

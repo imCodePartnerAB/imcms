@@ -26,21 +26,21 @@ public class SaveInPage extends HttpServlet {
      * doPost()
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        ImcmsServices imcref = Imcms.getServices();
+        ImcmsServices services = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentMapper documentMapper = services.getDocumentMapper();
 
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
 
-        TemplateMapper templateMapper = imcref.getTemplateMapper();
+        TemplateMapper templateMapper = services.getTemplateMapper();
 
         TemplateDomainObject requestedTemplate = getRequestedTemplate( req, templateMapper );
 
         TemplateGroupDomainObject requestedTemplateGroup = getRequestedTemplateGroup( req, templateMapper );
 
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
-        TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
+        TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups( services );
 
         boolean requestedTemplateGroupIsAllowed = null == requestedTemplateGroup;
         boolean requestedTemplateIsAllowed = null == requestedTemplate;
@@ -55,7 +55,7 @@ public class SaveInPage extends HttpServlet {
         }
 
         // Check if user has write rights
-        if ( !imcref.checkDocAdminRights( documentId, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE )
+        if ( !services.checkDocAdminRights( documentId, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE )
              || !requestedTemplateIsAllowed
              || !requestedTemplateGroupIsAllowed ) {	// Checking to see if user may edit this
             Utility.setDefaultHtmlContentType( res );
@@ -78,7 +78,7 @@ public class SaveInPage extends HttpServlet {
                 List vec = new ArrayList();
                 vec.add( "#meta_id#" );
                 vec.add( String.valueOf( documentId ) );
-                String htmlStr = imcref.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
+                String htmlStr = services.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
                 out.write( htmlStr );
                 return;
             }
@@ -90,7 +90,7 @@ public class SaveInPage extends HttpServlet {
             }
             try {
                 documentMapper.saveDocument( textDocument, user );
-                imcref.updateMainLog( "Text docs  [" + textDocument.getId() + "] updated by user: [" + user.getFullName()
+                services.updateMainLog( "Text docs  [" + textDocument.getId() + "] updated by user: [" + user.getFullName()
                                    + "]" );
             } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
                 throw new RuntimeException( e );
@@ -109,12 +109,12 @@ public class SaveInPage extends HttpServlet {
                 vec.add( "#meta_id#" );
                 vec.add( String.valueOf( documentId ) );
                 Utility.setDefaultHtmlContentType( res );
-                String htmlStr = imcref.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
+                String htmlStr = services.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
                 Writer out = res.getWriter();
                 out.write( htmlStr );
                 return;
             }
-            Object[] temp = imcref.getDemoTemplate( requestedTemplate.getId() );
+            Object[] temp = services.getDemoTemplate( requestedTemplate.getId() );
             if ( temp != null ) {
                 String demoTemplateName = requestedTemplate.getId() + "." + temp[0];
                 // Set content-type depending on type of demo-template.
@@ -126,7 +126,7 @@ public class SaveInPage extends HttpServlet {
                 return;
             } else {
                 Utility.setDefaultHtmlContentType( res );
-                String htmlStr = imcref.getAdminTemplate( "no_demotemplate.html", user, null );
+                String htmlStr = services.getAdminTemplate( "no_demotemplate.html", user, null );
                 Writer out = res.getWriter();
                 out.write( htmlStr );
                 return;

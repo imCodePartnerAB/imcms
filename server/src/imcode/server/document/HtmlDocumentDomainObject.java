@@ -13,7 +13,7 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
     }
 
     public DocumentTypeDomainObject getDocumentType() {
-        return DOCTYPE_HTML;
+        return DocumentTypeDomainObject.HTML;
     }
 
     public void accept( DocumentVisitor documentVisitor ) {

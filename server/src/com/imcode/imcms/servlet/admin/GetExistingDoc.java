@@ -207,7 +207,6 @@ public class GetExistingDoc extends HttpServlet {
 
     private Set getUsersAllowedDocumentTypeIdsOnDocument( UserDomainObject user,
                                                           TextDocumentDomainObject parentDocument ) {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         int[] allowedDocumentTypeIdsArray = ( (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( parentDocument ) ).getAllowedDocumentTypeIds();
         Set allowedDocumentTypeIds = new HashSet( Arrays.asList( ArrayUtils.toObject( allowedDocumentTypeIdsArray ) ) );
         return allowedDocumentTypeIds;

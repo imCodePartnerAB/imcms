@@ -11,7 +11,8 @@
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  com.imcode.imcms.flow.Page,
                  com.imcode.imcms.flow.OkCancelPage,
-                 com.imcode.imcms.flow.*"%>
+                 com.imcode.imcms.flow.*,
+                 imcode.server.ImcmsServices"%>
 <%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
     DocumentPermissionSetPage documentPermissionSetPage = (DocumentPermissionSetPage)Page.fromRequest(request) ;
     DocumentPermissionSetDomainObject documentPermissionSet = documentPermissionSetPage.getDocumentPermissionSet() ;
@@ -78,8 +79,10 @@
         <td class="imcmsAdmText"><input type="checkbox" name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__EDIT_MENUS %>" value="1" <% if ( textDocumentPermissionSet.getEditMenus() ) { %>checked<% } %>><? templates/sv/permissions/define_permission_2_262144.html/1001 ?></td>
         <td>
             <select name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__ALLOWED_DOCUMENT_TYPE_IDS %>" size="6" multiple>
-                <%  int[] allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds() ;
-                    Map allDocumentTypes = Imcms.getServices().getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user ) ;
+                <%
+    ImcmsServices services = Imcms.getServices();
+    int[] allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds() ;
+                    Map allDocumentTypes = services.getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user ) ;
                     for ( Iterator iterator = allDocumentTypes.entrySet().iterator(); iterator.hasNext(); ) {
                         Map.Entry entry = (Map.Entry)iterator.next();
                         Integer documentTypeId = (Integer)entry.getKey();
@@ -97,8 +100,8 @@
         <td>
         <select name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__ALLOWED_TEMPLATE_GROUP_IDS %>" size="6" multiple>
             <%
-                TemplateGroupDomainObject[] allTemplateGroups = Imcms.getServices().getTemplateMapper().getAllTemplateGroups() ;
-                TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups() ;
+                TemplateGroupDomainObject[] allTemplateGroups = services.getTemplateMapper().getAllTemplateGroups() ;
+                TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups( services ) ;
                 for ( int i = 0; i < allTemplateGroups.length; i++ ) {
                     TemplateGroupDomainObject templateGroup = allTemplateGroups[i];
                     boolean allowedTemplateGroup = ArrayUtils.contains(allowedTemplateGroups, templateGroup) ;
@@ -114,7 +117,7 @@
                 <select name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID %>">
                     <option value=""><? templates/sv/docinfo/default_templates_1.html/2 ?></option>
                     <%
-                        TemplateDomainObject[] allTemplates = Imcms.getServices().getTemplateMapper().getAllTemplates() ;
+                        TemplateDomainObject[] allTemplates = services.getTemplateMapper().getAllTemplates() ;
                         TemplateDomainObject defaultTemplate = textDocumentPermissionSet.getDefaultTemplate() ;
                         for ( int i = 0; i < allTemplates.length; i++ ) {
                             TemplateDomainObject template = allTemplates[i];
@@ -127,11 +130,10 @@
         </tr>
     <% } %>
 <% } else {
-    NonTextDocumentPermissionSetDomainObject nonTextDocumentPermissionSet = (NonTextDocumentPermissionSetDomainObject)documentPermissionSet ;
     %>
     <tr>
         <td class="imcmsAdmText"><? templates/sv/permissions/define_permission_5_65536.html/1 ?></td>
-        <td colspan="2"><input type="checkbox" name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__EDIT %>" value="1" <% if( nonTextDocumentPermissionSet.getEdit() ) { %>checked<% } %>></td>
+        <td colspan="2"><input type="checkbox" name="<%= DocumentPermissionSetPage.REQUEST_PARAMETER__EDIT %>" value="1" <% if( documentPermissionSet.getEdit() ) { %>checked<% } %>></td>
     </tr>
 <% } %>
 <tr>

@@ -65,8 +65,7 @@ public class DocumentPermissionSetPage extends OkCancelPage {
             } catch( NumberFormatException ignored ) {}
             textDocumentPermissionSet.setDefaultTemplate( defaultTemplate );
         } else {
-            NonTextDocumentPermissionSetDomainObject nonTextDocumentPermissionSet = (NonTextDocumentPermissionSetDomainObject)documentPermissionSet ;
-            nonTextDocumentPermissionSet.setEdit( null != request.getParameter( REQUEST_PARAMETER__EDIT ));
+            documentPermissionSet.setEdit( null != request.getParameter( REQUEST_PARAMETER__EDIT ));
         }
     }
 

@@ -102,7 +102,7 @@ public class ChangeImage extends HttpServlet {
     private void goToImageAdder( final DocumentMapper documentMapper, final TextDocumentDomainObject document,
                                  UserDomainObject user, final ImageDomainObject image, final int imageIndex,
                                  HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentDomainObject.DOCTYPE_ID_FILE, document, user );
+        FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.FILE_ID, document, user );
         final EditFileDocumentPageFlow.ArrayMimeTypeRestriction mimeTypeRestriction = new EditFileDocumentPageFlow.ArrayMimeTypeRestriction( IMAGE_MIME_TYPES, ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES );
         DocumentPageFlow.SaveDocumentCommand saveNewImageFileDocument = new CreateDocumentPageFlow.SaveDocumentCommand() {
             public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
@@ -182,7 +182,7 @@ public class ChangeImage extends HttpServlet {
         }
 
         TermQuery fileDocumentQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
-                                                                                                 + DocumentDomainObject.DOCTYPE_ID_FILE ) );
+                                                                                                 + DocumentTypeDomainObject.FILE_ID ) );
 
         BooleanQuery booleanQuery = new BooleanQuery();
         booleanQuery.add( fileDocumentQuery, true, false );

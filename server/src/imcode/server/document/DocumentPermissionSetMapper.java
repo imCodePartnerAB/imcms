@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
 import imcode.server.db.Database;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -29,9 +30,11 @@ public class DocumentPermissionSetMapper {
     private final static int EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID = ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES;
 
     private Database database;
+    private ImcmsServices services;
 
-    public DocumentPermissionSetMapper( Database service ) {
+    public DocumentPermissionSetMapper( Database service, ImcmsServices services ) {
         this.database = service;
+        this.services = services;
     }
 
     public DocumentPermissionSetDomainObject getRestrictedPermissionSet( DocumentDomainObject document,
@@ -41,7 +44,7 @@ public class DocumentPermissionSetMapper {
         if ( document instanceof TextDocumentDomainObject ) {
             documentPermissionSet = new TextDocumentPermissionSetDomainObject( permissionTypeId );
         } else {
-            documentPermissionSet = new NonTextDocumentPermissionSetDomainObject( permissionTypeId );
+            documentPermissionSet = new DocumentPermissionSetDomainObject( permissionTypeId );
         }
         setDocumentPermissionSetBitsFromDb( document, documentPermissionSet, forNewDocuments );
 
@@ -109,7 +112,7 @@ public class DocumentPermissionSetMapper {
         List permissionPairs = new ArrayList( Arrays.asList( new PermissionPair[]{
              new PermissionPair( EDIT_DOCINFO_PERMISSION_ID, documentPermissionSet.getEditDocumentInformation() ),
              new PermissionPair( EDIT_PERMISSIONS_PERMISSION_ID, documentPermissionSet.getEditPermissions() ),
-         } ) );
+        } ) );
 
         if ( document instanceof TextDocumentDomainObject ) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
@@ -119,7 +122,7 @@ public class DocumentPermissionSetMapper {
             permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID, textDocumentPermissionSet.getEditTemplates() ) );
             permissionPairs.add( new PermissionPair( EDIT_TEXT_DOCUMENT_INCLUDES_PERMISSION_ID, textDocumentPermissionSet.getEditIncludes() ) );
         } else {
-            permissionPairs.add( new PermissionPair( EDIT_DOCUMENT_PERMISSION_ID, ( (NonTextDocumentPermissionSetDomainObject)documentPermissionSet ).getEdit() ) );
+            permissionPairs.add( new PermissionPair( EDIT_DOCUMENT_PERMISSION_ID, documentPermissionSet.getEdit() ) ) ;
         }
 
         int permissionBits = 0;
@@ -150,7 +153,7 @@ public class DocumentPermissionSetMapper {
                                                TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
                                                boolean forNewDocuments ) {
         String table = getExtendedPermissionsTable( forNewDocuments );
-        TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
+        TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups( services );
         if ( null == allowedTemplateGroups ) {
             return;
         }
@@ -211,13 +214,7 @@ public class DocumentPermissionSetMapper {
                                            int permissionBits ) {
         documentPermissionSet.setEditDocumentInformation( 0 != ( permissionBits & EDIT_DOCINFO_PERMISSION_ID ) );
         documentPermissionSet.setEditPermissions( 0 != ( permissionBits & EDIT_PERMISSIONS_PERMISSION_ID ) );
-
-    }
-
-    void setNonTextDocumentPermissionSetFromBits( NonTextDocumentPermissionSetDomainObject nonTextDocumentPermissionSet,
-                                              int permissionBits ) {
-        setDocumentPermissionSetFromBits( nonTextDocumentPermissionSet, permissionBits );
-        nonTextDocumentPermissionSet.setEdit( 0 != ( permissionBits & EDIT_DOCUMENT_PERMISSION_ID ) );
+        documentPermissionSet.setEdit( 0 != ( permissionBits & EDIT_DOCUMENT_PERMISSION_ID ) );
     }
 
     void setTextDocumentPermissionSetFromBits( DocumentDomainObject document,

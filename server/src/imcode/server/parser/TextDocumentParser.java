@@ -3,6 +3,7 @@ package imcode.server.parser;
 import com.imcode.imcms.api.TextDocumentViewing;
 import imcode.server.DocumentRequest;
 import imcode.server.ImcmsServices;
+import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -187,7 +188,7 @@ public class TextDocumentParser {
 
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
 
-            TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
+            TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups( Imcms.getServices() );
             String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups( allowedTemplateGroups, selectedTemplateGroup );
 
             TemplateDomainObject[] templates = new TemplateDomainObject[0];

@@ -13,47 +13,6 @@ import java.util.*;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
-    public static final String DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX = "document_type/name/";
-
-    public static final int DOCTYPE_ID_TEXT = 2;
-    public static final int DOCTYPE_ID_URL = 5;
-    public static final int DOCTYPE_ID_BROWSER = 6;
-    public static final int DOCTYPE_ID_HTML = 7;
-    public static final int DOCTYPE_ID_FILE = 8;
-    public static final int DOCTYPE_ID_CONFERENCE = 102;
-    public static final int DOCTYPE_ID_CHAT = 103;
-    public static final int DOCTYPE_ID_BILLBOARD = 104;
-
-    public final static DocumentTypeDomainObject DOCTYPE_TEXT = new DocumentTypeDomainObject( DOCTYPE_ID_TEXT, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                       + "text" ) );
-    public final static DocumentTypeDomainObject DOCTYPE_URL = new DocumentTypeDomainObject( DOCTYPE_ID_URL, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                      + "url" ) );
-    public final static DocumentTypeDomainObject DOCTYPE_BROWSER = new DocumentTypeDomainObject( DOCTYPE_ID_BROWSER, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                          + "browser" ) );
-    public final static DocumentTypeDomainObject DOCTYPE_HTML = new DocumentTypeDomainObject( DOCTYPE_ID_HTML, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                       + "html" ) );
-    public final static DocumentTypeDomainObject DOCTYPE_FILE = new DocumentTypeDomainObject( DOCTYPE_ID_FILE, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                       + "file" ) );
-    public final static DocumentTypeDomainObject DOCTYPE_CONFERENCE = new DocumentTypeDomainObject( DOCTYPE_ID_CONFERENCE, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                               + "conference" ) );
-    public final static DocumentTypeDomainObject DOCTYPE_CHAT = new DocumentTypeDomainObject( DOCTYPE_ID_CHAT, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                         + "chat" ) );
-    public final static DocumentTypeDomainObject DOCTYPE_BILLBOARD = new DocumentTypeDomainObject( DOCTYPE_ID_BILLBOARD,
-                                                                                                   new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
-                                                                                                                         + "billboard" ) );
-    final static DocumentTypeDomainObject[] ALL_DOCUMENT_TYPES = {
-       DOCTYPE_BILLBOARD,
-       DOCTYPE_BROWSER,
-       DOCTYPE_CHAT,
-       DOCTYPE_CONFERENCE,
-       DOCTYPE_FILE,
-       DOCTYPE_HTML,
-       DOCTYPE_TEXT,
-       DOCTYPE_URL,
-    } ;
-
-    public static final int PSEUDO_DOCTYPE_ID_FORTUNES = 106;
-
     public static final int STATUS_NEW = 0;
     public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
     public static final int STATUS_PUBLICATION_APPROVED = 2;
@@ -65,10 +24,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     protected DocumentDomainObject() {
         attributes = new Attributes();
-        attributes.permissionSetForRestrictedOne = new NonTextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
-        attributes.permissionSetForRestrictedTwo = new NonTextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
-        attributes.permissionSetForRestrictedOneForNewDocuments = new NonTextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
-        attributes.permissionSetForRestrictedTwoForNewDocuments = new NonTextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
+        attributes.permissionSetForRestrictedOne = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
+        attributes.permissionSetForRestrictedTwo = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
+        attributes.permissionSetForRestrictedOneForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 );
+        attributes.permissionSetForRestrictedTwoForNewDocuments = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 );
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -83,28 +42,28 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         DocumentDomainObject document;
 
         switch ( documentTypeId ) {
-            case DOCTYPE_ID_TEXT :
+            case DocumentTypeDomainObject.TEXT_ID :
                 document = new TextDocumentDomainObject();
                 break;
-            case DOCTYPE_ID_URL:
+            case DocumentTypeDomainObject.URL_ID:
                 document = new UrlDocumentDomainObject();
                 break;
-            case DOCTYPE_ID_BROWSER:
+            case DocumentTypeDomainObject.BROWSER_ID:
                 document = new BrowserDocumentDomainObject();
                 break;
-            case DOCTYPE_ID_FILE:
+            case DocumentTypeDomainObject.FILE_ID:
                 document = new FileDocumentDomainObject();
                 break;
-            case DOCTYPE_ID_HTML:
+            case DocumentTypeDomainObject.HTML_ID:
                 document = new HtmlDocumentDomainObject();
                 break;
-            case DOCTYPE_ID_CHAT:
+            case DocumentTypeDomainObject.CHAT_ID:
                 document = new ChatDocumentDomainObject();
                 break;
-            case DOCTYPE_ID_CONFERENCE:
+            case DocumentTypeDomainObject.CONFERENCE_ID:
                 document = new ConferenceDocumentDomainObject();
                 break;
-            case DOCTYPE_ID_BILLBOARD:
+            case DocumentTypeDomainObject.BILLBOARD_ID:
                 document = new BillboardDocumentDomainObject();
                 break;
             default:

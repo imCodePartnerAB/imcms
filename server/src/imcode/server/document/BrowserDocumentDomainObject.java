@@ -16,7 +16,7 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
     }
 
     public DocumentTypeDomainObject getDocumentType() {
-        return DOCTYPE_BROWSER;
+        return DocumentTypeDomainObject.BROWSER;
     }
 
     public void accept( DocumentVisitor documentVisitor ) {

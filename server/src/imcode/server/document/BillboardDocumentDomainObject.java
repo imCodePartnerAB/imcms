@@ -11,6 +11,6 @@ import imcode.util.LocalizedMessage;
 public class BillboardDocumentDomainObject extends FormerExternalDocumentDomainObject {
 
     public DocumentTypeDomainObject getDocumentType() {
-        return DOCTYPE_BILLBOARD;
+        return DocumentTypeDomainObject.BILLBOARD;
     }
 }

@@ -47,7 +47,7 @@ public class TestDocumentMapper extends TestCase {
                 return null ;
             }
         }) ;
-        documentMapper = new DocumentMapper( services, database, userRegistry, new DocumentPermissionSetMapper( database ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
+        documentMapper = new DocumentMapper( services, database, userRegistry, new DocumentPermissionSetMapper( database, services ), new TestDocumentMapper.MockDocumentIndex(), null, new Config() );
     }
 
     public void testNotSerializable() {
@@ -138,6 +138,28 @@ public class TestDocumentMapper extends TestCase {
         documentMapper.deleteDocument( textDocument, user );
         database.addExpectedSqlCall( new MockDatabase.ProcedureSqlCallPredicate( DocumentMapper.SPROC_GET_DOCUMENT_INFO ), new String[0] );
         assertNull( documentMapper.getDocument( textDocument.getId() ) ) ;
+    }
+
+    public void testCreateTextDocument() {
+        user.addRole( RoleDomainObject.SUPERADMIN );
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.TEXT_ID, textDocument, user );
+        document.setTemplate( new TemplateDomainObject( 1, "test", "test" ) );
+        database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "@@IDENTITY"), "1002");
+        documentMapper.saveNewDocument( document, user );
+    }
+
+    public void testCreateHtmlDocument() {
+        user.addRole( RoleDomainObject.SUPERADMIN );
+        DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.HTML_ID, textDocument, user );
+        database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "@@IDENTITY"), "1002");
+        documentMapper.saveNewDocument( document, user );
+    }
+
+    public void testCreateUrlDocument() {
+        user.addRole( RoleDomainObject.SUPERADMIN );
+        DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.URL_ID, textDocument, user );
+        database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "@@IDENTITY"), "1002");
+        documentMapper.saveNewDocument( document, user );
     }
 
     public class MockDocumentIndex implements DocumentIndex {

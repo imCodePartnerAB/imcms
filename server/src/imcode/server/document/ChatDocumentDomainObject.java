@@ -9,6 +9,6 @@ package imcode.server.document;
 public class ChatDocumentDomainObject extends FormerExternalDocumentDomainObject {
 
     public DocumentTypeDomainObject getDocumentType() {
-        return DOCTYPE_CHAT;
+        return DocumentTypeDomainObject.CHAT;
     }
 }

@@ -23,7 +23,7 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
     }
 
     public DocumentTypeDomainObject getDocumentType() {
-        return DOCTYPE_URL ;
+        return DocumentTypeDomainObject.URL ;
     }
 
     public void accept( DocumentVisitor documentVisitor ) {

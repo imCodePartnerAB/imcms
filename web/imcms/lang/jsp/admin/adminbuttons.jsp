@@ -91,8 +91,7 @@ B { font-weight: bold; }
               %> title="<? templates/sv/adminbuttons/adminbutton2_1048576.html/2001 ?>" id="admBtnInclude" border="0"></a><%
             }
         } else {
-            NonTextDocumentPermissionSetDomainObject nonTextDocumentPermissionSet = (NonTextDocumentPermissionSetDomainObject)documentPermissionSet ;
-            if( nonTextDocumentPermissionSet.getEdit() ) {
+            if( documentPermissionSet.getEdit() ) {
                 %><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&flags=65536" id="admHrefRedigera"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/redigera.gif"<%
               %> alt="<? templates/sv/adminbuttons/adminbutton7_65536.html/2001 ?>"<%
               %> title="<? templates/sv/adminbuttons/adminbutton7_65536.html/2001 ?>" id="admBtnRedigera" border="0"></a><%

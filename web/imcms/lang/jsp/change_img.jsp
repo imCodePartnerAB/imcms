@@ -10,13 +10,11 @@
           imcode.util.Utility,
           imcode.util.Html,
           org.apache.commons.collections.Transformer,
-          imcode.server.document.DocumentMapper,
           imcode.server.user.UserDomainObject,
-          imcode.server.document.DocumentDomainObject,
           imcode.util.ImcmsImageUtils,
-          imcode.server.document.FileDocumentDomainObject,
           com.imcode.util.ImageSize,
-          com.imcode.util.ImageSize"
+          com.imcode.util.ImageSize,
+          imcode.server.document.*"
 
 	contentType="text/html"
 
@@ -281,7 +279,7 @@ function checkLinkOnBlur() {<%
 			<table>
 			<tr><%
 				if (!fromEditor) {
-					if (user.canCreateDocumentOfTypeIdFromParent( DocumentDomainObject.DOCTYPE_ID_FILE, document )) { %>
+					if (user.canCreateDocumentOfTypeIdFromParent( DocumentTypeDomainObject.FILE_ID, document )) { %>
 				<td><input type="submit" <%
 							%>name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON %>" <%
 							%>class="imcmsFormBtnSmall" style="width:200px" <%

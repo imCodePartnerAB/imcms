@@ -4,6 +4,7 @@ import imcode.util.Html;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
@@ -161,7 +162,7 @@ public class AdminListDocs extends Administrator {
                         int testVar = docTypes[i];
                         // if all doctypes choosen then lets get all doctypes
                         if ( testVar == 0 ) {
-                            docTypesToShow = imcref.getDocumentMapper().getAllDocumentTypeIds();
+                            docTypesToShow = DocumentTypeDomainObject.getAllDocumentTypeIds();
                         }
                     }
                 } else {

@@ -2,9 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -178,7 +176,7 @@ public class LinkCheck extends HttpServlet {
     private void addUrlDocumentLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
                                       HttpServletRequest request, IntRange range ) {
         TermQuery urlDocumentsQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
-                                                                                     + DocumentDomainObject.DOCTYPE_ID_URL ) );
+                                                                                     + DocumentTypeDomainObject.URL_ID ) );
         DocumentDomainObject[] urlDocuments = reindexingIndex.search( urlDocumentsQuery, user );
 
         for ( int i = 0; i < urlDocuments.length; i++ ) {

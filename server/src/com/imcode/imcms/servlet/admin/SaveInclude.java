@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -64,7 +65,7 @@ public class SaveInclude extends HttpServlet {
                     String[] docTypeStrArr = imcref.sqlProcedure( "GetDocType", new String[]{included_meta_id} );
                     int docType = Integer.parseInt( docTypeStrArr[0] );
                     if ( null == docTypeStrArr || 0 == docTypeStrArr.length
-                         || DocumentDomainObject.DOCTYPE_ID_TEXT != docType ) {
+                         || DocumentTypeDomainObject.TEXT_ID != docType ) {
                         sendBadId( imcref, out, meta_id, user );
                         return;
                     }

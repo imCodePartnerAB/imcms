@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.Imcms;
 
 public class DocumentPermissionSet {
 
@@ -66,7 +67,7 @@ public class DocumentPermissionSet {
 
     public String[] getEditableTemplateGroupNames() {
         if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
-            TemplateGroupDomainObject[] internalTemplateGroups = ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getAllowedTemplateGroups();
+            TemplateGroupDomainObject[] internalTemplateGroups = ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getAllowedTemplateGroups( Imcms.getServices() );
             String[] templateGroupNames = new String[internalTemplateGroups.length] ;
             for ( int i = 0; i < internalTemplateGroups.length; i++ ) {
                 TemplateGroupDomainObject internalTemplateGroup = internalTemplateGroups[i];

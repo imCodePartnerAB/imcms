@@ -181,7 +181,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private void initDocumentMapper() {
         File indexDirectory = new File( getRealContextPath(), "WEB-INF/index" );
         DocumentIndex documentIndex = new AutorebuildingDirectoryIndex( indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes() );
-        documentMapper = new DocumentMapper( this, this.getDatabase(), this.getImcmsAuthenticatorAndUserAndRoleMapper(), new DocumentPermissionSetMapper( this ), documentIndex, this.getClock(), this.getConfig() );
+        documentMapper = new DocumentMapper( this, this.getDatabase(), this.getImcmsAuthenticatorAndUserAndRoleMapper(), new DocumentPermissionSetMapper( getDatabase(), this ), documentIndex, this.getClock(), this.getConfig() );
     }
 
     private void initTemplateMapper() {
@@ -332,7 +332,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public String isFramesetDoc( int meta_id ) {
 
         String htmlStr = null;
-        if ( DocumentDomainObject.DOCTYPE_ID_HTML == getDocType( meta_id ) ) {
+        if ( DocumentTypeDomainObject.HTML_ID == getDocType( meta_id ) ) {
             String sqlStr = "select frame_set from frameset_docs where meta_id = ?";
             htmlStr = sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
         }

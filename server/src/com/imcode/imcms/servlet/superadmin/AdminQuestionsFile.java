@@ -10,6 +10,7 @@ import javax.servlet.http.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.util.*;
 import imcode.util.fortune.*;
 
@@ -58,8 +59,8 @@ public class AdminQuestionsFile extends Administrator {
         String date1 = "";
         String date2 = "";
         String text = "";
-        String errMsgDate = imcref.getTemplateFromDirectory( DATE_ERROR, user, null, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "" );
-        String errMsgTxt = imcref.getTemplateFromDirectory( TEXT_ERROR, user, null, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "" );
+        String errMsgDate = imcref.getTemplateFromDirectory( DATE_ERROR, user, null, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "" );
+        String errMsgTxt = imcref.getTemplateFromDirectory( TEXT_ERROR, user, null, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "" );
 
         if ( req.getParameter( "save" ) != null ) {
 
@@ -209,7 +210,7 @@ public class AdminQuestionsFile extends Administrator {
         values.add( "#options#" );
         values.add( buff.toString() );
 
-        String parsed = imcref.getTemplateFromDirectory( ADMIN_TEMPLATE, user, values, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "" );
+        String parsed = imcref.getTemplateFromDirectory( ADMIN_TEMPLATE, user, values, DocumentTypeDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "" );
         out.write( parsed );
         return;
 

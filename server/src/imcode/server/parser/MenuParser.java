@@ -3,6 +3,7 @@ package imcode.server.parser;
 import imcode.server.DocumentRequest;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -103,15 +104,15 @@ class MenuParser {
         docTypesMap.put( new Integer( EXISTING_DOCTYPE_ID ), new IdNamePair( EXISTING_DOCTYPE_ID, existing_doc_name ) );
 
         final int[] docTypeIdsOrder = {
-            DocumentDomainObject.DOCTYPE_ID_TEXT,
+            DocumentTypeDomainObject.TEXT_ID,
             EXISTING_DOCTYPE_ID,
-            DocumentDomainObject.DOCTYPE_ID_URL,
-            DocumentDomainObject.DOCTYPE_ID_FILE,
-            DocumentDomainObject.DOCTYPE_ID_BROWSER,
-            DocumentDomainObject.DOCTYPE_ID_HTML,
-            DocumentDomainObject.DOCTYPE_ID_CHAT,
-            DocumentDomainObject.DOCTYPE_ID_BILLBOARD,
-            DocumentDomainObject.DOCTYPE_ID_CONFERENCE,
+            DocumentTypeDomainObject.URL_ID,
+            DocumentTypeDomainObject.FILE_ID,
+            DocumentTypeDomainObject.BROWSER_ID,
+            DocumentTypeDomainObject.HTML_ID,
+            DocumentTypeDomainObject.CHAT_ID,
+            DocumentTypeDomainObject.BILLBOARD_ID,
+            DocumentTypeDomainObject.CONFERENCE_ID,
         };
 
         StringBuffer documentTypesHtmlOptionList = new StringBuffer();

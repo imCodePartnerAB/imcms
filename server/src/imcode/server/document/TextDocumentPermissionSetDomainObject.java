@@ -1,5 +1,7 @@
 package imcode.server.document;
 
+import imcode.server.ImcmsServices;
+
 import java.io.Serializable;
 
 public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject implements Serializable {
@@ -66,7 +68,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
         this.allowedTemplateGroups = allowedTemplateGroupNames;
     }
 
-    public TemplateGroupDomainObject[] getAllowedTemplateGroups() {
+    public TemplateGroupDomainObject[] getAllowedTemplateGroups( ImcmsServices services ) {
         return allowedTemplateGroups;
     }
 

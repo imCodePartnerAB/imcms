@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.util.InputStreamSource;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.list.TransformedList;
 
@@ -16,7 +17,7 @@ import java.util.Map;
 
 public class FileDocument extends Document {
 
-    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_ID_FILE ;
+    public final static int TYPE_ID = DocumentTypeDomainObject.FILE_ID ;
 
     FileDocument( FileDocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
         super( document, contentManagementSystem );

@@ -2,7 +2,9 @@ package imcode.server.document;
 
 import org.apache.commons.lang.NullArgumentException;
 
-public class DocumentPermission {
+import java.io.Serializable;
+
+public class DocumentPermission implements Serializable {
 
     private final String name ;
 

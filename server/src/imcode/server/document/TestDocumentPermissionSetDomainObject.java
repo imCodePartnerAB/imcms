@@ -1,5 +1,6 @@
 package imcode.server.document;
 
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import junit.framework.TestCase;
 
 public class TestDocumentPermissionSetDomainObject extends TestCase {
@@ -22,8 +23,9 @@ public class TestDocumentPermissionSetDomainObject extends TestCase {
     }
 
     public void testPermissionSetFull() {
-        DocumentPermissionSetDomainObject.FULL.setPermission( PERMISSION, false );
-        assertTrue( DocumentPermissionSetDomainObject.FULL.hasPermission( PERMISSION ) );
+        DocumentPermissionSetDomainObject full = DocumentPermissionSetDomainObject.FULL ;
+        full.setPermission( PERMISSION, false );
+        assertTrue( full.hasPermission( PERMISSION ) );
     }
 
     public void testSetPermissionTrue() throws Exception {

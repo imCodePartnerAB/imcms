@@ -20,7 +20,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
 
     public DocumentTypeDomainObject getDocumentType() {
-        return DOCTYPE_FILE;
+        return DocumentTypeDomainObject.FILE;
     }
 
     public void accept( DocumentVisitor documentVisitor ) {

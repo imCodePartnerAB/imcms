@@ -38,11 +38,14 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
         TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
         TemplateDomainObject defaultTemplateForRestricted1 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
         TemplateDomainObject defaultTemplateForRestricted2 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
+        int templateId = textDocumentTemplate.getId();
+        int templateGroupId = textDocument.getTemplateGroupId();
+        int textDocumentId = textDocument.getId();
         database.sqlUpdateQuery( sqlTextDocsInsertStr,
                                 new String[]{
-                                    "" + textDocument.getId(),
-                                    "" + textDocumentTemplate.getId(),
-                                    "" + textDocument.getTemplateGroupId(),
+                                    "" + textDocumentId,
+                                    "" + templateId,
+                                    "" + templateGroupId,
                                     null != defaultTemplate ? "" + defaultTemplate.getId() : null,
                                     null != defaultTemplateForRestricted1 ? "" + defaultTemplateForRestricted1.getId() : "-1",
                                     null != defaultTemplateForRestricted2 ? "" + defaultTemplateForRestricted2.getId() : "-1",
