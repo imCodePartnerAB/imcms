@@ -2,15 +2,21 @@ package imcode.server.document;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
+import imcode.util.IntervalSchedule;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.CharTokenizer;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -33,108 +39,46 @@ import java.util.*;
 
 public class DocumentIndex {
 
-    private final static int INDEX_LOG_TIME_STEP = 2500;
-    private final static Logger log = Logger.getLogger( imcode.server.document.DocumentIndex.class.getName() );
-
-    private File dir;
-    private IndexWriter indexWriter;
-
-    private static final String FIELD__META_ID = "meta_id";
-    private static final String FIELD__META_HEADLINE = "meta_headline";
-    private static final String FIELD__META_TEXT = "meta_text";
     public static final String FIELD__DOC_TYPE_ID = "doc_type_id";
-    private static final String FIELD__SECTION = "section";
-    private static final String FIELD__CREATED_DATETIME = "created_datetime";
-    private static final String FIELD__MODIFIED_DATETIME = "modified_datetime";
-    private static final String FIELD__ACTIVATED_DATETIME = "activated_datetime";
-    private static final String FIELD__PUBLICATION_START_DATETIME = "publication_start_datetime";
-    private static final String FIELD__PUBLICATION_END_DATETIME = "publication_end_datetime";
-    private static final String FIELD__ARCHIVED_DATETIME = "archived_datetime";
-    private static final String FIELD__STATUS = "status";
+    public static final String FIELD__IMAGE_LINK_URL = "image_link_url";
     public static final String FIELD__TEXT = "text";
+
+    private static final String FIELD__ACTIVATED_DATETIME = "activated_datetime";
+    private static final String FIELD__ARCHIVED_DATETIME = "archived_datetime";
     private static final String FIELD__CATEGORY_ID = "category_id";
+    private static final String FIELD__CREATED_DATETIME = "created_datetime";
     private static final String FIELD__KEYWORD = "keyword";
+    private static final String FIELD__META_HEADLINE = "meta_headline";
+    private static final String FIELD__META_ID = "meta_id";
+    private static final String FIELD__META_TEXT = "meta_text";
+    private static final String FIELD__MODIFIED_DATETIME = "modified_datetime";
     private static final String FIELD__PARENT_ID = "parent_id";
     private static final String FIELD__PARENT_MENU_ID = "parent_menu_id";
-    public static final String FIELD__IMAGE_LINK_URL = "image_link_url";
+    private static final String FIELD__PUBLICATION_END_DATETIME = "publication_end_datetime";
+    private static final String FIELD__PUBLICATION_START_DATETIME = "publication_start_datetime";
+    private static final String FIELD__SECTION = "section";
+    private static final String FIELD__STATUS = "status";
+
+    private final static int INDEXING_LOG_TIME_INTERVAL__MILLISECONDS = 10 * 1000;
+    private final static Logger log = Logger.getLogger( imcode.server.document.DocumentIndex.class.getName() );
+
+    private File indexDirectory;
+    private Thread indexThread;
 
     public DocumentIndex( File dir ) {
-        this.dir = dir;
+        this.indexDirectory = createIndexDirectoryInDirectory( dir );
         BooleanQuery.setMaxClauseCount( Integer.MAX_VALUE ); // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow queries?
+        indexAllDocumentsInTheBackground();
     }
 
-    public synchronized DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IOException {
-        IndexReader indexReader = IndexReader.open( dir );
-        IndexSearcher indexSearcher = new IndexSearcher( indexReader );
-        StopWatch searchStopWatch = new StopWatch();
-        searchStopWatch.start();
-        Hits hits = indexSearcher.search( query );
-        long searchTime = searchStopWatch.getTime();
-        List documentList = getDocumentListForHits( hits, searchingUser );
-        log.debug( "Search for " + query.toString() + ": " + searchTime + "ms. Total: " + searchStopWatch.getTime()
-                   + "ms." );
-        indexSearcher.close();
-        return (DocumentDomainObject[])documentList.toArray( new DocumentDomainObject[documentList.size()] );
-    }
-
-    private List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
-        List documentList = new ArrayList( hits.length() );
-        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface()
-                .getDocumentMapper();
-        StopWatch getDocumentStopWatch = new StopWatch();
-        for ( int i = 0; i < hits.length(); ++i ) {
-            int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
-            getDocumentStopWatch.resume();
-            DocumentDomainObject document = documentMapper.getDocument( metaId );
-            if ( documentMapper.userHasPermissionToSearchDocument( searchingUser, document ) ) {
-                documentList.add( document );
-            }
-            getDocumentStopWatch.suspend();
-        }
-        logGetDocumentsStopWatch( getDocumentStopWatch, documentList.size() );
-        return documentList;
-    }
-
-    public synchronized void indexAllDocuments() {
-        NDC.push( "indexAllDocuments" );
+    public synchronized void indexDocument( DocumentDomainObject document ) {
         try {
-            openIndexWriter( true );
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-            String[] documentIds = getAllDocumentIds( imcref );
-            int numberOfDocuments = documentIds.length;
-            log.info( "Building index of all " + numberOfDocuments + " documents" );
-            DocumentMapper documentMapper = imcref.getDocumentMapper();
-            int nextIndexLogTime = INDEX_LOG_TIME_STEP;
-            StopWatch indexingStopWatch = new StopWatch();
-            indexingStopWatch.start();
-            StopWatch getDocumentStopWatch = new StopWatch();
-            for ( int i = 0; i < numberOfDocuments; i++ ) {
-                int documentId = Integer.parseInt( documentIds[i] );
-                getDocumentStopWatch.resume();
-                DocumentDomainObject document = documentMapper.getDocument( documentId );
-                getDocumentStopWatch.suspend();
-                addDocumentToIndex( document, indexWriter );
-                if ( indexingStopWatch.getTime() >= nextIndexLogTime ) {
-                    logIndexingProgress( i, numberOfDocuments );
-                    nextIndexLogTime += INDEX_LOG_TIME_STEP;
-                }
-            }
-            indexingStopWatch.stop();
-            logIndexingCompleted( numberOfDocuments, indexingStopWatch );
-            logGetDocumentsStopWatch( getDocumentStopWatch, numberOfDocuments );
-            optimizeIndex( indexWriter );
-            closeIndexWriter();
-        } catch ( Exception e ) {
-            log.error( "Failed to index all documents", e );
-        } finally {
-            NDC.pop();
+            deleteDocumentFromIndex( document );
+            addDocumentToIndex( document );
+        } catch ( IOException e ) {
+            log.error( "Failed to index document " + document.getId() + " to index. Reindexing..." );
+            indexAllDocumentsInTheBackground();
         }
-    }
-
-    public synchronized void reindexOneDocument( DocumentDomainObject document ) throws IOException {
-        deleteDocumentFromIndex( document );
-        addDocumentToIndex( document );
     }
 
     public Query parseLucene( String queryString ) throws ParseException {
@@ -144,9 +88,163 @@ public class DocumentIndex {
         return query;
     }
 
-    private void logIndexingCompleted( int numberOfDocuments, StopWatch indexingStopWatch ) {
-        log.info( "Completed index of " + numberOfDocuments + " documents in " + indexingStopWatch.getTime()
-                  + "ms" );
+    public synchronized DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IOException {
+        try {
+            return trySearch( query, searchingUser );
+        } catch ( IOException e1 ) {
+            log.error( "Search failed. Reindexing and retrying...", e1 );
+            indexAllDocuments();
+            try {
+                return trySearch( query, searchingUser );
+            } catch ( IOException e2 ) {
+                String errorMessage = "Search failed again, after reindexing and retrying.";
+                log.fatal( errorMessage, e2 );
+                IOException ex = new IOException( errorMessage );
+                ex.initCause( e2 );
+                throw ex;
+            }
+        }
+    }
+
+    private DocumentDomainObject[] trySearch( Query query, UserDomainObject searchingUser ) throws IOException {
+        IndexReader indexReader = IndexReader.open( indexDirectory );
+        IndexSearcher indexSearcher = null;
+        try {
+            indexSearcher = new IndexSearcher( indexReader );
+            StopWatch searchStopWatch = new StopWatch();
+            searchStopWatch.start();
+            Hits hits = indexSearcher.search( query );
+            long searchTime = searchStopWatch.getTime();
+            List documentList = getDocumentListForHits( hits, searchingUser );
+            log.debug( "Search for " + query.toString() + ": " + searchTime + "ms. Total: "
+                       + searchStopWatch.getTime()
+                       + "ms." );
+            return (DocumentDomainObject[])documentList.toArray( new DocumentDomainObject[documentList.size()] );
+        } finally {
+            if ( null != indexSearcher ) {
+                indexSearcher.close();
+            }
+            indexReader.close();
+        }
+    }
+
+    private List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
+        List documentList = new ArrayList( hits.length() );
+        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface()
+                .getDocumentMapper();
+        for ( int i = 0; i < hits.length(); ++i ) {
+            int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
+            DocumentDomainObject document = documentMapper.getDocument( metaId );
+            if ( documentMapper.userHasPermissionToSearchDocument( searchingUser, document ) ) {
+                documentList.add( document );
+            }
+        }
+        return documentList;
+    }
+
+    private void deleteDocumentFromIndex( DocumentDomainObject document ) throws IOException {
+        IndexReader indexReader = IndexReader.open( indexDirectory );
+        try {
+            indexReader.delete( new Term( "meta_id", "" + document.getId() ) );
+        } finally {
+            indexReader.close();
+        }
+    }
+
+    private void addDocumentToIndex( DocumentDomainObject document ) throws IOException {
+        IndexWriter indexWriter = createIndexWriter( indexDirectory, false );
+        try {
+            addDocumentToIndex( document, indexWriter );
+        } finally {
+            indexWriter.close();
+        }
+    }
+
+    private synchronized void indexAllDocumentsInTheBackground() {
+        if ( null != indexThread && indexThread.isAlive() ) {
+            return;
+        }
+        indexThread = new Thread( "Background indexing thread" ) {
+            public void run() {
+                indexAllDocuments();
+                indexThread = null;
+            }
+        };
+        indexThread.setDaemon( true );
+        indexThread.start();
+    }
+
+    private void indexAllDocuments() {
+        NDC.push( "indexAllDocuments" );
+        try {
+            File newIndexDirectory = createIndexDirectoryInDirectory( indexDirectory.getParentFile() );
+            indexAllDocumentsToDirectory( newIndexDirectory );
+            replaceIndexDirectoryWith( newIndexDirectory );
+        } catch ( IOException e ) {
+            log.fatal( "Failed to index all documents.", e );
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    private File createIndexDirectoryInDirectory( File dir ) {
+        File indexDirectory = null;
+        try {
+            indexDirectory = File.createTempFile( "index", "", dir );
+            FileUtils.forceDelete( indexDirectory );
+            FileUtils.forceMkdir( indexDirectory );
+        } catch ( IOException e ) {
+            log.fatal("Failed to create index directory.") ;
+            throw new UnhandledException( e );
+        }
+        return indexDirectory;
+    }
+
+    private void indexAllDocumentsToDirectory( File indexDirectory ) throws IOException {
+        IndexWriter indexWriter = createIndexWriter( indexDirectory, true );
+        try {
+            indexAllDocumentsToIndexWriter( indexWriter );
+        } finally {
+            indexWriter.close();
+        }
+    }
+
+    private void indexAllDocumentsToIndexWriter( IndexWriter indexWriter ) throws IOException {
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        int[] documentIds = documentMapper.getAllDocumentIds();
+
+        logIndexingStarting( documentIds.length );
+        IntervalSchedule indexingLogSchedule = new IntervalSchedule( INDEXING_LOG_TIME_INTERVAL__MILLISECONDS );
+
+        for ( int i = 0; i < documentIds.length; i++ ) {
+            addDocumentToIndex( documentMapper.getDocument( documentIds[i] ), indexWriter );
+
+            if ( indexingLogSchedule.isTime() ) {
+                logIndexingProgress( i, documentIds.length );
+            }
+        }
+
+        logIndexingCompleted( documentIds.length, indexingLogSchedule.getStopWatch() );
+        optimizeIndex( indexWriter );
+    }
+
+    private synchronized void replaceIndexDirectoryWith( File directory ) throws IOException {
+        File oldIndexDirectory = indexDirectory;
+        indexDirectory = directory;
+        FileUtils.deleteDirectory( oldIndexDirectory );
+    }
+
+    private IndexWriter createIndexWriter( File dir, boolean createIndex ) throws IOException {
+        return new IndexWriter( dir, new Analyzer(), createIndex );
+    }
+
+    private void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
+        Document indexDocument = createIndexDocument( document );
+        indexWriter.addDocument( indexDocument );
+    }
+
+    private void logIndexingStarting( int documentCount ) {
+        log.info( "Building index of all " + documentCount + " documents" );
     }
 
     private void logIndexingProgress( int i, int numberOfDocuments ) {
@@ -154,28 +252,9 @@ public class DocumentIndex {
         log.info( "Completed " + indexPercentageCompleted + "% of the index." );
     }
 
-    private String[] getAllDocumentIds( IMCServiceInterface imcref ) {
-        return imcref.sqlQuery( "SELECT meta_id FROM meta", new String[0] );
-    }
-
-    private void closeIndexWriter() throws IOException {
-        indexWriter.close();
-        indexWriter = null;
-    }
-
-    private void openIndexWriter( final boolean createIndex ) throws IOException {
-        if ( null == indexWriter ) {
-            indexWriter = new IndexWriter( dir, new Analyzer(), createIndex );
-        }
-    }
-
-    private void logGetDocumentsStopWatch( StopWatch getDocumentStopWatch, int documentCount ) {
-        long time = getDocumentStopWatch.getTime();
-        if ( 0 != documentCount ) {
-            long millisecondsPerDocument = time / documentCount;
-            log.debug( "Spent " + time + "ms (" + millisecondsPerDocument + "ms/document) fetching " + documentCount
-                       + " documents from the database." );
-        }
+    private void logIndexingCompleted( int numberOfDocuments, StopWatch indexingStopWatch ) {
+        log.info( "Completed index of " + numberOfDocuments + " documents in " + indexingStopWatch.getTime()
+                  + "ms" );
     }
 
     private void optimizeIndex( IndexWriter indexWriter ) throws IOException {
@@ -184,17 +263,6 @@ public class DocumentIndex {
         indexWriter.optimize();
         optimizeStopWatch.stop();
         log.info( "Optimized index in " + optimizeStopWatch.getTime() + "ms" );
-    }
-
-    private void addDocumentToIndex( DocumentDomainObject document ) throws IOException {
-        openIndexWriter( false );
-        addDocumentToIndex( document, indexWriter );
-        closeIndexWriter();
-    }
-
-    private void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
-        Document indexDocument = createIndexDocument( document );
-        indexWriter.addDocument( indexDocument );
     }
 
     private Document createIndexDocument( DocumentDomainObject document ) {
@@ -210,23 +278,18 @@ public class DocumentIndex {
             SectionDomainObject section = sections[i];
             indexDocument.add( unStoredKeyword( FIELD__SECTION, section.getName() ) );
         }
-        if ( null != document.getCreatedDatetime() ) {
-            try {
-                indexDocument.add( unStoredKeyword( FIELD__CREATED_DATETIME, document.getCreatedDatetime() ) );
-            } catch ( RuntimeException re ) {
-                log.warn( "Indexing document " + documentId, re );
-            }
-        }
 
-        addDateField( documentId, indexDocument, FIELD__MODIFIED_DATETIME, document.getModifiedDatetime() );
-        addDateField( documentId, indexDocument, FIELD__ACTIVATED_DATETIME, document.getPublicationStartDatetime() );
-        addDateField( documentId, indexDocument, FIELD__PUBLICATION_START_DATETIME, document.getPublicationStartDatetime() );
-        addDateField( documentId, indexDocument, FIELD__PUBLICATION_END_DATETIME, document.getPublicationEndDatetime() );
-        addDateField( documentId, indexDocument, FIELD__ARCHIVED_DATETIME, document.getArchivedDatetime() );
+        addDateFieldToIndexDocument( documentId, indexDocument, FIELD__CREATED_DATETIME, document.getCreatedDatetime() );
+        addDateFieldToIndexDocument( documentId, indexDocument, FIELD__MODIFIED_DATETIME, document.getModifiedDatetime() );
+        addDateFieldToIndexDocument( documentId, indexDocument, FIELD__ACTIVATED_DATETIME, document.getPublicationStartDatetime() );
+        addDateFieldToIndexDocument( documentId, indexDocument, FIELD__PUBLICATION_START_DATETIME, document.getPublicationStartDatetime() );
+        addDateFieldToIndexDocument( documentId, indexDocument, FIELD__PUBLICATION_END_DATETIME, document.getPublicationEndDatetime() );
+        addDateFieldToIndexDocument( documentId, indexDocument, FIELD__ARCHIVED_DATETIME, document.getArchivedDatetime() );
 
         indexDocument.add( unStoredKeyword( FIELD__STATUS, "" + document.getStatus() ) );
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+
         if ( document instanceof TextDocumentDomainObject ) {
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
             Iterator textsIterator = textDocument.getTexts().entrySet().iterator();
@@ -271,7 +334,7 @@ public class DocumentIndex {
         return indexDocument;
     }
 
-    private void addDateField( int documentId, Document indexDocument, String fieldName, Date date ) {
+    private void addDateFieldToIndexDocument( int documentId, Document indexDocument, String fieldName, Date date ) {
         if ( null != date ) {
             try {
                 indexDocument.add( unStoredKeyword( fieldName, date ) );
@@ -282,12 +345,6 @@ public class DocumentIndex {
                           + documentId, re );
             }
         }
-    }
-
-    private void deleteDocumentFromIndex( DocumentDomainObject document ) throws IOException {
-        IndexReader indexReader = IndexReader.open( dir );
-        indexReader.delete( new Term( "meta_id", "" + document.getId() ) );
-        indexReader.close();
     }
 
     private Field unStoredKeyword( String fieldName, String fieldValue ) {
@@ -339,9 +396,8 @@ public class DocumentIndex {
             }
 
             protected boolean isTokenChar( char c ) {
-                return '_' == c || Character.isLetterOrDigit( c ) ;
+                return Character.isLetterOrDigit( c ) || '_' == c;
             }
         }
-
     }
 }

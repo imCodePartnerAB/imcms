@@ -7,6 +7,8 @@ import imcode.util.Utility;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.SystemUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -39,28 +41,15 @@ public class MainInitServlet extends HttpServlet {
 
             configureLogging( confPath );
 
-            createIndex();
-
+            kickstartImcms();
         } catch ( Exception e ) {
             System.err.println( e.getMessage() );
         }
         NDC.pop() ;
     }
 
-    private void createIndex() throws IOException {
-        boolean createIndex = Boolean.valueOf( Utility.getDomainPref( PREF__CREATE_INDEX_ON_STARTUP )).booleanValue() ;
-        if (!createIndex) {
-            Logger.getLogger( com.imcode.imcms.servlet.MainInitServlet.class.getName() ).info("Not creating index because "+PREF__CREATE_INDEX_ON_STARTUP+" is false.");
-            return ;
-        }
-        Thread indexThread = new Thread("Startup indexing thread") {
-            public void run() {
-                DocumentIndex documentIndexer = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex() ;
-                documentIndexer.indexAllDocuments();
-            }
-        };
-        indexThread.setDaemon( true );
-        indexThread.start();
+    private void kickstartImcms() {
+        ApplicationServer.getIMCServiceInterface() ;
     }
 
     private void configureLogging( File confPath ) {
@@ -79,6 +68,7 @@ public class MainInitServlet extends HttpServlet {
         final String osVersion = "os.version";
 
         log.info( "Servlet Engine: " + application.getServerInfo() );
+
         log.info( javaVersion + ": " + System.getProperty( javaVersion ) );
         log.info( javaVendor + ": " + System.getProperty( javaVendor ) );
         log.info( javaClassPath + ": " + System.getProperty( javaClassPath ) );

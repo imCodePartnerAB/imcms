@@ -15,7 +15,7 @@ import imcode.util.InputStreamSource;
 import imcode.util.Utility;
 import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -197,7 +197,6 @@ public class DocumentMapper {
         return newDocument;
     }
 
-
     /**
      * Delete childs from a menu.
      */
@@ -217,7 +216,7 @@ public class DocumentMapper {
             }
         }
         childStr.append( "]" );
-        indexDocument( document );
+        documentIndex.indexDocument( document );
     }
 
     public CategoryDomainObject[] getAllCategoriesOfType( CategoryTypeDomainObject categoryType ) {
@@ -654,14 +653,6 @@ public class DocumentMapper {
         return user.isSuperAdmin()
                || userHasMoreThanReadPermissionOnDocument( user, document )
                || document.isLinkableByOtherUsers();
-    }
-
-    private void indexDocument( DocumentDomainObject document ) {
-        try {
-            documentIndex.reindexOneDocument( document );
-        } catch ( IOException e ) {
-            log.error( "Failed to index document " + document.getId(), e );
-        }
     }
 
     public void removeInclusion( int includingMetaId, int includeIndex ) {
@@ -1206,7 +1197,7 @@ public class DocumentMapper {
                                         + " on document "
                                         + menuDocument.getId() );
         }
-        indexDocument( toBeRemoved );
+        documentIndex.indexDocument( toBeRemoved );
     }
 
     private void updateDocumentSections( int metaId,
@@ -1297,7 +1288,7 @@ public class DocumentMapper {
         SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
         String sqlStr = "update meta set date_modified = ? where meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{dateformat.format( date ), "" + document.getId()} );
-        indexDocument( document );
+        documentIndex.indexDocument( document );
     }
 
     private boolean userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
@@ -1310,7 +1301,8 @@ public class DocumentMapper {
     private boolean userHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
                                                              int leastPrivilegedPermissionSetIdWanted,
                                                              DocumentDomainObject document ) {
-        return getUsersMostPrivilegedPermissionSetIdOnDocument( user, document ) <= leastPrivilegedPermissionSetIdWanted;
+        return getUsersMostPrivilegedPermissionSetIdOnDocument( user, document )
+               <= leastPrivilegedPermissionSetIdWanted;
     }
 
     public DocumentIndex getDocumentIndex() {
@@ -1703,14 +1695,14 @@ public class DocumentMapper {
         String[][] rows = service.sqlQueryMulti( "SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", new String[]{
             user.getLanguageIso639_2()
         } );
-        Map allDocumentTypeIdsAndNamesInUsersLanguage = new TreeMap() ;
+        Map allDocumentTypeIdsAndNamesInUsersLanguage = new TreeMap();
         for ( int i = 0; i < rows.length; i++ ) {
             String[] row = rows[i];
-            Integer documentTypeId =  Integer.valueOf( row[0] ) ;
-            String documentTypeNameInUsersLanguage = row[1] ;
-            allDocumentTypeIdsAndNamesInUsersLanguage.put(documentTypeId, documentTypeNameInUsersLanguage) ;
+            Integer documentTypeId = Integer.valueOf( row[0] );
+            String documentTypeNameInUsersLanguage = row[1];
+            allDocumentTypeIdsAndNamesInUsersLanguage.put( documentTypeId, documentTypeNameInUsersLanguage );
         }
-        return allDocumentTypeIdsAndNamesInUsersLanguage ;
+        return allDocumentTypeIdsAndNamesInUsersLanguage;
     }
 
     public int[] getAllDocumentTypeIds() {
@@ -1737,12 +1729,23 @@ public class DocumentMapper {
     }
 
     public Iterator getDocumentsIterator( final IntRange idRange ) {
-        return new DocumentsIterator( getDocumentIds( idRange ) ) ;
+        return new DocumentsIterator( getDocumentIds( idRange ) );
     }
 
     private int[] getDocumentIds( IntRange idRange ) {
-        String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id >= ? AND meta_id <= ? ORDER BY meta_id" ;
-        String[] documentIdStrings = service.sqlQuery( sqlSelectIds, new String[] { ""+idRange.getMinimumInteger(), ""+idRange.getMaximumInteger() }) ;
+        String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id >= ? AND meta_id <= ? ORDER BY meta_id";
+        String[] documentIdStrings = service.sqlQuery( sqlSelectIds, new String[]{
+            "" + idRange.getMinimumInteger(), "" + idRange.getMaximumInteger()
+        } );
+        int[] documentIds = new int[documentIdStrings.length];
+        for ( int i = 0; i < documentIdStrings.length; i++ ) {
+            documentIds[i] = Integer.parseInt( documentIdStrings[i] );
+        }
+        return documentIds;
+    }
+
+    public int[] getAllDocumentIds() {
+        String[] documentIdStrings = service.sqlQuery( "SELECT meta_id FROM meta ORDER BY meta_id", new String[0] );
         int[] documentIds = new int[documentIdStrings.length] ;
         for ( int i = 0; i < documentIdStrings.length; i++ ) {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
@@ -1771,26 +1774,26 @@ public class DocumentMapper {
 
     private class DocumentsIterator implements Iterator {
 
-        int[] documentIds ;
-        int index = 0 ;
+        int[] documentIds;
+        int index = 0;
 
         DocumentsIterator( int[] documentIds ) {
-            this.documentIds = documentIds ;
+            this.documentIds = documentIds;
         }
 
         public void remove() {
-            throw new UnsupportedOperationException() ;
+            throw new UnsupportedOperationException();
         }
 
         public boolean hasNext() {
-            return index < documentIds.length ;
+            return index < documentIds.length;
         }
 
         public Object next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException() ;
+            if ( !hasNext() ) {
+                throw new NoSuchElementException();
             }
-            return getDocument( documentIds[index++] ) ;
+            return getDocument( documentIds[index++] );
         }
     }
 
