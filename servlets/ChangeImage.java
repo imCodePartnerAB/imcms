@@ -22,9 +22,9 @@ public class ChangeImage extends HttpServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	String host			= req.getHeader("Host") ;
-	String imcserver		= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
-	String image_url                = Utility.getDomainPref( "image_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
+	String image_url                = imcref.getImageUrl() ;
 
 	if (req.getParameter("preview")==null) {
 	    doGet(req,res) ;
@@ -55,9 +55,9 @@ public class ChangeImage extends HttpServlet {
     */
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	String host			= req.getHeader("Host") ;
-	String imcserver		= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
-	String image_url                = Utility.getDomainPref( "image_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
+	String image_url                = imcref.getImageUrl() ;
 	File image_path               = Utility.getDomainPrefPath( "image_path",host ) ;
 	imcode.server.User user ;
 	String htmlStr = "" ;
@@ -102,8 +102,8 @@ public class ChangeImage extends HttpServlet {
 	}
 
 	// Check if user has write rights
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver, meta_id, user) ) {
-	    log("User "+user.getInt("user_id")+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;
+	if ( !imcref.checkDocAdminRights( meta_id, user) ) {
+	    log("User "+user.getUserId()+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;
 	    String scheme = req.getScheme() ;
 	    String serverName = req.getServerName() ;
 	    int p = req.getServerPort() ;
@@ -148,7 +148,7 @@ public class ChangeImage extends HttpServlet {
 
 
 	String sqlStr = "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images where meta_id = "+meta_id+" and name = "+img_no ;
-	String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
+	String[] sql = imcref.sqlQuery(sqlStr) ;
 
 	Vector vec = new Vector () ;
 
@@ -309,9 +309,9 @@ public class ChangeImage extends HttpServlet {
 	vec.add(label) ;
 
 
-	String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	String lang_prefix = user.getLangPrefix() ;
 
-	htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"change_img.html", lang_prefix) ;
+	htmlStr = imcref.parseDoc(vec,"change_img.html", lang_prefix) ;
 
 	out.print(htmlStr) ;
 

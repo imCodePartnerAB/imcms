@@ -6,6 +6,7 @@ import javax.servlet.* ;
 import javax.servlet.http.* ;
 
 import imcode.util.* ;
+import imcode.server.* ;
 
 import org.apache.log4j.Category;
 
@@ -21,11 +22,11 @@ public class UrlDocTest extends HttpServlet {
 
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		String start_url        	= imcref.getStartUrl() ;
 
 		String sqlStr = "select meta_id, url_ref from url_docs order by meta_id" ;
-		Hashtable hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
+		Hashtable hash = imcref.sqlQueryHash(sqlStr) ;
 		String [] meta_id = (String[])hash.get("meta_id") ;
 		String [] url_ref = (String[])hash.get("url_ref") ;
 		res.setContentType("text/html") ;
@@ -41,16 +42,16 @@ public class UrlDocTest extends HttpServlet {
 		sqlStr  = "select role_id from users,user_roles_crossref\n" ;
 		sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
 		sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-		sqlStr += "and users.user_id = " + user.getInt("user_id") ;
+		sqlStr += "and users.user_id = " + user.getUserId() ;
 
-		if ( IMCServiceRMI.sqlQuery(imcserver,sqlStr).length == 0 ) {
+		if ( imcref.sqlQuery(sqlStr).length == 0 ) {
 			Utility.redirect(req,res,start_url) ;
 			return ;
 		}
 
-		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+		String lang_prefix = user.getLangPrefix() ;
 
-		out.print(IMCServiceRMI.parseDoc(imcserver,null,"UrlDocTestHead.html",lang_prefix)) ;
+		out.print(imcref.parseDoc(null,"UrlDocTestHead.html",lang_prefix)) ;
 		out.flush() ;
 		for ( int i = 0; meta_id != null && i<meta_id.length ; i++ ) {
 			String found = "green", reached = "green", ok = "red" ;
@@ -126,10 +127,10 @@ public class UrlDocTest extends HttpServlet {
 			vec.add(reached) ;
 			vec.add("#ok#") ;
 			vec.add(ok) ;
-			out.print(IMCServiceRMI.parseDoc(imcserver,vec,"UrlDocTestRow.html",lang_prefix)) ;
+			out.print(imcref.parseDoc(vec,"UrlDocTestRow.html",lang_prefix)) ;
 			out.flush() ;
 		}
-		out.print(IMCServiceRMI.parseDoc(imcserver,null,"UrlDocTestTail.html",lang_prefix)) ;
+		out.print(imcref.parseDoc(null,"UrlDocTestTail.html",lang_prefix)) ;
 	}
 
 	private String testUrl (URL url) throws IOException {

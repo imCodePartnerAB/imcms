@@ -8,6 +8,7 @@
  *
 */
 
+import imcode.server.* ;
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -67,19 +68,15 @@ public class ConfDiscView extends Conference {
 			return;
 		}
 
-		// Lets get the url to the servlets directory
-		String servletHome = MetaInfo.getServletPath(req) ;
-
 		// Lets get all parameters in a string which we'll send to every
 		// servlet in the frameset
-		MetaInfo metaInfo = new MetaInfo() ;
-		String paramStr = metaInfo.passMeta(params) ;
+		String paramStr = MetaInfo.passMeta(params) ;
 
 
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;
-		vm.addProperty("CONF_DISC", servletHome + "ConfDisc?" + paramStr ) ;
-		vm.addProperty("CONF_REPLY", servletHome + "ConfReply?" + paramStr) ;
+		vm.addProperty("CONF_DISC", "ConfDisc?" + paramStr ) ;
+		vm.addProperty("CONF_REPLY","ConfReply?" + paramStr) ;
 
 
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;

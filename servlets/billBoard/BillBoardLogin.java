@@ -1,3 +1,4 @@
+import imcode.server.* ;
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -65,15 +66,14 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ConfPoolServer = Utility.getDomainPref("billboard_server",host) ;
-	
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
+
 		String userId = user.getString("user_id");
 		if(!super.prepareUserForBillBoard(req, res, params, userId) ) {
 				log("Error in prepareUserFor Conf" ) ;
 		}
 		return ;
-		
 	} // End doGet
 
 	/**
@@ -124,15 +124,14 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 		// ************* VERIFY LOGIN TO CONFERENCE **************
 		// Ok, the user wants to login
 		if(loginType.equalsIgnoreCase("login") /* && req.getParameter("submit") != null */) {
 			//log("Ok, nu försöker vi verifiera logga in!") ;
 			String userId = user.getString("user_id");
-			
 
 			//  Lets update the users sessionobject with a a ok login to the conference
 			//	Send him to the manager with the ability to get in
@@ -143,17 +142,12 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 			return ;
 		}
 
-	
 		// ***** RETURN TO ADMIN MANAGER *****
 		if( loginType.equalsIgnoreCase("GoBack")) {
-			String url = MetaInfo.getServletPath(req) ;
-			url += "BillBoardLogin?login_type=admin_user" ;
-			res.sendRedirect(url) ;
+			res.sendRedirect("BillBoardLogin?login_type=admin_user") ;
 			return ;
 		}
 	} // end HTTP POST
-
-	
 
 
 	/**
@@ -179,9 +173,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 		Properties loginP) throws ServletException, IOException {
 
 		// Ok, lets check the parameters
-		MetaInfo mInfo = new MetaInfo() ;
-		if( mInfo.checkParameters(loginP) == false) {
-			// if(super.checkParameters(req, res, loginP) == false) {
+		if( MetaInfo.checkParameters(loginP) == false) {
 			String header = "BillBoardLogin servlet. " ;
 			BillBoardError err = new BillBoardError(req,res,header,50) ;
 			log(header + err.getErrorMsg()) ;

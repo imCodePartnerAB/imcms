@@ -35,8 +35,8 @@ public class SaveMeta extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 	String host				= req.getHeader("Host") ;
-	String imcserver			= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	imcode.server.User user ;
@@ -52,8 +52,8 @@ public class SaveMeta extends HttpServlet {
 	String meta_id = req.getParameter( "meta_id" ) ;
 	int meta_id_int = Integer.parseInt(meta_id) ;
 
-	if ( !IMCServiceRMI.checkDocAdminRightsAny(imcserver,meta_id_int,user,7 ) ) {	// Checking to see if user may edit this
-	    String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+	if ( !imcref.checkDocAdminRightsAny(meta_id_int,user,7 ) ) {	// Checking to see if user may edit this
+	    String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -65,15 +65,15 @@ public class SaveMeta extends HttpServlet {
 	String classification = req.getParameter("classification") ;
 
 	// Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
-	String[][] role_permissions = IMCServiceRMI.sqlProcedureMulti(imcserver, "GetRolesDocPermissions "+meta_id) ;
+	String[][] role_permissions = imcref.sqlProcedureMulti( "GetRolesDocPermissions "+meta_id) ;
 
 	// Now watch as i fetch the permission_set for the user...
-	String[] current_permissions = IMCServiceRMI.sqlProcedure(imcserver, "GetUserPermissionSet "+meta_id+", "+user.getInt("user_id")) ;
+	String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
 	int user_set_id = Integer.parseInt(current_permissions[0]) ;	// The users set_id
 
 	// Check if the user has any business in here whatsoever.
 	if ( user_set_id > 2 ) {
-	    String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -115,10 +115,10 @@ public class SaveMeta extends HttpServlet {
 		  ) {
 
 		// We used to save to the db immediately. Now we do it a little bit differently to make it possible to store stuff in the session instead of the db.
-		// IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
+		// imcref.sqlUpdateProcedure( "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
 		temp_permission_settings.setProperty(String.valueOf(role_id),String.valueOf(new_set_id)) ;
 	    } else {
-		mainLog.info("User "+user.getInt("user_id")+" with set_id "+user_set_id+" and permission_set "+user_perm_set+" was denied permission to change set_id for role "
+		mainLog.info("User "+user.getUserId()+" with set_id "+user_set_id+" and permission_set "+user_perm_set+" was denied permission to change set_id for role "
 			     +role_id+" from "+role_set_id+" to "+new_set_id+" on meta_id "+meta_id) ;
 	    }
 	}
@@ -292,7 +292,7 @@ public class SaveMeta extends HttpServlet {
 	String[] temp_default_templates = {temp_default_template_1, temp_default_template_2};
 
 	// Set modified-date to now...
-	Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+	Date dt = imcref.getCurrentDate() ;
 	metaprops.setProperty("date_modified",dateformat.format(dt)) ;
 
 	// It's like this... people make changes on the page, and then they forget to press "save"
@@ -372,38 +372,38 @@ public class SaveMeta extends HttpServlet {
 	    if (new_set_id == null) {
 		continue ;
 	    }
-	    IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
+	    imcref.sqlUpdateProcedure( "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
 	}
 
 	if ( sqlStr.length() > 0 ) {
 
 	    sqlStr = "update meta set " +sqlStr+ " where meta_id = "+meta_id ;
-	    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+	    imcref.sqlUpdateQuery(sqlStr) ;
 	}
 
 	// Save the classifications to the db
 	if ( classification != null ) {
-	    IMCServiceRMI.sqlUpdateProcedure(imcserver,"Classification_Fix "+meta_id+",'"+classification+"'") ;
+	    imcref.sqlUpdateProcedure("Classification_Fix "+meta_id+",'"+classification+"'") ;
 	}
 
 	//ok lets save the default templates
 	//log("test sql: UpdateDefaultTemplates "+meta_id+",'"+template1+"','"+template2+"'");
-	IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateDefaultTemplates '"+meta_id+"','"+template1+"','"+template2+"'") ;
+	imcref.sqlUpdateProcedure( "UpdateDefaultTemplates '"+meta_id+"','"+template1+"','"+template2+"'") ;
 
 	//if the administrator wants to change the date we does it here
 	if (created_datetime != null) {			
 	    //we did got a ok date so lets save it to db
 	    sqlStr = "update meta set date_created ='"+created_datetime+ "' where meta_id = "+meta_id ;
-	    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+	    imcref.sqlUpdateQuery(sqlStr) ;
 	}		
 	if (modified_datetime != null) {			
 	    //we did got a ok date so lets save it to db
 	    sqlStr = "update meta set date_modified ='"+modified_datetime+ "' where meta_id = "+meta_id ;
-	    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+	    imcref.sqlUpdateQuery(sqlStr) ;
 	}
 
 	// Update the date_modified for all parents.
-	IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateParentsDateModified "+meta_id) ;
+	imcref.sqlUpdateProcedure( "UpdateParentsDateModified "+meta_id) ;
 		
 	///**************** section index word stuff *****************
 	//ok lets handle the the section stuff save to db and so on
@@ -415,12 +415,12 @@ public class SaveMeta extends HttpServlet {
 	}
 	//ok if we have one lets update the db
 	if (section_id != null) {
-	    IMCServiceRMI.sqlUpdateProcedure(imcserver,"SectionAddCrossref " + meta_id +", " +section_id);
+	    imcref.sqlUpdateProcedure("SectionAddCrossref " + meta_id +", " +section_id);
 	}
 	//**************** end section index word stuff *************
 
 	// Let's split this joint!
-	String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+	String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,user,req,res) ;
 	if ( output != null ) {
 	    out.write(output) ;
 	}

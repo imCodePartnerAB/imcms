@@ -13,8 +13,6 @@ public class User extends Hashtable {
 	int template_group = -1 ;
 
 
-
-
 	public User() {
 		super(10,0.5f) ;
 	}

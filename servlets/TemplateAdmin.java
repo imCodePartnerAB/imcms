@@ -18,8 +18,8 @@ public class TemplateAdmin extends HttpServlet {
 
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		String start_url        	= imcref.getStartUrl() ;
 
 		User user ;
 		if ( (user = Check.userLoggedOn( req, res, start_url ))==null ) {
@@ -30,9 +30,9 @@ public class TemplateAdmin extends HttpServlet {
 		String sqlStr  = "select role_id from users,user_roles_crossref\n" ;
 		sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
 		sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-		sqlStr += "and users.user_id = " + user.getInt("user_id") ;
+		sqlStr += "and users.user_id = " + user.getUserId() ;
 		
-		if ( IMCServiceRMI.sqlQuery(imcserver,sqlStr).length == 0 ) {
+		if ( imcref.sqlQuery(sqlStr).length == 0 ) {
 			Utility.redirect(req,res,start_url) ;
 			return ;
 		}
@@ -42,7 +42,7 @@ public class TemplateAdmin extends HttpServlet {
 		res.setContentType("text/html") ;
 		
 		String temp[] ;
-		temp = IMCServiceRMI.sqlProcedure(imcserver, "getLanguages") ;
+		temp = imcref.sqlProcedure( "getLanguages") ;
 		String temps = "" ;
 		for (int i = 0; i < temp.length; i+=2) {
 			temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
@@ -52,8 +52,8 @@ public class TemplateAdmin extends HttpServlet {
 
 		vec.add("#languages#") ;
 		vec.add(temps);
-		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-		String htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_admin.html",lang_prefix) ;
+		String lang_prefix = user.getLangPrefix() ;
+		String htmlStr = imcref.parseDoc( vec, "template_admin.html",lang_prefix) ;
 		out.println( htmlStr ) ;
 		
 	}
@@ -61,8 +61,8 @@ public class TemplateAdmin extends HttpServlet {
 	
 	public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		String start_url        	= imcref.getStartUrl() ;
 
 		// Check if user logged on
 		User user ;
@@ -75,9 +75,9 @@ public class TemplateAdmin extends HttpServlet {
 		String sqlStr  = "select role_id from users,user_roles_crossref\n" ;
 		sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
 		sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-		sqlStr += "and users.user_id = " + user.getInt("user_id") ;
+		sqlStr += "and users.user_id = " + user.getUserId() ;
 		
-		if ( IMCServiceRMI.sqlQuery(imcserver,sqlStr).length == 0 ) {
+		if ( imcref.sqlQuery(sqlStr).length == 0 ) {
 			Utility.redirect(req,res,start_url) ;
 			return ;
 		}
@@ -87,7 +87,7 @@ public class TemplateAdmin extends HttpServlet {
 //		res.setHeader("Pragma","no-cache;") ;
 		PrintWriter out = res.getWriter() ;
 		
-		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+		String lang_prefix = user.getLangPrefix() ;
 		String lang = req.getParameter("language") ;
 		String htmlStr = null ;
 		if ( req.getParameter("cancel") != null ) {
@@ -96,7 +96,7 @@ public class TemplateAdmin extends HttpServlet {
 		} else if ( req.getParameter("add_template") != null ) {
 			Vector vec = new Vector() ;
 			String temp[] ;
-			temp = IMCServiceRMI.sqlProcedure(imcserver, "getTemplategroups") ;
+			temp = imcref.sqlProcedure( "getTemplategroups") ;
 			String temps = "" ;
 			for (int i = 0; i < temp.length; i+=2) {
 				temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
@@ -105,12 +105,12 @@ public class TemplateAdmin extends HttpServlet {
 			vec.add(temps);
 			vec.add("#language#") ;
 			vec.add(lang) ;
-			htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_upload.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc( vec, "template_upload.html",lang_prefix) ;
 		} else if ( req.getParameter("add_demotemplate") != null ) {
 			String list[] ;
-			list = IMCServiceRMI.getDemoTemplateList(imcserver) ;
+			list = imcref.getDemoTemplateList() ;
 			String temp[] ;
-			temp = IMCServiceRMI.sqlQuery(imcserver, "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
+			temp = imcref.sqlQuery( "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
 			Vector vec = new Vector() ;
 			vec.add("#language#") ;
 			vec.add(lang) ;
@@ -128,12 +128,12 @@ public class TemplateAdmin extends HttpServlet {
 				}
 				vec.add("#templates#") ;
 				vec.add(temps);
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "templatedemo_upload.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "templatedemo_upload.html",lang_prefix) ;
 			} else {
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
 			}
 		} else if ( req.getParameter("delete_template") != null ) {
-			String temp[][] = IMCServiceRMI.sqlQueryMulti(imcserver,"select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = '"+lang+"' group by t.template_id,simple_name order by simple_name") ;
+			String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = '"+lang+"' group by t.template_id,simple_name order by simple_name") ;
 			//String temp[] ;
 			htmlStr = "" ;
 			Vector vec ;
@@ -145,9 +145,9 @@ public class TemplateAdmin extends HttpServlet {
 				vec.add(temp[i][1]) ;
 				vec.add("#template_id#") ;
 				vec.add(temp[i][2]) ;
-				htmlStr += IMCServiceRMI.parseDoc(imcserver,vec,"template_list_row.html",lang_prefix) ;
+				htmlStr += imcref.parseDoc(vec,"template_list_row.html",lang_prefix) ;
 			}
-			//temp = IMCServiceRMI.sqlQuery(imcserver, "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
+			//temp = imcref.sqlQuery( "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
 			vec = new Vector() ;
 			vec.add("#language#") ;
 			vec.add(lang) ;
@@ -158,13 +158,13 @@ public class TemplateAdmin extends HttpServlet {
 //				}
 				vec.add("#templates#") ;
 				vec.add(htmlStr);
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_delete.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_delete.html",lang_prefix) ;
 			} else {
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
 			}
 		} else if ( req.getParameter("rename_template") != null ) {
 			String temp[] ;
-			temp = IMCServiceRMI.sqlQuery(imcserver, "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
+			temp = imcref.sqlQuery( "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
 			Vector vec = new Vector() ;
 			vec.add("#language#") ;
 			vec.add(lang) ;
@@ -175,13 +175,13 @@ public class TemplateAdmin extends HttpServlet {
 				}
 				vec.add("#templates#") ;
 				vec.add(temps);
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_rename.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_rename.html",lang_prefix) ;
 			} else {
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
 			}
 		} else if ( req.getParameter("get_template") != null ) {
 			String temp[] ;
-			temp = IMCServiceRMI.sqlQuery(imcserver, "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
+			temp = imcref.sqlQuery( "select template_id, simple_name from templates where lang_prefix = '"+lang+"' order by simple_name") ;
 			Vector vec = new Vector() ;
 			vec.add("#language#") ;
 			vec.add(lang) ;
@@ -192,15 +192,15 @@ public class TemplateAdmin extends HttpServlet {
 				}
 				vec.add("#templates#") ;
 				vec.add(temps);
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_get.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_get.html",lang_prefix) ;
 			} else {
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
 			}
 		} else if ( req.getParameter("add_group") != null ) {
-			htmlStr = IMCServiceRMI.parseDoc(imcserver, null, "templategroup_add.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc( null, "templategroup_add.html",lang_prefix) ;
 		} else if ( req.getParameter("delete_group") != null ) {
 			String temp[] ;
-			temp = IMCServiceRMI.sqlProcedure(imcserver, "getTemplategroups") ;
+			temp = imcref.sqlProcedure( "getTemplategroups") ;
 			String temps = "" ;
 			for (int i = 0; i < temp.length; i+=2) {
 				temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
@@ -208,10 +208,10 @@ public class TemplateAdmin extends HttpServlet {
 			Vector vec = new Vector() ;
 			vec.add("#templategroups#") ;
 			vec.add(temps);
-			htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "templategroup_delete.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc( vec, "templategroup_delete.html",lang_prefix) ;
 		} else if ( req.getParameter("rename_group") != null ) {
 			String temp[] ;
-			temp = IMCServiceRMI.sqlProcedure(imcserver, "getTemplategroups") ;
+			temp = imcref.sqlProcedure( "getTemplategroups") ;
 			String temps = "" ;
 			for (int i = 0; i < temp.length; i+=2) {
 				temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
@@ -219,15 +219,15 @@ public class TemplateAdmin extends HttpServlet {
 			Vector vec = new Vector() ;
 			vec.add("#templategroups#") ;
 			vec.add(temps);
-			htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "templategroup_rename.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc( vec, "templategroup_rename.html",lang_prefix) ;
 		} else if ( req.getParameter("assign_group") != null ) {
 			String temp[] ;
-			temp = IMCServiceRMI.sqlQuery(imcserver,"select template_id from templates where lang_prefix = '"+lang+"'") ;
+			temp = imcref.sqlQuery("select template_id from templates where lang_prefix = '"+lang+"'") ;
 			Vector vec = new Vector() ;
 			vec.add("#language#") ;
 			vec.add(lang) ;
 			if ( temp.length > 0 ) {
-				temp = IMCServiceRMI.sqlProcedure(imcserver, "getTemplategroups") ;
+				temp = imcref.sqlProcedure( "getTemplategroups") ;
 				String temps = "" ;
 				for (int i = 0; i < temp.length; i+=2) {
 					temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
@@ -242,13 +242,13 @@ public class TemplateAdmin extends HttpServlet {
 				vec.add("");
 				vec.add("#group_id#") ;
 				vec.add("");
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_assign.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_assign.html",lang_prefix) ;
 			} else {
-				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_no_langtemplates.html",lang_prefix) ;
+				htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html",lang_prefix) ;
 			}
 		} else if ( req.getParameter("show_templates") != null ) {
-			String temp[][] = IMCServiceRMI.sqlQueryMulti(imcserver,"select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = '"+lang+"' group by t.template_id,simple_name order by simple_name") ;
-			htmlStr = "" ; //IMCServiceRMI.parseDoc(imcserver,null,"template_list_head.html",lang_prefix) ;
+			String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = '"+lang+"' group by t.template_id,simple_name order by simple_name") ;
+			htmlStr = "" ; //imcref.parseDoc(null,"template_list_head.html",lang_prefix) ;
 			for ( int i = 0 ; i<temp.length ; i++ ) {
 				Vector vec = new Vector() ;
 				vec.add("#template_name#") ;
@@ -257,15 +257,15 @@ public class TemplateAdmin extends HttpServlet {
 				vec.add(temp[i][1]) ;
 				vec.add("#template_id#") ;
 				vec.add(temp[i][2]) ;
-				htmlStr += IMCServiceRMI.parseDoc(imcserver,vec,"template_list_row.html",lang_prefix) ;
+				htmlStr += imcref.parseDoc(vec,"template_list_row.html",lang_prefix) ;
 			}
-//			htmlStr += IMCServiceRMI.parseDoc(imcserver,null,"template_list_tail.html",lang_prefix) ;
+//			htmlStr += imcref.parseDoc(null,"template_list_tail.html",lang_prefix) ;
 			Vector vec = new Vector() ;
 			vec.add("#template_list#") ;
 			vec.add(htmlStr) ;
 			vec.add("#language#") ;
 			vec.add(lang) ;
-			htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"template_list.html",lang_prefix) ;
+			htmlStr = imcref.parseDoc(vec,"template_list.html",lang_prefix) ;
 		}
 		out.print(htmlStr) ;
 	}

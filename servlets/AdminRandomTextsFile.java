@@ -35,8 +35,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
     */
     public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
 	// Lets get the server this request was aimed for
-	String host = req.getHeader("Host") ;
-	String imcServer = Utility.getDomainPref("adminserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	HttpSession session = req.getSession();
 	imcode.server.User user ;
@@ -61,13 +60,13 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	String date2 = "";
 	String text  = "";
 
-	String errMsgDate	= IMCServiceRMI.parseExternalDoc(imcServer, null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
-	String errMsgTxt	= IMCServiceRMI.parseExternalDoc(imcServer, null, TEXT_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String errMsgDate	= imcref.parseExternalDoc(null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String errMsgTxt	= imcref.parseExternalDoc(null, TEXT_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 
 	if (req.getParameter("save")!=null) {
 	    addLineToList(req,lines);
 
-	    IMCServiceRMI.setQuoteList(imcServer, whichFile+".txt", lines);
+	    imcref.setQuoteList(whichFile+".txt", lines);
 
 	    //tillbaks till
 	    res.sendRedirect("AdminRandomTexts") ;
@@ -162,7 +161,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 
 	session.setAttribute("lines",lines);
 
-	StringBuffer buff = createOptionList(req,lines, imcServer, user );
+	StringBuffer buff = createOptionList(req,lines,user);
 
 	//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
 	Vector values = new Vector();
@@ -177,7 +176,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	values.add("#options#");
 	values.add(buff.toString());
 
-	String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE  , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String parsed = imcref.parseExternalDoc(values, HTML_TEMPLATE  , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 	out.print(parsed);
 	return;
     }
@@ -208,7 +207,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	return true;
     }
 
-    private StringBuffer createOptionList(HttpServletRequest req, List lines, String server, imcode.server.User user ) throws ServletException, IOException {
+    private StringBuffer createOptionList(HttpServletRequest req, List lines, imcode.server.User user ) throws ServletException, IOException {
 	StringBuffer buff = new StringBuffer();
 	int counter = 0;
 	Iterator iter = lines.iterator();

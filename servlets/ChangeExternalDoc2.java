@@ -4,6 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import imcode.server.* ;
 /**
   Return user from externaldoc editing or open metawindow for externaldoc.
 	Shows a change_meta.html which calls SaveMeta
@@ -27,8 +28,8 @@ public class ChangeExternalDoc2 extends HttpServlet {
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		String start_url        	= imcref.getStartUrl() ;
 
 		imcode.server.User user ; 
 		String htmlStr = "" ;                         	
@@ -48,22 +49,22 @@ public class ChangeExternalDoc2 extends HttpServlet {
 			return ;
 		} 
 
-		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,65536 ) ) {	// Checking to see if user may edit this
-			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+		if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this
+			String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 			if ( output != null ) {
 				out.write(output) ;
 			}
 			return ;
 		}
 
-		imcode.server.ExternalDocType ex_doc = IMCServiceRMI.isExternalDoc( imcserver,meta_id,user ) ;
+		imcode.server.ExternalDocType ex_doc = imcref.isExternalDoc(meta_id,user ) ;
 
 		if( req.getParameter("metadata")!=null ) {
 			htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(parent_meta_id),user,host) ;
 			out.write( htmlStr ) ;
 			return ;
 		}
-		String output = GetDoc.getDoc(parent_meta_id,parent_meta_id,host,req,res) ;
+		String output = GetDoc.getDoc(parent_meta_id,parent_meta_id,req,res) ;
 		out.write ( output ) ;
 
 	}

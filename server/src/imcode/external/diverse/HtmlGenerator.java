@@ -1,9 +1,13 @@
 package imcode.external.diverse;
+
 import java.io.*;
+import java.util.*;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.util.*;
-import imcode.util.Utility;
+
+import imcode.server.* ;
+import imcode.util.* ;
 
 /**
  *  Description of the Class
@@ -68,38 +72,6 @@ public class HtmlGenerator {
 
 
     // ************************** CREATE HTML STRING *******************
-
-
-    /**
-     *  Returns a RmiLayer object which is used to call the Janus system or the
-     *  janus database. if the user isnt logged in it will return null ;
-     *
-     *@param  req                   Description of Parameter
-     *@return                       The rmiObj value
-     *@exception  ServletException  Description of Exception
-     *@exception  IOException       Description of Exception
-     */
-
-    public RmiLayer getRmiObj(HttpServletRequest req)
-             throws ServletException, IOException {
-
-        HttpSession session = req.getSession(true);
-        Object done = session.getAttribute("logon.isDone");
-        // marker object
-        imcode.server.User user = (imcode.server.User) done;
-
-        if (done == null) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-            return null;
-        }
-
-        // Ok, were done verifying stuff. Lets add the new user to the db
-        RmiLayer imc = new RmiLayer(user);
-        return imc;
-        //return user ;
-
-    }
 
 
     /**
@@ -404,9 +376,8 @@ public class HtmlGenerator {
         }
 
         String host = req.getHeader("Host");
-        String server = imcode.util.Utility.getDomainPref("userserver", host);
-        RmiLayer rmiObj = this.getRmiObj(req);
-        String theHtml = rmiObj.parseDoc(server, srcHtml, htmlTags, data);
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        String theHtml = imcref.parseDoc(srcHtml, htmlTags, data);
         return theHtml;
     }
     // End of createHtmlString

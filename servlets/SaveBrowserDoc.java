@@ -5,6 +5,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import imcode.server.* ;
+
 /**
    Save a browserdocument.
    Shows a change_meta.html which calls SaveMeta
@@ -25,9 +27,9 @@ public class SaveBrowserDoc extends HttpServlet {
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host 				= req.getHeader("Host") ;
-	String imcserver 			= imcode.util.Utility.getDomainPref("adminserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	String servlet_url        	= imcode.util.Utility.getDomainPref( "servlet_url",host ) ;
-	String start_url        	= imcode.util.Utility.getDomainPref( "start_url",host ) ;
+	String start_url        	= imcref.getStartUrl() ;
 
 	imcode.server.User user ;
 	String htmlStr = "" ;
@@ -53,8 +55,8 @@ public class SaveBrowserDoc extends HttpServlet {
 	    return ;
 	}
 	// Check if user has write rights
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,65536 ) ) {	// Checking to see if user may edit this
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -80,17 +82,17 @@ public class SaveBrowserDoc extends HttpServlet {
 			}
 		    }
 		    if ( sqlStr != null ) {
-			IMCServiceRMI.sqlUpdateQuery( imcserver, sqlStr ) ;
+			imcref.sqlUpdateQuery( sqlStr ) ;
 		    }
 		}
 	    }
 
 	    SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
-	    Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+	    Date dt = imcref.getCurrentDate() ;
 	    // FIXME: Move to SProc
 	    String sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
 
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -102,13 +104,13 @@ public class SaveBrowserDoc extends HttpServlet {
 		for ( int i=0 ; i<browsers.length ; i++ ) {
 		    // FIXME: Move to SProc
 		    String sqlStr = "insert into browser_docs (meta_id,to_meta_id,browser_id) values ("+meta_id+",0,"+browsers[i]+")" ;
-		    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+		    imcref.sqlUpdateQuery(sqlStr) ;
 		}
 	    }
 	    Vector vec = new Vector () ;
 	    // FIXME: Move to SProc
 	    String sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = "+meta_id+" order by value desc,name asc" ;
-	    Hashtable hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
+	    Hashtable hash = imcref.sqlQueryHash(sqlStr) ;
 	    String[] b_id = (String[])hash.get("browser_id") ;
 	    String[] nm = (String[])hash.get("name") ;
 	    String[] to = (String[])hash.get("to_meta_id") ;
@@ -125,7 +127,7 @@ public class SaveBrowserDoc extends HttpServlet {
 	    vec.add(bs) ;
 	    // FIXME: Move to SProc
 	    sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = "+meta_id+" ) order by value desc,name asc" ;
-	    hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
+	    hash = imcref.sqlQueryHash(sqlStr) ;
 	    b_id = (String[])hash.get("browser_id") ;
 	    nm = (String[])hash.get("name") ;
 	    String nb = "" ;
@@ -145,10 +147,10 @@ public class SaveBrowserDoc extends HttpServlet {
 	    vec.add("#servlet_url#") ;
 	    vec.add(servlet_url) ;
 	    vec.add("#adminMode#") ;
-	    vec.add(IMCServiceRMI.getMenuButtons(imcserver,meta_id,user)) ;
-	    String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	    vec.add(imcref.getMenuButtons(meta_id,user)) ;
+	    String lang_prefix = user.getLangPrefix() ;
 
-	    htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "change_browser_doc.html", lang_prefix) ;
+	    htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", lang_prefix) ;
 	}
 	out.write( htmlStr ) ;
     }

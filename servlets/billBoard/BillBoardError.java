@@ -1,10 +1,11 @@
+import imcode.server.* ;
 import java.io.* ;
 import java.awt.* ;
 import java.util.* ;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
-import imcode.util.Utility;
+import imcode.util.* ;
 
 public class BillBoardError extends BillBoard
 {//ConfError
@@ -202,25 +203,20 @@ public class BillBoardError extends BillBoard
 	{
 
 		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid
 		File templateLib = this.getExternalTemplateFolder( req ) ;
-
-		// Lets add 3 server hostadresses
-		String servletPath = MetaInfo.getServletPath(req) ;
 
 		// Lets get the path to the imagefolder.
 		String imagePath = this.getExternalImageFolder(req) ;
 
 		vm.addProperty("IMAGE_URL", imagePath);
-		vm.addProperty("SERVLET_URL", servletPath);
+		vm.addProperty("SERVLET_URL", "");
 
 		HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile ) ;
 		String html = htmlObj.createHtmlString(vm,req) ;
-		//log(html);
-		//log( htmlFile );
 
 		htmlObj.sendToBrowser( req, res, html ) ;
 	}

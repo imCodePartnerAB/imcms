@@ -4,6 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import imcode.server.* ;
 /**
   Save a new framesetdocument.
   */
@@ -23,8 +24,8 @@ public class SaveNewFrameset extends HttpServlet {
 	*/
 	public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		String start_url        	= imcref.getStartUrl() ;
 
 		imcode.server.User user ; 
 		String htmlStr = "" ;  
@@ -69,8 +70,8 @@ public class SaveNewFrameset extends HttpServlet {
 			return ;
 		}
 		// Check if user has write rights
-		if ( !IMCServiceRMI.checkDocAdminRights(imcserver, meta_id, user) ) {
-			log("User "+user.getInt("user_id")+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;			
+		if ( !imcref.checkDocAdminRights( meta_id, user) ) {
+			log("User "+user.getUserId()+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;			
 			String scheme = req.getScheme() ;
 			String serverName = req.getServerName() ;
 			int p = req.getServerPort() ;
@@ -80,13 +81,13 @@ public class SaveNewFrameset extends HttpServlet {
 		}
 
 		if (req.getParameter("cancel")!=null) {
-			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 			if ( output != null ) {
 			    out.write(output) ;
 			}
 		} else {
-			IMCServiceRMI.saveNewFrameset(imcserver,new_meta_id,user,doc) ;
-			String output = AdminDoc.adminDoc(new_meta_id,new_meta_id,host,user,req,res) ;
+			imcref.saveNewFrameset(new_meta_id,user,doc) ;
+			String output = AdminDoc.adminDoc(new_meta_id,new_meta_id,user,req,res) ;
 			if ( output != null ) {
 			    out.write(output) ;
 			}

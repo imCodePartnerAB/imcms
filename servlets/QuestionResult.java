@@ -6,6 +6,7 @@ import javax.servlet.http.*;
 import imcode.external.diverse.*;
 import imcode.util.*;
 import imcode.util.fortune.* ;
+import imcode.server.* ;
 
 import org.apache.log4j.Category ;
 
@@ -26,7 +27,7 @@ public class QuestionResult extends HttpServlet
 	throws ServletException, IOException
 	{
 		String host = req.getHeader("Host");
-		String imcserver = Utility.getDomainPref("userserver",host);
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 		//get answer
 		String file = req.getParameter("file");
@@ -41,7 +42,7 @@ public class QuestionResult extends HttpServlet
 		    return ;
 		}
 
-		List currentPollList = IMCServiceRMI.getPollList(imcserver,file+".current.txt") ;
+		List currentPollList = imcref.getPollList(file+".current.txt") ;
 
 		if (currentPollList.isEmpty()) {
 		    log.error("QuestionResult: No current poll!") ;
@@ -53,7 +54,7 @@ public class QuestionResult extends HttpServlet
 
 		thePoll.addAnswer(answer) ;
 
-		IMCServiceRMI.setPollList(imcserver,file+".current.txt",currentPollList) ;
+		imcref.setPollList(file+".current.txt",currentPollList) ;
 
 		double totalAnswerCount = thePoll.getTotalAnswerCount() ;
 
@@ -77,7 +78,7 @@ public class QuestionResult extends HttpServlet
 		values.add("#total#");
 		values.add(""+(int)totalAnswerCount);
 
-		String parsed = IMCServiceRMI.parseExternalDoc(imcserver, values, RESULTTEMPLATE, IMCServiceRMI.getLanguage(imcserver), "106");
+		String parsed = imcref.parseExternalDoc( values, RESULTTEMPLATE, imcref.getLanguage(), "106");
 
 		res.setContentType("text/html");
 		Writer out = res.getWriter();

@@ -6,6 +6,7 @@ import javax.servlet.http.*;
 import java.rmi.* ;
 import java.rmi.registry.* ;
 import imcode.util.* ;
+import imcode.server.* ;
 /**
    Save an urldocument.
    Shows a change_meta.html which calls SaveMeta
@@ -26,8 +27,8 @@ public class SaveUrlDoc extends HttpServlet {
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	String imcserver			= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 
 	imcode.server.User user ;
 	String htmlStr = "" ;
@@ -80,8 +81,8 @@ public class SaveUrlDoc extends HttpServlet {
 	    return ;
 	}
 	// Check if user has write rights
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver, meta_id, user, 65536) ) {
-	    log("User "+user.getInt("user_id")+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;
+	if ( !imcref.checkDocAdminRights( meta_id, user, 65536) ) {
+	    log("User "+user.getUserId()+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;
 	    String scheme = req.getScheme() ;
 	    String serverName = req.getServerName() ;
 	    int p = req.getServerPort() ;
@@ -92,16 +93,16 @@ public class SaveUrlDoc extends HttpServlet {
 
 	// FIXME: Move to SProc
 	String sqlStr = "update url_docs set url_ref = '"+url_ref+"' where meta_id = "+meta_id ;
-	IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+	imcref.sqlUpdateQuery(sqlStr) ;
 	sqlStr = "update meta set target = '"+target+"' where meta_id = "+meta_id ;
-	IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+	imcref.sqlUpdateQuery(sqlStr) ;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
-	Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+	Date dt = imcref.getCurrentDate() ;
 	sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
-	IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+	imcref.sqlUpdateQuery(sqlStr) ;
 
-	String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	if ( output != null ) {
 	    out.write(output) ;
 	}

@@ -5,6 +5,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import imcode.server.* ;
 /**
   Save a framesetdocument.
 	Shows a change_meta.html which calls SaveMeta
@@ -25,8 +26,8 @@ public class SaveFrameset extends HttpServlet {
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		String start_url        	= imcref.getStartUrl() ;
 		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
 
 		imcode.server.User user ;
@@ -64,8 +65,8 @@ public class SaveFrameset extends HttpServlet {
 		}
 
 		// Check if user has write rights
-		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,65536 ) ) {	// Checking to see if user may edit this
-			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+		if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this
+			String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 			if ( output != null ) {
 				out.write(output) ;
 			}
@@ -73,13 +74,13 @@ public class SaveFrameset extends HttpServlet {
 		}
 
 		if( req.getParameter("ok")!=null ) {	//User pressed ok on form in change_frameset_doc.html
-			IMCServiceRMI.saveFrameset( imcserver,meta_id,user,doc ) ;
+			imcref.saveFrameset(meta_id,user,doc ) ;
 			SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
-			Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+			Date dt = imcref.getCurrentDate() ;
 			String sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
-			IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+			imcref.sqlUpdateQuery(sqlStr) ;
 
-			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 			if ( output != null ) {
 			    out.write(output) ;
 			}

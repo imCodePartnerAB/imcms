@@ -26,7 +26,7 @@ public class VerifyUser extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host 				= req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+	String start_url        	= imcref.getStartUrl() ;
 	String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
 	String admin_url       		= Utility.getDomainPref( "admin_url",host ) ;
 	String access_denied_url   	= Utility.getDomainPref( "access_denied_url",host ) ;

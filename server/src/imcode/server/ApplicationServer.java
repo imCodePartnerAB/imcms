@@ -21,7 +21,6 @@ public class ApplicationServer {
     private final static String CVS_REV="$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 
-    private final static String VERSION = "1.5.0";
     private final static String CONFIG_FILE = "ImcServer.cfg";
 
     private final static int LOGINTERVAL = 10000;
@@ -95,7 +94,6 @@ public class ApplicationServer {
 	    }
 	}
 
-	log.info("ImCMS Daemon " + VERSION);
 	log.info("imcmsd started: " + new java.util.Date());
 	log.info("imcmsd running...");
     }

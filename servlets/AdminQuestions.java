@@ -1,11 +1,14 @@
 import java.io.*;
 import java.util.*;
+import java.text.*;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
+
 import imcode.external.diverse.* ;
 import imcode.util.* ;
 import imcode.util.fortune.* ;
-import java.text.*;
+import imcode.server.* ;
 
 
 public class AdminQuestions extends Administrator  implements imcode.server.IMCConstants {
@@ -30,8 +33,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	Writer out = res.getWriter();
 
 	// Lets get the server this request was aimed for
-	String host = req.getHeader("Host") ;
-	String imcServer = Utility.getDomainPref("adminserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	// Lets validate the session
 	if (super.checkSession(req,res) == false)	return ;
@@ -47,20 +49,20 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	}
 
 	// Lets verify that the user who tries to admin a fortune is an admin
-	if (super.checkAdminRights(imcServer, user) == false) {
+	if (imcref.checkAdminRights(user) == false) {
 	    String header = "Error in AdminQuestions." ;
 	    String msg = "The user is not an administrator."+ "<BR>" ;
 	    this.log(header + msg) ;
 
 	    // Lets get the path to the admin templates folder
-	    String server			= Utility.getDomainPref("adminserver",host) ;
-	    File templateLib = getAdminTemplateFolder(server, user) ;
+	    File templateLib = getAdminTemplateFolder(imcref, user) ;
 
 	    AdminError err = new AdminError(req,res,header,msg) ;
 	    return ;
 	}
 
 	//get fortunefiles
+	String host = req.getHeader("host") ;
 	File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
 	File files[] = fortune_path.listFiles();
 
@@ -83,7 +85,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	values.add("#options#");
 	values.add(options.toString());
 
-	String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, ADMIN_QUESTION , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String parsed = imcref.parseExternalDoc(values, ADMIN_QUESTION , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 	out.write(parsed);
 
     } // End doGet
@@ -97,8 +99,8 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	res.setContentType("text/html");
 	PrintWriter out = res.getWriter();
 
-	String host = req.getHeader("Host") ;
-	String imcServer = Utility.getDomainPref("adminserver",host) ;
+	// Lets get the server this request was aimed for
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	imcode.server.User user ;
 
@@ -130,7 +132,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	    List list;
 
 	    try {
-		list = IMCServiceRMI.getPollList(imcServer, whichFile + ".stat.txt");
+		list = imcref.getPollList( whichFile + ".stat.txt");
 		Iterator iter = list.iterator();
 		int counter = 0;
 		SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
@@ -154,19 +156,19 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 		values.add("#options#");
 		values.add(buff.toString());
 
-		String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, QUESTION_RESULT , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+		String parsed = imcref.parseExternalDoc(values, QUESTION_RESULT , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 		out.print(parsed);
 
 		session.setAttribute("results",list);
 		return;
 	    } catch(NoSuchElementException ex) {
 		StringBuffer buff2 = new StringBuffer("<option>");
-		buff.append(IMCServiceRMI.parseExternalDoc(imcServer, null, RESULT_ERR_MSG , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
+		buff.append(imcref.parseExternalDoc(null, RESULT_ERR_MSG , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
 		buff2.append("</option>");
 		Vector values = new Vector();
 		values.add("#options#");
 		values.add(buff2.toString());
-		String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, QUESTION_RESULT , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+		String parsed = imcref.parseExternalDoc(values, QUESTION_RESULT , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 		out.print(parsed);
 		return;
 	    }
@@ -174,7 +176,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 
 	    StringBuffer buff = new StringBuffer();
 
-	    List lines = IMCServiceRMI.getPollList(imcServer, whichFile+".poll.txt");
+	    List lines = imcref.getPollList(whichFile+".poll.txt");
 	    Iterator iter = lines.iterator();
 	    int counter = 0;
 	    SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
@@ -204,7 +206,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	    values.add(buff.toString());
 
 
-	    String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, ADMIN_QUESTION_FILE , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	    String parsed = imcref.parseExternalDoc(values, ADMIN_QUESTION_FILE , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 	    out.print(parsed);
 
 	    session.setAttribute("lines",lines);

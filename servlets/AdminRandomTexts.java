@@ -3,8 +3,11 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
+
+import imcode.server.* ;
 import imcode.util.* ;
 import imcode.util.fortune.* ;
+
 import java.text.SimpleDateFormat;
 
 
@@ -26,10 +29,10 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 
 	res.setContentType("text/html");
 	Writer out = res.getWriter();
+	String host = req.getHeader("host") ;
 
 	// Lets get the server this request was aimed for
-	String host = req.getHeader("Host") ;
-	String imcServer = Utility.getDomainPref("adminserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	// Lets validate the session
 	if (super.checkSession(req,res) == false)	return ;
@@ -39,20 +42,17 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	if(user == null){
 	    String header = "Error in AdminRandomTexts." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;
-	    this.log(header + msg) ;
 	    AdminError err = new AdminError(req,res,header,msg) ;
 	    return ;
 	}
 
 	// Lets verify that the user who tries to admin a fortune is an admin
-	if (super.checkAdminRights(imcServer, user) == false){
+	if (imcref.checkAdminRights(user) == false){
 	    String header = "Error in AdminRandomTexts." ;
 	    String msg = "The user is not an administrator."+ "<BR>" ;
-	    this.log(header + msg) ;
 
 	    // Lets get the path to the admin templates folder
-	    String server			= Utility.getDomainPref("adminserver",host) ;
-	    File templateLib = getAdminTemplateFolder(server, user) ;
+	    File templateLib = getAdminTemplateFolder(imcref, user) ;
 
 	    AdminError err = new AdminError(req,res,header,msg) ;
 	    return ;
@@ -81,7 +81,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	values.add("#options#");
 	values.add(options.toString());
 
-	out.write(IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
+	out.write(imcref.parseExternalDoc(values, HTML_TEMPLATE , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
 
     } // End doGet
 
@@ -94,8 +94,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	res.setContentType("text/html");
 	Writer out = res.getWriter();
 
-	String host = req.getHeader("Host") ;
-	String imcServer = Utility.getDomainPref("adminserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	imcode.server.User user ;
 
@@ -121,10 +120,10 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	session.setAttribute("file",whichFile);
 
 	if (req.getParameter("edit")!=null)	{
-	    String options = IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	    String options = imcref.parseExternalDoc(null, OPTION_LINE , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 
 	    StringBuffer buff = new StringBuffer();
-	    List lines = IMCServiceRMI.getQuoteList(imcServer, whichFile+".txt");
+	    List lines = imcref.getQuoteList(whichFile+".txt");
 	    Iterator iter = lines.iterator();
 	    int counter = 0;
 	    SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
@@ -152,18 +151,10 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	    values.add("#options#");
 	    values.add(buff.toString());
 
-	    out.write(IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE_ADMIN , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
+	    out.write(imcref.parseExternalDoc(values, HTML_TEMPLATE_ADMIN , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
 	    session.setAttribute("lines",lines);
 	    return;
 	}
-    }
-
-    /**
-       Log function, will work for both servletexec and Apache
-    **/
-    public void log( String str){
-	super.log(str) ;
-	System.out.println("AdminRandomTexts: " + str ) ;
     }
 
 } // End of class

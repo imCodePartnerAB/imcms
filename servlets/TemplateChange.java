@@ -23,7 +23,7 @@ public class TemplateChange extends HttpServlet {
     public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host = req.getHeader("host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	// Check if user logged on
@@ -37,7 +37,7 @@ public class TemplateChange extends HttpServlet {
 	String sqlStr  = "select role_id from users,user_roles_crossref\n" ;
 	sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
 	sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-	sqlStr += "and users.user_id = " + user.getInt("user_id") ;
+	sqlStr += "and users.user_id = " + user.getUserId() ;
 
 	if ( imcref.sqlQuery(sqlStr).length == 0 ) {
 	    Utility.redirect(req,res,start_url) ;
@@ -48,7 +48,7 @@ public class TemplateChange extends HttpServlet {
 
 	ServletOutputStream out = res.getOutputStream() ;
 	String htmlStr = null ;
-	String lang_prefix = imcref.sqlQueryStr("select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	String lang_prefix = user.getLangPrefix() ;
 	String lang = req.getParameter("language") ;
 	if ( req.getParameter("cancel") != null ) {
 	    Utility.redirect(req,res,"TemplateAdmin") ;

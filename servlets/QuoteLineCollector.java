@@ -19,7 +19,7 @@ public class QuoteLineCollector implements imcode.external.GetDocControllerInter
 		String retValue = null;
 		//lets get the stuff we need to get the quote file
 		String host					= req.getHeader("Host") ;
-		String imcserver			= Utility.getDomainPref("userserver",host) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 		String fileName				= req.getParameter("qFile");
 		if(fileName == null) {
@@ -32,7 +32,7 @@ public class QuoteLineCollector implements imcode.external.GetDocControllerInter
 		    qLine = (String) req.getAttribute("qLine");
 		}
 
-		List quoteList = IMCServiceRMI.getQuoteList(imcserver,fileName) ;
+		List quoteList = imcref.getQuoteList(fileName) ;
 
 		int qInt;
 		try{

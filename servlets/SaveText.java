@@ -31,8 +31,8 @@ public class SaveText extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 	String host 	 = req.getHeader("Host") ;
-	String imcserver = Utility.getDomainPref("adminserver",host) ;
-	String start_url = Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url = imcref.getStartUrl() ;
 
 	res.setContentType( "text/html" );
 	Writer out = res.getWriter( );
@@ -47,8 +47,8 @@ public class SaveText extends HttpServlet {
 	int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
 
 	// Check if user has permission to be here
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS ) ) {	// Checking to see if user may edit this
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	if ( !imcref.checkDocAdminRights(meta_id,user,imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS ) ) {	// Checking to see if user may edit this
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if (output != null) {
 		out.write(output) ;
 	    }
@@ -71,10 +71,10 @@ public class SaveText extends HttpServlet {
 	user.put("flags",new Integer(imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS)) ;
 
 	if( req.getParameter( "ok" )!=null ) {
-	    IMCServiceRMI.saveText( imcserver,user,meta_id,txt_no,text) ;
+	    imcref.saveText(user,meta_id,txt_no,text) ;
 	}
 
-	String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	if (output != null) {
 	    out.write(output) ;
 	}

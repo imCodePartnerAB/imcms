@@ -1,3 +1,4 @@
+import imcode.server.* ;
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -42,17 +43,13 @@ public class ConfViewer extends Conference {
 			return;
 		}
 
-		// Lets get the url to the servlets directory
-		String servletHome = MetaInfo.getServletPath(req) ;
-
 		// Lets get all parameters in a string which we'll send to every servlet in the frameset
-		MetaInfo metaInfo = new MetaInfo() ;
-		String paramStr = metaInfo.passMeta(params) ;
+		String paramStr = MetaInfo.passMeta(params) ;
 
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;
-		vm.addProperty("CONF_FORUM", servletHome + "ConfForum?" + paramStr);
-		vm.addProperty("CONF_DISC_VIEW", servletHome + "ConfDiscView?" + paramStr ) ;
+		vm.addProperty("CONF_FORUM", "ConfForum?" + paramStr);
+		vm.addProperty("CONF_DISC_VIEW", "ConfDiscView?" + paramStr ) ;
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 		//log("Nu är ConfViewer klar") ;
 		return ;

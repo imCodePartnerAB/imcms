@@ -7,11 +7,11 @@ import imcode.server.* ;
 public class Restart extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-	
+
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		String start_url        	= imcref.getStartUrl() ;
 
 		User user ;
 		if ( (user = Check.userLoggedOn( req, res, start_url ))==null ) {
@@ -22,9 +22,9 @@ public class Restart extends HttpServlet {
 		String sqlStr  = "select role_id from users,user_roles_crossref\n" ;
 		sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
 		sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-		sqlStr += "and users.user_id = " + user.getInt("user_id") ;
-		
-		if ( IMCServiceRMI.sqlQuery(imcserver,sqlStr).length == 0 ) {
+		sqlStr += "and users.user_id = " + user.getUserId() ;
+
+		if ( imcref.sqlQuery(sqlStr).length == 0 ) {
 			Utility.redirect(req,res,start_url) ;
 			return ;
 		}

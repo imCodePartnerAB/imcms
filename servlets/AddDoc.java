@@ -6,6 +6,7 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.external.diverse.* ;
+import imcode.server.* ;
 
 /**
    Adds a new document to a menu.
@@ -28,8 +29,8 @@ public class AddDoc extends HttpServlet {
     public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 	String host				= req.getHeader("Host") ;
-	String imcserver			= imcode.util.Utility.getDomainPref("adminserver",host) ;
-	String start_url	= imcode.util.Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+	String start_url	= imcref.getStartUrl() ;
 
 	imcode.server.User user ;
 
@@ -48,12 +49,11 @@ public class AddDoc extends HttpServlet {
 	}
 
 	// Lets get the language
-	// FIXME: Use user.getLangPrefix() instead.
-	String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	String lang_prefix = user.getLangPrefix() ;
 
 	// Fetch all doctypes from the db and put them in an option-list
 	// First, get the doc_types the current user may use.
-	String[] user_dt = IMCServiceRMI.sqlProcedure(imcserver,"GetDocTypesForUser "+meta_id+","+user.getInt("user_id")+",'"+lang_prefix+"'") ;
+	String[] user_dt = imcref.sqlProcedure("GetDocTypesForUser "+meta_id+","+user.getUserId()+",'"+lang_prefix+"'") ;
 	HashSet user_doc_types = new HashSet() ;
 
 	// I'll fill a HashSet with all the doc-types the current user may use,
@@ -63,7 +63,7 @@ public class AddDoc extends HttpServlet {
 	}
 
 	if ( !"0".equals(item_selected) && !user_doc_types.contains(item_selected) ) {
-	    String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -101,7 +101,7 @@ public class AddDoc extends HttpServlet {
 	    vec.add("") ;
 
 	    // Lets fix the sortby list, first get the displaytexts from the database
-	    String[] sortOrder = IMCServiceRMI.sqlProcedure(imcserver,  "SortOrder_GetExistingDocs '" + lang_prefix + "'") ;
+	    String[] sortOrder = imcref.sqlProcedure("SortOrder_GetExistingDocs '" + lang_prefix + "'") ;
 	    Vector sortOrderV = this.convert2Vector(sortOrder) ;
 	    sortOrderV.copyInto(sortOrder) ;
 	    Html htm  = new Html() ;
@@ -110,7 +110,7 @@ public class AddDoc extends HttpServlet {
 	    vec.add( sortOrderStr ) ;
 
 	    // Lets set all the the documenttypes as selected in the html file
-	    String[] allDocTypesArray = IMCServiceRMI.getDocumentTypesInList(imcserver, lang_prefix) ;
+	    String[] allDocTypesArray = imcref.getDocumentTypesInList(lang_prefix) ;
 	    for(int i = 0 ; i < allDocTypesArray.length; i+=2 ) {
 		vec.add("#checked_" + allDocTypesArray[i] + "#" ) ;
 		vec.add("checked" ) ;
@@ -134,7 +134,7 @@ public class AddDoc extends HttpServlet {
 		}
 	    }
 	    // Lets parse the html page which consists of the add an existing doc
-	    out.write(IMCServiceRMI.parseDoc(imcserver,vec,"existing_doc.html",lang_prefix)) ;
+	    out.write(imcref.parseDoc(vec,"existing_doc.html",lang_prefix)) ;
 	    return ;
 
 	} else if ( item_selected.equals ( "5" ) ) {
@@ -154,17 +154,8 @@ public class AddDoc extends HttpServlet {
 	    "disable_search",	"0",
 	    "archive",			"0",
 	    "show_meta",		"0",
-	    //			"category_id",		"1",
 	    "permissions",		"1",
-	    //			"expand",			"1",
-	    //			"help_text_id",		"1",
-	    //			"status_id",		"1",
-	    //			"lang_prefix",		"se",
-	    //			"sort_position",	"1",
-	    //			"menu_position",	"1",
-	    //			"description",		null,
 	    "meta_image",		null,
-	    //			"classification",	"",
 	    "frame_name",		null,
 	    "target",			null,
 	} ;
@@ -174,17 +165,8 @@ public class AddDoc extends HttpServlet {
 	    CHECKBOX,
 	    CHECKBOX,
 	    CHECKBOX,
-	    //			NORMAL,
 	    NORMAL,
-	    //			NORMAL,
-	    //			NORMAL,
-	    //			NORMAL,
-	    //			NORMAL,
-	    //			NORMAL,
-	    //			NORMAL,
-	    //			NORMAL,
 	    NORMAL,
-	    //			NORMAL,
 	    NORMAL,
 	    OPTION
 	} ;
@@ -192,7 +174,7 @@ public class AddDoc extends HttpServlet {
 
 	// Lets get the meta information
 	String sqlStr = "select * from meta where meta_id = "+meta_id ;
-	Hashtable hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
+	Hashtable hash = imcref.sqlQueryHash(sqlStr) ;
 
 	// Lets get the html template file
 
@@ -200,15 +182,15 @@ public class AddDoc extends HttpServlet {
 
 	String advanced = "" ;
 
-	if (IMCServiceRMI.checkDocAdminRights( imcserver, meta_id_int, user, 2 )) {
+	if (imcref.checkDocAdminRights( meta_id_int, user, 2 )) {
 	    advanced = "adv_" ;
 	}
 
 	if (item_selected.equals ( "2" )) {
 
-	    htmlStr = IMCServiceRMI.parseDoc(imcserver,null,advanced+"new_meta_text.html",lang_prefix ) ;
+	    htmlStr = imcref.parseDoc(null,advanced+"new_meta_text.html",lang_prefix ) ;
 	} else {
-	    htmlStr = IMCServiceRMI.parseDoc(imcserver,null,advanced+"new_meta.html",lang_prefix ) ;
+	    htmlStr = imcref.parseDoc(null,advanced+"new_meta.html",lang_prefix ) ;
 	}
 
 
@@ -261,7 +243,7 @@ public class AddDoc extends HttpServlet {
 
 	// Lets get the permission stuff and put it into hidden fields, we'll need them later
 	/*
-	  hash = IMCServiceRMI.sqlQueryHash(imcserver, "select role_id, set_id from roles_rights where meta_id = "+meta_id ) ;
+	  hash = imcref.sqlQueryHash( "select role_id, set_id from roles_rights where meta_id = "+meta_id ) ;
 	  if (hash != null) {
 	  String[] role_id = (String[])hash.get("role_id") ;
 	  String[] permission_id = (String[])hash.get("permission_id") ;
@@ -275,7 +257,7 @@ public class AddDoc extends HttpServlet {
 	// Here i'll select all classification-strings and
 	// concatenate them into one semicolon-separated string.
 	sqlStr = "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = "+meta_id ;
-	String[] classifications = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
+	String[] classifications = imcref.sqlQuery(sqlStr) ;
 	String classification = "" ;
 	if ( classifications.length > 0 ) {
 	    classification += classifications[0] ;
@@ -287,7 +269,7 @@ public class AddDoc extends HttpServlet {
 	vec.add(classification) ;
 
 	// Lets fix the date information (date_created, modified etc)
-	Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+	Date dt = imcref.getCurrentDate() ;
 	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
 	//		checks += "<input type=hidden name=\"date_created\" value=\""+dateformat.format(dt)+"\">" ;
 	//		checks += "<input type=hidden name=\"date_modified\" value=\""+dateformat.format(dt)+"\">" ;
@@ -315,18 +297,18 @@ public class AddDoc extends HttpServlet {
 
 	//**************** section index word stuff *****************
 	//lets get the section stuff from db
-	String[] parent_section = IMCServiceRMI.sqlProcedure(imcserver,"SectionGetInheritId "+meta_id) ;
+	String[] parent_section = imcref.sqlProcedure("SectionGetInheritId "+meta_id) ;
 	//lets add the stuff that ceep track of the inherit section id and name
 	if (parent_section == null || parent_section.length < 2 ) {
 	    vec.add("#current_section_id#") ;	vec.add("-1") ;
-	    vec.add("#current_section_name#") ;	vec.add(IMCServiceRMI.parseDoc(imcserver, null, MetaDataParser.SECTION_MSG_TEMPLATE, lang_prefix )) ;
+	    vec.add("#current_section_name#") ;	vec.add(imcref.parseDoc( null, MetaDataParser.SECTION_MSG_TEMPLATE, lang_prefix )) ;
 	}else {
 	    vec.add("#current_section_id#") ;	vec.add(parent_section[0]) ;
 	    vec.add("#current_section_name#") ;	vec.add(parent_section[1]) ;
 	}
 
 	//lets build the option list used when the admin whants to breake the inherit chain
-	String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver,"SectionGetAll") ;
+	String[] all_sections = imcref.sqlProcedure("SectionGetAll") ;
 	Vector onlyTemp = new Vector();
 	String option_list = "";
 	String selected = "-1";
@@ -347,9 +329,9 @@ public class AddDoc extends HttpServlet {
 
 	// Lets parse the information and send it to the browser
 	if (item_selected.equals ( "2" )) {
-	    out.write ( IMCServiceRMI.parseDoc(imcserver,vec,advanced+"new_meta_text.html",lang_prefix ) ) ;
+	    out.write ( imcref.parseDoc(vec,advanced+"new_meta_text.html",lang_prefix ) ) ;
 	} else {
-	    out.write ( IMCServiceRMI.parseDoc(imcserver,vec,advanced+"new_meta.html",lang_prefix ) ) ;
+	    out.write ( imcref.parseDoc(vec,advanced+"new_meta.html",lang_prefix ) ) ;
 	}
 
     }

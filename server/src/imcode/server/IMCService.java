@@ -36,9 +36,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private File m_TemplateHome ;           // template home
     private File m_IncludePath ;
     private File m_FortunePath ;
+    private File m_ImagePath ;
     private int m_DefaultHomePage ;        // default home page
+    private String m_StartUrl  ;			   // start url
     private String m_ServletUrl  ;			   // servlet url
-    private String m_ImageFolder ;            // image folder
+    private String m_ImageUrl ;            // image folder
     private String m_Language          = "" ;      // language
     private String m_serverName        = "" ;      // servername
 
@@ -63,7 +65,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Contructs an IMCService object.
      */
-    //	public IMCService(ConnectionPool conPool,javax.swing.JTextArea output,String serverName)
     public IMCService(imcode.server.InetPoolManager conPool,Properties props) {
 	super();
 	m_conPool    = conPool ;
@@ -89,15 +90,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	} catch (NullPointerException ex) {
 	    throw new RuntimeException ("No StartDocument given in properties-file.") ;
 	}
-
 	log.info("StartDocument: " + m_DefaultHomePage) ;
+
+	m_StartUrl       = props.getProperty("StartUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
+	log.info("StartUrl: " + m_StartUrl) ;
 
 	m_ServletUrl        = props.getProperty("ServletUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
 	log.info("ServletUrl: " + m_ServletUrl) ;
 
 	// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-	m_ImageFolder       = props.getProperty("ImageUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
-	log.info("ImageUrl: " + m_ImageFolder) ;
+	m_ImageUrl       = props.getProperty("ImageUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
+	log.info("ImageUrl: " + m_ImageUrl) ;
 
 	String externalDocTypes  = props.getProperty("ExternalDoctypes").trim() ; //FIXME: Get rid of, if possible.
 	log.info("ExternalDoctypes: " + externalDocTypes) ;
@@ -126,19 +129,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	try {
 	    m_SessionCounter     = Integer.parseInt(this.sqlProcedureStr("GetCurrentSessionCounter")) ;
 	    m_SessionCounterDate = this.sqlProcedureStr("GetCurrentSessionCounterDate") ;
-	    //m_NoOfTemplates      = this.sqlProcedureInt("GetNoOfTemplates") ;
 	} catch ( NumberFormatException ex ) {
 	    log.fatal("Failed to get SessionCounter from db.", ex) ;
 	    throw ex ;
 	}
 
-	//m_Template = new Template[m_NoOfTemplates] ;
-
 	log.info("SessionCounter: "+m_SessionCounter) ;
 	log.info("SessionCounterDate: "+m_SessionCounterDate) ;
-	//log.log(Log.INFO, "TemplateCount: "+m_NoOfTemplates) ;
 
-	textDocParser = new TextDocumentParser(this, m_conPool,m_TemplateHome,m_IncludePath,m_ImageFolder,m_ServletUrl) ;
+	textDocParser = new TextDocumentParser(this, m_conPool,m_TemplateHome,m_IncludePath,m_ImageUrl,m_ServletUrl) ;
     }
 
     public int getSessionCounter() {
@@ -150,11 +149,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * Get me page _id.
+     * Get the start document
      */
     public int getDefaultHomePage() {
 	return m_DefaultHomePage ;
     }
+
 
     /**
      * Verify a Internet/Intranet user. User data retrived from SQL Database.
@@ -1514,8 +1514,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-	@deprecated Ugly use parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
-		//or something else instead.
+	@deprecated Ugly use {@link #parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)}
+	or something else instead.
      */
     public File getExternalTemplateFolder(int meta_id) {
 	Vector data = new Vector() ;
@@ -1550,10 +1550,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Return  imagehome.
      */
-    public String getImageHome() {
-	return m_ImageFolder ;
+    public String getImageUrl() {
+	return m_ImageUrl ;
     }
 
+
+    /**
+     * Return  starturl.
+     */
+    public String getStartUrl() {
+	return m_StartUrl ;
+    }
 
     /**
      * Return  language.
@@ -1929,6 +1936,30 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
+       CheckAdminRights, returns true if the user is an superadmin. Only an superadmin
+       is allowed to create new users
+       False if the user isn't an administrator.
+       1 = administrator
+       0 = superadministrator
+    */
+
+    public boolean checkAdminRights(imcode.server.User user) {
+
+	// Lets verify that the user who tries to add a new user is an SUPERADMIN
+	int currUser_id = user.getUserId() ;
+	String checkAdminSql = "CheckAdminRights " + currUser_id ;
+	String[] roles = sqlProcedure(checkAdminSql) ;
+
+	for(int i = 0 ; i< roles.length; i++ ){
+	    String aRole = roles[i] ;
+	    if(aRole.equalsIgnoreCase("0") )
+		return true ;
+	}
+	return false ;
+    } // checkAdminRights
+
+
+    /**
        checkDocAdminRights
     */
     public boolean checkDocAdminRights(int meta_id, User user) {
@@ -2229,7 +2260,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String[] suffixList =
 	{"jpg","jpeg","gif","png","html","htm"};
 
-	for(int i=0;i<=5;i++)
+	for(int i=0;i<suffixList.length;i++)
 	    { // Looking for a template with one of six suffixes
 		File fileObj = new File(m_TemplateHome, "/text/demo/" + template_id + "." + suffixList[i]);
 		long date = 0;

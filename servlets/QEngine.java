@@ -4,9 +4,9 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import imcode.server.HTMLConv ;
 import imcode.util.* ;
 import imcode.util.fortune.* ;
+import imcode.server.* ;
 
 /**
  * @author  Monika Hurtig
@@ -20,7 +20,7 @@ public class QEngine extends HttpServlet
 	{
 
 		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 		//get parameters
 		String type = req.getParameter("type");
@@ -31,7 +31,7 @@ public class QEngine extends HttpServlet
 		}
 
 		//gets the filecontent
-		List quoteList = IMCServiceRMI.getQuoteList(imcServer,inFile);
+		List quoteList = imcref.getQuoteList(inFile);
 
 		res.setContentType("text/html");
 		Writer out = res.getWriter();

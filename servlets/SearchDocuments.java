@@ -6,6 +6,7 @@ import java.rmi.* ;
 import java.rmi.registry.* ;
 import imcode.util.* ;
 import imcode.external.diverse.Html;
+import imcode.server.* ;
 
 /**
   Search documents
@@ -49,7 +50,7 @@ public class SearchDocuments extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 		String host			= req.getHeader("Host") ;
-	String imcserver		= Utility.getDomainPref("adminserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	HttpSession session	= req.getSession(true);
 		imcode.server.User user	= (imcode.server.User) session.getAttribute("logon.isDone");
 
@@ -149,7 +150,7 @@ public class SearchDocuments extends HttpServlet {
 			if (sqlResults == null) res.sendRedirect("StartDoc");
 		}else {
 			//its a new one so lets do a new search
-			sqlResults = IMCServiceRMI.sqlProcedureMulti(imcserver, sqlBuff.toString());
+			sqlResults = imcref.sqlProcedureMulti( sqlBuff.toString());
 			session.setAttribute("search_hit_list",sqlResults)	;
 		}
 
@@ -158,7 +159,7 @@ public class SearchDocuments extends HttpServlet {
 		}
 
 		//the sections list
-		String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver, SPROC_SECTION_GET_ALL_SECTIONS) ;
+		String[] all_sections = imcref.sqlProcedure( SPROC_SECTION_GET_ALL_SECTIONS) ;
 		String option_list = "";
 		if (all_sections != null) {
 			Vector onlyTemp = new Vector();
@@ -172,11 +173,11 @@ public class SearchDocuments extends HttpServlet {
 		String oneRecHtmlSrc,resultHtmlSrc,noHitHtmlStr,returnStr;
 		String action = req.getParameter("action");
 		if (action == null) {//must fix the startNo variable
-			String langPrefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+			String langPrefix = user.getLangPrefix() ;
 
 			//the default search uses the templates in template/"langprefix"/admin/
-			oneRecHtmlSrc = IMCServiceRMI.parseDoc(imcserver,null,HIT_LINE_TEMPLATE,langPrefix);
-			resultHtmlSrc = IMCServiceRMI.parseDoc(imcserver,null,HIT_PAGE_TEMPLATE,langPrefix);
+			oneRecHtmlSrc = imcref.parseDoc(null,HIT_LINE_TEMPLATE,langPrefix);
+			resultHtmlSrc = imcref.parseDoc(null,HIT_PAGE_TEMPLATE,langPrefix);
 
 			//lets see what template to use
 			String template_to_use = req.getParameter("mode") == null ? SEARCH_PAGE_TEMPLATE : SEARCH_PAGE_TEMPLATE_ADV;
@@ -195,16 +196,16 @@ public class SearchDocuments extends HttpServlet {
 
 				if (startNrInt + noOfHit  < hits) {
 					//ok we need the next button search_next.html
-					nextButton = IMCServiceRMI.parseDoc(imcserver,tagsV,NEXT_BUTTON,langPrefix);
+					nextButton = imcref.parseDoc(tagsV,NEXT_BUTTON,langPrefix);
 				}
 				if (startNrInt - noOfHit >= 0) {
 					//ok we need the prev button
-					prevButton = IMCServiceRMI.parseDoc(imcserver,tagsV,PREV_BUTTON,langPrefix);
+					prevButton = imcref.parseDoc(tagsV,PREV_BUTTON,langPrefix);
 				}
 			}
 
 			//parsa i ordning träflistan
-			StringBuffer buff = SearchDocuments.parseSearchResults(imcserver,oneRecHtmlSrc,sqlResults,startNrInt,noOfHit);
+			StringBuffer buff = SearchDocuments.parseSearchResults(imcref,oneRecHtmlSrc,sqlResults,startNrInt,noOfHit);
 			String[] tagsArr = {"#hit_list#",buff.toString()};
 			returnStr = Parser.parseDoc(resultHtmlSrc,tagsArr );
 
@@ -214,7 +215,7 @@ public class SearchDocuments extends HttpServlet {
 			tags.add("#nex_page#")	;		tags.add(nextButton);
 			tags.add("#section_list#");		tags.add(option_list);
 
-			returnStr = IMCServiceRMI.parseDoc(imcserver,tags,template_to_use,langPrefix);
+			returnStr = imcref.parseDoc(tags,template_to_use,langPrefix);
 
 		}else if (action.equalsIgnoreCase("user_search")) {
 			//lets set up the <-prev- 1 2 .. -next-> stuff
@@ -240,11 +241,11 @@ public class SearchDocuments extends HttpServlet {
 
 
 				//lets get the templates to do this those templates must exists
-				String nextTextTemplate	= IMCServiceRMI.getSearchTemplate(imcserver ,USER_NEXT);
-				String prevTextTemplate	= IMCServiceRMI.getSearchTemplate(imcserver ,USER_PREV);
-				String activeTemplate		= IMCServiceRMI.getSearchTemplate(imcserver ,USER_ACTIVE);
-				String inActiveTemplate		= IMCServiceRMI.getSearchTemplate(imcserver ,USER_INACTIVE);
-				String ahrefTemplate		= IMCServiceRMI.getSearchTemplate(imcserver ,USER_AHREF);
+				String nextTextTemplate	= imcref.getSearchTemplate(USER_NEXT);
+				String prevTextTemplate	= imcref.getSearchTemplate(USER_PREV);
+				String activeTemplate		= imcref.getSearchTemplate(USER_ACTIVE);
+				String inActiveTemplate		= imcref.getSearchTemplate(USER_INACTIVE);
+				String ahrefTemplate		= imcref.getSearchTemplate(USER_AHREF);
 				//Fix kolla att ingen mall är null om så returnera alla hitts i en lång lista
 
 				//ok this is a tricky part to set up the html for the next button and so on
@@ -281,10 +282,10 @@ public class SearchDocuments extends HttpServlet {
 
 			//user defined search this will use the templates stored in the templates/search/ folder
 			//this one is used by ex maBra and they has there templates
-			oneRecHtmlSrc	= IMCServiceRMI.getSearchTemplate(imcserver ,req.getParameter("template_list"));
-			resultHtmlSrc	= IMCServiceRMI.getSearchTemplate(imcserver ,req.getParameter("template"));
-			noHitHtmlStr	= IMCServiceRMI.getSearchTemplate(imcserver ,req.getParameter("template_no_hit"));
-			StringBuffer buff = SearchDocuments.parseSearchResults(imcserver,oneRecHtmlSrc,sqlResults,startNrInt,noOfHit);
+			oneRecHtmlSrc	= imcref.getSearchTemplate(req.getParameter("template_list"));
+			resultHtmlSrc	= imcref.getSearchTemplate(req.getParameter("template"));
+			noHitHtmlStr	= imcref.getSearchTemplate(req.getParameter("template_no_hit"));
+			StringBuffer buff = SearchDocuments.parseSearchResults(imcref,oneRecHtmlSrc,sqlResults,startNrInt,noOfHit);
 			//if there isnt any hitts lets add the no hit message
 			if (buff.length()==0) {
 				buff.append(noHitHtmlStr);
@@ -321,8 +322,8 @@ public class SearchDocuments extends HttpServlet {
     */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host				= req.getHeader("Host") ;
-		String imcserver			= Utility.getDomainPref("adminserver",host) ;
-		String start_url	= Utility.getDomainPref( "start_url",host ) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		String start_url	= imcref.getStartUrl() ;
 		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 		imcode.server.User user ;
@@ -348,7 +349,7 @@ public class SearchDocuments extends HttpServlet {
 		    return ;
 		}
 
-		String langPrefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+		String langPrefix = user.getLangPrefix() ;
 
 		//ok lets see what page to send if we dont get any lets send the simple one
 		String templateStr = null;
@@ -356,23 +357,23 @@ public class SearchDocuments extends HttpServlet {
 		if (mode != null) {
 			if (mode.equals("adv"))	 {
 				//ok lets get the adv page
-				templateStr = IMCServiceRMI.parseDoc(imcserver,null,SEARCH_PAGE_TEMPLATE_ADV,langPrefix);
+				templateStr = imcref.parseDoc(null,SEARCH_PAGE_TEMPLATE_ADV,langPrefix);
 			}else if(mode.equals("user")) {
 				if (req.getParameter("template") != null) {
-					templateStr = IMCServiceRMI.getSearchTemplate(imcserver ,req.getParameter("template"));
+					templateStr = imcref.getSearchTemplate(req.getParameter("template"));
 				}else {
-					templateStr = IMCServiceRMI.getSearchTemplate(imcserver ,USER_SEARCH_PAGE);
+					templateStr = imcref.getSearchTemplate(USER_SEARCH_PAGE);
 				}
 			}
 		}
 
 		if (templateStr == null) {
 			//default mode
-			templateStr = IMCServiceRMI.parseDoc(imcserver,null,SEARCH_PAGE_TEMPLATE,langPrefix);
+			templateStr = imcref.parseDoc(null,SEARCH_PAGE_TEMPLATE,langPrefix);
 		}
 
 
-		String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver, SPROC_SECTION_GET_ALL_SECTIONS) ;
+		String[] all_sections = imcref.sqlProcedure( SPROC_SECTION_GET_ALL_SECTIONS) ;
 		String option_list = "";
 		if (all_sections != null) {
 			Vector onlyTemp = new Vector();
@@ -449,7 +450,7 @@ public class SearchDocuments extends HttpServlet {
 	/**
 		@Author Peter Östergren
 	*/
-	private static StringBuffer parseSearchResults(String imcserver, String oneRecHtmlSrc,
+	private static StringBuffer parseSearchResults(IMCServiceInterface imcref, String oneRecHtmlSrc,
       String[][] sqlResults, int startValue , int numberToParse) throws java.io.IOException{
 		StringBuffer searchResults = new StringBuffer("") ;
 		int stop  = startValue + numberToParse;

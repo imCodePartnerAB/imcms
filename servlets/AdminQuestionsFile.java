@@ -38,7 +38,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 	// Lets get the server this request was aimed for
 	String host = req.getHeader("Host") ;
-	String imcserver = Utility.getDomainPref("adminserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	HttpSession session = req.getSession();
 
@@ -63,36 +63,36 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	String date1 = "";
 	String date2 = "";
 	String text  = "";
-	String errMsgDate	= IMCServiceRMI.parseExternalDoc(imcserver, null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
-	String errMsgTxt	= IMCServiceRMI.parseExternalDoc(imcserver, null, TEXT_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String errMsgDate	= imcref.parseExternalDoc( null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String errMsgTxt	= imcref.parseExternalDoc( null, TEXT_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 
 	if (req.getParameter("save")!=null) {
 
 	    addLineToList(req,lines);
 
-	    IMCServiceRMI.setPollList(imcserver, whichFile+".poll.txt", lines);
+	    imcref.setPollList( whichFile+".poll.txt", lines);
 
 	    // Get the current poll
-	    List currentPollList = IMCServiceRMI.getPollList(imcserver,whichFile+".current.txt") ;
+	    List currentPollList = imcref.getPollList(whichFile+".current.txt") ;
 
 	    if ( currentPollList.isEmpty() ) {
 		// There was no poll, get one.
-		currentPollList = this.getNewQuestion(imcserver,whichFile) ;
-		IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",currentPollList) ;
+		currentPollList = this.getNewQuestion(imcref,whichFile) ;
+		imcref.setPollList(whichFile+".current.txt",currentPollList) ;
 	    }
 	    Poll currentPoll = (Poll) currentPollList.get(0) ;
 
 	    // Get a new poll
-	    List newPollList = this.getNewQuestion(imcserver,whichFile) ;
+	    List newPollList = this.getNewQuestion(imcref,whichFile) ;
 	    Poll newCurrentPoll = (Poll) newPollList.get(0) ;
 
 	    // Replace the current poll if it changed.
 	    if (!newCurrentPoll.getQuestion().equals(currentPoll.getQuestion())) {
-		IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
+		imcref.setPollList(whichFile+".current.txt",newPollList) ;
 		if (!"".equals(currentPoll.getQuestion()) && currentPoll.getTotalAnswerCount() > 0) {
-		    List statsList = IMCServiceRMI.getPollList(imcserver,whichFile+".stat.txt") ;
+		    List statsList = imcref.getPollList(whichFile+".stat.txt") ;
 		    statsList.add(currentPoll) ;
-		    IMCServiceRMI.setPollList(imcserver,whichFile+".stat.txt", statsList) ;
+		    imcref.setPollList(whichFile+".stat.txt", statsList) ;
 		}
 	    }
 
@@ -197,7 +197,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	//this part is always done its the creation and sending of the page to the browser
 	session.setAttribute("lines",lines);
 
-	StringBuffer buff = createOptionList(req,lines, imcserver, user );
+	StringBuffer buff = createOptionList(req,lines, imcref, user );
 
 
 	//Add info for parsing to a Vector and parse it with a template to a htmlString that is writeed
@@ -213,13 +213,13 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	values.add("#options#");
 	values.add(buff.toString());
 
-	String parsed = IMCServiceRMI.parseExternalDoc(imcserver, values, ADMIN_TEMPLATE, user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String parsed = imcref.parseExternalDoc( values, ADMIN_TEMPLATE, user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 	out.write(parsed);
 	return;
 
     }//end doPost()
 
-    private StringBuffer createOptionList(HttpServletRequest req, List lines, String server, imcode.server.User user ) throws ServletException, IOException {
+    private StringBuffer createOptionList(HttpServletRequest req, List lines, IMCServiceInterface imcref, imcode.server.User user ) throws ServletException, IOException {
 	StringBuffer buff = new StringBuffer();
 	int counter = 0;
 	Iterator iter = lines.iterator();
@@ -270,9 +270,9 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	return true;
     }
 
-    private List getNewQuestion(String imcserver,String whichFile) throws ServletException, IOException {
+    private List getNewQuestion(IMCServiceInterface imcref,String whichFile) throws ServletException, IOException {
 
-	List questionList = IMCServiceRMI.getQuoteList(imcserver,whichFile+".poll.txt") ;
+	List questionList = imcref.getQuoteList(whichFile+".poll.txt") ;
 
 	Date date = new Date();
 	Iterator qIterator = questionList.iterator() ;

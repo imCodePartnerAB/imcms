@@ -1,26 +1,3 @@
-/******************************************************************************************
-* IMCServiceInterface.java                                                                *
-* Copyright Magnum Software 1998,1999                                                     *
-*-----------------------------------------------------------------------------------------*
-* SYNOPSIS:                                                                               *
-* Outline     : The interface for the Imcode Net Server database pool                     *
-*-----------------------------------------------------------------------------------------*
-* Author      : Magnus Isenberg : Magnum Software (c) 1998,1999                           *
-*-----------------------------------------------------------------------------------------*
-* PLATFORM    : PC/MAC/SOLARIS					              *
-* ENVIRONMENT : WINDOWS 95/98/NT MacOS UNIX OS2 LINUX runs from command line.             *
-* TOOLS       : JavaSoft JDK1.2, KAWA IDE				              *
-* REFERENCE   : The Java Class Libraries 1 & 2		                          *
-*               Getting Staring Using RMI (www.javasoft.com)                              *
-* Thanks to   : Andreas Bengtsson : Software Engineer : Entra Memtek Education AB         *
-*             : Hasse Brattberg   : Software Engineer : Entra Memtek Education AB         *
-*             : Roger Larsson     : HTML Programmer   : Visby Interactive Studio AB       *
-*-----------------------------------------------------------------------------------------*
-* Last Update : 09:00 06-12-1999                                                          *
-*-----------------------------------------------------------------------------------------*
-* REVISION HISTORY :                                                                      *
-* 06-12-1999 : MI  : First Written                                                        *
-******************************************************************************************/
 package imcode.server ;
 
 import java.util.Vector ;

@@ -1,3 +1,4 @@
+import imcode.server.* ;
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -71,8 +72,8 @@ public class BillBoardCreator extends BillBoard
 
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 		// ********* NEW ********
 		if(action.equalsIgnoreCase("ADD_BILLBOARD"))
@@ -83,9 +84,8 @@ public class BillBoardCreator extends BillBoard
 			// Ok, Since the billboard db can be used from different servers
 			// we have to check when we add a new billboard that such an meta_id
 			// doesnt already exists.
-			RmiConf rmi = new RmiConf(user) ;
 			String metaId = params.getProperty("META_ID") ;
-			String foundMetaId = rmi.execSqlProcedureStr(confPoolServer, "B_FindMetaId " + metaId) ;
+			String foundMetaId = billref.sqlProcedureStr("B_FindMetaId " + metaId) ;
 			if(!foundMetaId.equals("1"))
 			{
 				action = "" ;
@@ -100,29 +100,27 @@ public class BillBoardCreator extends BillBoard
 
 
 			String confName = confParams.getProperty("BILLBOARD_NAME") ;//CONF_NAME
-			// String sortType = "1" ;	// Default value, unused so far
+
 			String subject =  	confParams.getProperty("SUBJECT_NAME");
 			String sqlQ = "B_AddNewBillBoard " + metaId + ", '" + confName + "', '"+ subject+"'" ;//AddNewConf
-			//log("B_AddNewBillBoard sql:" + sqlQ ) ;
-			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
+
+			billref.sqlUpdateProcedure(sqlQ) ;
 
 			// Lets add a new section to the billBoard
 			// B_AddNewSection @meta_id int, @section_name varchar(255), @archive_mode char, @archive_time int
 			String newFsql = "B_AddNewSection " + metaId +", '" + confParams.getProperty("SECTION_NAME") + "', ";//AddNewForum
 			newFsql += "'A' , 30, 14" ;
-			//newFsql += "'" + confParams.getProperty("ARCHIVE_MODE") + "', " ;
-			//newFsql += confParams.getProperty("ARCHIVE_TIME")	;
-			//log("B_AddNewSection sql:" + newFsql ) ;
-			rmi.execSqlUpdateProcedure(confPoolServer, newFsql) ;
+
+			billref.sqlUpdateProcedure(newFsql) ;
 
 			// Lets get the administrators user_id
 			String user_id = user.getString("user_id") ;
 
 			// Ok, were done creating the billBoard. Lets tell Janus system to show this child.
-			rmi.activateChild(imcServer, metaId) ;
+			imcref.activateChild(Integer.parseInt(metaId),user) ;
 
 			// Ok, Were done adding the billBoard, Lets go back to the Manager
-			String loginPage = MetaInfo.getServletPath(req) + "BillBoardLogin?login_type=login" ;
+			String loginPage = "BillBoardLogin?login_type=login" ;
 			res.sendRedirect(loginPage) ;
 			return ;
 		}
@@ -170,7 +168,7 @@ public class BillBoardCreator extends BillBoard
 		{
 			// Lets build the Responsepage to the loginpage
 			VariableManager vm = new VariableManager() ;
-			vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
+			vm.addProperty("SERVLET_URL", "") ;
 			sendHtml(req,res,vm, HTML_TEMPLATE) ;
 			return ;
 		}

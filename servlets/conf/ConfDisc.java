@@ -8,6 +8,7 @@
  *
 */
 
+import imcode.server.* ;
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -79,20 +80,12 @@ public class ConfDisc extends Conference {
 
 		// Lets get the buttonparameters  and validate all parameters
 		if (super.checkParameters(req, res, params) == false) {
-			/*
-			String header = "ConfDisc servlet. " ;
-			String msg = params.toString() ;
-			ConfError err = new ConfError(req,res,header,1) ;
-			*/
 			return ;
 		}
 
 		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
-
-		RmiConf rmi = new RmiConf(user) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 		// ********* UPDATE DISCUSSIONS ********
 		if (req.getParameter("UPDATE") != null) {
@@ -103,10 +96,9 @@ public class ConfDisc extends Conference {
 			String discIndex = params.getProperty("DISC_INDEX") ;
 			String changeForum = req.getParameter("CHANGE_FORUM");
 
-			//	RmiConf rmi = new RmiConf(user) ;
 			HttpSession session = req.getSession(false) ;
 			if(session != null) {
-				String latestDiscId = rmi.execSqlProcedureStr(confPoolServer, "A_GetLastDiscussionId " +
+				String latestDiscId = confref.sqlProcedureStr("A_GetLastDiscussionId " +
 					params.getProperty("META_ID") + ", " + aForumId) ;
 
 				if(latestDiscId == null) {
@@ -127,19 +119,14 @@ public class ConfDisc extends Conference {
 				session.setAttribute("Conference.disc_index", discIndex) ;
 			}
 
-			//	log("LastLoginDate: " + session.getAttribute("Conference.last_login_date")) ;
-			// Lets redirect to the servlet which holds in us.
-			String where = MetaInfo.getServletPath(req) ;
-
-			res.sendRedirect(where + "ConfDiscView") ;
+			res.sendRedirect("ConfDiscView") ;
 			return ;
 		}
 
 		// ********* ADD DISCUSSIONS ********
 		if (req.getParameter("ADD") != null) {
 			// log("Nu redirectar vi till ConfAdd") ;
-			String where = MetaInfo.getServletPath(req) ;
-			res.sendRedirect(where + "ConfAdd?ADDTYPE=Discussion") ;
+			res.sendRedirect("ConfAdd?ADDTYPE=Discussion") ;
 			return ;
 		}
 
@@ -150,19 +137,18 @@ public class ConfDisc extends Conference {
 			// Lets get the total nbr of discs in the forum
 			// RmiConf rmi = new RmiConf(user) ;
 			String sql = "A_GetNbrOfDiscs " + params.getProperty("FORUM_ID") ;
-			String nbrOfDiscsStr = rmi.execSqlProcedureStr(confPoolServer, sql) ;
+			String nbrOfDiscsStr = confref.sqlProcedureStr(sql) ;
 			int nbrOfDiscs = 0 ;
 
 			// Lets get the nbr of discussions to show. If it does not contain any
 			// discussions, 20 will be returned by default from db
-			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "A_GetNbrOfDiscsToShow " +
+			String showDiscsStr = confref.sqlProcedureStr("A_GetNbrOfDiscsToShow " +
 				params.getProperty("FORUM_ID"))  ;
 			int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
-			// log("Nbr of discs to show: " + showDiscsCounter) ;
 
 			try {
 				nbrOfDiscs = Integer.parseInt(nbrOfDiscsStr) ;
-			} catch (Exception e) {
+			} catch (NumberFormatException e) {
 				nbrOfDiscs = 0 ;
 				log("GetNbrOfDiscs returned null") ;
 			}
@@ -170,12 +156,10 @@ public class ConfDisc extends Conference {
 			int currIndex = this.getDiscIndex(req) ;
 			if( currIndex + showDiscsCounter < nbrOfDiscs ) {
 				this.increaseDiscIndex(req, showDiscsCounter) ;
-				// log("Ok, vi höjer indexräknaren") ;
 			}
 
 			// Lets redirect to the servlet which holds in us.
-			String where = MetaInfo.getServletPath(req) ;
-			res.sendRedirect(where + "ConfDiscView") ;
+			res.sendRedirect("ConfDiscView") ;
 			return ;
 		}
 
@@ -186,23 +170,19 @@ public class ConfDisc extends Conference {
 
 			// Lets get the nbr of discussions to show. If it does not contain any
 			// discussions, 20 will be returned by default from db
-			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "A_GetNbrOfDiscsToShow " +
+			String showDiscsStr = confref.sqlProcedureStr("A_GetNbrOfDiscsToShow " +
 				params.getProperty("FORUM_ID"))  ;
 			int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
-			// log("Nbr of discs to show: " + showDiscsCounter) ;
 
 			this.decreaseDiscIndex(req, showDiscsCounter) ;
-			// log("Currindex efter sänkning: " + this.getDiscIndex(req)) ;
 
 			// Lets redirect to the servlet which holds in us.
-			String where = MetaInfo.getServletPath(req) ;
-			res.sendRedirect(where + "ConfDiscView") ;
+			res.sendRedirect("ConfDiscView") ;
 			return ;
 		}
 
 		// ********* SEARCH ********
 		if (req.getParameter("SEARCH") != null) {
-			//	log("Nu är vi i search") ;
 			params = this.getSearchParameters(req, params) ;
 			String searchMsg = "" ;
 			String sqlAnswer[] = null ;
@@ -213,7 +193,7 @@ public class ConfDisc extends Conference {
 
 			String aForumId = params.getProperty("FORUM_ID") ;
 			String sqlForumName = "A_GetForumName " + aForumId ;
-			currForum = "" + rmi.execSqlProcedureStr(confPoolServer, "A_GetForumName " + aForumId) ;
+			currForum = "" + confref.sqlProcedureStr("A_GetForumName " + aForumId) ;
 
 			//lets get metaId befor buildSearchDateParams destroys that info (happens if error in dateformat)
 			String metaId = params.getProperty("META_ID");
@@ -221,7 +201,6 @@ public class ConfDisc extends Conference {
 			// Lets validate the searchdates. If not correct then get a message and show user
 			// 42=En sökdatumsträng var felaktig!
 			params = this.buildSearchDateParams(params) ;
-			//log("Efter buildSearchDateParams: " + params) ;
 
 			if (params == null) {
 				log("An illegal searchdateparameter was sent to server") ;
@@ -235,24 +214,15 @@ public class ConfDisc extends Conference {
 			// 40=En sökparameter saknades! Du måste ange minst ett sökord!
 			if( searchParamsOk) {
 				boolean itsOk = this.checkSearchWords(params) ;
-				//this.log("ItsOk: " + itsOk) ;
 				if (!itsOk ) {
 					ConfError msgErr = new ConfError() ;
 					searchMsg = msgErr.getErrorMessage(req, 40) ;
-					//log("searchMsg: " + searchMsg) ;
 					searchParamsOk = false ;
 				}
 			}
 
-			//log("Ok, we have passed test 1 and 2") ;
-			//log("searchParamsOk: " + searchParamsOk) ;
-			// this.log("SEARCHWORD: " + params.getProperty("SEARCH").trim()) ;
-
-
 			// Lets check if everything is alright
 			if( searchParamsOk ) {
-				//String metaId = params.getProperty("META_ID") ;
-				//aForumId = params.getProperty("FORUM_ID") ;
 				String searchW = params.getProperty("SEARCH") ;
 				String category = params.getProperty("CATEGORY") ;
 				String frDate = params.getProperty("FR_DATE") ;
@@ -262,24 +232,17 @@ public class ConfDisc extends Conference {
 				// IF WE ARE LOOKING FOR USERS ACTIVITY
 				if(params.getProperty("CATEGORY").equals("2")) {
 					String sqlQ = this.buildSearchUserSql(params) ;
-					//log("SQL: " + sqlQ) ;
-					//RmiConf rmi = new RmiConf(user) ;
-					sqlAnswer = rmi.execSqlQueryExt(confPoolServer, sqlQ) ;
+					sqlAnswer = confref.sqlQueryExt(sqlQ) ;
 				}
 				else {
 					// Ok, Lets build the search string
-					//RmiConf rmi = new RmiConf(user) ;
 					String sqlQ = "A_SearchText " + metaId +", "+ aForumId + ", " ;
 					sqlQ += category  + ", " + "'" + searchW + "'" + " ," ;
 					sqlQ += "'" + frDate  + "', '" + toDate + " 23:59:59" + "'" ;
 
-					// log("Search SQL: " + sqlQ) ;
-					sqlAnswer = rmi.execSqlProcedureExt(confPoolServer, sqlQ) ;
+					sqlAnswer = confref.sqlProcedureExt(sqlQ) ;
 				} // End if
 			} // End if
-
-			//log("Ok, we have done a search!") ;
-			//log("sqlAnswer:" + sqlAnswer) ;
 
 			// Lets get the part of an html page, wich will be parsed for every a Href reference
 			File templateLib = super.getExternalTemplateFolder(req) ;
@@ -334,11 +297,11 @@ public class ConfDisc extends Conference {
 			//lets show newbutton if user has more than readrights
 			String newDiscButton = "&nbsp;";
 			int intMetaId = Integer.parseInt( metaId );
-			if ( IMCServiceRMI.checkDocRights( imcServer, intMetaId, user ) &&
-			   IMCServiceRMI.checkDocAdminRights( imcServer, intMetaId, user ) ) {
+			if ( imcref.checkDocRights( intMetaId, user ) &&
+			   imcref.checkDocAdminRights( intMetaId, user ) ) {
 
 				VariableManager vmButtons = new VariableManager();
-				vmButtons.addProperty( "#SERVLET_URL#", MetaInfo.getServletPath( req ) );
+				vmButtons.addProperty( "#SERVLET_URL#", "" );
 				vmButtons.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
 				HtmlGenerator newButtonHtmlObj = new HtmlGenerator( templateLib, this.NEW_DISC_TEMPLATE );
 				newDiscButton = newButtonHtmlObj.createHtmlString( vmButtons, req );
@@ -350,7 +313,7 @@ public class ConfDisc extends Conference {
 			vm.addProperty("NEW_DISC_BUTTON", newDiscButton );
 			vm.addProperty( "ADMIN_LINK_HTML", this.ADMIN_LINK_TEMPLATE );
 			this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-			// log("ConfDisc doPost är färdig") ;
+
 			return ;
 		}
 	} // DoPost
@@ -367,11 +330,6 @@ public class ConfDisc extends Conference {
 		// Lets get the standard SESSION parameters and validate them
 		Properties params = this.getSessionParameters(req) ;
 		if (super.checkParameters(req, res, params) == false) {
-			/*
-			String header = "ConfDisc servlet. " ;
-			String msg = params.toString() ;
-			ConfError err = new ConfError(req,res,header,1) ;
-			*/
 			return ;
 		}
 
@@ -384,14 +342,8 @@ public class ConfDisc extends Conference {
 		}
 
 		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
-
-		RmiConf rmi = new RmiConf(user) ;
-
-		// Lets get the url to the servlets directory
-		String servletHome = MetaInfo.getServletPath(req) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 		// Lets get parameters
 		String aMetaId = params.getProperty("META_ID") ;
@@ -409,7 +361,7 @@ public class ConfDisc extends Conference {
 		// Lets get all Discussions
 		String sqlStoredProcOld = "A_GetAllDiscussions " + aMetaId + ", " + aForumId +", '"+ aLoginDate + "'"  ;
 		//log("GetAllDiscussionsSQL: " + sqlStoredProcOld) ;
-		String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProcOld ) ;
+		String sqlAnswer[] = confref.sqlProcedureExt(sqlStoredProcOld ) ;
 
 		//lets generate the buttons that should appear
 		File templateLib = this.getExternalTemplateFolder( req );
@@ -419,7 +371,7 @@ public class ConfDisc extends Conference {
 
                 // Lets bee ready to create button and new flags
 		VariableManager vmButtons = new VariableManager();
-		vmButtons.addProperty( "#SERVLET_URL#", MetaInfo.getServletPath( req ) );
+		vmButtons.addProperty( "#SERVLET_URL#", "" );
 		vmButtons.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
 
 		// Lets preparse all records
@@ -433,24 +385,17 @@ public class ConfDisc extends Conference {
 			Vector tagsV = this.buildTags() ;
 
 			// Lets get the start record position in the array
-			//int discIndexPos = this.getDiscIndex(req) ;
-			// log("DOGET discindex: " + discIndexPos) ;
 
 			// Lets get the nbr of discussions to show. If it does not contain any
 			// discussions, 20 will be returned by default from db
-			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "A_GetNbrOfDiscsToShow " +
+			String showDiscsStr = confref.sqlProcedureStr("A_GetNbrOfDiscsToShow " +
 				params.getProperty("FORUM_ID"))  ;
-			//int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
 			showDiscsCounter = Integer.parseInt(showDiscsStr) ;
 			int recStartPos = this.getRecordPos(sqlAnswer, discIndexPos, req ) ;
 			int recStopPos = this.getRecordPos(sqlAnswer, discIndexPos + showDiscsCounter, req ) ;
 
-			// log("StartRecordPos: " + recStartPos ) ;
-			// log("StopRecordPos: " + recStopPos ) ;
-
 			// Lets create an array
 			String[] newArr = this.buildArray(sqlAnswer, recStartPos, recStopPos) ;
-			// log("NEW ARR LENGTH: " + newArr.length ) ;
 			if( newArr.length > 0)
 				allRecs = preParse(req, newArr, tagsV, aHrefHtmlFile, imagePath ) ;
 
@@ -468,12 +413,11 @@ public class ConfDisc extends Conference {
 		}
 
 		// Lets get the forumname for the current forum
-		String currForum = "" + rmi.execSqlProcedureStr(confPoolServer, "A_GetForumName " + params.getProperty("FORUM_ID")) ;
-		// log("CurrentForum: " + currForum) ;
+		String currForum = "" + confref.sqlProcedureStr("A_GetForumName " + params.getProperty("FORUM_ID")) ;
 
 		//lets show newdiscbutton if user has more than readrights
-		if ( IMCServiceRMI.checkDocRights( imcServer, metaId, user ) &&
-		   IMCServiceRMI.checkDocAdminRights( imcServer, metaId, user ) ) {
+		if ( imcref.checkDocRights( metaId, user ) &&
+		   imcref.checkDocAdminRights( metaId, user ) ) {
 			HtmlGenerator newButtonHtmlObj = new HtmlGenerator( templateLib, this.NEW_DISC_TEMPLATE );
 			newDiscButton = newButtonHtmlObj.createHtmlString( vmButtons, req );
 		}
@@ -486,8 +430,6 @@ public class ConfDisc extends Conference {
 		vm.addProperty("CURRENT_FORUM_NAME", currForum) ;
 		vm.addProperty( "ADMIN_LINK_HTML", this.ADMIN_LINK_TEMPLATE );
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-		//	this.showSession(req) ;
-		//log("ConfDisc doGet är färdig") ;
 	} //DoGet
 
 	/**
@@ -512,7 +454,7 @@ public class ConfDisc extends Conference {
 					dataV.add(DBArr[j]) ;
 				}
 				// Lets insert the aHrefCode to the end of the vector
-				dataV.add( MetaInfo.getServletPath(req) + "ConfReply?") ;
+				dataV.add("ConfReply?") ;
 
 				// Lets check if the discussions should have a new bitmap in front of them
 				// Lets first check against the logindate in the sql, then check the

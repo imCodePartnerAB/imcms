@@ -1,34 +1,3 @@
-/************************************************************************************
-* IMCService.java                                                                   *
-* Copyright Magnum Software 1998,1999                                               *
-*-----------------------------------------------------------------------------------*
-* SYNOPSIS:                                                                         *
-* Outline     : The main module for the Imcode Application Server.                  *
-*-----------------------------------------------------------------------------------*
-* Author      : Magnus Isenberg : Magnum Software (c) 1998,1999                     *
-*-----------------------------------------------------------------------------------*
-* PLATFORM    : PC/MAC/SOLARIS			             *
-* ENVIRONMENT : WINDOWS 95/98/NT MacOS UNIX OS2 LINUX runs from command line.       *
-* TOOLS       : JavaSoft JDK1.2, KAWA IDE				         *
-* REFERENCE   : The Java Class Libraries 1 & 2		                 *
-*               Getting Staring Using RMI (www.javasoft.com)                        *
-* Thanks to   : Andreas Bengtsson : Software Engineer : Entra Memtek Education AB   *
-*             : Hasse Brattberg   : Software Engineer : Entra Memtek Education AB   *
-*             : Roger Larsson     : HTML Programmer   : Visby Interactive Studios*  *
-*-----------------------------------------------------------------------------------*
-* Last Update : 17:00 12-05-1999                                                    *
-*-----------------------------------------------------------------------------------*
-* REVISION HISTORY :                                                                *
-* 30-09-1999 : MI  : parseDoc                                                       *
-* 30-09-1999 : MI  : sqlQuery    return String array                                *
-* 30-09-1999 : MI  : sqlUpdate                                                      *
-* 30-09-1999 : MI  : sqlQueryStr   return String                                    *
-* 30-09-1999 : MI  : parseDoc, uses two vectors                                     *
-* 12-10-1999 : MI  : insertNewTexts                                                 *
-* 12-10-1999 : MI  : insertNewImages                                                *
-* 27-10-1999 : MI  : getExternalTemplateFolder()                                    *
-* 18-11-1999 : MI  : sqlQuery(String sqlQuery,String catalog)                       *
-************************************************************************************/
 package imcode.server ;
 
 import java.sql.*;
@@ -51,7 +20,6 @@ public class IMCPool implements IMCPoolInterface {
     /**
        Construct a pool object
     */
-    //	public IMCPool(ConnectionPool conPool,javax.swing.JTextArea output)
     public IMCPool(imcode.server.InetPoolManager conPool,Properties props) {
 	super();
 	m_conPool = conPool ;
@@ -87,12 +55,6 @@ public class IMCPool implements IMCPoolInterface {
 	    return null ;
 	}
     }
-
-
-
-
-
-
 
     /**
        Send a sqlquery to the database and return a string array
@@ -173,7 +135,6 @@ public class IMCPool implements IMCPoolInterface {
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
-	// dbc.createStatement() ;
 
 
 	data = (Vector)dbc.executeProcedure() ;
@@ -208,7 +169,6 @@ public class IMCPool implements IMCPoolInterface {
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
-	//dbc.createStatement() ;
 	data = (Vector)dbc.executeProcedure().clone() ;
 
 
@@ -237,7 +197,6 @@ public class IMCPool implements IMCPoolInterface {
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
-	// dbc.createStatement() ;
 	dbc.executeUpdateProcedure();
 	dbc.closeConnection() ;
 	dbc = null ;
@@ -302,7 +261,6 @@ public class IMCPool implements IMCPoolInterface {
     public String[] sqlQueryExt(String sqlQuery) {
 
 	Vector data = new Vector() ;
-	// Vector meta = new Vector() ;
 	String[] meta = new String[0] ;
 
 	DBConnect dbc = new DBConnect(m_conPool,sqlQuery) ;
@@ -310,10 +268,6 @@ public class IMCPool implements IMCPoolInterface {
 	dbc.createStatement() ;
 	data = (Vector)dbc.executeQuery();
 	meta = dbc.getMetaData() ;
-
-	//meta = (Vector)dbc.getMetaData().clone() ;
-	//data = (Vector)dbc.executeQuery().clone() ;
-	//meta = (Vector)dbc.getMetaData().clone() ;
 
 	if ( data.size() > 0 ) {
 	    String result[] = new String[data.size() + dbc.getColumnCount() + 1] ;
@@ -355,7 +309,6 @@ public class IMCPool implements IMCPoolInterface {
     public String[] sqlProcedureExt(String procedure) {
 
 	Vector data = new Vector() ;
-	//	Vector meta = new Vector() ;
 	String[] meta = new String[0] ;
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
@@ -412,14 +365,12 @@ public class IMCPool implements IMCPoolInterface {
     public Hashtable sqlQueryHash(String sqlQuery) {
 
 	Vector data = new Vector() ;
-	//Vector meta = new Vector() ;
 	String[] meta = new String[0] ;
 
 	DBConnect dbc = new DBConnect(m_conPool,sqlQuery) ;
 	dbc.getConnection() ;
 	dbc.createStatement() ;
 	data = (Vector)dbc.executeQuery().clone() ;
-	//meta = (Vector)dbc.getMetaData().clone() ;
 
 	meta = dbc.getMetaData() ;
 	int columns = dbc.getColumnCount() ;

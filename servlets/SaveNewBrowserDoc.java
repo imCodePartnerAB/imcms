@@ -3,6 +3,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.util.* ;
+import imcode.server.* ;
 /**
    Save a new browserdocument.
 */
@@ -22,8 +23,8 @@ public class SaveNewBrowserDoc extends HttpServlet {
     */
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	String imcserver			= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	imcode.server.User user ;
@@ -60,8 +61,8 @@ public class SaveNewBrowserDoc extends HttpServlet {
 	    return ;
 	}
 	// Check if user has write rights
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver, meta_id, user) ) {
-	    log("User "+user.getInt("user_id")+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;
+	if ( !imcref.checkDocAdminRights( meta_id, user) ) {
+	    log("User "+user.getUserId()+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;
 	    String scheme = req.getScheme() ;
 	    String serverName = req.getServerName() ;
 	    int p = req.getServerPort() ;
@@ -73,8 +74,8 @@ public class SaveNewBrowserDoc extends HttpServlet {
 	if( req.getParameter("cancel")!=null ) {
 	    // FIXME: Move to SProc
 	    String sqlStr = "delete from browser_docs where to_meta_id = 0 and meta_id = " + meta_id ;
-	    IMCServiceRMI.sqlUpdateQuery( imcserver, sqlStr ) ;
-	    String output = AdminDoc.adminDoc(parent_meta_id,parent_meta_id,host,user,req,res) ;
+	    imcref.sqlUpdateQuery( sqlStr ) ;
+	    String output = AdminDoc.adminDoc(parent_meta_id,parent_meta_id,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -99,13 +100,13 @@ public class SaveNewBrowserDoc extends HttpServlet {
 			}
 		    }
 		    if ( sqlStr != null ) {
-			IMCServiceRMI.sqlUpdateQuery( imcserver, sqlStr ) ;
+			imcref.sqlUpdateQuery( sqlStr ) ;
 		    }
 		}
 	    }
-	    IMCServiceRMI.activateChild(imcserver,meta_id,user) ;
+	    imcref.activateChild(meta_id,user) ;
 
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -117,13 +118,13 @@ public class SaveNewBrowserDoc extends HttpServlet {
 		for ( int i=0 ; i<browsers.length ; i++ ) {
 		    // FIXME: Move to SProc
 		    String sqlStr = "insert into browser_docs (meta_id,to_meta_id,browser_id) values ("+meta_id+",0,"+browsers[i]+")" ;
-		    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+		    imcref.sqlUpdateQuery(sqlStr) ;
 		}
 	    }
 	    Vector vec = new Vector () ;
 	    // FIXME: Move to SProc
 	    String sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = "+meta_id+" order by value desc,name asc" ;
-	    Hashtable hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
+	    Hashtable hash = imcref.sqlQueryHash(sqlStr) ;
 	    String[] b_id = (String[])hash.get("browser_id") ;
 	    String[] nm = (String[])hash.get("name") ;
 	    String[] to = (String[])hash.get("to_meta_id") ;
@@ -143,7 +144,7 @@ public class SaveNewBrowserDoc extends HttpServlet {
 	    vec.add(bs) ;
 	    // FIXME: Move to SProc
 	    sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = "+meta_id+" ) order by value desc,name asc" ;
-	    hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
+	    hash = imcref.sqlQueryHash(sqlStr) ;
 	    b_id = (String[])hash.get("browser_id") ;
 	    nm = (String[])hash.get("name") ;
 	    String nb = "" ;
@@ -166,9 +167,9 @@ public class SaveNewBrowserDoc extends HttpServlet {
 	    vec.add(String.valueOf(parent_meta_id)) ;
 	    vec.add("#servlet_url#") ;
 	    vec.add(servlet_url) ;
-	    String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	    String lang_prefix = user.getLangPrefix() ;
 
-	    htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_browser_doc.html", lang_prefix) ;
+	    htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", lang_prefix) ;
 	}
 
 	out.write(htmlStr) ;

@@ -31,7 +31,7 @@ public class AdminDoc extends HttpServlet {
     public void doGet( HttpServletRequest req,	HttpServletResponse res ) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 	int start_doc				= imcref.getDefaultHomePage() ;
 	imcode.server.User user ;
@@ -57,7 +57,7 @@ public class AdminDoc extends HttpServlet {
 
 	int doc_type = imcref.getDocType( meta_id ) ;
 
-	String tempstring = AdminDoc.adminDoc(meta_id,parent_meta_id,host,user,req,res) ;
+	String tempstring = AdminDoc.adminDoc(meta_id,parent_meta_id,user,req,res) ;
 
 	if (tempstring != null) {
 	    byte[] tempbytes = tempstring.getBytes("8859_1") ;
@@ -66,15 +66,16 @@ public class AdminDoc extends HttpServlet {
 	}
     }
 
-    public static String adminDoc (int meta_id, int parent_meta_id, String host, User user, HttpServletRequest req, HttpServletResponse res) throws IOException {
+    public static String adminDoc (int meta_id, int parent_meta_id, User user, HttpServletRequest req, HttpServletResponse res) throws IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
+	String host = req.getHeader("host") ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 	int start_doc					= imcref.getDefaultHomePage() ;
 
 	String htmlStr = "" ;
-	String lang_prefix = imcref.sqlQueryStr( "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	String lang_prefix = user.getLangPrefix() ;
 
 	Stack history = (Stack)user.get("history") ;
 	if ( history == null ) {
@@ -107,7 +108,7 @@ public class AdminDoc extends HttpServlet {
 	}
 
 	if ( !imcref.checkDocAdminRights( meta_id, user, flags ) ) {
-	    return GetDoc.getDoc(meta_id,parent_meta_id,host,req,res) ;
+	    return GetDoc.getDoc(meta_id,parent_meta_id,req,res) ;
 	}
 
 	// Lets detect which view the admin wants

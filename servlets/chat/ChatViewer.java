@@ -9,7 +9,7 @@ import java.rmi.registry.* ;
 import imcode.external.chat.*;
 
 
-//meningen är att denna ska ladda framesetet och kolla 
+//meningen är att denna ska ladda framesetet och kolla
 //all nödvändig data innan den gör detta
 
 public class ChatViewer extends ChatBase {
@@ -27,7 +27,7 @@ public class ChatViewer extends ChatBase {
 	public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
 		HttpSession session = req.getSession(true);
 		ServletContext myContext = getServletContext();
-		
+
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 
@@ -46,14 +46,11 @@ public class ChatViewer extends ChatBase {
 		if ( !isUserAuthorized( req, res, user ) ){
 			return;
 		}
-		String metaId = params.getProperty("META_ID") ;		
-		
-		// Lets get the url to the servlets directory
-		MetaInfo metaInfo = new MetaInfo() ;
-		String servletHome = MetaInfo.getServletPath(req) ;
-		// Lets get all parameters in a string which we'll send to every servlet in the frameset	
-		String paramStr = metaInfo.passMeta(params) ;
-		
+		String metaId = params.getProperty("META_ID") ;
+
+		// Lets get all parameters in a string which we'll send to every servlet in the frameset
+		String paramStr = MetaInfo.passMeta(params) ;
+
 		//lets clean up some in the session just incase
 		session.removeAttribute("checkBoxTextarr"); //ska tas bort
 		session.removeAttribute("chatParams");
@@ -77,19 +74,18 @@ public class ChatViewer extends ChatBase {
 		if (myGroup == null){
 			log("there wasn't any group so return");
 		}
-	
+
 		//ok lets see if we have an bindingListener
 		if (session.getAttribute("chatBinding") == null){
 			session.setAttribute("chatBinding",new ChatBindingListener());
-			
+
 		}
-		
+
 		// Lets build the Responsepage
 		Vector tags = new Vector();
-		tags.add("#CHAT_MESSAGES#");tags.add(servletHome + "ChatBoard?" + paramStr);
-		tags.add("#CHAT_CONTROL#"); tags.add(servletHome + "ChatControl?" + paramStr ) ;
+		tags.add("#CHAT_MESSAGES#");tags.add("ChatBoard?" + paramStr);
+		tags.add("#CHAT_CONTROL#"); tags.add("ChatControl?" + paramStr ) ;
 		this.sendHtml(req,res,tags, HTML_TEMPLATE,null) ;
-		log("Nu är ChatViewer klar") ;
 		return ;
 	}//end doGet
 

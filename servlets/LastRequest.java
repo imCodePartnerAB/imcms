@@ -4,6 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import imcode.server.* ;
 /**
   Return to last page.
   */
@@ -23,8 +24,8 @@ public class LastRequest extends HttpServlet {
 	doGet()
 	*/
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-		String start_url        	= imcode.util.Utility.getDomainPref( "start_url",host ) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		String start_url        	= imcref.getStartUrl() ;
 
 		imcode.server.User user ; 
 		String htmlStr = "" ;     

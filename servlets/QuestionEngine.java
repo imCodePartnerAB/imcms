@@ -5,12 +5,12 @@ import java.text.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import imcode.server.HTMLConv ;
 import imcode.external.diverse.*;
 import imcode.external.chat.*;
 
 import imcode.util.* ;
 import imcode.util.fortune.* ;
+import imcode.server.* ;
 
 import org.apache.log4j.Category ;
 
@@ -30,7 +30,7 @@ public class QuestionEngine extends HttpServlet
     {
 
 	String host = req.getHeader("Host") ;
-	String imcserver = Utility.getDomainPref("userserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
 
 	res.setContentType("text/html");
@@ -42,13 +42,13 @@ public class QuestionEngine extends HttpServlet
 	}
 
 	// Get the current poll
-	List pollList = IMCServiceRMI.getPollList(imcserver,inFile+".current.txt") ;
+	List pollList = imcref.getPollList(inFile+".current.txt") ;
 
 	Date now = new Date() ;
 
 	if ( pollList.isEmpty() ) {
 	    // There was no poll, get one.
-	    pollList = this.getNewQuestion(imcserver,inFile) ;
+	    pollList = this.getNewQuestion(imcref,inFile) ;
 	}
 
 	// So... the Poll.
@@ -58,13 +58,13 @@ public class QuestionEngine extends HttpServlet
 
 	    // The poll was no longer current, archive it...
 	    if (!"".equals(thePoll.getQuestion())) {
-		List pollStatsList = IMCServiceRMI.getPollList(imcserver,inFile+".stat.txt") ;
+		List pollStatsList = imcref.getPollList(inFile+".stat.txt") ;
 		pollStatsList.add(thePoll) ;
-		IMCServiceRMI.setPollList(imcserver,inFile+".stat.txt",pollStatsList) ;
+		imcref.setPollList(inFile+".stat.txt",pollStatsList) ;
 	    }
 
 	    // ... and replace it.
-	    pollList = this.getNewQuestion(imcserver,inFile) ;
+	    pollList = this.getNewQuestion(imcref,inFile) ;
 	    thePoll = (Poll)pollList.get(0) ;
 
 	}
@@ -81,7 +81,7 @@ public class QuestionEngine extends HttpServlet
 	values.add("#file#");
 	values.add(inFile);
 
-	String parsed = IMCServiceRMI.parseExternalDoc(imcserver, values, questionTemplate, IMCServiceRMI.getLanguage(imcserver), "106");
+	String parsed = imcref.parseExternalDoc( values, questionTemplate, imcref.getLanguage(), "106");
 
 	out.print(parsed);
 
@@ -98,10 +98,10 @@ public class QuestionEngine extends HttpServlet
     }
 
 
-    public List getNewQuestion(String imcserver,String inFile) throws ServletException, IOException
+    public List getNewQuestion(IMCServiceInterface imcref,String inFile) throws ServletException, IOException
     {
 
-	List questionList = IMCServiceRMI.getQuoteList(imcserver,inFile+".poll.txt") ;
+	List questionList = imcref.getQuoteList(inFile+".poll.txt") ;
 
 	Date date = new Date();
 	Iterator qIterator = questionList.iterator() ;
@@ -114,7 +114,7 @@ public class QuestionEngine extends HttpServlet
 
 		List newPollList = new LinkedList() ;
 		newPollList.add(new Poll(questionString,aPollQuestion.getDateRange())) ;
-		IMCServiceRMI.setPollList(imcserver,inFile+".current.txt",newPollList) ;
+		imcref.setPollList(inFile+".current.txt",newPollList) ;
 		return newPollList ;
 	    }
 	}

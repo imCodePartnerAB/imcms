@@ -7,6 +7,7 @@ import java.rmi.*;
 import java.rmi.registry.*;
 
 import imcode.util.* ;
+import imcode.server.* ;
 
 public class SaveFileUpload extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
@@ -18,8 +19,8 @@ public class SaveFileUpload extends HttpServlet {
 
     public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	String imcserver			= imcode.util.Utility.getDomainPref("adminserver",host) ;
-	String start_url	= imcode.util.Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 	File file_path				= imcode.util.Utility.getDomainPrefPath( "file_path", host );
 
 	imcode.server.User user ;
@@ -52,8 +53,8 @@ public class SaveFileUpload extends HttpServlet {
 
 	res.setContentType("text/html") ;
 	// Check if user has write rights
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id_int,user,65536 ) ) {	// Checking to see if user may edit this
-	    String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+	if ( !imcref.checkDocAdminRights(meta_id_int,user,65536 ) ) {	// Checking to see if user may edit this
+	    String output = AdminDoc.adminDoc(meta_id_int,meta_id_int,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -127,15 +128,9 @@ public class SaveFileUpload extends HttpServlet {
 	    } else {
 		sqlStr = "update fileupload_docs set mime = '"+mime+"' where meta_id = " + meta_id ;
 	    }
-
-	    try {
-		IMCServiceRMI.sqlUpdateQuery( imcserver, sqlStr ) ;
-	    } catch ( RemoteException ex ) {
-		log ("Failed to update db with new fileupload") ;
-	    }
+	    imcref.sqlUpdateQuery( sqlStr ) ;
 
 	    // Write the file to disk.
-	    // FIXME: File needs to be sent to the appserver.
 	    if (file.length() > 0) {
 		FileOutputStream fos = new FileOutputStream(fn) ;
 		fos.write(file.getBytes("8859_1")) ;
@@ -144,13 +139,13 @@ public class SaveFileUpload extends HttpServlet {
 	}
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
-	Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+	Date dt = imcref.getCurrentDate() ;
 	String sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
-	IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+	imcref.sqlUpdateQuery(sqlStr) ;
 
 
-	//		String htmlStr = IMCServiceRMI.interpretTemplate(imcserver,Integer.parseInt(parent),user) ;
-	String output = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),host,user,req,res) ;
+	//		String htmlStr = imcref.interpretTemplate(Integer.parseInt(parent),user) ;
+	String output = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),user,req,res) ;
 	if ( output != null ) {
 	    out.write(output) ;
 	}

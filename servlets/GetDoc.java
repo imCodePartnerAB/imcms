@@ -30,6 +30,7 @@ import imcode.server.parser.ParserParameters;
 import imcode.util.IMCServiceRMI;
 
 import org.apache.log4j.* ;
+import org.apache.oro.text.perl.Perl5Util ;
 
 /**
    Get a document = Parse data from database.
@@ -46,8 +47,7 @@ public class GetDoc extends HttpServlet {
     */
     public void doGet( HttpServletRequest req, HttpServletResponse res )	throws ServletException, IOException {
 
-	String host = req.getHeader("host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	HttpSession session = req.getSession( true );
 
@@ -64,7 +64,7 @@ public class GetDoc extends HttpServlet {
 	    meta_id = imcref.getDefaultHomePage() ;
 	    log.debug("Exception occured" + ex );
 	}
-	String tempstring = getDoc(meta_id,meta_id,host,req,res) ;
+	String tempstring = getDoc(meta_id,meta_id,req,res) ;
 	if ( tempstring != null ) {
 	    byte[] tempbytes = tempstring.getBytes("8859_1") ;
 	    res.setContentLength(tempbytes.length) ;
@@ -75,9 +75,10 @@ public class GetDoc extends HttpServlet {
 
     }
 
-    public static String getDoc (int meta_id, int parent_meta_id, String host, HttpServletRequest req, HttpServletResponse res) throws IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+    public static String getDoc (int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res) throws IOException {
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
+	String host = req.getHeader("host") ;
 	String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 	File file_path			= Utility.getDomainPrefPath( "file_path", host ) ;
@@ -120,8 +121,9 @@ public class GetDoc extends HttpServlet {
 	DocumentRequest documentRequest ;
 	String referrer = req.getHeader("Referer") ; // Note, intended misspelling of "Referrer", according to the HTTP spec.
 	Document referringDocument = null ;
-	if (null != referrer && referrer.indexOf("meta_id=") != -1) {
-	    int referring_meta_id = Integer.parseInt(referrer.substring(referrer.indexOf("meta_id=")+8));
+	Perl5Util perlrx = new Perl5Util() ;
+	if (null != referrer && perlrx.match("/meta_id=(\\d+)/",referrer)) {
+	    int referring_meta_id = Integer.parseInt(perlrx.group(1));
 	    try {
 		referringDocument = imcref.getDocument(referring_meta_id) ;
 	    } catch (IndexOutOfBoundsException ex) {
@@ -195,7 +197,7 @@ public class GetDoc extends HttpServlet {
 	    Utility.redirect(req,res,"GetDoc?meta_id="+meta_id+"&parent_meta_id="+parent_meta_id) ;
 	    // Log to accesslog
 	    trackLog.info(documentRequest);
-	    return null ; //getDoc(meta_id,parent_meta_id,host,req,res) ;
+	    return null ;
 
 	case 7:	//frameset-doc
 	    String html_str_temp = imcref.isFramesetDoc( meta_id,user ) ;
@@ -216,7 +218,7 @@ public class GetDoc extends HttpServlet {
 	    try {
 		fr = new BufferedInputStream( new FileInputStream( new File( file_path, String.valueOf( meta_id )+"_se" ) ) ) ;
 	    } catch ( IOException ex ) {
-		String lang_prefix = imcref.sqlQueryStr("select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+		String lang_prefix = user.getLangPrefix() ;
 		htmlStr = imcref.parseDoc( null,"no_page.html",lang_prefix ) ;
 		return htmlStr ;
 	    }

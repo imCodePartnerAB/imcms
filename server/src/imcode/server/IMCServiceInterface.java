@@ -236,7 +236,11 @@ public interface IMCServiceInterface {
 	;
 
     // get imagehome
-    public String getImageHome()
+    public String getImageUrl()
+	;
+
+    // get starturl
+    public String getStartUrl()
 	;
 
     // get language
@@ -364,4 +368,6 @@ public interface IMCServiceInterface {
     public String getFilename(int meta_id) ;
 
     public Template getTemplate(int meta_id) ;
+
+    public boolean checkAdminRights(imcode.server.User user) ;
 }

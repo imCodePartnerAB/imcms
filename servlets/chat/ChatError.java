@@ -183,26 +183,17 @@ public class ChatError extends ChatBase
 		VariableManager vm, String htmlFile ) throws ServletException, IOException
 	{
 
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
-
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid
 		File templateLib = this.getExternalTemplateFolder( req ) ;
-
-		// Lets add 3 server hostadresses
-		String servletPath = MetaInfo.getServletPath(req) ;
 
 		// Lets get the path to the imagefolder.
 		String imagePath = this.getExternalImageFolder(req,res) ;
 
 		vm.addProperty("IMAGE_URL", imagePath);
-		vm.addProperty("SERVLET_URL", servletPath);
+		vm.addProperty("SERVLET_URL", "");
 
 		HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile ) ;
 		String html = htmlObj.createHtmlString(vm,req) ;
-		//log(html);
-		//log( htmlFile );
 
 		htmlObj.sendToBrowser( req, res, html ) ;
 	}

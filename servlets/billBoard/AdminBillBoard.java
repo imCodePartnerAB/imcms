@@ -1,3 +1,4 @@
+import imcode.server.* ;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -69,11 +70,11 @@ public class AdminBillBoard extends Administrator { //AdminConference
 		log("START AdminBillBoard doPost");
 
         String host = request.getHeader( "Host" );
-        String imcserver = Utility.getDomainPref( "adminserver", host );
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
 
         // lets get ready for errors
-        String deafultLanguagePrefix = IMCServiceRMI.getLanguage( imcserver );
+        String deafultLanguagePrefix = imcref.getLanguage();
 
         // Lets validate the session
         if ( super.checkSession( request, response ) == false ) {
@@ -83,21 +84,21 @@ public class AdminBillBoard extends Administrator { //AdminConference
         // Lets get an user object
         imcode.server.User user = super.getUserObj( request, response ) ;
         if(user == null) {
-            sendErrorMessage( imcserver, eMailServerMaster, deafultLanguagePrefix , this.ERROR_HEADER, 1, response );
+            sendErrorMessage( imcref, eMailServerMaster, deafultLanguagePrefix , this.ERROR_HEADER, 1, response );
             return ;
         }
 
         // Lets verify that the user who tries to add a new user is an admin
-        if (super.checkAdminRights( imcserver, user) == false) {
-            sendErrorMessage( imcserver, eMailServerMaster, deafultLanguagePrefix , this.ERROR_HEADER, 2, response );
+        if (imcref.checkAdminRights(user) == false) {
+            sendErrorMessage( imcref, eMailServerMaster, deafultLanguagePrefix , this.ERROR_HEADER, 2, response );
             return ;
         }
 
-                /* User has right lets do the request */
-        String languagePrefix = getLanguagePrefix( imcserver, user.getInt( "lang_id" ) );
+	/* User has right lets do the request */
+        String languagePrefix = user.getLangPrefix() ;
         VariableManager vm = new VariableManager();
 
-                /* lets get which request to do */
+	/* lets get which request to do */
         // generate htmlpage for listing conferences
         if ( request.getParameter( "VIEW_CONF_LIST_TOOL" ) != null ) {
             sendHtml( request, response, vm, this.TEMPLATE_LIST_TOOL );
@@ -145,7 +146,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
     private void listConferences( HttpServletRequest request, HttpServletResponse response, String languagePrefix )
     throws ServletException, IOException {
         String host = request.getHeader( "Host" );
-        String imcserver = Utility.getDomainPref( "adminserver", host );
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
         boolean noErrors = true;
 
@@ -207,14 +208,14 @@ public class AdminBillBoard extends Administrator { //AdminConference
         // lets generate response page
         if ( noErrors ) {
 
-            String ConfPoolServer = Utility.getDomainPref( "billboard_server", host );//"conference_server"
+	    IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(request) ;
 
             //lets get htmltemplate for conferencerow
-            String htmlConferenceElement = IMCServiceRMI.parseDoc( imcserver, null, this.TEMPLATE_CONF_ELEMENT, languagePrefix );
-            String htmlForumElement = IMCServiceRMI.parseDoc( imcserver, null, this.TEMPLATE_FORUM_ELEMENT, languagePrefix );
-            String htmlDebateElement = IMCServiceRMI.parseDoc( imcserver, null, this.TEMPLATE_DEBATE_ELEMENT, languagePrefix );
+            String htmlConferenceElement = imcref.parseDoc( null, this.TEMPLATE_CONF_ELEMENT, languagePrefix );
+            String htmlForumElement = imcref.parseDoc( null, this.TEMPLATE_FORUM_ELEMENT, languagePrefix );
+            String htmlDebateElement = imcref.parseDoc( null, this.TEMPLATE_DEBATE_ELEMENT, languagePrefix );
 
-            String[][] listOfBillBoards = IMCServiceRMI.sqlQueryMulti( imcserver, "ListBillBoards" );//ListConferenses
+            String[][] listOfBillBoards = imcref.sqlQueryMulti( "ListBillBoards" );//ListConferenses
 
             // lets create conferencelist
             StringBuffer conferencesListTag = new StringBuffer();
@@ -227,7 +228,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
 
                 String metaId = listOfBillBoards[i][0];
                 String sprocetForum = "B_AdminStatistics1 " + metaId + ", '" + startDate + "', '" + endDate + "', " + listMode;
-                String[][] queryResultForum = BillBoardManager.getStatistics( ConfPoolServer, sprocetForum );
+                String[][] queryResultForum = BillBoardManager.getStatistics( billref, sprocetForum );
 
                 //lets create sectionList for this conference
                 StringBuffer sectionList = new StringBuffer();
@@ -236,7 +237,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
 
                     String forumId = queryResultForum[j][0];
                     String sprocetDebate = "B_AdminStatistics2 " + metaId + ", " + forumId + ", '" + startDate + "', '" + endDate + "', " + listMode;
-                    String[][] queryResultDebate = BillBoardManager.getStatistics( ConfPoolServer, sprocetDebate );
+                    String[][] queryResultDebate = BillBoardManager.getStatistics( billref, sprocetDebate );
 
                     // lets create debatelist for this forum
                     StringBuffer debateList = new StringBuffer();
@@ -251,7 +252,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
                 }
 
                 if ( queryResultForum.length > 0 ) {
-                    billBoardTags.put( "SERVLET_URL", MetaInfo.getServletPath( request ) );
+                    billBoardTags.put( "SERVLET_URL", "" );
                     billBoardTags.put( "META_ID", metaId );
                     billBoardTags.put( "BILLBOARD", listOfBillBoards[i][1] );
                     billBoardTags.put( "SECTION_LIST", sectionList.toString() );
@@ -266,7 +267,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
             this.sendHtml( request, response, vm, this.TEMPLATE_LIST );
 
         } else {
-            sendErrorMessage( imcserver, eMailServerMaster, languagePrefix , this.ERROR_HEADER, 10, response );
+            sendErrorMessage( imcref, eMailServerMaster, languagePrefix , this.ERROR_HEADER, 10, response );
         }
     }
 }

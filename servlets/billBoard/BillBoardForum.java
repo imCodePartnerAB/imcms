@@ -1,3 +1,4 @@
+import imcode.server.* ;
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -72,23 +73,19 @@ public class BillBoardForum extends BillBoard {//ConfForum
 			return;
 		}
 
-		RmiConf rmi = new RmiConf(user) ;
 		HttpSession session = req.getSession(false) ;
 		String aMetaId = (String) session.getAttribute("BillBoard.meta_id") ;
 		String aSectionId = (String) session.getAttribute("BillBoard.section_id") ;
 		String discIndex = params.getProperty("DISC_INDEX") ;
 
-		// Lets get the url to the servlets directory
-		String servletHome = MetaInfo.getServletPath(req) ;
-
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 		// Lets get the information from DB
 		String sqlStoredProc = "B_GetAllSection " + aMetaId ;
-		String sqlAnswer[] = rmi.execSqlProcedure(confPoolServer, sqlStoredProc ) ;
+		String sqlAnswer[] = billref.sqlProcedure(sqlStoredProc) ;
 		Vector sectionV = super.convert2Vector(sqlAnswer) ;
 
 		// Lets fill the select box

@@ -3,7 +3,7 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 import javax.servlet.*;
 import javax.servlet.http.*;
-
+import imcode.server.* ;
 import imcode.util.* ;
 
 
@@ -27,10 +27,10 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	String imcserver			= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
-	String image_url			= Utility.getDomainPref( "image_url",host ) ;
+	String image_url			= imcref.getImageUrl() ;
 	File image_path			= Utility.getDomainPrefPath( "image_path",host ) ;
 
 	imcode.server.User user ;
@@ -71,7 +71,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 
 	// FIXME: Move to SProc
 	String sqlStr = "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images where meta_id = "+meta_id+" and name = "+img_no;
-	String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr);
+	String[] sql = imcref.sqlQuery(sqlStr);
 	String origWidth = req.getParameter("origW"); // width
 	String origHeight = req.getParameter("origH"); // height
 
@@ -244,8 +244,8 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	    return ;
 	}
 	// Check if user has write rights
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,131072 ) ) {	// Checking to see if user may edit this
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	if ( !imcref.checkDocAdminRights(meta_id,user,131072 ) ) {	// Checking to see if user may edit this
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -258,7 +258,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	if(dirList == null)dirList="";
 
 	if( req.getParameter( "cancel" )!=null ) {
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -354,8 +354,8 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 
 	    vec.add("#folders#");
 	    vec.add(dirList);
-	    String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-	    htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"change_img.html", lang_prefix) ;
+	    String lang_prefix = user.getLangPrefix() ;
+	    htmlStr = imcref.parseDoc(vec,"change_img.html", lang_prefix) ;
 	    out.write(htmlStr) ;
 	    return ;
 	} else if ( req.getParameter("delete") != null ) {
@@ -396,21 +396,20 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	    vec.add("#folders#");
 	    vec.add(dirList);
 
-	    String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-	    htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"change_img.html", lang_prefix) ;
+	    String lang_prefix = user.getLangPrefix() ;
+	    htmlStr = imcref.parseDoc(vec,"change_img.html", lang_prefix) ;
 	    out.write(htmlStr) ;
 	    return ;
 	} else {
-	    IMCServiceRMI.saveImage( imcserver,meta_id,user,img_no,image ) ;
+	    imcref.saveImage(meta_id,user,img_no,image ) ;
 
 	    SimpleDateFormat dateformat = new SimpleDateFormat(DATETIME_FORMAT_STD) ;
-	    Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+	    Date dt = imcref.getCurrentDate() ;
 
 	    sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
-	    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr);
+	    imcref.sqlUpdateQuery(sqlStr);
 
-	    //			htmlStr = IMCServiceRMI.interpretTemplate( imcserver,meta_id,user ) ;
-	    String tempstring = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    String tempstring = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( tempstring != null ) {
 		out.write(tempstring) ;
 	    }

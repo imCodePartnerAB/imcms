@@ -8,6 +8,7 @@ import imcode.external.chat.*;
 import imcode.server.HTMLConv ;
 import imcode.util.* ;
 import imcode.util.fortune.* ;
+import imcode.server.* ;
 
 /**
  * @author  Monika Hurtig
@@ -24,7 +25,7 @@ public class QuotPicEngine extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException {
 
 	String host = req.getHeader("Host") ;
-	String imcServer = Utility.getDomainPref("userserver",host) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	res.setContentType("text/html");
 	Writer out = res.getWriter();
@@ -36,9 +37,9 @@ public class QuotPicEngine extends HttpServlet {
 	//lets get a list of all questions/citat/pictures
 	List lines;
 	if (type.equals("pic") || type.equals("quot")){
-	    lines = IMCServiceRMI.getQuoteList(imcServer, inFile +".txt");
+	    lines = imcref.getQuoteList( inFile +".txt");
 	}else {
-	    lines = IMCServiceRMI.getPollList(imcServer,inFile +".txt");
+	    lines = imcref.getPollList(inFile +".txt");
 	}
 
 	//ok lets loop and store the ones to use

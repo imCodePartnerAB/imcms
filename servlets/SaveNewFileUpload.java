@@ -6,6 +6,7 @@ import java.rmi.*;
 import java.rmi.registry.*;
 
 import imcode.util.* ;
+import imcode.server.* ;
 
 public class SaveNewFileUpload extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
@@ -17,8 +18,8 @@ public class SaveNewFileUpload extends HttpServlet {
 
     public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	String imcserver			= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 	File file_path				= Utility.getDomainPrefPath( "file_path", host );
 
@@ -96,18 +97,18 @@ public class SaveNewFileUpload extends HttpServlet {
 		fn = new File(file_path, meta_id+"_se") ;
 		// FIXME: Move to SProc
 		String sqlStr = "insert into fileupload_docs (meta_id,filename,mime) values ("+meta_id+",'"+filename+"','"+mime+"')" ;
-		IMCServiceRMI.sqlUpdateQuery( imcserver, sqlStr ) ;
+		imcref.sqlUpdateQuery( sqlStr ) ;
 		FileOutputStream fos = new FileOutputStream(fn) ;
 		fos.write(file.getBytes("8859_1")) ;
 		fos.close() ;
-		IMCServiceRMI.activateChild(imcserver,Integer.parseInt(meta_id),user) ;
+		imcref.activateChild(Integer.parseInt(meta_id),user) ;
 	    }
-	    String output = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
 	} else {
-	    String output = AdminDoc.adminDoc(Integer.parseInt(parent),Integer.parseInt(parent),host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(Integer.parseInt(parent),Integer.parseInt(parent),user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }

@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat ;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.util.* ;
+import imcode.server.* ;
 
 public class SavePermissions extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
@@ -22,8 +23,8 @@ public class SavePermissions extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 	String host 				= req.getHeader("Host") ;
-	String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-	String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url        	= imcref.getStartUrl() ;
 	String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	imcode.server.User user ;
@@ -39,8 +40,8 @@ public class SavePermissions extends HttpServlet {
 	res.setContentType( "text/html" );
 	Writer out = res.getWriter();
 
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,4 ) ) {	// Checking to see if user may edit this
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	if ( !imcref.checkDocAdminRights(meta_id,user,4 ) ) {	// Checking to see if user may edit this
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -64,7 +65,7 @@ public class SavePermissions extends HttpServlet {
 	    // User pressed ok.
 
 	    // Here i fetch the current users set-id and the document-permissions for this document (Whether set-id 1 is more privileged than set-id 2.)
-	    String[] current_permissions = IMCServiceRMI.sqlProcedure(imcserver, "GetUserPermissionSet "+meta_id+", "+user.getInt("user_id")) ;
+	    String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
 	    int user_set_id = Integer.parseInt(current_permissions[0]) ;
 	    int user_perm_set = Integer.parseInt(current_permissions[1]) ;
 	    int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;
@@ -74,7 +75,7 @@ public class SavePermissions extends HttpServlet {
 	    HashMap perm_ex_data_map = new HashMap() ;
 
 	    // Get an array containing perm_id, perm_data, perm_id, perm_data, and so on.
-	    String[] user_permission_data = IMCServiceRMI.sqlProcedure(imcserver, "GetUserPermissionSetEx "+meta_id+", "+user.getInt("user_id")) ;
+	    String[] user_permission_data = imcref.sqlProcedure( "GetUserPermissionSetEx "+meta_id+", "+user.getUserId()) ;
 	    for ( int i=0 ; i<user_permission_data.length ; i+=2 ) {
 		// Check if the map contains a set for this permission_id
 		HashSet temp_set = (HashSet)perm_ex_data_map.get(user_permission_data[i]) ;
@@ -87,7 +88,7 @@ public class SavePermissions extends HttpServlet {
 	    }
 
 	    // Delete all extended permissions for this permissionset.
-	    IMCServiceRMI.sqlUpdateProcedure(imcserver, "Delete"+newstr+"DocPermissionSetEx "+meta_id+","+set_id) ;
+	    imcref.sqlUpdateProcedure( "Delete"+newstr+"DocPermissionSetEx "+meta_id+","+set_id) ;
 
 	    // Read checkboxes and OR the values into an int, which is stored in the db.
 	    for ( int i=0 ; perms != null && i<perms.length ; ++i ) {
@@ -102,7 +103,7 @@ public class SavePermissions extends HttpServlet {
 		    permissions |= perm ;
 		}
 	    }
-	    IMCServiceRMI.sqlUpdateProcedure(imcserver, "Set"+newstr+"DocPermissionSet "+meta_id+","+set_id+","+permissions) ;
+	    imcref.sqlUpdateProcedure( "Set"+newstr+"DocPermissionSet "+meta_id+","+set_id+","+permissions) ;
 
 	    // Read the select-lists for the new extended permissions, and store the values in the db.
 
@@ -128,13 +129,13 @@ public class SavePermissions extends HttpServlet {
 				)
 		     ) {
 
-		    IMCServiceRMI.sqlUpdateProcedure(imcserver, "Set"+newstr+"DocPermissionSetEx "+meta_id+","+set_id+","+perm+","+value) ;
+		    imcref.sqlUpdateProcedure( "Set"+newstr+"DocPermissionSetEx "+meta_id+","+set_id+","+perm+","+value) ;
 		}
 	    }
 	}
 
 	user.put("flags",new Integer(4)) ;
-	String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	if (output != null) {
 	    out.write(output) ;
 	}

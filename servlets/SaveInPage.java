@@ -5,6 +5,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import imcode.server.* ;
+
 /**
    Save data from editwindow.
 */
@@ -25,8 +27,8 @@ public class SaveInPage extends HttpServlet {
     */
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	String imcserver			= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 
 	imcode.server.User user ;
 	String submit_name = "" ;
@@ -63,10 +65,10 @@ public class SaveInPage extends HttpServlet {
 	    return ;
 	}
 	// Check if user has write rights
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,imcode.server.IMCConstants.PERM_DT_TEXT_CHANGE_TEMPLATE ) ) {	// Checking to see if user may edit this
+	if ( !imcref.checkDocAdminRights(meta_id,user,imcode.server.IMCConstants.PERM_DT_TEXT_CHANGE_TEMPLATE ) ) {	// Checking to see if user may edit this
 	    res.setContentType("text/html");
 
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null ) {
 		Writer out = res.getWriter();
 		out.write(output) ;
@@ -74,7 +76,7 @@ public class SaveInPage extends HttpServlet {
 	    return ;
 	}
 
-	String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	String lang_prefix = user.getLangPrefix() ;
 
 	if (req.getParameter("update")!=null) {
 	    Writer out = res.getWriter();
@@ -86,22 +88,22 @@ public class SaveInPage extends HttpServlet {
 		Vector vec = new Vector() ;
 		vec.add("#meta_id#") ;
 		vec.add(String.valueOf(meta_id)) ;
-		String htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"inPage_admin_no_template.html",lang_prefix) ;
+		String htmlStr = imcref.parseDoc(vec,"inPage_admin_no_template.html",lang_prefix) ;
 		out.write(htmlStr) ;
 		return ;
 	    }
 	    // save textdoc
-	    IMCServiceRMI.saveTextDoc(imcserver,meta_id,user,doc) ;
+	    imcref.saveTextDoc(meta_id,user,doc) ;
 
 	    SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
-	    Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+	    Date dt = imcref.getCurrentDate() ;
 
 	    // FIXME: Move to SProc
 	    String sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
-	    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr);
+	    imcref.sqlUpdateQuery(sqlStr);
 
 	    // return page
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -113,13 +115,13 @@ public class SaveInPage extends HttpServlet {
 		vec.add("#meta_id#") ;
 		vec.add(String.valueOf(meta_id)) ;
 		res.setContentType("text/html");
-		String htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"inPage_admin_no_template.html",lang_prefix) ;
+		String htmlStr = imcref.parseDoc(vec,"inPage_admin_no_template.html",lang_prefix) ;
 		Writer out = res.getWriter();
 		out.write(htmlStr) ;
 		return ;
 	    }
 	    Object[] temp = null ;
-	    temp = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
+	    temp = imcref.getDemoTemplate(Integer.parseInt(template)) ;
 	    if (temp != null) {
 		String demoTemplateName = template+"."+(String)temp[0] ;
 		// Set content-type depending on type of demo-template.
@@ -131,7 +133,7 @@ public class SaveInPage extends HttpServlet {
 		return;
 	    } else {
 		res.setContentType("text/html") ;
-		String htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ) ;
+		String htmlStr = imcref.parseDoc( null, "no_demotemplate.html", lang_prefix ) ;
 		Writer out = res.getWriter();
 		out.write(htmlStr) ;
 		return ;
@@ -147,7 +149,7 @@ public class SaveInPage extends HttpServlet {
 		user.setTemplateGroup(Integer.parseInt(req.getParameter("group"))) ;
 	    }
 
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }

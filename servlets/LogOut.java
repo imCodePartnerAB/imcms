@@ -4,6 +4,7 @@ import javax.servlet.* ;
 import javax.servlet.http.* ;
 
 import imcode.util.* ;
+import imcode.server.* ;
 
 public class LogOut extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
@@ -21,9 +22,9 @@ public class LogOut extends HttpServlet {
 	*/
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("userserver",host) ;
+		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 		String login_url        	= Utility.getDomainPref( "admin_url",host ) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		String start_url        	= imcref.getStartUrl() ;
 		res.setContentType("text/html") ;
 		ServletOutputStream out = res.getOutputStream () ;
 		HttpSession session = req.getSession (true) ;
@@ -38,7 +39,7 @@ public class LogOut extends HttpServlet {
 		vec.add(start_url) ;
 		vec.add("#login#") ;
 		vec.add(login_url) ;
-		String htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"logged_out.html",user.getLangPrefix()) ;
+		String htmlStr = imcref.parseDoc(vec,"logged_out.html",user.getLangPrefix()) ;
 		session.invalidate() ;
 		out.print(htmlStr) ;
 	}

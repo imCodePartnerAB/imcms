@@ -26,7 +26,7 @@ public class StartDoc extends HttpServlet {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host = req.getHeader("host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	long time = System.currentTimeMillis() ;

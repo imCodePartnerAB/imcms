@@ -1,3 +1,4 @@
+import imcode.server.* ;
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -33,8 +34,6 @@ public class BillBoardViewer extends BillBoard {//ConfViewer
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-		//log("START BillBoardViewer doGet");
-
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 
@@ -68,17 +67,13 @@ public class BillBoardViewer extends BillBoard {//ConfViewer
 			return;
 		}
 
-		// Lets get the url to the servlets directory
-		String servletHome = MetaInfo.getServletPath(req) ;
-
 		// Lets get all parameters in a string which we'll send to every servlet in the frameset
-		MetaInfo metaInfo = new MetaInfo() ;
-		String paramStr = metaInfo.passMeta(params) ;
+		String paramStr = MetaInfo.passMeta(params) ;
 
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;
-		vm.addProperty("BILLBOARD_SECTION", servletHome + "BillBoardForum?" + paramStr);
-		vm.addProperty("BILLBOARD_DISC_VIEW", servletHome + "BillBoardDiscView?" + paramStr ) ;
+		vm.addProperty("BILLBOARD_SECTION", "BillBoardForum?" + paramStr);
+		vm.addProperty("BILLBOARD_DISC_VIEW", "BillBoardDiscView?" + paramStr ) ;
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 		//log("Nu är BillBoardViewer klar") ;
 		return ;

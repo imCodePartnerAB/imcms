@@ -1,11 +1,13 @@
 import java.io.*;
 import java.util.*;
+import java.text.* ;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.* ;
 import imcode.util.* ;
-import java.text.* ;
+import imcode.server.* ;
 
 import org.apache.log4j.Category;
 
@@ -35,8 +37,8 @@ public class GetExistingDoc extends HttpServlet {
      */
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	String host			= req.getHeader("Host") ;
-	String imcserver		= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 
 	imcode.server.User user ;
 	String htmlStr = "" ;
@@ -89,7 +91,7 @@ public class GetExistingDoc extends HttpServlet {
 	StringBuffer searchResults = new StringBuffer() ;
 
 	if ( (req.getParameter("cancel") != null) || (req.getParameter("cancel.x") != null) ) {
-	    String tempstring = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    String tempstring = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if (tempstring != null) {
 		out.write ( tempstring ) ;
 	    }
@@ -144,7 +146,7 @@ public class GetExistingDoc extends HttpServlet {
 	    fromDoc = "1";
 
 	    // Lets get the language prefix
-	    String langPrefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = " + user.getInt("lang_id"));
+	    String langPrefix = user.getLangPrefix() ;
 
 	    // Lets check that the sortby option is valid by run the method
 	    // "SortOrder_GetExistingDocs 'lang_prefix' wich will return
@@ -153,7 +155,7 @@ public class GetExistingDoc extends HttpServlet {
 	    // we are able to determine if the sortorder is okay.
 
 	    // Lets fix the sortby list, first get the displaytexts from the database
-	    String[] sortOrder = IMCServiceRMI.sqlProcedure(imcserver,  "SortOrder_GetExistingDocs '" + langPrefix + "'") ;
+	    String[] sortOrder = imcref.sqlProcedure(  "SortOrder_GetExistingDocs '" + langPrefix + "'") ;
 	    Vector sortOrderV = new Vector(Arrays.asList(sortOrder)) ;
 	    Hashtable sortOrderHash  = this.convert2Hashtable(sortOrder) ;
 	    if (sortOrderHash.containsKey(sortBy) == false) {
@@ -173,18 +175,18 @@ public class GetExistingDoc extends HttpServlet {
 	    // FIXME: Maximum number of hits is 1000.
 	    sqlString = "SearchDocs " + userId + ",'" + searchString + "', '" + searchPrep + "', '" + doctype + "', " + fromDoc + ", " + "1000" + ", '" + sortBy + "', " + includeDocStr + ", '1','0'";
 
-	    String[][] sqlResults = IMCServiceRMI.sqlProcedureMulti(imcserver, sqlString);
+	    String[][] sqlResults = imcref.sqlProcedureMulti( sqlString);
 	    Vector outVector = new Vector();
 
 	    // Lets get the resultpage fragment used for an result
-	    String oneRecHtmlSrc = IMCServiceRMI.parseDoc(imcserver, null, "existing_doc_hit.html", langPrefix) ;
+	    String oneRecHtmlSrc = imcref.parseDoc( null, "existing_doc_hit.html", langPrefix) ;
 
 	    // Lets get all document types and put them in a hashTable
-	    String[] allDocTypesArray = IMCServiceRMI.getDocumentTypesInList(imcserver, langPrefix) ;
+	    String[] allDocTypesArray = imcref.getDocumentTypesInList( langPrefix) ;
 	    Hashtable allDocTypesHash = this.convert2Hashtable(allDocTypesArray) ;
 
 	    // Lets parse the searchresults
-	    searchResults =  this.parseSearchResults(imcserver, oneRecHtmlSrc, sqlResults, allDocTypesHash) ;
+	    searchResults =  this.parseSearchResults(imcref, oneRecHtmlSrc, sqlResults, allDocTypesHash) ;
 
 	    // Lets get the surrounding resultpage fragment used for all the result
 	    // and parse all the results into this summarize html template for all the results
@@ -192,7 +194,7 @@ public class GetExistingDoc extends HttpServlet {
 	    tmpV.add("#searchResults#") ;
 	    tmpV.add(searchResults.toString()) ;
 	    searchResults.replace(0, searchResults.length(),
-				  IMCServiceRMI.parseDoc(imcserver, tmpV, "existing_doc_res.html", langPrefix)) ;
+				  imcref.parseDoc( tmpV, "existing_doc_res.html", langPrefix)) ;
 
 	    // Lets parse out hidden fields
 	    outVector.add("#meta_id#") ;
@@ -291,7 +293,7 @@ public class GetExistingDoc extends HttpServlet {
 	    }
 
 	    // Lets fix the sortby list, first get the displaytexts from the database
-	    // String[] sortOrder = IMCServiceRMI.sqlProcedure(imcserver,  "SortOrder_GetExistingDocs '" + langPrefix + "'") ;
+	    // String[] sortOrder = imcref.sqlProcedure(  "SortOrder_GetExistingDocs '" + langPrefix + "'") ;
 	    //Vector sortOrderV = this.convert2Vector(sortOrder) ;
 	    Html htm  = new Html() ;
 	    String sortOrderStr = htm.createHtmlCode("ID_OPTION", sortBy, sortOrderV) ;
@@ -302,8 +304,8 @@ public class GetExistingDoc extends HttpServlet {
 	    outVector.add( searchResults.toString() ) ;
 
 	    // Send page to browser
-	    // htmlOut = IMCServiceRMI.parseDoc(imcserver, htmlOut, outVector);
-	    String htmlOut = IMCServiceRMI.parseDoc(imcserver, outVector, "existing_doc.html", langPrefix);
+	    // htmlOut = imcref.parseDoc( htmlOut, outVector);
+	    String htmlOut = imcref.parseDoc( outVector, "existing_doc.html", langPrefix);
 	    out.write(htmlOut);
 	    return ;
 	} else {
@@ -322,7 +324,7 @@ public class GetExistingDoc extends HttpServlet {
 
 		    // Fetch all doctypes from the db and put them in an option-list
 		    // First, get the doc_types the current user may use.
-		    String[] user_dt = IMCServiceRMI.sqlProcedure(imcserver,"GetDocTypesForUser "+meta_id+","+user.getInt("user_id")+",'"+user.getLangPrefix()+"'") ;
+		    String[] user_dt = imcref.sqlProcedure("GetDocTypesForUser "+meta_id+","+user.getUserId()+",'"+user.getLangPrefix()+"'") ;
 		    HashSet user_doc_types = new HashSet() ;
 
 		    // I'll fill a HashSet with all the doc-types the current user may use,
@@ -332,25 +334,25 @@ public class GetExistingDoc extends HttpServlet {
 		    }
 
 		    String sqlStr = "select doc_type from meta where meta_id = "+existing_meta_id ;
-		    String doc_type = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
+		    String doc_type = imcref.sqlQueryStr(sqlStr) ;
 
 		    // Add the document in menu if user is admin for the document OR the document is shared.
-		    boolean sharePermission = IMCServiceRMI.checkUserDocSharePermission(imcserver,user,existing_meta_id) ;
+		    boolean sharePermission = imcref.checkUserDocSharePermission(user,existing_meta_id) ;
 		    if (user_doc_types.contains(doc_type)
 			&& sharePermission) {
-			IMCServiceRMI.addExistingDoc(imcserver,meta_id,user,existing_meta_id,doc_menu_no) ;
+			imcref.addExistingDoc(meta_id,user,existing_meta_id,doc_menu_no) ;
 		    }
 
 		} // End of for loop
 	    } catch ( NumberFormatException ex ) {
-		String tempstring = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+		String tempstring = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 		if (tempstring != null) {
 		    out.write ( tempstring ) ;
 		}
 		return ;
 	    }
 
-	    String tempstring = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    String tempstring = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if (tempstring != null) {
 		out.write ( tempstring ) ;
 	    }
@@ -423,7 +425,7 @@ public class GetExistingDoc extends HttpServlet {
      * Parses all the searchhits and returns an StringBuffer
      */
 
-    private static StringBuffer parseSearchResults(String imcserver, String oneRecHtmlSrc,
+    private static StringBuffer parseSearchResults(IMCServiceInterface imcref, String oneRecHtmlSrc,
 						   String[][] sqlResults, Hashtable allDocTypesHash) throws java.io.IOException{
 	StringBuffer searchResults = new StringBuffer(1024) ;
 	int docTypeIndex = 1 ;  // Index of where the doctype id is placed in one record array
@@ -446,7 +448,7 @@ public class GetExistingDoc extends HttpServlet {
 		else
 		    tmpVecData.add(oneRec[k]) ;
 	    }
-	    searchResults.append(IMCServiceRMI.parseDoc(imcserver, oneRecHtmlSrc,oneRecVariables, tmpVecData )) ;
+	    searchResults.append(imcref.parseDoc( oneRecHtmlSrc,oneRecVariables, tmpVecData )) ;
 	}
 	return searchResults ;
     }

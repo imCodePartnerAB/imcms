@@ -8,7 +8,7 @@ import java.rmi.registry.* ;
 import org.apache.oro.text.regex.* ;
 
 import imcode.util.* ;
-import imcode.server.IMCText ;
+import imcode.server.* ;
 /**
    Edit text in a document.
 */
@@ -28,8 +28,8 @@ public class ChangeText extends HttpServlet {
     */
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	String imcserver			= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	imcode.server.User user ;
@@ -63,15 +63,15 @@ public class ChangeText extends HttpServlet {
 	}
 
 	// Check if user has write rights
-	if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,65536 ) ) {	// Checking to see if user may edit this
-	    String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this
+	    String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 	    if ( output != null) {
 		out.write(output) ;
 	    }
 	    return ;
 	}
 
-	IMCText text = IMCServiceRMI.getText(imcserver,meta_id,txt_no) ;
+	IMCText text = imcref.getText(meta_id,txt_no) ;
 
 	if ( null == text) {
 	    text = new IMCText("",IMCText.TEXT_TYPE_PLAIN) ;
@@ -104,7 +104,7 @@ public class ChangeText extends HttpServlet {
 	vec.add(servlet_url) ;
 	vec.add("#txt_no#") ;
 	vec.add(String.valueOf(txt_no)) ;
-	String outputString = IMCServiceRMI.parseDoc(imcserver,vec,"change_text.html",user.getLangPrefix()) ;
+	String outputString = imcref.parseDoc(vec,"change_text.html",user.getLangPrefix()) ;
 	out.write(outputString) ;
     }
 }

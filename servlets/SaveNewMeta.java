@@ -34,8 +34,8 @@ public class SaveNewMeta extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 	String host	= req.getHeader("Host") ;
-	String imcserver	= Utility.getDomainPref("adminserver",host) ;
-	String start_url	= Utility.getDomainPref( "start_url",host ) ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	imcode.server.User user ;
@@ -111,7 +111,7 @@ public class SaveNewMeta extends HttpServlet {
 	inputMap.remove("frame_name") ;  // we only need to store frame_name in db column "target"
 
 	SimpleDateFormat datetimeformat = new SimpleDateFormat("yyyy-MM-dd HH:mm") ;
-	Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+	Date dt = imcref.getCurrentDate() ;
 
 	String activated_date = req.getParameter("activated_date") ;
 	String activated_time = req.getParameter("activated_time") ;
@@ -157,11 +157,11 @@ public class SaveNewMeta extends HttpServlet {
 	    return ;
 	}
 
-	String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	String lang_prefix = user.getLangPrefix() ;
 
 	// Fetch all doctypes from the db and put them in an option-list
 	// First, get the doc_types the current user may use.
-	String[] user_dt = IMCServiceRMI.sqlProcedure(imcserver,"GetDocTypesForUser "+parent_meta_id+","+user.getInt("user_id")+",'"+lang_prefix+"'") ;
+	String[] user_dt = imcref.sqlProcedure("GetDocTypesForUser "+parent_meta_id+","+user.getUserId()+",'"+lang_prefix+"'") ;
 	HashSet user_doc_types = new HashSet() ;
 
 	// I'll fill a HashSet with all the doc-types the current user may use,
@@ -172,7 +172,7 @@ public class SaveNewMeta extends HttpServlet {
 
 	// So... if the user may not create this particular doc-type... he's outta here!
 	if ( !user_doc_types.contains(doc_type) ) {
-	    String output = AdminDoc.adminDoc(parent_int,parent_int,host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(parent_int,parent_int,user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -184,11 +184,11 @@ public class SaveNewMeta extends HttpServlet {
 	// Lets fix the date information (date_created, modified etc)
 	metaprops.setProperty("date_modified",datetimeformat.format(dt)) ;
 	metaprops.setProperty("date_created",datetimeformat.format(dt)) ;
-	metaprops.setProperty("owner_id",String.valueOf(user.getInt("user_id"))) ;
+	metaprops.setProperty("owner_id",String.valueOf(user.getUserId())) ;
 	
 	
 	if( req.getParameter( "cancel" ) != null ) {
-	    String output = AdminDoc.adminDoc(Integer.parseInt(parent_meta_id),Integer.parseInt(parent_meta_id),host,user,req,res) ;
+	    String output = AdminDoc.adminDoc(Integer.parseInt(parent_meta_id),Integer.parseInt(parent_meta_id),user,req,res) ;
 	    if ( output != null ) {
 		out.write(output) ;
 	    }
@@ -212,29 +212,29 @@ public class SaveNewMeta extends HttpServlet {
 		sqlStr2 += ",'"+Parser.parseDoc(val,vp)+"'" ;
 	    }
 	    sqlStr += sqlStr2 + ")" ;
-	    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
-	    String meta_id = IMCServiceRMI.sqlQueryStr(imcserver,"select @@IDENTITY") ;
+	    imcref.sqlUpdateQuery(sqlStr) ;
+	    String meta_id = imcref.sqlQueryStr("select @@IDENTITY") ;
 
 	    // Save the classifications to the db
 	    if ( classification != null ) {
-		IMCServiceRMI.sqlUpdateProcedure(imcserver,"Classification_Fix "+meta_id+",'"+classification+"'") ;
+		imcref.sqlUpdateProcedure("Classification_Fix "+meta_id+",'"+classification+"'") ;
 	    }
 
-	    IMCServiceRMI.sqlUpdateProcedure(imcserver,"InheritPermissions "+meta_id+","+parent_meta_id+","+doc_type) ;
+	    imcref.sqlUpdateProcedure("InheritPermissions "+meta_id+","+parent_meta_id+","+doc_type) ;
 
 	    // Lets add the sortorder to the parents childlist
 	    sqlStr =	"declare @new_sort int\n" +
 		"select @new_sort = max(manual_sort_order)+10 from childs where meta_id = "+parent_meta_id +" and menu_sort = "+doc_menu_no+"\n"+
 		"if @new_sort is null begin set @new_sort = 500 end\n"+
 		"insert into childs (meta_id, to_meta_id, menu_sort, manual_sort_order) values ("+parent_meta_id+","+meta_id+","+doc_menu_no+",@new_sort)\n" ;
-	    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+	    imcref.sqlUpdateQuery(sqlStr) ;
 	    log (meta_id) ;
 
 	    // Lets update the parents created_date
 	    sqlStr  = "update meta\n" ;
 	    sqlStr += "set date_modified = '" + metaprops.getProperty( "date_modified" ) + "'\n" ;
 	    sqlStr += "where meta_id = " + parent_meta_id ;
-	    IMCServiceRMI.sqlUpdateQuery( imcserver,sqlStr ) ;
+	    imcref.sqlUpdateQuery(sqlStr ) ;
 
 		//lets log to mainLog the stuff done
 		mainLog.info(logdateFormat.format(new java.util.Date())+"Document [" +meta_id +"] of type ["+doc_type+"] created on ["+parent_meta_id+"] by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
@@ -248,7 +248,7 @@ public class SaveNewMeta extends HttpServlet {
 		}
 		//ok if we have one lets update the db
 		if (section_id != null) {
-			IMCServiceRMI.sqlUpdateProcedure(imcserver,"SectionAddCrossref " + meta_id +", " +section_id);
+			imcref.sqlUpdateProcedure("SectionAddCrossref " + meta_id +", " +section_id);
 		}
 				
 				
@@ -258,10 +258,10 @@ public class SaveNewMeta extends HttpServlet {
 	    // BROWSER DOCUMENT
 	    if( doc_type.equals("6") ) {
 		sqlStr = "insert into browser_docs (meta_id, to_meta_id, browser_id) values ("+meta_id+","+parent_meta_id+",0)" ;
-		IMCServiceRMI.sqlUpdateQuery(imcserver, sqlStr) ;
+		imcref.sqlUpdateQuery( sqlStr) ;
 		Vector vec = new Vector () ;
 		sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = "+meta_id+" order by value desc,name asc" ;
-		Hashtable hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
+		Hashtable hash = imcref.sqlQueryHash(sqlStr) ;
 		String[] b_id = (String[])hash.get("browser_id") ;
 		String[] nm = (String[])hash.get("name") ;
 		String[] to = (String[])hash.get("to_meta_id") ;
@@ -277,7 +277,7 @@ public class SaveNewMeta extends HttpServlet {
 		vec.add("#browsers#") ;
 		vec.add(bs) ;
 		sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = "+meta_id+" ) order by value desc,name asc" ;
-		hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
+		hash = imcref.sqlQueryHash(sqlStr) ;
 		b_id = (String[])hash.get("browser_id") ;
 		nm = (String[])hash.get("name") ;
 		String nb = "" ;
@@ -299,12 +299,12 @@ public class SaveNewMeta extends HttpServlet {
 		vec.add(String.valueOf(parent_meta_id)) ;
 		vec.add("#servlet_url#") ;
 		vec.add(servlet_url) ;
-		htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_browser_doc.html", lang_prefix) ;
+		htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", lang_prefix) ;
 
 		// FILE UP LOAD
 	    } else if( doc_type.equals("8") ) {
 		sqlStr = "select mime,mime_name from mime_types where lang_prefix = '"+lang_prefix+"' and mime != 'other'" ;
-		String temp[] = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
+		String temp[] = imcref.sqlQuery(sqlStr) ;
 		Vector vec = new Vector() ;
 		String temps = null ;
 		for (int i = 0; i < temp.length; i+=2) {
@@ -318,8 +318,8 @@ public class SaveNewMeta extends HttpServlet {
 		vec.add(String.valueOf(parent_meta_id)) ;
 		vec.add("#servlet_url#") ;
 		vec.add(servlet_url) ;
-		htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_fileupload.html", lang_prefix) ;
-		//				htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver, meta_id,user,"new_fileupload.html",8,new_meta_id,0,doc_menu_no );
+		htmlStr = imcref.parseDoc( vec, "new_fileupload.html", lang_prefix) ;
+		//				htmlStr = imcref.interpretAdminTemplate( meta_id,user,"new_fileupload.html",8,new_meta_id,0,doc_menu_no );
 		out.write( htmlStr ) ;
 		return ;
 
@@ -332,7 +332,7 @@ public class SaveNewMeta extends HttpServlet {
 		vec.add(String.valueOf(parent_meta_id)) ;
 		vec.add("#servlet_url#") ;
 		vec.add(servlet_url) ;
-		htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_url_doc.html", lang_prefix) ;
+		htmlStr = imcref.parseDoc( vec, "new_url_doc.html", lang_prefix) ;
 		out.write( htmlStr ) ;
 		return ;
 
@@ -345,7 +345,7 @@ public class SaveNewMeta extends HttpServlet {
 		vec.add(String.valueOf(parent_meta_id)) ;
 		vec.add("#servlet_url#") ;
 		vec.add(servlet_url) ;
-		htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_frameset.html", lang_prefix) ;
+		htmlStr = imcref.parseDoc( vec, "new_frameset.html", lang_prefix) ;
 		out.write( htmlStr ) ;
 		return ;
 
@@ -353,7 +353,7 @@ public class SaveNewMeta extends HttpServlet {
 	    } else if( Integer.parseInt(doc_type) > 100 ) {
 		// check if external doc
 		imcode.server.ExternalDocType ex_doc ;
-		ex_doc = IMCServiceRMI.isExternalDoc( imcserver,Integer.parseInt(meta_id),user ) ;
+		ex_doc = imcref.isExternalDoc(Integer.parseInt(meta_id),user ) ;
 		String paramStr = "?meta_id=" + meta_id + "&" ;
 		paramStr += "parent_meta_id=" + parent_meta_id + "&" ;
 		paramStr += "cookie_id=" + "1A" + "&action=new" ;
@@ -363,10 +363,10 @@ public class SaveNewMeta extends HttpServlet {
 		// TEXT DOCUMENT
 	    } else if (doc_type.equals("2")) {
 		//lets get the users greatest permission_set for this dokument
-		final int perm_set = IMCServiceRMI.getUserHighestPermissionSet (imcserver,Integer.parseInt(meta_id), user.getInt("user_id"));
+		final int perm_set = imcref.getUserHighestPermissionSet(Integer.parseInt(meta_id), user.getUserId());
 		//ok now lets see what to do with the templates
 		sqlStr = "select template_id, sort_order,group_id,default_template_1,default_template_2 from text_docs where meta_id = " + parent_meta_id ;
-		String temp[] = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
+		String temp[] = imcref.sqlQuery(sqlStr) ;
 		//ok now we have to setup the template too use
 		if (perm_set == imcode.server.IMCConstants.DOC_PERM_SET_RESTRICTED_1)
 		    {
@@ -397,7 +397,7 @@ public class SaveNewMeta extends HttpServlet {
 			}
 		//ok were set, lets update db
 		sqlStr = "insert into text_docs (meta_id,template_id,sort_order,group_id,default_template_1,default_template_2) values ("+meta_id+","+temp[0]+","+temp[1]+","+temp[2]+","+temp[3]+","+temp[4]+")" ;
-		IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+		imcref.sqlUpdateQuery(sqlStr) ;
 
 
 		// Lets check if we should copy the metaheader and meta text into text1 and text2.
@@ -413,17 +413,17 @@ public class SaveNewMeta extends HttpServlet {
 		    String mText = Parser.parseDoc(metaprops.getProperty("meta_text"),vp) ;
 
 		    sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id +", 1, '" + mHeadline + "', 1)" ;
-		    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+		    imcref.sqlUpdateQuery(sqlStr) ;
 		    sqlStr = "insert into texts (meta_id,name,text,type) values ("+meta_id +", 2, '" + mText + "', 1)" ;
-		    IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+		    imcref.sqlUpdateQuery(sqlStr) ;
 		}
 
 		// Lets activate the textfield
 		sqlStr = "update meta set activate = 1 where meta_id = "+meta_id ;
-		IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+		imcref.sqlUpdateQuery(sqlStr) ;
 
 		// Lets build the page
-		String output = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),host,user,req,res) ;
+		String output = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),user,req,res) ;
 		if ( output != null ) {
 		    out.write(output) ;
 		}
