@@ -173,7 +173,7 @@ public interface IMCServiceInterface {
 	;
 
     // Send a update procedure to the database
-    public void sqlUpdateProcedure(String procedure)
+    public int sqlUpdateProcedure(String procedure)
 	;
 
     // Parse doc replace variables with data, uses two vectors

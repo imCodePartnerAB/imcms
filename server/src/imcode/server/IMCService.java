@@ -515,54 +515,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Add a existing doc.
      */
     public void addExistingDoc(int meta_id,User user,int existing_meta_id,int doc_menu_no) {
-	String sqlStr = "" ;
-	int newSortNo ;
-
 	
-
-	// create a db connection an get meta data
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.getConnection() ;
-
-	// test if this is the first child
-	sqlStr = "select to_meta_id from childs where meta_id =" +  meta_id + " and menu_sort = " + doc_menu_no ;
-	dbc.setSQLString(sqlStr) ;
-	dbc.createStatement() ;
-	Vector child_test = (Vector)dbc.executeQuery() ;
-	dbc.clearResultSet() ;
-
-	if ( child_test.size() > 0 ) {
-
-	    // update child table
-	    sqlStr  = "select max(manual_sort_order) from childs\n" ;
-	    sqlStr += "where meta_id = " + meta_id + " and menu_sort = " + doc_menu_no ;
-	    dbc.setSQLString(sqlStr) ;
-	    dbc.createStatement() ;
-	    Vector max_sort_no = (Vector)dbc.executeQuery() ;
-	    if ( max_sort_no.size() > 0 )
-		newSortNo = Integer.parseInt(max_sort_no.elementAt(0).toString())  + 10 ;
-	    else
-		newSortNo = 500 ;
-	    dbc.clearResultSet() ;
-	} else
-	    newSortNo = 500 ;
-
-	sqlStr  = "insert into childs(meta_id,to_meta_id,menu_sort,manual_sort_order)\n" ;
-	sqlStr += "values(" + meta_id + "," + existing_meta_id + "," + doc_menu_no + "," + newSortNo + ")" ;
-	System.out.println("Lennart: "+sqlStr);
-	dbc.setSQLString(sqlStr) ;
-	dbc.createStatement() ;
-	dbc.executeUpdateQuery() ;
-	this.updateLogs("(AddExisting) Child links for [" + meta_id + "] updated by user: [" +
-			user.getString("first_name").trim() + " " +
-			user.getString("last_name").trim() + "]") ;
-
-	//close connection
-	dbc.closeConnection() ;
-	dbc = null ;
-
-    }
-
+		String sqlStr = "AddExistingDocToMenu  " +  meta_id + ", " + existing_meta_id + ", " + doc_menu_no;
+		int addDoc = sqlUpdateProcedure(sqlStr) ;
+		   
+		if (1 == addDoc ) {	// if existing doc is added to the menu 
+			this.updateLogs("(AddExisting) Child links for [" + meta_id + "] updated by user: [" +
+				user.getString("first_name").trim() + " " +
+				user.getString("last_name").trim() + "]") ;
+		}
+	}
 
 
     /**
@@ -1540,13 +1502,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
 	return null ;
     }
-
+	
+	
+	
     /**
        The preferred way of getting data to the db.
        @param procedure The name of the procedure
        @param params    The parameters of the procedure
+	   @return updateCount or -1 if error
     **/
-    public void sqlUpdateProcedure(String procedure, String[] params) {
+    public int sqlUpdateProcedure(String procedure, String[] params) {
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	if ( params.length > 0 ) {
@@ -1557,10 +1522,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
 
 	dbc.setProcedure(procedure, params) ;
-	dbc.executeUpdateProcedure() ;
+	int res = dbc.executeUpdateProcedure() ;
 	dbc.clearResultSet() ;
 	dbc.closeConnection() ;
 	dbc = null ;
+	return res;
     }
 
     /**

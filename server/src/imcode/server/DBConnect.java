@@ -170,20 +170,24 @@ public class DBConnect {
 	return results ;
     }
 
-
-
+	
+	
     /**
      * <p>Update database procedure.
+	 * @return updatecount or -1 if error
      */
-    public void executeUpdateProcedure() {
+    public int executeUpdateProcedure() {
+	int res = 0;
 	try {
-	    cs.executeUpdate() ;
+	    res = cs.executeUpdate() ;
 	    cs.close() ;
 	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
     	    log.warn("Failed to execute updateprocedure: {"+eol+strProcedure+eol+"}", ex) ;
 	}
+	return res;
     }
+	
 
     /**
      * <p>Get metadata.
