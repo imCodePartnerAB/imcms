@@ -12,8 +12,6 @@ import com.imcode.imcms.servlet.WebComponent;
 
 public class UserFinder extends WebComponent {
 
-    private boolean userSelected;
-    private UserDomainObject selectedUser;
     private boolean usersAddable;
     private String searchString;
     private int selectButton;
@@ -29,10 +27,6 @@ public class UserFinder extends WebComponent {
             userFinder = new UserFinder();
         }
         return userFinder;
-    }
-
-    public UserDomainObject getSelectedUser() {
-        return selectedUser;
     }
 
     public void setUsersAddable( boolean usersAddable ) {
@@ -80,9 +74,9 @@ public class UserFinder extends WebComponent {
         this.selectUserCommand = selectUserCommand;
     }
 
-    public static abstract class SelectUserCommand {
+    public static interface SelectUserCommand {
 
-        public abstract void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
+        void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
                                 HttpServletResponse response ) throws ServletException, IOException ;
     }
 }
