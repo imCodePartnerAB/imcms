@@ -33,7 +33,7 @@ WHERE
         dpse.permission_data IS NOT NULL
        OR rr.set_id = 0
        OR urc.role_id = 0
-ORDER BY dt.group_id
+ORDER BY dt.group_name
 
 
 GO
