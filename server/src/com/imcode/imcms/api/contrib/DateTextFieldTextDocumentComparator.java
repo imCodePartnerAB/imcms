@@ -65,7 +65,7 @@ public class DateTextFieldTextDocumentComparator extends Document.Comparator {
         return compareDate( date1, date2 );
     }
 
-    public int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
+    protected int compareDocuments( Document d1, Document d2 ) throws NoPermissionException {
         try {
             TextDocument textDocument1 = (TextDocument)d1;
             TextDocument textDocument2 = (TextDocument)d2;
