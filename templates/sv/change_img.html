@@ -28,7 +28,9 @@ function doClear(){
 	f.imageref_link.value       = "";
 	f.target.selectedIndex      = 0;
 	f.target_name.value         = "";
-	if (isMoz) document.getElementById("imgTable").style.display = "none";
+	if (isMoz) {
+		if (document.getElementById("imgTable")) document.getElementById("imgTable").style.display = "none";
+	}
 }
 
 function setDef() {
