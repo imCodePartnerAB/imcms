@@ -40,7 +40,10 @@ Setting up Tomcat:
         
 
 Installing imCMS:
-    * Install the file imcms.war in the "tomcat/webapps" directory.
+    * Install the file "imcms.war" in the "tomcat/webapps" directory.
+      If the war-file isn't named "imcms.war", rename it first,
+      or it will be unpacked in a directory named after the file,
+      and internal references to the url-path "/imcms" will not work.
 
     * Start Tomcat.
       The servlet engine will find the war-file you installed, and unpack it.
