@@ -6,7 +6,6 @@ import java.rmi.*;
 import java.rmi.registry.*;
 
 import imcode.util.* ;
-//import imcode.external.diverse.* ;
 import imcode.server.* ;
 
 public class TemplateChange extends HttpServlet {
@@ -46,7 +45,7 @@ public class TemplateChange extends HttpServlet {
 		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 		String lang = req.getParameter("language") ;
 		if ( req.getParameter("cancel") != null ) {
-			res.sendRedirect("TemplateAdmin") ;
+			Utility.redirect(req,res,"TemplateAdmin") ;
 			return ;
 		} else if ( req.getParameter("template_get")!=null ) {
 			int template_id = Integer.parseInt(req.getParameter("template")) ;
@@ -417,9 +416,13 @@ public class TemplateChange extends HttpServlet {
 		for (int i = 0; i < temp.length; i+=2) {
 			int tmp = Integer.parseInt(temp[i]) ;
 			for ( int j = 0 ; j < list.length ; j++ ) {
-				if ( Integer.parseInt(list[j]) == tmp ) {
-					temp[i+1] = "*" + temp[i+1] ;
-					break ;
+				try {
+					if ( Integer.parseInt(list[j]) == tmp ) {
+						temp[i+1] = "*" + temp[i+1] ;
+						break ;
+					}
+				} catch ( NumberFormatException ex ) {
+					
 				}
 			}
 			temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
@@ -433,9 +436,13 @@ public class TemplateChange extends HttpServlet {
 			for (int i = 0; i < temp.length; i+=2) {
 				int tmp = Integer.parseInt(temp[i]) ;
 				for ( int j = 0 ; j < list.length ; j++ ) {
-					if ( Integer.parseInt(list[j]) == tmp ) {
-						temp[i+1] = "*" + temp[i+1] ;
-						break ;
+					try {
+						if ( Integer.parseInt(list[j]) == tmp ) {
+							temp[i+1] = "*" + temp[i+1] ;
+							break ;
+						}					
+					} catch ( NumberFormatException ex ) {
+						
 					}
 				}
 				temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;

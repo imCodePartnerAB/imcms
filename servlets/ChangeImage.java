@@ -4,6 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import javax.swing.*; // (Använder ImageIcon)
 /**
   Edit imageref  - upload image to server.
   */
@@ -32,7 +33,7 @@ public class ChangeImage extends HttpServlet {
 		res.setContentType("text/html");
 		PrintWriter out = res.getWriter();
 
-		String tmp = req.getParameter("img") ;
+		String tmp = (req.getParameter("img_no") != null)?req.getParameter("img_no"):req.getParameter("img") ;
 		log (tmp);
 		img_no = Integer.parseInt(tmp) ;
 
@@ -40,9 +41,45 @@ public class ChangeImage extends HttpServlet {
 		log (tmp);
 		meta_id = Integer.parseInt(tmp) ;
 
+
 		// Check if ChangeImage is invoked by ImageBrowse, hence containing
 		// an image filename as option value (M. Wallin)
 		String img_preset = (req.getParameter("imglist") == null)?"":req.getParameter("imglist");
+
+		// Preview image from ImageBrowse
+		if(req.getParameter("preview") != null)  {
+				HttpSession session = req.getSession(true);
+				Object done = session.getValue("logon.isDone");
+				user = (imcode.server.User)done ;
+				String optionList = (String)(session.getValue("optionlist"));
+
+//				if (optionList == null)
+//					res.sendRedirect("/servlet/ImageBrowse");
+				
+					Vector vec = new Vector () ;
+
+					vec.add("#meta_id#");
+					vec.add("" +meta_id);
+					
+					vec.add("#img_preview#");
+					vec.add("<img src='" + img_preset + "'>");
+					
+					vec.add("#img_no#");
+					vec.add("" + img_no);
+					
+					vec.add("#options#");
+					vec.add(optionList);
+					
+					String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+					htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"ImageBrowse.html", lang_prefix) ;
+					//log("HTMLSTR = " + htmlStr);
+					out.print(htmlStr) ;
+				
+
+				
+		} else {
+
+
 		/*
 		Enumeration logga = req.getParameterNames();
 		while(logga.hasMoreElements())
@@ -86,16 +123,34 @@ public class ChangeImage extends HttpServlet {
 		String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
 		log ("d") ;
 		Vector vec = new Vector () ;
+		
+		String imageName = (img_preset.equals("")?sql[1]:img_preset); // selected OPTION or ""
+		if(imageName.lastIndexOf("/") != -1)
+			imageName = imageName.substring(imageName.lastIndexOf("/") +1);
+		String imagePath = Utility.getDomainPref( "image_path",host ) + imageName;
+		//****************************************************************
+			//String imagePath = image_url + imageName;
+			ImageIcon icon = new ImageIcon(imagePath);
+			int width = icon.getIconWidth();
+			int height = icon.getIconHeight();
+		//****************************************************************
+		
+		
 		if ( sql.length > 0 ) {
 			log("sql.lenght > 0");
 			vec.add("#imgName#") ;
 			vec.add(sql[0]) ;
 			vec.add("#imgRef#") ;
-			vec.add(img_preset.equals("")?sql[1]:img_preset) ; // selected OPTION or "" (M. Wallin)
+			vec.add(Utility.getDomainPref( "image_url",host ) + imageName);
 			vec.add("#imgWidth#") ;
-			vec.add(sql[2]) ;
+			vec.add(img_preset.equals("")?sql[2]:"" + width);
+			vec.add("#origW#"); // original imageWidth
+			vec.add("" + width);
 			vec.add("#imgHeight#") ;
-			vec.add(sql[3]) ;
+			vec.add(img_preset.equals("")?sql[3]:"" + height);
+			vec.add("#origH#");
+			vec.add("" + height); // original imageHeight
+			
 			vec.add("#imgBorder#") ;
 			vec.add(sql[4]) ;
 			vec.add("#imgVerticalSpace#") ;
@@ -159,11 +214,11 @@ public class ChangeImage extends HttpServlet {
 			vec.add("#imgName#") ;
 			vec.add("") ;
 			vec.add("#imgRef#") ;
-			vec.add(img_preset); // selected OPTION or "" (M. Wallin)
+			vec.add(Utility.getDomainPref( "image_url",host ) + imageName);
 			vec.add("#imgWidth#") ;
-			vec.add("0") ;
+			vec.add("" + width) ;
 			vec.add("#imgHeight#") ;
-			vec.add("0") ;
+			vec.add("" + height) ;
 			vec.add("#imgBorder#") ;
 			vec.add("0") ;
 			vec.add("#imgVerticalSpace#") ;
@@ -198,7 +253,7 @@ public class ChangeImage extends HttpServlet {
 		log ("g") ;
 		//htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_img.html",img_no,0,0,0) ;                        	
 		out.print(htmlStr) ;
-
+		}
 
 
 	}

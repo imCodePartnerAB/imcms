@@ -6,7 +6,6 @@ import java.rmi.*;
 import java.rmi.registry.*;
 
 import imcode.util.* ;
-//import imcode.external.diverse.* ;
 import imcode.server.* ;
 
 public class TemplateAdd extends HttpServlet {
@@ -14,6 +13,82 @@ public class TemplateAdd extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 	}
+
+	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+		String host 				= req.getHeader("Host") ;
+		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
+		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		
+		// Check if user logged on
+		User user ;
+		if ( (user = Check.userLoggedOn(req,res,start_url))==null ) {
+			return ;
+		} 
+		// Is user superadmin?
+
+		String sqlStr  = "select role_id from users,user_roles_crossref\n" ;
+		sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
+		sqlStr += "and user_roles_crossref.role_id = 0\n" ;
+		sqlStr += "and users.user_id = " + user.getInt("user_id") ;
+		
+		if ( IMCServiceRMI.sqlQuery(imcserver,sqlStr).length == 0 ) {
+			Utility.redirect(req,res,start_url) ;
+			return ;
+		}
+		
+		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+		PrintWriter out = res.getWriter() ;
+
+	//**********************************************************************************************
+	// Redirected here with bogus parameter, no-cache workaround
+	// 
+		if(req.getParameter("action") != null) {
+		String htmlStr ;
+		if(req.getParameter("action").equals("noCacheImageView")) 
+		{
+			String template = req.getParameter("template");
+			String suffix = req.getParameter("suffix");
+			String mimeType = req.getParameter("mimeType");
+		
+			Object[] suffixAndStream = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
+				byte[] temp = (byte[])suffixAndStream[1];
+				
+				if ( temp == null ) {
+					htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ) ;
+				} else {
+					htmlStr = new String(temp,"8859_1") ;
+
+				}
+			
+			res.setContentType(mimeType) ;
+			out.print(htmlStr) ;
+			return ;
+			} else if (req.getParameter("action").equals("return")) {
+				res.setContentType("text/html");
+			
+			Vector vec = new Vector() ;
+				vec.add("#buttonName#");
+				vec.add("return");
+				vec.add("#formAction#");
+				vec.add("TemplateAdmin");
+				vec.add("#formTarget#");
+				vec.add("_top");
+				vec.add("#hiddenName#");
+				vec.add("add_demotemplate");
+				vec.add("#hiddenValue#");
+				vec.add("Rastapaupoulous");
+			htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "back_button.html",lang_prefix) ;
+			out.print(htmlStr);
+			return;
+			}
+		}
+	//***********************************************************************************************
+		
+	}
+
+
+
+
 
 	public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
@@ -38,8 +113,9 @@ public class TemplateAdd extends HttpServlet {
 			return ;
 		}
 
-		res.setContentType("text/html") ;
+		//res.setContentType("text/html") ;
 		
+				
 		int length = req.getContentLength();
 
 		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
@@ -65,13 +141,14 @@ public class TemplateAdd extends HttpServlet {
 		MultipartFormdataParser mp = new MultipartFormdataParser(buffer,contentType) ;
 
 		if ( mp.getParameter("cancel") != null ) {
-			res.sendRedirect("TemplateAdmin") ;
+			Utility.redirect(req,res,"TemplateAdmin") ;
 		}
 
 		// Plocka ut språket, så vi vet vilket vi editerar...
 		String lang = mp.getParameter("language") ;		
 
 		boolean demo = mp.getParameter("demo") != null ;
+	
 
 		String template = null ;
 		String simple_name = null ;
@@ -81,9 +158,11 @@ public class TemplateAdd extends HttpServlet {
 				Vector vec = new Vector() ;
 				vec.add("#language#") ;
 				vec.add(lang);
-				String htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "templatedemo_upload_template_blank.html", lang_prefix) ;                        	
+				String htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "templatedemo_upload_template_blank.html", lang_prefix) ;
+				res.setContentType("text/html") ;
 				out.print(htmlStr) ;
 				return ;
+	// ************************* DELETE DEMO
 			} else if ( mp.getParameter("delete_demo")!=null ) {
 				IMCServiceRMI.deleteDemoTemplate(imcserver, Integer.parseInt(template)) ;
 				String list[] ;
@@ -112,18 +191,52 @@ public class TemplateAdd extends HttpServlet {
 				} else {
 					htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "template_no_langtemplates.html",lang_prefix) ;
 				}
+				res.setContentType("text/html") ;
 				out.print(htmlStr) ;
 				return ;
+	// ************************** VIEW DEMO
+	// Updated IMCService + interface, IMCServiceRMI : Now returns Object[] filesuffix, byteStream
 			} else if ( mp.getParameter("view_demo") != null ) {
-				byte[] temp = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
+				Object[] suffixAndStream = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
 				String htmlStr ;
-				if ( temp == null ) {
+				
+				if ( suffixAndStream == null) {
 					htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ) ;
+					out.print(htmlStr) ;
+				 	return ;
+					
 				} else {
-					htmlStr = new String(temp,"8859_1") ;
+					byte[] temp = (byte[])suffixAndStream[1];
+					String suffix = (String)suffixAndStream[0];
+					if (temp == null) {
+						htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ) ;
+						out.print(htmlStr) ;
+				 		return ;
+					} else {
+					   htmlStr = new String(temp,"8859_1") ;
+					   String mimeType = Utility.getMimeTypeFromExtension(suffix);
+					   //res.setContentType(mimeType) ;
+					   String redirect = ("TemplateAdd?action=noCacheImageView&template="
+							+ template + "&suffix=" + suffix + "&mimeType=" + java.net.URLEncoder.encode(mimeType)
+							+ "&bogus=" + System.currentTimeMillis());
+						
+						// create frameset with topframe containing return-button
+						// and the main-frame doing a redirect
+						res.setContentType("text/html");
+						out.print(
+						"<html><head><title></title></head>"
+						+ "<frameset rows=\"80,*\" frameborder=\"NO\" border=\"0\" framespacing=\"0\">"
+  						+ "<frame name=\"topFrame\" scrolling=\"NO\" noresize src=\"TemplateAdd?action=return\">"
+  						+ "<frame name=\"mainFrame\" src=\"" + redirect + "\">"
+						+ "</frameset>"
+						+ "<noframes><body>" + redirect + "</body></noframes></html>");
+							
+						//res.sendRedirect(redirect);	
+					}
+						
+				 
 				}
-				out.print(htmlStr) ;
-				return ;
+	
 			}
 		} else {
 			simple_name = mp.getParameter("name") ;
@@ -131,7 +244,8 @@ public class TemplateAdd extends HttpServlet {
 				Vector vec = new Vector() ;
 				vec.add("#language#") ;
 				vec.add(lang);
-				String htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "template_upload_name_blank.html", lang_prefix) ;                        	
+				String htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "template_upload_name_blank.html", lang_prefix) ;
+				res.setContentType("text/html") ;
 				out.print(htmlStr) ;
 				return ;
 			}
@@ -146,8 +260,10 @@ public class TemplateAdd extends HttpServlet {
 			if ( demo ) {
 				htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "templatedemo_upload_file_blank.html", lang_prefix) ;                        				
 			} else {
-				htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "template_upload_file_blank.html", lang_prefix) ;                        					
+				htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "template_upload_file_blank.html", lang_prefix) ;
+				
 			}
+			res.setContentType("text/html") ;
 			out.print(htmlStr) ;
 			return ;
 		}
@@ -160,13 +276,38 @@ public class TemplateAdd extends HttpServlet {
 		boolean overwrite = (mp.getParameter("overwrite") != null) ;
 		String htmlStr = null ;
 
+// ********************************** OK
+
 		if ( demo ) {
 			try {
-				IMCServiceRMI.saveDemoTemplate( imcserver, Integer.parseInt(template), file.getBytes("8859_1")) ;				
+				// get the suffix
+				log("*** TEMPLATE_ADD ***  FILENAME = " + filename + " | SUFFIX = " + filename.substring(filename.lastIndexOf('.') +1));
+				String suffix = filename.substring(filename.lastIndexOf('.') +1);
+				
+				if(filename.lastIndexOf(".") == -1)
+					suffix="";
 				Vector vec = new Vector() ;
-				vec.add("#language#") ;
-				vec.add(lang);
-				htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "templatedemo_upload_done.html", lang_prefix) ;                        	
+				if(!suffix.equals("jpg")
+					&& !suffix.equals("jpeg")
+					&& !suffix.equals("png")
+					&& !suffix.equals("gif")
+					&& !suffix.equals("htm")
+					&& !suffix.equals("html"))
+				{
+					vec.add("#language#") ;
+					vec.add(lang);
+					htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "templatedemo_upload_done.html", lang_prefix) ;
+				}
+				else {
+					IMCServiceRMI.saveDemoTemplate( imcserver, Integer.parseInt(template), file.getBytes("8859_1"), suffix) ;
+					
+					vec.add("#language#") ;
+					vec.add(lang);
+					htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "templatedemo_upload_done.html", lang_prefix) ;                        	
+				}
+				
+				
+				
 
 			} catch ( RemoteException ex ) {
 				Vector vec = new Vector() ;
@@ -205,7 +346,7 @@ public class TemplateAdd extends HttpServlet {
 				htmlStr = IMCServiceRMI.parseDoc( imcserver, vec, "template_upload_done.html", lang_prefix) ;                        	
 			}
 		}
-
+		res.setContentType("text/html") ;
 		out.print(htmlStr) ;
 		return ;
 	}

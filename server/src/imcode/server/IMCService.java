@@ -6671,32 +6671,58 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	/**
 	  get demo template
 	  */
-	public byte[] getDemoTemplate(int  template_id) throws IOException {
-		String str = "" ;
+	public Object[] getDemoTemplate(int  template_id) throws IOException {
+		//String str = "" ;
+		StringBuffer str = new StringBuffer() ;
+		BufferedReader fr = null;
+		String suffix = null;
+		String[] suffixList = 
+			{"jpg","jpeg","gif","png","html","htm"};
+		
+		for(int i=0;i<=5;i++) 
+			{ // Looking for a template with one of six suffixes
+				String path = m_TemplateHome + "/text/demo/" + template_id + "." + suffixList[i];
+				File fileObj = new File(path);
+				long date = 0;
+				long fileDate = fileObj.lastModified();
+				System.out.println("*****>>> File: " + fileObj.getName() + "  filedate " + fileDate);
+				if (fileObj.exists() && fileDate>date)
+				{
+					System.out.println("New latest " + fileObj.getName());
+					// if a template was not properly removed, the template
+					// with the most recens modified-date is returned
+					date = fileDate;
 
-		FileReader fr ;
-
+					try {
+						fr = new BufferedReader(new InputStreamReader(new FileInputStream(fileObj),"8859_1")) ;
+						suffix = suffixList[i];
+						} catch(IOException e) {
+							return null ; //Could not read
+							}
+				} // end IF
+			} // end FOR
+		
+		char[] buffer = new char[4096] ;
 		try {
-			fr = new FileReader(m_TemplateHome  + "/text/demo/" + template_id + ".html") ;
-		} catch(FileNotFoundException e) {
-			log.log(Log.INFO, "Failed to find demotemplate for template number "+template_id) ;
-			return null ;
-		}
-
-		try {
-			while (true) {
-				int temp = fr.read() ;
-				if (temp == -1)
-					break;
-				str+=(char)temp;
+			int read ;
+			while ( (read = fr.read(buffer,0,4096)) != -1 ) {
+				str.append(buffer,0,read) ;
 			}
 		} catch(IOException e) {
-			log.log(Log.INFO, "Failed to read demotemplate for template number "+template_id) ;
+			return null ;
+		}
+		catch(NullPointerException e) {
 			return null ;
 		}
 
-		return str.getBytes("8859_1") ;
-	}
+
+		
+		return new Object[] {suffix , str.toString().getBytes("8859_1")} ; //return the buffer
+
+			
+	
+
+}
 
 
 
@@ -6774,11 +6800,23 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	/**
 	  save demo template
 	  */
-	public int saveDemoTemplate(int template_id,byte [] data) {
+	public int saveDemoTemplate(int template_id,byte [] data, String suffix) {
 
 		// save template demo
+		
+		// See if there are templete_id:s with other file-formats and delete them
+		// WARNING: Uggly Code
+			String[] suffixes = {"jpg","jpeg","gif","png","htm","html"};
+			for(int i=0;i<=5;i++) {
+				File file = new File(m_TemplateHome + "/text/demo/" + template_id + "." + suffixes[i]);
+				if(file.exists())
+					file.delete();
+			// doesn't always delete the file, made sure the right template is
+			// shown using the file-date & time in getDemoTemplate
+			}
+		
 		try {
-			FileOutputStream fw = new FileOutputStream(m_TemplateHome  + "/text/demo/" + template_id + ".html") ;
+			FileOutputStream fw = new FileOutputStream(m_TemplateHome  + "/text/demo/" + template_id + "." + suffix) ;
 			fw.write(data) ;
 			fw.close() ;
 		} catch(IOException e) {

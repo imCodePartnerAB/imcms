@@ -618,7 +618,7 @@ public class IMCServiceRMI {
 		}
 	}
 
-	public static byte[] getDemoTemplate (String server, int template_id) throws IOException {
+	public static Object[] getDemoTemplate (String server, int template_id) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
 		try {
 			return imc.getDemoTemplate(template_id) ;
@@ -659,13 +659,13 @@ public class IMCServiceRMI {
 		}
 	}
 */
-	public static int saveDemoTemplate (String server, int template_id, byte[] file) throws IOException {
+	public static int saveDemoTemplate (String server, int template_id, byte[] file, String suffix) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
 		try {
-			return imc.saveDemoTemplate(template_id,file) ;
+			return imc.saveDemoTemplate(template_id,file, suffix) ;
 		} catch ( IOException ex ) {
 			imc = renewInterface(server) ;
-			return imc.saveDemoTemplate(template_id,file) ;
+			return imc.saveDemoTemplate(template_id,file, suffix) ;
 		}
 	}
 /*
