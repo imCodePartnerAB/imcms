@@ -111,140 +111,140 @@ function showHelpLayer(what){
 		// * Help texts for the click-button-help
 		case 'Cut':
 			helpImageIcon = 'images/btn_cut.gif';
-			helpHeading = 'Knappen &quot;Klipp ut&quot;';
-			helpContent = 'Används för att klippa ut markerad text till <i>Urklipp/Klippbordet</i>. Innehållet kan sedan klistras in på annan plats eller i annat program.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/1 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/2 ?>';
 			break;
 		case 'Copy':
 			helpImageIcon = 'images/btn_copy.gif';
-			helpHeading = 'Knappen &quot;Kopiera&quot;';
-			helpContent = 'Används för att kopiera markerad text till <i>Urklipp/Klippbordet</i>. Innehållet kan sedan klistras in på annan plats eller i annat program.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/3 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/4 ?>';
 			break;
 		case 'Paste':
 			helpImageIcon = 'images/btn_paste.gif';
-			helpHeading = 'Knappen &quot;Klistra in&quot;';
-			helpContent = 'Används för att klistra in det senast kopierade eller urklippta innehållet i <i>Urklipp/Klippbordet</i>.<br><br>Innehållet klistras in där markören står.<br>Om någon text är markerad, byts den ut mot det inklistrade innehållet.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/5 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/6 ?>';
 			break;
 		case 'Preview':
 			helpImageIcon = 'images/btn_preview.gif';
-			helpHeading = 'Knappen &quot;Förhandsgranska&quot;';
-			helpContent = 'Öppnar och visar hur HTML-koden ser ut, i ett nytt fönster.<br><br>I förhandsgranskningsfönstret får man se hur koden verkligen genereras av en webläsare, när man väl har sparat sin kod.<br><br>Vidare kan man justera innehållsbredden, om man vet denna, för att återspegla den bredd man använder där själva texten/koden skall ligga. Därmed får man en exakt uppfattning om radbrytningar och ev. förskjutningar som kan uppstå på fel ställe.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/7 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/8 ?>';
 			break;
 		case 'Undo':
 			helpImageIcon = 'images/btn_undo.gif';
-			helpHeading = 'Knappen &quot;Ångra&quot;';
-			helpContent = 'Ångrar/återställer senast utförda åtgärd.<br><br><b>OBS! Gäller inte alla funktioner.</b><br><br>Vissa funktioner kan man bara återställa genom att göra något av följande:<ul><li>Ladda om senast sparade version<li>Manuellt editera bort koden i HTML-läge.<li>Välja att radera all formatering (tar bort all HTML)</ul>';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/9 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/10 ?>';
 			break;
 		case 'Redo':
 			helpImageIcon = 'images/btn_redo.gif';
-			helpHeading = 'Knappen &quot;Gör om&quot;';
-			helpContent = 'Återställer senast ångrade åtgärd.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/11 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/12 ?>';
 			break;
 		case 'Refresh':
 			helpImageIcon = 'images/btn_refresh.gif';
-			helpHeading = 'Knappen &quot;Ladda om texten&quot;';
-			helpContent = 'Återställer orginalversionen, eller senast sparade version (om man sparat), från imCMS textinmatningsformulär.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/13 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/14 ?>';
 			break;
 		case 'Erase':
 			helpImageIcon = 'images/btn_eraser.gif';
-			helpHeading = 'Knappen &quot;Radera all formatering&quot;';
-			helpContent = 'Raderar alla HTML taggar i texten och återställer formateringen till ren text.<br><br><b>OBS!</b> Raderar inte radbrytningar men ev. styckeformatering bibehålls inte.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/15 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/16 ?>';
 			break;
 		case 'FontClass':
 			helpImageIcon = '';
-			helpHeading = 'Formatväljare';
-			helpContent = 'Ändrar stilen på markerad text till det valda formatet.<br><br>';
-			helpContent += '<b>Notera!&nbsp;&nbsp;</b>Det är bättre att markera texten som skall ändras genom att dra med muspekaren, än att dubbel- eller trippelklicka som i ordbehandlingsprogrammen. I bland försvinner radbrytningen efter markeringen om man markerar så och använder funktionen. (Microsofts fel)<br><br>';
-			helpContent += 'Det är ingen fara dock. Bara att ställa sig efter markeringen och göra en ny radbrytning.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/17 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/18 ?><br><br>';
+			helpContent += '<? sv/htmleditor/scripts/editor_help.js/19 ?><br><br>';
+			helpContent += '<? sv/htmleditor/scripts/editor_help.js/20 ?>';
 			break;
 		case 'FontColor':
 			helpImageIcon = 'images/btn_color_text.gif';
-			helpHeading = 'Teckensnittsfärg';
-			helpContent = 'Ändrar färgen på <font style="color:blue">markerad</font> text till den valda färgen.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/21 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/22 ?>';
 			break;
 		case 'FontBgColor':
 			helpImageIcon = 'images/btn_color_background.gif';
-			helpHeading = 'Överstrykningsfärg';
-			helpContent = 'Ändrar överstrykningsfärgen på <font style="background-color:#bbffbb">markerad</font> text till den valda färgen.<br>Simulerar en överstrykningspenna.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/23 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/24 ?>';
 			break;
 		case 'EditCode':
 			helpImageIconNew = '<button disabled style="width:55; height:21; cursor:default"><img src="images/btn_preview_editor.gif"></button>&nbsp;<button disabled style="width:55; height:21; cursor:default"><img src="images/btn_preview_html.gif"></button>';
-			helpHeading = 'Knappen &quot;Växla editeringsläge&quot;';
-			helpContent = 'Växlar mellan lägena WYSIWYG editor (What You See Is What You Get) och HTML editor.<br><br>I läget HTML editor kan man alltså finjustera sin HTML-kod, eller rätta till ev. felaktigheter, om man har den kunskapen.<br>I läget WYSIWYG editor fungerar editeringen nästan som en ordbehandlare.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/25 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/26 ?>';
 			break;
 		case 'Bold':
 			helpImageIcon = 'images/btn_format_f.gif';
-			helpHeading = 'Knappen &quot;Fetstil&quot;';
-			helpContent = 'Formaterar <b>markerad</b> text som fetstil.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/27 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/28 ?>';
 			break;
 		case 'Italic':
 			helpImageIcon = 'images/btn_format_k.gif';
-			helpHeading = 'Knappen &quot;Kursiv stil&quot;';
-			helpContent = 'Formaterar <i>markerad</i> text som kursiv (lutande).';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/29 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/30 ?>';
 			break;
 		case 'Underline':
 			helpImageIcon = 'images/btn_format_u.gif';
-			helpHeading = 'Knappen &quot;Understrykning&quot;';
-			helpContent = 'Stryker under <u>markerad</u> text.<br><br>Bör användas med försiktighet, eftersom understruken text lätt kan förväxlas med en länk på Internet.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/31 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/32 ?>';
 			break;
 		case 'StrikeThrough':
 			helpImageIconNew = '<button class="button" onClick="return false" style="cursor:default"><strike style="position:relative; top:-1; font: bold 14px Times New Roman">S</strike></button>';
-			helpHeading = 'Knappen &quot;Överstrykning&quot;';
-			helpContent = 'Stryker över <strike>markerad</strike> text.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/33 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/34 ?>';
 			break;
 		case 'JustifyLeft':
 			helpImageIcon = 'images/btn_justify_left.gif';
-			helpHeading = 'Knappen &quot;Vänster justera&quot;';
-			helpContent = 'Vänster justerar markerat stycke. (standard)';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/35 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/36 ?>';
 			break;
 		case 'JustifyCenter':
 			helpImageIcon = 'images/btn_justify_center.gif';
-			helpHeading = 'Knappen &quot;Centrera&quot;';
-			helpContent = 'Centrerar markerat stycke.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/37 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/38 ?>';
 			break;
 		case 'JustifyRight':
 			helpImageIcon = 'images/btn_justify_right.gif';
-			helpHeading = 'Knappen &quot;Höger justera&quot;';
-			helpContent = 'Höger justerar markerat stycke.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/39 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/40 ?>';
 			break;
 		case 'SuperScript':
 			helpImageIcon = 'images/btn_superscript.gif';
-			helpHeading = 'Knappen &quot;Upphöjd text&quot;';
-			helpContent = 'Formaterar markerad text som upphöjd text. Ex: m<sup>2</sup>.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/41 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/42 ?>';
 			break;
 		case 'SubScript':
 			helpImageIcon = 'images/btn_subscript.gif';
-			helpHeading = 'Knappen &quot;Nersänkt text&quot;';
-			helpContent = 'Formaterar markerad text som nersänkt text. Ex: H<sub>2</sub>O.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/43 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/44 ?>';
 			break;
 		case 'InsertOrderedList':
 			helpImageIcon = 'images/btn_list_ordered.gif';
-			helpHeading = 'Knappen &quot;Skapa numrerad lista&quot;';
-			helpContent = 'Skapar en numrerad lista (1,2,3...) av alla markerade stycken.<br><br>Ytterligare punkter kan läggas till genom att klicka på <i>Enter</i>.<br>För att byta rad utan att skapa ny punkt - klicka <i>Shift + Enter</i>.<br><br>För att börja skriva utanför listan:<br>Klicka utanför listtexten på det ställe du vill börja skriva - eller...<br>klicka på <i>Enter</i> och sedan på &quot;Skapa numrerad lista&quot; igen.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/45 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/46 ?>';
 			break;
 		case 'InsertUnorderedList':
 			helpImageIcon = 'images/btn_list_unordered.gif';
-			helpHeading = 'Knappen &quot;Skapa punktlista&quot;';
-			helpContent = 'Skapar en punktlista av alla markerade stycken.<br><br>Ytterligare punkter kan läggas till genom att klicka på <i>Enter</i>.<br>För att byta rad utan att skapa ny punkt - klicka <i>Shift + Enter</i>.<br><br>För att börja skriva utanför listan:<br>Klicka utanför listtexten på det ställe du vill börja skriva - eller...<br>klicka på <i>Enter</i> och sedan på &quot;Skapa punktlista&quot; igen.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/47 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/48 ?>';
 			break;
 		case 'Outdent':
 			helpImageIcon = 'images/btn_outdent.gif';
-			helpHeading = 'Knappen &quot;Öka indrag&quot;';
-			helpContent = 'Ökar indraget (vänstermarginalen) på markerade stycken med ett steg.<br><br>Hur stort indraget är beror på vilken webläsare man har. Det brukar vara ungefär 40 pixlar. Man kan justera detta värde genom att lägga in <nobr class="imEditHelpCode">BLOCKQUOTE { margin-left: <i>nytt värde</i> }</nobr> i sitt stylesheet.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/49 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/50 ?>';
 			break;
 		case 'Indent':
 			helpImageIcon = 'images/btn_indent.gif';
-			helpHeading = 'Knappen &quot;Minska indrag&quot;';
-			helpContent = 'Minskar indraget (vänstermarginalen) på markerade stycken med ett steg.<br><br>Hur stort indraget är beror på vilken webläsare man har. Det brukar vara ungefär 40 pixlar. Man kan justera detta värde genom att lägga in <nobr class="imEditHelpCode">BLOCKQUOTE { margin-left: <i>nytt värde</i> }</nobr> i sitt stylesheet.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/51 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/52 ?>';
 			break;
 			
 		case 'DefaultText':
 			helpImageIcon = '';
-			helpHeading = 'Funktions beskrivning';
-			helpContent = 'Klicka på knappen/funktionen du vill veta mer om. Gäller för knappar/funktioner där muspekaren blir till ett frågetecken när man för musen över densamma.';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/53 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/54 ?>';
 			break;
 		default:
-			helpHeading = 'Ingen hjälp till detta!';
-			helpContent = 'Klicka på en knapp som har en hjälp-muspekare...';
+			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/55 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/56 ?>';
 	}
 	
 	

@@ -54,13 +54,13 @@ function checkWordCode(str) {
 		}
 		
 		/* Ask once, if Word-fixing are to be executed directly */
-		var sMess = 'OBS!\n\n';
-		sMess += 'Du har klistrat in Wordformaterad text.\n\n';
-		sMess += 'För att denna text skall fungera i en webläsare för andra än de som har Windows, Internet Explorer och MS-Word, måste formateringen fixas till\n\n';
-		sMess += 'Formateringen kan ta mellan 3 och 30 sekunder, beroende på hur mycket och hur avancerad texten är. Texten kan komma att se lite konstig ut, främst när det gäller radbrytningar. En styckebrytning i Word (Enter) ger en enkel radbrytning, medans den i en webläsare ger en dubbel.\n';
-		sMess += 'En vanlig radbrytning i Word (Shift + Enter), ger dock samma resultat i båda fallen.\n\n';
-		sMess += 'Syftet med rensningen i koden är att resultatet skall bli så lika som möjligt för de som inte har Windows/MS-Word\n\n';
-		sMess += 'Om du klistrar in mer Word-text senare, kan du välja att klicka på knappen [Fixa Word-kod], som nu dykt upp i din nedre knapprad.';
+		var sMess = '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/1 ?>\n\n';
+		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/2 ?>.\n\n';
+		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/3 ?>\n\n';
+		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/4 ?>.\n';
+		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/5 ?>.\n\n';
+		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/6 ?>\n\n';
+		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/7 ?>.';
 		
 		askedAboutWord = 1;
 		if (confirm(sMess)){

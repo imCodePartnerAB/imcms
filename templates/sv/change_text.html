@@ -34,9 +34,9 @@ function openEditor(metaId,txtNr) {
 		var popWindow = window.open(sUrl,"Editor","resizable=no,menubar=" + sMenu + ",scrollbars=" + sScroll + ",status=" + sStatus + ",width=" + window_width + ",height=" + window_height + ",top=" + window_top + ",left=" + window_left + ",location=0,directories=0");
 		if (popWindow) popWindow.focus();
 	} else {
-		var sMess = "Du måste ha ";
-		sMess += (isMac) ? "Windows och " : "";
-		sMess += "Internet Explorer 5.5+ för att kunna använda Text-editorn.";
+		var sMess = "<? sv/change_text.html/13 ?> ";
+		sMess += (isMac) ? "<? sv/change_text.html/14 ?> " : "";
+		sMess += "<? sv/change_text.html/15 ?>";
 		alert(sMess);
 	}
 }

@@ -251,7 +251,7 @@ Sub CreateLink_onclick
 		strNewText = sStartCode & theText & sEndCode
 		'MsgBox(len(objMyRange.text) & " / " & strTagName & " / " & isObject(objSelRange) & " - " & isObject(objMyRange) & " / " & IsEmpty(objSelRange) & " - " & IsEmpty(objMyRange))
 		If strTagName = "INPUT" Then
-			MsgBox("Du måste markera något som skall vara länkat" & vbNewLine & "eller ställa markören där länken skall ligga!")
+			MsgBox("<? sv/htmleditor/scripts/editor_functions.vbs/1 ?>" & vbNewLine & "<? sv/htmleditor/scripts/editor_functions.vbs/2 ?>!")
 		Else
 			objMyRange.pasteHTML strNewText
 		End If
@@ -381,7 +381,7 @@ Sub CreatePixel_onclick
 	Set objMyRange = objSelRange.duplicate
 	strNewText = sPixelCode
 	If strTagName = "INPUT" Then
-		MsgBox("Du måste ställa markören där bilden skall ligga!")
+		MsgBox("<? sv/htmleditor/scripts/editor_functions.vbs/3 ?>!")
 	Else
 		objMyRange.pasteHTML strNewText
 	End If
@@ -391,12 +391,12 @@ End Sub
 
 
 Sub findBtnClick
-	textToFind = InputBox("Sök efter ord eller fras i texten!","Sökning","sökord")
+	textToFind = InputBox("<? sv/htmleditor/scripts/editor_functions.vbs/4 ?>")
 	set r = document.body.createTextRange()
 	blnFound = r.findText(textToFind)
 	if blnFound then
 		r.select()
 	else
-		MsgBox "Hittades ej!"
+		MsgBox "<? sv/htmleditor/scripts/editor_functions.vbs/5 ?>!"
 	end if
 End Sub
