@@ -42,38 +42,28 @@ function AddLink()
           
 			   document.forms[0].elements["ADDHEADER"].focus();         
         }
-		var cancelBool = true;
-		function SetCancelBoolean(){
-			cancelBool = false;
-		}
-		
+				
 		function ValidateFields()
 		{
-			if(cancelBool){
-				if(document.forms[0].ADDHEADER.value == ""){
-					alert("En Rubrik måste vara finnas!");
-					document.forms[0].ADDHEADER.focus();
-					cancelBool = true;
-					event.returnValue=false;
-				}else if(document.forms[0].ADDTEXT.value == ""){
-					alert("En Text måste finnas!");
-					document.forms[0].ADDTEXT.focus();
-					cancelBool = true;
-					event.returnValue=false;
-				}
-				else if(document.forms[0].ADDEPOST.value == ""){
-					alert("Din Epost Adress måste finnas!");
-					document.forms[0].ADDEPOST.focus();
-					cancelBool = true;
-					event.returnValue=false;
-				}
-				else{
-					cancelBool = true;
-					event.returnValue=true;
-				}
-			}else{
-				event.returnValue=true;
+			var returnValue = false;
+			if(document.forms[0].ADDHEADER.value == ""){
+				alert("En Rubrik måste vara finnas!");
+				document.forms[0].ADDHEADER.focus();
+				returnValue=false;
+			}else if(document.forms[0].ADDTEXT.value == ""){
+				alert("En Text måste finnas!");
+				document.forms[0].ADDTEXT.focus();
+				returnValue=false;
 			}
+			else if(document.forms[0].ADDEPOST.value == ""){
+				alert("Din Epost Adress måste finnas!");
+				document.forms[0].ADDEPOST.focus();
+				returnValue=false;
+			}
+			else{
+				returnValue=true;
+			}
+			return returnValue;
 		}
 		
 //-->
@@ -91,7 +81,7 @@ function AddLink()
     <td width="285" height="3"><IMG height=3 src="#IMAGE_URL#1pix.gif" width=1></td>
   </tr>
 </table>
-<form method="post" action="#SERVLET_URL#BillBoardAdd" target=_parent name="NewMsgForm" onsubmit="ValidateFields();">
+<form method="post" action="#SERVLET_URL#BillBoardAdd" target=_parent name="NewMsgForm" onsubmit="if(ValidateFields() == true){return true;}else{return false;};">
   <table border=0 width="270" cellpadding="0" cellspacing="0">
   	<tr> 
       <td colspan=2 valign=top>
@@ -126,7 +116,7 @@ function AddLink()
       </td>
 	</tr>
     <tr valign="top"> 
-      <td colspan="2" height="30"> 
+      <td height="30"> 
         <div align="right"> &nbsp;&nbsp; <font size=3> 
           <input type="hidden" name="ADDTYPE" value="#ADD_TYPE#">
           <input type="hidden" name="ADD1" value="Lägg till">
@@ -134,7 +124,12 @@ function AddLink()
           <input type="hidden" name="CANCEL1" value="Avbryt">
           </font> 
           <input type="image" border="0" name="ADD" src="#IMAGE_URL#billBoard_send.gif" width="52" height="18">
-          <input type="image" border="0" name="CANCEL" src="#IMAGE_URL#billBoard_cancel.gif" width="52" height="18" onclick="SetCancelBoolean();">
+ </form>&nbsp;
+ 	</td>
+ 	<td height="30"> 
+ <form method="post" action="#SERVLET_URL#BillBoardAdd" target=_parent name="NewMsgForm">
+       
+		  &nbsp;<input type="image" border="0" name="CANCEL" src="#IMAGE_URL#billBoard_cancel.gif" width="52" height="18">
           <font size=3> </font> </div>
       </td>
     </tr>
