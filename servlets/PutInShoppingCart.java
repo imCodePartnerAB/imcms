@@ -51,21 +51,29 @@ public class PutInShoppingCart extends HttpServlet {
 		/* We temporarily hold the item in a ShoppingItemQuantity
 		   in the map formItems, until we put it in the ShoppingCart */
 		ShoppingItemQuantity quantity = (ShoppingItemQuantity)formItems.get(formitemno) ;
-		if (null == quantity) {
-		    /* There was no item in temporary storage,
-		       so create a new one */
-		    quantity = new ShoppingItemQuantity() ;
-		    formItems.put(formitemno, quantity) ;
-		}
-
 		try {
+		    if (null == quantity) {
+			/* There was no item in temporary storage,
+			   so create a new one */
+			quantity = new ShoppingItemQuantity() ;
+			int number = -1 ;
+			if (null != req.getParameter("number_"+formitemno)) {
+			    number = Integer.parseInt(req.getParameter("number_"+formitemno)) ;
+			} else if (null != req.getParameter("add_"+formitemno)) {
+			    number = Integer.parseInt(req.getParameter("add_"+formitemno)) ;
+			    quantity.setAdd(true) ;
+			}
+			quantity.setQuantity(number) ;
+			formItems.put(formitemno, quantity) ;
+		    }
+
+		    if ("number".equals(field)) {
+			continue ;
+		    }
 		    if (!"".equals(paramValue)) {
 			log.debug("Parsing '"+paramValue+"' for parameter "+aParameter) ;
 		    }
-		    if ("number".equals(field)) {
-			/* The quantity of this item */
-			quantity.setQuantity(Integer.parseInt(paramValue)) ;
-		    } else if ("remove".equals(field)) {
+		    if ("remove".equals(field)) {
 			quantity.setRemove(true) ;
 		    } else if ("price".equals(field)) {
 			/* Parse the given price with the DecimalFormat we created from the given parameters */
@@ -114,7 +122,13 @@ public class PutInShoppingCart extends HttpServlet {
 	    } else if (itemQuantity.getQuantity() > 0) {
 		/* Else, if there are more than 0 of the item,
 		   put the given quantity of the item in the ShoppingCart */
-		cart.putItem(itemQuantity.getItem(), itemQuantity.getQuantity()) ;
+		if (itemQuantity.getAdd()) {
+		    /* We're supposed to add to the item in the cart */
+		    cart.addItem(itemQuantity.getItem(), itemQuantity.getQuantity()) ;
+		} else {
+		    /* We're supposed to put (replace) the item in the cart */
+		    cart.putItem(itemQuantity.getItem(), itemQuantity.getQuantity()) ;
+		}
 	    }
 	}
 
@@ -161,11 +175,15 @@ public class PutInShoppingCart extends HttpServlet {
 	/** The item **/
 	private ShoppingItem item = new ShoppingItem() ;
 
-	/** The quantity of item **/
-	private int quantity = 0 ;
+	/** The quantity of item,
+	    -1 means no quantity given **/
+	private int quantity = -1 ;
 
-	/** Whether to remove the item instead of adding it **/
+	/** Whether to remove the item instead of putting it **/
 	private boolean remove = false ;
+
+	/** Whether to add the item instead of putting it **/
+	private boolean add = false ;
 
 	/**
 	   get-method for item
@@ -206,7 +224,7 @@ public class PutInShoppingCart extends HttpServlet {
 	/**
 	   get-method for remove
 
-	   @return Whether the item this ShoppingItemQuantity represents is supposed to be removed from the ShoppingCart
+	   @return Whether the item is supposed to be removed from the ShoppingCart
 	**/
 	public boolean getRemove() {
 	    return this.remove ;
@@ -215,10 +233,28 @@ public class PutInShoppingCart extends HttpServlet {
 	/**
 	   set-method for remove
 
-	   @param remove Whether the item this ShoppingItemQuantity represents is supposed to be removed from the ShoppingCart
+	   @param remove Whether the item is supposed to be removed from the ShoppingCart
 	**/
 	public void setRemove(boolean remove) {
 	    this.remove = remove ;
+	}
+
+	/**
+	   get-method for add
+
+	   @return Whether the item is supposed to be added to the the cart instead of replacing one in the cart.
+	**/
+	public boolean getAdd() {
+	    return this.add ;
+	}
+
+	/**
+	   set-method for add
+
+	   @param add Whether the item is supposed to be added to the the cart instead of replacing one in the cart.
+	**/
+	public void setAdd(boolean add) {
+	    this.add = add ;
 	}
     }
 }
