@@ -939,6 +939,7 @@ public class ChatBase extends HttpServlet {
 	/**
 	Returns the folder where this templates are situated for a certain metaid.
 	**/
+
 	protected String getExternalImageFolder(String server, String meta_id) throws ServletException, IOException
 	{
 		RmiConf rmi = new RmiConf() ;

@@ -4,6 +4,10 @@ import javax.servlet.http.*;
 import java.awt.* ;
 import java.util.* ;
 
+import imcode.external.diverse.MetaInfo;
+import imcode.external.diverse.SettingsAccessor;
+import imcode.external.diverse.FileManager
+
 public class NewDiagram2 extends HttpServlet {
 	
 		String FILE_PATH ;            // the path to where the servlets are
