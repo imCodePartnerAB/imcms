@@ -48,4 +48,9 @@ public class Category {
         return internalCategory.getId();
     }
 
+    public String getImage(){
+        return internalCategory.getImage();
+    }
+    
+
 }

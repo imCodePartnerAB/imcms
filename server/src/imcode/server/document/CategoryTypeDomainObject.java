@@ -5,12 +5,18 @@ package imcode.server.document;
  */
 public class CategoryTypeDomainObject {
 
+    private int id;
     private String name ;
     private int maxChoices ;
 
-    public CategoryTypeDomainObject(String name, int maxChoices) {
+    public CategoryTypeDomainObject(int id, String name, int maxChoices) {
+        this.id = id;
         this.name = name;
-        this.maxChoices = maxChoices;
+        this.maxChoices = maxChoices;  // 0=singel choice, 1=multi choice
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {

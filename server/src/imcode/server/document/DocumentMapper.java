@@ -196,7 +196,7 @@ public class DocumentMapper {
     }
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
-        String sqlQuery = "SELECT categories.category_id, categories.name, categories.description\n"
+        String sqlQuery = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
                 + "FROM categories\n"
                 + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
                 + "WHERE category_types.name = ?";
@@ -206,23 +206,25 @@ public class DocumentMapper {
             int categoryId = Integer.parseInt(sqlResult[i][0]);
             String categoryName = sqlResult[i][1];
             String categoryDescription = sqlResult[i][2];
+            String categoryImage = sqlResult[i][3];
 
             categoryDomainObjects[i] =
-                    new CategoryDomainObject(categoryId, categoryName, categoryDescription, categoryType);
+                    new CategoryDomainObject(categoryId, categoryName, categoryDescription, categoryImage, categoryType);
         }
         return categoryDomainObjects;
     }
 
     public CategoryTypeDomainObject[] getAllCategoryTypes() {
-        String sqlQuery = "SELECT name, max_choices FROM category_types ORDER BY name";
+        String sqlQuery = "SELECT category_type_id, name, max_choices FROM category_types ORDER BY name";
         String[][] sqlResult = service.sqlQueryMulti(sqlQuery, new String[0]);
 
         CategoryTypeDomainObject[] categoryTypeDomainObjects = new CategoryTypeDomainObject[sqlResult.length];
         for (int i = 0; i < categoryTypeDomainObjects.length; i++) {
-            String typeName = sqlResult[i][0];
-            int maxChoices = Integer.parseInt(sqlResult[i][1]);
+            int categoryTypeId = Integer.parseInt(sqlResult[i][0]);
+            String typeName = sqlResult[i][1];
+            int maxChoices = Integer.parseInt(sqlResult[i][2]);
 
-            categoryTypeDomainObjects[i] = new CategoryTypeDomainObject(typeName, maxChoices);
+            categoryTypeDomainObjects[i] = new CategoryTypeDomainObject(categoryTypeId, typeName, maxChoices);
         }
 
         return categoryTypeDomainObjects;
@@ -240,7 +242,7 @@ public class DocumentMapper {
     }
 
     public CategoryDomainObject getCategory(CategoryTypeDomainObject categoryType, String categoryName) {
-        String sqlQuery = "SELECT categories.category_id, categories.name, categories.description\n"
+        String sqlQuery = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
                 + "FROM categories\n"
                 + "JOIN category_types\n"
                 + "ON categories.category_type_id = category_types.category_type_id\n"
@@ -251,15 +253,16 @@ public class DocumentMapper {
             final int categoryId = Integer.parseInt(sqlResult[0]);
             final String categoryNameFromDb = sqlResult[1];
             final String categoryDescription = sqlResult[2];
+            final String categoryImge = sqlResult[3];
 
-            return new CategoryDomainObject(categoryId, categoryNameFromDb, categoryDescription, categoryType);
+            return new CategoryDomainObject(categoryId, categoryNameFromDb, categoryDescription, categoryImge, categoryType);
         } else {
             return null;
         }
     }
 
     public CategoryDomainObject getCategory(int categoryId) {
-        String sqlQuery = "SELECT categories.name, categories.description, category_types.name \n" +
+        String sqlQuery = "SELECT categories.name, categories.description, category_types.name, categories.image \n" +
                 "FROM categories\n" + "JOIN category_types\n"
                 + "ON categories.category_type_id = category_types.category_type_id\n" +
                 "WHERE categories.category_id = ?";
@@ -268,15 +271,16 @@ public class DocumentMapper {
             final String categoryNameFromDb = sqlResult[0];
             final String categoryDescription = sqlResult[1];
             final String categoryTypeName = sqlResult[2];
+            final String categoryImage = sqlResult[3];
             CategoryTypeDomainObject categoryType = getCategoryType(categoryTypeName);
-            return new CategoryDomainObject(categoryId, categoryNameFromDb, categoryDescription, categoryType);
+            return new CategoryDomainObject(categoryId, categoryNameFromDb, categoryDescription, categoryImage, categoryType);
         } else {
             return null;
         }
     }
 
     public CategoryDomainObject getCategoryById(int categoryId) {
-        String sqlQuery = "SELECT categories.name, categories.description, category_types.name, category_types.max_choices\n"
+        String sqlQuery = "SELECT categories.name, categories.description, category.image, category_types.category_type_id, category_types.name, category_types.max_choices\n"
                 + "FROM categories\n"
                 + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
                 + "WHERE categories.category_id = ?";
@@ -285,26 +289,29 @@ public class DocumentMapper {
 
         String categoryName = categorySqlResult[0];
         String categoryDescription = categorySqlResult[1];
-        String categoryTypeName = categorySqlResult[2];
-        int categoryTypeMaxChoices = Integer.parseInt(categorySqlResult[3]);
+        String categoryImage = categorySqlResult[2];
+        int categoryTypeId = Integer.parseInt(categorySqlResult[3]);
+        String categoryTypeName = categorySqlResult[4];
+        int categoryTypeMaxChoices = Integer.parseInt(categorySqlResult[5]);
 
-        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(categoryTypeName, categoryTypeMaxChoices);
+        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(categoryTypeId, categoryTypeName, categoryTypeMaxChoices);
 
-        return new CategoryDomainObject(categoryId, categoryName, categoryDescription, categoryType);
+        return new CategoryDomainObject(categoryId, categoryName, categoryDescription, categoryImage, categoryType);
 
     }
 
     public CategoryTypeDomainObject getCategoryType(String categoryTypeName) {
-        String sqlStr = "SELECT category_types.name, category_types.max_choices\n" + "FROM category_types\n"
+        String sqlStr = "SELECT category_types.category_type_id, category_types.name, category_types.max_choices\n" + "FROM category_types\n"
                 + "WHERE category_types.name = ?";
         String[] sqlResult = service.sqlQuery(sqlStr, new String[]{categoryTypeName});
 
         if (null == sqlResult || 0 == sqlResult.length) {
             return null;
         } else {
-            String categoryTypeNameFromDb = sqlResult[0];
-            int categoryTypeMaxChoices = Integer.parseInt(sqlResult[1]);
-            return new CategoryTypeDomainObject(categoryTypeNameFromDb, categoryTypeMaxChoices);
+            int categoryTypeId = Integer.parseInt(sqlResult[0]);
+            String categoryTypeNameFromDb = sqlResult[1];
+            int categoryTypeMaxChoices = Integer.parseInt(sqlResult[2]);
+            return new CategoryTypeDomainObject(categoryTypeId, categoryTypeNameFromDb, categoryTypeMaxChoices);
         }
     }
 
@@ -810,7 +817,7 @@ public class DocumentMapper {
     }
 
     private void addCategoriesFromDatabaseToDocument(DocumentDomainObject document) {
-        String[][] categories = service.sqlQueryMulti("SELECT categories.category_id, categories.name, categories.description, category_types.name, category_types.max_choices"
+        String[][] categories = service.sqlQueryMulti("SELECT categories.category_id, categories.name, categories.image, categories.description, category_types.category_type_id, category_types.name, category_types.max_choices"
                 + " FROM document_categories"
                 + " JOIN categories"
                 + "  ON document_categories.category_id = categories.category_id"
@@ -823,14 +830,16 @@ public class DocumentMapper {
 
             int categoryId = Integer.parseInt(categoryArray[0]);
             String categoryName = categoryArray[1];
-            String categoryDescription = categoryArray[2];
-            String categoryTypeName = categoryArray[3];
-            int categoryTypeMaxChoices = Integer.parseInt(categoryArray[4]);
+            String categoryImage = categoryArray[2];
+            String categoryDescription = categoryArray[3];
+            int categoryTypeId = Integer.parseInt(categoryArray[4]);
+            String categoryTypeName = categoryArray[5];
+            int categoryTypeMaxChoices = Integer.parseInt(categoryArray[6]);
 
-            CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(categoryTypeName,
+            CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(categoryTypeId, categoryTypeName,
                     categoryTypeMaxChoices);
             CategoryDomainObject category = new CategoryDomainObject(categoryId, categoryName, categoryDescription,
-                    categoryType);
+                    categoryImage, categoryType);
             document.addCategory(category);
         }
 

@@ -1490,6 +1490,17 @@ GO
 
 -- 2004-02-11 /Hasse
 
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.categories ADD
+	image varchar(255) NOT NULL DEFAULT ''
+GO
+COMMIT
+
+-- 2004-02-23 / Lennart -  Add new column for path to category icon
+
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '
 print ''

@@ -23,4 +23,8 @@ public class CategoryType {
     public String getName() {
         return internalCategoryType.getName() ;
     }
+
+    public int getId() {
+        return internalCategoryType.getId();
+    }
 }

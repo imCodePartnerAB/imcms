@@ -428,7 +428,8 @@ CREATE TABLE [dbo].[categories] (
 	category_id int NOT NULL IDENTITY (1, 1),
 	category_type_id int NOT NULL,
 	name varchar(50) NOT NULL,
-	description varchar(500) NULL
+	description varchar(500) NULL,
+	image varchar(255) NOT NULL DEFAULT ''
 	)  ON [PRIMARY]
 GO
 

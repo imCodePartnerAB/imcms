@@ -9,11 +9,13 @@ public class CategoryDomainObject {
     private int id;
     private CategoryTypeDomainObject type;
     private String description;
+    private String image;
 
-    CategoryDomainObject(int id, String name, String description, CategoryTypeDomainObject type) {
+    CategoryDomainObject(int id, String name, String description, String image, CategoryTypeDomainObject type) {
         this.description = description;
         this.type = type;
         this.name = name;
+        this.image = image;
         this.id = id;
     }
 
@@ -50,6 +52,14 @@ public class CategoryDomainObject {
 
     public String getDescription() {
         return description ;
+    }
+
+     public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
 }
