@@ -4858,8 +4858,6 @@ values (0,198,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
 values (0,199,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
-values (0,199,3)
-INSERT INTO roles_rights (role_id, meta_id ,set_id )
 values (0,200,3)
 
 END

@@ -3,11 +3,17 @@ För att updatera en databas med hjälpsidor gör följande.
  
 OBS VIKTIGT att kolla punkt 1 !!!
 
-1. Kontrollera att det inte fins några mallar som har id 2 eller 3
+1. Kontrollera att det inte finns några mallar som har id 2 eller 3
    om det redan finns mallar i WEB-INF/templates/text som heter 2.html och 3.html
-   går det ej att köra detta script. Lösningen ligger i att logga in i imCMS och sedan
-   ladda ner och upp de mallar som har id 2 och 3 (de får då ett nytt idnummer) och 
-   du kan lägga in våra mallar 2.html och 3.html.
+   går det ej att köra detta script. 
+   Lösningen ligger i att logga in i imCMS och sedan ladda ner och upp de mallar som har id 2 och 3
+   (de får då ett nytt idnummer) och du kan lägga in våra mallar 2.html och 3.html.
+   
+   Detta görs genom att först köra move_templates.sql och sedan döpa om 
+   de gamla filerna 2.html o 3.html till de som resultatet av scriptet ger.
+   Forsätt sedan med punkt 2.	
+  	
+
 
 2. Lägg upp filerna 2.html och 3.html i WEB-INF/templates/text
 
@@ -18,5 +24,9 @@ OBS VIKTIGT att kolla punkt 1 !!!
 5. Lägg upp de statiska html sidorna login error osv på sina platser.
 
    Vid multi installation eller om webroten har ett annat namn än imcms måste ni ändra 
-   @webroot = '/imcms' som finns i början på scriptet.	
+   @webroot = '/imcms' som finns i början på scriptet.
+	
 6. Kör scriptet help.sql
+
+
+
