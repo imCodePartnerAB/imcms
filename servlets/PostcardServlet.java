@@ -248,7 +248,7 @@ public class PostcardServlet extends HttpServlet {
 		VariableManager vm = new VariableManager();
 		vm.addProperty("postcard","/imcms/postcards/"+pcFileName);
 		vm.addProperty("bottom","/imcms/postcards/bottom.html");
-		HtmlGenerator htmlObj = new HtmlGenerator(templateLib.getPath()+"\\", POSTCARD_SET) ;
+		HtmlGenerator htmlObj = new HtmlGenerator(templateLib, POSTCARD_SET) ;
 		
 		String frameSetHtml = htmlObj.createHtmlString(vm,req) ;
 		//log("Before sendToBrowser: ") ;
@@ -402,14 +402,14 @@ public class PostcardServlet extends HttpServlet {
 		} catch (ProtocolException ex )
 		{
 			File mailError = new File( templateLib, POSTCARD_MAIL_ERROR); 	
-			HtmlGenerator htmlObj = new HtmlGenerator(mailError.getPath()) ;
+			HtmlGenerator htmlObj = new HtmlGenerator(mailError) ;
 			htmlObj.sendToBrowser(req, res, htmlObj.createHtmlString(vm,req));
 			log ("Protocol error while sending mail. " + ex.getMessage()) ;
 			return ;
 		} catch (IOException ex )
 		{
 			File mailError = new File( templateLib, POSTCARD_MAIL_ERROR); 	
-			HtmlGenerator htmlObj = new HtmlGenerator(mailError.getPath()) ;
+			HtmlGenerator htmlObj = new HtmlGenerator(mailError) ;
 			htmlObj.sendToBrowser(req, res, htmlObj.createHtmlString(vm,req));
 			log ("The mailservlet probably timed out. " + ex.getMessage()) ;
 			return ;
@@ -417,7 +417,7 @@ public class PostcardServlet extends HttpServlet {
 		
 		
 		File mailSent = new File( templateLib, POSTCARD_MAIL_SENT); 	
-		HtmlGenerator htmlObj = new HtmlGenerator(mailSent.getPath()) ;
+		HtmlGenerator htmlObj = new HtmlGenerator(mailSent) ;
 		htmlObj.sendToBrowser(req, res, htmlObj.createHtmlString(vm,req));
 		
 		return;
