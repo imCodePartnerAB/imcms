@@ -3,16 +3,7 @@ package imcode.server.db.sql;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.SQLException;
 import java.util.ArrayList;
-
-import imcode.server.db.sql.SQLTypeNull;
-import imcode.server.db.sql.ConnectionPool;
 
 public class SQLProcessorNoTransaction {
 
@@ -24,20 +15,15 @@ public class SQLProcessorNoTransaction {
         this.connectionPool = connectionPool;
     }
 
-    public SQLTransaction createNewTransaction( int transactionIsolationLevel ) {
+    public SQLTransaction createNewTransaction( int transactionIsolationLevel, int noOfRetries ) {
         SQLTransaction result = null;
         try {
-             result = new SQLTransaction( connectionPool, transactionIsolationLevel );
+             result = new SQLTransaction( connectionPool, transactionIsolationLevel, noOfRetries );
         }
         catch( SQLException ex ) {
             static_logSQLException( "SQLExcetion in createNewTransaction()", ex );
         }
         return result;
-    }
-
-    public SQLTransaction createNewTransaction() {
-        return createNewTransaction( Connection.TRANSACTION_SERIALIZABLE );
-
     }
 
     public ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProc ) {
@@ -86,7 +72,7 @@ public class SQLProcessorNoTransaction {
         }
     }
 
-    static void static_executeBatchUpdate( Connection con, String[] sqlCommands ) {
+    private static void static_executeBatchUpdate( Connection con, String[] sqlCommands ) {
         try {
             Statement statment = con.createStatement();
             for( int i = 0; i < sqlCommands.length; i++ ) {

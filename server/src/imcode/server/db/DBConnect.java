@@ -1,10 +1,10 @@
 package imcode.server.db;
 
+import imcode.server.db.sql.ConnectionPool;
+import org.apache.log4j.Category;
+
 import java.sql.*;
 import java.util.*;
-
-import org.apache.log4j.Category;
-import imcode.server.db.sql.ConnectionPool;
 
 public class DBConnect {
     private static Category log = Category.getInstance( "DBConnect" );

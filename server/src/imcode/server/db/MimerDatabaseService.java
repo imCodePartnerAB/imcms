@@ -1,9 +1,10 @@
 package imcode.server.db;
 
-import org.apache.log4j.Logger;
 import imcode.server.db.sql.SQLTransaction;
 import imcode.server.db.sql.TransactionContent;
+import org.apache.log4j.Logger;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -11,10 +12,10 @@ import java.sql.SQLException;
  * deadlock can't happend, but instead they throw Exceptions when to transaction clashes, 
  * see http://developer.mimer.com/features/feature_12.htm
  */
-public class MimerDatabaseService extends DatabaseService {
+class MimerDatabaseService extends DatabaseService {
 
     public MimerDatabaseService( String hostName, Integer port, String databaseName, String user, String password, Integer maxConnectionCount ) {
-        super( Logger.getLogger( MimerDatabaseService.class ) );
+        super( Logger.getLogger( MimerDatabaseService.class ), 3 );
 
         // log.debug( "Creating a 'Mimer' database service");
         String jdbcDriver = "com.mimer.jdbc.Driver";
@@ -29,7 +30,7 @@ public class MimerDatabaseService extends DatabaseService {
     }
 
     void backup( final String fullPathToBackupFile ) {
-        final SQLTransaction transaction = sqlProcessor.createNewTransaction();
+        final SQLTransaction transaction = sqlProcessor.createNewTransaction( Connection.TRANSACTION_SERIALIZABLE, 1 );
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 transaction.executeUpdate( "START BACKUP", null );
@@ -40,7 +41,7 @@ public class MimerDatabaseService extends DatabaseService {
     }
 
     /*
-    Not working, but I'm tired, whaiting a few days before desiding on if this is needed.
+    Not working, but I'm tired, whaiting a few days before deciding on if this is needed.
     void restore( String fullPathToDatabaseFile, String fullPathToBackupFile )  throws IOException {
         SQLProcessor.SQLTransaction transaction = sqlProcessor.createNewTransaction();
         sqlProcessor.executeUpdate( "SET DATABASE OFFLINE", null );

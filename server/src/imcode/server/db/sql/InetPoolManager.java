@@ -1,13 +1,14 @@
 package imcode.server.db.sql;
 
-import java.util.Properties;
-import java.sql.*;
-import javax.sql.*;
-
-import com.inet.pool.PoolManager;
 import com.inet.pool.PDataSource;
-
+import com.inet.pool.PoolManager;
 import org.apache.log4j.Category;
+
+import javax.sql.ConnectionPoolDataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Properties;
 
 
 public class InetPoolManager implements ConnectionPool {
@@ -39,7 +40,7 @@ public class InetPoolManager implements ConnectionPool {
               props.getProperty( "LoginTimeout" ) );
     }
 
-    public InetPoolManager( String serverName, String maxConnectionCount,
+    private InetPoolManager( String serverName, String maxConnectionCount,
                             String dbServerName, String port, String databaseName,
                             String user, String password, String loginTimeout ) throws SQLException {
         this.maxConnectionCount = maxConnectionCount;
@@ -153,14 +154,14 @@ public class InetPoolManager implements ConnectionPool {
     /**
      return used connections
      */
-    public int getUsedConnectionCount() {
+    private int getUsedConnectionCount() {
         return manager.getUsedConnectionCount();
     }
 
     /**
      return max connections
      */
-    public int getMaxConnectionCount() {
+    private int getMaxConnectionCount() {
         return manager.getMaxConnectionCount();
     }
 }

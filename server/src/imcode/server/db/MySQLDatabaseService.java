@@ -1,21 +1,19 @@
 package imcode.server.db;
 
-import java.io.File ;
-
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class MySQLDatabaseService extends DatabaseService {
+class MySQLDatabaseService extends DatabaseService {
 
     private static final String TEXT_TYPE_MY_SQL = "TEXT";
     private static final String CREATE_TABLE_STR = "CREATE TABLE";
 
     public MySQLDatabaseService( String hostName, Integer port, String databaseName, String user, String password, Integer maxConnectionCount  ) {
-        super( Logger.getLogger( MySQLDatabaseService.class ) );
+        super( Logger.getLogger( MySQLDatabaseService.class ), 1 );
         // log.debug( "Creating a 'My SQL' database service");
         String jdbcDriver = "com.mysql.jdbc.Driver";
         String jdbcUrl = "jdbc:mysql://";

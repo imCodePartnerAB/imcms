@@ -10,8 +10,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import imcode.server.db.sql.ConnectionPool;
-
 /**
  * This class is purpose is to help JDBC drivers that lacks Connection Pooling.
  * It does so by registrer with the DriverManager a new driver that has Connection Pooling that
@@ -162,7 +160,7 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
      * This main is used to test that the pooling and driver work properly. it can be run standalone, ie without beeing
      * run in an web application.
      */
-    public static void main( String[] args ) throws Exception, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public static void main( String[] args ) throws Exception, ClassNotFoundException {
         String driverClassName = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
         String serverName = "localhost";
         String serverPort = "1433";

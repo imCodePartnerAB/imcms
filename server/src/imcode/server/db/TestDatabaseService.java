@@ -2,8 +2,8 @@ package imcode.server.db;
 
 import imcode.server.test.Log4JConfiguredTestCase;
 
-import java.sql.Timestamp;
 import java.io.IOException;
+import java.sql.Timestamp;
 
 public class TestDatabaseService extends Log4JConfiguredTestCase {
 
@@ -66,10 +66,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         createAditionalTestData();
     }
 
-    private void createDatabasesWithDefaultData() throws IOException {
+    private void createDatabasesWithDefaultData() {
         databaseServices = new DatabaseService[]{
-            DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
+            DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initMimer(),
         };
     }
@@ -101,6 +101,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
            }
         }
     }
+
 
     /**
      * I do all of them together for performance reasons.

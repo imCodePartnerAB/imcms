@@ -54,7 +54,7 @@ public class NonPoolingDriverDBConnectionManager {
         }
     }
 
-    public NonPoolingDriverDBConnectionManager( String serverName, String driverClassName, String dbUrl, String userName, String password, int maxActiveConnections ) throws Exception, InstantiationException, SQLException, ClassNotFoundException {
+    private NonPoolingDriverDBConnectionManager( String serverName, String driverClassName, String dbUrl, String userName, String password, int maxActiveConnections ) throws Exception, InstantiationException, SQLException, ClassNotFoundException {
         this.pooledDataSourceName = POOLED_DATA_SOURCE_NAME_PREFIX + serverName;
         this.serverName = serverName;
         this.userName = userName;
@@ -71,7 +71,7 @@ public class NonPoolingDriverDBConnectionManager {
         s_logDatabaseData( getConnection() );
     }
 
-    public Connection getConnection() throws SQLException {
+    private Connection getConnection() throws SQLException {
         Connection result = null;
         try {
             Connection result11 = DriverManager.getConnection( URI_FOR_POOLED_DRIVER + pooledDataSourceName, userName, password );
@@ -83,7 +83,7 @@ public class NonPoolingDriverDBConnectionManager {
         return result;
     }
 
-    public void testConnectionAndLogResultToTheErrorLog() {
+    private void testConnectionAndLogResultToTheErrorLog() {
         try {
             getConnection();
             log.debug( getAttributeAsString(), null );
@@ -148,7 +148,7 @@ public class NonPoolingDriverDBConnectionManager {
      * This main is used to test that the pooling and driver work properly. it can be run standalone, ie without beeing
      * run in an web application.
      */
-    public static void main( String[] args ) throws Exception, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public static void main( String[] args ) throws Exception, ClassNotFoundException {
         String driverClassName = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
         String serverName = "localhost";
         String serverPort = "1433";

@@ -3,9 +3,9 @@ package imcode.server.db.sql;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class SQLTransaction {
@@ -18,6 +18,7 @@ public class SQLTransaction {
 
     private ConnectionPool connectionPool;
     private int transactionIsolationLevel;
+    private int noOfRetries;
     private Connection currentConnection;
 
     private int rowCount = 0;
@@ -25,16 +26,17 @@ public class SQLTransaction {
 
     private static Logger logger = Logger.getLogger( SQLTransaction.class );
 
-    public SQLTransaction( ConnectionPool connectionPool, int transactionIsolationLevel ) throws SQLException {
+    public SQLTransaction( ConnectionPool connectionPool, int transactionIsolationLevel, int noOfRetries ) throws SQLException {
         this.connectionPool = connectionPool;
         this.transactionIsolationLevel = transactionIsolationLevel;
+        this.noOfRetries = noOfRetries;
     }
 
     public void executeAndCommit( TransactionContent transactionContent ) {
-        executeAndCommit( 1, transactionContent );
+        executeAndCommit( noOfRetries, transactionContent );
     }
 
-    public void executeAndCommit( int maxNoOfTries, TransactionContent transactionContent ) {
+    private void executeAndCommit( int maxNoOfTries, TransactionContent transactionContent ) {
         Throwable latestException = null;
         boolean succeded = false;
         int tryNo = 0;
@@ -70,7 +72,7 @@ public class SQLTransaction {
         }
     }
 
-    public int executeUpdate( String sql, Object[] params ) throws SQLException {
+    public int executeUpdate( String sql, Object[] params ) {
         int rowCount = SQLProcessorNoTransaction.executeUpdate( currentConnection, sql, params );
         this.rowCount += rowCount;
         return rowCount;
@@ -79,7 +81,7 @@ public class SQLTransaction {
     public ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProcessor ) throws SQLException {
         ArrayList result = new ArrayList();
         PreparedStatement statement = null;
-        ResultSet rs = null;
+        ResultSet rs;
         try {
             statement = currentConnection.prepareStatement( sql );
             SQLProcessorNoTransaction.setParamsIntoStatment( statement, paramValues );
