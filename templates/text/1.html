@@ -1,41 +1,63 @@
+<!--IMSCRIPT-->
 <html>
 <head>
-<!--IMSCRIPT-->
-<title><? text/1.html/1 ?></title>
-<!--/IMSCRIPT-->
+<title>#metaHeadline# - Powered by imCode imCMS</title>
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<STYLE TYPE="text/css">
+<!-- 
+TD { font: x-small Verdana,Geneva,sans-serif; color:#000000; }
+.small { font: xx-small Verdana,Geneva,sans-serif; color:#666666; }
+TT { font: x-small "Courier New", Courier, monospace; color:#888888; }
+-->
+</STYLE>
+
 </head>
-
 <body bgcolor="#FFFFFF">
-<!--IMSCRIPT-->
-<center>
-<? text/1.html/2 ?>
 
-<?imcms:include no="1"?>
-
-<?imcms:image no="1"?>
-<?imcms:text  no="1"?>
-
-<br>
-<br>
-<?imcms:menu no="1"?>
-<table>
-<?imcms:menuloop?>
-<? text/1.html/3 ?>
-<?/imcms:menuloop?>
+<table border="0" cellspacing="0" cellpadding="0" width="620" align="center">
+<tr>
+	<td>#adminMode#</td>
+</tr>
 </table>
-<?/imcms:menu?>
-<br>
 
-<br>
-<?imcms:image no="2"?>
-<?imcms:text no="2"?>
-<br>
-<?imcms:image no="3"?>
-<? text/1.html/4 ?>
-</center>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+	<td><?imcms:include no="1" label='Include 1'?></td>
+</tr>
+</table>
 
-<!--/IMSCRIPT-->
+<table border="0" cellspacing="0" cellpadding="0" width="620" align="center">
+<tr>
+	<td>
+	<?imcms:image no='1' label='Bild 1'?>
+	<?imcms:text no='1' label='Text 1' post='<br><br>'?>
+	
+	
+	<?imcms:menu no="1" label='Meny 1'?>
+	<table border="0" cellspacing="0" cellpadding="3">
+	<?imcms:menuloop?>
+	<tr valign="top">
+		<td>#menuitemimage#</td>
+		<td align="right"><tt>#menuitemtreesortkey# [#menuitemlinkonly##menuitemmetaid##/menuitemlinkonly#]</tt></td>
+		<td class="small">#menuitemlink##menuitemheadline##/menuitemlink#<div>#menuitemtext#</div></td>
+	</tr>
+	<?/imcms:menuloop?>
+	</table><br>
+	<?/imcms:menu?>
+	
+	<?imcms:text no='2' label='Text 2' pre='<br>'?>
+	<?imcms:image no='2' label='Bild 2' post='<br>'?>
+	
+	<?imcms:image no="3" label='Bild 3'?>
+	
+	<br clear="all">
+	<b>Info <?imcms:metaid?>:</b>
+<? text/1.html/1 ?>#changePage##adminMode#</td>
+</tr>
+</table>
 
 </body>
 </html>
+<!--/IMSCRIPT-->
