@@ -30,12 +30,12 @@
  *         Forms                                                                             *
  ******************************************************************************************* */
 
-.imcmsFormBtn, .imcmsAdmTable TD .imcmsFormBtn {
+.imcmsFormBtn, .imcmsFormBtnDisabled, .imcmsAdmTable TD .imcmsFormBtn {
 	color: #ffffff;
 	font: 12px Tahoma, Arial, sans-serif;
 }
 
-.imcmsFormBtnSmall {
+.imcmsFormBtnSmall, .imcmsFormBtnSmallDisabled {
 	color: #ffffff;
 	font: 11px Tahoma, Arial, sans-serif;
 }

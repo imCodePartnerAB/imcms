@@ -30,6 +30,8 @@
  *         Buttons                                                                           *
  ******************************************************************************************* */
 
+ /* Normal */
+
 .imcmsFormBtn {
 	background-color: #20568D;
 	color: #ffffff;
@@ -37,7 +39,18 @@
 	border: 2px outset #668DB6;
 	border-color: #668DB6 #000000 #000000 #668DB6;
 	cursor:hand;
-	padding: 2 8; }
+	padding: 2 6; }
+
+.imcmsFormBtnDisabled {
+	background-color: #B8C6D5;
+	color: #ffffff;
+	font: 11px Tahoma, Arial, sans-serif;
+	border: 2px outset #DAE4EF;
+	border-color: #DAE4EF #999999 #999999 #DAE4EF;
+	cursor:hand;
+	padding: 2 6; }
+
+ /* Small */
 
 .imcmsFormBtnSmall {
 	background-color: #20568D;
@@ -45,6 +58,15 @@
 	font: 10px Tahoma, Arial, sans-serif;
 	border: 2px outset #668DB6;
 	border-color: #668DB6 #000000 #000000 #668DB6;
+	cursor:hand;
+	padding: 0 2; }
+
+.imcmsFormBtnSmallDisabled {
+	background-color: #B8C6D5;
+	color: #ffffff;
+	font: 10px Tahoma, Arial, sans-serif;
+	border: 2px outset #DAE4EF;
+	border-color: #DAE4EF #999999 #999999 #DAE4EF;
 	cursor:hand;
 	padding: 0 2; }
 
