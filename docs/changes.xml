@@ -20,26 +20,6 @@
             </p>
             <bug id="2891"/>
         </change>
-        <change>
-            <p>
-                Added class <class>ContentManagementSystemRunnable</class> and
-                method <method>ContentManagementSystem.runAsSuperadmin(ContentManagementSystemRunnable)</method>
-                to allow code that has been signed by an administrator to run with superadmin-privileges.
-            </p>
-            <p>
-                The following things are required to run code with superadmin-privileges:
-            </p>
-            <ul>
-                <li><config>KeyStorePath</config> in <path>server.properties</path> must be the path of a keystore.</li>
-                <li>The class implementing <class>ContentManagementSystemRunnable</class> must be signed (e.g. inside a signed jar-file).</li>
-                <li>All certificates used for signing the class must be found in the keystore.</li>
-            </ul>
-            <p>
-                See <url>http://java.sun.com/docs/books/tutorial/jar/sign/</url>
-                for more information about signing jar files.
-            </p>
-            <bug id="2875"/>
-        </change>
     </changes>
 
     <changes for="users">
@@ -143,6 +123,26 @@
                 containing class <class>DateTextFieldTextDocumentComparator</class>,
                 contributed by Anders Flodell and Pontus Amberg at Vetenskapsrådet.
             </p>
+        </change>
+        <change>
+            <p>
+                Added class <class>ContentManagementSystemRunnable</class> and
+                method <method>ContentManagementSystem.runAsSuperadmin(ContentManagementSystemRunnable)</method>
+                to allow code that has been signed by an administrator to run with superadmin-privileges.
+            </p>
+            <p>
+                The following things are required to run code with superadmin-privileges:
+            </p>
+            <ul>
+                <li><config>KeyStorePath</config> in <path>server.properties</path> must be the path of a keystore.</li>
+                <li>The class implementing <class>ContentManagementSystemRunnable</class> must be signed (e.g. inside a signed jar-file).</li>
+                <li>All certificates used for signing the class must be found in the keystore.</li>
+            </ul>
+            <p>
+                See <url>http://java.sun.com/docs/books/tutorial/jar/sign/</url>
+                for more information about signing jar files.
+            </p>
+            <bug id="2875"/>
         </change>
         <change>
             <p>
