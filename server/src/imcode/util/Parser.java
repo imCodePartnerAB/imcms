@@ -73,12 +73,12 @@ public class Parser {
 		return sb.toString() ;
 	}
 
-	/**
-		@deprecated Replaced by {@link #parseTags(java.lang.StringBuffer, char, java.lang.String, java.util.Map, boolean, int)}, for obvious reasons.
-	*/
-	public static StringBuffer parseTags(StringBuffer str, char tagdelim, String nontag, Hashtable data, boolean removetaglikes, int recurse ) {
-			return parseTags (str,tagdelim,nontag,(Map)data,removetaglikes,recurse) ;
-	}
+    //	/**
+    //		@deprecated Replaced by {@link #parseTags(java.lang.StringBuffer, char, java.lang.String, java.util.Map, boolean, int)}, for obvious reasons.
+    //	*/
+    //	public static StringBuffer parseTags(StringBuffer str, char tagdelim, String nontag, Hashtable data, boolean removetaglikes, int recurse ) {
+    //			return parseTags (str,tagdelim,nontag,(Map)data,removetaglikes,recurse) ;
+    //	}
 
 
 	/**
