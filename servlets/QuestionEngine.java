@@ -41,16 +41,16 @@ public class QuestionEngine extends HttpServlet
 		File currentFile = new File(fortune_path , inFile + "current.txt");
 		if (currentFile.createNewFile())
 		{
-			out.println("currentFile.createNewFile()");
+			//out.println("currentFile.createNewFile()");
 			//om filen inte fanns, skapa den och skriv in aktuell text
 			question =this.getNewQuestion(host,imcServer,inFile);
 		}
 		else
 		{
-			out.println("!currentFile.createNewFile()");
+			//out.println("!currentFile.createNewFile()");
 			//gets the filecontent 
 			String resFile = IMCServiceRMI.getFortune(imcServer,inFile + "current.txt");
-			out.println("resFile: " + resFile );
+			//out.println("resFile: " + resFile );
 			
 			StringTokenizer tokens = new StringTokenizer(resFile,"#");
 		
@@ -70,15 +70,15 @@ public class QuestionEngine extends HttpServlet
 		
 				if( ( date1.before(date) || (dateF.format(date1)).equals(dateF.format(date))  ) && ( date2.after(date) || (dateF.format(date2)).equals(dateF.format(date)) ) )
 				{
-					out.println("date correct " );
+					//out.println("date correct " );
 					question = tokens.nextToken();
 				}
 				else
 				{
-					out.println("date not correct " );
+					//out.println("date not correct " );
 					//save old question
 					this.saveOldQuestion(host,imcServer,inFile);
-					out.println("after question " );
+					//out.println("after question " );
 					
 					//get new question
 					question = this.getNewQuestion(host,imcServer,inFile);
