@@ -241,6 +241,7 @@ public class PutInShoppingCart extends HttpServlet {
 	ShoppingCart cart = (ShoppingCart)req.getSession(true).getAttribute(ShoppingCart.SESSION_NAME) ;
 	ShoppingItem[] items = cart.getItems() ;
 
+	double totalPrice = 0 ;
 	for (int i = 0; i < items.length; ++i) {
 	    ShoppingItem item = items[i] ;
 
@@ -259,7 +260,14 @@ public class PutInShoppingCart extends HttpServlet {
 	    itemStringMap.put("#price#",""+item.getPrice()) ;
 
 	    /* Put the quantity in the map */
-	    itemStringMap.put("#quantity#",""+cart.countItem(item)) ;
+	    int quantity = cart.countItem(item) ;
+	    itemStringMap.put("#quantity#",""+quantity) ;
+
+	    /* Put the total item price for this item in the map */
+	    itemStringMap.put("#total_price#",""+(quantity*item.getPrice())) ;
+
+	    /* Add to the total price for all items */
+	    totalPrice += quantity*item.getPrice() ;
 
 	    /* Replace the tags in the mailitemformat with the appropriate data from the map */
 	    String mailItem = Util.substitute(patternMatcher,
@@ -276,6 +284,7 @@ public class PutInShoppingCart extends HttpServlet {
 	mailStringMap.put("#items#", mailItems.toString()) ;
 	mailStringMap.put("#datetime#", dateFormat.format(new Date())) ;
 	mailStringMap.put("#user_login_name#", user.getLoginName()) ;
+	mailStringMap.put("#total_price#", ""+totalPrice) ;
 
 	/* Put the mailitems in the mail */
 	String mail = Util.substitute(patternMatcher,

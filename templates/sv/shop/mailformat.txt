@@ -2,5 +2,6 @@
 
 Användare #user_login_name# beställde följande saker:
 
-
 #items#
+
+Totalt #total_price#
