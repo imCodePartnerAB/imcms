@@ -60,6 +60,10 @@ public class SQLProcessor {
                 static_closeConnection( con );
             }
         }
+
+        public ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProcessor ) {
+            return sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
+        }
     }
 
     public SQLTransaction startTransaction() {

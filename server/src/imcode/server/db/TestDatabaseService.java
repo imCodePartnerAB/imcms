@@ -25,10 +25,12 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private int DOC_NO_OF_DOCS = 5; // 1001 + folowing
     private static final int DOC_ID_FIRST_PAGE = 1001;
     private static final int DOC_ID_NON_EXISTING = 66666;
-    private final static int DOC_FIRST_TEST_ID = 9001;
+    private final static int DOC_TEST_FIRST_ID = 9001;
     private final static int DOC_TEST_SECOND_ID = 9002;
     private final static int DOC_TEST_THIRD_ID_FILE_DOC_TYPE = 9003;
     private final static int DOC_TEST_ID_DETACHED = 9999;
+    private final static int DOC_TEST_MAX_ID = DOC_TEST_ID_DETACHED;
+    private static final int DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM = 100000;
 
     private static final int DOC_TYPE_TEXT_ID = 2;
     private static final int DOC_TYPE_FILE_ID = 8;
@@ -41,13 +43,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static final int PHONE_TYPE_OTHER = 0;
 
     private static final int LANG_ID_SWEDEN = 1;
-    private static final String DOC_TYPE_LANG__PREFIX_SWEDEN = "se";
+    private static final String LANG_PREFIX_SWEDEN = "se";
 
     protected void setUp() throws IOException {
         databaseServices = new DatabaseService[]{
-	    DatabaseTestInitializer.static_initMySql(),
-	    DatabaseTestInitializer.static_initSqlServer(),
-	    DatabaseTestInitializer.static_initMimer(),
+            DatabaseTestInitializer.static_initMySql(),
+            DatabaseTestInitializer.static_initSqlServer(),
+            DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -65,10 +67,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetPhonetypes_ORDER_BY_phonetype_id( dbService );
             test_sproc_GetUserPhoneNumbers( dbService );
             test_sproc_GetUserPhones( dbService );
-            test_sproc_FindUserName(  dbService );
+            test_sproc_FindUserName( dbService );
             test_sproc_FindMetaId( dbService );
             test_sproc_getChilds( dbService );
-            test_sproc_CheckForFileDocs( dbService );
             test_sproc_getDocs( dbService );
             test_sproc_CheckAdminRights( dbService );
             test_sproc_CheckUserDocSharePermission( dbService );
@@ -76,7 +77,20 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetFileName( dbService );
             test_sproc_GetDocType( dbService );
             test_sproc_GetDocTypes( dbService );
+            test_sproc_GetDocTypesForUser( dbService ) ;
+            testIsFileDoc( dbService );
         }
+    }
+
+    private void test_sproc_GetDocTypesForUser( DatabaseService dbService ) {
+        DatabaseService.View_doc_types[] userDocTypes = dbService.sproc_GetDocTypesForUser(USER_TEST_ID, DOC_TEST_FIRST_ID, LANG_PREFIX_SWEDEN) ;
+        assertEquals(1, userDocTypes.length) ;
+        assertEquals(2, userDocTypes[0].doc_type) ;
+    }
+
+    private void testIsFileDoc( DatabaseService dbService ) {
+        assertFalse( dbService.isFileDoc( DOC_TEST_FIRST_ID ) );
+        assertTrue( dbService.isFileDoc( DOC_TEST_THIRD_ID_FILE_DOC_TYPE ) );
     }
 
     private int test_sproc_getAllRoles( DatabaseService dbService ) {
@@ -130,23 +144,15 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertFalse( dbService.sproc_FindMetaId( DOC_ID_NON_EXISTING ) );
     }
 
-
     private void test_sproc_getDocs( DatabaseService dbService ) {
-        assertEquals( DOC_NO_OF_DOCS, dbService.sproc_getDocs( USER_ADMIN_ID, 1, 100000 ).length );
-    }
-
-    private void test_sproc_CheckForFileDocs( DatabaseService dbService ) {
-        int[] documentIds = new int[]{DOC_FIRST_TEST_ID, DOC_TEST_SECOND_ID, DOC_TEST_THIRD_ID_FILE_DOC_TYPE, DOC_TEST_ID_DETACHED};
-        int[] fileDocumentIds = dbService.sproc_CheckForFileDocs( documentIds );
-        assertEquals( 1, fileDocumentIds.length );
-        assertEquals( DOC_TEST_THIRD_ID_FILE_DOC_TYPE, fileDocumentIds[0] );
+        assertEquals( DOC_NO_OF_DOCS, dbService.sproc_getDocs( USER_ADMIN_ID, 1, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM ).length );
     }
 
     private void test_sproc_getChilds( DatabaseService dbService ) {
         DatabaseService.View_ChildData[] children = dbService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID );
         assertEquals( 0, children.length );
 
-        children = dbService.sproc_getChilds( DOC_FIRST_TEST_ID, USER_ADMIN_ID );
+        children = dbService.sproc_getChilds( DOC_TEST_FIRST_ID, USER_ADMIN_ID );
         assertEquals( 1, children.length );
     }
 
@@ -156,8 +162,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_CheckUserDocSharePermission( DatabaseService dbService ) {
-        assertTrue( dbService.sproc_CheckUserDocSharePermission( USER_ADMIN_ID, DOC_FIRST_TEST_ID ) );
-        assertFalse( dbService.sproc_CheckUserDocSharePermission( USER_USER_ID, DOC_FIRST_TEST_ID ) );
+        assertTrue( dbService.sproc_CheckUserDocSharePermission( USER_ADMIN_ID, DOC_TEST_FIRST_ID ) );
+        assertFalse( dbService.sproc_CheckUserDocSharePermission( USER_USER_ID, DOC_TEST_FIRST_ID ) );
     }
 
     private void test_sproc_checkUserAdminrole( DatabaseService dbService ) {
@@ -167,18 +173,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_GetFileName( DatabaseService databaseService ) {
-        assertNull( databaseService.sproc_GetFileName(DOC_ID_FIRST_PAGE) ) ;
-        assertNull( databaseService.sproc_GetFileName(DOC_ID_NON_EXISTING) ) ;
-        assertTrue( DOC_THIRD_DOC_FILENAME.equals(databaseService.sproc_GetFileName(DOC_TEST_THIRD_ID_FILE_DOC_TYPE))) ;
+        assertNull( databaseService.sproc_GetFileName( DOC_ID_FIRST_PAGE ) );
+        assertNull( databaseService.sproc_GetFileName( DOC_ID_NON_EXISTING ) );
+        assertTrue( DOC_THIRD_DOC_FILENAME.equals( databaseService.sproc_GetFileName( DOC_TEST_THIRD_ID_FILE_DOC_TYPE ) ) );
     }
 
     private void test_sproc_GetDocType( DatabaseService databaseService ) {
-        assertEquals( DOC_TYPE_TEXT_ID, databaseService.sproc_GetDocType( DOC_FIRST_TEST_ID ));
-        assertEquals( DOC_TYPE_FILE_ID , databaseService.sproc_GetDocType( DOC_TEST_THIRD_ID_FILE_DOC_TYPE ));
+        assertEquals( DOC_TYPE_TEXT_ID, databaseService.sproc_GetDocType( DOC_TEST_FIRST_ID ) );
+        assertEquals( DOC_TYPE_FILE_ID, databaseService.sproc_GetDocType( DOC_TEST_THIRD_ID_FILE_DOC_TYPE ) );
     }
 
-    private void test_sproc_GetDocTypes(  DatabaseService databaseService ) {
-        assertEquals( DOC_TYPES_NUMBER_OF, databaseService.sproc_GetDocTypes( DOC_TYPE_LANG__PREFIX_SWEDEN ).length);
+    private void test_sproc_GetDocTypes( DatabaseService databaseService ) {
+        assertEquals( DOC_TYPES_NUMBER_OF, databaseService.sproc_GetDocTypes( LANG_PREFIX_SWEDEN ).length );
     }
 
     public void test_sproc_AddNewuser() {
@@ -308,7 +314,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
             int doc_menu_no = 1;
             int rowCount = databaseService.sproc_AddExistingDocToMenu( DOC_TEST_ID_DETACHED, DOC_TEST_ID_DETACHED, doc_menu_no );
-            assertEquals( 1, rowCount );
+            assertEquals( 2, rowCount );
 
             int linksAfter = databaseService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID ).length;
             assertEquals( linksBefore + 1, linksAfter );
@@ -324,6 +330,20 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
+    // todo: lägg till testdata för samtliga doc typer
+    public void test_sproc_copyDocs() {
+        int[] documentsToBeCopied = new int[]{DOC_TEST_SECOND_ID, DOC_TEST_THIRD_ID_FILE_DOC_TYPE};
+        int menu_id = 1;
+        String copyPrefix = "Kopierat document";
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            DatabaseService.View_DocumentForUser[] documentForUserBefore = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM );
+            int[] result = databaseService.sproc_copyDocs( DOC_TEST_FIRST_ID, menu_id, USER_ADMIN_ID, documentsToBeCopied, copyPrefix );
+            assertEquals( 1, result.length );
+            DatabaseService.View_DocumentForUser[] documentForUserAfter = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_NO_MORE_THAN_EXISTS_IN_SYSTEM );
+            assertTrue( documentForUserBefore.length != documentForUserAfter.length );
+        }
+    }
     // Below is helper functions to more than one test.
 
     private static DatabaseService.Table_users static_createDummyUser() {
@@ -331,7 +351,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         return user;
     }
 
-    // todo: this should be a method on Service?
+    // todo: this should be a method on DatabaseService?
     private static DatabaseService.Table_users getUser( DatabaseService dbService, int user_id ) {
         DatabaseService.Table_users[] sqlServerUsers = dbService.sproc_GetAllUsers_OrderByLastName();
         DatabaseService.Table_users modifiedUser = null;

@@ -22,6 +22,7 @@ Kvar att undersöka/göra
 * Indexeringen är droppad så länge men borde gå att lägga till.
 * Kvar är help.sql tills jag vet mer hur dessa skapats.
 * lägga till en forreign key mellan owner id och user tabellen?
+* Ska det finnas kvar en counter i texts?
 
 Sproc:ar kvar att flytta in i koden:
 (Ta bort den du håller på med)
@@ -36,7 +37,6 @@ getbrowserdocchilds.prc
 getcategoryusers.prc
 getcurrentsessioncounter.prc
 getcurrentsessioncounterdate.prc
-getdoctypesforuser.prc
 getdoctypeswithnewpermissions.prc
 getdoctypeswithpermissions.prc
 getdocumentinfo.prc
@@ -64,7 +64,6 @@ gettextdocdata.prc
 gettextnumber.prc
 gettexts.prc
 getuseradminpermissibleroles.prc
-getuserbylogin.prc
 getusercreatedate.prc
 getuserflags.prc
 getuserflagsforuser.prc
