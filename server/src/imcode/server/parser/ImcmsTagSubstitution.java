@@ -402,9 +402,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    } else if("modified".startsWith(type)) {
 		date = document.getModifiedDatetime();
 	    } else if("archived".startsWith(type)) {
-		date = document.getActivatedDatetime();
-	    } else if("activated".startsWith(type)) {
 		date = document.getArchivedDatetime();
+	    } else if("activated".startsWith(type)) {
+		date = document.getActivatedDatetime();
 	    } else {
 		return "<!-- <?imcms:datetime ... type=\""+type+"\" is empty, wrong or does not exist! -->";
 	    }
