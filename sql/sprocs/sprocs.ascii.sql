@@ -3605,7 +3605,7 @@ GO
 
 CREATE PROCEDURE ListDocsGetInternalDocTypesValue AS
 /* selct all internal doc types */
-select doc_type
+select distinct doc_type
 from doc_types
 where doc_type <= 100
 

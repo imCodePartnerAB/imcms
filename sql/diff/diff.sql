@@ -878,3 +878,14 @@ DROP TABLE #documents
 GO
 
 -- 2001-10-30
+
+--Changed the procedure so it only gets the document ones
+
+ALTER PROCEDURE ListDocsGetInternalDocTypesValue AS
+/* selct all internal doc types */
+select distinct doc_type
+from doc_types
+where doc_type <= 100
+GO
+
+-- 2001-11-12
