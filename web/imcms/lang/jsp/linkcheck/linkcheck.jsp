@@ -48,7 +48,7 @@ String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 </tr>
 <tr>
 	<td align="right">
-	<input type="submit" name="<%= LinkCheck.REQUEST_PARAMETER__START_BUTTON %>" value="Start<%= language.equals("swe") ? "a" : "" %> check" class="imcmsFormBtn"></td>
+	<input type="submit" name="<%= LinkCheck.REQUEST_PARAMETER__START_BUTTON %>" value="<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/start_check ?>" class="imcmsFormBtn"></td>
 </tr>
 </table>
 </form>
