@@ -52,9 +52,6 @@ public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
         Connection result = null;
         try {
             result = DriverManager.getConnection( URI_FOR_POOLED_DRIVER + dbUrl, userName, password );
-            if ( log.isDebugEnabled() ) {
-                log.debug( "Connections used: " + getUsedConnectionsString( connectionPool ) );
-            }
         } catch ( org.apache.commons.dbcp.DbcpException ex ) {
             log.error( getAttributeAsString(), ex );
             throw (SQLException)ex.getCause();

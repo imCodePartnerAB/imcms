@@ -46,6 +46,7 @@ public class TextDocument extends Document {
 
     public void setTemplate( Template newTemplate ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
+        // todo: check if the template is alowed to be set on this document
         TemplateDomainObject internalTemplate = newTemplate.getInternal();
         internalDocument.setTemplate( internalTemplate );
     }
