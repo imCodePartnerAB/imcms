@@ -79,11 +79,11 @@
             <td colspan="3">
             <table border="0" cellspacing="0" cellpadding="2">
             <tr>
-                <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.STATUS_NEW %>" <%= isSelected(DocumentDomainObject.STATUS_NEW, statusIds) ? "checked" : "" %> ></td>
+                <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS_ID %>" value="<%= DocumentDomainObject.STATUS_NEW %>" <%= isSelected(DocumentDomainObject.STATUS_NEW, statusIds) ? "checked" : "" %> ></td>
                 <td><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/4 ?> &nbsp;</td>
-                <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.STATUS_PUBLICATION_APPROVED %>" <%= isSelected(DocumentDomainObject.STATUS_PUBLICATION_APPROVED, statusIds) ? "checked" : "" %> ></td>
+                <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS_ID %>" value="<%= DocumentDomainObject.STATUS_PUBLICATION_APPROVED %>" <%= isSelected(DocumentDomainObject.STATUS_PUBLICATION_APPROVED, statusIds) ? "checked" : "" %> ></td>
                 <td><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/5 ?> &nbsp;</td>
-                <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED %>" <%= isSelected(DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED, statusIds) ? "checked" : "" %> ></td>
+                <td><input type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS_ID %>" value="<%= DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED %>" <%= isSelected(DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED, statusIds) ? "checked" : "" %> ></td>
                 <td><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/6 ?></td>
             </tr>
             </table></td>

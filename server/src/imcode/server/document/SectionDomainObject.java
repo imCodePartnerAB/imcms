@@ -1,9 +1,8 @@
 package imcode.server.document;
 
-/**
- * @author kreiger
- */
-public class SectionDomainObject implements Comparable {
+import java.io.Serializable;
+
+public class SectionDomainObject implements Comparable, Serializable {
 
     private int id ;
     private String name ;

@@ -69,7 +69,7 @@
                             <td>
                                     <%
                                         if (user.canEditDocumentInformationFor(document)) {
-                                            %><a href="PageDispatcher?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%
+                                            %><a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%
                                         }
                                         %><%= Html.getStatusIconTemplate(document, user) %></a><%
                                         if (user.canEditDocumentInformationFor(document)) {
@@ -93,7 +93,7 @@
                             %>
                             <td align="right">&nbsp;
                                 <% if (documentFinder.isDocumentsSelectable()) { %>
-                                    <a href="PageDispatcher?<%= SearchDocumentsPage.REQUEST_PARAMETER__SELECTED_DOCUMENT_ID+"="+document.getId()+"&"+searchDocumentsPage.getParameterString(request)%>"><? imcms/lang/jsp/search_documents.jsp/select_document ?></a>
+                                    <a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__SELECTED_DOCUMENT_ID, ""+document.getId()) %>"><? imcms/lang/jsp/search_documents.jsp/select_document ?></a>
                                 <% } %>
                             </td>
                         </tr>

@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.io.Serializable;
 
 public class HttpSessionUtils {
 
@@ -21,7 +22,7 @@ public class HttpSessionUtils {
     private HttpSessionUtils() {
     }
 
-    public static void setSessionAttributeAndSetNameInRequestAttribute( final Object objectToAddToSession,
+    public static void setSessionAttributeAndSetNameInRequestAttribute( final Serializable objectToAddToSession,
                                                                         HttpServletRequest request,
                                                                         final String sessionAttributeNameRequestAttributeName ) {
         String sessionAttributeName = getSessionAttributeNameFromRequest( request, sessionAttributeNameRequestAttributeName );
@@ -34,7 +35,7 @@ public class HttpSessionUtils {
     }
 
     public static void put( HttpServletRequest request, String sessionAttributeName,
-                             final Object objectToAddToSession ) {
+                             final Serializable objectToAddToSession ) {
         LRUMap sessionMap = getSessionMap( request );
         if (sessionMap.isFull()) {
             log.debug( "SessionMap is full. Least recently used object will be evicted.") ;

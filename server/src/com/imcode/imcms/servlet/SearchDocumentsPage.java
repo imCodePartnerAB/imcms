@@ -61,13 +61,12 @@ public class SearchDocumentsPage extends OkCancelPage {
     private int firstDocumentIndex;
     private int documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
     private DocumentDomainObject selectedDocument;
-    private DocumentDomainObject documentSelectedForEditing;
     private Query query;
     private boolean searchButtonPressed;
 
     DocumentFinder documentFinder;
 
-    public static final String REQUEST_PARAMETER__STATUS = "status";
+    public static final String REQUEST_PARAMETER__STATUS_ID = "status";
 
     public static final int USER_DOCUMENTS_RESTRICTION__NONE = 0;
     public static final int USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER = 1;
@@ -88,11 +87,6 @@ public class SearchDocumentsPage extends OkCancelPage {
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-        try {
-            documentSelectedForEditing = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );
-        } catch ( NumberFormatException nfe ) {
-        }
-
         if ( documentFinder.isDocumentsSelectable() ) {
             try {
                 selectedDocument = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__SELECTED_DOCUMENT_ID ) ) );
@@ -111,7 +105,7 @@ public class SearchDocumentsPage extends OkCancelPage {
         } catch ( NumberFormatException nfe ) {
         }
 
-        statusIds = Utility.getParameterInts( request, REQUEST_PARAMETER__STATUS );
+        statusIds = Utility.getParameterInts( request, REQUEST_PARAMETER__STATUS_ID );
 
         String userDocumentsRestrictionParameter = request.getParameter( REQUEST_PARAMETER__PERMISSION );
         if ( null != userDocumentsRestrictionParameter ) {
@@ -143,7 +137,12 @@ public class SearchDocumentsPage extends OkCancelPage {
             documentFinder.setDocumentComparator(documentComparator) ;
         }
 
-        setDocumentsPerPage( NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE ), DEFAULT_DOCUMENTS_PER_PAGE ) );
+        try {
+            documentsPerPage = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE ) );
+        } catch (NumberFormatException ignored) {}
+        if ( documentsPerPage <= 0 ) {
+            documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
+        }
         firstDocumentIndex = Math.max( 0, NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX ) ) );
         queryString = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__QUERY_STRING ) );
         searchButtonPressed = null != request.getParameter( REQUEST_PARAMETER__SEARCH_BUTTON );
@@ -157,11 +156,11 @@ public class SearchDocumentsPage extends OkCancelPage {
 
     private Query createQuery( DocumentFinder documentFinder, UserDomainObject user ) {
 
-        BooleanQuery query = new BooleanQuery();
+        BooleanQuery newQuery = new BooleanQuery();
         if ( StringUtils.isNotBlank( queryString ) ) {
             try {
                 Query textQuery = documentFinder.parse( queryString );
-                query.add( textQuery, true, false );
+                newQuery.add( textQuery, true, false );
             } catch ( ParseException e ) {
                 log.debug( e.getMessage() + " in search-string " + queryString, e );
             }
@@ -173,7 +172,7 @@ public class SearchDocumentsPage extends OkCancelPage {
                 SectionDomainObject section = (SectionDomainObject)iterator.next();
                 sectionQueries.add( new TermQuery( new Term( DocumentIndex.FIELD__SECTION, section.getName().toLowerCase() ) ), false, false );
             }
-            query.add( sectionQueries, true, false ) ;
+            newQuery.add( sectionQueries, true, false ) ;
         }
 
         BooleanQuery statusQueries = new BooleanQuery();
@@ -183,17 +182,17 @@ public class SearchDocumentsPage extends OkCancelPage {
             statusQueries.add( statusQuery, false, false );
         }
         if ( statusIds.length > 0 ) {
-            query.add( statusQueries, true, false );
+            newQuery.add( statusQueries, true, false );
         }
 
         if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER == userDocumentsRestriction ) {
             Query createdByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, "" + user.getId() ) );
-            query.add( createdByUserQuery, true, false );
+            newQuery.add( createdByUserQuery, true, false );
         }
 
         if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER == userDocumentsRestriction ) {
             Query publishedByUserQuery = new TermQuery( new Term( DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId() ) );
-            query.add( publishedByUserQuery, true, false );
+            newQuery.add( publishedByUserQuery, true, false );
         }
 
 
@@ -224,13 +223,13 @@ public class SearchDocumentsPage extends OkCancelPage {
             Term lowerTerm = new Term( dateField, DateField.dateToString( startDate ) );
             Term upperTerm = new Term( dateField, DateField.dateToString( calculatedEndDate ) );
             Query publicationStartedQuery = new RangeQuery( lowerTerm, upperTerm, true );
-            query.add( publicationStartedQuery, true, false );
+            newQuery.add( publicationStartedQuery, true, false );
         }
 
-        if ( 0 == query.getClauses().length ) {
+        if ( 0 == newQuery.getClauses().length ) {
             return null;
         }
-        return query;
+        return newQuery;
     }
 
     protected boolean wasCanceled( HttpServletRequest request ) {
@@ -242,8 +241,15 @@ public class SearchDocumentsPage extends OkCancelPage {
     }
 
     protected void dispatchOther( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        if ( null != getDocumentSelectedForEditing() ) {
-            goToEditDocumentInformation( this, documentFinder, request, response );
+        DocumentDomainObject documentSelectedForEditing = null ;
+        try {
+            DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+            documentSelectedForEditing = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );
+        } catch ( NumberFormatException nfe ) {
+        }
+
+        if ( null != documentSelectedForEditing ) {
+            goToEditDocumentInformation( request, response, documentSelectedForEditing );
         } else if ( null != getSelectedDocument() ) {
             documentFinder.selectDocument( getSelectedDocument(), request, response );
         } else {
@@ -251,21 +257,16 @@ public class SearchDocumentsPage extends OkCancelPage {
         }
     }
 
-    private void goToEditDocumentInformation( final SearchDocumentsPage page, final DocumentFinder documentFinder,
-                                              HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        DocumentDomainObject documentSelectedForEditing = page.getDocumentSelectedForEditing();
+    private void goToEditDocumentInformation( HttpServletRequest request, HttpServletResponse response,
+                                              DocumentDomainObject documentSelectedForEditing ) throws IOException, ServletException {
         DispatchCommand returnCommand = new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                documentFinder.forwardWithPage( request, response, page );
+                documentFinder.forwardWithPage( request, response, SearchDocumentsPage.this);
             }
         };
         EditDocumentInformationPageFlow editDocumentInformationPageFlow = new EditDocumentInformationPageFlow( documentSelectedForEditing, returnCommand, new DocumentMapper.SaveEditedDocumentCommand() );
         editDocumentInformationPageFlow.setAdminButtonsHidden( true );
         editDocumentInformationPageFlow.dispatch( request, response );
-    }
-
-    public String getParameterString( HttpServletRequest request ) {
-        return Utility.createQueryStringFromParameterMultiMap( getParameterMap( request ) );
     }
 
     public String getParameterStringWithParameter( HttpServletRequest request,
@@ -277,21 +278,6 @@ public class SearchDocumentsPage extends OkCancelPage {
 
     private MultiMap getParameterMap( HttpServletRequest request ) {
         MultiMap parameters = new MultiHashMap() ;
-        if ( StringUtils.isNotBlank( queryString ) ) {
-            parameters.put( REQUEST_PARAMETER__QUERY_STRING, queryString );
-        }
-        if ( !sections.isEmpty() ) {
-            for ( Iterator iterator = sections.iterator(); iterator.hasNext(); ) {
-                SectionDomainObject section = (SectionDomainObject)iterator.next();
-                parameters.put( REQUEST_PARAMETER__SECTION_ID, "" + section.getId() );
-            }
-        }
-        if ( 0 != firstDocumentIndex ) {
-            parameters.put( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, "" + firstDocumentIndex );
-        }
-        if ( DEFAULT_DOCUMENTS_PER_PAGE != documentsPerPage ) {
-            parameters.put( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE, "" + documentsPerPage );
-        }
         String pageSessionNameFromRequest = Page.getPageSessionNameFromRequest( request );
         if ( null != pageSessionNameFromRequest ) {
             parameters.put( Page.IN_REQUEST, pageSessionNameFromRequest );
@@ -305,7 +291,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     }
 
     public Set getSections() {
-        return sections;
+        return Collections.unmodifiableSet( sections );
     }
 
     public DocumentDomainObject[] getDocumentsFound() {
@@ -332,23 +318,12 @@ public class SearchDocumentsPage extends OkCancelPage {
         return selectedDocument;
     }
 
-    public DocumentDomainObject getDocumentSelectedForEditing() {
-        return documentSelectedForEditing;
-    }
-
     public Query getQuery() {
         return query;
     }
 
     public boolean isSearchButtonPressed() {
         return searchButtonPressed;
-    }
-
-    private void setDocumentsPerPage( int documentsPerPage ) {
-        if ( documentsPerPage <= 0 ) {
-            documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
-        }
-        this.documentsPerPage = documentsPerPage;
     }
 
     public DocumentFinder getDocumentFinder() {

@@ -1,10 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import com.imcode.imcms.flow.Page;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,22 +12,14 @@ public class SearchDocuments extends HttpServlet {
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
-        DocumentFinder documentFinder = new DocumentFinder();
-        documentFinder.forward(request, response);
-        /*
-        final SearchDocumentsPage page = (SearchDocumentsPage) SearchDocumentsPage.fromRequest( request );
-        final DocumentFinder documentFinder = page.getDocumentFinder();
-
-        if ( page.isCancelButtonPressed() ) {
-            documentFinder.cancel( request, response );
-        } else if ( null != page.getDocumentSelectedForEditing() ) {
-            goToEditDocumentInformation( page, documentFinder, request, response );
-        } else if ( null != page.getSelectedDocument() ) {
-            documentFinder.selectDocument( page.getSelectedDocument(), request, response );
+        if (null != Page.fromRequest( request )) {
+            request.getRequestDispatcher( "PageDispatcher" ).forward( request, response );
         } else {
-            documentFinder.forwardWithPage(request, response, page);
+            SearchDocumentsPage searchDocumentsPage = new SearchDocumentsPage() ;
+            DocumentFinder documentFinder = new DocumentFinder(searchDocumentsPage);
+            searchDocumentsPage.updateFromRequest( request );
+            documentFinder.forward(request, response);
         }
-    */
     }
 
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {

@@ -162,6 +162,7 @@ public class DocumentMapper {
             String sectionName = sqlRows[i][1];
             allSections[i] = new SectionDomainObject( sectionId, sectionName );
         }
+        Arrays.sort(allSections, new SectionNameComparator()) ;
         return allSections;
     }
 
@@ -1134,5 +1135,13 @@ public class DocumentMapper {
 
     }
 
+    private static class SectionNameComparator implements Comparator {
+
+        public int compare( Object o1, Object o2 ) {
+            SectionDomainObject section1 = (SectionDomainObject)o1;
+            SectionDomainObject section2 = (SectionDomainObject)o2;
+            return section1.getName().compareToIgnoreCase( section2.getName() ) ;
+        }
+    }
 }
 

@@ -100,7 +100,7 @@
 <tr>
 <td colspan="2">
 
-<form method="post" action="PageDispatcher">
+<form method="GET" action="SearchDocuments">
 <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__FROMPAGE %>" value="<%= AdminManager.PAGE_SEARCH %>">
 <jsp:include page="../search_documents_form.jsp" />
 

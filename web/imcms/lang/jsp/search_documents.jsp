@@ -37,7 +37,7 @@
 #gui_outer_start()
 #gui_head( "<? templates/sv/search/search_documents.html/1 ?>" )
 
-<form method="GET" action="PageDispatcher">
+<form method="GET" action="SearchDocuments">
 
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>

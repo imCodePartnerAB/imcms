@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 public abstract class PageFlow implements Serializable {
 
-    public static final String REQUEST_PARAMETER__PAGE = "page";
+    public static final String REQUEST_PARAMETER__PAGE = "flowpage";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
     public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW = "flow";

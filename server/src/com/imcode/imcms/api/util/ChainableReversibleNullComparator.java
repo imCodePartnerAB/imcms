@@ -3,8 +3,9 @@ package com.imcode.imcms.api.util;
 import org.apache.commons.collections.ComparatorUtils;
 
 import java.util.Comparator;
+import java.io.Serializable;
 
-public abstract class ChainableReversibleNullComparator implements Comparator {
+public abstract class ChainableReversibleNullComparator implements Comparator, Serializable {
 
     public ChainableReversibleNullComparator chain( Comparator comparator ) {
         return new ComparatorWrapper( ComparatorUtils.chainedComparator( this, comparator ) );

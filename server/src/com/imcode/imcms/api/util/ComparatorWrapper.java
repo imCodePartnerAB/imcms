@@ -7,8 +7,9 @@
 package com.imcode.imcms.api.util;
 
 import java.util.Comparator;
+import java.io.Serializable;
 
-public class ComparatorWrapper extends ChainableReversibleNullComparator {
+public class ComparatorWrapper extends ChainableReversibleNullComparator implements Serializable {
 
     Comparator wrappedComparator;
 
