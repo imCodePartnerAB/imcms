@@ -2,12 +2,12 @@ if exists (select * from sysobjects where id = object_id(N'[dbo].[AddBrowserStat
 drop procedure [dbo].[AddBrowserStatistics]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SortOrder_GetExistingDocs ]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[SortOrder_GetExistingDocs ]
-GO
-
 if exists (select * from sysobjects where id = object_id(N'[dbo].[AddNewuser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddNewuser]
+GO
+
+if exists (select * from sysobjects where id = object_id(N'[dbo].[AddPhoneNr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[AddPhoneNr]
 GO
 
 if exists (select * from sysobjects where id = object_id(N'[dbo].[AddScreenStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -64,6 +64,10 @@ GO
 
 if exists (select * from sysobjects where id = object_id(N'[dbo].[DeleteNewDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[DeleteNewDocPermissionSetEx]
+GO
+
+if exists (select * from sysobjects where id = object_id(N'[dbo].[DelPhoneNr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[DelPhoneNr]
 GO
 
 if exists (select * from sysobjects where id = object_id(N'[dbo].[DelUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -152,6 +156,10 @@ GO
 
 if exists (select * from sysobjects where id = object_id(N'[dbo].[GetImgs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetImgs]
+GO
+
+if exists (select * from sysobjects where id = object_id(N'[dbo].[GetIncludes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[GetIncludes]
 GO
 
 if exists (select * from sysobjects where id = object_id(N'[dbo].[GetLangPrefix]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -442,6 +450,10 @@ if exists (select * from sysobjects where id = object_id(N'[dbo].[SetDocPermissi
 drop procedure [dbo].[SetDocPermissionSetEx]
 GO
 
+if exists (select * from sysobjects where id = object_id(N'[dbo].[SetInclude]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SetInclude]
+GO
+
 if exists (select * from sysobjects where id = object_id(N'[dbo].[SetNewDocPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetNewDocPermissionSet]
 GO
@@ -456,6 +468,10 @@ GO
 
 if exists (select * from sysobjects where id = object_id(N'[dbo].[SetSessionCounterDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetSessionCounterDate]
+GO
+
+if exists (select * from sysobjects where id = object_id(N'[dbo].[SortOrder_GetExistingDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SortOrder_GetExistingDocs]
 GO
 
 if exists (select * from sysobjects where id = object_id(N'[dbo].[SystemMessageGet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -563,6 +579,41 @@ INSERT INTO users (user_id,login_name,login_password,first_name,last_name,addres
 VALUES (@user_id, @login_name, @login_password, @first_name, @last_name, @address, @city, @zip, @country,
    @county_council, @email, @admin_mode, @last_page, @archive_mode, @lang_id ,@user_type, @active, getDate())
 */
+
+GO
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+GO
+
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+GO
+
+CREATE PROCEDURE AddPhoneNr
+/* Adds a role to a particular user
+*/
+ @aUser_id int,
+ @aRole_id int
+AS
+-- Lets check if the role already exists
+DECLARE @foundFlag int
+SET @foundFlag = 0 
+SELECT @foundFlag = ref.role_id
+FROM user_roles_crossref ref
+WHERE ref.role_id = @aRole_id
+ AND ref.user_id = @aUser_id
+IF @@rowcount  = 0 BEGIN
+ INSERT INTO  user_roles_crossref(user_id, role_id)
+ VALUES( @aUser_id , @aRole_id)
+END
+/*
+CREATE PROCEDURE AddUserRole
+ Adds a role to a particular user
+ @aUser_id int,
+ @aRole_id int
+AS
+ INSERT INTO  user_roles_crossref(user_id, role_id)
+ VALUES( @aUser_id , @aRole_id)
+*/ 
+
 
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
@@ -867,6 +918,21 @@ CREATE PROCEDURE DeleteNewDocPermissionSetEx @meta_id INT, @set_id INT AS
 DELETE FROM  new_doc_permission_sets_ex
 WHERE  meta_id = @meta_id
   AND set_id = @set_id
+
+GO
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+GO
+
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+GO
+
+CREATE PROCEDURE DelPhoneNr
+ @aUserId int
+AS
+ DELETE 
+ FROM phones
+ WHERE user_id = @aUserId
+
 
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
@@ -1476,6 +1542,17 @@ CREATE PROCEDURE GetImgs
 @meta_id int AS
 select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = @meta_id
 
+GO
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+GO
+
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+GO
+
+CREATE PROCEDURE GetIncludes @meta_id INT AS
+
+SELECT include_id, included_meta_id  FROM includes WHERE meta_id = @meta_id
+ORDER BY include_id
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
@@ -3336,6 +3413,22 @@ GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
 
+SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  OFF 
+GO
+
+CREATE PROCEDURE SetInclude @meta_id INT, @include_id INT, @included_meta_id INT AS
+
+DELETE FROM	includes 
+WHERE 	meta_id = @meta_id
+	AND 	include_id = @include_id
+
+INSERT INTO	includes	 (meta_id, include_id, included_meta_id)
+VALUES	(@meta_id, @include_id, @included_meta_id)
+
+GO
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+GO
+
 SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
 GO
 
@@ -3401,6 +3494,31 @@ AS
  
   return
 
+GO
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+GO
+
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+GO
+
+CREATE PROCEDURE SortOrder_GetExistingDocs 
+
+	@langPrefixString char(3)
+AS
+/*
+This sproc is used by the GetExistingDoc servlet, it takes the lang id string as argument and returns 
+the sortorder options  display text for that language. 
+Example: SortOrder_GetExistingDocs 'se'.
+
+*/
+
+SELECT sType.sort_by_type , display.display_name
+FROM lang_prefixes lang
+INNER JOIN display_name display
+	ON display.lang_id = lang.lang_id
+	AND lang.lang_prefix = @langPrefixString
+INNER JOIN sort_by sType
+	ON sType.sort_by_id = display.sort_by_id
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
@@ -3594,31 +3712,3 @@ GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
 
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-CREATE PROCEDURE SortOrder_GetExistingDocs 
-
-	@langPrefixString char(3)
-AS
-/*
-This sproc is used by the GetExistingDoc servlet, it takes the lang id string as argument and returns 
-the sortorder options  display text for that language. 
-Example: SortOrder_GetExistingDocs 'se'.
-
-*/
-
-SELECT sType.sort_by_type , display.display_name
-FROM lang_prefixes lang
-INNER JOIN display_name display
-	ON display.lang_id = lang.lang_id
-	AND lang.lang_prefix = @langPrefixString
-INNER JOIN sort_by sType
-	ON sType.sort_by_id = display.sort_by_id
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
