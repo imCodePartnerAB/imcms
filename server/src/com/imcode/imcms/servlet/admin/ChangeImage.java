@@ -10,7 +10,6 @@ import imcode.util.*;
 import imcode.server.*;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
-import com.imcode.imcms.servlet.admin.ImageBrowse;
 
 /**
  * Edit imageref  - upload image to server.
@@ -34,27 +33,16 @@ public class ChangeImage extends HttpServlet {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        int meta_id;
-        int img_no;
-
         res.setContentType( "text/html" );
         PrintWriter out = res.getWriter();
 
-        String tmp = ( req.getParameter( "img_no" ) != null ) ? req.getParameter( "img_no" ) : req.getParameter( "img" );
-        img_no = Integer.parseInt( tmp );
-
-        tmp = req.getParameter( "meta_id" );
-        meta_id = Integer.parseInt( tmp );
+        String metaIdStr = req.getParameter( "meta_id" );
+        int meta_id = Integer.parseInt( metaIdStr );
 
         String label = req.getParameter( "label" );
         if ( label == null ) {
             label = "";
         }
-
-        // Check if ChangeImage is invoked by ImageBrowse, hence containing
-        // an image filename as option value.
-        String imageListParam = req.getParameter( "imglist" );
-        String img_preset = ( imageListParam == null ) ? "" : URLDecoder.decode( imageListParam );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         // Check if user has write rights
@@ -81,9 +69,19 @@ public class ChangeImage extends HttpServlet {
         HttpSession session = req.getSession( true );
         session.setAttribute( "imageFolderOptionList", folderOptions.toString() );
 
+        String imgNoStr = ( req.getParameter( "img_no" ) != null ) ? req.getParameter( "img_no" ) : req.getParameter( "img" );
+        int img_no = Integer.parseInt( imgNoStr );
+
         String[] sql = DocumentMapper.getDocumentImageData(imcref, meta_id, img_no);
 
-        Vector vec = new Vector();
+        // Check if ChangeImage is invoked by ImageBrowse, hence containing
+        // an image filename as option value.
+        String paramCancel = req.getParameter( ImageBrowse.PARAMETER_BUTTON__CANCEL );
+        String imageListParam = "";
+        if( null == paramCancel ) {
+            imageListParam = req.getParameter( "imglist" );
+        }
+        String img_preset = ( imageListParam == null ) ? "" : URLDecoder.decode( imageListParam );
 
         String imageName = ( "".equals( img_preset ) && sql.length > 0 ? sql[1] : img_preset ); // selected OPTION or ""
 
@@ -93,6 +91,7 @@ public class ChangeImage extends HttpServlet {
         int height = image.getHeight();
         //****************************************************************
 
+        Vector vec = new Vector();
         if ( sql.length > 0 ) {
             int current_width = 0;
             try {
