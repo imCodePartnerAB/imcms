@@ -10,9 +10,6 @@ Prerequisites:
 
     * Install Microsoft SQL Server 2000.
 
-    * Download the Microsoft JDBC driver for SQL Server 2000 Service Pack 2 or later
-      from http://www.microsoft.com/downloads/
-
 
 Building:
 
@@ -27,9 +24,6 @@ Installing imCMS:
 
     * Start Tomcat.
       Tomcat will find the war-file you installed, and unpack it into a directory named after the war-file.
-
-    * Copy the JDBC jar-files (3 files) from the /lib directory where you have unpacked the JDBC driver
-      to directory "tomcat/webapps/imcms/WEB-INF/lib".
 
 
 Setting up the database:
@@ -68,8 +62,6 @@ Setting up imCMS:
     * Edit the file "server.properties" in the directory "tomcat/webapps/imcms/WEB-INF/conf",
       and set the database parameters ("JdbcDriver", "JdbcUrl", "User", "Password", "MaxConnectionCount")
       according to your setup.
-      If using Microsofts JDBC-driver, note that it will "clone" connections past the MaxConnectionCount
-      unless property "SelectMethod=cursor" is set in the JdbcUrl.
       Set "SmtpServer" to the hostname of your SMTP (outgoing mail) server.
 
     * If you want to add a file-extension to be recognized as a mime-type by imCMS,
