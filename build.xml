@@ -29,6 +29,7 @@
     <property name="readrunner"	           value="${webroot}/readrunner"/>
     <property name="shop"	           value="${webroot}/shop"/>
     <property name="poll"	           value="${webroot}/poll"/>
+    <property name="apisample"	           value="${webroot}/apisample"/>
 
     <!-- 'WEB-INF' - Everything put here is private to the webapp -->
     <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
@@ -417,6 +418,7 @@
 		<include name="adminuser/**"/>
 		<include name="shop/**"/>
 		<include name="poll/**"/>
+        <include name="apisamples/**"/>
 		<exclude name="**/*.gif"/>
 		<exclude name="**/*.jpg"/>
 	    </fileset>
