@@ -8,6 +8,8 @@ import java.rmi.registry.* ;
 import imcode.util.* ;
 
 public class ConfAdd extends Conference {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	String HTML_TEMPLATE ;
 	String SERVLET_NAME ;  // The name on this servlet

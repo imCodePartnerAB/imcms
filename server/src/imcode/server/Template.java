@@ -4,6 +4,8 @@ import java.util.* ;
 
 
 public class Template {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	int id ;
 	String description ;
 	String file_name ;

@@ -37,6 +37,8 @@ import imcode.util.Parser;
 
 
 public class Conference extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private final static String ADMIN_BUTTON_TEMPLATE = "Conf_Admin_Button.htm";
 	private final static String UNADMIN_BUTTON_TEMPLATE = "Conf_Unadmin_Button.htm";

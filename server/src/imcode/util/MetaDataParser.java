@@ -8,6 +8,8 @@ import imcode.server.* ;
 import imcode.util.* ;
 
 public class MetaDataParser {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     /**
        parseMetaData collects the information for a certain meta_id from the db and

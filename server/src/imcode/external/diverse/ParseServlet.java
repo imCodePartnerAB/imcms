@@ -8,6 +8,8 @@ import javax.servlet.http.*;
 
 
 public class ParseServlet extends HttpServlet{
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     String htmlStr ;
     
     public String getHtmlDoc(){

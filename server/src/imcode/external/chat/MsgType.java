@@ -17,6 +17,8 @@ package imcode.external.chat;
 
 public class MsgType
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private int _msgIdNr;
 	private String _name;

@@ -17,6 +17,8 @@ import imcode.util.* ;
  */
 
 public class BillBoardLogin extends BillBoard {//ConfLogin
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private final static String USER_UNADMIN_LINK_TEMPLATE = "BillBoard_User_Unadmin_Link.htm";//Conf_User_Unadmin_Link.htm
     //private static Vector test;

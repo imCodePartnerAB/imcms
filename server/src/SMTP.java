@@ -5,9 +5,11 @@ import java.util.*;
 /**
 		class SMTP - Manages a connection to a SMTP-server, and provides methods for sending mail.
 		@author Kreiger
-		@version 0.6
+		@version $Revision$
 */
 public class SMTP implements Runnable {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	
 	protected PrintStream out;
 	protected BufferedReader in;

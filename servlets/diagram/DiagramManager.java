@@ -5,6 +5,8 @@ import javax.servlet.http.*;
 import imcode.external.diverse.* ;
 
 public class DiagramManager extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     String HTML_TEMPLATE ;
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)

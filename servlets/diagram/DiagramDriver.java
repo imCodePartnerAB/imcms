@@ -4,6 +4,8 @@ import java.io.*;
 import imcode.external.diverse.* ;
 
 public class DiagramDriver{
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	
 	
 

@@ -21,6 +21,9 @@ package imcode.external.chat;
 class Counter
 {
 
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
+
 	private int _countValue;
 
 	protected void Counter(int startValue)

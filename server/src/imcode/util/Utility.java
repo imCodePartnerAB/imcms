@@ -8,6 +8,8 @@ import java.util.* ;
 import imcode.util.log.* ;
 
 public class Utility {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     static protected Hashtable mimetypes ;
     

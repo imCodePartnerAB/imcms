@@ -7,6 +7,8 @@ import imcode.external.diverse.* ;
 import imcode.util.Utility;
 
 public class ConfError extends Conference {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private static final String ERROR_FILE = "Conf_Error.htm";
 	String myErrorHeader ;

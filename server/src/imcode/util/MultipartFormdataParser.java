@@ -6,6 +6,8 @@ import java.util.* ;
 	Parses multipart/form-data into parts, easily gettable with it's methods.
 */
 public class MultipartFormdataParser {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	MultipartParser mp ;	
 	String names[] ;
 	/**

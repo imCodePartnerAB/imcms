@@ -46,7 +46,8 @@ import imcode.server.User ;
 ******************************************************************************************/
 public interface IMCPoolInterface {
 
-
+	final static String CVS_REV = "$Revision$" ;
+	final static String CVS_DATE = "$Date$" ;
 
 	// Parse doc replace variables with data
 	String  parseDoc(String htmlStr,java.util.Vector variables)

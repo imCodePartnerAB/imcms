@@ -4,6 +4,8 @@ import java.util.Map ;
 import java.util.Hashtable ;
 
 public class Parser {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 		Parses a string.

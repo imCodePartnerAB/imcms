@@ -2,6 +2,8 @@ package imcode.external.diverse ;
 import java.util.* ;
 
 public class VariableManager {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     Vector tags ;
     Vector data ;
     

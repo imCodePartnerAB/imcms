@@ -1,6 +1,8 @@
 package imcode.server ;
 
 public class Image implements java.io.Serializable {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	String image_ref ;
 	String image_name ;
 	int image_width, image_height, image_border ;

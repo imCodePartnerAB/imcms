@@ -18,6 +18,8 @@ import java.util.*;
 
 public class MsgBuffer
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private List _msgBuffer;
 	private final int _maxSize = 100;

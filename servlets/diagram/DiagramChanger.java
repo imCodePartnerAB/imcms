@@ -5,6 +5,8 @@ import javax.servlet.http.*;
 import imcode.external.diverse.* ;
 
 public class DiagramChanger extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 			
 	public void doPost(HttpServletRequest req, HttpServletResponse res)

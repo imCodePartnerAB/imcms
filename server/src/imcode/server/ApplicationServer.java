@@ -16,8 +16,10 @@ import imcode.util.Prefs;
  *@created    den 30 augusti 2001
  */
 public class ApplicationServer {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
-    private final static String VERSION = "1.4.0 (2000-09-19 13:00)";
+    private final static String VERSION = "1.5.0 (2000-10-12 10:30)";
     private final static String CONFIG_FILE = "ImcServer.cfg";
 
     private final static int LOGINTERVAL = 10000;

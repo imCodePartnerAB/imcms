@@ -1,6 +1,8 @@
 package imcode.server ;
 
 public class LoginUser implements java.io.Serializable {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	String login_name = "" ;
 	String login_password = "" ;
 	String user_table_name           = "users" ;            // default

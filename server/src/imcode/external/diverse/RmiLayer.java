@@ -9,6 +9,8 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 public class RmiLayer {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     imcode.server.User user ;
     static Hashtable interfaces ;	// Keeps track of servers. "ip:port"=interface
 

@@ -18,6 +18,8 @@ import java.util.*;
 
 public class ChatMsg
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private String _senderStr;
 	private int _msgType;

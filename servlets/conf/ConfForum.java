@@ -8,6 +8,8 @@ import java.rmi.registry.* ;
 import imcode.util.* ;
 
 public class ConfForum extends Conference {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private final static String ADMIN_LINK_TEMPLATE = "Conf_Forum_Admin_Link.htm";
 

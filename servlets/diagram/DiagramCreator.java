@@ -5,6 +5,8 @@ import javax.servlet.http.*;
 import imcode.external.diverse.* ;
 
 public class DiagramCreator extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 		String HTML_TEMPLATE ; 				// The template file to generate the html page
 			

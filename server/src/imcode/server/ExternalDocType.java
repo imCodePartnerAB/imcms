@@ -1,6 +1,8 @@
 package imcode.server ;
 
 public class ExternalDocType implements java.io.Serializable {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private int    m_DocType ;
 	private String m_CallServlet ;
 	private String m_DocName ;

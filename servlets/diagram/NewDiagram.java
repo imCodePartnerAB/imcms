@@ -6,6 +6,8 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 
 public class NewDiagram extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	
 //		String FILE_PATH ;            // the path to where the servlets are
 		String HTML_TEMPLATE ;		    // The template HTML file

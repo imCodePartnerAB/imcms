@@ -13,6 +13,8 @@ import java.io.* ;
 	it will return the file in the cache.
 */
 public class FileTagReplacer extends Hashtable {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	
 	/**
 		The file-prefix

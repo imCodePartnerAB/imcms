@@ -11,6 +11,8 @@ import org.apache.log4j.PropertyConfigurator;
    Modifierad av hasse@erudio.se 2001 09 12
 **/
 public class Log implements LogLevels {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 
 	/* 

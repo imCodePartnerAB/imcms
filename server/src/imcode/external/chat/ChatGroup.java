@@ -18,6 +18,8 @@ import java.util.*;
 
 public class ChatGroup
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private int _groupId;
 	private String _name;

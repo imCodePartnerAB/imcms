@@ -4,6 +4,8 @@ import java.io.*;
 
 
 public class SettingsDataAccessor extends DataAccessor {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     
     
     //////////////////////////////////////////////////////

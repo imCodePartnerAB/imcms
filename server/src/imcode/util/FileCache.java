@@ -5,6 +5,8 @@ import org.apache.oro.util.* ;
 import imcode.util.log.* ;
 
 public class FileCache {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     private final int m_FileCacheSize = 50 ;
     private CacheLRU fileCache = new CacheLRU(m_FileCacheSize) ;

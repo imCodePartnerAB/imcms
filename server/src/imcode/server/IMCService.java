@@ -23,6 +23,8 @@ import imcode.util.FileCache ;
    Made final, since only a complete and utter moron would want to extend it.
 **/
 final public class IMCService implements IMCServiceInterface, IMCConstants {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     
     private final imcode.server.InetPoolManager m_conPool ; // inet pool of connections
     private TextDocumentParser textDocParser ;

@@ -21,6 +21,8 @@ import imcode.server.IMCServiceInterface ;
 */
 
 public class IMCServiceRMI {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     private static Hashtable interfaces = new Hashtable() ;	// Keeps track of servers. "ip:port"=interface
     private final static imcode.server.ApplicationServer appServer = new imcode.server.ApplicationServer() ;

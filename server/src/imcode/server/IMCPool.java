@@ -43,6 +43,8 @@ import imcode.server.* ;
   Database connection pool for the Imcode Net Server
   */
 public class IMCPool implements IMCPoolInterface {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     //	ConnectionPool m_conPool ;            // our pool of connections
     imcode.server.InetPoolManager m_conPool ; // inet pool of connections
 

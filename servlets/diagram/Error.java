@@ -6,6 +6,8 @@ import javax.servlet.http.*;
 import imcode.external.diverse.* ;
 	
 public class Error {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 public Error(HttpServletRequest req, HttpServletResponse res,String fileName, String msg) 
                                throws ServletException, IOException {

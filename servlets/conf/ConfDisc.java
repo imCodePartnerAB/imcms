@@ -46,6 +46,8 @@ import imcode.util.IMCServiceRMI;
 
 
 public class ConfDisc extends Conference {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private final static String NEW_DISC_FLAG_TEMPLATE = "Conf_Disc_List_New.htm";
 	private final static String PREVIOUS_DISC_LIST_TEMPLATE = "Conf_Disc_List_Previous.htm";

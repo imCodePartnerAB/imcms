@@ -7,6 +7,8 @@ import java.util.* ;
 */
 
 public class MultipartParser {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	String bodies[] ;	// Contains the MIME-bodies
 	Properties headers[] ;	//Contains the MIME-headers

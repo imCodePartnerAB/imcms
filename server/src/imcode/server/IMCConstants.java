@@ -2,6 +2,9 @@ package imcode.server ;
 
 public interface IMCConstants {
 
+    final static String CVS_REV = "$Revision$" ;
+    final static String CVS_DATE = "$Date$" ;
+
     /* Documenttypes */
     
     /** Text-doc **/

@@ -11,6 +11,8 @@ import imcode.external.diverse.*;
 */
 public class Chat
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private int _chatId;
 	private String _name;
 	private Hashtable _chatMembers;

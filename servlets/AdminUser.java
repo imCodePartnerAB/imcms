@@ -7,6 +7,8 @@ import imcode.util.* ;
 
 public class AdminUser extends Administrator
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	String HTML_TEMPLATE ;
 	String HTML_RESPONSE ;

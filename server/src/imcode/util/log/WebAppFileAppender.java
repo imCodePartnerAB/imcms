@@ -7,6 +7,8 @@ import imcode.server.WebAppGlobalConstants;
 
 public class WebAppFileAppender  extends FileAppender
 {	
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private static File absoluteWebAppPath = new File(WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath());
 
 	public WebAppFileAppender() 

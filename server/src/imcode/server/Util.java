@@ -2,6 +2,8 @@ package imcode.server ;
 
 
 class Util {
+	private final static String CVS_REV = "$Revision" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	public static String convertDate(String date_str,boolean max) {
 		String temp_str = "" ;

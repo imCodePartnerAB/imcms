@@ -5,8 +5,10 @@ import java.io.*;
 import java.io.FilenameFilter;
 
 
-public class GetImages implements FilenameFilter, Comparator
-{
+public class GetImages implements FilenameFilter, Comparator {
+
+    private final static String CVS_REV = "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
     private static GetImages _this = new GetImages() ;
     

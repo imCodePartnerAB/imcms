@@ -9,6 +9,8 @@ import SMTP ;
 import imcode.util.log.Log ;
 
 public class DBConnect {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     imcode.server.InetPoolManager conPool ; // Inet poolmanager
 

@@ -13,6 +13,9 @@ import java.util.*;
  *  @author 478 Development Teamy */
 public abstract class DataAccessor {
     
+    private final static String CVS_REV = "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
+
         /**
          *  A HashMap/hashtable of the recordings.
          *

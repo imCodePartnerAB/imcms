@@ -10,6 +10,8 @@ import java.io.*;
 
 
 public class ValueAccessor {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     private String FILE_NAME ;
     private Vector diagramValues ;
     

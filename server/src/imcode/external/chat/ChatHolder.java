@@ -5,6 +5,8 @@ import java.util.*;
 
 public class ChatHolder
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private static Hashtable _allChatts;
 	
 	static

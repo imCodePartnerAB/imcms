@@ -70,6 +70,16 @@ public class Version extends HttpServlet implements FilenameFilter {
 	    } else {
 		out.print("Unknown ") ;
 	    }
+
+	    // Find and print the date.
+	    if (perl.match("/\\$"+"Date: (\\S+)\\s+(\\S+) "+"\\$/",file_buffer.toString())) {
+		String date = perl.group(1) ;
+		String time = perl.group(2) ;
+		out.print(date+' '+time+' ') ;
+	    } else {
+		out.print("Unknown ") ;
+	    }
+
 	    // Print the checksum.
 	    out.println(checksum.getValue()) ;
 	}

@@ -2,6 +2,9 @@ package imcode.util.log ;
 
 public interface LogLevels {
 
+    final static String CVS_REV = "$Revision$" ;
+    final static String CVS_DATE = "$Date$" ;
+
     /**
        EMERGENCY: Something that brings the system down completely.
      */

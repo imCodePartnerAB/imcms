@@ -10,6 +10,8 @@ import imcode.util.log.* ;
 import imcode.util.* ;
 
 public class ImcmsTagSubstitution implements Substitution {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     private static Pattern HTML_PREBODY_PATTERN  = null ;
     private static Pattern HTML_POSTBODY_PATTERN  = null ;

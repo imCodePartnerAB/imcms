@@ -8,6 +8,8 @@ import imcode.util.Utility;
 
 public class BillBoardError extends BillBoard
 {//ConfError
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private static final String ERROR_FILE = "BillBoard_Error.htm";
 	private static final String ERROR_FILE_2 = "BillBoard_User_Error.htm";

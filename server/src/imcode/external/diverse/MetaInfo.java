@@ -8,6 +8,8 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 public class MetaInfo extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     
     public MetaInfo(){
 	

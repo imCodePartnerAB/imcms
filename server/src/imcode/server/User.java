@@ -3,6 +3,8 @@ package imcode.server ;
 import java.util.* ;
 
 public class User extends Hashtable {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	int archive_mode = 0 ;
 	String browser_info[] = new String[3] ;
 	String browser_str = "" ;

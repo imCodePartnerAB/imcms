@@ -8,6 +8,8 @@ import imcode.server.* ;
 import imcode.util.* ;
 
 public class RmiConf {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     static Hashtable interfaces = new Hashtable() ;	// Keeps track of servers. "ip:port"=interface
     static Hashtable paths = new Hashtable() ;	    // Keeps track of paths. "server"=interface
     imcode.server.User user ;

@@ -4,6 +4,8 @@ import java.io.*;
 
 
 public class SettingsAccessor extends DataAccessor {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     
     protected String FILE_NAME ;
     protected Properties settingsTable ;

@@ -6,6 +6,8 @@ import imcode.util.log.* ;
 import imcode.util.* ;
 
 public class MenuParserSubstitution implements Substitution {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     private static Pattern HASHTAG_PATTERN  = null ;
     private static Pattern MENULOOP_PATTERN  = null ;

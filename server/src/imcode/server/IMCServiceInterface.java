@@ -31,6 +31,9 @@ import java.util.* ;
   */
 public interface IMCServiceInterface {
 
+	final static String CVS_REV = "$Revision$" ;
+	final static String CVS_DATE = "$Date$" ;
+
 	// Verify a Internet/Intranet user. Data from any SQL Database.
 	imcode.server.User verifyUser(imcode.server.LoginUser login_user,String fieldNames[])
 	 ;

@@ -3,6 +3,8 @@ package imcode.util ;
 import java.util.*;
 
 public class ExStringTokenizer implements Enumeration {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	LinkedList list;
 	public ExStringTokenizer (String str, String delim) {

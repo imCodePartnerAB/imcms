@@ -5,8 +5,9 @@ import java.io.*;
 import java.io.FilenameFilter;
 
 
-public class ImageFileMetaData
-{
+public class ImageFileMetaData {
+    private final static String CVS_REV="$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
     static final byte[] PNG_HEADER = { -119, 80, 78, 71, 13, 10, 26, 10 } ;
 

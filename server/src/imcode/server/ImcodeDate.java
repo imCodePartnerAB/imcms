@@ -2,6 +2,8 @@ package imcode.server ;
 import java.util.Calendar ;
 
 public class ImcodeDate {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 
 	/**

@@ -28,6 +28,8 @@ import imcode.util.* ;
 */
 
 public class BillBoardForum extends BillBoard {//ConfForum
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Section_Admin_Link.htm";//Conf_Forum_Admin_Link.htm
 

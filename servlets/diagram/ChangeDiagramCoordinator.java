@@ -6,6 +6,8 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 
 public class ChangeDiagramCoordinator extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 		String HTML_TEMPLATE ; 				// The template file to generate the html page
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res)

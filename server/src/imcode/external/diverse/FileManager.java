@@ -4,6 +4,8 @@ import java.io.*;
 import java.lang.* ;
 
 public class FileManager{
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     
 /**
  * Deletes a file from hd

@@ -5,8 +5,9 @@ package imcode.server;
 * so I realy have no choice.../Hasse
 */
 
-public class WebAppGlobalConstants 
-{
+public class WebAppGlobalConstants {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private static WebAppGlobalConstants singletonInstance;
 	
 	/** 

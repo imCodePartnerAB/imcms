@@ -19,6 +19,8 @@ import java.util.*;
  */
 
 public class Html {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     
     
         /**

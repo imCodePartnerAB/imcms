@@ -5,6 +5,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 public class Check extends Object {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	static public imcode.server.User userLoggedOn (HttpServletRequest req, HttpServletResponse res, String start_url) throws ServletException, IOException {
 

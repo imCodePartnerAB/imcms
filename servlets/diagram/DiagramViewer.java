@@ -6,6 +6,8 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 
 public class DiagramViewer extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 		// String FILE_PATH ;            // The physical path to the path to where this
 		String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are

@@ -10,6 +10,8 @@ import java.util.* ;
  */
 
 public class StringManager {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     String delim ;
     String str ;
     

@@ -1,6 +1,8 @@
 package imcode.server ;
 
 public class HTMLConv {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	final static String h_code[] = { "&nbsp;","&iexcl;","&cent;","&pound;","&curren;","&yen;","",
 											"&sect;","&uml;","&copy;","&ordf;","&laquo;","&not;","",
 											"&reg;","&macr;","&deg;","&plusmn;","","",

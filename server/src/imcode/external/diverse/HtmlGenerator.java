@@ -12,6 +12,8 @@ import imcode.util.Utility;
  *@created    den 30 augusti 2001
  */
 public class HtmlGenerator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     String HTML_TEMPLATE;
 

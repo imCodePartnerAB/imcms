@@ -9,6 +9,8 @@ import java.util.* ;
 	Config location specified in systemproperty "com.imcode.netserver.config".
 */
 public class Prefs {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private final static Hashtable hash = new Hashtable () ;
 	private static String conf_path = "NOT INITIALIZED, CALL Prefs.setConfigPath() AT STARTUP";
 

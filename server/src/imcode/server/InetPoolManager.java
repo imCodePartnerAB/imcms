@@ -10,6 +10,8 @@ import javax.sql.* ;
 import imcode.util.log.* ;
 
 public class InetPoolManager {
+	private final static String CVS_REV="$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 
     // Inet poolmanager
@@ -102,11 +104,10 @@ public class InetPoolManager {
 	    log.log(Log.INFO, "Driver Name: " + conMD.getDriverName(),null );
 	    log.log(Log.INFO, "Driver Version:" + conMD.getDriverVersion(),null );
 
+	    connection.close() ;
 	} catch (SQLException ex) {
 	    log.log(Log.CRITICAL, "Failed to make first contact with the DataSource.",ex );
 	    throw ex ;
-	} finally {
-	    connection.close() ;
 	}
     }
 

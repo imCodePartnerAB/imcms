@@ -45,6 +45,8 @@ import imcode.util.Parser;
 
 
 public class BillBoard extends HttpServlet { //Conference
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private final static String ADMIN_BUTTON_TEMPLATE = "BillBoard_Admin_Button.htm";
 	private final static String UNADMIN_BUTTON_TEMPLATE = "BillBoard_Unadmin_Button.htm";
 

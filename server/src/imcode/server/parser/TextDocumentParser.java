@@ -11,6 +11,8 @@ import imcode.util.* ;
 import imcode.util.log.* ;
 
 public class TextDocumentParser implements imcode.server.IMCConstants {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     private Log log = Log.getLog("server") ;
     private FileCache fileCache = new FileCache() ;

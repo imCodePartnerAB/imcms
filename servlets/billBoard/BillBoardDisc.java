@@ -54,6 +54,8 @@ import imcode.util.IMCServiceRMI;
 
 
 public class BillBoardDisc extends BillBoard {//ConfDisc
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private final static String NEW_DISC_FLAG_TEMPLATE = "BillBoard_Disc_List_New.htm";//"Conf_Disc_List_New.htm";
 	private final static String PREVIOUS_DISC_LIST_TEMPLATE = "BillBoard_Disc_List_Previous.htm";//"Conf_Disc_List_Previous.htm";

@@ -6,6 +6,8 @@ import java.util.* ;
 import imcode.util.log.* ;
 
 public class HashTagSubstitution implements Substitution {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	
     private static Pattern HASHTAGNUMBER_PATTERN  = null ;
 

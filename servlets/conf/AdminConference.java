@@ -42,6 +42,8 @@ import imcode.external.diverse.MetaInfo;
  *
  */
 public class AdminConference extends Administrator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     private static final String TEMPLATE_CONF = "AdminConference.html";
     private static final String TEMPLATE_LIST_TOOL = "AdminConference_list_tool.html";

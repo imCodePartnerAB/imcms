@@ -5,6 +5,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 public class ReadTextFile {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     
     public synchronized static String getFile(String theFile) {
         String retStr = "" ;

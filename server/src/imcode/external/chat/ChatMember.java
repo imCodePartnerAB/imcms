@@ -18,6 +18,8 @@ import java.util.*;
 
 public class ChatMember 
 {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	private Properties myChatSettings;
 	private int _userId;
 	private String _ipNr;
