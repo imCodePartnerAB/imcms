@@ -184,11 +184,18 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    return "" ;
 	} else if (null != (attributevalue = attributes.getProperty("url"))) { // If we have an attribute of the form url="url:url"
 	    try {
-		URL url = new URL(attributevalue) ;
-		if (url.getProtocol().equalsIgnoreCase("file")) { // Make sure we don't have to defend against file://urls...
-		    return "" ;
+		String urlStr = attributevalue ;
+		URL url = new URL(urlStr) ;
+		String urlProtocol = url.getProtocol() ;
+		if ("file".equalsIgnoreCase(urlProtocol)) { // Make sure we don't have to defend against file://urls...
+		    return "<!-- imcms:include failed: file-url not allowed -->" ;
 		}
-		InputStreamReader urlInput = new InputStreamReader(url.openConnection().getInputStream()) ;
+		String sessionId = documentRequest.getSessionId() ;
+		URLConnection urlConnection = url.openConnection() ;
+		if (null != attributes.getProperty("sendsessionid")) {
+		    urlConnection.setRequestProperty("Cookie","JSESSIONID="+sessionId) ;
+		}
+		InputStreamReader urlInput = new InputStreamReader(urlConnection.getInputStream()) ;
 		int charsRead = -1 ;
 		final int URL_BUFFER_LEN = 16384 ;
 		char[] buffer = new char[URL_BUFFER_LEN] ;
@@ -204,7 +211,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    } catch (RuntimeException ex) {
 		return "<!-- imcms:include failed: "+ex+" -->" ;
 	    }
-	} else { // If we have none of the attributes no, file, or document
+	} else { // If we have none of the attributes no, file, url, or document
 	    no = implicitIncludeNumber++ ; // Implicitly use the next number.
 	}
 	try {
@@ -228,15 +235,15 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
 		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
 		return documentStr ;
+	    } else {
+		return "<!-- imcms:include failed: max include-level reached. -->" ;
 	    }
 	} catch (IOException ex) {
 	    return "<!-- imcms:include failed: "+ex+" -->" ;
 	} catch (NumberFormatException ex) {
 	    // There was no such include in the db.
-	    return "" ;
+	    return "<!-- imcms:include failed: "+ex+" -->" ;
 	}
-
-	return "" ;
     }
 
     /**
