@@ -1,3 +1,9 @@
+-- diff.sql,v
+-- Revision 1.2  2001/09/26 12:19:50  kreiger
+-- Added default-templates to text_docs.
+--
+
+
 drop procedure [dbo].[CheckDocSharePermissionForUser]
 
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
@@ -22,3 +28,15 @@ GROUP BY m.meta_id
 GO
 
 -- 2001-09-19
+
+-- Add columns for default-templates to text-docs.
+
+alter table text_docs 
+add default_template_1 INT DEFAULT -1 NOT NULL
+
+alter table text_docs 
+add default_template_2 INT DEFAULT -1 NOT NULL
+
+
+-- 2001/09/26 12:19:50
+-- 2001-09-26
