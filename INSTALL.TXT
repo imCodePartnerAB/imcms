@@ -7,7 +7,7 @@ Prerequisites:
     * Install Apache Tomcat 4+,
       or another servlet-api 2.3 (or later) compatible servlet engine.
 
-    * Install Microsoft SQL Server 2000 and the accompanying Full Text Index Server.
+    * Install Microsoft SQL Server 2000.
 
     * Download the Microsoft JDBC driver for SQL Server 2000 Service Pack 2 or later from www.microsoft.com.
 
@@ -25,9 +25,6 @@ Setting up the database:
       a simple script to use.
 
     * To set up the imCMS-database run "imcms.sql" on the empty database.
-
-    * If you'd like to set up any of the extra features "conference", "chat", or "billboard",
-      download the imCMS source code, and run the corresponding files in the "sql" directory.
 
 
 Installing imCMS:
