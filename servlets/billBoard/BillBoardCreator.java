@@ -99,7 +99,8 @@ public class BillBoardCreator extends BillBoard
 
 			String confName = confParams.getProperty("BILLBOARD_NAME") ;//CONF_NAME
 			// String sortType = "1" ;	// Default value, unused so far
-			String sqlQ = "B_AddNewBillBoard " + metaId + ", '" + confName + "'" ;//AddNewConf
+			String subject =  	confParams.getProperty("SUBJECT_NAME");
+			String sqlQ = "B_AddNewBillBoard " + metaId + ", '" + confName + "', '"+ subject+"'" ;//AddNewConf
 			//log("B_AddNewBillBoard sql:" + sqlQ ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 
@@ -184,9 +185,12 @@ public class BillBoardCreator extends BillBoard
 		Properties confP = new Properties() ;
 		String billBoard_name = (req.getParameter("billBoard_name")==null) ? "" : (req.getParameter("billBoard_name")) ;//conference_name
 		String section_name = (req.getParameter("section_name")==null) ? "" : (req.getParameter("section_name")) ;//forum_name
+		String subject_name = (req.getParameter("subject_name")==null) ? "" : (req.getParameter("subject_name")) ;
 	
+		
 		confP.setProperty("BILLBOARD_NAME", billBoard_name.trim()) ;
 		confP.setProperty("SECTION_NAME", section_name.trim()) ;
+		confP.setProperty("SUBJECT_NAME", subject_name.trim()) ;
 		
 		//log("BillBoard paramters:" + confP.toString()) ;
 		return confP ;
