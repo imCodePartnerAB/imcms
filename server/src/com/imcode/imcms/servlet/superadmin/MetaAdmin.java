@@ -18,7 +18,7 @@ public class MetaAdmin extends HttpServlet {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
 

@@ -36,7 +36,7 @@ public class GetDoc extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         int meta_id;
-        res.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
 
         try {

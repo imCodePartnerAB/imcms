@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.TextDocumentDomainObject.Text;
 import imcode.server.document.TextDocumentDomainObject;
@@ -23,7 +24,7 @@ public class ChangeText extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
 
         Writer out = res.getWriter();
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );

@@ -1,6 +1,7 @@
 package imcode.util;
 
 import imcode.server.user.UserDomainObject;
+import imcode.server.WebAppGlobalConstants;
 
 import javax.servlet.http.*;
 import javax.servlet.http.HttpUtils;
@@ -119,6 +120,10 @@ public class Utility {
         } else {
             return date1.compareTo( date2 ) ;
         }
+    }
+
+    public static void setDefaultHtmlContentType( HttpServletResponse res ) {
+        res.setContentType( "text/html; charset="+WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
     }
 
 }

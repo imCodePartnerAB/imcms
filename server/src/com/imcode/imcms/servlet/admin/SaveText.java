@@ -2,10 +2,10 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.server.user.UserDomainObject;
-import imcode.server.document.TextDocumentDomainObject.Text;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -21,7 +21,8 @@ import java.io.Writer;
 public class SaveText extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        res.setContentType( "text/html" );
+        req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         // Check if user has permission to be here

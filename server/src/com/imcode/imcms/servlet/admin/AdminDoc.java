@@ -52,7 +52,7 @@ public class AdminDoc extends HttpServlet {
             // Find the start-page
             int start_doc = imcref.getSystemData().getStartDocument();
 
-            res.setContentType("text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING_CP1252);
+            Utility.setDefaultHtmlContentType( res );
             ServletOutputStream out = res.getOutputStream();
             int meta_id = Integer.parseInt(req.getParameter("meta_id"));
             int parent_meta_id;
