@@ -94,6 +94,13 @@ public class Log implements LogLevels {
 			StringBuffer messageBuff = new StringBuffer( msg );
 			messageBuff.append( ", " );
 			messageBuff.append( obj.toString() );
+			if ( obj instanceof Exception ) 
+			{
+				Exception ex = (Exception)obj;
+				java.io.StringWriter sw = new java.io.StringWriter();
+				ex.printStackTrace( new java.io.PrintWriter( sw ) );
+				messageBuff.append( sw.toString() );
+			}
 			message = messageBuff.toString();
 		}
 		return message;
