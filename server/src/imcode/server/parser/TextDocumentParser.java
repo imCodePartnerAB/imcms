@@ -105,7 +105,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution( parserParameters, document, menumode );
             ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
 
-            String returnresult = replaceTags( template, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution, document, user );
+            String returnresult = replaceTags( template, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution );
 
             returnresult = applyEmphasis( documentRequest, user, returnresult, patMat, result );
             return returnresult;
@@ -163,8 +163,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     private String replaceTags( String template, Perl5Matcher patMat, MenuParserSubstitution menuparsersubstitution,
-                                ImcmsTagSubstitution imcmstagsubstitution, MapSubstitution hashtagsubstitution,
-                                TextDocumentDomainObject document, UserDomainObject user ) {
+                                ImcmsTagSubstitution imcmstagsubstitution, MapSubstitution hashtagsubstitution ) {
         // Menus.
         String result = Util.substitute( patMat, MENU_PATTERN, menuparsersubstitution, template, Util.SUBSTITUTE_ALL );
         // <?imcms:tags?>

@@ -41,10 +41,6 @@ class SecurityChecker {
         }
     }
 
-    void hasTemplateGroupPermission( TemplateGroup templateGroup ) {
-        // todo
-    }
-
     void userHasPermissionToAddDocumentToAnyMenu( Document document ) throws NoPermissionException {
         if (!docMapper.userHasPermissionToAddDocumentToAnyMenu(accessingUser, document.getInternal())) {
             throw new NoPermissionException("The logged in user does not have permission to add this document to any menu "+document.getId()) ;

@@ -37,14 +37,13 @@ public class TemplateService {
     }
 
     /**
-     * Get an array of all the Templates in a TemplateGroup
+     * Get an array of all the Templates in a TemplateGroup.
      *
      * @param templateGroup The wanted TemplateGroup
      * @return An array of all the Templates in the given TemplateGroup
      * @throws NoPermissionException If the current user doesn't have permission to list the templates in the templategroup.
      */
     public Template[] getTemplates( TemplateGroup templateGroup ) throws NoPermissionException {
-        securityChecker.hasTemplateGroupPermission( templateGroup );
         TemplateDomainObject[] templates = templateMapper.getTemplatesInGroup( templateGroup.getInternal() );
         Template[] result = new Template[templates.length];
         for (int i = 0; i < templates.length; i++) {
