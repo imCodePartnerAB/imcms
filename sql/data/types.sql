@@ -18,7 +18,7 @@ INSERT INTO doc_types VALUES(104, 'se', 'Anslagstavla')
 
 INSERT INTO doc_types VALUES(2, 'en', 'Text page')
 INSERT INTO doc_types VALUES(5, 'en', 'External link')
-INSERT INTO doc_types VALUES(6, 'en', 'Browser controled link')
+INSERT INTO doc_types VALUES(6, 'en', 'Browser controlled link')
 INSERT INTO doc_types VALUES(7, 'en', 'HTML-document')
 INSERT INTO doc_types VALUES(8, 'en', 'File')
 INSERT INTO doc_types VALUES(102, 'en', 'Conference')
