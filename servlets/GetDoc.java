@@ -31,6 +31,7 @@ import com.cyscape.browserhawk.BrowserHawkException;
 import com.cyscape.browserhawk.LicenseException;
 */
 import imcode.util.* ;
+import imcode.util.log.* ;
 import imcode.server.* ;
 import imcode.util.IMCServiceRMI;
 
@@ -42,6 +43,20 @@ public class GetDoc extends HttpServlet {
 	private static final int COOKIE_EXPIRE_TIME = 518400;
 
 	private static ServletContext sc ;
+
+    static Log trackLog = Log.getLog("accesslog") ;
+
+    static {
+	try {
+	    String trackLogFilename = Prefs.get("accesslog","servlet.cfg") ;
+	    if (trackLogFilename != null) {
+		trackLog.addLogListener(new WriterLogger(new java.io.BufferedWriter(new java.io.FileWriter(trackLogFilename,true)),Log.INFO,Log.WARNING,60000,32768)) ;
+	    }
+	} catch (IOException ex) {
+	    System.err.println("Failed to set up access log. "+ex.getMessage()) ;
+	}
+    }
+
 	/**
 	init()
 	*/
@@ -206,12 +221,13 @@ public class GetDoc extends HttpServlet {
 			return null ;
 		}
 		//int doc_type = IMCServiceRMI.getDocType( imcserver,meta_id ) ;
+	        trackLog.log(Log.INFO, "User: "+user.getInt("user_id")+" From: "+parent_meta_id+" To: "+meta_id+" DocType: "+doc_type_str) ;
 		switch( Integer.parseInt(doc_type_str) ) {
 
 		case 5:	//URL-doc
 			imcode.server.Table url_doc = IMCServiceRMI.isUrlDoc( imcserver,meta_id,user ) ;
 			// track user
-			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
+			//IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
 			String temp = url_doc.getString("url_ref") ;
 			if ( temp.indexOf("://")==-1 ) {
 				temp = "http://"+temp ;
@@ -228,7 +244,8 @@ public class GetDoc extends HttpServlet {
 				meta_id = Integer.parseInt(tmp) ;
 			}
 			user.archiveOff( ) ;
-			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
+			//IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
+
 			Utility.redirect(req,res,"GetDoc?meta_id="+meta_id+"&parent_meta_id="+parent_meta_id) ;
 			return null ; //getDoc(meta_id,parent_meta_id,host,req,res) ;
 
@@ -238,7 +255,7 @@ public class GetDoc extends HttpServlet {
 				throw new RuntimeException("Null-frameset encountered.") ;
 			}
 			// track user
-			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
+			//			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
 			htmlStr = html_str_temp ;
 			return htmlStr.getBytes("8859_1") ;
 
@@ -247,7 +264,7 @@ public class GetDoc extends HttpServlet {
 			String mimetype =	IMCServiceRMI.sqlQueryStr( imcserver,sqlStr ) ;
 			sqlStr = "select filename from fileupload_docs where meta_id = " + meta_id ;
 			String filename =	IMCServiceRMI.sqlQueryStr( imcserver,sqlStr ) ;
-			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
+			//			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
 			BufferedInputStream fr ;
 			try {
 				fr = new BufferedInputStream( new FileInputStream( new File( file_path, String.valueOf( meta_id )+"_se" ) ) ) ;
@@ -259,11 +276,8 @@ public class GetDoc extends HttpServlet {
 			int len = fr.available( ) ;
 			ServletOutputStream out = res.getOutputStream() ;
 			String range = req.getHeader("Range") ;
-			sc.log("Range: "+range) ;
-			sc.log (String.valueOf(meta_id)+"Name: "+filename) ;
 			String content_type = mimetype/*+"; name=\""+filename+"\""*/ ;
 			String content_disposition = "inline; filename="+filename ;
-			sc.log ("Content-Type: "+content_type) ;
 			//sc.log ("Content-Disposition: "+content_disposition) ;
 			res.setContentLength( len ) ;
 			res.setContentType( content_type ) ;
@@ -296,12 +310,10 @@ public class GetDoc extends HttpServlet {
 			user.archiveOff( ) ;
 			user.setTemplateGroup(-1) ;
 			// track user
-			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
+			//			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
 
 			user.setLastMetaId( meta_id ) ;
-			long time = System.currentTimeMillis() ;
 			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,0 ) ;
-			sc.log("parsePage: "+(System.currentTimeMillis()-time)+" ms") ;
 			return result ;
 		}
 	}
