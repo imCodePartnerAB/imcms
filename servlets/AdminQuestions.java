@@ -132,13 +132,14 @@ public class AdminQuestions extends Administrator
 		String options = "";
 	
 		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
-		File file = new File(fortune_path,whichFile + "statistics.txt");
+		File file = new File(fortune_path,whichFile + "enkatstatistics.txt");
 		if (file.exists())
 		{	//öppna filen med detta namnet, om det finns en statisticsfil, annars skriv felmeddelande	//öppna filen med detta namnet, om det finns en statisticsfil, annars skriv felmeddelande
-			String openFile = IMCServiceRMI.getFortune(imcServer,whichFile + "statistics.txt") ;
+			String openFile = IMCServiceRMI.getFortune(imcServer,whichFile + "enkatstatistics.txt") ;
 			BufferedReader readFile = new BufferedReader( new StringReader( openFile ) );
 			
 			String line = readFile.readLine();
+		
 			int row = 0;
 			while ( line!=null && !(line.length()<=12) )
 			{
@@ -150,12 +151,13 @@ public class AdminQuestions extends Administrator
 				row++;
 			}
 			
+					
 			//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
 			Vector values = new Vector();
 			values.add("#options#");
 			values.add(options);
 
-			String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, "ShowQuestions.htm" , "se", "admin");
+			String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, "ShowQuestions.htm" , "se", "106");
 			out.print(parsed);
 			
 			session.setAttribute("results",results);	
@@ -164,7 +166,7 @@ public class AdminQuestions extends Administrator
 		}
 		else
 		{
-			String url = MetaInfo.getServletPath(req) + "AdminRandomTexts" ;
+			String url = MetaInfo.getServletPath(req) + "AdminQuestions" ;
 			res.sendRedirect(url) ;
 			return;
 		}
