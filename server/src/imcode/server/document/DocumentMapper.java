@@ -1013,6 +1013,14 @@ public class DocumentMapper {
         documentCache.clear();
     }
 
+    public int getLowestDocumentId() {
+        return Integer.parseInt(service.sqlQueryStr( "SELECT MIN(meta_id) FROM meta", new String[0] )) ;
+    }
+
+    public int getHighestDocumentId() {
+        return Integer.parseInt( service.sqlQueryStr( "SELECT MAX(meta_id) FROM meta", new String[0] ) );
+    }
+
     public static class TextDocumentMenuIndexPair {
 
         private TextDocumentDomainObject document;

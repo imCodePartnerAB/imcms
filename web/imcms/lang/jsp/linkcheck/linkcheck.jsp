@@ -22,12 +22,26 @@
     #gui_start_of_page( "<? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" "AdminManager" "" "18" "" )
 </vel:velocity>
 <form method="GET" action="LinkCheck">
-<div><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/only_broken ?><input type="checkbox" name="<%= LinkCheck.REQUEST_PARAMETER__BROKEN_ONLY %>"  value="0"  <%= linkCheckPage.isBrokenOnly() ? "checked" : "" %> >
-    &nbsp; <input type="submit" name="<%= LinkCheck.LinkCheckPage.REQUEST_PARAMETER__START_BUTTON %>" value="Start check" class="imcmsFormBtn" style="width:100">
-
+<div>
+<table border="0">
+    <tr>
+        <td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/only_broken ?></td>
+        <td><input type="checkbox" name="<%= LinkCheck.REQUEST_PARAMETER__BROKEN_ONLY %>"  value="0"  <%= linkCheckPage.isBrokenOnly() ? "checked" : "" %> ></td>
+    </tr>
+    <tr>
+        <td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/start_id ?></td>
+        <td><input type="text" name="<%= LinkCheck.REQUEST_PARAMETER__START_ID %>"  size="5" value="<%= linkCheckPage.getStartId() %>"></td>
+    </tr>
+    <tr>
+        <td><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/end_id ?></td>
+        <td><input type="text" name="<%= LinkCheck.REQUEST_PARAMETER__END_ID %>" size="5" value="<%= linkCheckPage.getEndId() %>"></td>
+    </tr>
+</table>
+<input type="submit" name="<%= LinkCheck.REQUEST_PARAMETER__START_BUTTON %>" value="Start check" class="imcmsFormBtn" style="width:100">
 </div>
 </form>
 <% if (doCheckLinks) { %>
+
         <%  UserDomainObject user = Utility.getLoggedOnUser( request ) ;
             Iterator linksIterator = (Iterator)linkCheckPage.getLinksIterator() ;
             while ( linksIterator.hasNext() ) {

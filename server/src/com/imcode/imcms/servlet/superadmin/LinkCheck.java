@@ -12,11 +12,11 @@ import imcode.util.Utility;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.math.IntRange;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.*;
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.oro.text.regex.PatternMatcherInput;
 
@@ -40,7 +40,10 @@ public class LinkCheck extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( LinkCheck.class.getName() );
 
+    public static final String REQUEST_PARAMETER__START_BUTTON = "start_check";
     public static final String REQUEST_PARAMETER__BROKEN_ONLY = "broken_only";
+    public static final String REQUEST_PARAMETER__START_ID = "start_id";
+    public static final String REQUEST_PARAMETER__END_ID = "end_id";
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
@@ -54,13 +57,30 @@ public class LinkCheck extends HttpServlet {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentIndex reindexingIndex = documentMapper.getDocumentIndex();
-        addUrlDocumentLinks( links, reindexingIndex, user, request );
-        addTextAndImageLinks( links, reindexingIndex, user, request );
+
+        int lowestDocumentId = documentMapper.getLowestDocumentId();
+        int highestDocumentId = documentMapper.getHighestDocumentId();
+        int startId = NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__START_ID ), lowestDocumentId );
+        int endId =   NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__END_ID ),   highestDocumentId );
+        IntRange range = new IntRange( startId,endId );
+        range = new IntRange( Math.max(range.getMinimumInteger(), lowestDocumentId), Math.min(range.getMaximumInteger(), highestDocumentId));
+
+        addUrlDocumentLinks( links, reindexingIndex, user, request, range );
+        addTextAndImageLinks( links, reindexingIndex, user, request, range );
+        Collections.sort( links, new Comparator() {
+            public int compare( Object o1, Object o2 ) {
+                Link l1 = (Link)o1 ;
+                Link l2 = (Link)o2 ;
+                return l1.getDocument().getId() - l2.getDocument().getId() ;
+            }
+        } );
 
         LinkCheckPage linkCheckPage = new LinkCheckPage();
         linkCheckPage.setLinksIterator( links.iterator() );
-        boolean doCheckLinks = null != request.getParameter( LinkCheckPage.REQUEST_PARAMETER__START_BUTTON );
+        boolean doCheckLinks = null != request.getParameter( REQUEST_PARAMETER__START_BUTTON );
         linkCheckPage.setDoCheckLinks( doCheckLinks );
+        linkCheckPage.setStartId( range.getMinimumInteger() ) ;
+        linkCheckPage.setEndId( range.getMaximumInteger() ) ;
         linkCheckPage.setBrokenOnly( null != request.getParameter( REQUEST_PARAMETER__BROKEN_ONLY ) );
         if ( doCheckLinks ) {
             Iterator iterator = links.iterator();
@@ -93,10 +113,12 @@ public class LinkCheck extends HttpServlet {
     public static class LinkCheckPage implements Serializable {
 
         public static final String REQUEST_ATTRIBUTE__PAGE = "linkpage";
-        public static final String REQUEST_PARAMETER__START_BUTTON = "start_check";
+
         boolean brokenOnly;
         boolean doCheckLinks;
         private Iterator linksIterator;
+        private int startId;
+        private int endId;
 
         public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
             putInRequest( request );
@@ -131,23 +153,42 @@ public class LinkCheck extends HttpServlet {
         public Iterator getLinksIterator() {
             return linksIterator;
         }
+
+        public int getStartId() {
+            return startId;
+        }
+
+        public int getEndId() {
+            return endId;
+        }
+
+        public void setStartId( int startId ) {
+            this.startId = startId;
+        }
+
+        public void setEndId( int endId ) {
+            this.endId = endId;
+        }
     }
 
     private void addUrlDocumentLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
-                                      HttpServletRequest request ) {
-        DocumentDomainObject[] urlDocuments = reindexingIndex.search( new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
-                                                                                                                                 + DocumentDomainObject.DOCTYPE_URL.getId() ) ), user );
-        Arrays.sort( urlDocuments, DocumentComparator.ID );
+                                      HttpServletRequest request, IntRange range ) {
+        TermQuery urlDocumentsQuery = new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
+                                                                                     + DocumentDomainObject.DOCTYPE_URL.getId() ) );
+        DocumentDomainObject[] urlDocuments = reindexingIndex.search( urlDocumentsQuery, user );
 
         for ( int i = 0; i < urlDocuments.length; i++ ) {
             UrlDocumentDomainObject urlDocument = (UrlDocumentDomainObject)urlDocuments[i];
+            if ( !range.containsInteger( urlDocument.getId() )) {
+                continue ;
+            }
             Link link = new UrlDocumentLink( urlDocument, request );
             links.add( link );
         }
     }
 
     private void addTextAndImageLinks( List links, DocumentIndex reindexingIndex, UserDomainObject user,
-                                       HttpServletRequest request ) {
+                                       HttpServletRequest request, IntRange range ) {
         BooleanQuery query = new BooleanQuery();
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http" ) ), false, false );
         query.add( new PrefixQuery( new Term( DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href" ) ), false, false );
@@ -157,6 +198,9 @@ public class LinkCheck extends HttpServlet {
 
         for ( int i = 0; i < textDocuments.length; i++ ) {
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject)textDocuments[i];
+            if (!range.containsInteger( textDocument.getId() )) {
+                continue;
+            }
             addTextLinks( links, textDocument, request );
             addImageLinks( links, textDocument, request );
         }
