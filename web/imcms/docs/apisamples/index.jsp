@@ -82,6 +82,7 @@ Clear the first include, <%= makeLinks("document_clear_include.jsp") %><br>
 <br>
 To create different kinds of document that is linked from the document above, <%= makeLinks("document_create_documents.jsp") %><br>
 <br>
+To list files in file-documents, <%= makeLinks( "file_document_search.jsp" ) %><br>
 
 <h3>Categories</h3>
 List all possible document categories, <%= makeLinks("categories_show_all.jsp") %><br>

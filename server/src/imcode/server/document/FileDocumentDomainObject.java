@@ -4,6 +4,7 @@ import com.imcode.imcms.api.util.InputStreamSource;
 import imcode.util.Utility;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.UnhandledException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,14 +29,26 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         documentVisitor.visitFileDocument( this );
     }
 
-    public void addFile( String fileId, FileDocumentFile fileDocumentFile ) {
+    public void addFile( String fileId, FileDocumentFile file ) {
         if ( null == fileId ) {
             throw new NullArgumentException( "fileId" );
         }
         if ( !files.containsKey( defaultFileId ) ) {
             defaultFileId = fileId;
         }
-        files.put( fileId, fileDocumentFile );
+        FileDocumentFile fileClone = cloneFile( file );
+        fileClone.setId( fileId );
+        files.put( fileId, fileClone );
+    }
+
+    private FileDocumentFile cloneFile( FileDocumentFile file ) {
+        FileDocumentFile fileClone;
+        try {
+            fileClone = (FileDocumentFile)file.clone();
+        } catch ( CloneNotSupportedException e ) {
+            throw new UnhandledException( e );
+        }
+        return fileClone;
     }
 
     public Map getFiles() {
@@ -49,7 +62,8 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     public FileDocumentFile getFile( String fileId ) {
-        return (FileDocumentFile)files.get( fileId );
+        FileDocumentFile file = (FileDocumentFile)files.get( fileId );
+        return cloneFile( file );
     }
 
     public FileDocumentFile removeFile( String fileId ) {
@@ -90,7 +104,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     public FileDocumentFile getDefaultFile() {
-        return (FileDocumentFile)files.get( defaultFileId );
+        return getFile( defaultFileId );
 
     }
 
@@ -110,14 +124,15 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         if ( files.containsKey( newFileId ) ) {
             throw new IllegalStateException( "There already is a file with the id " + newFileId );
         }
-        files.put( newFileId, files.remove( oldFileId ) );
+        addFile( newFileId, (FileDocumentFile)files.remove( oldFileId ) );
         if ( defaultFileId.equals( oldFileId ) ) {
             defaultFileId = newFileId;
         }
     }
 
-    public static class FileDocumentFile {
+    public static class FileDocumentFile implements Cloneable {
 
+        private String id;
         private String filename;
         private String mimeType;
         private InputStreamSource inputStreamSource;
@@ -153,6 +168,18 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
         public boolean isCreatedAsImage() {
             return createdAsImage;
+        }
+
+        public void setId( String id ) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        protected Object clone() throws CloneNotSupportedException {
+            return super.clone();
         }
     }
 }

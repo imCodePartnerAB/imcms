@@ -1,8 +1,12 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
 
 public class UrlDocument extends Document {
+
+    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_URL;
+
     UrlDocument(UrlDocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
         super(document, contentManagementSystem);
     }

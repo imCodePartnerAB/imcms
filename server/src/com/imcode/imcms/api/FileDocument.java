@@ -1,17 +1,20 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.api.util.InputStreamSource;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.util.FileInputStreamSource;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.TransformerUtils;
-import org.apache.commons.collections.map.TransformedMap;
+import org.apache.commons.collections.list.TransformedList;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class FileDocument extends Document {
+
+    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_FILE ;
 
     FileDocument( FileDocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
         super( document, contentManagementSystem );
@@ -31,15 +34,16 @@ public class FileDocument extends Document {
         return new FileDocumentFile( getInternalFileDocument().removeFile( fileId ) );
     }
 
-    public Map getFiles() throws NoPermissionException {
+    public FileDocumentFile[] getFiles() throws NoPermissionException {
         getSecurityChecker().hasAtLeastDocumentReadPermission( this );
-        Map fileMap = TransformedMap.decorate(new HashMap(), TransformerUtils.nopTransformer(), new Transformer() {
+        Map filesMap = getInternalFileDocument().getFiles();
+        List files = TransformedList.decorate(new ArrayList(filesMap.size()), new Transformer() {
             public Object transform( Object input ) {
                 return new FileDocumentFile( (FileDocumentDomainObject.FileDocumentFile)input ) ;
             }
         }) ;
-        fileMap.putAll( getInternalFileDocument().getFiles() );
-        return fileMap;
+        files.addAll( filesMap.values() ) ;
+        return (FileDocumentFile[])files.toArray( new FileDocumentFile[files.size()] );
     }
 
     public FileDocumentFile getFileOrDefault( String fileId ) throws NoPermissionException {
@@ -95,6 +99,10 @@ public class FileDocument extends Document {
 
         public InputStreamSource getInputStreamSource() {
             return internalFile.getInputStreamSource();
+        }
+
+        public String getId() {
+            return internalFile.getId() ;
         }
 
         public void setInputStreamSource( InputStreamSource inputStreamSource ) {
