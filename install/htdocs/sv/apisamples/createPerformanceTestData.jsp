@@ -1,8 +1,7 @@
 <%@ page import="com.imcode.imcms.api.ContentManagementSystem,
                  com.imcode.imcms.api.RequestConstants,
                  com.imcode.imcms.api.DocumentService,
-                 com.imcode.imcms.api.TextDocument,
-                 imcode.server.document.TextDocumentDomainObject"%>
+                 com.imcode.imcms.api.TextDocument"%>
 <%
     String parentIdParamName = "parentId";
     String parentIdStr = request.getParameter(parentIdParamName);

@@ -38,6 +38,7 @@
     <property name="javascript" value="${webroot}/javascript"/>
     <property name="jsp" value="${webroot}/jsp"/>
     <property name="imcms" value="${webroot}/imcms"/>
+    <property name="imcmstest" value="${imcms}/test"/>
     <property name="imcmscss" value="${imcms}/css"/>
     <property name="apisamples" value="${webroot}/apisamples"/>
 
@@ -637,6 +638,11 @@
         <!-- css -->
         <copy todir="${css}">
             <fileset dir="install/htdocs/css"/>
+        </copy>
+
+        <!-- test -->
+        <copy todir="${imcmstest}">
+            <fileset dir="install/htdocs/imcms/test"/>
         </copy>
 
         <!-- html -->
