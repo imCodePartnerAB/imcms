@@ -100,9 +100,21 @@
     <property name="help-sql"                 value="${dist}/help.sql"/>
 
 
+    <path id="libraries">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+
+    <path id="classes-and-libraries">
+        <pathelement path="${classes}"/>
+        <path refid="libraries"/>
+    </path>
+
+
     <!-- Where to install imCMS -->
     <property name="webapproot"               value="${deployroot}/${webappname}"/>
-
 
     <!-- A handy target to have everything else depend on, just in case. -->
     <target name="init" depends="global-filters" description="Handy target for everything else to depend on.">
@@ -116,6 +128,8 @@
             <srcfileset file="${basedir}/build.xml"/>
             <targetfileset dir="${build}"/>
         </dependset>
+
+        <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
 
     </target>
 
@@ -287,8 +301,8 @@
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
 	    depends="init,
-		     server,
-		     servlets,
+		     classes,
+             doc,
 		     templates,
 		     libraries,
 		     web,conf,dir,sql,
@@ -305,10 +319,19 @@
 
 
     <!-- Install the webapp, bypassing the war-file -->
-    <target name="install" depends="init,build,check-deployroot,doc" description="Copies the webapp directly into the webapp-directory in the deployroot.">
-	<copy todir="${webapproot}">
-	    <fileset dir="${build}"/>
-	</copy>
+    <target name="install" depends="init,build,check-deployroot" description="Copies the webapp directly into the webapp-directory in the deployroot.">
+	    <copy todir="${webapproot}">
+	        <fileset dir="${build}"/>
+	    </copy>
+        <copy todir="${webapproot}/WEB-INF/lib">
+            <fileset dir="lib/nodist"/>
+        </copy>
+    </target>
+
+
+    <!-- Install the war-file -->
+    <target name="install-war" depends="init,dist,check-deployroot,check-webappname" description="Copies the WAR-package into the deployroot.">
+        <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
     </target>
 
 
@@ -328,12 +351,6 @@
     <target name="clean-install" description="Runs the targets 'clean' and 'install'"
         depends="clean,install"
         />
-
-
-    <!-- Install the war-file -->
-    <target name="install-war" depends="init,dist,check-deployroot,check-webappname" description="Copies the WAR-package into the deployroot.">
-	<copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
-    </target>
 
 
     <!-- Delete an installed webapp -->
@@ -357,8 +374,11 @@
     </target>
 
 
+    <target name="classes" depends="init,server,servlets" description="Builds all classes."/>
+
+
     <!-- Generate documentation -->
-    <target name="doc" depends="build" description="Generates javadoc.">
+    <target name="doc" description="Generates javadoc.">
         <javadoc packagenames="imcode.imcms.api.*" sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API">
             <packageset dir="server/src/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
@@ -392,16 +412,17 @@
 
 
     <!-- Builds the 'non-servlets'. -->
-    <target name="server" depends="init,dir" description="Builds the server and utility classes.">
+    <target name="server" depends="init,dir">
 
 	<mkdir dir="${classes}"/>
+
 	<javac srcdir="server/src" destdir="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
+
+	    <exclude name="**/Test*.java" unless="junit-available"/>
+        <exclude name="**/*TestCase.java" unless="junit-available"/>
+
+        <classpath refid="libraries"/>
+
 	</javac>
 
     </target>
@@ -413,12 +434,7 @@
 	<mkdir dir="${classes}"/>
 	<javac srcdir="servlets" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
 
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
+        <classpath refid="classes-and-libraries"/>
 
 	</javac>
 
@@ -429,10 +445,7 @@
     <target name="libraries" depends="init,dir" description="Copies the jar-files.">
 
 	<copy todir="${lib}">
-	    <fileset dir="install/lib" >
-			<exclude name = "junit.jar"/>
-			<exclude name = "servlet.jar"/>
-	    </fileset>
+	    <fileset dir="lib" includes="*.jar"/>
 	</copy>
 
     </target>
@@ -445,12 +458,10 @@
             <targetfileset dir="${conf}"/>
 	    </dependset>
         <copy todir="${conf}" filtering="true">
-	    <fileset dir="install/conf">
-		<exclude name="policy"/>
-	    </fileset>
-	</copy>
+	        <fileset dir="install/conf" />
+    	</copy>
 
-	<copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
+	    <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
 
     </target>
 
@@ -665,12 +676,8 @@
 	<mkdir dir="${classes}"/>
 	<javac srcdir="servlets/calender" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
 
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
+        <classpath refid="classes-and-libraries"/>
+
 	</javac>
     </target>
 
@@ -735,12 +742,8 @@
 	<mkdir dir="${classes}"/>
 	<javac srcdir="servlets/conf" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
 
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
+        <classpath refid="classes-and-libraries"/>
+
 	</javac>
 
     </target>
@@ -808,12 +811,8 @@
 	<mkdir dir="${classes}"/>
 	<javac srcdir="servlets/chat" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
 
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
+	    <classpath refid="classes-and-libraries"/>
+
 	</javac>
 
     </target>
@@ -858,12 +857,8 @@
 	<mkdir dir="${classes}"/>
 	<javac srcdir="servlets/billBoard" destdir="${classes}" includes="*.java" classpath="${classes}" debug="${debug}" optimize="${optimize}" deprecation="${deprecation}">
 
-	    <classpath>
-		<pathelement path="${classes}"/>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
+        <classpath refid="classes-and-libraries"/>
+
 	</javac>
 
     </target>

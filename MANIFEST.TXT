@@ -1,4 +1,5 @@
 install/**
+lib/*.jar
 server/**
 servlets/**/*.java
 server/**/*.java
