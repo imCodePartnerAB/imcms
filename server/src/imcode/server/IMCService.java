@@ -5,7 +5,6 @@ import imcode.server.db.ConnectionPool;
 import imcode.server.db.DBConnect;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.TemplateMapper;
 import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
@@ -1220,6 +1219,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     public DocumentMapper getDocumentMapper() {
         return documentMapper ;
+    }
+
+    public ImcmsAuthenticatorAndUserMapper getUserAndRoleMapper() {
+        return imcmsAuthenticatorAndUserMapper;
     }
 
     /**

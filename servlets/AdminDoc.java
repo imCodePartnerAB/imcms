@@ -21,7 +21,7 @@ public class AdminDoc extends HttpServlet {
         super.init( config );
     }
 
-    
+
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();

@@ -33,17 +33,17 @@ function openHelp(id){
 	<td width="5%">&nbsp;</td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="2" width="100%">
-	<tr> 
+	<tr>
 		<td width="90"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
 		&nbsp;Rubrik<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
 		<td><input type="TEXT" name="meta_headline" size="67" maxlength="255" value="#meta_headline#" style="width:100%"></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
 		&nbsp;Text<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
 		<td><textarea name="meta_text" cols="65" rows="3" maxlength="100" wrap="virtual" style="width:100%">
 #meta_text#</textarea></td>
-	<tr> 
+	<tr>
 		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
 		&nbsp;Bild<br><font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
 		<td><input type="TEXT" name="meta_image" size="67" value="#meta_image#" maxlength="255" style="width:100%"></td>
@@ -51,7 +51,7 @@ function openHelp(id){
 	<tr>
 		<td colspan="2"><hr></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td>&nbsp;</td>
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0">
@@ -103,7 +103,7 @@ function openHelp(id){
 	<tr>
 		<td colspan="2"><hr></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;S&ouml;kord</font></td>
 		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">
 		<input type="TEXT" name="classification" size="67" value="#classification#" maxlength="200" style="width:100%">
@@ -113,14 +113,14 @@ function openHelp(id){
 	<tr>
 		<td colspan="2"><hr></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Avdelning</font></td>
-		<td> 		
+		<td>
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nuvarande: #current_section_name# <br>
-		Byt till:&nbsp; 
+		Byt till:&nbsp;
 		<select name="change_section" size="1">
-			<option value="-1">Ingen avdelning</option>			  
-			#section_option_list#		
+			<option value="-1">Ingen avdelning</option>
+			#section_option_list#
 		</select></font>
 		</td>
     </tr>
@@ -151,12 +151,12 @@ function openHelp(id){
 	<tr>
 		<td colspan="2"><hr></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Dela ut</font></font></td>
 		<td><font size="2">
 		<input type="CHECKBOX" name="show_meta" value="1" #show_meta#>
-		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Visa 
-		dokumentet &auml;ven f&ouml;r obeh&ouml;riga anv&auml;ndare<br></font> 
+		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Visa
+		dokumentet &auml;ven f&ouml;r obeh&ouml;riga anv&auml;ndare<br></font>
 		<input type="CHECKBOX" name="shared" value="1" #shared#>
 		<font face="Verdana, Arial, Helvetica, sans-serif">
 		Dela ut dokumentet f&ouml;r andra administrat&ouml;rer</font></font> </td>
@@ -164,18 +164,31 @@ function openHelp(id){
 	<tr>
 		<td colspan="2"><hr></td>
 	</tr>
-	<tr> 
+    <tr>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Ansvarig<br> utgivare</font></td>
+        <td>
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Nuvarande: #current_publisher_name# <br>
+		Byt till:&nbsp;
+		<select name="publisher_id" size="1">
+		    #publisher_id#
+		</select></font>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2"><hr></td>
+	</tr>
+	<tr>
 		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Publicera</font></td>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
 		<input type="TEXT" name="activated_date" size="13" value="#activated_date#" maxlength="10" >
 		<font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font>
 		&nbsp;&nbsp;&nbsp;&nbsp;kl:
 		<input type="TEXT" name="activated_time" size="7" maxlength="5" value="#activated_time#" >
 		<font size="1">(HH:MM)</font></font></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Arkivera</font></td>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
 		<input type="TEXT" name="archived_date" size="13" maxlength="10" value="#archived_date#" >
 		<font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font>
 		&nbsp;&nbsp;&nbsp;&nbsp;kl:
@@ -185,9 +198,9 @@ function openHelp(id){
 	<tr>
 		<td colspan="2"><hr></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Visa i</font></td>
-		<td nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+		<td nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
 		<input type="radio" name="target" style="background-color:#bababa" value="_self" #_self#> Samma frame
 		<input type="radio" name="target" style="background-color:#bababa" value="_blank" #_blank#> Nytt f&ouml;nster
 		<input type="radio" name="target" style="background-color:#bababa" value="_top" #_top#> Ers&auml;tt allt
@@ -197,7 +210,7 @@ function openHelp(id){
 	<tr>
 		<td colspan="2"><hr></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td><table border="0" cellspacing="0" cellpadding="0" width="90"><tr><td>&nbsp;</td></tr></table></td>
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0">
@@ -221,7 +234,7 @@ function openHelp(id){
 </table>
 
 <table border="0" cellpadding="0" cellspacing="0" align="center">
-<tr> 
+<tr>
 	<td>#adminMode#</td>
 </tr>
 </table>

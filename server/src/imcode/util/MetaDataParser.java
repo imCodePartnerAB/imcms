@@ -9,7 +9,7 @@ import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.parser.AdminButtonParser;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -102,6 +102,7 @@ public class MetaDataParser {
             "target", null, OTHER,
             "frame_name", null, OTHER,
             "lang_prefix", null, OTHER,
+            "publisher_id", null, OTHER,
         };
 
         // Lets get the langprefix
@@ -326,6 +327,7 @@ public class MetaDataParser {
 
         addLanguageRelatedTagsForDocInfoPageToParseList(vec, hash, imcref, user);
 
+        addPublisherRelatedTagsForDocInfoPageToParseList(vec, hash, imcref );
 
         vec.add("#categories#");
         vec.add(createHtmlListBoxesOfCategoriesForEachCategoryType(imcref.getDocumentMapper(), Integer.parseInt(meta_id),imcref,user));
@@ -410,6 +412,27 @@ public class MetaDataParser {
         }
         vec.add("#section_option_list#");
         vec.add(option_list);
+    }
+
+    public static void addPublisherRelatedTagsForDocInfoPageToParseList( Vector vec, Hashtable hash, IMCServiceInterface imcref ) {
+        ImcmsAuthenticatorAndUserMapper userAndRoleMapper = imcref.getUserAndRoleMapper();
+
+        String publisherIdStr = ((String[])hash.get("publisher_id"))[0];
+        UserDomainObject publisher = userAndRoleMapper.getUser( Integer.parseInt(publisherIdStr));
+
+        vec.add("#current_publisher_name#");
+        vec.add( publisher.getLastName() + ", " + publisher.getFirstName() );
+
+        UserDomainObject[] users = userAndRoleMapper.getAllUsers();
+        List usersInOptionList = new ArrayList();
+        for (int i = 0; i < users.length; i++) {
+            UserDomainObject user = users[i];
+            usersInOptionList.add( "" + user.getUserId() );
+            usersInOptionList.add( user.getLastName() + ", " + user.getFirstName() );
+        }
+        String optionList = Html.createHtmlOptionList( "" + publisher.getUserId(), usersInOptionList );
+        vec.add("#publisher_id#");
+        vec.add( optionList );
     }
 
     public static void addLanguageRelatedTagsForDocInfoPageToParseList(Vector vec, Hashtable hash,
@@ -883,7 +906,7 @@ public class MetaDataParser {
         StringBuffer doc_specific = new StringBuffer(
                 imcref.parseDoc(null, "permissions/define_permissions_" + doc_type + ".html", lang_prefix));
 
-        Parser.parseTags(doc_specific, '#', " <>\"\n\r\t", (Map) vec, true, 1);
+        Parser.parseTags(doc_specific, '#', " <>\"\n\r\t", vec, true, 1);
 
         vec.put("doc_rights", doc_specific.toString());
 
@@ -897,7 +920,7 @@ public class MetaDataParser {
 
         vec.setPrefix("permissions/define_permission_");
 
-        return Parser.parseTags(complete, '#', " <>\"\n\r\t", (Map) vec, true, 1).toString();
+        return Parser.parseTags(complete, '#', " <>\"\n\r\t", vec, true, 1).toString();
     }
 
 } // End of class

@@ -97,6 +97,7 @@ public class DocumentMapper {
         map.put("frame_name", result[22]);
         map.put("activated_datetime", result[23]);
         map.put("archived_datetime", result[24]);
+        map.put("publisher_id", result[25]);
 
         return map;
     }
@@ -288,6 +289,13 @@ public class DocumentMapper {
         }
         document.setLanguageIso639_2(langStr);
         document.setArchived("0".equals(documentData.get("archive")) ? false : true);
+
+        String publisherIDStr = (String) documentData.get("publisher_id");
+        if( null != publisherIDStr ) {
+            UserDomainObject publisher = imcmsAAUM.getUser( Integer.parseInt(publisherIDStr));
+            document.publisher = publisher;
+        };
+
         String[] section_data = sprocSectionGetInheritId(service, metaId);
         String sectionName = null;
         if (section_data.length == 2) {
@@ -587,9 +595,10 @@ public class DocumentMapper {
         TemplateDomainObject template = document.template;
         int templateGroupId = document.templateGroupId;
         String text = document.text;
+        UserDomainObject publisher = document.publisher;
 
         sqlUpdateMeta(service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline,
-                image, modifiedDatetime, target, text, archived, language);
+                image, modifiedDatetime, target, text, archived, language, publisher.getUserId() );
         updateSection(service, document, section);
 
         service.sqlUpdateQuery("DELETE FROM document_categories WHERE meta_id = ?", new String[] { ""+document.getMetaId()}) ;
@@ -649,10 +658,9 @@ public class DocumentMapper {
 
     private static void sqlUpdateMeta(IMCServiceInterface service, int meta_id, Date activatedDatetime,
                                       Date archivedDateTime, Date createdDatetime, String headline, String image, Date modifiedDateTime,
-                                      String target, String text, boolean isArchived, String language) {
+                                      String target, String text, boolean isArchived, String language, int publisherID ) {
 
         StringBuffer sqlStr = new StringBuffer("update meta set ");
-
 
         sqlStr.append(makeDateSQL("activated_datetime", activatedDatetime));
         sqlStr.append(makeDateSQL("archived_datetime", archivedDateTime));
@@ -664,6 +672,7 @@ public class DocumentMapper {
         sqlStr.append(makeStringSQL("meta_text", text));
         sqlStr.append(makeStringSQL("lang_prefix", language));
         sqlStr.append(makeBooleanSQL("archive", isArchived));
+        sqlStr.append(makeIntSQL("publisher_id", publisherID));
         // todo: Remove from the meta table all collumns that are not used.
         // Candidates: All not used above.
 
@@ -671,11 +680,15 @@ public class DocumentMapper {
         service.sqlUpdateQuery(sqlStr.toString());
     }
 
-    private static String makeBooleanSQL(String columnName, boolean field_isarchived) {
-        String str = columnName + " = " + (field_isarchived ? 1 : 0);
+    private static String makeIntSQL( String columnName, int publisherID ) {
+        String str = columnName + " = " + publisherID;
         return str;
     }
 
+    private static String makeBooleanSQL(String columnName, boolean field_isarchived) {
+        String str = columnName + " = " + (field_isarchived ? 1 : 0) + ", ";
+        return str;
+    }
 
     private static String makeDateSQL(String columnName, Date date) {
         if (null != date) {

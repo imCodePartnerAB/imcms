@@ -284,7 +284,7 @@ public class AddDoc extends HttpServlet {
         }
 
         MetaDataParser.addLanguageRelatedTagsForDocInfoPageToParseList(vec,hash,imcref,user);
-        
+
         //lets build the option list used when the admin whants to breake the inherit chain
         String[] all_sections = imcref.sqlProcedure( "SectionGetAll" );
         Vector onlyTemp = new Vector();

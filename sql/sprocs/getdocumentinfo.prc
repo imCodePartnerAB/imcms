@@ -1,6 +1,6 @@
-SET QUOTED_IDENTIFIER OFF 
+SET QUOTED_IDENTIFIER OFF
 GO
-SET ANSI_NULLS OFF 
+SET ANSI_NULLS OFF
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetDocumentInfo]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
@@ -36,12 +36,13 @@ AS
 	target,
 	frame_name,
 	activated_datetime,
-	archived_datetime
- FROM meta 
+	archived_datetime,
+	publisher_id
+ FROM meta
  WHERE meta_id=@meta_id
 GO
-SET QUOTED_IDENTIFIER OFF 
+SET QUOTED_IDENTIFIER OFF
 GO
-SET ANSI_NULLS ON 
+SET ANSI_NULLS ON
 GO
 

@@ -6,7 +6,7 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.*;
 
-/** Stores all info about a text-internalDocument. **/
+/** Stores all info about a internalDocument. **/
 
 public class DocumentDomainObject implements IMCConstants {
 
@@ -24,6 +24,7 @@ public class DocumentDomainObject implements IMCConstants {
     String target;
     String section;
     UserDomainObject creator ;
+    UserDomainObject publisher;
     String languageIso639_2;
     Set categories = new HashSet() ;
     Map rolesMappedToPermissionSetIds = new HashMap();
@@ -326,6 +327,10 @@ public class DocumentDomainObject implements IMCConstants {
         this.templateGroupId = v;
     }
 
+    public UserDomainObject getPublisher() {
+        return publisher;
+    }
+
     public UserDomainObject getCreator() {
         return creator;
     }
@@ -400,4 +405,7 @@ public class DocumentDomainObject implements IMCConstants {
         categories.clear() ;
     }
 
+    public void setPublisher( UserDomainObject user ) {
+        publisher = user;
+    }
 }

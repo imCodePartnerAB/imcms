@@ -4,7 +4,7 @@ import java.io.* ;
 import java.util.* ;
 
 import imcode.server.parser.ParserParameters ;
-import imcode.server.user.UserDomainObject;
+import imcode.server.user.*;
 import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.db.ConnectionPool;
@@ -394,5 +394,7 @@ public interface IMCServiceInterface {
     String[][] sqlQueryMulti( String sqlStr, String[] params );
 
     DocumentMapper getDocumentMapper();
+
+    ImcmsAuthenticatorAndUserMapper getUserAndRoleMapper();
 
 }

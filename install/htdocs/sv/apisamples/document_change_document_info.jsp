@@ -23,8 +23,13 @@
         %> (The category did not exist.)<br> <%
     }
 
+    // publisher
+    UserService userService = imcmsSystem.getUserService();
+    User admin = userService.getUser("admin");
+    document.setPublisher( admin );
+
     // don't forget to save your changes!
     documentService.saveChanges( document );
 %>
-Done changing the headline, menutext, menuimageurl, and language, and adding a category to
+Done changing the headline, menutext, menuimageurl, language, publisher and adding a category to
 document <a href="../servlet/GetDoc?meta_id=<%= documentId %>"><%= documentId %></a>.

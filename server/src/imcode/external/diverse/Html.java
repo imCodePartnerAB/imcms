@@ -20,10 +20,6 @@ import java.util.*;
 
 public class Html {
 
-    private final static String CVS_REV = "$Revision$";
-    private final static String CVS_DATE = "$Date$";
-
-
     /**
      * CreateHtml code, can mark up several values as selected
      */
@@ -49,16 +45,16 @@ public class Html {
                 } // end if
             } // end for
         } // end if
-        
-        
-        
-        
+
+
+
+
         /*
                         THIS CODE WILL GENERATE LIST WIHT A HREF REFERENCES
         // Lets prepare HTML code
                 Html ht = new Html() ;
         String optionList = ht.createHtmlCode("ID_OPTION", "", repliesV ) ;
-                 
+
         // Lets generate a list with a hrefs links
         String aHrefList = "" ;
         String start = "<a href=\"" ;
@@ -68,13 +64,13 @@ public class Html {
         String targetFrame = "ConfRepliesFrame";
         String targetStart = " target=\"_" + targetFrame ;
         String targetStop = "\" ";
-                 
+
         for(int i = 0 ; i < repliesV.size(); i+=2) {
                 String argument = repliesV.elementAt(i).toString() ;
                 String visibleTxt = repliesV.elementAt(i+1).toString() ;
         //	String tmp = start + argument + middle1 + middle2 + visibleTxt + end ;
                         String tmp = start + argument + middle1 + targetStart + middle1+ middle2 +  visibleTxt + end ;
-                 
+
                 aHrefList += tmp ;
                 log("Här är en aHref: " + tmp) ;
         }
@@ -95,16 +91,19 @@ public class Html {
         StringBuffer htmlStr = new StringBuffer() ;
 
         for ( int i = 0 ; i < data.size() ; i += 2 ) {
-            htmlStr.append( "<option value=\"" ).append( data.get( i ) ).append( "\"" );
+            String value = (String) data.get( i );
+            String visible = (String) data.get( i + 1 );
+
+            htmlStr.append( "<option value=\"" ).append( value ).append( "\"" );
 
             if ( null != selected ) {
-                if ( selected.equals( data.get( i ) ) ) {
+                if ( selected.equals( value ) ) {
                     htmlStr.append(" selected ");
                 }
             }
 
             htmlStr.append(">");
-            htmlStr.append(data.get( i + 1 )).append("</option>");
+            htmlStr.append(visible).append("</option>");
         }
         return htmlStr.toString();
     }
@@ -133,7 +132,7 @@ public class Html {
         return htmlStr;
     }
     /*
-          
+
             if (format.indexOf("TABLE") !=-1) {
              int iNumCount = dbc.getColumnCount() ;
                     htmlStr += "<TABLE BORDER=1 width=\"75%\" align=\"center\">\n" ;
@@ -147,12 +146,12 @@ public class Html {
                      }
                    htmlStr += "</TABLE>\n" ;
             }
-          
-          
+
+
            if (format.indexOf("CHECKBOX_LIST") !=-1) {
              int iNumCount = dbc.getColumnCount() ;
                     htmlStr += "<TABLE BORDER=1 width=\"75%\" align=\"center\">\n" ;
-          
+
                      htmlStr += "<TH>&nbsp;" ;
                      for( int i = 0 ; i < tableHeader.size() ; i++)
                        htmlStr += "<TH>" + tableHeader.elementAt(i).toString() ;
@@ -167,16 +166,16 @@ public class Html {
                      }
                    htmlStr += "</TABLE>\n" ;
             }
-          
-          
+
+
            if (format.indexOf("CLICK_LIST") !=-1) {
              int iNumCount = dbc.getColumnCount() ;
                     htmlStr += "<TABLE BORDER=1 width=\"75%\" align=\"center\">\n" ;
-          
+
                      htmlStr += "<TH>&nbsp;" ;
                      for( int i = 0 ; i < tableHeader.size() ; i++)
                        htmlStr += "<TH>" + tableHeader.elementAt(i).toString() ;
-          
+
                       for( int i = 0 ; i < data.size() ; i+=iNumCount) {
                            htmlStr += "<TR><TD>\n" ;
                            htmlStr += "<a href=\"/servlet/GetUser?user_id=" + data.elementAt(i).toString() + "\">" ;
@@ -188,16 +187,16 @@ public class Html {
                      }
                    htmlStr += "</TABLE>\n" ;
             }
-          
+
             dbc.clearResultSet() ;
             dbc.closeConnection() ;
             dbc = null ;
             return htmlStr ;
     }
-          
+
      */
-    
-    
+
+
     /**
      * creats list of options, no selected options.
      * @param options must be in order name, value.
@@ -250,37 +249,4 @@ public class Html {
 
         return option.toString();
     }
-
-    /**
-     * Loops throug a vector and looks out for a character and replaces this
-     * character to a string .
-     **/
-    public static StringBuffer replace( StringBuffer strBuff, char lookFor, String replacement ) {
-        for ( int i = 0 ; i < strBuff.length() ; i++ ) {
-            char aChar = strBuff.charAt( i );
-            if ( '\n' == aChar ) {
-                strBuff = strBuff.replace( i, i, replacement );
-                i += replacement.length();
-            }
-        }
-
-        return strBuff;
-    } // End of replace
-    
-    /**
-     * Loops throug a vector and looks out for a character and replaces this
-     * character to a string .
-     *
-     * public static Vector replace(Vector v, char lookFor, String replacement) {
-     * StringBuffer strBuff = new StringBuffer(v.toString()) ;
-     * strBuff = replace(strBuff, lookFor, replacement) ;
-     * Vector returnV = new Vector() ;
-     * for( int i = 0 ; i < strBuff.length(); i++ ) {
-     * returnV.add(""+ strBuff.charAt(i), i);
-     * }
-     *
-     * return returnV ;
-     * } // End of replace
-     **/
-
-} // End of class
+}
