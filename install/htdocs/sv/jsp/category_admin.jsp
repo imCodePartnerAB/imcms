@@ -7,7 +7,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Administer categories / category_typesr</title>
+<title><? install/htdocs/sv/jsp/category_admin/title ?></title>
 <link rel="STYLESHEET" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
 
@@ -19,7 +19,7 @@ imcmsGui("outer_start", null);
 imcmsGui("head", null);
 </script>
 <%
-    AdminCategories.FormData adminCategoriesFormData = (AdminCategories.FormData)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
+    AdminCategories.FormData formData = (AdminCategories.FormData)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
     StringBuffer messageToUser = new StringBuffer("");
 
 %>
@@ -30,19 +30,19 @@ imcmsGui("head", null);
     </tr>
     <tr>
     <td colspan="2">
-        <input type="submit" class="imcmsFormBtn" name="add_category_type" value="<? global/create ?>">
-        <input type="submit" class="imcmsFormBtn" name="edit_category_type" value="<? global/edit ?>" >
-        <input type="submit" class="imcmsFormBtn" name="delete_category_type" value="<? global/remove ?>"></td>
+        <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE %>" value="<? global/create ?>">
+        <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__EDIT_CATEGORY_TYPE %>" value="<? global/edit ?>" >
+        <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__DELETE_CATEGORY_TYPE %>" value="<? global/remove ?>"></td>
     </tr>
     <tr>
     <td colspan="2" class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category ?>:</b></td>
     </tr>
     <tr>
     <td colspan="2">
-        <input type="submit" class="imcmsFormBtn" name="add_category" value="<? global/create ?>">
-        <input type="submit" class="imcmsFormBtn" name="edit_category" value="<? global/edit ?>">
-        <input type="submit" class="imcmsFormBtn" name="delete_category" value="<? global/remove ?>">
-        <input type="submit" class="imcmsFormBtn" name="view_category" value="<? global/view ?>">
+        <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__ADD_CATEGORY %>" value="<? global/create ?>">
+        <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__EDIT_CATEGORY %>" value="<? global/edit ?>">
+        <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__DELETE_CATEGORY %>" value="<? global/remove ?>">
+        <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__VIEW_CATEGORY %>" value="<? global/view ?>">
     <td>
         <input type="button" value="<? global/help ?>" title="Open help" class="imcmsFormBtn" onClick="openHelpW(124)"></td>
     </tr>
@@ -54,32 +54,35 @@ imcmsGui("mid", null);
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="main" action="AdminCategories" method="post">
 <%
-    String defaultHeading = "<? install/htdocs/sv/jsp/category_admin/administer_categories ?>" ;
-    String createCategoryTypeHeading = "<? install/htdocs/sv/jsp/category_admin/create_category_type ?>" ;
-    String editCategoryTypeHeading = "<? install/htdocs/sv/jsp/category_admin/edit_category_type ?>";
-    String removeCategoryTypeHeading = "<? install/htdocs/sv/jsp/category_admin/remove_category_type ?>";
-    String createCategoryHeading = "<? install/htdocs/sv/jsp/category_admin/create_category ?>";
-    String editCategoryHeading = "<? install/htdocs/sv/jsp/category_admin/edit_category ?>";
-    String removeCategoryHeading = "<? install/htdocs/sv/jsp/category_admin/remove_category ?>";
-    String viewCategoriesHeading = "<? install/htdocs/sv/jsp/category_admin/view_categories ?>";
-    String heading = request.getParameter("heading") != null ? request.getParameter("heading") : defaultHeading;
 
-    if(request.getParameter("add_category_type") != null ){
-        heading = createCategoryTypeHeading;
-    }else if(request.getParameter("edit_category_type")!=null){
-        heading = editCategoryTypeHeading;
-    }else if(request.getParameter("delete_category_type")!=null){
-        heading = removeCategoryTypeHeading;
-    }else if(request.getParameter("add_category")!=null){
-        heading = createCategoryHeading;
-    }else if(request.getParameter("edit_category")!=null){
-        heading = editCategoryHeading;
-    }else if(request.getParameter("delete_category")!=null){
-        heading = removeCategoryHeading;
-    }else if(request.getParameter("view_category")!=null){
-        heading = viewCategoriesHeading;
-    }else if(request.getParameter("cancel")!=null){
-        heading = defaultHeading;
+    boolean inAddCategoryTypeMode = null != request.getParameter(AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE);
+    boolean inEditCategoryTypeMode = null != request.getParameter(AdminCategories.PARAMETER_MODE__EDIT_CATEGORY_TYPE) ;
+    boolean inDeleteCategoryTypeMode = null != request.getParameter(AdminCategories.PARAMETER_MODE__DELETE_CATEGORY_TYPE) ;
+    boolean inAddCategoryMode = null != request.getParameter(AdminCategories.PARAMETER_MODE__ADD_CATEGORY) ;
+    boolean inEditCategoryMode = null != request.getParameter(AdminCategories.PARAMETER_MODE__EDIT_CATEGORY) ;
+    boolean inDeleteCategoryMode = null != request.getParameter(AdminCategories.PARAMETER_MODE__DELETE_CATEGORY) ;
+    boolean inViewCategoryMode = null != request.getParameter(AdminCategories.PARAMETER_MODE__VIEW_CATEGORY);
+    boolean pressedCancelButton = null != request.getParameter(AdminCategories.PARAMETER_BUTTON__CANCEL);
+    boolean inDefaultMode = null != request.getParameter(AdminCategories.PARAMETER_MODE__DEFAULT) || pressedCancelButton;
+
+    String defaultHeading = "<? install/htdocs/sv/jsp/category_admin/administer_categories ?>";
+    String heading = defaultHeading ;
+    if (inDefaultMode) {
+        heading = defaultHeading ;
+    } else if(inAddCategoryTypeMode){
+        heading = "<? install/htdocs/sv/jsp/category_admin/create_category_type ?>";
+    }else if(inEditCategoryTypeMode){
+        heading = "<? install/htdocs/sv/jsp/category_admin/edit_category_type ?>";
+    }else if(inDeleteCategoryTypeMode){
+        heading = "<? install/htdocs/sv/jsp/category_admin/remove_category_type ?>";
+    }else if(inAddCategoryMode){
+        heading = "<? install/htdocs/sv/jsp/category_admin/create_category ?>";
+    }else if(inEditCategoryMode){
+        heading = "<? install/htdocs/sv/jsp/category_admin/edit_category ?>";
+    }else if(inDeleteCategoryMode){
+        heading = "<? install/htdocs/sv/jsp/category_admin/remove_category ?>";
+    }else if(inViewCategoryMode) {
+        heading = "<? install/htdocs/sv/jsp/category_admin/view_categories ?>";
     }
  %>
 <tr>
@@ -89,22 +92,16 @@ imcmsGui("mid", null);
     <td colspan="2">
     <table border="0" cellpadding="0" cellspacing="0">
 
-    <% // ---- cancel --------------------
-    if(request.getParameter("cancel") != null ) { %>
-        <input type="hidden" name="adminMode" value="">
+    <% if (inDefaultMode || pressedCancelButton) { // default %>
+        <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__DEFAULT %>" value="1">
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap>
                 <? install/htdocs/sv/jsp/category_admin/select_function ?></td>
             <td>&nbsp;</td>
         </tr>
-    </table></td>
-    </tr>
+    <%} else if(request.getParameter(AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE) != null ) {   %>
 
-    <% } //------ add category type --------
-    else if(request.getParameter("add_category_type") != null || request.getParameter("category_type_add") != null) {   %>
-
-        <input type="hidden" name="adminMode" value="addCategoryTypeMode">
-        <input type="hidden" name="heading" value="<%=createCategoryTypeHeading%> ">
+        <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE %>" value="1">
         <tr>
             <td>&nbsp;</td>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? global/Name ?></td>
@@ -127,141 +124,104 @@ imcmsGui("mid", null);
              <td width="80" height="24" class="imcmsAdmText" nowrap>
               <input type="radio" name="max_choices" value="0" >&nbsp;<? install/htdocs/sv/jsp/category_admin/multi_choice ?></td>
         </tr>
-    </table></td>
-    </tr>
 
     <% }  // ---------- edit category type ------------
-    else if(request.getParameter("edit_category_type") != null || adminCategoriesFormData.getAdminMode().equals("editCategoryTypeMode") ) { %>
+    else if(request.getParameter(AdminCategories.PARAMETER_MODE__EDIT_CATEGORY_TYPE) != null ) { %>
 
-        <input type="hidden" name="adminMode" value="editCategoryTypeMode">
-        <input type="hidden" name="heading" value="<%=editCategoryTypeHeading%>">
+        <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__EDIT_CATEGORY_TYPE %>" value="1">
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_type ?> &nbsp;</td>
             <td>
-                <select name="<%= AdminCategories.PARAMETER_SELECT__SELECT_CATEGORY_TYPE%>">
-                    <%= adminCategoriesFormData.getCategoryTypesOptionList() %>
-                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE %>" value="<? global/select ?>"></td>
+                <select name="<%= AdminCategories.PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW%>">
+                    <%= AdminCategories.createHtmlOptionListOfCategoryTypes(formData.getCategoryTypeToEdit()) %>
+                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE %>" value="<? global/select ?>"></td>
         </tr>
 
-        <% if(adminCategoriesFormData.getCategoryTypeToEdit() != null ){  %>
+        <% if(formData.getCategoryTypeToEdit() != null ){  %>
             <tr>
                 <td height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/new_name ?> &nbsp;</td>
                 <td><script>
-                    writeFormField("TEXT","name",30,50,null, "<%=adminCategoriesFormData.getCategoryTypeToEdit().getName()%>");
+                    writeFormField("TEXT","name",30,50,null, "<%=formData.getCategoryTypeToEdit().getName()%>");
                 </script></td>
             </tr>
 
             <tr>
                 <td>&nbsp;</td>
                 <td width="80" height="24" class="imcmsAdmText" nowrap>
-                 <input type="radio" name="max_choices" value="1" <%= adminCategoriesFormData.getCategoryTypeToEdit().getMaxChoices() == 1 ?  "checked" : "" %> >
+                 <input type="radio" name="max_choices" value="1" <%= formData.getCategoryTypeToEdit().getMaxChoices() == 1 ?  "checked" : "" %> >
                    &nbsp;<? install/htdocs/sv/jsp/category_admin/singel_choice ?></td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
                  <td width="80" height="24" class="imcmsAdmText" nowrap>
-                  <input type="radio" name="max_choices" value="0" <%= adminCategoriesFormData.getCategoryTypeToEdit().getMaxChoices() == 0 ? "checked" : "" %> >
+                  <input type="radio" name="max_choices" value="0" <%= formData.getCategoryTypeToEdit().getMaxChoices() == 0 ? "checked" : "" %> >
                     &nbsp;<? install/htdocs/sv/jsp/category_admin/multi_choice ?></td>
             </tr>
         <%}%>
-    </table></td>
-    </tr>
 
     <%} // ------ add category -------
-    else if(request.getParameter("add_category") != null || adminCategoriesFormData.getAdminMode().equals("addCategoryMode")) {
+    else if(request.getParameter(AdminCategories.PARAMETER_MODE__ADD_CATEGORY) != null) {
 
-        CategoryDomainObject categoryToEdit = adminCategoriesFormData.getCategoryToEdit();
-        if( request.getParameter("category_add") != null && !adminCategoriesFormData.getUniqueName() ) {
-            messageToUser.append("Det finns redan en kategori med namn \"");
+        CategoryDomainObject categoryToEdit = formData.getCategoryToEdit();
+        if( request.getParameter("category_add") != null && !formData.getUniqueName() ) {
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/1 ?> \"");
             messageToUser.append(request.getParameter("name") + "\" ");
-            messageToUser.append("i kategoritypen \"" + categoryToEdit.getType().getName() + "\". ");
-            messageToUser.append("Var vänlig välj ett nytt namn!");
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/2 ?> \"" + categoryToEdit.getType().getName() + "\". ");
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/3 ?>!");
         }
     %>
 
 
-        <input type="hidden" name="adminMode" value="addCategoryMode">
-        <input type="hidden" name="heading" value="<%=createCategoryHeading%>">
-    <% if (null != categoryToEdit) { %>
+        <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__ADD_CATEGORY %>" value="1">
+    <% if (null != categoryToEdit) {
+        boolean readonly = false; %>
+
         <%@include file="category_admin_category.jsp"%>
     <% } %>
-    </table></td>
-    </tr>
+
     <%if( messageToUser.length() > 0 ) { %>
     <tr><td colspan="2">&nbsp;</td></tr>
     <tr>
         <td colspan="2" height="24" class="imcmsAdmText" ><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="red"> <%=messageToUser %> </font></td>
     </tr>
     <%}
-
-
     }  // ---------- edit category ------------
-    else if(request.getParameter("edit_category") != null || adminCategoriesFormData.getAdminMode().equals("editCategoryMode") ) {
+    else if(null != request.getParameter(AdminCategories.PARAMETER_MODE__EDIT_CATEGORY)) {
 
-        if( request.getParameter("category_save") != null && !adminCategoriesFormData.getUniqueName() ) {
-            messageToUser.append("Det finns redan en kategori med namn \"");
+        if( request.getParameter("category_save") != null && !formData.getUniqueName() ) {
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/1 ?> \"");
             messageToUser.append(request.getParameter("name") + "\" ");
-            messageToUser.append("i kategoritypen \"" + adminCategoriesFormData.getCategoryTypeToEdit().getName() + "\". ");
-            messageToUser.append("Var vänlig välj ett nytt namn!");
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/2 ?> \"" + formData.getCategoryToEdit().getType().getName() + "\". ");
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/3 ?>!");
         }
         %>
-        <input type="hidden" name="adminMode" value="editCategoryMode">
-        <input type="hidden" name="heading" value="<%=editCategoryHeading%>">
-        <input type="hidden" name="adminMode" value="editCategoryMode">
-        <input type="hidden" name="oldName" value="<%=adminCategoriesFormData.getCategoryToEdit() != null ? adminCategoriesFormData.getCategoryToEdit().getName() : "" %>">
+        <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__EDIT_CATEGORY %>" value="1">
+        <input type="hidden" name="oldName" value="<%=formData.getCategoryToEdit() != null ? formData.getCategoryToEdit().getName() : "" %>">
 
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_type ?> &nbsp;</td>
             <td>
-                <select name="<%= AdminCategories.PARAMETER_SELECT__SELECT_CATEGORY_TYPE %>">
-                    <%= adminCategoriesFormData.getCategoryTypesOptionList() %>
-                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE %>" value="<? global/select ?>"></td>
+                <select name="<%= AdminCategories.PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW %>">
+                    <%= AdminCategories.createHtmlOptionListOfCategoryTypes(formData.getCategoryTypeToEdit()) %>
+                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE %>" value="<? global/select ?>"></td>
         </tr>
-        <% if (null != adminCategoriesFormData.getCategoryTypeToEdit()) { %>
+        <% if (null != formData.getCategoryTypeToEdit()) { %>
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category ?> &nbsp;</td>
             <td>
                 <select name="categories">
-                    <%= adminCategoriesFormData.getCategoriesOptionList() %>
+                    <%= AdminCategories.createHtmlOptionListOfCategoriesForOneType(formData.getCategoryTypeToEdit(), formData.getCategoryToEdit()) %>
                 </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="select_category_to_edit" value="<? global/select ?>"></td>
         </tr>
         <%}%>
 
 
-        <% if(adminCategoriesFormData.getCategoryToEdit() != null ){  %>
-        <tr>
-            <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_name ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXT","name",30,50,null, "<%= adminCategoriesFormData.getCategoryToEdit().getName()%>");
-            </script></td>
-        </tr>
-        <tr><td colspan="2"></td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/description ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXTAREA","description",30,2,"100%",null);
-            </script><%= adminCategoriesFormData.getCategoryToEdit().getDescription()%></textarea></td>
-        </tr>
-        <tr><td colspan="2"></td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/icon ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXT","icon",30,255,null, "<%= adminCategoriesFormData.getCategoryToEdit().getImage()%>");
-            </script>
-            <%if(!adminCategoriesFormData.getCategoryToEdit().getImage().equals("")) { %>
-                &nbsp;<input type="image" src="<%=adminCategoriesFormData.getCategoryToEdit().getImage() %>" name="" value="" border="0">
-            <%} %></td>
-        </tr>
-        <tr><td colspan="2"></td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/add_to_category_type ?> &nbsp;</td>
-            <td><select name="<%= AdminCategories.PARAMETER__ADD_TO_CATEGORY_TYPE %>">
-                    <%= adminCategoriesFormData.getCategoryTypesOptionList() %>
-                </select></td>
-        </tr>
+        <% CategoryDomainObject categoryToEdit = formData.getCategoryToEdit() ;
+            if(categoryToEdit != null ){
+                boolean readonly = false;
+            %>
+                <%@include file="category_admin_category.jsp"%>
        <%}%>
-    </table></td>
-    </tr>
     <%if( messageToUser.length() > 0 ) { %>
      <tr><td>&nbsp;</td></tr>
      <tr>
@@ -269,74 +229,67 @@ imcmsGui("mid", null);
      </tr>
      <%}
     }  // ---------- View category ------------
-    else if(request.getParameter("view_category") != null || adminCategoriesFormData.getAdminMode().equals("showCategoryMode") ) { %>
-        <input type="hidden" name="adminMode" value="showCategoryMode">
-        <input type="hidden" name="heading" value="<%=viewCategoriesHeading%>">
+    else if(request.getParameter(AdminCategories.PARAMETER_MODE__VIEW_CATEGORY) != null) { %>
+        <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__VIEW_CATEGORY %>" value="1">
 
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_type ?> &nbsp;</td>
             <td>
-                <select name="<%= AdminCategories.PARAMETER_SELECT__SELECT_CATEGORY_TYPE %>">
-                    <%= adminCategoriesFormData.getCategoryTypesOptionList() %>
-                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE %>" value="<? global/select ?>"></td>
+                <select name="<%= AdminCategories.PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW %>">
+                    <%= AdminCategories.createHtmlOptionListOfCategoryTypes(formData.getCategoryTypeToEdit()) %>
+                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE %>" value="<? global/select ?>"></td>
         </tr>
-        <% if(adminCategoriesFormData.getCategoryTypeToEdit() != null ){ %>
+        <% if(formData.getCategoryTypeToEdit() != null ){ %>
         <tr>
             <td  class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category ?> &nbsp;</td>
             <td>
                 <select name="categories">
-                    <%= adminCategoriesFormData.getCategoriesOptionList() %>
+                    <%= AdminCategories.createHtmlOptionListOfCategoriesForOneType(formData.getCategoryTypeToEdit(), formData.getCategoryToEdit()) %>
                 </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="select_category_to_edit" value="<? global/select ?>"></td>
         </tr>
         <%}
-        if(adminCategoriesFormData.getCategoryToEdit() != null ){  %>
+        if(formData.getCategoryToEdit() != null ){  %>
         <tr>
             <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_name ?> &nbsp;</td>
             <td><script>
-                writeFormField("TEXT","name",30,50,null, "<%= adminCategoriesFormData.getCategoryToEdit().getName()%>");
-            </script>&nbsp;ID: <%=adminCategoriesFormData.getCategoryToEdit().getId() %> </td>
+                writeFormField("TEXT","name",30,50,null, "<%= formData.getCategoryToEdit().getName()%>");
+            </script>&nbsp;ID: <%=formData.getCategoryToEdit().getId() %> </td>
         </tr>
         <tr><td colspan="2"></td></tr>
         <tr>
 		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/description ?> &nbsp;</td>
             <td><script>
                 writeFormField("TEXTAREA","description",30,2,"100%",null);
-            </script><%= adminCategoriesFormData.getCategoryToEdit().getDescription()%></textarea></td>
+            </script><%= formData.getCategoryToEdit().getDescription()%></textarea></td>
         </tr>
         <tr><td colspan="2"></td></tr>
         <tr>
 		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/icon ?> &nbsp;</td>
             <td><script>
-                writeFormField("TEXT","icon",30,255,null, "<%= adminCategoriesFormData.getCategoryToEdit().getImage()%>");
+                writeFormField("TEXT","icon",30,255,null, "<%= formData.getCategoryToEdit().getImage()%>");
             </script>
-            <%if(!adminCategoriesFormData.getCategoryToEdit().getImage().equals("")) { %>
-                &nbsp;<input type="image" src="<%=adminCategoriesFormData.getCategoryToEdit().getImage() %>" name="" value="" border="0">
+            <%if(!formData.getCategoryToEdit().getImage().equals("")) { %>
+                &nbsp;<input type="image" src="<%=formData.getCategoryToEdit().getImage() %>" name="" value="" border="0">
             <%}%></td>
         </tr>
         <%}%>
-    </table></td>
-    </tr>
-
     <%}  // ---------- delete category type------------
-    else if(request.getParameter("delete_category_type") != null || adminCategoriesFormData.getAdminMode().equals("deleteCategoryTypeMode") ) {
-        if(adminCategoriesFormData.getNumberOfCategories() > 0 ) {
-            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/the_category_type ?> \"");
-            messageToUser.append( adminCategoriesFormData.getCategoryTypeToEdit().getName() + "\" <? install/htdocs/sv/jsp/category_admin/contains ?> ");
-            messageToUser.append(adminCategoriesFormData.getNumberOfCategories() +"");
-            messageToUser.append(" <? install/htdocs/sv/jsp/category_admin/categories ?>. ");
-            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/remove_category_type_not_allowed ?>!");
+    else if(request.getParameter(AdminCategories.PARAMETER_MODE__DELETE_CATEGORY_TYPE) != null ) {
+        if(formData.getNumberOfCategories() > 0 ) {
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_delete_category_type/1 ?> \"");
+            messageToUser.append( formData.getCategoryTypeToEdit().getName() + "\" <? install/htdocs/sv/jsp/category_admin/message_delete_category_type/2 ?> ");
+            messageToUser.append(formData.getNumberOfCategories() +"");
+            messageToUser.append(" <? install/htdocs/sv/jsp/category_admin/message_delete_category_type/3 ?>. ");
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_delete_category_type/4 ?>!");
         } %>
-        <input type="hidden" name="adminMode" value="deleteCategoryTypeMode">
-        <input type="hidden" name="heading" value="<%=removeCategoryTypeHeading%>">
+        <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__DELETE_CATEGORY_TYPE %>" value="1">
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_type ?> &nbsp;</td>
             <td>
-                <select name="<%= AdminCategories.PARAMETER_SELECT__SELECT_CATEGORY_TYPE %>">
-                    <%= adminCategoriesFormData.getCategoryTypesOptionList() %>
-                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE %>" value="<? global/remove ?>"></td>
+                <select name="<%= AdminCategories.PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW %>">
+                    <%= AdminCategories.createHtmlOptionListOfCategoryTypes(formData.getCategoryTypeToEdit()) %>
+                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE %>" value="<? global/remove ?>"></td>
         </tr>
-    </table></td>
-    </tr>
     <%if( messageToUser.length() > 0 ) { %>
     <tr><td colspan="2">&nbsp;</td></tr>
     <tr>
@@ -345,38 +298,37 @@ imcmsGui("mid", null);
     <%}
 
     } // ------------  delete category -------------------
-    else if(request.getParameter("delete_category") != null || adminCategoriesFormData.getAdminMode().equals("deleteCategoryMode") ) {
-        if(adminCategoriesFormData.getDocumentsOfOneCategory() != null && adminCategoriesFormData.getDocumentsOfOneCategory().length > 0 ) {
-            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/the_category ?> \"");
-            messageToUser.append( adminCategoriesFormData.getCategoryToEdit().getName() + "\" <? install/htdocs/sv/jsp/category_admin/is_used_by ?> ");
-            messageToUser.append(adminCategoriesFormData.getDocumentsOfOneCategory().length +"");
+    else if(request.getParameter(AdminCategories.PARAMETER_MODE__DELETE_CATEGORY) != null ) {
+        if(formData.getDocumentsOfOneCategory() != null && formData.getDocumentsOfOneCategory().length > 0 ) {
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_delete_category/1 ?> \"");
+            messageToUser.append( formData.getCategoryToEdit().getName() + "\" <? install/htdocs/sv/jsp/category_admin/message_delete_category/2 ?> ");
+            messageToUser.append(formData.getDocumentsOfOneCategory().length +"");
             messageToUser.append(" <? global/document ?>. ");
-            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/do_you_really_want_to ?>?");
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_delete_category/3 ?>?");
         } %>
-        <input type="hidden" name="adminMode" value="deleteCategoryMode">
-        <input type="hidden" name="heading" value="<%=removeCategoryHeading%>">
+        <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__DELETE_CATEGORY %>" value="1">
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_type ?> &nbsp;</td>
             <td>
-                <select name="<%= AdminCategories.PARAMETER_SELECT__SELECT_CATEGORY_TYPE %>">
-                    <%= adminCategoriesFormData.getCategoryTypesOptionList() %>
-                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE %>" value="<? global/select ?>"></td>
+                <select name="<%= AdminCategories.PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW %>">
+                    <%= AdminCategories.createHtmlOptionListOfCategoryTypes(formData.getCategoryTypeToEdit()) %>
+                </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE %>" value="<? global/select ?>"></td>
         </tr>
-        <% if(adminCategoriesFormData.getCategoryTypeToEdit() != null ){ %>
+        <% if(formData.getCategoryTypeToEdit() != null ){ %>
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category ?> &nbsp;</td>
             <td>
                 <select name="categories">
-                    <%= adminCategoriesFormData.getCategoriesOptionList() %>
+                    <%= AdminCategories.createHtmlOptionListOfCategoriesForOneType(formData.getCategoryTypeToEdit(), formData.getCategoryToEdit()) %>
                 </select> &nbsp;<input type="submit" class="imcmsFormBtn" name="select_category_to_edit" value="<? global/select ?>"></td>
         </tr>
         <tr><td colspan="2">&nbsp;</td></tr>
         <% }
-        if(adminCategoriesFormData.getCategoryToEdit() != null) { %>
+        if(formData.getCategoryToEdit() != null) { %>
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_name ?> &nbsp;</td>
             <td><script>
-                writeFormField("TEXT","name",30,50,null, "<%= adminCategoriesFormData.getCategoryToEdit().getName()%>");
+                writeFormField("TEXT","name",30,50,null, "<%= formData.getCategoryToEdit().getName()%>");
             </script></td>
         </tr>
         <tr><td colspan="2"></td></tr>
@@ -384,38 +336,28 @@ imcmsGui("mid", null);
 		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/description ?> &nbsp;</td>
             <td><script>
                 writeFormField("TEXTAREA","description",30,2,"100%",null);
-            </script><%= adminCategoriesFormData.getCategoryToEdit().getDescription()%></textarea></td>
+            </script><%= formData.getCategoryToEdit().getDescription()%></textarea></td>
         </tr>
         <tr><td colspan="2"></td></tr>
         <tr>
 		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/icon ?> &nbsp;</td>
             <td><script>
-                writeFormField("TEXT","icon",30,255,null, "<%= adminCategoriesFormData.getCategoryToEdit().getImage()%>");
+                writeFormField("TEXT","icon",30,255,null, "<%= formData.getCategoryToEdit().getImage()%>");
             </script>
-            <%if(!adminCategoriesFormData.getCategoryToEdit().getImage().equals("")) { %>
-                &nbsp;<input type="image" src="<%=adminCategoriesFormData.getCategoryToEdit().getImage() %>" name="" value="" border="0">
+            <%if(!formData.getCategoryToEdit().getImage().equals("")) { %>
+                &nbsp;<input type="image" src="<%=formData.getCategoryToEdit().getImage() %>" name="" value="" border="0">
             <%} %></td>
         </tr>
         <%}%>
-        </table></td>
-        </tr>
          <%if( messageToUser.length() > 0 ) { %>
         <tr><td colspan="2">&nbsp;</td></tr>
         <tr>
             <td colspan="2" height="24" class="imcmsAdmText" ><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="red"> <%=messageToUser %> </font></td>
         </tr>
         <%}
-    }
-    else { // default %>
-        <input type="hidden" name="adminMode" value="">
-        <tr>
-            <td width="80" height="24" class="imcmsAdmText" nowrap>
-                <? install/htdocs/sv/jsp/category_admin/select_function ?></td>
-            <td>&nbsp;</td>
-        </tr>
-    </table></td>
-    </tr>
-    <%}%>
+    } %>
+</table></td>
+</tr>
 
 <tr>
     <td colspan="2"><script>hr("100%",656,"blue");</script></td>
@@ -423,23 +365,22 @@ imcmsGui("mid", null);
 <tr>
     <td colspan="2" align="right">
         
-        <% if(request.getParameter("add_category_type") != null) { %>
-            <input type="submit" class="imcmsFormBtn" name="category_type_add" value="<? global/create ?>">
+        <%
+            if (!inDefaultMode) {
+                if( inAddCategoryTypeMode ) { %>
+                    <input type="submit" class="imcmsFormBtn" name="category_type_add" value="<? global/create ?>">
+                <%}else if( inEditCategoryTypeMode && null != formData.getCategoryTypeToEdit() ) { %>
+                    <input type="submit" class="imcmsFormBtn" name="category_type_save" value="<? global/save ?>" >
+                <%}else if( inAddCategoryMode ) { %>
+                    <input type="submit" class="imcmsFormBtn" name="category_add" value="<? global/create ?>" >
+                <%}else if( inEditCategoryMode && null != formData.getCategoryToEdit() ) { %>
+                    <input type="submit" class="imcmsFormBtn" name="category_save" value="<? global/save ?>" >
+                <%}else if( inDeleteCategoryMode && null != formData.getCategoryToEdit() ) { %>
+                    <input type="submit" class="imcmsFormBtn" name="category_delete" value="<? global/remove ?>" >
+                <%}%>
+        <%  }  %>
 
-        <%}else if( request.getParameter(AdminCategories.PARAMETER_BUTTON__SELECT_CATEGORY_TYPE) != null && adminCategoriesFormData.getAdminMode().equals("editCategoryTypeMode") ) { %>
-            <input type="submit" class="imcmsFormBtn" name="category_type_save" value="<? global/edit ?>" >
-
-        <%}else if(request.getParameter("add_category") != null || request.getParameter("category_add") != null ) { %>
-            <input type="submit" class="imcmsFormBtn" name="category_add" value="<? global/create ?>" >
-
-        <%}else if( adminCategoriesFormData.getAdminMode().equals("editCategoryMode") && request.getParameter("select_category_to_edit") != null || request.getParameter("category_save") != null ) { %>
-            <input type="submit" class="imcmsFormBtn" name="category_save" value="<? global/edit ?>" >
-
-        <%}else if( adminCategoriesFormData.getAdminMode().equals("deleteCategoryMode") && request.getParameter("select_category_to_edit") != null  ) { %>
-            <input type="submit" class="imcmsFormBtn" name="category_delete" value="<? global/remove ?>" >
-        <%}%>
-
-        <input type="submit" class="imcmsFormBtn" name="cancel" value="<? global/back ?>"></td>
+        <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__CANCEL %>" value="<? global/back ?>"></td>
 </tr>
 </form>
 </table>
