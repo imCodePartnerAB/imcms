@@ -1550,24 +1550,19 @@ public abstract class DatabaseService {
     }
 
     /**
-     *
-     * @param meta_id
-     * @param name
-     * @return
+     Retrieve a text with type
      */
-    public Table_texts sproc_getText( int meta_id, int name ) {
-        String sql = "SELECT meta_id, name, text, type, counter FROM texts WHERE meta_id = ? AND name = ? ";
-        Object[] paramValues = new Object[]{new Integer( meta_id ), new Integer( name )};
-        ArrayList queryResult = noTransactionSqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
-            public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new Table_texts( rs );
+    // Todo: Denna returnerade i orginalutförandet endast en del av datan som finns för rad i tabellen texts,
+    // todo: ok att returnera hela på detta sätt?
+    public Table_texts sproc_GetText( int meta_id, int name ) {
+        Table_texts[] allTextInDocument = selectFrom_texts( new Integer( meta_id ) );
+        for( int i = 0; i < allTextInDocument.length; i++ ) {
+            Table_texts table_texts = allTextInDocument[i];
+            if( table_texts.name == name ) {
+                return table_texts;
             }
-        } );
-        if( queryResult.isEmpty() ) {
-            return null;
-        } else {
-            return (Table_texts)queryResult.get( 0 );
         }
+        return null;
     }
 
     public Table_texts[] sproc_GetTexts( int meta_id ) {
@@ -2032,22 +2027,6 @@ public abstract class DatabaseService {
             }
         } );
         return transaction.getRowCount();
-    }
-
-    /**
-     Retrieve a text with type
-     */
-    // Todo: Denna returnerade i orginalutförandet endast en del av datan som finns för rad i tabellen texts,
-    // todo: ok att returnera hela på detta sätt?
-    public Table_texts sproc_GetText( int meta_id, int name ) {
-        Table_texts[] allTextInDocument = selectFrom_texts( new Integer( meta_id ) );
-        for( int i = 0; i < allTextInDocument.length; i++ ) {
-            Table_texts table_texts = allTextInDocument[i];
-            if( table_texts.name == name ) {
-                return table_texts;
-            }
-        }
-        return null;
     }
 
     public int sproc_deleteInclude( final int meta_id, final int include_id ) {

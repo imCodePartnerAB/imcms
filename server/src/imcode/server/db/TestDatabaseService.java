@@ -157,7 +157,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetUserByLogin( databaseService );
             test_sproc_GetTextDocData( databaseService );
             test_sproc_getTemplategroups( databaseService );
-            test_sproc_getText( databaseService );
+            test_sproc_GetText( databaseService );
             test_sproc_GetUserTypes( databaseService );
             test_sproc_IPAccessesGetAll( databaseService );
             test_sproc_SortOrder_GetExistingDocs( databaseService );
@@ -248,9 +248,6 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertEquals( 3, databaseService.sproc_GetUserTypes( LANG_PREFIX_SWEDEN ).length );
         assertEquals( 3, databaseService.sproc_GetUserTypes( LANG_PREFIX_ENGLAND ).length );
         assertEquals( 0, databaseService.sproc_GetUserTypes( "adf" ).length );
-    }
-    private void test_sproc_getText( DatabaseService databaseService ) {
-        assertEquals( DOC_TEST_FIRST_ID, databaseService.sproc_getText( DOC_TEST_FIRST_ID, 1 ).meta_id );
     }
 
     // todo: Testa denna, väntar på lite vettig testdata från Christoffer.

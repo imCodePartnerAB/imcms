@@ -74,7 +74,6 @@
     <property name="wardist"              value="${dist}/${warfile}"/>
 
     <property name="dist-sql"             value="${dist}/imcms.sql"/>
-    <property name="sprocs-sql"           value="${dist}/sprocs.sql"/>
     <property name="help-sql"             value="${dist}/help.sql"/>
 
 
@@ -320,9 +319,6 @@
 	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
 	<cat destfile="${dist-sql}" orderby="path" filtering="true">
 	    <fileset dir="sql/tables" includes="tables.ascii.sql"/>
-	    <fileset dir="sql/sprocs"/>
-	    <fileset dir="sql/data" includes="types.sql"/>
-	    <fileset dir="sql/data" includes="newdb.sql"/>
 	    <fileset dir="sql/index"/>
 	    <fileset dir="sql/help" includes="help.sql"/>
 	</cat>
