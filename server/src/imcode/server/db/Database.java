@@ -74,10 +74,6 @@ public class Database {
         return SqlHelpers.sqlProcedureStr( connectionPool, procedure, params );
     }
 
-    public Map sqlQueryHash( String sqlQuery, String[] params ) {
-        return SqlHelpers.sqlQueryHash( connectionPool, sqlQuery, params );
-    }
-
     public Map sqlProcedureHash( String procedure, String[] params ) {
         return SqlHelpers.sqlProcedureHash( connectionPool, procedure, params );
     }

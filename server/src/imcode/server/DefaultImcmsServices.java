@@ -635,10 +635,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return sessionCounterDate;
     }
 
-    public Map sqlQueryHash( String sqlQuery, String[] params ) {
-        return database.sqlQueryHash( sqlQuery, params );
-    }
-
     public Map sqlProcedureHash( String procedure, String[] params ) {
         return database.sqlProcedureHash( procedure, params );
     }
@@ -1139,10 +1135,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
             }
         }
         return languageProperties;
-    }
-
-    public File getFilePath() {
-        return config.getFilePath();
     }
 
     public File getIncludePath() {

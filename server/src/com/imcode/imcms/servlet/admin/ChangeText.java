@@ -1,11 +1,12 @@
 package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import imcode.util.Parser;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,85 +20,82 @@ import java.io.Writer;
  */
 
 public class ChangeText extends HttpServlet {
+
     private static final String JSP__CHANGE_TEXT = "change_text.jsp";
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        ImcmsServices service = Imcms.getServices();
         Utility.setDefaultHtmlContentType( res );
 
         Writer out = res.getWriter();
-        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        // Check if user has admin rights to edit textfield
-        if ( !service.checkDocAdminRights( meta_id, user, 65536 ) ) {	// Checking to see if user may edit this
-            String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
+
+        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( textDocument, user );
+
+        if ( !textDocumentPermissionSet.getEditTexts() ) {	// Checking to see if user may edit this
+            String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }
             return;
         }
-        ImcmsServices imcref = Imcms.getServices();
-        int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
+
         int textIndex = Integer.parseInt( req.getParameter( "txt" ) );
-        String label = null == req.getParameter( "label" ) ? "" :  req.getParameter( "label" );
-        TextDomainObject text = imcref.getText( documentId, textIndex  );
-        int type = text.getType();
+        String label = null == req.getParameter( "label" ) ? "" : req.getParameter( "label" );
 
-        String[] tags = {
-            "&", "&amp;",
-            "<", "&lt;",
-            ">", "&gt;"
-        };
+        TextDomainObject text = textDocument.getText( textIndex );
+        if ( null == text ) {
+            text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_PLAIN );
+        }
 
-        String text_string = Parser.parseDoc( text.getText(), tags );
-        TextEditPage page = new TextEditPage( documentId, textIndex, text_string, label, type );
-        page.forward(req, res, user);
+        TextEditPage page = new TextEditPage( documentId, textIndex, text, label );
+        page.forward( req, res, user );
 
     }
 
     public static class TextEditPage {
 
-            public static final String REQUEST_ATTRIBUTE__PAGE = "page";
-            int documentId;
-            private int textIndex;
-            private String text_string;
-            private String label;
-            private int type;
+        public static final String REQUEST_ATTRIBUTE__PAGE = "page";
+        int documentId;
+        private int textIndex;
+        private String label;
+        private TextDomainObject text;
 
-            public TextEditPage( int documentId, int textIndex, String text_string, String label, int type ) {
-                this.documentId = documentId;
-                this.text_string = text_string;
-                this.textIndex = textIndex;
-                this.label = label;
-                this.type = type;
-            }
+        public TextEditPage( int documentId, int textIndex, TextDomainObject text, String label ) {
+            this.documentId = documentId;
+            this.text = text;
+            this.textIndex = textIndex;
+            this.label = label;
+        }
 
-            public int getDocumentId() {
-                return documentId;
-            }
+        public int getDocumentId() {
+            return documentId;
+        }
 
-            public String getTextString() {
-                return text_string;
-            }
+        public String getTextString() {
+            return text.getText();
+        }
 
-            public int getTextIndex() {
-                return textIndex;
-            }
+        public int getTextIndex() {
+            return textIndex;
+        }
 
-            public String getLabel() {
-                return label;
-            }
+        public String getLabel() {
+            return label;
+        }
 
-            public int getType() {
-                return type;
-            }
+        public int getType() {
+            return text.getType();
+        }
 
-            public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
-                request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
-                String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__CHANGE_TEXT;
-                request.getRequestDispatcher( forwardPath ).forward( request, response );
-            }
+        public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
+            request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP__CHANGE_TEXT;
+            request.getRequestDispatcher( forwardPath ).forward( request, response );
+        }
 
     }
 

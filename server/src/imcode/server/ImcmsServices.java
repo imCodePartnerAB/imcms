@@ -24,29 +24,28 @@ public interface ImcmsServices {
 	;
 
     /**
-       Retrieve a text-field
-    **/
+       @deprecated Use {@link imcode.server.document.textdocument.TextDocumentDomainObject#getText(int)} instead.
+     **/
     TextDomainObject getText(int meta_id,int txt_no)
 	;
 
     String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
+    /** @deprecated Use {@link imcode.server.document.textdocument.MenuItemDomainObject#setSortKey(Integer)} **/
     void saveManualSort(int meta_id,imcode.server.user.UserDomainObject user,List childs, List sort_no, int menuNumber)
 	;
 
-    // archive childs
+    /** @deprecated Use {@link DocumentDomainObject#setArchivedDatetime(java.util.Date)} */
     void archiveChilds(int meta_id,UserDomainObject user,String[] childsThisMenu)
 	;
 
-    // List all archived docs
-    //    String listArchive(int meta_id,imcode.server.user.User user)
-    //;
-
-    // check if url doc
+    /**
+     * @deprecated Use {@link imcode.server.document.UrlDocumentDomainObject#getUrl()} instead. *
+     */
     String isUrlDoc( int meta_id )
 	;
 
-    // check if url doc
+    /** @deprecated Use {@link imcode.server.document.HtmlDocumentDomainObject#getHtml()} instead. **/
     String isFramesetDoc( int meta_id )
 	;
 
@@ -105,7 +104,7 @@ public interface ImcmsServices {
     int getDocType(int meta_id)
 	;
 
-    // checkDocAdminRights
+    /** @deprecated Use {@link UserDomainObject#canEdit(imcode.server.document.DocumentDomainObject)} **/
     boolean checkDocAdminRights(int meta_id, UserDomainObject user)
 	;
 
@@ -204,8 +203,6 @@ public interface ImcmsServices {
 
     String sqlQueryStr(String sqlStr, String[] params);
 
-    Map sqlQueryHash(String sqlStr, String[] params);
-
     String[][] sqlQueryMulti(String sqlstr, String[] params);
 
     TemplateMapper getTemplateMapper();
@@ -213,8 +210,6 @@ public interface ImcmsServices {
     SMTP getSMTP();
 
     Properties getLanguageProperties(UserDomainObject user);
-
-    File getFilePath();
 
     File getIncludePath();
 
