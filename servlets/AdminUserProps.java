@@ -968,13 +968,27 @@ public class AdminUserProps extends Administrator {
 	    	Vector rolesV = this.getRolesParameters("roles", req, res) ;
 	    	if( rolesV == null) return ;
 		
+		
 		    // Lets add the new users roles. but first, delete users current Roles
 		    // and then add the new ones
-		    imcref.sqlUpdateProcedure("DelUserRoles " + userToChangeId ) ;
-		    for(int i = 0; i<rolesV.size(); i++) {
+			
+			if ( isSuperadmin ){ // delete all userroles
+		    	int roleId = -1;
+				imcref.sqlUpdateProcedure("DelUserRoles " + userToChangeId + ", " + roleId ) ;
+		    	
+			}else{  // delete only roles that the useradmin has permission to administrate
+				String[] rolesArr = imcref.sqlProcedure("GetUseradminPermissibleRoles " + user.getUserId() );
+				for ( int i=0; i < rolesArr.length; i+=2 ){
+					imcref.sqlUpdateProcedure("DelUserRoles " + userToChangeId + ", " + Integer.parseInt(rolesArr[i]) ) ;
+				}  	
+			}
+			
+			for(int i = 0; i<rolesV.size(); i++) {
 				String aRole = rolesV.elementAt(i).toString();
 				imcref.sqlUpdateProcedure("AddUserRole  " + userToChangeId + ", " + aRole) ;
 		    }
+			
+			
 			// always let user get the role Users
 			String[] roleId = imcref.sqlProcedure ("GetRoleIdByRoleName Users");
 			if ( roleId != null ){  
@@ -1413,9 +1427,17 @@ public class AdminUserProps extends Administrator {
 		}
 			
 		
-		// Lets get all ROLES from DB
-		String[] rolesArr = imcref.sqlProcedure("GetAllRoles") ;
+		// Lets get ROLES from DB
+		String[] rolesArr = {};
+		
+		if ( isSuperadmin ) {
+			rolesArr = imcref.sqlProcedure("GetAllRoles") ;
+		}else{
+			rolesArr = imcref.sqlProcedure("GetUseradminPermissibleRoles " + user.getUserId() );
+		}
 		Vector allRolesV  = new Vector(java.util.Arrays.asList(rolesArr)) ;
+		
+		
 		
 		//Lets get all ROLES from DB except of Useradmin and Superadmin
 		Vector rolesV  = (Vector)allRolesV.clone();

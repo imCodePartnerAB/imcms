@@ -84,12 +84,7 @@ public class AdminUser extends Administrator
 	vm.addProperty("USER_TYPES", user_type  ) ;
 
 	// Lets get all USERS from DB with firstname or lastname or login name like the searchString
-	String isSA = "0";
-	if (isSuperadmin){
-		isSA = "1";
-	}
-	String param = category + ", " + searchString + ", " + user.getUserId() + ", " +  isSA ;
-	System.out.println("param= " + param);
+	String param = category + ", " + searchString + ", " + user.getUserId();
 	String[] usersArr = imcref.sqlProcedure("GetCategoryUsers " + param) ;
 	Vector usersV  = new Vector(java.util.Arrays.asList(usersArr)) ;
 	String usersOption = ht.createHtmlCode("ID_OPTION", "", usersV ) ;

@@ -51,21 +51,21 @@ function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 
-function activateUseradmin_roles(){	 
+function activateUseradmin_roles(){
 	var list = document.forms[0].roles;
+	document.forms[0].useradmin_roles.disabled = true;
 	for ( i = 0 ; i < list.length ; i++ ){
-		document.forms[0].useradmin_roles.disabled = (list.options[i].text == "Useradmin"  && list.options[i].selected)? 0 : 1;
+		if ( list.options[i].text == "Useradmin"  && list.options[i].selected ){
+			document.forms[0].useradmin_roles.disabled = false;
+		}
 	}
 }
 
-function init() {
-		document.forms[0].useradmin_roles.disabled = true
-}
 
 //-->
 </script>
 </head>
-<body bgcolor="#ffffff" onload="activateUseradmin_roles(); return true">
+<body bgcolor="#ffffff" onload="activateUseradmin_roles(); return true;">
 
 
 <form method="post" action="AdminUserProps">

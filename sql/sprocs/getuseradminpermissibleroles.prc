@@ -13,9 +13,13 @@ CREATE  PROCEDURE GetUseradminPermissibleRoles
 */
  @userId int
  AS
- SELECT role_id
- FROM useradmin_role_crossref 
- WHERE user_id = @userId
+ 
+ 	SELECT role_id, role_name
+	FROM roles
+	WHERE roles.role_id IN ( 
+		SELECT role_id
+ 		FROM useradmin_role_crossref  
+ 		WHERE user_id = @userId )
 
 
 GO
