@@ -1,5 +1,6 @@
-package imcode.util.net;
+package com.imcode.imcms.test.external;
 
+import imcode.util.net.SMTP;
 import junit.framework.TestCase;
 
 import javax.activation.DataSource;

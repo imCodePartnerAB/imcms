@@ -1,5 +1,7 @@
-package imcode.server.user;
+package com.imcode.imcms.test.external;
 
+import imcode.server.user.LdapUserAndRoleMapper;
+import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;

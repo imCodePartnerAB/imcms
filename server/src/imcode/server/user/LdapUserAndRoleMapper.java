@@ -27,7 +27,7 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
     private final static Logger log = Logger.getLogger( LdapUserAndRoleMapper.class );
 
     public static final String DEFAULT_LDAP_ROLE = "LDAP";
-    final static String AUTHENTICATION_TYPE_SIMPLE = "simple";
+    public final static String AUTHENTICATION_TYPE_SIMPLE = "simple";
 
     private static final String DISTINGUISHED_NAME = "dn";
 

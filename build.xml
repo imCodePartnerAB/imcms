@@ -199,12 +199,10 @@
 
             <batchtest>
                 <fileset dir="${classes}">
-                    <exclude name="**/test/http/*.class"/>
-                    <exclude name="**/*$*.class"/>
-                    <exclude name="**/TestLdap*.class"/>
-                    <exclude name="**/TestSMTP.class"/>
                     <include name="Test*.class"/>
                     <include name="**/Test*.class"/>
+                    <exclude name="**/*$*.class"/>
+                    <exclude name="**/external/*.class"/>
                 </fileset>
             </batchtest>
         </junit>

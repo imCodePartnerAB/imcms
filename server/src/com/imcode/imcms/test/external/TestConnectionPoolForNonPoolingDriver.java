@@ -1,15 +1,14 @@
-package imcode.server.db;
+package com.imcode.imcms.test.external;
 
-import org.apache.log4j.*;
-import org.apache.commons.collections.ExtendedProperties;
-
-import java.sql.*;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.io.FileInputStream;
-
+import imcode.server.db.ConnectionPoolForNonPoolingDriver;
 import junit.framework.TestCase;
+import org.apache.commons.collections.ExtendedProperties;
+import org.apache.log4j.*;
+
+import java.io.FileInputStream;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,7 +19,7 @@ import junit.framework.TestCase;
  */
 public class TestConnectionPoolForNonPoolingDriver extends TestCase {
 
-    private final static Logger log = Logger.getLogger( imcode.server.db.TestConnectionPoolForNonPoolingDriver.class.getName() );
+    private final static Logger log = Logger.getLogger( com.imcode.imcms.test.external.TestConnectionPoolForNonPoolingDriver.class.getName() );
 
     private String driverClassName ;
     private String userName ;
