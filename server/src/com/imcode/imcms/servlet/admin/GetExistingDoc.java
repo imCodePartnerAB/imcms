@@ -191,7 +191,7 @@ public class GetExistingDoc extends HttpServlet {
     }
 
     private void addDocument( imcode.server.user.UserDomainObject user, HttpServletRequest req,
-                              IMCServiceInterface imcref, int meta_id, int doc_menu_no, HttpServletResponse res,
+                              IMCServiceInterface imcref, int meta_id, int menuIndex, HttpServletResponse res,
                               Writer out ) throws IOException {
         String[] values;
         int existing_meta_id;
@@ -204,52 +204,42 @@ public class GetExistingDoc extends HttpServlet {
         }
 
         // Lets loop through all the selected existsing meta ids and add them to the current menu
-        try {
-            for ( int m = 0; m < values.length; m++ ) {
-                existing_meta_id = Integer.parseInt( values[m] );
+        for ( int m = 0; m < values.length; m++ ) {
+            existing_meta_id = Integer.parseInt( values[m] );
 
-                // Fetch all doctypes from the db and put them in an option-list
-                // First, get the doc_types the current user may use.
-                String[] user_dt = imcref.sqlProcedure( "GetDocTypesForUser",
-                                                        new String[]{
-                                                            "" + meta_id, "" + user.getUserId(),
-                                                            user.getLanguageIso639_2()
-                                                        } );
-                Set user_doc_types = new HashSet();
+            // Fetch all doctypes from the db and put them in an option-list
+            // First, get the doc_types the current user may use.
+            String[] user_dt = imcref.sqlProcedure( "GetDocTypesForUser",
+                                                    new String[]{
+                                                        "" + meta_id, "" + user.getUserId(),
+                                                        user.getLanguageIso639_2()
+                                                    } );
+            Set user_doc_types = new HashSet();
 
-                // I'll fill a HashSet with all the doc-types the current user may use,
-                // for easy retrieval.
-                for ( int i = 0; i < user_dt.length; i += 2 ) {
-                    user_doc_types.add( user_dt[i] );
-                }
-
-                int doc_type = DocumentMapper.sqlGetDocTypeFromMeta( imcref, existing_meta_id );
-
-                DocumentMapper documentMapper = imcref.getDocumentMapper();
-                DocumentDomainObject existingDocument = documentMapper.getDocument( existing_meta_id );
-                // Add the document in menu if user is admin for the document OR the document is shared.
-                boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToMenu( user, existingDocument );
-                if ( user_doc_types.contains( "" + doc_type ) && sharePermission ) {
-                    try {
-                        documentMapper.addDocumentToMenu( user, meta_id, doc_menu_no, existing_meta_id );
-                    } catch ( DocumentMapper.DocumentAlreadyInMenuException e ) {
-                        //ok, already in menu
-                    }
-                }
-
-            } // End of for loop
-        } catch ( NumberFormatException ex ) {
-            String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
-            if ( tempstring != null ) {
-                out.write( tempstring );
+            // I'll fill a HashSet with all the doc-types the current user may use,
+            // for easy retrieval.
+            for ( int i = 0; i < user_dt.length; i += 2 ) {
+                user_doc_types.add( user_dt[i] );
             }
-            return;
-        }
 
-        String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
-        if ( tempstring != null ) {
-            out.write( tempstring );
-        }
+            int doc_type = DocumentMapper.sqlGetDocTypeFromMeta( imcref, existing_meta_id );
+
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DocumentDomainObject existingDocument = documentMapper.getDocument( existing_meta_id );
+            // Add the document in menu if user is admin for the document OR the document is shared.
+            boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToMenu( user, existingDocument );
+            if ( user_doc_types.contains( "" + doc_type ) && sharePermission ) {
+                try {
+                    documentMapper.addDocumentToMenu( user, meta_id, menuIndex, existing_meta_id );
+                } catch ( DocumentMapper.DocumentAlreadyInMenuException e ) {
+                    //ok, already in menu
+                }
+            }
+
+        } // End of for loop
+
+        res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags=" + IMCConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu="
+                          + menuIndex );
     }
 
     private void createSearchResultsPage( IMCServiceInterface imcref, imcode.server.user.UserDomainObject user,

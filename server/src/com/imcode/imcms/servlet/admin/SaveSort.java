@@ -25,8 +25,6 @@ public class SaveSort extends HttpServlet {
 
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
-    private final static String FILE_WARNING_TEMPLATE = "copy_file_warning.html";
-
     /**
      * service()
      */
@@ -38,7 +36,7 @@ public class SaveSort extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !imcref.checkDocAdminRights( documentId, user, 262144 ) ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRights( documentId, user, IMCConstants.PERM_DT_TEXT_EDIT_MENUS ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );
