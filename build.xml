@@ -18,7 +18,10 @@
   <property name="uploads"        value="${WEB-INF}/uploads"/>
   <property name="logs"           value="${WEB-INF}/logs"/>
 
-  <property name="admintemplates" value="${templates}/admin"/>
+  <property name="language"	  value="se"/>
+  <property name="srclanguage"	  value="sv"/>
+  
+  <property name="admintemplates" value="${templates}/${language}/admin"/>
   <property name="texttemplates"  value="${templates}/text"/>
   <property name="demotemplates"  value="${texttemplates}/demo"/>
 
@@ -135,7 +138,6 @@
 
       </filterset>
     </copy>
-    <echo> Copied conf-files. Don't forget to edit them! </echo>
   </target>
 
   <target name="web"
@@ -170,14 +172,14 @@
     <mkdir dir="${admintemplates}"/>
     <mkdir dir="${demotemplates}"/>
 
-    <copy todir="${admintemplates}/se/adminbuttons">
-      <fileset dir="templates/sv/adminbuttons"/>
+    <copy todir="${admintemplates}/adminbuttons">
+      <fileset dir="templates/${srclanguage}/adminbuttons"/>
     </copy>
-    <copy todir="${admintemplates}/se/permissions">
-      <fileset dir="templates/sv/permissions"/>
+    <copy todir="${admintemplates}/permissions">
+      <fileset dir="templates/${srclanguage}/permissions"/>
     </copy>
-    <copy todir="${admintemplates}/se">
-      <fileset dir="templates/sv">
+    <copy todir="${admintemplates}">
+      <fileset dir="templates/${srclanguage}">
         <patternset>
 	  <include name="*.htm"/>
 	  <include name="*.html"/>
