@@ -90,10 +90,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String param_value = paramsToParse.getParameter();
             String extparam_value = paramsToParse.getExternalParameter();
 
-            String[] user_permission_set = ImcmsAuthenticatorAndUserMapper.sprocGetUserPermissionSet( service, meta_id_str, user_id_str );
-
-            int user_set_id = Integer.parseInt( user_permission_set[0] );
-            int user_perm_set = Integer.parseInt( user_permission_set[1] );
+            DocumentMapper documentMapper = service.getDocumentMapper();
 
             boolean textmode = false;
             boolean imagemode = false;
@@ -102,6 +99,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             boolean includemode = false;
 
             if ( flags > 0 ) {
+                int user_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument(user, document) ;
+                int user_perm_set = documentMapper.getUsersPermissionBitsOnDocumentIfRestricted(user_set_id, document) ;
 
                 textmode = ( flags & PERM_DT_TEXT_EDIT_TEXTS ) != 0 && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_EDIT_TEXTS ) != 0 );
                 imagemode = ( flags & PERM_DT_TEXT_EDIT_IMAGES ) != 0 && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_EDIT_IMAGES ) != 0 );
@@ -154,7 +153,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Perl5Substitution emphasize_substitution = new Perl5Substitution( emphasize_string );
 
             Properties tags = new Properties();	// A properties object to hold the results from the db...
-            Map textMap = service.getDocumentMapper().getTexts( meta_id );
+            Map textMap = documentMapper.getTexts( meta_id );
             HashMap imageMap = new HashMap();
 
             Iterator imit = Arrays.asList( images ).iterator();
@@ -332,7 +331,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             // Give the user a row of buttons if he is privileged enough.
             if ( ( service.getDocumentMapper().userHasMoreThanReadPermissionOnDocument( user, document ) || service.checkUserAdminrole( user.getUserId(), 2 ) ) && flags >= 0 ) {
-                tags.setProperty( "#adminMode#", service.getMenuButtons( meta_id, user ) );
+                tags.setProperty( "#adminMode#", service.getMenuButtons( user, document ) );
             }
 
             if ( templatemode ) {	//Templatemode! :)

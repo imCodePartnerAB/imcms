@@ -35,7 +35,7 @@ public class SaveMeta extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
-        
+
         if ( null != req.getParameter( "ImageBrowse" ) ) {
             RequestDispatcher rd = req.getRequestDispatcher( "ImageBrowse" );
             rd.forward( req, res );
@@ -66,7 +66,9 @@ public class SaveMeta extends HttpServlet {
 
         // Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
         // Now watch as i fetch the permission_set for the user...
-        String[] current_permissions = sprocGetUserPermissionSet( imcref, user, metaIdStr );
+        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet", new String[]{
+            metaIdStr, "" + user.getUserId()
+        } );
         int userSetId = Integer.parseInt( current_permissions[0] );	// The users set_id
         int userPermSet = Integer.parseInt( current_permissions[1] );
         int currentDocPerms = Integer.parseInt( current_permissions[2] );
@@ -456,14 +458,6 @@ public class SaveMeta extends HttpServlet {
     public static void sprocUpdateDefaultTemplates( IMCServiceInterface imcref, String meta_id, String template1,
                                                     String template2 ) {
         imcref.sqlUpdateProcedure( "UpdateDefaultTemplates", new String[]{meta_id, template1, template2} );
-    }
-
-    public static String[] sprocGetUserPermissionSet( IMCServiceInterface imcref, UserDomainObject user,
-                                                      String meta_id ) {
-        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet", new String[]{
-            meta_id, "" + user.getUserId()
-        } );
-        return current_permissions;
     }
 
     public static String[][] sprocGetRolesDocPermissions( IMCServiceInterface imcref, String meta_id ) {

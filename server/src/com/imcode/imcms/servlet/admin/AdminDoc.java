@@ -105,6 +105,8 @@ public class AdminDoc extends HttpServlet {
         Integer userflags = (Integer)user.remove( PARAMETER__DISPATCH_FLAGS );		// Get the flags from the user-object
         int flags = ( userflags == null ) ? 0 : userflags.intValue();	// Are there flags? Set to 0 if not.
 
+        DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
+
         try {
             flags = Integer.parseInt( req.getParameter( PARAMETER__DISPATCH_FLAGS ) );	// Check if we have a "flags" in the request too. In that case it takes precedence.
         } catch ( NumberFormatException ex ) {
@@ -112,7 +114,7 @@ public class AdminDoc extends HttpServlet {
                 if ( doc_type != 1 && doc_type != 2 ) {
                     Vector vec = new Vector( 2 );
                     vec.add( "#adminMode#" );
-                    vec.add( imcref.getMenuButtons( meta_id, user ) );
+                    vec.add( imcref.getMenuButtons( user, document ) );
                     vec.add( "#doc_type_description#" );
                     vec.add( imcref.getAdminTemplate( "adminbuttons/adminbuttons" + doc_type + "_description.html", user, null ) );
                     return imcref.getAdminTemplate( "docinfo.html", user, vec );
@@ -138,7 +140,6 @@ public class AdminDoc extends HttpServlet {
         switch ( doc_type ) {
 
             default:
-                DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
                 DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req );
                 String result = imcref.parsePage( documentRequest, flags, new ParserParameters() );
                 return result;
@@ -297,7 +298,7 @@ public class AdminDoc extends HttpServlet {
                 htmlStr = imcref.getAdminTemplate( "change_fileupload.html", user, d );
                 break;
         }
-        String[] parsetmp = {"#adminMode#", imcref.getMenuButtons( meta_id, user )};
+        String[] parsetmp = {"#adminMode#", imcref.getMenuButtons( user, document )};
         htmlStr = imcode.util.Parser.parseDoc( htmlStr, parsetmp );
 
         return htmlStr;

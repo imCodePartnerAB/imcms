@@ -25,8 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
-import com.imcode.imcms.api.User;
-
 final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     public ConnectionPool getConnectionPool() {
@@ -341,24 +339,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Returns the menubuttonrow
      */
-    public String getMenuButtons( String meta_id, UserDomainObject user ) {
-        // Get the users language prefix
-        String lang_prefix = user.getLanguageIso639_2();
-
-        // Find out what permissions the user has
-        String[] permissions = sqlProcedure( "GetUserPermissionSet",
-                                             new String[]{
-                                                 String.valueOf( meta_id ), String.valueOf( user.getUserId() )
-                                             } );
-
-        if ( permissions.length == 0 ) {
+    public String getMenuButtons( UserDomainObject user, DocumentDomainObject document ) {
+        int user_permission_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument(user, document) ;
+        if (user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ) {
             return "";
         }
+
+        // Get the users language prefix
+        String lang_prefix = user.getLanguageIso639_2();
 
         StringBuffer tempbuffer;
         StringBuffer templatebuffer;
         StringBuffer superadmin;
-        int doc_type = getDocType( Integer.parseInt( meta_id ) );
+        int doc_type = document.getDocumentTypeId() ;
         try {
 
             String tempbuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons" + doc_type + ".html";
@@ -377,21 +370,20 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             return "";
         }
 
-        int user_permission_set_id = Integer.parseInt( permissions[0] );
-        int user_permission_set = Integer.parseInt( permissions[1] );
+        int user_permission_set = documentMapper.getUsersPermissionBitsOnDocumentIfRestricted( user_permission_set_id, document );
 
-        imcode.server.parser.AdminButtonParser doc_tags = new imcode.server.parser.AdminButtonParser(
+        AdminButtonParser doc_tags = new AdminButtonParser(
                 new File( templatePath, lang_prefix + "/admin/adminbuttons/adminbutton" + doc_type + "_" ).toString(),
                 ".html", user_permission_set_id, user_permission_set );
 
-        doc_tags.put( "getMetaId", meta_id );
+        doc_tags.put( "getMetaId", ""+document.getId());
         Parser.parseTags( tempbuffer, '#', " <>\n\r\t", doc_tags, true, 1 );
 
-        AdminButtonParser tags = new imcode.server.parser.AdminButtonParser(
+        AdminButtonParser tags = new AdminButtonParser(
                 new File( templatePath, lang_prefix + "/admin/adminbuttons/adminbutton_" ).toString(), ".html",
                 user_permission_set_id, user_permission_set );
 
-        tags.put( "getMetaId", meta_id );
+        tags.put( "getMetaId", ""+document.getId() );
         tags.put( "doc_buttons", tempbuffer.toString() );
 
 
@@ -408,13 +400,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         Parser.parseTags( templatebuffer, '#', " <>\n\r\t", tags, true, 1 );
 
         return templatebuffer.toString();
-    }
-
-    /**
-     * Returns the menubuttonrow
-     */
-    public String getMenuButtons( int meta_id, UserDomainObject user ) {
-        return getMenuButtons( String.valueOf( meta_id ), user );
     }
 
     /**

@@ -27,7 +27,10 @@ public class AdminButtonParser extends imcode.util.FileTagReplacer {
 		try {
 			int key_int = Integer.parseInt((String)key) ;
 			// If user's set-id is 0, or the value of this key is 0 (normal), or user has the bit for this permission set.
-			if ( set_id == 0 || key_int == 0 || ((key_int & set) != 0) ) {
+            boolean isFullAdmin = set_id == 0;
+            boolean isAdminButtonNormalView = key_int == 0;
+            boolean hasPermissionBitForThisButtonSet = ((key_int & set) != 0);
+            if ( isFullAdmin || isAdminButtonNormalView || hasPermissionBitForThisButtonSet ) {
 				// Then return it! (w00p!)
 				return super.get(key) ;
 			} else {

@@ -9,6 +9,7 @@ import imcode.server.document.TextDocumentDomainObject.Text;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.db.ConnectionPool;
 import imcode.util.net.SMTP;
 
@@ -190,9 +191,7 @@ public interface IMCServiceInterface {
     public void deleteDemoTemplate(int template_id) throws IOException
     ;
 
-    public String getMenuButtons(int meta_id, UserDomainObject user)  ;
-
-    public String getMenuButtons(String meta_id, UserDomainObject user)  ;
+    public String getMenuButtons( UserDomainObject user, DocumentDomainObject document )  ;
 
     public SystemData getSystemData()  ;
 

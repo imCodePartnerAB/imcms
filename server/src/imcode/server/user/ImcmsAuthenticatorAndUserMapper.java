@@ -361,8 +361,4 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         service.sqlUpdateProcedure( modifyUserProcedureName, params );
     }
 
-    public static String[] sprocGetUserPermissionSet( IMCServiceInterface service, String meta_id_str,
-                                                      String user_id_str ) {
-        return service.sqlProcedure( "GetUserPermissionSet", new String[]{meta_id_str, user_id_str} );
-    }
 }

@@ -8,9 +8,7 @@ import imcode.server.document.DocumentMapper;
 import imcode.server.parser.AdminButtonParser;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.collections.Transformer;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -42,8 +40,7 @@ public class MetaDataParser {
      * parses the information into the change_meta.html (the plain admin mode file).
      */
     static public String parseMetaData( String meta_id, String parent_meta_id, UserDomainObject user,
-                                        String meta_image )
-            throws IOException {
+                                        String meta_image ) {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -54,10 +51,10 @@ public class MetaDataParser {
         int currentuser_perms = Integer.parseInt( current_permissions[1] );
 
         if ( currentuser_set_id == IMCConstants.DOC_PERM_SET_FULL || ( currentuser_perms & IMCConstants.PERM_EDIT_DOCINFO ) != 0 ) {
-            return getMetaDataFromDb( meta_id, parent_meta_id, user, ADVANCED_CHANGE_DOCINFO_TEMPLATE, false,
+            return getMetaDataFromDb( Integer.parseInt(meta_id), parent_meta_id, user, ADVANCED_CHANGE_DOCINFO_TEMPLATE, false,
                                       meta_image );
         } else {
-            return getMetaDataFromDb( meta_id, parent_meta_id, user, SIMPLE_CHANGE_DOCINFO_TEMPLATE, false, meta_image );
+            return getMetaDataFromDb( Integer.parseInt(meta_id), parent_meta_id, user, SIMPLE_CHANGE_DOCINFO_TEMPLATE, false, meta_image );
         }
     } // end of parseMetaData
 
@@ -66,8 +63,8 @@ public class MetaDataParser {
      * parses the information into the change_meta.html (the plain admin mode file).
      */
     public static String parseMetaPermission( String meta_id, String parent_meta_id, UserDomainObject user,
-                                              String htmlFile, String meta_image ) throws IOException {
-        return getMetaDataFromDb( meta_id, parent_meta_id, user, htmlFile, true, meta_image );
+                                              String htmlFile, String meta_image ) {
+        return getMetaDataFromDb( Integer.parseInt(meta_id), parent_meta_id, user, htmlFile, true, meta_image );
     }
 
     /**
@@ -75,9 +72,8 @@ public class MetaDataParser {
      * parses the information into the assigned htmlFile. If the htmlfile doesnt has
      * all the properties, hidden fields will be created by default into the htmlfile
      */
-    static private String getMetaDataFromDb( String meta_id, String parent_meta_id, UserDomainObject user,
-                                             String htmlFile, boolean showRoles, String meta_image )
-            throws IOException {
+    static private String getMetaDataFromDb( int meta_id, String parent_meta_id, UserDomainObject user,
+                                             String htmlFile, boolean showRoles, String meta_image ) {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -126,7 +122,7 @@ public class MetaDataParser {
 
         user.remove( USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS );	// Forget about it, so it won't appear on a reload.
 
-        if ( temp_perm_settings != null && meta_id.equals( temp_perm_settings[0] ) ) {		// Make sure this is the right document.
+        if ( temp_perm_settings != null && meta_id == Integer.parseInt((String)temp_perm_settings[0]) ) {		// Make sure this is the right document.
             // Copy everything from this temporary hashtable into the meta-hash.
             Enumeration temp_enum = ( (Hashtable)temp_perm_settings[1] ).keys();
             while ( temp_enum.hasMoreElements() ) {
@@ -190,7 +186,7 @@ public class MetaDataParser {
         // concatenate them into one semicolon-separated string.
         String[] classifications = imcref.sqlQuery(
                 "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?",
-                new String[]{meta_id} );
+                new String[]{""+meta_id} );
         String classification = "";
         if ( classifications.length > 0 ) {
             classification += HTMLConv.toHTMLSpecial( classifications[0] );
@@ -285,7 +281,7 @@ public class MetaDataParser {
 
         // Lets add the standard fileItemMap to the vector
         vec.add( "#meta_id#" );
-        vec.add( meta_id );
+        vec.add( ""+meta_id );
 
         vec.add( "#parent_meta_id#" );
         vec.add( parent_meta_id );
@@ -295,15 +291,17 @@ public class MetaDataParser {
         vec.add( "#checks#" );
         vec.add( checks );
 
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( meta_id ) ;
         // Lets get the menu with the buttons
-        String menuStr = imcref.getMenuButtons( meta_id, user );
+        String menuStr = imcref.getMenuButtons(user, document);
         vec.add( "#adminMode#" );
         vec.add( menuStr );
 
         // Lets get the owner from the db and add it to vec
         String owner = imcref.sqlQueryStr(
                 "select rtrim(first_name)+' '+rtrim(last_name) from users join meta on users.user_id = meta.owner_id and meta.meta_id = ?",
-                new String[]{meta_id} );
+                new String[]{""+meta_id} );
         vec.add( "#owner#" );
         if ( owner != null ) {
             vec.add( owner );
@@ -318,8 +316,7 @@ public class MetaDataParser {
         addPublisherRelatedTagsForDocInfoPageToParseList( vec, hash, imcref, user );
 
         vec.add( "#categories#" );
-        vec.add( createHtmlListBoxesOfCategoriesForEachCategoryType( imcref.getDocumentMapper(),
-                                                                     Integer.parseInt( meta_id ), imcref, user ) );
+        vec.add( createHtmlListBoxesOfCategoriesForEachCategoryType( documentMapper, meta_id, imcref, user ) );
 
         // Lets fix the date_today tag
         vec.add( "#date_today#" );
@@ -403,11 +400,11 @@ public class MetaDataParser {
     }
 
     public static void getSectionDataFromDbAndAddSectionRelatedTagsToParseList( IMCServiceInterface imcref,
-                                                                                String meta_id, Vector vec,
+                                                                                int meta_id, Vector vec,
                                                                                 UserDomainObject user ) {
         //**************** section index word stuff *****************
         //lets get the section stuff from db
-        String[][] documentSections = imcref.sqlProcedureMulti( "SectionGetInheritId", new String[]{meta_id} );
+        String[][] documentSections = imcref.sqlProcedureMulti( "SectionGetInheritId", new String[]{""+meta_id} );
 
         //lets add the stuff that ceep track of the inherit section id and name
         List selected = new ArrayList();
@@ -444,7 +441,7 @@ public class MetaDataParser {
      * getRolesFromDb collects the information for a certain meta_id regarding the
      * rolesrights and parses the information into the assigned htmlFile.
      */
-    private static void getRolesFromDb( String meta_id, UserDomainObject user, Vector vec ) {
+    private static void getRolesFromDb( int meta_id, UserDomainObject user, Vector vec ) {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -462,7 +459,7 @@ public class MetaDataParser {
         Hashtable temp_perm_hash = null;
         String[] temp_default_templates = null;
 
-        if ( temp_perm_settings != null && meta_id.equals( temp_perm_settings[0] ) ) {		// Make sure this is the right document.
+        if ( temp_perm_settings != null && meta_id == Integer.parseInt( (String)temp_perm_settings[0] ) ) {		// Make sure this is the right document.
             temp_perm_hash = (Hashtable)temp_perm_settings[2];
             temp_default_templates = (String[])temp_perm_settings[3];
         }
@@ -470,11 +467,11 @@ public class MetaDataParser {
 
         // Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
         String[][] role_permissions = imcref.sqlProcedureMulti( "GetUserRolesDocPermissions",
-                                                                new String[]{meta_id, "" + user.getUserId()} );
+                                                                new String[]{""+meta_id, "" + user.getUserId()} );
 
         // Now watch as i fetch the permission_set for the user...
         String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet",
-                                                            new String[]{meta_id, "" + user.getUserId()} );
+                                                            new String[]{""+meta_id, "" + user.getUserId()} );
         int user_set_id = Integer.parseInt( current_permissions[0] );
         int currentdoc_perms = Integer.parseInt( current_permissions[2] );		// A bitvector containing the permissions for this document. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
 
@@ -549,7 +546,7 @@ public class MetaDataParser {
 
             Vector ftr = new Vector();
 
-            int doc_type = imcref.getDocType( Integer.parseInt( meta_id ) );
+            int doc_type = imcref.getDocType( meta_id );
             String default_templates = "";//the string containing default-templates-option-list
 
             if ( user_set_id == IMCConstants.DOC_PERM_SET_FULL ) {
@@ -624,7 +621,7 @@ public class MetaDataParser {
     } // End of getRolesFromDb
 
     private static String getDefaultTemplateOptionList( IMCServiceInterface imcref,
-                                                        String[] def_templates, String meta_id,
+                                                        String[] def_templates, int meta_id,
                                                         UserDomainObject user,
                                                         boolean canEditRestricted1DefaultTemplate ) {
         String returnValue = "";

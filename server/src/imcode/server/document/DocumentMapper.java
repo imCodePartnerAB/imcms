@@ -138,6 +138,20 @@ public class DocumentMapper {
                || userHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_FULL, parent );
     }
 
+    public int getUsersPermissionBitsOnDocumentIfRestricted( int user_permission_set_id,
+                                                             DocumentDomainObject document ) {
+        int user_permission_set = 0;
+        if ( IMCConstants.DOC_PERM_SET_RESTRICTED_1 == user_permission_set_id
+             || IMCConstants.DOC_PERM_SET_RESTRICTED_2 == user_permission_set_id ) {
+            String sqlSelectPermissionBits = "SELECT permission_id FROM doc_permission_sets WHERE meta_id = ? AND set_id = ?";
+            String permissionBitsString = service.sqlQueryStr( sqlSelectPermissionBits, new String[]{
+                "" + document.getId(), "" + user_permission_set_id
+            } );
+            user_permission_set = Integer.parseInt( permissionBitsString );
+        }
+        return user_permission_set;
+    }
+
     private Integer[] getDocumentTypeIdsCreatableByRestrictedPermissionSetIdOnDocument( int restrictedPermissionSetId,
                                                                                         DocumentDomainObject document ) {
         String sqlStr = "SELECT permission_data FROM doc_permission_sets_ex\n"
@@ -152,8 +166,11 @@ public class DocumentMapper {
         return documentTypeIds;
     }
 
-    public int getUsersMostPrivilegedPermissionSetIdOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
-        Map rolesMappedToPermissionSetIds = parent.getRolesMappedToPermissionSetIds();
+    public int getUsersMostPrivilegedPermissionSetIdOnDocument( UserDomainObject user, DocumentDomainObject document ) {
+        if ( user.isSuperAdmin() ) {
+            return IMCConstants.DOC_PERM_SET_FULL;
+        }
+        Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds();
         RoleDomainObject[] usersRoles = user.getRoles();
         int mostPrivilegedPermissionSetIdFoundYet = IMCConstants.DOC_PERM_SET_NONE;
         for ( int i = 0; i < usersRoles.length; i++ ) {
@@ -645,8 +662,8 @@ public class DocumentMapper {
         try {
             InputStreamSource inputStreamSource = newFileDocument.getInputStreamSource();
             boolean fileAlreadyIsOnDisk = inputStreamSource instanceof FileInputStreamSource;
-            if (fileAlreadyIsOnDisk) {
-                return ;
+            if ( fileAlreadyIsOnDisk ) {
+                return;
             }
             InputStream in = inputStreamSource.getInputStream();
             if ( null == in ) {
