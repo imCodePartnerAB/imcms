@@ -409,14 +409,13 @@ public class SaveMeta extends HttpServlet {
 	//ok lets handle the the section stuff save to db and so on
 	//lets start an see if we got any request to change the inherit one
 	String section_id = req.getParameter("change_section");
-	if (section_id == null) {
-	    //ok it vas null so lets try and get the inherit one
-	    section_id = req.getParameter("current_section_id");
-	}
-	//ok if we have one lets update the db
-	if (section_id != null) {
+	String current_section_id = req.getParameter("current_section_id");
+	if (section_id != current_section_id) {
+	    //ok lets update the db
 	    imcref.sqlUpdateProcedure("SectionAddCrossref " + meta_id +", " +section_id);
 	}
+	
+	
 	//**************** end section index word stuff *************
 
 	// Let's split this joint!

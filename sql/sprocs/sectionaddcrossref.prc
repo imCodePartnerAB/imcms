@@ -16,8 +16,12 @@ AS
 DELETE FROM meta_section
 WHERE meta_id=@meta_id
 
-INSERT INTO meta_section (meta_id,section_id)
-VALUES (  @meta_id , @section_id )
+IF (@section_id > 0)  BEGIN /* if we have a valid section */
+
+	INSERT INTO meta_section (meta_id,section_id)
+	VALUES (  @meta_id , @section_id )
+END
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
