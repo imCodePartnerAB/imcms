@@ -260,7 +260,7 @@ function onCancel() {
 		<tr>
 			<td class="imcmsAdmText" nowrap>
 			<%= lang("URL/address/meta_id",user) %>: &nbsp;</td>
-			<td><input type="text" name="f_href" id="f_href" size="54" maxlength="100" style="width:260px" value="Skriv nummer!"></td>
+			<td><input type="text" name="f_href" id="f_href" size="54" maxlength="100" style="width:260px" value="<%= lang("Write number",user) %>!"></td>
 		</tr>
 		<tr>
 			<td class="imcmsAdmText" nowrap>
