@@ -1,64 +1,142 @@
 <html>
+
 <head>
+
 <title>Upload new template model</title>
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+
+
+<SCRIPT language=JavaScript>
+
+<!--
+
+function openHelp(id){
+
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+
+}
+
+//-->
+
+</SCRIPT>
+
+
+
 </head>
 
+
+
 <body bgcolor="#FFFFFF">
+
 <form method="post" action="TemplateAdd" enctype="multipart/form-data">
+
   <table width="40%" border="0" cellspacing="0" cellpadding="4">
+
 	<tr bgcolor="#333366"> 
+
 	  <td width="5%">&nbsp;</td>
+
 	  <td colspan="2"> 
-		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"><b><font size="2">
+
+		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"><b><font size="2"> 
+
 		  Upload new template model</font></b></font></div>
+
 	  </td>
+
 	  <td width="5%">&nbsp;</td>
+
 	</tr>
+
 	<tr bgcolor="#bababa"> 
+
 	  <td width="5%">&nbsp;</td>
-	  <td width="45%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Enter
-		template model: </font></td>
+
+	  <td width="45%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Get template model: </font></td>
+
 	  <td width="45%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+
 		<input type="file" name="file">
+
 		</font></td>
+
 	  <td width="5%">&nbsp;</td>
+
 	</tr>
+
 	<tr bgcolor="#bababa"> 
+
 	  <td width="5%">&nbsp;</td>
-	  <td width="45%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Select 
-		template: </font></td>
+
+	  <td width="45%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Select template: </font></td>
+
 	  <td width="45%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+
 		<select name="template">
+
 			#templates#
+
 		</select>
-		* = Template model exists </font></td>
+
+		*&nbsp;=&nbsp;Template model exists </font></td>
+
 	  <td width="5%">&nbsp;</td>
+
 	</tr>
+
 	<tr bgcolor="#bababa"> 
+
 	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">The current
-		template model will be overwritten.</font></td>
+
+	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Existing 
+
+		template model will be erased!</font></td>
+
 	  <td width="5%">&nbsp;</td>
+
 	</tr>
+
 	<tr bgcolor="#bababa"> 
+
 	  <td width="5%">&nbsp;</td>
+
 	  <td colspan="2"> 
+
 		<input type="submit" name="ok" value="Upload">
+
 		<input type="submit" name="view_demo" value="Show template model">
-		<input type="submit" name="delete_demo" value="Remove template model">
+
+		<input type="submit" name="delete_demo" value="Delete template model">
+
 		<input type="submit" name="cancel" value="Back">
+
 		<input type="hidden" name="language" value="#language#">
-		<input type="hidden" name="demo" value="true">
+
+		<input type="hidden" name="demo" value="true">&nbsp; <a href="javascript:openHelp('23');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open help page"></a>
+
 	  </td>
+
 	  <td width="5%">&nbsp;</td>
+
 	</tr>
+
 	<tr bgcolor="#bababa"> 
+
 	  <td width="5%">&nbsp;</td>
+
 	  <td colspan="2">&nbsp;</td>
+
 	  <td width="5%">&nbsp;</td>
+
 	</tr>
+
   </table>
+
 </form>
+
 </body>
+
 </html>
+

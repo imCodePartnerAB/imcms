@@ -1,31 +1,106 @@
 <html>
+
 <head>
-<title>Radera formatmall</title>
+
+<title>Delete design template</title>
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+
+
+<SCRIPT language=JavaScript>
+
+<!--
+
+function openHelp(id){
+
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+
+}
+
+//-->
+
+</SCRIPT>
+
+
+
 </head>
 
+
+
 <body bgcolor="#FFFFFF">
-<p align="center">Radera formatmall:</p>
-<form method="post" action="TemplateDelete">
-  <center>
-    <table width="50%" border="0">
-      <tr>
-        <td width="25%">
-          <div align="right">Mallfil:</div>
-        </td>
-        <td width="25%"> 
-          <div align="right"></div>
-        </td>
-        <td width="50%"> 
-          <select name="templatefiles">
-			#templatefiles#
-          </select>
-        </td>
-      </tr>
-    </table>
-    <br>
-    <input type="submit" name="OK" value="OK">
-  </center>
+
+<form method="post" action="TemplateChange">
+
+  <table width="40%" border="0" cellspacing="0">
+
+	<tr bgcolor="#333366"> 
+
+	  <td width="5%">&nbsp;</td>
+
+	  <td width="90%"> 
+
+		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF"> 
+
+		  Delete design template</font></b></font></div>
+
+	  </td>
+
+	  <td width="5%">&nbsp;</td>
+
+	</tr>
+
+	<tr bgcolor="#bababa"> 
+
+	  <td width="5%">&nbsp;</td>
+
+	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">design templates: 
+
+		<select name="template">
+
+			#templates#
+
+        </select>
+
+		</font></td>
+
+	  <td width="5%">&nbsp;</td>
+
+	</tr>
+
+	<tr bgcolor="#bababa"> 
+
+	  <td width="5%">&nbsp;</td>
+
+	  <td width="90%"> 
+
+		<input type="submit" name="template_delete_check" value="Delete">
+
+		<input type="submit" name="cancel" value="Back">
+
+		<input type="hidden" name="language" value="#language#">&nbsp; <a href="javascript:openHelp('25');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="Open help page"></a>
+
+	  </td>
+
+	  <td width="5%">&nbsp;</td>
+
+	</tr>
+
+	<tr bgcolor="#bababa"> 
+
+	  <td width="5%">&nbsp;</td>
+
+	  <td width="90%">&nbsp;</td>
+
+	  <td width="5%">&nbsp;</td>
+
+	</tr>
+
+  </table>
+
 </form>
+
 </body>
+
 </html>
+
