@@ -70,8 +70,8 @@ public class MetaDataParser {
 	    "meta_headline",	        null,       NORMAL,
 	    "meta_text",	        null,       NORMAL,
 	    "meta_image",	        null,       NORMAL,
-	    "date_created",	        null,       NORMAL,
-	    "date_modified",	        null,       NORMAL,
+	    "date_created",	        null,       OTHER,
+	    "date_modified",	        null,       OTHER,
 	    "doc_type",		        null,       NORMAL,
 	    "activated_datetime",	null,       OTHER,
 	    "archived_datetime",	null,       OTHER,
@@ -211,6 +211,34 @@ public class MetaDataParser {
 	    vec.add("#archived_time#") ;
 	    vec.add("") ;
 	}
+	
+	String date_created = ((String[])hash.get("date_created"))[0] ;
+	if ( date_created.indexOf(' ') != -1) {
+	    vec.add("#date_created#") ;
+	    vec.add(date_created.substring(0,date_created.indexOf(' '))) ;
+	    vec.add("#created_time#") ;
+	    vec.add(date_created.substring(date_created.indexOf(' ')+1)) ;
+	} else {
+	    vec.add("#date_created#") ;
+	    vec.add("") ;
+	    vec.add("#created_time#") ;
+	    vec.add("") ;
+
+	} // end of else
+	
+	String date_modified = ((String[])hash.get("date_modified"))[0] ;
+	if ( date_modified.indexOf(' ') != -1) {
+	    vec.add("#date_modified#") ;
+	    vec.add(date_modified.substring(0,date_modified.indexOf(' '))) ;
+	    vec.add("#modified_time#") ;
+	    vec.add(date_modified.substring(date_modified.indexOf(' ')+1)) ;
+	} else {
+	    vec.add("#date_modified#") ;
+	    vec.add("") ;
+	    vec.add("#modified_time#") ;
+	    vec.add("") ;
+
+	} // end of else
 
 	vec.add("#classification#") ;
 	vec.add(classification) ;

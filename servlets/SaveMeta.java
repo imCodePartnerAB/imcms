@@ -224,7 +224,32 @@ public class SaveMeta extends HttpServlet {
 			archived_datetime = null ;
 		    }
 		}
-		
+
+
+		//ok here we check if the createdate is requested to bee changed
+		String created_date = req.getParameter("date_created");
+		String created_time = req.getParameter("created_time");
+		String created_datetime = null;
+		if ( created_date != null && created_time != null ) {
+		    created_datetime = created_date + ' ' + created_time ;
+		    try {
+				dateformat.parse(created_datetime);
+		    } catch (ParseException ex) {
+			created_datetime = null ;
+		    }
+		}
+		//ok here we check if the modifieddate is requested to bee changed
+		String modified_date = req.getParameter("date_modified");
+		String modified_time = req.getParameter("modified_time");
+		String modified_datetime = null;
+		if ( modified_date != null && modified_time != null ) {
+		    modified_datetime = modified_date + ' ' + modified_time ;
+		    try {
+				dateformat.parse(modified_datetime);
+		    } catch (ParseException ex) {
+				modified_datetime = null ;
+		    }
+		}
 		
 		// If target is set to '_other', it means the real target is in 'frame_name'.
 		// In this case, set target to the value of frame_name.
@@ -269,8 +294,8 @@ public class SaveMeta extends HttpServlet {
 		String[] temp_default_templates = {temp_default_template_1, temp_default_template_2};
 
 		// Set modified-date to now...
-		Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
-		metaprops.setProperty("date_modified",dateformat.format(dt)) ;
+			Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+			metaprops.setProperty("date_modified",dateformat.format(dt)) ;
 
 		// It's like this... people make changes on the page, and then they forget to press "save"
 		// before they press one of the "define-permission" buttons, and then their settings are lost.
@@ -367,6 +392,17 @@ public class SaveMeta extends HttpServlet {
 		//log("test sql: UpdateDefaultTemplates "+meta_id+",'"+template1+"','"+template2+"'");
 		IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateDefaultTemplates '"+meta_id+"','"+template1+"','"+template2+"'") ;
 
+		//if the administrator wants to change the date we does it here
+		if (created_datetime != null) {			
+			//we did got a ok date so lets save it to db
+			sqlStr = "update meta set date_created ='"+created_datetime+ "' where meta_id = "+meta_id ;
+			IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+		}		
+		if (modified_datetime != null) {			
+			//we did got a ok date so lets save it to db
+			sqlStr = "update meta set date_modified ='"+modified_datetime+ "' where meta_id = "+meta_id ;
+			IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+		}
 
 		// Update the date_modified for all parents.
 		IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateParentsDateModified "+meta_id) ;
