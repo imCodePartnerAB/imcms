@@ -84,7 +84,7 @@ public class Document {
         Iterator keyIterator = keys.iterator();
         while ( keyIterator.hasNext() ) {
             String roleName = (String)keyIterator.next();
-            TextDocumentPermissionSetDomainObject documentPermissionSetDO = (TextDocumentPermissionSetDomainObject)rolesMappedToPermissionsIds.get(
+            DocumentPermissionSetDomainObject documentPermissionSetDO = (DocumentPermissionSetDomainObject)rolesMappedToPermissionsIds.get(
                     roleName );
             DocumentPermissionSet documentPermissionSet = new DocumentPermissionSet( documentPermissionSetDO );
             result.put( roleName, documentPermissionSet );
