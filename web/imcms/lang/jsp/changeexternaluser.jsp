@@ -3,7 +3,8 @@
                  javax.servlet.ServletException,
                  java.io.IOException,
                  imcode.server.WebAppGlobalConstants,
-                 com.imcode.imcms.api.*"%>
+                 com.imcode.imcms.api.*,
+                 imcode.util.Utility"%>
 <%!
 
 private final static String ACTION_SAVE_USER       = "SAVE_USER" ;
@@ -12,7 +13,6 @@ private final static String ACTION_CANCEL          = "CANCEL" ;
 private final static String FORM_SELECT_ROLES      = "roles" ;
 
 private final static String SERVLET_ADMIN_USER_URL = "/servlet/AdminUser" ;
-private final static String MY_LOCATION_URL        = "/adminuser/changeexternaluser.jsp" ;
 
 private static boolean buttonPressed (HttpServletRequest request, String buttonName) {
 	boolean buttonPressed = null != request.getParameter(buttonName) ;
@@ -56,7 +56,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </head>
 <body bgcolor="#ffffff">
 
-<form method="POST" action="<%=request.getContextPath() + MY_LOCATION_URL%>">
+<form method="POST" action="<%=request.getContextPath() %>/imcms/<%= Utility.getLoggedOnUser( request ).getLanguageIso639_2() %>/jsp/changeexternaluser.jsp">
 <table width="550" border="0" cellspacing="0" bgcolor="#bababa">
 <tr bgcolor="#333366">
 	<td width="5%">&nbsp;</td>
@@ -197,22 +197,22 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 		<td>
 		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">
 		<select name="<%= FORM_SELECT_ROLES %>" size="5" multiple><%
-		
+
 		String[] allRoleNames = userMapper.getAllRolesNames();
 		Set setOfAllRoleNames = new TreeSet( Arrays.asList(allRoleNames) );
-		
+
 		String[] userRoleNames = userMapper.getRoleNames( user );
 		Set setOfUserRoleNames = new HashSet( Arrays.asList( userRoleNames ));
-		
+
 		for( Iterator iterator = setOfAllRoleNames.iterator(); iterator.hasNext(); ) {
 			String roleName = (String)iterator.next();
 			%>
 			<option value="<%= roleName %>"<%= (setOfUserRoleNames.contains(roleName) ? " selected" : "") %>><%= roleName %></option><%
 		} %>
 		</select></font></td>
-		
+
 		<td>&nbsp;</td>
-		
+
 		<td><font size="1" face="Verdana, Arial, Helvetica, sans-serif"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/21 ?></font></td>
 	</tr>
 	</table></td>
