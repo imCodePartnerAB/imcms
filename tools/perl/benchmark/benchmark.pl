@@ -8,7 +8,7 @@ use LWP::Simple ;
 use Term::ProgressBar ;
 
 my $AB                    = '/usr/sbin/ab' ;
-my $benchmark_seconds     = 30 ;
+my $benchmark_seconds     = 10 ;
 my $min_concurrency       = 5 ;
 my $max_concurrency       = 5 ;
 my $concurrency_increment = 1 ;
@@ -38,10 +38,11 @@ my $benchmarks_run = 0 ;
 
 foreach my $inputfile ( keys %inputfiles ) {
 
+    $dir = "$origdir/0" ;
     while ( -e $dir ) {
-        $dir =~ s/^\Q$origdir\E(?:\-(\d+))?$/ "$origdir-".(($1 || 0) + 1) /e ;
+        $dir =~ s!^\Q$origdir\E(?:\/(\d+))?$! "$origdir/".(($1 || 0) + 1) !e ;
     }
-    mkdir $dir or die "Could not mkdir: $!\n" ;
+    mkpath $dir or die "Could not mkdir: $!\n" ;
 
     my @inputlines = @{ $inputfiles{$inputfile} } ;
 
@@ -63,24 +64,12 @@ foreach my $inputfile ( keys %inputfiles ) {
             ) ;
             $progressbar->update($benchmarks_run) ;
             sleep 2 ;
-            my $result =
+            my ($result, $mean_time_per_request, $requests_per_second, $complete_requests) =
               benchmark( $name, $dir, $url, $benchmark_seconds, $concurrency ) ;
 
             open OUT, '>>', "$dir/$name" or warn $! ;
             print OUT $result, "\f\n" ;
             close OUT ;
-            my ($mean_time_per_request) =
-              $result =~ /^Time per request:\s+ (\d+\.\d+|inf).*\(mean\)/im
-              or warn "No mean time found!" ;
-            my ($requests_per_second) =
-              $result =~ /^Requests per second:\s+(\d+\.\d+)/im
-              or warn "No requests/s found!" ;
-            my ($complete_requests) = $result =~ /^Complete requests:\s+(\d+)/im
-              or warn "No request count found." ;
-            $progressbar->message(
-                sprintf
-                  '%3d concurrent requests: %8.2f ms/request %6.2f requests/s',
-                $concurrency, $mean_time_per_request, $requests_per_second ) ;
 
             open SUM, '>>', "$dir/summary" ;
             print SUM
@@ -110,10 +99,16 @@ sub benchmark {
         local $/ = undef ;
         my $result = <AB> ;
         close AB or die "Could not close ab: $!\n" ;
+        my ($mean_time_per_request) = $result =~ /^Time per request:\s+ (\d+\.\d+|inf).*\(mean\)/im or warn "No mean time found!" ;
+        my ($requests_per_second) = $result =~ /^Requests per second:\s+(\d+\.\d+)/im or warn "No requests/s found!" ;
+        my ($complete_requests) = $result =~ /^Complete requests:\s+(\d+)/im or warn "No request count found." ;
+        my $message = sprintf '%3d concurrent requests: %8.2f ms/request %6.2f requests/s', $concurrency, $mean_time_per_request, $requests_per_second ;
         if ( $result =~ /results.*not.*reliable/i ) {
-            $progressbar->message("Results not reliable. Retrying...") ;
+            $progressbar->message("Results not reliable. ($message) Retrying... ") ;
+            sleep 1 ;
             redo BENCHMARK;
         }
-        return $result ;
+        $progressbar->message($message) ;
+        return ($result, $mean_time_per_request, $requests_per_second, $complete_requests) ;
     }
 }
