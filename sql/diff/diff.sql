@@ -612,6 +612,172 @@ SET QUOTED_IDENTIFIER OFF
 
 -- 2003-01-09
 
+
+/*
+	den 14 januari 2003 12:52:04
+	Create table phonetypes and insert values	
+*/
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phonetypes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[phonetypes]
+GO
+
+CREATE TABLE [dbo].[phonetypes] (
+	[phonetype_id] [int] NOT NULL ,
+	[typename] [varchar] (12) NOT NULL ,
+	[lang_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[phonetypes] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phonetypes] PRIMARY KEY  CLUSTERED 
+	(
+		[phonetype_id],
+		[lang_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[phonetypes] ADD 
+	CONSTRAINT [FK_phonetypes_lang_prefixes] FOREIGN KEY 
+	(
+		[lang_id]
+	) REFERENCES [dbo].[lang_prefixes] (
+		[lang_id]
+	)
+GO
+
+
+INSERT INTO phonetypes VALUES(0, 'Annat', 1 )
+INSERT INTO phonetypes VALUES(1, 'Home', 1 )
+INSERT INTO phonetypes VALUES(2, 'Arbete', 1 )
+INSERT INTO phonetypes VALUES(3, 'Mobil', 1 )
+INSERT INTO phonetypes VALUES(4, 'Fax', 1 )
+INSERT INTO phonetypes VALUES(0, 'Other', 2 )
+INSERT INTO phonetypes VALUES(1, 'Home', 2 )
+INSERT INTO phonetypes VALUES(2, 'Work', 2 )
+INSERT INTO phonetypes VALUES(3, 'Mobile', 2 )
+INSERT INTO phonetypes VALUES(4, 'Fax', 2 )
+GO
+
+
+/*
+   den 14 januari 2003 
+   On table phones, 
+   add column phonetype_id int default 0 ( default typename = Other ) 
+*/
+
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+
+BEGIN TRANSACTION
+ALTER TABLE dbo.phones ADD
+	phonetype_id int NOT NULL CONSTRAINT DF_phones_phonetype_id DEFAULT 0
+GO
+COMMIT
+
+
+/* 
+	On table phones,
+	Change type for column phones.number från char(25) to varchar(25)
+ */
+BEGIN TRANSACTION
+ALTER TABLE dbo.phones
+	DROP CONSTRAINT FK_phones_users
+GO
+ALTER TABLE dbo.phones
+	DROP CONSTRAINT DF_phones_phonetype_id
+GO
+CREATE TABLE dbo.Tmp_phones
+	(
+	phone_id int NOT NULL,
+	country_code varchar(4) NOT NULL,
+	area_code char(8)  NOT NULL,
+	number varchar(25)  NOT NULL,
+	user_id int NOT NULL,
+	phonetype_id int NOT NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_phones ADD CONSTRAINT
+	DF_phones_phonetype_id DEFAULT (0) FOR phonetype_id
+GO
+IF EXISTS(SELECT * FROM dbo.phones)
+	 EXEC('INSERT INTO dbo.Tmp_phones (phone_id, country_code, area_code, number, user_id, phonetype_id)
+		SELECT phone_id, country_code, area_code, CONVERT(varchar(25), number), user_id, phonetype_id FROM dbo.phones TABLOCKX')
+GO
+DROP TABLE dbo.phones
+GO
+EXECUTE sp_rename N'dbo.Tmp_phones', N'phones', 'OBJECT'
+GO
+ALTER TABLE dbo.phones ADD CONSTRAINT
+	PK_phones PRIMARY KEY NONCLUSTERED 
+	(
+	phone_id,
+	user_id
+	) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.phones WITH NOCHECK ADD CONSTRAINT
+	FK_phones_users FOREIGN KEY
+	(
+	user_id
+	) REFERENCES dbo.users
+	(
+	user_id
+	)
+GO
+COMMIT
+
+/*
+	On table phones,
+	concat values in columns country_code, area_code, number and store result in column number
+	then delete column country_code and area_code
+*/
+
+
+BEGIN TRANSACTION
+declare @phone_id int
+declare @country_code varchar(4)
+declare @area_code varchar(8)
+declare @number varchar(25)
+
+
+declare posCursor  Cursor scroll 
+for select phone_id from phones 
+open posCursor
+fetch next from posCursor 
+into @phone_id
+while @@fetch_status = 0
+begin
+	select @country_code = rtrim(country_code), @area_code = rtrim(area_code), @number = rtrim(number)
+	from phones
+	where phone_id = @phone_id
+	update phones set number = ltrim(ltrim(@country_code)+' '+ltrim(@area_code)+' '+ltrim(@number))
+	where phone_id = @phone_id
+
+	fetch next from posCursor 
+  	into @phone_id
+end 
+close posCursor
+deallocate posCursor
+GO
+
+ALTER TABLE dbo.phones
+	DROP COLUMN country_code, area_code
+GO
+COMMIT
+
+-- 2003-01-14
+
+
+
+
 print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
 
 

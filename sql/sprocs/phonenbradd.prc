@@ -13,17 +13,16 @@ CREATE PROCEDURE phoneNbrAdd
 This function adds a new phone numbers to the db. Used by AdminUserPhones
 */
  @user_id int,
- @country varchar(15) ,
- @area varchar(15) , 
- @nbr varchar(15)
+ @nbr varchar(25),
+ @phonetype_id int
 AS
 DECLARE @newPhoneId int
 SELECT @newPhoneId = MAX(phone_id) + 1
 FROM phones
 IF @newPhoneId IS NULL 
  SET @newPhoneId = 1
-INSERT INTO PHONES ( phone_id , country_code, area_code, number , user_id )
-VALUES (@newPhoneId , @country, @area,  @nbr, @user_id )  
+INSERT INTO PHONES ( phone_id , number , user_id, phonetype_id )
+VALUES (@newPhoneId , @nbr, @user_id, @phonetype_id )  
 
 
 GO

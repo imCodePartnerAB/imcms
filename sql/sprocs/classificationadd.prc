@@ -31,7 +31,7 @@ WHERE code LIKE @theClassCode
 IF ( @foundCode = 0 ) BEGIN 
  --PRINT 'Koden fanns inte'
  -- Lets start to add the classification
- INSERT INTO classification (  Code)
+ INSERT INTO classification (code)
  VALUES (  @theClassCode )
  SELECT @foundCode = @@identity
 END 

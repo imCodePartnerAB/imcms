@@ -69,6 +69,12 @@ public class AdminUserProps extends Administrator {
 		tmp_phones = new Vector();
 	}
 	
+	String[] phonetypesA= imcref.sqlProcedure("GetPhonetypes " + user.getLangId()) ;
+    	
+	// Get a new Vector:  phonetype_id, typename 
+	Vector phoneTypesV = new Vector(java.util.Arrays.asList(phonetypesA) ); 
+	
+		
 	//Vector theUserRolesV = new Vector();
 	//if ( tmp_userRoles != null ) {
 	//	theUserRolesV = new Vector(java.util.Arrays.asList(tmp_userRoles)) ;
@@ -163,11 +169,12 @@ public class AdminUserProps extends Administrator {
 		vec.add("#ADMIN_TASK#") ; 	vec.add("ADD_USER") ;
 
 		vec.add("#PHONE_ID#") ; 	vec.add("");
-		vec.add("#COUNTRY_CODE#") ; vec.add("");
-		vec.add("#AREA_CODE#") ; 	vec.add("");
 		vec.add("#NUMBER#") ; 		vec.add("");
-
-
+		
+		// phonetype list
+		String phonetypes = htm.createHtmlCode("ID_OPTION", "1" , phoneTypesV ) ;
+		vec.add("#PHONETYPES_MENU#") ; vec.add(phonetypes);
+		
 		// phoneslist
 		String phones = htm.createHtmlCode("ID_OPTION", "" , tmp_phones ) ;
 		vec.add("#PHONES_MENU#") ; 	vec.add(phones) ;
@@ -274,20 +281,20 @@ public class AdminUserProps extends Administrator {
 		}
 		
 				
-		// Lets get all users phone numbers from session if we have any
-		// return value from db= phone_id, country_code, area_code, number, user_id
+		// Lets get all users phone numbers from session if we have any else we get them from db
+		// return value from db= phone_id, number, user_id, phonetype_id, typename
 		Html htm = new Html() ;
     	String[][] phonesArr= imcref.sqlProcedureMulti("GetUserPhoneNumbers " + userToChange.getUserId()) ;
     	
-		// Get a new Vector:  phone_id, countryCode,  areaCode,  number, user_id  ex. 10, 46, 498, 123456, 3
+		// Get a new Vector:  phone_id, number, user_id, phonetype_id, typename  ex. 10, 46 498 123456, 3, 1
 		Vector phoneNumbers = getPhonesArrayVector (phonesArr); 
     	
 		if ( tmp_phones.size() > 0 ) {
 			 phoneNumbers = tmp_phones;
 		}
 		
-		// Get a new Vector: phone_id, countryCode areaCode number  ex. 10, 46 498 123456)
-		Vector phonesV  = this.getPhonesVector(phoneNumbers);
+		// Get a new Vector: phone_id, (typename) number   ex.  { 10, (Hem) 46 498 123456 }
+		Vector phonesV  = this.getPhonesVector(phoneNumbers, ""+user.getLangId(), imcref);
 
     	String selected = "";
     	if (phonesV.size() > 0){
@@ -298,7 +305,7 @@ public class AdminUserProps extends Administrator {
 
     	String phones = htm.createHtmlCode("ID_OPTION", selected , phonesV ) ;
 		
-    	
+		    	
     	res.setContentType("text/html");
 
     	Writer out = res.getWriter();
@@ -340,6 +347,11 @@ public class AdminUserProps extends Administrator {
     	vec.add("#COUNTRY_CODE#"); 	vec.add("");
     	vec.add("#AREA_CODE#"); 	vec.add("");
     	vec.add("#NUMBER#"); 		vec.add("");
+		
+		// phonetype list
+		String phonetypes = htm.createHtmlCode("ID_OPTION", "1" , phoneTypesV ) ;
+		vec.add("#PHONETYPES_MENU#") ; vec.add(phonetypes);
+			
     	vec.add("#PHONES_MENU#"); 	vec.add(phones);	
     
 
@@ -448,6 +460,12 @@ public class AdminUserProps extends Administrator {
 	Properties userInfoP = new Properties() ;
 			    
 	userInfoP = this.getParameters(req, imcref, user, userToChange);
+	
+	// Lets get all phonetypes from db
+	String[] phonetypesA= imcref.sqlProcedure("GetPhonetypes " + user.getLangId()) ;
+    	
+	// Get a new Vector:  phonetype_id, typename 
+	Vector phoneTypesV = new Vector(java.util.Arrays.asList(phonetypesA) ); 
 
 	// Lets get all Userinformation and add it to html page
 		
@@ -554,8 +572,8 @@ public class AdminUserProps extends Administrator {
 		
 		 
 		
-		// Lets all phonenumbers from the session
-		// Get a new Vector:  phone_id, countryCode,  areaCode,  number, user_id  ex. 10, 46, 498, 123456, 3
+		// Lets get all phonenumbers from the session
+		// Get a new Vector:  phone_id, number, user_id, phonetype_id, typename  ex. 10, 46 498 123456, 3, 1, Hem
 		Vector  phoneNumbers = ( session.getAttribute("Ok_phoneNumbers") != null ) ? (Vector)session.getAttribute("Ok_phoneNumbers") : new Vector() ;
 	
 		log("test"+req.getParameter("edit_phones"));
@@ -563,7 +581,6 @@ public class AdminUserProps extends Administrator {
 
 		String selectedPhoneId = "";
 		
-
 				
 		
 		//******** OK_PHONES BUTTON WAS PRESSED **********
@@ -571,53 +588,46 @@ public class AdminUserProps extends Administrator {
 		
 			log("ok_phones in doPost");
 			
-
 		   	//lets get the phonenumber from the form and add it into Vectorn phonesV
-		    if (! req.getParameter("area_code").equals("") &&
-				!req.getParameter("local_code").equals("")) {
+		    				
+			boolean found = false;  // marker that we is going to edit a selected phone number 
+			int tempId = 1;  // temporary phone id
+			
+			Enumeration enum = phoneNumbers.elements();
 				
-				boolean found = false;  // marker that we is going to edit a selected phone number 
-				int tempId = 1;  // temporary phone id
-				
-				Enumeration enum = phoneNumbers.elements();
-					
-				while (enum.hasMoreElements()) {
-			    	String[] temp = (String[]) enum.nextElement();
-			    	if (temp[0].equals(req.getParameter("phone_id"))) {
-						selectedPhoneId = temp[0];
-						phoneNumbers.remove(temp);
-						temp[1] = req.getParameter("country_code");
-						temp[2] = req.getParameter("area_code");
-						temp[3] = req.getParameter("local_code");
-						phoneNumbers.addElement(temp);
+			while (enum.hasMoreElements()) {
+		    	String[] temp = (String[]) enum.nextElement();
+		    	if (temp[0].equals(req.getParameter("phone_id"))) {
+					selectedPhoneId = temp[0];
+					phoneNumbers.remove(temp);
+					temp[1] = req.getParameter("local_code");
+					temp[3] = req.getParameter("phonetype");
+					phoneNumbers.addElement(temp);
+					found =  true;
+		    	}
+		    	try {
+					if (Integer.parseInt(temp[0]) >= tempId) {
+			    		tempId = Integer.parseInt(temp[0]) + 1;
+					}
 
-						found =  true;
-			    	}
-			    	try {
-						if (Integer.parseInt(temp[0]) >= tempId) {
-				    		tempId = Integer.parseInt(temp[0]) + 1;
-						}
+		    	}catch(NumberFormatException ignored) {
+				// ignored
+		   	 	}
 
-			    	}catch(NumberFormatException ignored) {
-					// ignored
-			   	 	}
+			}
+			
 
-				}
-				
-
-				if (!found) {
-			    	String[] temp = new String[5];
-				    temp[0] = ""+tempId;
-				    selectedPhoneId = temp[0];
-				    temp[1] = req.getParameter("country_code");
-				    temp[2] = req.getParameter("area_code");
-				    temp[3] = req.getParameter("local_code");
-				    temp[4] = userToChangeId;
-				    phoneNumbers.addElement(temp);
-				}
-
-		    }
-
+			if (!found) {
+		    	String[] temp = new String[5];
+			    temp[0] = ""+tempId;
+			    selectedPhoneId = temp[0];
+			    temp[1] = req.getParameter("local_code");
+			    temp[2] = userToChangeId;
+				temp[3] = req.getParameter("phonetype");
+			    phoneNumbers.addElement(temp);
+			}
+			
+			
 		} 
 		// ********* end ok_phones *************************
 		
@@ -625,6 +635,7 @@ public class AdminUserProps extends Administrator {
 		//********* EDIT_PHONES BUTTON WAS PRESSED ***********
 		
 		boolean found = false;
+		String phonetypes_id = "";
 		
 		if ( req.getParameter("edit_phones") != null ) {
 	    	log("edit_phones");
@@ -635,9 +646,8 @@ public class AdminUserProps extends Administrator {
 				String[] temp = (String[]) enum.nextElement();
 				if (temp[0].equals(req.getParameter("user_phones"))) {
 					vm.addProperty( "PHONE_ID", temp[0]);
-					vm.addProperty( "COUNTRY_CODE", temp[1]);
-					vm.addProperty( "AREA_CODE", temp[2]);
-					vm.addProperty( "NUMBER", temp[3]);
+					vm.addProperty( "NUMBER", temp[1]);
+					phonetypes_id = temp[3];
 					found = true;
 				}
 			}
@@ -645,10 +655,13 @@ public class AdminUserProps extends Administrator {
 		
 		if (!found) {
 			vm.addProperty( "PHONE_ID", "");
-			vm.addProperty( "COUNTRY_CODE", "");
-			vm.addProperty( "AREA_CODE", "");
 			vm.addProperty( "NUMBER", "");
+			phonetypes_id = "1";
 		}
+		
+		// phonetype list
+		String phonetypes = htm.createHtmlCode("ID_OPTION", phonetypes_id , phoneTypesV ) ;
+		vm.addProperty("PHONETYPES_MENU", phonetypes);
 
 	    selectedPhoneId = req.getParameter("user_phones");
 	    log("Number: "+selectedPhoneId);
@@ -728,18 +741,23 @@ public class AdminUserProps extends Administrator {
 //		String selectedId = req.getParameter("selected_id") == null ? "" : req.getParameter("selected_id");
 //		log("selected_id= "+ selectedPhoneId);
 
-		// Get a new Vector: phone_id, countryCode areaCode number  ex. 10, 46 498 123456)
-		Vector phonesV  = this.getPhonesVector(phoneNumbers);
+		// Get a new Vector: phone_id, (typename) number    ex. { 10, (Hem) 46 498 123456 }
+		Vector phonesV  = this.getPhonesVector(phoneNumbers, ""+user.getLangId(), imcref);
 	
 		if (phonesV == null) {
 			this.sendErrorMsg(req,res, "Add/edit user", "An eror occured!");
 			return;
 		}	
-
+		
+		// update Vector phonesV from Vector phonesNumber: phone_id, (typename) number   ex.  { 10, (Hem) 46 498 123456 }
+		phonesV  = this.getPhonesVector(phoneNumbers, ""+user.getLangId(), imcref);
+		
+		// add phones list
 		String phones = htm.createHtmlCode("ID_OPTION", selectedPhoneId, phonesV ) ;
 		log("phones stringen: "+phones);
 		vm.addProperty("PHONES_MENU", phones  ) ;
-
+		
+		
 /*
 		// Lets get the the users language id
 		String[] langList = (String[])session.getAttribute("RESET_langList");
@@ -858,11 +876,11 @@ public class AdminUserProps extends Administrator {
 	
 		
 
-	    //spara telefonnummer från listan
+	    //spara telefonnummer från listan  ( phonesV : id, number, user_id, phonetype_id )
 	    for(int i = 0; i<phonesV.size(); i++) {
 			String[] aPhone = (String[])phonesV.elementAt(i);
 			String sqlStr = "phoneNbrAdd " + newUserId + ", '" ;//userId
-			sqlStr += aPhone[1] + "', '" + aPhone[2] + "', '" + aPhone[3] + "'" ;//country_code,area_code,number
+			sqlStr += aPhone[1] + "', '" + aPhone[3] + "'" ;//number, phonetype_id
 
 			log("PhoneNrAdd: " + sqlStr);
 
@@ -960,14 +978,14 @@ public class AdminUserProps extends Administrator {
 			return;
 	    }
 		
-	    //radera telefonnummer
+	    //First delete existing phone number from db 
 	    imcref.sqlUpdateProcedure("DelPhoneNr " + userToChangeId ) ;
 
-	    // spara från listan, till databasen
+	    // Then lets save all number from session into db ( phonesV : id, number, user_id, phonetype_id )
 	    for(int i = 0; i<phonesV.size(); i++) {
 			String[] aPhone = (String[])phonesV.elementAt(i);
-			String sqlStr = "phoneNbrAdd " + aPhone[4] + ", '" ;
-			sqlStr += aPhone[1] + "', '" + aPhone[2] + "', '" + aPhone[3] + "'" ;//country_code,area_code,number
+			String sqlStr = "phoneNbrAdd " + aPhone[2] + ", '" ; // user_id
+			sqlStr += aPhone[1] + "', '" + aPhone[3] + "'" ;//number, phonetype_id
 
 			imcref.sqlUpdateProcedure(sqlStr) ;
 	    }
@@ -1287,7 +1305,7 @@ public class AdminUserProps extends Administrator {
 	/**
 	   adds the phoneNrId to the vector followed by the phoneNumber 
 	   return a new Vector with elements formated like
-		( phone_id, countryCode,  areaCode,  number, user_id  ex. 10, 46, 498, 123456, 3)
+		( phone_id, number, user_id, phonetype_id, typename   ex. { 10, 46 498 123456, 3, 1 } )
 	*/
     public Vector getPhonesArrayVector(String[][] phoneNr) {
 		Vector phonesArrV = new Vector();
@@ -1300,47 +1318,26 @@ public class AdminUserProps extends Administrator {
 
  	
 	/** return a new Vector with elements formated like
-		( phone_id, countryCode areaCode number  ex. 10, 46 498 123456)
+		( phone_id, (typename) number,   ex. { 10, (Hem) 46 498 123456 } )
+		input vector  ex. 10, 46 498 123456, 3, 1
 	*/
-    public Vector getPhonesVector(Vector phonesArrV) {
+    public Vector getPhonesVector(Vector phonesArrV, String lang_id, IMCServiceInterface imcref ) {
 
 		Vector phonesV = new Vector();
 		Enumeration enum = phonesArrV.elements();
-
+		
 		while (enum.hasMoreElements()) {
 			String[] tempPhone = (String[])enum.nextElement();
-			String temp = "";
-			for(int i=0; i < tempPhone.length-1; i++) {
-				if (i== 0) {
-					phonesV.addElement(tempPhone[i]);
-			    }else{
-				    temp += tempPhone[i] +" ";
-				}
-		    }
+			String[] typename= imcref.sqlProcedure("GetPhonetypeName " + tempPhone[3] + ", " + lang_id) ;
+			String temp = "(" + typename[0] + ") " +  tempPhone[1];
+			
+			phonesV.addElement(tempPhone[0]);
 			phonesV.addElement(temp);							 
 	    }
 		return phonesV;
     }
 	
-	
-	
-	public String[] getPhoneNumberParts(String phoneNumber){
-		String countryCode = "";
-		String areaCode = "";
-		String number = "";
-				
-		number = phoneNumber.substring( phoneNumber.lastIndexOf(" ") );
-		phoneNumber = phoneNumber.substring(0, phoneNumber.lastIndexOf(" "));
-		if ( phoneNumber.length() > 0 ){
-			areaCode = phoneNumber.substring( phoneNumber.lastIndexOf(" ") );
-			phoneNumber = phoneNumber.substring(0, phoneNumber.lastIndexOf(" "));
-		}
-		if ( phoneNumber.length() > 0 ){
-			countryCode = phoneNumber;
-		}
-		return new String[] { countryCode , areaCode , number };
-	}
-		
+			
 
 	boolean checkAdminRights(User user, IMCServiceInterface imcref ){
 		

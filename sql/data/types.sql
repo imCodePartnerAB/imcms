@@ -195,3 +195,15 @@ INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(6,1,'Arkiv
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(6,2,'Archived date')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(7,1,'Aktiverat datum')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(7,2,'Activated date')
+
+
+INSERT INTO phonetypes VALUES(0, 'Annat', 1 )
+INSERT INTO phonetypes VALUES(1, 'Home', 1 )
+INSERT INTO phonetypes VALUES(2, 'Arbete', 1 )
+INSERT INTO phonetypes VALUES(3, 'Mobil', 1 )
+INSERT INTO phonetypes VALUES(4, 'Fax', 1 )
+INSERT INTO phonetypes VALUES(0, 'Other', 2 )
+INSERT INTO phonetypes VALUES(1, 'Home', 2 )
+INSERT INTO phonetypes VALUES(2, 'Work', 2 )
+INSERT INTO phonetypes VALUES(3, 'Mobile', 2 )
+INSERT INTO phonetypes VALUES(4, 'Fax', 2 )

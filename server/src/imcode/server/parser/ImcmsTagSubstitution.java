@@ -435,6 +435,87 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    return "<!-- imcms:datetime failed: "+ex.getMessage()+" -->";
 	}
     }
+	
+		
+	/**
+       Handle a <?imcms:userfirstname?> tag.
+
+    **/
+	public String tagUserFirstname() {
+		return documentRequest.getUser().getFirstName() ;
+    }
+	
+	
+	/**
+       Handle a <?imcms:userlastname?> tag.
+
+    **/
+	public String tagUserLastname() {
+		return documentRequest.getUser().getLastName() ;
+    }
+	
+	/**
+       Handle a <?imcms:usercompany?> tag.
+
+    **/
+	public String tagUserCompany() {
+		return documentRequest.getUser().getCompany() ;
+    }
+	
+	/**
+       Handle a <?imcms:useradress?> tag.
+
+    **/
+	public String tagUserAdress() {
+		return documentRequest.getUser().getAddress() ;
+    }
+	
+	/**
+       Handle a <?imcms:userzip?> tag.
+
+    **/
+	public String tagUserZip() {
+		return documentRequest.getUser().getZip() ;
+    }
+	
+	/**
+       Handle a <?imcms:usercity?> tag.
+
+    **/
+	public String tagUserCity() {
+		return documentRequest.getUser().getCity() ;
+    }
+	
+	/**
+       Handle a <?imcms:userworkphone?> tag.
+
+    **/
+	public String tagUserWorkphone() {
+		int userId = documentRequest.getUser().getUserId() ;
+		
+		return ""; 
+    }
+	
+	/**
+       Handle a <?imcms:usermobilephone?> tag.
+
+    **/
+	public String tagUserMobilephone() {
+		int userId = documentRequest.getUser().getUserId() ;
+		
+		return ""; 
+    }
+	
+	
+	/**
+       Handle a <?imcms:useremail?> tag.
+
+    **/
+	public String tagUserEmail() {
+		return documentRequest.getUser().getEmailAddress() ;
+    }
+	
+		
 
     public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {
 	String tagname = matres.group(1) ;
@@ -463,6 +544,24 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    result = tagDatetime(attributes) ;
 	} else if ("section".equals(tagname)) {
 	    result= tagSection() ;
+	} else if ("userfirstname".equals(tagname)) {
+	    result= tagUserFirstname() ;
+	} else if ("userlastname".equals(tagname)) {
+	    result= tagUserLastname() ;	
+	} else if ("usercompany".equals(tagname)) {
+	    result= tagUserCompany() ;
+	} else if ("useradress".equals(tagname)) {
+	    result= tagUserAdress() ;	
+	} else if ("userzip".equals(tagname)) {
+	    result= tagUserZip() ;
+	} else if ("useracity".equals(tagname)) {
+	    result= tagUserCity() ;
+	} else if ("userworkphone".equals(tagname)) {
+	    result= tagUserWorkphone() ;
+	} else if ("usermobilephone".equals(tagname)) {
+	    result= tagUserMobilephone() ;	
+	} else if ("useremail".equals(tagname)) {
+	    result= tagUserEmail() ;	
 	} else {
 	    result = matres.group(0) ;
 	}

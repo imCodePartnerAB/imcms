@@ -13,9 +13,9 @@ CREATE PROCEDURE RoleDelete
 */
  @roleId int
 AS
-DELETE FROM ROLES_RIGHTS WHERE ROLE_ID = @roleId
-DELETE FROM user_roles_crossref WHERE ROLE_ID =@roleId
-DELETE FROM ROLES WHERE ROLE_ID = @roleId
+DELETE FROM ROLES_RIGHTS WHERE role_id = @roleId
+DELETE FROM user_roles_crossref WHERE role_id =@roleId
+DELETE FROM ROLES WHERE role_id = @roleId
 
 
 GO

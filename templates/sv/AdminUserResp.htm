@@ -172,17 +172,10 @@ function activateUseradmin_roles(){
 	<td>&nbsp;</td>
 	<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Telefonnummer:</font></td>
 	<td>&nbsp;</td>
-	<td>landskod / riktnr / abonnentnr</td>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td>&nbsp;</td>
-	<td>&nbsp;</td>
-	<td>&nbsp;</td>
-	<td>
-	<input name="country_code" size="4" value="#COUNTRY_CODE#">
-	<input name="area_code" size="5" value="#AREA_CODE#">
-	<input name="local_code" size="9" value="#NUMBER#">
+	<td><select name="phonetype" size="1" >
+	#PHONETYPES_MENU#
+</select>
+	<input name="local_code" size="16" value="#NUMBER#">
 	<input type="submit" value="OK" name="ok_phones"></td>
 	<td>&nbsp;</td>
 </tr>

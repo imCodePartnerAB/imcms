@@ -17,8 +17,8 @@ AS
 */
 DECLARE @returnVal int
 SELECT  @returnVal = COUNT(  r.role_id ) 
-FROM ROLES_RIGHTS r
-WHERE ROLE_ID = @aRoleId
+FROM roles_rights r
+WHERE role_id = @aRoleId
 -- Lets validate for null
 SELECT @returnVal = ISNULL(  @returnVal , 0 )
 SELECT @returnVal AS 'Number_of_roles'

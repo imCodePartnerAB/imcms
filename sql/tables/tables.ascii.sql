@@ -2,10 +2,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_cl
 ALTER TABLE [dbo].[meta_classification] DROP CONSTRAINT FK_meta_classification_classification
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_doc_permission_sets_ex_doc_permission_sets1]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
-ALTER TABLE [dbo].[doc_permission_sets_ex] DROP CONSTRAINT FK_doc_permission_sets_ex_doc_permission_sets1
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_display_name_lang_prefixes]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[display_name] DROP CONSTRAINT FK_display_name_lang_prefixes
 GO
@@ -70,10 +66,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_ri
 ALTER TABLE [dbo].[user_rights] DROP CONSTRAINT FK_user_rights_meta
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_new_doc_permission_sets_ex_new_doc_permission_sets]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
-ALTER TABLE [dbo].[new_doc_permission_sets_ex] DROP CONSTRAINT FK_new_doc_permission_sets_ex_new_doc_permission_sets
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_doc_permission_sets_permission_types]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[doc_permission_sets] DROP CONSTRAINT FK_doc_permission_sets_permission_types
 GO
@@ -96,6 +88,10 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_roles_crossref_roles]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[user_roles_crossref] DROP CONSTRAINT FK_user_roles_crossref_roles
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_useradmin_role_crossref_roles]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[useradmin_role_crossref] DROP CONSTRAINT FK_useradmin_role_crossref_roles
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_section_section]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
@@ -126,28 +122,28 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_phones_
 ALTER TABLE [dbo].[phones] DROP CONSTRAINT FK_phones_users
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_rights_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
-ALTER TABLE [dbo].[user_rights] DROP CONSTRAINT FK_user_rights_users
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_doc_permission_sets_ex_doc_permission_sets1]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[doc_permission_sets_ex] DROP CONSTRAINT FK_doc_permission_sets_ex_doc_permission_sets1
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_roles_crossref_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
-ALTER TABLE [dbo].[user_roles_crossref] DROP CONSTRAINT FK_user_roles_crossref_users
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_new_doc_permission_sets_ex_new_doc_permission_sets]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[new_doc_permission_sets_ex] DROP CONSTRAINT FK_new_doc_permission_sets_ex_new_doc_permission_sets
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_permission_sets_ex]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[doc_permission_sets_ex]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[new_doc_permission_sets_ex]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[new_doc_permission_sets_ex]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[browser_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[browser_docs]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[browsers]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[browsers]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[childs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[childs]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[classification]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[display_name]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -156,22 +152,6 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[doc_permission_sets]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_permission_sets_ex]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[doc_permission_sets_ex]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_permissions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[doc_permissions]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[doc_types]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[fileupload_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[fileupload_docs]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[frameset_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -184,6 +164,78 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[includes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[includes]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta_classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[meta_classification]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta_section]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[meta_section]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[new_doc_permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[new_doc_permission_sets]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phones]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[phones]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[roles_rights]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sys_data]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[sys_data]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[templates_cref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[templates_cref]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[text_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[text_docs]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[texts]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[texts]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[url_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[url_docs]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[user_rights]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_roles_crossref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[user_roles_crossref]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[useradmin_role_crossref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[useradmin_role_crossref]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[browsers]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[browsers]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[classification]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_permissions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[doc_permissions]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[doc_types]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[fileupload_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[fileupload_docs]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ip_accesses]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -206,24 +258,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta]') an
 drop table [dbo].[meta]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta_classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[meta_classification]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta_section]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[meta_section]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[mime_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[mime_types]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[new_doc_permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[new_doc_permission_sets]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[new_doc_permission_sets_ex]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[new_doc_permission_sets_ex]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -234,8 +270,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[permission
 drop table [dbo].[permissions]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phones]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[phones]
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phonetypes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[phonetypes]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[readrunner_user_data]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -250,10 +286,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles_perm
 drop table [dbo].[roles_permissions]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[roles_rights]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sections]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[sections]
 GO
@@ -264,10 +296,6 @@ GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[stats]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[stats]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sys_data]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[sys_data]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sys_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -282,32 +310,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[templates]
 drop table [dbo].[templates]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[templates_cref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[templates_cref]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[text_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[text_docs]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[texts]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[texts]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[track_log]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[track_log]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[url_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[url_docs]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[user_rights]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_roles_crossref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[user_roles_crossref]
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
@@ -317,12 +321,6 @@ GO
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[users]
 GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[useradmin_role_crossref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[useradmin_role_crossref]
-GO
-
-
 
 exec sp_fulltext_database N'enable' 
 
@@ -339,13 +337,6 @@ exec sp_fulltext_catalog N'full_text_index', N'create'
 
 GO
 
-CREATE TABLE [dbo].[browser_docs] (
-	[meta_id] [int] NOT NULL ,
-	[to_meta_id] [int] NOT NULL ,
-	[browser_id] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
 CREATE TABLE [dbo].[browsers] (
 	[browser_id] [int] NOT NULL ,
 	[name] [varchar] (50) NOT NULL ,
@@ -354,39 +345,9 @@ CREATE TABLE [dbo].[browsers] (
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [dbo].[childs] (
-	[meta_id] [int] NOT NULL ,
-	[to_meta_id] [int] NOT NULL ,
-	[menu_sort] [int] NOT NULL ,
-	[manual_sort_order] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
 CREATE TABLE [dbo].[classification] (
 	[class_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[code] [varchar] (30) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[display_name] (
-	[sort_by_id] [int] NOT NULL ,
-	[lang_id] [int] NOT NULL ,
-	[display_name] [varchar] (30) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[doc_permission_sets] (
-	[meta_id] [int] NOT NULL ,
-	[set_id] [int] NOT NULL ,
-	[permission_id] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[doc_permission_sets_ex] (
-	[meta_id] [int] NOT NULL ,
-	[set_id] [int] NOT NULL ,
-	[permission_id] [int] NOT NULL ,
-	[permission_data] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -409,38 +370,6 @@ CREATE TABLE [dbo].[fileupload_docs] (
 	[meta_id] [int] NOT NULL ,
 	[filename] [varchar] (50) NOT NULL ,
 	[mime] [varchar] (50) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[frameset_docs] (
-	[meta_id] [int] NOT NULL ,
-	[frame_set] [text] NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[images] (
-	[meta_id] [int] NOT NULL ,
-	[width] [int] NOT NULL ,
-	[height] [int] NOT NULL ,
-	[border] [int] NOT NULL ,
-	[v_space] [int] NOT NULL ,
-	[h_space] [int] NOT NULL ,
-	[name] [int] NOT NULL ,
-	[image_name] [varchar] (40) NOT NULL ,
-	[target] [varchar] (15) NOT NULL ,
-	[target_name] [varchar] (80) NOT NULL ,
-	[align] [varchar] (15) NOT NULL ,
-	[alt_text] [varchar] (255) NOT NULL ,
-	[low_scr] [varchar] (255) NOT NULL ,
-	[imgurl] [varchar] (255) NOT NULL ,
-	[linkurl] [varchar] (255) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[includes] (
-	[meta_id] [int] NOT NULL ,
-	[include_id] [int] NOT NULL ,
-	[included_meta_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -501,38 +430,11 @@ CREATE TABLE [dbo].[meta] (
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [dbo].[meta_classification] (
-	[meta_id] [int] NOT NULL ,
-	[class_id] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[meta_section] (
-	[meta_id] [int] NOT NULL ,
-	[section_id] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
 CREATE TABLE [dbo].[mime_types] (
 	[mime_id] [int] IDENTITY (0, 1) NOT NULL ,
 	[mime_name] [varchar] (50) NOT NULL ,
 	[mime] [varchar] (50) NOT NULL ,
 	[lang_prefix] [varchar] (3) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[new_doc_permission_sets] (
-	[meta_id] [int] NOT NULL ,
-	[set_id] [int] NOT NULL ,
-	[permission_id] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[new_doc_permission_sets_ex] (
-	[meta_id] [int] NOT NULL ,
-	[set_id] [int] NOT NULL ,
-	[permission_id] [int] NOT NULL ,
-	[permission_data] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -549,12 +451,10 @@ CREATE TABLE [dbo].[permissions] (
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [dbo].[phones] (
-	[phone_id] [int] NOT NULL ,
-	[country_code] [varchar] (4) NOT NULL ,
-	[area_code] [char] (8) NOT NULL ,
-	[number] [char] (25) NOT NULL ,
-	[user_id] [int] NOT NULL 
+CREATE TABLE [dbo].[phonetypes] (
+	[phonetype_id] [int] NOT NULL ,
+	[typename] [varchar] (12) NOT NULL ,
+	[lang_prefix] [varchar] (3) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -577,18 +477,10 @@ CREATE TABLE [dbo].[roles] (
 ) ON [PRIMARY]
 GO
 
-
 CREATE TABLE [dbo].[roles_permissions] (
 	[permission_id] [int] NOT NULL ,
 	[lang_prefix] [varchar] (3) NOT NULL ,
 	[description] [varchar] (40) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[roles_rights] (
-	[role_id] [int] NOT NULL ,
-	[meta_id] [int] NOT NULL ,
-	[set_id] [tinyint] NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -607,13 +499,6 @@ GO
 CREATE TABLE [dbo].[stats] (
 	[name] [varchar] (120) NOT NULL ,
 	[num] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[sys_data] (
-	[sys_id] [tinyint] IDENTITY (1, 1) NOT NULL ,
-	[type_id] [tinyint] NOT NULL ,
-	[value] [varchar] (80) NULL 
 ) ON [PRIMARY]
 GO
 
@@ -640,60 +525,12 @@ CREATE TABLE [dbo].[templates] (
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [dbo].[templates_cref] (
-	[group_id] [int] NOT NULL ,
-	[template_id] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[text_docs] (
-	[meta_id] [int] NOT NULL ,
-	[template_id] [int] NOT NULL ,
-	[group_id] [int] NOT NULL ,
-	[sort_order] [int] NOT NULL ,
-	[default_template_1] [int] NOT NULL ,
-	[default_template_2] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[texts] (
-	[meta_id] [int] NOT NULL ,
-	[name] [int] NOT NULL ,
-	[text] [ntext] NOT NULL ,
-	[type] [int] NULL ,
-	[counter] [int] IDENTITY (1, 1) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
 CREATE TABLE [dbo].[track_log] (
 	[user_id] [smallint] NULL ,
 	[log_datetime] [datetime] NULL ,
 	[from_meta_id] [int] NULL ,
 	[to_meta_id] [int] NULL ,
 	[cookie_id] [int] NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[url_docs] (
-	[meta_id] [int] NOT NULL ,
-	[frame_name] [varchar] (80) NOT NULL ,
-	[target] [varchar] (15) NOT NULL ,
-	[url_ref] [varchar] (255) NOT NULL ,
-	[url_txt] [varchar] (255) NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[user_rights] (
-	[user_id] [int] NOT NULL ,
-	[meta_id] [int] NOT NULL ,
-	[permission_id] [tinyint] NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[user_roles_crossref] (
-	[user_id] [int] NOT NULL ,
-	[role_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -728,57 +565,183 @@ CREATE TABLE [dbo].[users] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [dbo].[browser_docs] (
+	[meta_id] [int] NOT NULL ,
+	[to_meta_id] [int] NOT NULL ,
+	[browser_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[childs] (
+	[meta_id] [int] NOT NULL ,
+	[to_meta_id] [int] NOT NULL ,
+	[menu_sort] [int] NOT NULL ,
+	[manual_sort_order] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[display_name] (
+	[sort_by_id] [int] NOT NULL ,
+	[lang_id] [int] NOT NULL ,
+	[display_name] [varchar] (30) NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[doc_permission_sets] (
+	[meta_id] [int] NOT NULL ,
+	[set_id] [int] NOT NULL ,
+	[permission_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[frameset_docs] (
+	[meta_id] [int] NOT NULL ,
+	[frame_set] [text] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[images] (
+	[meta_id] [int] NOT NULL ,
+	[width] [int] NOT NULL ,
+	[height] [int] NOT NULL ,
+	[border] [int] NOT NULL ,
+	[v_space] [int] NOT NULL ,
+	[h_space] [int] NOT NULL ,
+	[name] [int] NOT NULL ,
+	[image_name] [varchar] (40) NOT NULL ,
+	[target] [varchar] (15) NOT NULL ,
+	[target_name] [varchar] (80) NOT NULL ,
+	[align] [varchar] (15) NOT NULL ,
+	[alt_text] [varchar] (255) NOT NULL ,
+	[low_scr] [varchar] (255) NOT NULL ,
+	[imgurl] [varchar] (255) NOT NULL ,
+	[linkurl] [varchar] (255) NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[includes] (
+	[meta_id] [int] NOT NULL ,
+	[include_id] [int] NOT NULL ,
+	[included_meta_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[meta_classification] (
+	[meta_id] [int] NOT NULL ,
+	[class_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[meta_section] (
+	[meta_id] [int] NOT NULL ,
+	[section_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[new_doc_permission_sets] (
+	[meta_id] [int] NOT NULL ,
+	[set_id] [int] NOT NULL ,
+	[permission_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[phones] (
+	[phone_id] [int] NOT NULL ,
+	[number] [varchar] (25) NOT NULL ,
+	[user_id] [int] NOT NULL ,
+	[phonetype_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[roles_rights] (
+	[role_id] [int] NOT NULL ,
+	[meta_id] [int] NOT NULL ,
+	[set_id] [tinyint] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[sys_data] (
+	[sys_id] [tinyint] IDENTITY (1, 1) NOT NULL ,
+	[type_id] [tinyint] NOT NULL ,
+	[value] [varchar] (80) NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[templates_cref] (
+	[group_id] [int] NOT NULL ,
+	[template_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[text_docs] (
+	[meta_id] [int] NOT NULL ,
+	[template_id] [int] NOT NULL ,
+	[group_id] [int] NOT NULL ,
+	[sort_order] [int] NOT NULL ,
+	[default_template_1] [int] NOT NULL ,
+	[default_template_2] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[texts] (
+	[meta_id] [int] NOT NULL ,
+	[name] [int] NOT NULL ,
+	[text] [ntext] NOT NULL ,
+	[type] [int] NULL ,
+	[counter] [int] IDENTITY (1, 1) NOT NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[url_docs] (
+	[meta_id] [int] NOT NULL ,
+	[frame_name] [varchar] (80) NOT NULL ,
+	[target] [varchar] (15) NOT NULL ,
+	[url_ref] [varchar] (255) NOT NULL ,
+	[url_txt] [varchar] (255) NOT NULL ,
+	[lang_prefix] [varchar] (3) NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[user_rights] (
+	[user_id] [int] NOT NULL ,
+	[meta_id] [int] NOT NULL ,
+	[permission_id] [tinyint] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[user_roles_crossref] (
+	[user_id] [int] NOT NULL ,
+	[role_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [dbo].[useradmin_role_crossref] (
 	[user_id] [int] NOT NULL ,
 	[role_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[useradmin_role_crossref] WITH NOCHECK ADD 
-	CONSTRAINT [PK_useradmin_role_crossref] PRIMARY KEY  CLUSTERED 
-	(
-		[user_id],
-		[role_id]
-	)  ON [PRIMARY] 
+CREATE TABLE [dbo].[doc_permission_sets_ex] (
+	[meta_id] [int] NOT NULL ,
+	[set_id] [int] NOT NULL ,
+	[permission_id] [int] NOT NULL ,
+	[permission_data] [int] NOT NULL 
+) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[useradmin_role_crossref] ADD 
-	CONSTRAINT [FK_useradmin_role_crossref_roles] FOREIGN KEY 
-	(
-		[role_id]
-	) REFERENCES [dbo].[roles] (
-		[role_id]
-	),
-	CONSTRAINT [FK_useradmin_role_crossref_users] FOREIGN KEY 
-	(
-		[user_id]
-	) REFERENCES [dbo].[users] (
-		[user_id]
-	)
+CREATE TABLE [dbo].[new_doc_permission_sets_ex] (
+	[meta_id] [int] NOT NULL ,
+	[set_id] [int] NOT NULL ,
+	[permission_id] [int] NOT NULL ,
+	[permission_data] [int] NOT NULL 
+) ON [PRIMARY]
 GO
 
-
-ALTER TABLE [dbo].[display_name] WITH NOCHECK ADD 
-	CONSTRAINT [PK_display_name] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [dbo].[phonetypes] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phonetypes] PRIMARY KEY  CLUSTERED 
 	(
-		[sort_by_id],
-		[lang_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[includes] WITH NOCHECK ADD 
-	CONSTRAINT [PK_includes] PRIMARY KEY  CLUSTERED 
-	(
-		[meta_id],
-		[include_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[meta_section] WITH NOCHECK ADD 
-	CONSTRAINT [PK_meta_section] PRIMARY KEY  CLUSTERED 
-	(
-		[meta_id],
-		[section_id]
+		[phonetype_id],
+		[lang_prefix]
 	)  ON [PRIMARY] 
 GO
 
@@ -810,6 +773,30 @@ ALTER TABLE [dbo].[stats] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ALTER TABLE [dbo].[display_name] WITH NOCHECK ADD 
+	CONSTRAINT [PK_display_name] PRIMARY KEY  CLUSTERED 
+	(
+		[sort_by_id],
+		[lang_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[includes] WITH NOCHECK ADD 
+	CONSTRAINT [PK_includes] PRIMARY KEY  CLUSTERED 
+	(
+		[meta_id],
+		[include_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[meta_section] WITH NOCHECK ADD 
+	CONSTRAINT [PK_meta_section] PRIMARY KEY  CLUSTERED 
+	(
+		[meta_id],
+		[section_id]
+	)  ON [PRIMARY] 
+GO
+
 ALTER TABLE [dbo].[texts] WITH NOCHECK ADD 
 	CONSTRAINT [PK_texts] PRIMARY KEY  CLUSTERED 
 	(
@@ -817,10 +804,12 @@ ALTER TABLE [dbo].[texts] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
- CREATE  CLUSTERED  INDEX [childs_meta_id] ON [dbo].[childs]([meta_id]) ON [PRIMARY]
-GO
-
- CREATE  CLUSTERED  INDEX [IX_doc_permission_sets] ON [dbo].[doc_permission_sets]([meta_id], [set_id]) ON [PRIMARY]
+ALTER TABLE [dbo].[useradmin_role_crossref] WITH NOCHECK ADD 
+	CONSTRAINT [PK_useradmin_role_crossref] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[role_id]
+	)  ON [PRIMARY] 
 GO
 
  CREATE  CLUSTERED  INDEX [IX_doc_permissions] ON [dbo].[doc_permissions]([permission_id]) ON [PRIMARY]
@@ -835,17 +824,13 @@ GO
  CREATE  UNIQUE  CLUSTERED  INDEX [meta_meta_id] ON [dbo].[meta]([meta_id], [show_meta], [activate]) ON [PRIMARY]
 GO
 
- CREATE  CLUSTERED  INDEX [roles_rights_meta_id] ON [dbo].[roles_rights]([meta_id], [role_id], [set_id]) ON [PRIMARY]
+ CREATE  CLUSTERED  INDEX [childs_meta_id] ON [dbo].[childs]([meta_id]) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[browser_docs] WITH NOCHECK ADD 
-	CONSTRAINT [DF_browser_docs_browser_id] DEFAULT (0) FOR [browser_id],
-	CONSTRAINT [PK_browser_docs] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id],
-		[to_meta_id],
-		[browser_id]
-	)  ON [PRIMARY] 
+ CREATE  CLUSTERED  INDEX [IX_doc_permission_sets] ON [dbo].[doc_permission_sets]([meta_id], [set_id]) ON [PRIMARY]
+GO
+
+ CREATE  CLUSTERED  INDEX [roles_rights_meta_id] ON [dbo].[roles_rights]([meta_id], [role_id], [set_id]) ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[browsers] WITH NOCHECK ADD 
@@ -859,37 +844,10 @@ GO
  CREATE  INDEX [IX_browsers] ON [dbo].[browsers]([value]) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[childs] WITH NOCHECK ADD 
-	CONSTRAINT [PK_childs] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id],
-		[to_meta_id],
-		[menu_sort]
-	)  ON [PRIMARY] 
-GO
-
 ALTER TABLE [dbo].[classification] WITH NOCHECK ADD 
 	CONSTRAINT [PK_classification] PRIMARY KEY  NONCLUSTERED 
 	(
 		[class_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[doc_permission_sets] WITH NOCHECK ADD 
-	CONSTRAINT [PK_doc_permission_sets] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id],
-		[set_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[doc_permission_sets_ex] WITH NOCHECK ADD 
-	CONSTRAINT [PK_permission_sets_ex] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id],
-		[set_id],
-		[permission_id],
-		[permission_data]
 	)  ON [PRIMARY] 
 GO
 
@@ -924,21 +882,6 @@ ALTER TABLE [dbo].[fileupload_docs] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [dbo].[frameset_docs] WITH NOCHECK ADD 
-	CONSTRAINT [PK_frameset_docs] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[images] WITH NOCHECK ADD 
-	CONSTRAINT [PK_images] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id],
-		[name]
-	)  ON [PRIMARY] 
-GO
-
 ALTER TABLE [dbo].[lang_prefixes] WITH NOCHECK ADD 
 	CONSTRAINT [PK_lang_prefixes] PRIMARY KEY  NONCLUSTERED 
 	(
@@ -961,38 +904,12 @@ ALTER TABLE [dbo].[meta] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [dbo].[meta_classification] WITH NOCHECK ADD 
-	CONSTRAINT [PK_meta_classification] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id],
-		[class_id]
-	)  ON [PRIMARY] 
-GO
-
 ALTER TABLE [dbo].[mime_types] WITH NOCHECK ADD 
 	CONSTRAINT [DF_mime_types_lang_prefix] DEFAULT ('se') FOR [lang_prefix],
 	CONSTRAINT [PK_mime_types] PRIMARY KEY  NONCLUSTERED 
 	(
 		[mime_id],
 		[lang_prefix]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[new_doc_permission_sets] WITH NOCHECK ADD 
-	CONSTRAINT [PK_new_doc_permission_sets] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id],
-		[set_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[new_doc_permission_sets_ex] WITH NOCHECK ADD 
-	CONSTRAINT [PK_new_doc_permission_sets_ex] PRIMARY KEY  NONCLUSTERED 
-	(
-		[meta_id],
-		[set_id],
-		[permission_id],
-		[permission_data]
 	)  ON [PRIMARY] 
 GO
 
@@ -1012,12 +929,8 @@ ALTER TABLE [dbo].[permissions] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [dbo].[phones] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phones] PRIMARY KEY  NONCLUSTERED 
-	(
-		[phone_id],
-		[user_id]
-	)  ON [PRIMARY] 
+ALTER TABLE [dbo].[phonetypes] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phonetypes_lang_prefix] DEFAULT ('se') FOR [lang_prefix]
 GO
 
 ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
@@ -1033,32 +946,11 @@ ALTER TABLE [dbo].[roles] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-
-
 ALTER TABLE [dbo].[roles_permissions] WITH NOCHECK ADD 
 	CONSTRAINT [PK_roles_permissions] PRIMARY KEY  NONCLUSTERED 
 	(
 		[permission_id],
 		[lang_prefix]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[roles_rights] WITH NOCHECK ADD 
-	CONSTRAINT [PK_roles_rights] PRIMARY KEY  NONCLUSTERED 
-	(
-		[role_id],
-		[meta_id]
-	)  ON [PRIMARY] 
-GO
-
- CREATE  INDEX [roles_rights_role_id] ON [dbo].[roles_rights]([role_id]) ON [PRIMARY]
-GO
-
-ALTER TABLE [dbo].[sys_data] WITH NOCHECK ADD 
-	CONSTRAINT [PK_sys_data] PRIMARY KEY  NONCLUSTERED 
-	(
-		[sys_id],
-		[type_id]
 	)  ON [PRIMARY] 
 GO
 
@@ -1089,6 +981,111 @@ ALTER TABLE [dbo].[templates] WITH NOCHECK ADD
 	(
 		[simple_name],
 		[lang_prefix]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[user_types] WITH NOCHECK ADD 
+	CONSTRAINT [PK_user_types] PRIMARY KEY  NONCLUSTERED 
+	(
+		[user_type],
+		[lang_prefix]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[users] WITH NOCHECK ADD 
+	CONSTRAINT [DF_users_title] DEFAULT ('') FOR [title],
+	CONSTRAINT [DF_users_company] DEFAULT ('') FOR [company],
+	CONSTRAINT [DF_users_user_type] DEFAULT (1) FOR [user_type],
+	CONSTRAINT [DF_users_active] DEFAULT (1) FOR [active],
+	CONSTRAINT [PK_users] PRIMARY KEY  NONCLUSTERED 
+	(
+		[user_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[browser_docs] WITH NOCHECK ADD 
+	CONSTRAINT [DF_browser_docs_browser_id] DEFAULT (0) FOR [browser_id],
+	CONSTRAINT [PK_browser_docs] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[to_meta_id],
+		[browser_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[childs] WITH NOCHECK ADD 
+	CONSTRAINT [PK_childs] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[to_meta_id],
+		[menu_sort]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[doc_permission_sets] WITH NOCHECK ADD 
+	CONSTRAINT [PK_doc_permission_sets] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[set_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[frameset_docs] WITH NOCHECK ADD 
+	CONSTRAINT [PK_frameset_docs] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[images] WITH NOCHECK ADD 
+	CONSTRAINT [PK_images] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[name]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[meta_classification] WITH NOCHECK ADD 
+	CONSTRAINT [PK_meta_classification] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[class_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[new_doc_permission_sets] WITH NOCHECK ADD 
+	CONSTRAINT [PK_new_doc_permission_sets] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[set_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[phones] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phones_phonetype_id] DEFAULT (0) FOR [phonetype_id],
+	CONSTRAINT [PK_phones] PRIMARY KEY  NONCLUSTERED 
+	(
+		[phone_id],
+		[user_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[roles_rights] WITH NOCHECK ADD 
+	CONSTRAINT [PK_roles_rights] PRIMARY KEY  NONCLUSTERED 
+	(
+		[role_id],
+		[meta_id]
+	)  ON [PRIMARY] 
+GO
+
+ CREATE  INDEX [roles_rights_role_id] ON [dbo].[roles_rights]([role_id]) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[sys_data] WITH NOCHECK ADD 
+	CONSTRAINT [PK_sys_data] PRIMARY KEY  NONCLUSTERED 
+	(
+		[sys_id],
+		[type_id]
 	)  ON [PRIMARY] 
 GO
 
@@ -1138,22 +1135,23 @@ ALTER TABLE [dbo].[user_roles_crossref] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [dbo].[user_types] WITH NOCHECK ADD 
-	CONSTRAINT [PK_user_types] PRIMARY KEY  NONCLUSTERED 
+ALTER TABLE [dbo].[doc_permission_sets_ex] WITH NOCHECK ADD 
+	CONSTRAINT [PK_permission_sets_ex] PRIMARY KEY  NONCLUSTERED 
 	(
-		[user_type],
-		[lang_prefix]
+		[meta_id],
+		[set_id],
+		[permission_id],
+		[permission_data]
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [dbo].[users] WITH NOCHECK ADD 
-	CONSTRAINT [DF_users_title] DEFAULT ('') FOR [title],
-	CONSTRAINT [DF_users_company] DEFAULT ('') FOR [company],
-	CONSTRAINT [DF_users_user_type] DEFAULT (1) FOR [user_type],
-	CONSTRAINT [DF_users_active] DEFAULT (1) FOR [active],
-	CONSTRAINT [PK_users] PRIMARY KEY  NONCLUSTERED 
+ALTER TABLE [dbo].[new_doc_permission_sets_ex] WITH NOCHECK ADD 
+	CONSTRAINT [PK_new_doc_permission_sets_ex] PRIMARY KEY  NONCLUSTERED 
 	(
-		[user_id]
+		[meta_id],
+		[set_id],
+		[permission_id],
+		[permission_data]
 	)  ON [PRIMARY] 
 GO
 
@@ -1262,23 +1260,6 @@ ALTER TABLE [dbo].[doc_permission_sets] ADD
 	)
 GO
 
-ALTER TABLE [dbo].[doc_permission_sets_ex] ADD 
-	CONSTRAINT [FK_doc_permission_sets_ex_doc_permission_sets1] FOREIGN KEY 
-	(
-		[meta_id],
-		[set_id]
-	) REFERENCES [dbo].[doc_permission_sets] (
-		[meta_id],
-		[set_id]
-	),
-	CONSTRAINT [FK_doc_permission_sets_ex_permission_sets] FOREIGN KEY 
-	(
-		[set_id]
-	) REFERENCES [dbo].[permission_sets] (
-		[set_id]
-	)
-GO
-
 ALTER TABLE [dbo].[frameset_docs] ADD 
 	CONSTRAINT [FK_frameset_docs_meta] FOREIGN KEY 
 	(
@@ -1350,23 +1331,6 @@ ALTER TABLE [dbo].[new_doc_permission_sets] ADD
 		[meta_id]
 	),
 	CONSTRAINT [FK_new_doc_permission_sets_permission_sets] FOREIGN KEY 
-	(
-		[set_id]
-	) REFERENCES [dbo].[permission_sets] (
-		[set_id]
-	)
-GO
-
-ALTER TABLE [dbo].[new_doc_permission_sets_ex] ADD 
-	CONSTRAINT [FK_new_doc_permission_sets_ex_new_doc_permission_sets] FOREIGN KEY 
-	(
-		[meta_id],
-		[set_id]
-	) REFERENCES [dbo].[new_doc_permission_sets] (
-		[meta_id],
-		[set_id]
-	),
-	CONSTRAINT [FK_new_doc_permission_sets_ex_permission_sets] FOREIGN KEY 
 	(
 		[set_id]
 	) REFERENCES [dbo].[permission_sets] (
@@ -1461,12 +1425,6 @@ ALTER TABLE [dbo].[user_rights] ADD
 		[meta_id]
 	) REFERENCES [dbo].[meta] (
 		[meta_id]
-	),
-	CONSTRAINT [FK_user_rights_users] FOREIGN KEY 
-	(
-		[user_id]
-	) REFERENCES [dbo].[users] (
-		[user_id]
 	)
 GO
 
@@ -1476,12 +1434,49 @@ ALTER TABLE [dbo].[user_roles_crossref] ADD
 		[role_id]
 	) REFERENCES [dbo].[roles] (
 		[role_id]
-	),
-	CONSTRAINT [FK_user_roles_crossref_users] FOREIGN KEY 
+	)
+GO
+
+ALTER TABLE [dbo].[useradmin_role_crossref] ADD 
+	CONSTRAINT [FK_useradmin_role_crossref_roles] FOREIGN KEY 
 	(
-		[user_id]
-	) REFERENCES [dbo].[users] (
-		[user_id]
+		[role_id]
+	) REFERENCES [dbo].[roles] (
+		[role_id]
+	)
+GO
+
+ALTER TABLE [dbo].[doc_permission_sets_ex] ADD 
+	CONSTRAINT [FK_doc_permission_sets_ex_doc_permission_sets1] FOREIGN KEY 
+	(
+		[meta_id],
+		[set_id]
+	) REFERENCES [dbo].[doc_permission_sets] (
+		[meta_id],
+		[set_id]
+	),
+	CONSTRAINT [FK_doc_permission_sets_ex_permission_sets] FOREIGN KEY 
+	(
+		[set_id]
+	) REFERENCES [dbo].[permission_sets] (
+		[set_id]
+	)
+GO
+
+ALTER TABLE [dbo].[new_doc_permission_sets_ex] ADD 
+	CONSTRAINT [FK_new_doc_permission_sets_ex_new_doc_permission_sets] FOREIGN KEY 
+	(
+		[meta_id],
+		[set_id]
+	) REFERENCES [dbo].[new_doc_permission_sets] (
+		[meta_id],
+		[set_id]
+	),
+	CONSTRAINT [FK_new_doc_permission_sets_ex_permission_sets] FOREIGN KEY 
+	(
+		[set_id]
+	) REFERENCES [dbo].[permission_sets] (
+		[set_id]
 	)
 GO
 

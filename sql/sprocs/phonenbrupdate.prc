@@ -14,14 +14,11 @@ This function adds a new phone numbers to the db. Used by AdminUserPhones
 */
  @user_id int,
  @phone_id int,
- @country varchar(15) ,
- @area varchar(15) , 
- @nbr varchar(15)
+ @nbr varchar(25),
+ @phonetype_id int
 AS
 UPDATE phones
- SET country_code = @country,
- area_code = @area ,
- number = @nbr
+ SET number = @nbr, phonetype_id = @phonetype_id
 WHERE phones.user_id = @user_id
 AND phones.phone_id = @phone_id
 

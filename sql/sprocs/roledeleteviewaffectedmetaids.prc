@@ -16,8 +16,8 @@ AS
  All metaids where the role is used will be presenteted in i list
 */
 SELECT  TOP 50 r.meta_id , r.meta_id
-FROM ROLES_RIGHTS r
-WHERE ROLE_ID = @aRoleId
+FROM roles_rights r
+WHERE role_id = @aRoleId
 -- Lets validate for null
 --SELECT @returnVal = ISNULL(  @returnVal , -1 )
 --SELECT @returnVal AS 'FoundRoleName'

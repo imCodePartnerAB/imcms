@@ -17,7 +17,7 @@ AS
 */
 SELECT  DISTINCT COUNT(usr.role_id )
 FROM user_roles_crossref usr, roles r, users u
-WHERE usr.ROLE_ID = @aRoleId 
+WHERE usr.role_id = @aRoleId 
 AND usr.user_id = u.user_id
 
 
