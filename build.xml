@@ -53,6 +53,8 @@
 
     <property name="imcmsurl" value="${rooturl}/imcms"/>
 
+    <property name="imagespattern" value="**/*.png,**/*.jpg,**/*.gif"/>
+
 
     <path id="libraries">
         <fileset dir="lib">
@@ -351,7 +353,11 @@
         <mkdir dir="${WEB-INF}/uploads"/>
 
         <copy todir="${webroot}" filtering="true">
-            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**"/>
+            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**,${imagespattern}"/>
+        </copy>
+
+        <copy todir="${webroot}">
+            <fileset dir="web" excludes="imcms/lang/**,WEB-INF/templates/lang/**" includes="${imagespattern}"/>
         </copy>
 
         <antcall target="web-lang">
@@ -418,11 +424,11 @@
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${imcms}/${buildlanguage}" filtering="true">
-            <fileset dir="web/imcms/lang" excludes="**/*.png,**/*.jpg,**/*.gif" />
+            <fileset dir="web/imcms/lang" excludes="${imagespattern}" />
         </imtranslate>
 
         <copy todir="${imcms}/${buildlanguage}" filtering="false">
-            <fileset dir="web/imcms/lang" includes="**/*.png,**/*.jpg,**/*.gif" />
+            <fileset dir="web/imcms/lang" includes="${imagespattern}" />
         </copy>
 
     </target>
