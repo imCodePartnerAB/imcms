@@ -24,6 +24,10 @@ public class User extends Hashtable {
 
 	}
 
+    public int getUserId() {
+	return getInt("user_id") ;
+    }
+
 	// add object
 	public void addObject(String fieldName,Vector object) {
 		put(fieldName,object) ;
