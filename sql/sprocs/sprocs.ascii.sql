@@ -210,6 +210,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetTemplat
 drop procedure [dbo].[GetTemplateGroupsWithPermissions]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetTemplateId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[GetTemplateId]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetTextDocData]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetTextDocData]
 GO
@@ -532,6 +536,7 @@ SET ANSI_NULLS ON
 GO
 
 
+
 CREATE PROCEDURE AddBrowserStatistics @os VARCHAR(30), @browser varchar(30), @version varchar(30) AS
 DECLARE @newline CHAR(2)
 SET @newline = CHAR(13)+CHAR(10)
@@ -542,6 +547,7 @@ SET @browserstring =  'Os: '+@os+@newline+
 EXEC AddStatistics @browserstring
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -552,6 +558,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE AddNewuser
@@ -610,6 +617,7 @@ VALUES (@user_id, @login_name, @login_password, @first_name, @last_name, @addres
 */
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -620,6 +628,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE AddPhoneNr
@@ -651,6 +660,7 @@ AS
 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -663,12 +673,14 @@ SET ANSI_NULLS ON
 GO
 
 
+
 CREATE PROCEDURE AddScreenStatistics @width INT, @height INT, @bits INT AS
 DECLARE @screen VARCHAR(20) 
 SET @screen = 'Screen: '+LTRIM(STR(@width))+'x'+LTRIM(STR(@height))+'x'+LTRIM(STR(@bits))
 EXEC AddStatistics @screen
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -679,6 +691,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE AddStatistics @name VARCHAR(120) AS
@@ -694,6 +707,7 @@ VALUES ( @name,
 END
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -704,12 +718,14 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE AddStatisticsCount AS
 EXEC AddStatistics 'Count'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -720,6 +736,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE AddUserRole
@@ -750,6 +767,7 @@ AS
 */ 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -760,6 +778,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE AddVersionStatistics @name VARCHAR(30), @version VARCHAR(30) AS
@@ -768,6 +787,7 @@ SET @string = @name+': '+@version
 EXEC AddStatistics @string
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -778,6 +798,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE ChangeUserActiveStatus @user_id int, @active int AS
@@ -790,6 +811,7 @@ active = @active
 WHERE user_id = @user_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -800,6 +822,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE CheckAdminRights
@@ -816,6 +839,7 @@ FROM users INNER JOIN
 WHERE roles.role_id = 0 AND users.user_id = @aUserId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -826,6 +850,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 CREATE PROCEDURE CheckDocSharePermissionForUser @user_id INT, @meta_id INT AS
 SELECT m.meta_id
@@ -843,6 +868,7 @@ WHERE				(
 				)
 GROUP BY m.meta_id
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -853,6 +879,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE CheckExistsInMenu
@@ -872,6 +899,7 @@ SELECT @returnVal = ISNULL(@returnVal, 0)
 SELECT @returnVal AS 'ExistsInMenu'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -882,6 +910,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 
 CREATE PROCEDURE CheckUserDocSharePermission @user_id INT, @meta_id INT AS
@@ -901,6 +930,7 @@ WHERE				(
 				)
 GROUP BY m.meta_id
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -911,6 +941,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE ClassificationAdd 
@@ -945,6 +976,7 @@ INSERT INTO meta_classification (meta_id,class_id)
 VALUES (  @theMetaId , @foundCode )
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -955,6 +987,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE Classification_Fix
@@ -993,6 +1026,7 @@ EXEC ClassificationAdd @meta_id , @value
 -- INSERT INTO data (value) VALUES (@string)
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1003,6 +1037,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE Classification_Get_All AS
@@ -1017,6 +1052,7 @@ SELECT meta_id, classification
  and classification NOT LIKE 'Test'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1027,6 +1063,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 
 
@@ -1418,6 +1455,7 @@ select * from meta_classification where meta_id = 1009
 DROP TABLE #documents
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1428,6 +1466,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE DelPhoneNr
@@ -1439,6 +1478,7 @@ AS
 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1449,6 +1489,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE DelUser
@@ -1463,6 +1504,7 @@ AS
  WHERE user_id = @aUserId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1473,6 +1515,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE DelUserRoles
@@ -1483,6 +1526,7 @@ AS
  WHERE user_id = @aUserId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1493,6 +1537,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE DeleteDocPermissionSetEx @meta_id INT, @set_id INT AS
@@ -1502,6 +1547,7 @@ CREATE PROCEDURE DeleteDocPermissionSetEx @meta_id INT, @set_id INT AS
 DELETE FROM  doc_permission_sets_ex
 WHERE  meta_id = @meta_id
   AND set_id = @set_id
+
 
 
 GO
@@ -1516,9 +1562,11 @@ SET ANSI_NULLS OFF
 GO
 
 
+
 CREATE PROCEDURE DeleteInclude @meta_id INT, @include_id INT AS
 
 DELETE FROM includes WHERE meta_id = @meta_id AND include_id = @include_id
+
 
 
 GO
@@ -1533,6 +1581,7 @@ SET ANSI_NULLS ON
 GO
 
 
+
 CREATE PROCEDURE DeleteNewDocPermissionSetEx @meta_id INT, @set_id INT AS
 /*
  Delete extended permissions for a permissionset for a document
@@ -1540,6 +1589,7 @@ CREATE PROCEDURE DeleteNewDocPermissionSetEx @meta_id INT, @set_id INT AS
 DELETE FROM  new_doc_permission_sets_ex
 WHERE  meta_id = @meta_id
   AND set_id = @set_id
+
 
 
 GO
@@ -1552,6 +1602,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 
 CREATE PROCEDURE [dbo].[DocumentDelete] 
@@ -1579,6 +1630,7 @@ delete from fileupload_docs where meta_id = @meta_id
 delete from frameset_docs where meta_id = @meta_id  
 delete from meta where meta_id = @meta_id
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1589,6 +1641,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 
 CREATE PROCEDURE ExistingDocsGetSelectedMetaIds
@@ -1666,6 +1719,7 @@ WHERE meta_id IN
 DROP TABLE #wanted_meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1676,6 +1730,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE [FindMetaId]
@@ -1686,6 +1741,7 @@ FROM meta
 WHERE meta_id = @meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1696,6 +1752,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE [FindUserName] 
@@ -1711,6 +1768,7 @@ FROM users u
 WHERE u.login_name = @userName
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1721,6 +1779,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetAllRoles AS
@@ -1730,6 +1789,7 @@ FROM roles
 ORDER BY role_name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1740,6 +1800,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE [GetAllUsers] AS
@@ -1749,6 +1810,7 @@ CREATE PROCEDURE [GetAllUsers] AS
  order by  last_name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1759,6 +1821,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetAllUsersInList AS
@@ -1769,6 +1832,7 @@ SELECT user_id, last_name + ', ' + first_name from users
 ORDER BY last_name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1779,6 +1843,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetCategoryUsers
@@ -1796,6 +1861,7 @@ ORDER BY last_name
 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1806,6 +1872,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1943,6 +2010,7 @@ end
 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1953,6 +2021,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetCurrentSessionCounter 
@@ -1963,6 +2032,7 @@ AS
  WHERE type_id  = 1
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1973,6 +2043,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetCurrentSessionCounterDate
@@ -1983,6 +2054,7 @@ AS
  WHERE type_id  = 2
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1993,6 +2065,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetDocType
@@ -2004,6 +2077,7 @@ AS
 SELECT doc_type
 FROM meta
 WHERE meta_id = @meta_id
+
 
 
 GO
@@ -2018,12 +2092,14 @@ SET ANSI_NULLS ON
 GO
 
 
+
 CREATE PROCEDURE GetDocTypes @lang_prefix VARCHAR(3) AS
 SELECT doc_type,type FROM doc_types
 WHERE lang_prefix = @lang_prefix
 ORDER BY doc_type
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2034,6 +2110,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetDocTypesForUser @meta_id INT,@user_id INT, @lang_prefix VARCHAR(3) AS
@@ -2064,6 +2141,7 @@ WHERE
 ORDER BY dt.doc_type
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2074,6 +2152,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 --
@@ -2099,6 +2178,7 @@ WHERE dt.lang_prefix = @lang_prefix
 ORDER BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC,doc_type
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2109,6 +2189,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 --
@@ -2134,6 +2215,7 @@ WHERE dt.lang_prefix = @lang_prefix
 ORDER BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC,doc_type
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2144,6 +2226,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetHighestUserId
@@ -2153,6 +2236,7 @@ SELECT MAX(user_id) +1
 FROM users
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2163,11 +2247,13 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetImgs
 @meta_id int AS
 select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = @meta_id
+
 
 
 GO
@@ -2182,11 +2268,13 @@ SET ANSI_NULLS OFF
 GO
 
 
+
 CREATE PROCEDURE GetIncludes @meta_id INT AS
 
 SELECT include_id, included_meta_id  FROM includes WHERE meta_id = @meta_id
 ORDER BY include_id
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2197,6 +2285,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetLangPrefix
@@ -2210,6 +2299,7 @@ FROM meta
 WHERE meta_id = @meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2220,6 +2310,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetLangPrefixFromId
@@ -2233,6 +2324,7 @@ FROM lang_prefixes
 WHERE lang_id = @aLangId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2243,6 +2335,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetLanguageList
@@ -2257,6 +2350,7 @@ WHERE lp.lang_prefix = lang.lang_prefix
 AND lang.user_prefix = @user_lang_prefix
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2267,6 +2361,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetMetaPathInfo
@@ -2284,6 +2379,7 @@ FROM META
 WHERE meta_id = @meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2294,6 +2390,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE [GetNewPermissionSet] @meta_id INT, @set_id INT, @lang_prefix VARCHAR(3) AS
@@ -2323,6 +2420,7 @@ LEFT JOIN new_doc_permission_sets dps
        AND dps.meta_id = m.meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2333,10 +2431,12 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetNoOfTemplates AS
 select count(*) from templates
+
 
 
 GO
@@ -2349,6 +2449,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE [GetPermissionSet] @meta_id INT, @set_id INT, @lang_prefix VARCHAR(3) AS
@@ -2378,6 +2479,7 @@ LEFT JOIN doc_permission_sets dps
        AND dps.meta_id = m.meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2388,6 +2490,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetRolesDocPermissions @meta_id INT AS
@@ -2406,6 +2509,7 @@ WHERE r.role_id > 0
 ORDER BY role_name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2416,6 +2520,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetTemplateGroupsForUser @meta_id INT, @user_id INT AS
@@ -2446,6 +2551,7 @@ WHERE
 ORDER BY dt.group_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2456,6 +2562,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 --
@@ -2480,6 +2587,7 @@ LEFT JOIN new_doc_permission_sets_ex dpse
 ORDER  BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC, group_name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2490,6 +2598,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetTemplateGroupsWithPermissions @meta_id INT, @set_id INT AS
@@ -2510,6 +2619,27 @@ LEFT JOIN doc_permission_sets_ex dpse
 ORDER  BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC, group_name
 
 
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+
+CREATE PROCEDURE GetTemplateId
+ @aTemplatename varchar(80)
+ AS
+
+
+SELECT template_id
+FROM templates
+WHERE simple_name = @aTemplatename
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2520,6 +2650,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetTextDocData @meta_id INT AS
@@ -2530,6 +2661,7 @@ JOIN   templates c
 WHERE meta_id = @meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2540,6 +2672,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetTextNumber @meta_id int,  @name int AS
@@ -2550,6 +2683,7 @@ where
  meta_id = @meta_id  and name = @name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2560,11 +2694,13 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetTexts
 @meta_id int AS
 select '#txt'+convert(varchar(5), name)+'#',name,type,text from texts where meta_id = @meta_id
+
 
 
 GO
@@ -2577,6 +2713,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserCreateDate
@@ -2596,6 +2733,7 @@ WHERE users.user_id = @userId
 SELECT @retVal  AS 'Usercreatedate'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2606,6 +2744,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserId 
@@ -2616,6 +2755,7 @@ AS
  WHERE user_id  = @aUserId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2626,6 +2766,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE [GetUserIdFromName] 
@@ -2642,6 +2783,7 @@ WHERE u.login_name = @userName
 AND u.login_password = @userPwd
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2654,6 +2796,7 @@ SET ANSI_NULLS ON
 GO
 
 
+
 CREATE PROCEDURE GetUserInfo
 /* Returns all the information about a user. Used by adminsystem & conference system
 */
@@ -2664,6 +2807,7 @@ AS
  WHERE user_id = @aUserId 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2674,6 +2818,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserNames
@@ -2698,6 +2843,7 @@ SELECT @returnVal =  ISNULL(@returnVal, -1)
 SELECT @returnVal AS 'UserName'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2708,6 +2854,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserPassword 
@@ -2723,6 +2870,7 @@ SELECT @retVal =  ISNULL(@retVal , '')
 SELECT @retVal AS 'Password'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2733,6 +2881,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserPermissionSet @meta_id INT, @user_id INT AS
@@ -2772,6 +2921,7 @@ GROUP BY ISNULL(dps.permission_id,0),m.permissions
 ORDER BY ISNULL((MIN(ISNULL(rr.set_id,4))*CAST(MIN(ISNULL(urc.role_id,1)) AS BIT)),4)
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2782,6 +2932,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserPermissionSetEx @meta_id INT, @user_id INT AS
@@ -2802,6 +2953,7 @@ JOIN  doc_permission_sets_ex dps
       AND rr.set_id = dps.set_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2812,6 +2964,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserPhoneNumbers
@@ -2827,6 +2980,7 @@ WHERE u.user_id = p.user_id
 AND u.user_id = @user_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2837,6 +2991,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserPhones
@@ -2851,6 +3006,7 @@ WHERE u.user_id = p.user_id
 AND u.user_id = @user_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2861,6 +3017,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserRoles
@@ -2875,6 +3032,7 @@ Used to get all roles for a user
   AND user_roles_crossref.user_id = @aUserId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2885,6 +3043,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserRolesDocPermissions @meta_id INT, @user_id INT AS
@@ -2906,6 +3065,7 @@ WHERE r.role_id > 0
 ORDER BY role_name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2916,6 +3076,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserRolesIds
@@ -2929,6 +3090,7 @@ CREATE PROCEDURE GetUserRolesIds
   AND user_roles_crossref.user_id = @aUserId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2939,6 +3101,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserType
@@ -2955,6 +3118,7 @@ SELECT @returnVal =  ISNULL(@returnVal, 1)
 SELECT @returnVal AS 'Usertype'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2965,6 +3129,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUserTypes
@@ -2978,6 +3143,7 @@ Used to generate a list with all type of users. Used from AdminUserProps
  FROM user_types
  WHERE lang_prefix=@lang_prefix
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2988,6 +3154,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE GetUsersWhoBelongsToRole @role_id int AS
@@ -3002,6 +3169,7 @@ where role_id = @role_id
 order by  last_name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3012,6 +3180,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE IPAccessAdd
@@ -3026,6 +3195,7 @@ INSERT INTO IP_ACCESSES ( user_id , ip_start , ip_end )
 VALUES ( @user_id , @ip_start , @ip_end )
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3036,6 +3206,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE IPAccessDelete
@@ -3048,6 +3219,7 @@ DELETE FROM IP_ACCESSES
 WHERE ip_access_id = @ipAccessId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3058,6 +3230,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE IPAccessUpdate
@@ -3076,6 +3249,7 @@ SET user_id = @newUserId ,
 WHERE ip_access_id = @IpAccessId 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3086,6 +3260,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE IPAccessesGetAll AS
@@ -3097,6 +3272,7 @@ FROM IP_ACCESSES ip, USERS usr
 WHERE ip.user_id = usr.user_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3107,6 +3283,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE IncSessionCounter 
@@ -3121,6 +3298,7 @@ AS
   return
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3131,6 +3309,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE InheritPermissions @new_meta_id INT, @parent_meta_id INT, @doc_type INT AS
@@ -3212,6 +3391,7 @@ WHERE meta_id = @parent_meta_id
 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3222,6 +3402,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE ListConferences AS
@@ -3230,6 +3411,7 @@ from meta
 where doc_type = 102
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3240,6 +3422,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE ListDocsByDate @listMod int,  @doc_type int, @startDate varchar(10), @endDate varchar(20), @lang_prefix varchar(3) AS
@@ -3388,6 +3571,7 @@ else begin
 end
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3398,6 +3582,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE ListDocsGetInternalDocTypes @lang_prefix VARCHAR(3) AS
@@ -3408,6 +3593,7 @@ where doc_type <= 100
 and lang_prefix = @lang_prefix
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3418,6 +3604,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE ListDocsGetInternalDocTypesValue AS
@@ -3427,6 +3614,7 @@ from doc_types
 where doc_type <= 100
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3437,6 +3625,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE PermissionsGetPermission @login_name varchar(15), @permission int AS
@@ -3454,6 +3643,7 @@ where login_name = @login_name
 group by login_password, first_name, last_name, email, lang_prefix 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3464,6 +3654,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE PhoneNbrDelete
@@ -3476,6 +3667,7 @@ DELETE FROM PHONES
 WHERE phone_id = @phoneId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3486,6 +3678,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE PhoneNbrUpdate 
@@ -3506,6 +3699,7 @@ WHERE phones.user_id = @user_id
 AND phones.phone_id = @phone_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3516,6 +3710,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RemoveUserFromRole
@@ -3527,6 +3722,7 @@ FROM user_roles_crossref
 WHERE user_id = @userId and role_id = @role_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3537,6 +3733,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleAddNew
@@ -3551,6 +3748,7 @@ VALUES( @newRoleId , @newRoleName )
  
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3561,6 +3759,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleAdminGetAll AS
@@ -3570,6 +3769,7 @@ CREATE PROCEDURE RoleAdminGetAll AS
 SELECT role_id , role_name FROM ROLES
 WHERE role_id != 0
 ORDER BY role_name
+
 
 
 GO
@@ -3582,6 +3782,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 
 CREATE PROCEDURE RoleCheckConferenceAllowed 
@@ -3600,6 +3801,7 @@ JOIN  roles r
 WHERE lang_prefix = @lang_prefix
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3610,6 +3812,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleCount
@@ -3628,6 +3831,7 @@ SELECT @returnVal = ISNULL(  @returnVal , 0 )
 SELECT @returnVal AS 'Number_of_roles'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3638,6 +3842,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleCountAffectedUsers
@@ -3653,6 +3858,7 @@ WHERE usr.ROLE_ID = @aRoleId
 AND usr.user_id = u.user_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3663,6 +3869,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleDelete
@@ -3675,6 +3882,7 @@ DELETE FROM user_roles_crossref WHERE ROLE_ID =@roleId
 DELETE FROM ROLES WHERE ROLE_ID = @roleId
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3685,6 +3893,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleDeleteViewAffectedMetaIds
@@ -3702,6 +3911,7 @@ WHERE ROLE_ID = @aRoleId
 --SELECT @returnVal AS 'FoundRoleName'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3712,6 +3922,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleDeleteViewAffectedUsers
@@ -3729,6 +3940,7 @@ AND usr.user_id = u.user_id
 ORDER BY (RTRIM(last_name) + ', ' + RTRIM(first_name))
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3739,6 +3951,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleFindName
@@ -3757,6 +3970,7 @@ SELECT @returnVal = ISNULL(  @returnVal , -1 )
 SELECT @returnVal AS 'FoundRoleName'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3767,6 +3981,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleGetAllApartFromRole @role_id int AS
@@ -3776,6 +3991,7 @@ CREATE PROCEDURE RoleGetAllApartFromRole @role_id int AS
 SELECT role_id , role_name FROM ROLES
 WHERE role_id != 0 and role_id != @role_id
 ORDER BY role_id
+
 
 
 GO
@@ -3788,6 +4004,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 
 CREATE PROCEDURE RoleGetConferenceAllowed
@@ -3812,6 +4029,7 @@ JOIN  roles r
 WHERE lang_prefix = @lang_prefix
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3822,6 +4040,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleGetName
@@ -3840,6 +4059,7 @@ SELECT @returnStr = ISNULL(  @returnStr , '---' )
 SELECT @returnStr AS 'Rolename'
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3850,6 +4070,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleGetPermissionsByLanguage @lang_prefix varchar(3) AS
@@ -3860,6 +4081,7 @@ where lang_prefix = @lang_prefix
 order by permission_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3870,6 +4092,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleGetPermissionsFromRole @role_id int, @lang_prefix varchar(3) AS
@@ -3884,6 +4107,7 @@ LEFT JOIN  roles r
 WHERE lang_prefix = @lang_prefix
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3894,6 +4118,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RolePermissionsAddNew
@@ -3907,6 +4132,7 @@ INSERT INTO roles (  role_id , role_name, permissions )
 VALUES( @newRoleId , @newRoleName, @permissions )
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3917,6 +4143,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleUpdateName
@@ -3931,6 +4158,7 @@ SET role_name = @newRole_name
 WHERE role_id = @role_id 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3941,6 +4169,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE RoleUpdatePermissions @role_id int,  @permissions int AS
@@ -3950,6 +4179,7 @@ Set permissions = @permissions
 where role_id = @role_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -3960,6 +4190,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE SearchDocs
@@ -4260,6 +4491,7 @@ DROP TABLE #doc_types
 DROP TABLE #keywords_matched
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4270,6 +4502,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE ServerMasterGet AS
@@ -4280,6 +4513,7 @@ SELECT @smaddress = value FROM sys_data WHERE type_id = 5
 SELECT @smname,@smaddress
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4290,6 +4524,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE ServerMasterSet 
@@ -4299,6 +4534,7 @@ UPDATE sys_data SET value = @smname WHERE type_id = 4
 UPDATE sys_data SET value = @smaddress WHERE type_id = 5
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4309,6 +4545,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE SetDocPermissionSet @meta_id INT, @set_id INT, @permission_id INT AS
@@ -4324,6 +4561,7 @@ INSERT INTO doc_permission_sets
 VALUES (@meta_id,@set_id,@permission_id)
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4334,6 +4572,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE SetDocPermissionSetEx @meta_id INT, @set_id INT, @permission_id INT, @permission_data INT AS
@@ -4343,6 +4582,7 @@ CREATE PROCEDURE SetDocPermissionSetEx @meta_id INT, @set_id INT, @permission_id
 -- Insert new value
 INSERT INTO doc_permission_sets_ex
 VALUES (@meta_id,@set_id,@permission_id, @permission_data)
+
 
 
 GO
@@ -4357,6 +4597,7 @@ SET ANSI_NULLS OFF
 GO
 
 
+
 CREATE PROCEDURE SetInclude @meta_id INT, @include_id INT, @included_meta_id INT AS
 
 DELETE FROM	includes 
@@ -4365,6 +4606,7 @@ WHERE 	meta_id = @meta_id
 
 INSERT INTO	includes	 (meta_id, include_id, included_meta_id)
 VALUES	(@meta_id, @include_id, @included_meta_id)
+
 
 
 GO
@@ -4377,6 +4619,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE SetNewDocPermissionSet @meta_id INT, @set_id INT, @permission_id INT AS
@@ -4392,6 +4635,7 @@ INSERT INTO new_doc_permission_sets
 VALUES (@meta_id,@set_id,@permission_id)
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4404,6 +4648,7 @@ SET ANSI_NULLS ON
 GO
 
 
+
 CREATE PROCEDURE SetNewDocPermissionSetEx @meta_id INT, @set_id INT, @permission_id INT, @permission_data INT AS
 /*
  Updates an extended permissionset for a document.
@@ -4413,6 +4658,7 @@ INSERT INTO new_doc_permission_sets_ex
 VALUES (@meta_id,@set_id,@permission_id, @permission_data)
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4423,6 +4669,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE SetRoleDocPermissionSetId @role_id INT, @meta_id INT, @set_id INT AS
@@ -4438,6 +4685,7 @@ BEGIN
 END
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4448,6 +4696,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE SetSessionCounterDate
@@ -4460,6 +4709,7 @@ AS
   return
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4470,6 +4720,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 
 CREATE PROCEDURE SortOrder_GetExistingDocs 
@@ -4491,6 +4742,7 @@ INNER JOIN display_name display
 INNER JOIN sort_by sType
 	ON sType.sort_by_id = display.sort_by_id
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4501,6 +4753,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE SystemMessageGet AS
@@ -4512,6 +4765,7 @@ FROM sys_data s
 WHERE s.type_id = 3
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4522,6 +4776,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE SystemMessageSet
@@ -4535,6 +4790,7 @@ SET value = @newMsg
 WHERE type_id = 3
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4546,6 +4802,7 @@ GO
 SET ANSI_NULLS OFF 
 GO
 
+
 CREATE PROCEDURE [UpdateDefaultTemplates] 
  @meta_id INT,
  @template1 int,
@@ -4555,6 +4812,7 @@ UPDATE text_docs
 SET default_template_1= @template1,
 default_template_2=@template2 
 WHERE meta_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4565,6 +4823,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE [UpdateParentsDateModified] @meta_id INT AS
@@ -4575,6 +4834,7 @@ ON meta.meta_id = c.meta_id
 WHERE c.to_meta_id = @meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4585,6 +4845,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE UpdateTemplateTextsAndImages
@@ -4629,6 +4890,7 @@ close tmp
 deallocate tmp
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4639,6 +4901,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE UpdateUser
@@ -4684,6 +4947,7 @@ lang_id = @lang_id
 WHERE user_id = @User_id 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4694,6 +4958,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE UserPrefsChange
@@ -4709,6 +4974,7 @@ FROM users
 WHERE user_id = @aUserId 
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4719,6 +4985,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE WebMasterGet AS
@@ -4729,6 +4996,7 @@ SELECT @wmaddress = value FROM sys_data WHERE type_id = 7
 SELECT @wmname,@wmaddress
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4739,6 +5007,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE WebMasterSet 
@@ -4748,6 +5017,7 @@ UPDATE sys_data SET value = @wmname WHERE type_id = 6
 UPDATE sys_data SET value = @wmaddress WHERE type_id = 7
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4758,6 +5028,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE classification_convert AS
@@ -4784,6 +5055,7 @@ CLOSE tmpCursor
 DEALLOCATE tmpCursor
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4794,6 +5066,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE getBrowserDocChilds @meta_id int, @user_id int AS
@@ -4818,6 +5091,7 @@ WHERE m.activate = 1
 ORDER BY to_meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4828,6 +5102,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE getDocs @user_id int, @start int, @end int AS
@@ -4855,6 +5130,7 @@ GROUP BY  m.meta_id,m.meta_headline,m.doc_type,c.to_meta_id
 ORDER BY  m.meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4865,12 +5141,14 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE getLanguages AS
 select lang_prefix,language from languages order by language
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4881,6 +5159,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE getMenuDocChilds @meta_id int, @user_id int AS
@@ -4904,6 +5183,7 @@ WHERE m.activate = 1
 ORDER BY to_meta_id
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4914,12 +5194,14 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE getTemplategroups AS
 select group_id,group_name from templategroups order by group_name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4930,12 +5212,14 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE getTemplates AS
 select template_id, simple_name from templates
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4946,6 +5230,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE getTemplatesInGroup @grp_id INT AS
@@ -4957,6 +5242,7 @@ WHERE c.group_id = @grp_id
 ORDER BY simple_name
 
 
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -4967,6 +5253,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE phoneNbrAdd
@@ -4985,6 +5272,7 @@ IF @newPhoneId IS NULL
  SET @newPhoneId = 1
 INSERT INTO PHONES ( phone_id , country_code, area_code, number , user_id )
 VALUES (@newPhoneId , @country, @area,  @nbr, @user_id )  
+
 
 
 GO
