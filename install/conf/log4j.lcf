@@ -21,15 +21,26 @@ log4j.rootCategory=DEBUG, A1
 # log4j.appender.A1=org.apache.log4j.ConsoleAppender
 log4j.appender.A1=imcode.util.log.WebAppFileAppender
 log4j.appender.A1.Append=true
-log4j.appender.A1.File=WEB-INF/logs/main.log
+log4j.appender.A1.File=WEB-INF/logs/error.log
 log4j.appender.A1.layout=org.apache.log4j.PatternLayout
 log4j.appender.A1.layout.ConversionPattern=%-4r %-5p [%t] %20c, %m%n
 
 # The access log, accesslog (the name defined in GetDoc.ACCESS_LOG)
 log4j.category.accesslog=INFO, A2
+log4j.additivity.accesslog=false
 log4j.appender.A2=imcode.util.log.WebAppFileAppender
 # Appender AccessLog writes to the file "access.log".
 log4j.appender.A2.File=WEB-INF/logs/access.log
 log4j.appender.A2.Append=true
 log4j.appender.A2.layout=org.apache.log4j.PatternLayout
 log4j.appender.A2.layout.ConversionPattern=%-5r %-5p [%t] %c{2} - %m%n
+
+# The main log, mainlog (the name defined in ??????)
+log4j.category.mainlog=INFO, A3
+log4j.additivity.mainlog=false
+log4j.appender.A3=imcode.util.log.WebAppFileAppender
+log4j.appender.A3.File=WEB-INF/logs/main.log
+log4j.appender.A3.Append=true
+log4j.appender.A3.layout=org.apache.log4j.PatternLayout
+log4j.appender.A3.layout.ConversionPattern=%-5r %-5p [%t] %c{2} - %m%n
+

@@ -3,18 +3,19 @@ package imcode.server.parser ;
 import org.apache.oro.text.regex.* ;
 import java.util.* ;
 
-import imcode.util.log.* ;
+import org.apache.log4j.Category;
 
 public class HashTagSubstitution implements Substitution {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 	
     private static Pattern HASHTAGNUMBER_PATTERN  = null ;
+	
+	private static Category log = Category.getInstance("server");
 
     Properties tags ;
     Properties numberedtags ;
     Perl5Compiler patComp = new Perl5Compiler() ;
-    Log log = Log.getLog("server") ;
 
     static {
 	Perl5Compiler patComp = new Perl5Compiler() ;
@@ -24,8 +25,7 @@ public class HashTagSubstitution implements Substitution {
 	
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-	    Log log = Log.getLog("server") ;
-	    log.log(Log.CRITICAL, "Danger, Will Robinson!") ;
+	    log.fatal("Danger, Will Robinson!",ignored) ;
 	}
     }
 
@@ -57,7 +57,7 @@ public class HashTagSubstitution implements Substitution {
 		    try { // Replace the number in all the tagdata
 			tagdata = org.apache.oro.text.regex.Util.substitute(patMat,patComp.compile(qm),new StringSubstitution(tagnumber),tagdata,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
 		    } catch (MalformedPatternException ex) {
-			log.log(Log.WARNING, "Dynamic Pattern-compilation failed in HashTagSubstitution.hashTagHandler(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"+numbertag+"'",ex) ;
+			log.warn("Dynamic Pattern-compilation failed in HashTagSubstitution.hashTagHandler(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"+numbertag+"'",ex) ;
 		    }
 		}
 	    } else {

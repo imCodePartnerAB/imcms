@@ -2,6 +2,8 @@ package imcode.util ;
 
 import java.util.* ;
 
+import org.apache.log4j.Category;
+
 /**
 	Parses MIME multipart/* data into parts and MIME-headers.
 */
@@ -10,6 +12,7 @@ public class MultipartParser {
 	private final static String CVS_REV="$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
+	private static Category log = Category.getInstance("server");
 	String bodies[] ;	// Contains the MIME-bodies
 	Properties headers[] ;	//Contains the MIME-headers
 	Hashtable headparams[] ;	//Contains a Hashtable of Properties to keep track of the parameters for each individual header.
@@ -23,8 +26,7 @@ public class MultipartParser {
 		try {
 			parse (new String(data,"8859_1"),contenttype) ;
 		} catch ( java.io.UnsupportedEncodingException ex ) {
-			imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
-			log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   		
+			log.debug("Exception occured" + ex );	   		
 		}
 	}
 	/**

@@ -77,6 +77,11 @@ public interface IMCConstants {
     /* Document-Permissions */
 
     public final static int DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 = (1 << 0) ; // 1
+	
+	/* Log instances*/
+	public final static String MAIN_LOG 		= "mainlog";
+	public final static String ACCESS_LOG 		= "accesslog";
+	public final static String ERROR_LOG 		= "errorlog";
     
     /* Menu-sort-orders */
     

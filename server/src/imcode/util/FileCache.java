@@ -2,7 +2,8 @@ package imcode.util ;
 
 import java.io.* ;
 import org.apache.oro.util.* ;
-import imcode.util.log.* ;
+
+import org.apache.log4j.Category;
 
 public class FileCache {
 	private final static String CVS_REV="$Revision$" ;
@@ -11,7 +12,7 @@ public class FileCache {
     private final int m_FileCacheSize = 50 ;
     private CacheLRU fileCache = new CacheLRU(m_FileCacheSize) ;
 
-    Log log = Log.getLog("server") ;
+    private static Category log = Category.getInstance("server") ;
 
     /**
        Fetch a file from the cache, if it hasn't changed on disc.
@@ -34,7 +35,7 @@ public class FileCache {
 	    }
 	    br.close();
 	} catch (IOException ex) {
-	    log.log(Log.ERROR, "File not found during parsing.", ex) ;
+	    log.error("File not found during parsing.", ex) ;
 	    tempbuffer.append(ex.getMessage()) ;
 	}
 	return tempbuffer ;

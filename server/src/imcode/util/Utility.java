@@ -5,7 +5,8 @@ import javax.servlet.http.HttpUtils ;
 import java.io.* ;
 import java.util.* ;
 
-import imcode.util.log.* ;
+
+import org.apache.log4j.Category;
 
 public class Utility {
 	private final static String CVS_REV="$Revision$" ;
@@ -13,7 +14,7 @@ public class Utility {
 
     static protected Hashtable mimetypes ;
     
-    static Log log = Log.getLog("server") ;
+    private static Category log = Category.getInstance( "server" ) ;
 
     static {
 	// Read an apache style mime-types file (mime	ext1 ext2 ext3)
@@ -33,7 +34,7 @@ public class Utility {
 		}
 	    }
 	} catch ( IOException ex ) {
-	    log.log(Log.ERROR,"Unable to load mime-types-file",ex) ;
+	    log.error("Unable to load mime-types-file",ex) ;
 	}
     }
 

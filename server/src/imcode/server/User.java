@@ -70,7 +70,10 @@ public class User extends Hashtable {
 	public void setLastMetaId(int last_meta_id) {
 		put("last_page",Integer.toString(last_meta_id))  ;
 	}
-
+	
+	public String getLastMetaId() {
+		return (String)get("last_page");
+	}
 	// get browser_info
 	public String[] getBrowserInfo() {
 		return browser_info ;

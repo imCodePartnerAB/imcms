@@ -9,14 +9,17 @@ import java.sql.Date ;
 import java.io.*;
 import java.util.*;
 import java.text.Collator ;
-import java.text.SimpleDateFormat ;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.net.URL ;
 import java.net.MalformedURLException ;
 
 import imcode.server.* ;
 import imcode.server.parser.* ;
-import imcode.util.log.* ;
+
 import imcode.util.FileCache ;
+
+import org.apache.log4j.Category;
 
 /**
    Main services for the Imcode Net Server.
@@ -48,7 +51,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     
     private FileCache fileCache = new FileCache() ;
 
-    private Log log = Log.getLog("server") ;
+
+	private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;			
+	private final static Category mainLog = Category.getInstance( IMCConstants.MAIN_LOG ) ;
+	private final static Category log = Category.getInstance( "server" ) ;
+
+	static 
+	{
+		mainLog.info("Main log started." );
+		log.debug("Main log called for the first time. The logs name is "+IMCConstants.MAIN_LOG );
+	}
+
     
     /**
      * <p>Contructs an IMCService object.
@@ -62,19 +75,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	String templatePathString = props.getProperty("TemplatePath").trim() ;
 	m_TemplateHome      = imcode.util.Utility.getAbsolutePathFromString(templatePathString) ;
-	log.log(Log.INFO, "TemplatePath: " + m_TemplateHome) ;
+	log.info("TemplatePath: " + m_TemplateHome) ;
 	    
 	String includePathString = props.getProperty("IncludePath").trim() ;
 	m_IncludePath       = imcode.util.Utility.getAbsolutePathFromString(includePathString) ;
-	log.log(Log.INFO, "IncludePath: " + m_IncludePath) ;
+	log.info("IncludePath: " + m_IncludePath) ;
 
 	String fortunePathString = props.getProperty("FortunePath").trim() ;
 	m_FortunePath       = imcode.util.Utility.getAbsolutePathFromString(fortunePathString) ;
-	log.log(Log.INFO, "FortunePath: " + m_IncludePath) ;
+	log.info("FortunePath: " + m_IncludePath) ;
 	
 	String searchTemplatePathString = props.getProperty("SearchTemplatePath").trim() ;
 	m_SearchTemplatePath = imcode.util.Utility.getAbsolutePathFromString(searchTemplatePathString) ;
-	log.log(Log.INFO, "SearchTemplatePath: " + m_SearchTemplatePath) ;
+	log.info("SearchTemplatePath: " + m_SearchTemplatePath) ;
 	    
 	try {
 	    m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument").trim()) ;    //FIXME: Get from DB
@@ -84,20 +97,20 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    throw new RuntimeException ("No StartDocument given in properties-file.") ;
 	}
 
-	log.log(Log.INFO, "StartDocument: " + m_DefaultHomePage) ;
+	log.info("StartDocument: " + m_DefaultHomePage) ;
 	    
 	m_ServletUrl        = props.getProperty("ServletUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
-	log.log(Log.INFO, "ServletUrl: " + m_ServletUrl) ;
+	log.info("ServletUrl: " + m_ServletUrl) ;
 	    
 	// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
 	m_ImageFolder       = props.getProperty("ImageUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
-	log.log(Log.INFO, "ImageUrl: " + m_ImageFolder) ;
+	log.info("ImageUrl: " + m_ImageFolder) ;
 	    
 	String externalDocTypes  = props.getProperty("ExternalDoctypes").trim() ; //FIXME: Get rid of, if possible.
-	log.log(Log.INFO, "ExternalDoctypes: " + externalDocTypes) ;
+	log.info("ExternalDoctypes: " + externalDocTypes) ;
 	    
 	m_Language          = props.getProperty("DefaultLanguage").trim() ; //FIXME: Get from DB
-	log.log(Log.INFO, "DefaultLanguage: " + m_Language) ;
+	log.info("DefaultLanguage: " + m_Language) ;
 	    
 	    
 	StringTokenizer doc_types = new StringTokenizer(externalDocTypes,";",false) ;
@@ -122,14 +135,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    m_SessionCounterDate = this.sqlProcedureStr("GetCurrentSessionCounterDate") ;
 	    //m_NoOfTemplates      = this.sqlProcedureInt("GetNoOfTemplates") ;
 	} catch ( NumberFormatException ex ) {
-	    log.log(Log.CRITICAL, "Failed to get SessionCounter from db.", ex) ;
+	    log.fatal("Failed to get SessionCounter from db.", ex) ;
 	    throw ex ;
 	}
 	    
 	//m_Template = new Template[m_NoOfTemplates] ;
 	    
-	log.log(Log.INFO, "SessionCounter: "+m_SessionCounter) ;
-	log.log(Log.INFO, "SessionCounterDate: "+m_SessionCounterDate) ;
+	log.info("SessionCounter: "+m_SessionCounter) ;
+	log.info("SessionCounterDate: "+m_SessionCounterDate) ;
 	//log.log(Log.INFO, "TemplateCount: "+m_NoOfTemplates) ;
 
 	textDocParser = new TextDocumentParser(this, m_conPool,m_TemplateHome,m_IncludePath,m_ImageFolder,m_ServletUrl) ;
@@ -179,16 +192,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    String login_password_from_form = login_user.getLoginPassword() ;
 
 	    if ( login_password_from_db.equals(login_password_from_form) && user.getBoolean("active"))
-		this.updateLogs(new java.util.Date() + "->User "	 + login_user.getLoginName()
+		this.updateLogs("->User "	 + login_user.getLoginName()
 				+ " succesfully logged in.") ;
 	    else if (!user.getBoolean("active") ) {
-		this.updateLogs(new java.util.Date() + "->User "	 + (login_user.getLoginName()).trim()
+		this.updateLogs("->User "	 + (login_user.getLoginName()).trim()
 				+ " tried to logged in: User deleted!") ;
 		dbc.closeConnection() ;
 		dbc = null ;
 		return null ;
 	    } else {
-		this.updateLogs(new java.util.Date() + "->User "	 + (login_user.getLoginName()).trim()
+		this.updateLogs("->User "	 + (login_user.getLoginName()).trim()
 				+ " tried to logged in: Wrong password!") ;
 		dbc.closeConnection() ;
 		dbc = null ;
@@ -196,7 +209,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    }
 
 	} else {
-	    this.updateLogs(new java.util.Date() + "->User " + login_user.getLoginName()
+	    this.updateLogs("->User " + login_user.getLoginName()
 			    + " tried to logged in: User not found!") ;
 	    dbc.closeConnection() ;
 	    dbc = null ;
@@ -268,7 +281,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		superadmin = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, superadmin_filename))) ;
 
 	    } catch(IOException e) {
-		log.log(Log.ERROR, "An error occurred reading adminbuttonfile", e );
+		log.error("An error occurred reading adminbuttonfile", e );
 		return null ;
 	    }
 
@@ -302,7 +315,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	    return templatebuffer.toString() ;
 	} catch ( RuntimeException ex ) {
-	    log.log(Log.ERROR,"Error occurred while parsing the adminbuttons.",ex) ;
+	    log.error("Error occurred while parsing the adminbuttons.",ex) ;
 	    return null ;
 	}
     }
@@ -628,16 +641,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	
 	if (childsThisMenu != null && childsThisMenu.length > 0) {
 	    StringBuffer childs = new StringBuffer("CopyDocs '"+childsThisMenu[0]) ;
-
+		StringBuffer logchilds = new StringBuffer(childsThisMenu[0]) ;
 	    for (int i=1; i<childsThisMenu.length; ++i) {
-		childs.append(",").append(childsThisMenu[i]) ;
-	    }
+		childs.append(",").append(childsThisMenu[i]) ;		
+		logchilds.append(", "+childsThisMenu[i]) ;	
+		}
 
 	    childs.append("',"+meta_id+","+doc_menu_no+","+user.getUserId()+","+copyPrefix) ;
 	    sqlUpdateProcedure(childs.toString()) ;
-
+		this.updateLogs("Childs [" + logchilds.toString()+"] on ["+meta_id+"] copied by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+	   
 	}
-
+	
     }
 
     /**
@@ -960,6 +975,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * <p>Update logs.
      */
     public void updateLogs(String event) {
+	
+	//***********s  
+	
+	mainLog.info(logdateFormat.format(new java.util.Date())+event );
+
+	//************e
+	/*
+	
 	String sqlStr = "" ;
 
 	java.util.Calendar cal = java.util.Calendar.getInstance() ;
@@ -996,7 +1019,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	//close connection
 	dbc.closeConnection() ;
 	dbc = null ;
-
+	*/
     }
 
 
@@ -1004,6 +1027,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * <p>Update track log.
      */
     public void updateTrackLog(int from_meta_id,int to_meta_id,imcode.server.User user) {
+	/*
 	String sqlStr = "" ;
 
 	int cookie_id = user.getInt("user_id") ;
@@ -1043,7 +1067,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	//close connection
 	dbc.closeConnection() ;
 	dbc = null ;
-
+	*/
     }
 
 
@@ -1524,7 +1548,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    String[] foo = new String[variables.size()] ;
 	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
 	} catch ( RuntimeException ex ) {
-	    log.log(Log.ERROR,"parseDoc(String,Vector): RuntimeException", ex );
+	    log.error("parseDoc(String,Vector): RuntimeException", ex );
 	    throw ex ;
 	}
     }
@@ -1539,7 +1563,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    String[] bar = new String[data.size()] ;
 	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo),(String[])data.toArray(bar)) ;
 	} catch ( RuntimeException ex ) {
-	    log.log(Log.ERROR,"parseDoc(String,Vector,Vector): RuntimeException", ex );
+	    log.error("parseDoc(String,Vector,Vector): RuntimeException", ex );
 	    throw ex ;
 	}
     }
@@ -1557,10 +1581,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    String[] foo = new String[variables.size()] ;
 	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
 	} catch ( RuntimeException e ) {
-	    log.log(Log.ERROR,"parseDoc(Vector, String, String): RuntimeException", e );
+	    log.error("parseDoc(Vector, String, String): RuntimeException", e );
 	    throw e ;
 	} catch ( IOException e ) {
-	    log.log(Log.ERROR,"parseDoc(Vector, String, String): IOException", e );
+	    log.error("parseDoc(Vector, String, String): IOException", e );
 	    return "" ;
 	}
     }
@@ -1578,10 +1602,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    String[] foo = new String[variables.size()] ;
 	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
 	} catch ( RuntimeException e ) {
-	    log.log(Log.ERROR,"parseExternalDoc(Vector, String, String, String): RuntimeException", e );
+	    log.error("parseExternalDoc(Vector, String, String, String): RuntimeException", e );
 	    throw e ;
 	} catch ( IOException e ) {
-	    log.log(Log.ERROR,"parseExternalDoc(Vector, String, String, String): IOException", e );
+	    log.error("parseExternalDoc(Vector, String, String, String): IOException", e );
 	    return "" ;
 	}
     }
@@ -2030,7 +2054,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		return false ;
 	    }
 	} catch (RuntimeException ex) {
-	    log.log(Log.ERROR, "Exception in checkDocAdminRights(int,User)",ex) ;
+	    log.error("Exception in checkDocAdminRights(int,User)",ex) ;
 	    throw ex ;
 	}
     }
@@ -2057,7 +2081,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		return false ;
 	    }
 	} catch (RuntimeException ex) {
-	    log.log(Log.ERROR, "Exception in checkDocRights(int,User)",ex) ;
+	    log.error("Exception in checkDocRights(int,User)",ex) ;
 	    throw ex ;
 	}
     }
@@ -2092,7 +2116,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		return false ;
 	    }
 	} catch (RuntimeException ex) {
-	    log.log(Log.ERROR, "Exception in checkDocAdminRightsAny(int,User,int)",ex) ;
+	    log.error("Exception in checkDocAdminRightsAny(int,User,int)",ex) ;
 	    throw ex ;
 	}
     }
@@ -2129,7 +2153,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		return false ;
 	    }
 	} catch (RuntimeException ex) {
-	    log.log(Log.ERROR, "Exception in checkDocAdminRights(int,User,int)",ex) ;
+	    log.error("Exception in checkDocAdminRights(int,User,int)",ex) ;
 	    throw ex ;
 	}
     }
@@ -2171,7 +2195,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 				return DOC_PERM_SET_NONE; //the user has no permission at all for this document
 			}
 		} catch (RuntimeException ex){
-			log.log(Log.ERROR, "Exception in getUserHighestPermissionSet(int,int)",ex) ;
+			log.error("Exception in getUserHighestPermissionSet(int,int)",ex) ;
 			throw ex ;
 		}
 	}
@@ -2365,7 +2389,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	try {
 	    fr = new BufferedReader( new FileReader(m_TemplateHome  + "/text/" + template_id + ".html")) ;
 	} catch(FileNotFoundException e) {
-	    log.log(Log.INFO, "Failed to find template number "+template_id) ;
+	    log.info("Failed to find template number "+template_id) ;
 	    return null ;
 	}
 
@@ -2375,7 +2399,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		str+=(char)temp;
 	    }
 	} catch(IOException e) {
-	    log.log(Log.INFO, "Failed to read template number "+template_id) ;
+	    log.info("Failed to read template number "+template_id) ;
 	    return null ;
 	}
 

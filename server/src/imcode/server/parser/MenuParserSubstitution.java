@@ -2,8 +2,9 @@ package imcode.server.parser ;
 
 import java.util.* ;
 import org.apache.oro.text.regex.* ;
-import imcode.util.log.* ;
 import imcode.util.* ;
+
+import org.apache.log4j.Category;
 
 public class MenuParserSubstitution implements Substitution {
     private final static String CVS_REV = "$Revision$" ;
@@ -14,7 +15,7 @@ public class MenuParserSubstitution implements Substitution {
 
     private FileCache fileCache = new FileCache() ;
 
-    Log log = Log.getLog("server") ;
+    private static Category log = Category.getInstance("server") ;
 
     static {
 
@@ -25,8 +26,7 @@ public class MenuParserSubstitution implements Substitution {
 	    MENU_NO_PATTERN = patComp.compile("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-	    Log log = Log.getLog("server") ;
-	    log.log(Log.CRITICAL, "Danger, Will Robinson!") ;
+	    log.fatal("Danger, Will Robinson!",ignored) ;
 	}
     }
 

@@ -8,13 +8,14 @@ import org.apache.oro.text.regex.* ;
 
 import imcode.server.* ;
 import imcode.util.* ;
-import imcode.util.log.* ;
+
+import org.apache.log4j.Category;
 
 public class TextDocumentParser implements imcode.server.IMCConstants {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
-    private Log log = Log.getLog("server") ;
+    private static Category log = Category.getInstance("server") ;
     private FileCache fileCache = new FileCache() ;
 
     private final static org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util() ; // Internally synchronized
@@ -38,8 +39,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    MENU_PATTERN = patComp.compile("<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-	    Log log = Log.getLog("server") ;
-	    log.log(Log.CRITICAL, "Danger, Will Robinson!") ;
+	    log.fatal("Danger, Will Robinson!",ignored) ;
 	}
     }
 
@@ -92,7 +92,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    dbc.clearResultSet() ;
 	    if ( user_permission_set == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
-		log.log(Log.ERROR, "parsePage: GetUserPermissionset returned null") ;
+		log.error("parsePage: GetUserPermissionset returned null") ;
 		return ("GetUserPermissionset returned null").getBytes("8859_1") ;
 	    }
 
@@ -130,13 +130,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    dbc.clearResultSet() ;
 	    if ( text_docs == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
-		log.log(Log.ERROR, "parsePage: GetTextDocData returned null") ;
+		log.error("parsePage: GetTextDocData returned null") ;
 		return "parsePage: GetTextDocData returned null".getBytes("8859_1") ;
 	    }
 
 	    if ( text_docs.size() == 0 ) {
 		dbc.closeConnection() ;			// Close connection to db.
-		log.log(Log.ERROR, "parsePage: GetTextDocData returned nothing") ;
+		log.error("parsePage: GetTextDocData returned nothing") ;
 		return "parsePage: GetTextDocData returned nothing".getBytes("8859_1") ;
 	    }
 			
@@ -217,7 +217,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    if ( texts == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
-		log.log(Log.ERROR, "parsePage: GetTexts returned null") ;
+		log.error("parsePage: GetTexts returned null") ;
 		return ("GetTexts returned null").getBytes("8859_1") ;
 	    }
 
@@ -232,7 +232,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    if ( meta == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
-		log.log(Log.ERROR, "parsePage: Query for date_modified returned null") ;
+		log.error("parsePage: Query for date_modified returned null") ;
 		return ("Query for date_modified returned null").getBytes("8859_1") ;
 	    }
 
@@ -245,7 +245,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    if ( childs == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
-		log.log(Log.ERROR, "parsePage: GetChilds returned null") ;
+		log.error("parsePage: GetChilds returned null") ;
 		return ("GetChilds returned null").getBytes("8859_1") ;
 	    }
 
@@ -257,7 +257,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    Vector images = (Vector)dbc.executeProcedure() ;
 	    if ( images == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
-		log.log(Log.ERROR, "parsePage: GetImgs returned null") ;
+		log.error("parsePage: GetImgs returned null") ;
 		return ("GetImgs returned null").getBytes("8859_1") ;
 	    }
 
@@ -579,7 +579,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		    templatebuffer.setLength(0) ;
 		}
 	    } catch(IOException e) {
-		log.log(Log.ERROR, "An error occurred reading file during parsing.", e) ;
+		log.error("An error occurred reading file during parsing.", e) ;
 		return ("Error occurred reading file during parsing.\n"+e).getBytes("8859_1") ;
 	    }
 
@@ -686,7 +686,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    }
 	    return returnresult.getBytes("8859_1") ;
 	} catch (RuntimeException ex) {
-	    log.log(Log.ERROR, "Error occurred during parsing.",ex ) ;
+	    log.error("Error occurred during parsing.",ex ) ;
 	    return ex.toString().getBytes("8859_1") ;
 	}
     }
@@ -709,7 +709,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 								org.apache.oro.text.regex.Util.SUBSTITUTE_ALL
 								) ;
 	    } catch (MalformedPatternException ex) {
-		log.log(Log.WARNING, "Dynamic Pattern-compilation failed in IMCService.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"+emp[i]+"'",ex) ;
+		log.warn("Dynamic Pattern-compilation failed in IMCService.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"+emp[i]+"'",ex) ;
 	    }
 	}
 	return str ;

@@ -1,8 +1,10 @@
 package imcode.util ;
-import imcode.util.log.*;
+
 import java.util.*;
 import java.io.*;
 import java.io.FilenameFilter;
+
+import org.apache.log4j.Category;
 
 
 public class ImageFileMetaData {
@@ -23,7 +25,8 @@ public class ImageFileMetaData {
     public static final int APP0 = 0xE0 ; // JFIF Segment Marker
     public static final int SOS  = 0xDA ; // Start of Scan
 
-    protected Log log = Log.getLog("server");
+    private static Category log = Category.getInstance("server");
+	
     protected int width, height;		// the width and the height of the image
     protected File file;				// imageFile fileObject
     protected String type;				// the type of the image i.e. GIF87a, GIF89a, JFIF
@@ -71,7 +74,7 @@ public class ImageFileMetaData {
 			case SOF3 :
 			    int precision = dis.read() ;
 			    if ( precision != 0x08) {
-				log.log(Log.WARNING, "Trying to read jpeg with unsupported precision (0x"+Integer.toHexString(precision)+")",file) ;
+				log.warn("Trying to read jpeg with unsupported precision (0x"+Integer.toHexString(precision)+")"+file.getCanonicalPath()) ;
 			    }
 			    height = (dis.read()<<8) + dis.read() ;
 			    width = (dis.read()<<8) + dis.read() ;
@@ -85,7 +88,7 @@ public class ImageFileMetaData {
 			    dis.readFully(t);
 			    type = new String(t,"8859_1") ;
 			    if(!type.equals("JFIF\0")) {
-				log.log(Log.WARNING, "Trying to read jpeg with unsupported type ("+type+")",file) ;
+				log.warn("Trying to read jpeg with unsupported type ("+type+")"+file.getCanonicalPath()) ;
 			    }
 			    dis.skipBytes(lengthOfBlock-7);
 			    break ;
@@ -172,13 +175,13 @@ public class ImageFileMetaData {
 		    }
 		
 		else {
-		    log.log(Log.ERROR, "Unknown suffix");
+		    log.error("Unknown suffix");
 		}
 		dis.close() ;
 	    } catch(RuntimeException e) {
-		log.log(Log.ERROR, "Getting size from image", e);
+		log.error("Getting size from image", e);
 	    } catch(IOException e) {
-		log.log(Log.ERROR, "Getting size from image", e);
+		log.error("Getting size from image", e);
 	    }
 
     }

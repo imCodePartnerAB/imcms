@@ -8,11 +8,15 @@ import java.net.* ;
 import imcode.util.* ;
 import imcode.server.* ;
 
+import org.apache.log4j.Category;
+
 public class RmiLayer {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
     imcode.server.User user ;
     static Hashtable interfaces ;	// Keeps track of servers. "ip:port"=interface
+	
+	private static Category log = Category.getInstance("server");
 
     static {
         interfaces = new Hashtable() ;
@@ -184,8 +188,7 @@ public class RmiLayer {
         try {
             aMeta_id = Integer.parseInt("meta_id") ;
         } catch(NumberFormatException ex) {
-	        imcode.util.log.Log log = imcode.util.log.Log.getLog( "RmiLayer" );
-	        log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
+	        log.debug("Exception occured" + ex );	   
 		throw new IllegalArgumentException() ;
         }
 

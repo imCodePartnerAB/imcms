@@ -6,7 +6,8 @@ import java.io.*;
 import java.util.*;
 import SMTP ;
 
-import imcode.util.log.Log ;
+
+import org.apache.log4j.Category;
 
 public class DBConnect {
 	private final static String CVS_REV="$Revision$" ;
@@ -27,7 +28,7 @@ public class DBConnect {
     protected boolean trimStr = true ;
     protected int columnCount ;                       // Column count
 	
-    Log log = Log.getLog("server") ;
+    private static Category log = Category.getInstance("server") ;
 
     // constructor
     public DBConnect(imcode.server.InetPoolManager conPool) {
@@ -46,9 +47,7 @@ public class DBConnect {
 	    con = conPool.getConnection();
 	} catch (Exception ex) {
 	    // We already logged in conPool.getConnection
-	    //log.log(Log.WARNING, "Failed to get connection.", ex) ;
-	    imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
-	    log.log( Log.WARNING, "Exception occured while getting connection.",ex );	   		
+	    log.warn("Exception occured while getting connection.",ex );	   		
 	}
     }
     
@@ -57,7 +56,7 @@ public class DBConnect {
 	try {
 	    stmt = con.createStatement();						  // Create statement 
 	} catch (Exception ex) {
-	    log.log(Log.WARNING, "Failed to create SQL statement.", ex) ;
+	    log.warn("Failed to create SQL statement.", ex) ;
 	}
     }
 
@@ -96,7 +95,7 @@ public class DBConnect {
 
 	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
-	    log.log(Log.WARNING, "Failed to execute query: {"+eol+strSQLString+eol+"}", ex) ;
+	    log.warn("Failed to execute query: {"+eol+strSQLString+eol+"}", ex) ;
 	}
 
 	return results ;
@@ -111,7 +110,7 @@ public class DBConnect {
 	    con.setCatalog(catalog);
 	    result = executeQuery() ;
 	} catch (Exception ex) {
-	    log.log(Log.WARNING, "Failed to set catalog to "+catalog+" and execute query.", ex) ;
+	    log.warn( "Failed to set catalog to "+catalog+" and execute query.", ex) ;
 	}
 	return result ;
     }
@@ -126,7 +125,7 @@ public class DBConnect {
 	    stmt.close() ;
 	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
-    	    log.log(Log.WARNING, "Failed to execute update: {"+eol+strSQLString+eol+"}", ex) ;
+    	    log.warn("Failed to execute update: {"+eol+strSQLString+eol+"}", ex) ;
 	}
     }
 
@@ -168,7 +167,7 @@ public class DBConnect {
 	    cs.close() ;
 	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
-	    log.log(Log.WARNING, "Failed to execute procedure: {"+eol+strProcedure+eol+"}", ex) ;
+	    log.warn("Failed to execute procedure: {"+eol+strProcedure+eol+"}", ex) ;
 	}
 	return results ;
     }
@@ -184,7 +183,7 @@ public class DBConnect {
 	    cs.close() ;
 	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
-    	    log.log(Log.WARNING, "Failed to execute updateprocedure: {"+eol+strProcedure+eol+"}", ex) ;
+    	    log.warn("Failed to execute updateprocedure: {"+eol+strProcedure+eol+"}", ex) ;
 	}
     }
 
@@ -212,7 +211,7 @@ public class DBConnect {
 	try {
 	    con.close() ;
 	} catch (Exception ex) {
-    	    log.log(Log.WARNING, "Failed to close connection.", ex) ;	    
+    	    log.warn("Failed to close connection.", ex) ;	    
 	}
 	con = null ;
     }	
@@ -249,7 +248,7 @@ public class DBConnect {
 	    cs.setString(1,param) ;
 	} catch (Exception ex) {
 	    String eol = System.getProperty("line.separator") ;
-    	    log.log(Log.WARNING, "Failed to prepare procedure: {"+eol+procedure+" "+param+eol+"}", ex) ;
+    	    log.warn("Failed to prepare procedure: {"+eol+procedure+" "+param+eol+"}", ex) ;
 	}
     }
 
@@ -281,7 +280,7 @@ public class DBConnect {
 		    paramstr += ", " ;
 		}
 	    }
-    	    log.log(Log.WARNING, "Failed to prepare procedure: {"+eol+procedure+" "+paramstr+eol+"}", ex) ;
+    	    log.warn("Failed to prepare procedure: {"+eol+procedure+" "+paramstr+eol+"}", ex) ;
 	}
     }
 	
@@ -381,7 +380,7 @@ public class DBConnect {
 		    paramstr += ", " ;
 		}
 	    }
-    	    log.log(Log.WARNING, "Failed to prepare procedure: {"+eol+procedure+" "+paramstr+eol+"}", ex) ;
+    	    log.warn("Failed to prepare procedure: {"+eol+procedure+" "+paramstr+eol+"}", ex) ;
 	}
     }
 

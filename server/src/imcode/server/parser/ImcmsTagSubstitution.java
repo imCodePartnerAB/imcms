@@ -6,8 +6,9 @@ import java.net.* ;
 
 import org.apache.oro.text.regex.* ;
 import imcode.server.* ;
-import imcode.util.log.* ;
 import imcode.util.* ;
+
+import org.apache.log4j.Category;
 
 public class ImcmsTagSubstitution implements Substitution {
 	private final static String CVS_REV = "$Revision$" ;
@@ -16,6 +17,8 @@ public class ImcmsTagSubstitution implements Substitution {
     private static Pattern HTML_PREBODY_PATTERN  = null ;
     private static Pattern HTML_POSTBODY_PATTERN  = null ;
     private static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN  = null ;
+	
+	private static Category log = Category.getInstance("server");
 
     FileCache fileCache = new FileCache() ;
 
@@ -30,8 +33,7 @@ public class ImcmsTagSubstitution implements Substitution {
 
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
-	    Log log = Log.getLog("server") ;
-	    log.log(Log.CRITICAL, "Danger, Will Robinson!") ;
+	    log.fatal("Danger, Will Robinson!",ignored) ;
 	}
 
     }

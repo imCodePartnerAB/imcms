@@ -3,7 +3,6 @@ package imcode.server.parser ;
 import org.apache.oro.text.regex.* ;
 import java.util.* ;
 
-import imcode.util.log.* ;
 
 public class ParserParameters {
 	private final static String CVS_REV = "$Revision$" ;

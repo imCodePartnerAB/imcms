@@ -7,10 +7,14 @@ import javax.servlet.http.*;
 import imcode.util.* ;
 import imcode.server.* ;
 
+import org.apache.log4j.Category;
+
 public class MetaInfo extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
     
+	static Category log = Category.getInstance( "server" ) ;
+	
     public MetaInfo(){
 	
     }
@@ -99,8 +103,7 @@ public class MetaInfo extends HttpServlet {
 	try {
 	    metaId = Integer.parseInt(meta_id) ;
 	} catch(NumberFormatException  ex) {
-		imcode.util.log.Log log = imcode.util.log.Log.getLog( "MetaInfo" );
-		log.log( imcode.util.log.LogLevels.DEBUG, "No MetaId could be found in getExternalTemplateFolder(). Lets use -1 instead" + ex.getMessage() );	   
+		log.debug("No MetaId could be found in getExternalTemplateFolder(). Lets use -1 instead",ex );	   
 	    metaId = -1 ;
 	}
 	return RmiLayer.getExternalTemplateFolder(server, metaId) ;
