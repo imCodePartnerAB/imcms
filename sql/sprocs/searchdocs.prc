@@ -186,6 +186,7 @@ FROM
   meta m
 JOIN
   #doc_types dt  ON m.doc_type = dt.doc_type
+     AND meta_id > 1000
      AND activate = 1
      AND (
        (
@@ -226,7 +227,7 @@ JOIN
            rr.set_id = 3   -- ... or a user with read-rights
           OR show_meta != 0   -- ... or if the document lets anyone see
          )
-         AND m.disable_search = 0   -- ... that is, if searching is not turned off for this document
+         --AND m.disable_search = 0   -- ... that is, if searching is not turned off for this document
          AND (
            m.shared != 0   -- ... and the document is shared
           OR @only_addable = 0  -- ... unless we've selected to only see addable (shared) documents.
