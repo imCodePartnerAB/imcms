@@ -71,13 +71,14 @@ sub load {
 
         if ($current_property) {
             my ($key, $value) = ($current_property, '') ;
-            while ($current_property =~ /(\\*)[=:\s]/g) {
-                if (!(length($1) & 1)) {
-                    my $pos = pos($current_property) ;
-                    $key = unescape(substr($current_property,0,$pos-1)) ;
-                    $value = unescape(substr($current_property,$pos)) ;
-                    last ;
-                }
+            while ($current_property =~ /(?<!\\)(?:\\.)*(\s*[=:\s](\s*))/g) {
+		my $sep = $1 ;
+		my $trail = $2 ;
+                my $pos = pos($current_property) ;
+		pos($current_property) = $pos - length($trail) ;
+                $key = unescape(substr($current_property,0,$pos-length($sep))) ;
+                $value = unescape(substr($current_property,$pos)) ;
+                last ;
             }
             $self->{$key} = $value;
             $current_property = '';
@@ -122,7 +123,7 @@ sub escape_key {
 sub escape_value {
     local $_ = shift ;
 
-    s!\\!\\!g ;
+    s!\\!\\\\!g ;
     s!\f!\\f!g ;
     s!\r!\\r!g ;
     s!\t!\\t!g ;

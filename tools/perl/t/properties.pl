@@ -3,18 +3,20 @@
 use warnings ;
 use strict ;
 
-use Test::More tests => 23 ;
+use Test::More tests => 27 ;
 
 use lib '..' ;
 use Properties ;
 
 my @keys = (qw( 	empty 		        true
-				    undefined	        unicode
-				    tab 		        formfeed
-				    newline 	        carriagereturn
-				    backslash 	        backslash\\in\\key\\
-				    equals=in=key=      backslash\\=and\\=equals\\=in\\=key\\=
-				    linecontinuation ), 'space in key ' ) ;
+			equals			space
+			colon
+			undefined	        unicode
+			tab 		        formfeed
+			newline 	        carriagereturn
+			backslash 	        backslash\\in\\key\\
+			equals=in=key=      	backslash\\=and\\=equals\\=in\\=key\\=
+			linecontinuation ), 	'space in key ' ) ;
 
 chdir 't' unless -e 'test.properties' ;
 
@@ -25,6 +27,12 @@ ok( defined $p, 'new' ) ;
 is( $p->{empty}, '', 'empty' ) ;
 
 is( $p->{true}, '1', 'true = 1' ) ;
+
+is( $p->{space}, '1', 'space' ) ;
+
+is( $p->{equals}, '1', 'equals' ) ;
+
+is( $p->{colon}, '1', 'colon' ) ;
 
 ok( !defined($p->{undefined}), 'defined' ) ;
 
@@ -42,13 +50,13 @@ is( $p->{backslash}, '\\', 'backslash') ;
 
 is( $p->{'linecontinuation'}, 'foobar', 'linecontinuation') ;
 
-ok( defined($p->{'backslash\\in\\key\\'}), 'backslash in key' ) ;
+is($p->{'backslash\\in\\key\\'}, 'foobar', 'backslash in key' ) ;
 
-ok( defined($p->{'equals=in=key='}), 'equals in key' ) ;
+is( $p->{'equals=in=key='}, 'foobar', 'equals in key' ) ;
 
-ok( defined($p->{'space in key '}), 'space in key' ) ;
+is( $p->{'space in key '}, 'foobar', 'space in key' ) ;
 
-ok( defined($p->{'backslash\\=and\\=equals\\=in\\=key\\='}), 'backslash and equals in key' ) ;
+is( $p->{'backslash\\=and\\=equals\\=in\\=key\\='}, 'foobar', 'backslash and equals in key' ) ;
 
 is( Properties::escape_key(" ... "), "\\ ...\\ ", 'escape space' ) ;
 
@@ -66,11 +74,15 @@ unlink '/tmp/test.properties' ;
 $p->save('/tmp/test.properties') ;
 ok(-f '/tmp/test.properties', 'save') ;
 
+use Data::Dumper ;
+
+my $tp = Properties->new('/tmp/test.properties') ;
+ok(eq_hash($tp, $p), 'dogfood') or print Dumper($tp, $p) ;
+
 # Check for unwanted keys
 
 my %copy = %$p ;
 
 delete $copy{$_} for @keys ;
 
-ok( (0 == keys %copy), 'unwanted keys') or diag("Unwanted keys:\n", map { "\t".Properties::escape_key($_) } keys %copy) ;
-
+ok( (0 == keys %copy), 'unwanted keys') or diag("Unwanted keys:\n". join "\n", map { "'".Properties::escape_key($_)."'" } keys %copy) ;
