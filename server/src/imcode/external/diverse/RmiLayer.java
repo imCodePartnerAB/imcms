@@ -25,12 +25,12 @@ public class RmiLayer {
 /**
 	GetInterface.
 */
-	static IMCServiceInterface getInterface(String server) throws IOException {
+	static imcode.server.IMCServiceInterface getInterface(String server) throws IOException {
 		if ( server == null ) {
     	log("Invalid server argument") ;
-			throw new IllegalArgumentException("Server == null") ;
+	throw new IllegalArgumentException("Server == null") ;
 		}
-		IMCServiceInterface imc = (IMCServiceInterface)interfaces.get(server) ;
+		imcode.server.IMCServiceInterface imc = (imcode.server.IMCServiceInterface)interfaces.get(server) ;
 		if (imc == null) {
 			imc = renewInterface(server) ;
 		}
@@ -42,7 +42,7 @@ public class RmiLayer {
 	RenewInterface.
 **/
 
-	static IMCServiceInterface renewInterface(String server) throws IOException {
+	static imcode.server.IMCServiceInterface renewInterface(String server) throws IOException {
 		if ( server == null ) {
 			throw new IllegalArgumentException("Server == null") ;
 		}
@@ -72,14 +72,14 @@ public class RmiLayer {
 
   // OK, Lets try our interface with,
 
-		IMCServiceInterface imc ;
+		imcode.server.IMCServiceInterface imc ;
 		try {
 			Registry reg = LocateRegistry.getRegistry(ip, Integer.parseInt(port)) ;
-			imc = (IMCServiceInterface)reg.lookup(object) ;
+			imc = (imcode.server.IMCServiceInterface)reg.lookup(object) ;
 		} catch ( Exception ex ) {
 			Registry reg = LocateRegistry.getRegistry(ip, Integer.parseInt(port)) ;
 			try {
-				imc = (IMCServiceInterface)reg.lookup(object) ;
+				imc = (imcode.server.IMCServiceInterface)reg.lookup(object) ;
 			} catch ( NotBoundException exc ) {
       	log("No IMCService object found") ;
 				throw new RemoteException (exc.getMessage() + " No IMCService object found") ;
@@ -111,7 +111,7 @@ public class RmiLayer {
 
 public void activateChild(String server, String meta_id ) throws ServletException, IOException {
   try {
-	  IMCServiceInterface imc = getInterface( server ) ;
+	  imcode.server.IMCServiceInterface imc = getInterface( server ) ;
  		imc.activateChild(Integer.parseInt(meta_id), user) ;
     return ;
  	} catch (Exception ex) {
@@ -128,7 +128,7 @@ public void activateChild(String server, String meta_id ) throws ServletExceptio
 
 public void inActivateChild(String server, String meta_id) throws ServletException {
   try {
-  	IMCServiceInterface imc = getInterface( server ) ;
+  	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
     imc.inActiveChild(Integer.parseInt(meta_id), user) ;
     return ;
  	} catch (Exception ex) {
@@ -146,7 +146,7 @@ public void inActivateChild(String server, String meta_id) throws ServletExcepti
 
 public boolean deleteDocAll(String server, int metaId) {
  try {
-  	IMCServiceInterface imc = getInterface( server ) ;
+  	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
     imc.deleteDocAll(metaId, this.user) ;
 		return true ;
  	} catch (Exception ex) {
@@ -163,7 +163,7 @@ public boolean deleteDocAll(String server, int metaId) {
 
 public boolean setCounter(String server, int value) throws ServletException {
 	try {
-	 	IMCServiceInterface imc = getInterface( server ) ;
+	 	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 	  int newValue = imc.setCounter(value) ;
 		return true ;
 		} catch (Exception ex) {
@@ -178,7 +178,7 @@ public boolean setCounter(String server, int value) throws ServletException {
 
 public int incCounter(String server) throws ServletException {
 	try {
-	 	IMCServiceInterface imc = getInterface( server ) ;
+	 	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 	  int newValue = imc.incCounter() ;
 		return newValue ;
 		} catch (Exception ex) {
@@ -213,7 +213,7 @@ public int incCounter(String server) throws ServletException {
 
 public int getCounter(String server) throws ServletException {
 	try {
-	 	IMCServiceInterface imc = getInterface( server ) ;
+	 	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 	 	int newValue = imc.getCounter() ;
 		return newValue ;
 	} catch (Exception ex) {
@@ -258,7 +258,7 @@ public boolean setCounterDate(String server, String date) throws ServletExceptio
    }
    */
    try {
-    	IMCServiceInterface imc = getInterface( server ) ;
+    	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
     	imc.setCounterDate(date) ;
    } catch (Exception ex) {
        ex.printStackTrace();
@@ -288,7 +288,7 @@ public String getCounterDate(String server) throws ServletException {
    }
    */
   try {
-   	IMCServiceInterface imc = getInterface( server ) ;
+   	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
    	String date  = imc.getCounterDate() ;
 		return date ;
   } catch (Exception ex) {
@@ -311,7 +311,7 @@ public String getCounterDate(String server) throws ServletException {
 
 public static String getExternalTemplateFolder(String server, int meta_id) throws IOException {
 		String theFolder = "" ;
-    IMCServiceInterface imc = getInterface( server ) ;
+    imcode.server.IMCServiceInterface imc = getInterface( server ) ;
   	try {
    		theFolder = imc.getExternalTemplateFolder(meta_id) ;
   	} catch (IOException ex) {
@@ -327,7 +327,7 @@ public static String getExternalTemplateFolder(String server, int meta_id) throw
 
 public static String getInternalTemplateFolder(String server) throws IOException {
 	String theFolder = "" ;
-  IMCServiceInterface imc = getInterface( server ) ;
+  imcode.server.IMCServiceInterface imc = getInterface( server ) ;
   try {
  // Lets get the templatefolder from Janus,
      	theFolder = imc.getInternalTemplateFolder(-1) ;
@@ -348,7 +348,7 @@ public static String getInternalTemplateFolder(String server) throws IOException
 
 public static String getInternalTemplateFolder(String server, int meta_id) throws IOException {
 	String theFolder = "" ;
-	IMCServiceInterface imc = getInterface( server ) ;
+	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
   try {
 
  // Lets get the templatefolder from Janus,
@@ -370,7 +370,7 @@ public static String getInternalTemplateFolder(HttpServletRequest req) throws IO
   	String theFolder = "" ;
   // Lets get the server information from request object
    	String host 				= req.getHeader("Host") ;
-   	String server 			= Utility.getDomainPref("userserver",host) ;
+   	String server 			= imcode.util.Utility.getDomainPref("userserver",host) ;
 
   // Lets get the metaid and convert it to an int
     String meta_id = req.getParameter("meta_id") ;
@@ -382,7 +382,7 @@ public static String getInternalTemplateFolder(HttpServletRequest req) throws IO
     	return "" ;
     }
 
-  	IMCServiceInterface imc = getInterface( server ) ;
+  	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 
   	try {
     // Lets get the templatefolder from Janus,
@@ -423,7 +423,7 @@ public static boolean checkAdminRights(String server, String metaId, imcode.serv
  */
 
   try {
-  	IMCServiceInterface imc = getInterface( server ) ;
+  	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 		int newMetaId = Integer.parseInt(metaId) ;
 
   // Lets check if the user is an admin
@@ -467,7 +467,7 @@ public String parseDoc(String server, String htmlStr, java.util.Vector variables
  */
 
  try {
- 		IMCServiceInterface imc = getInterface( server ) ;
+ 		imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 
 	// Lets parse
    	String anHtmlStr = imc.parseDoc(htmlStr, variables, data) ;
@@ -508,7 +508,7 @@ public String parseDoc(String server, String htmlStr, java.util.Vector variables
    }
  */
  try {
- 		IMCServiceInterface imc = getInterface( server ) ;
+ 		imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 
 	 // Lets parse
     	String anHtmlStr = imc.parseDoc(htmlStr, variables) ;
@@ -609,7 +609,7 @@ public String execSQlProcedureStr(String server, String sqlStr ) throws ServletE
 public String execSqlProcedureStr(String server, String sqlStr ) throws ServletException {
 
   try {
- 		IMCServiceInterface imc = getInterface( server ) ;
+ 		imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 	  return imc.sqlProcedureStr(sqlStr) ;
   } catch (Exception ex) {
     ex.printStackTrace();
@@ -646,7 +646,7 @@ public String[] execSqlProcedure(String server, String sqlStr ) throws ServletEx
    }
  */
    try {
- 		IMCServiceInterface imc = getInterface( server ) ;
+ 		imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 
 	  String[] answer = imc.sqlProcedure(sqlStr) ;
     return answer ;
@@ -684,7 +684,7 @@ public void execSqlUpdateProcedure(String server, String sqlStr )
  */
 
  try {
- IMCServiceInterface imc = getInterface( server ) ;
+ imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 
   imc.sqlUpdateProcedure(sqlStr) ;
   return ;
@@ -725,7 +725,7 @@ public String execSqlQueryStr(String server, String sqlStr ) throws ServletExcep
    }
 */
  try {
- 	IMCServiceInterface imc = getInterface( server ) ;
+ 	imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 
  	String answer = imc.sqlQueryStr(sqlStr) ;
   return answer ;
@@ -762,7 +762,7 @@ public String[] execSqlQuery(String server, String sqlStr ) throws ServletExcept
    }
  */
   try {
- 		IMCServiceInterface imc = getInterface( server ) ;
+ 		imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 
  		String[] answer = imc.sqlQuery(sqlStr) ;
     return answer ;
@@ -799,7 +799,7 @@ public void execSqlUpdateQuery(String server, String sqlStr ) throws ServletExce
  */
 
   try {
- 		IMCServiceInterface imc = getInterface( server ) ;
+ 		imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 
  		imc.sqlUpdateQuery(sqlStr) ;
     return ;
@@ -819,7 +819,7 @@ public void execSqlUpdateQuery(String server, String sqlStr ) throws ServletExce
 public static String[][] execProcedureMulti(String server, String sqlStr ) throws ServletException {
 
  try {
- 		IMCServiceInterface imc = getInterface( server ) ;
+ 		imcode.server.IMCServiceInterface imc = getInterface( server ) ;
  		return imc.sqlProcedureMulti(sqlStr) ;
 
 	} catch (Exception ex) {

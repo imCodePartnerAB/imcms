@@ -41,12 +41,12 @@ public class RmiConf {
 /**
 	GetInterface. Returns an interface to the host db. The JanusDB
 */
-	static IMCServiceInterface getInterface(String server) throws IOException {
+	static imcode.server.IMCServiceInterface getInterface(String server) throws IOException {
 		if ( server == null ) {
     	log("Invalid server argument") ;
 			throw new IllegalArgumentException("Server == null") ;
 		}
-		IMCServiceInterface imc = (IMCServiceInterface)interfaces.get(server) ;
+		imcode.server.IMCServiceInterface imc = (imcode.server.IMCServiceInterface)interfaces.get(server) ;
 		if (imc == null) {
 			imc = renewInterface(server) ;
 		}
@@ -58,7 +58,7 @@ public class RmiConf {
 	RenewInterface. Returns a renewed interface towards the host DB
 */
 
-	static IMCServiceInterface renewInterface(String server) throws IOException {
+	static imcode.server.IMCServiceInterface renewInterface(String server) throws IOException {
 		if ( server == null ) {
 			throw new IllegalArgumentException("Server == null") ;
 		}
@@ -88,14 +88,14 @@ public class RmiConf {
 
   // OK, Lets try our interface with,
 
-		IMCServiceInterface imc ;
+		imcode.server.IMCServiceInterface imc ;
 		try {
 			Registry reg = LocateRegistry.getRegistry(ip, Integer.parseInt(port)) ;
-			imc = (IMCServiceInterface)reg.lookup(object) ;
+			imc = (imcode.server.IMCServiceInterface)reg.lookup(object) ;
 		} catch ( Exception ex ) {
 			Registry reg = LocateRegistry.getRegistry(ip, Integer.parseInt(port)) ;
 			try {
-				imc = (IMCServiceInterface)reg.lookup(object) ;
+				imc = (imcode.server.IMCServiceInterface)reg.lookup(object) ;
 			} catch ( NotBoundException exc ) {
       	log("No IMCService object found") ;
 				throw new RemoteException (exc.getMessage() + " No IMCService object found") ;
@@ -110,14 +110,14 @@ public class RmiConf {
 /**
 	GetInterface. Returns an interface to the host db. The JanusDB
 */
-	static IMCPoolInterface getPoolInterface(String server) throws IOException {
+	static imcode.server.IMCPoolInterface getPoolInterface(String server) throws IOException {
 		if ( server == null ) {
-    	log("Invalid server argument") ;
-			throw new IllegalArgumentException("Server == null") ;
+    	          log("Invalid server argument") ;
+		  throw new IllegalArgumentException("Server == null") ;
 		}
-		IMCPoolInterface imc = (IMCPoolInterface)interfaces.get(server) ;
+		imcode.server.IMCPoolInterface imc = (imcode.server.IMCPoolInterface)interfaces.get(server) ;
 		if (imc == null) {
-			imc = renewPoolInterface(server) ;
+		  imc = renewPoolInterface(server) ;
 		}
 		return imc;
 	}
@@ -127,7 +127,7 @@ public class RmiConf {
 	RenewInterface. Returns a renewed interface towards the host DB
 */
 
-	static IMCPoolInterface renewPoolInterface(String server) throws IOException {
+	static imcode.server.IMCPoolInterface renewPoolInterface(String server) throws IOException {
 		if ( server == null ) {
 			throw new IllegalArgumentException("Server == null") ;
 		}
@@ -157,14 +157,14 @@ public class RmiConf {
 
   // OK, Lets try our interface with,
 
-		IMCPoolInterface imc ;
+		imcode.server.IMCPoolInterface imc ;
 		try {
 			Registry reg = LocateRegistry.getRegistry(ip, Integer.parseInt(port)) ;
-			imc = (IMCPoolInterface)reg.lookup(object) ;
+			imc = (imcode.server.IMCPoolInterface)reg.lookup(object) ;
 		} catch ( Exception ex ) {
 			Registry reg = LocateRegistry.getRegistry(ip, Integer.parseInt(port)) ;
 			try {
-				imc = (IMCPoolInterface)reg.lookup(object) ;
+				imc = (imcode.server.IMCPoolInterface)reg.lookup(object) ;
 			} catch ( NotBoundException exc ) {
       	log("No IMCService object found") ;
 				throw new RemoteException (exc.getMessage() + " No IMCPool object found") ;
@@ -186,7 +186,7 @@ public class RmiConf {
 
 public static String execJanusSqlProcedureStr(String server, String sqlStr ) throws ServletException {
   try {
- 		IMCServiceInterface imc = getInterface( server ) ;
+ 		imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 	  return imc.sqlProcedureStr(sqlStr) ;
   } catch (Exception ex) {
     ex.printStackTrace();
@@ -201,7 +201,7 @@ public static String execJanusSqlProcedureStr(String server, String sqlStr ) thr
 
 public static String[] execJanusSqlProcedure(String server, String sqlStr ) throws ServletException {
  	try {
-		IMCServiceInterface imcJanusDB = getInterface( server ) ;
+		imcode.server.IMCServiceInterface imcJanusDB = getInterface( server ) ;
 	 	return imcJanusDB.sqlProcedure(sqlStr) ;
   } catch (Exception ex) {
       ex.printStackTrace();
@@ -225,7 +225,7 @@ public static String[] execJanusSqlProcedure(String server, String sqlStr ) thro
 
 public static String[] execJanusSqlProcedureExt(String server, String sqlStr ) throws ServletException {
 	try {
-		IMCServiceInterface imcJanusDB = getInterface( server ) ;
+		imcode.server.IMCServiceInterface imcJanusDB = getInterface( server ) ;
    	return imcJanusDB.sqlProcedureExt(sqlStr) ;
   } catch (Exception ex) {
       ex.printStackTrace();
@@ -241,7 +241,7 @@ public static String[] execJanusSqlProcedureExt(String server, String sqlStr ) t
 
 public static void execJanusSqlUpdateProcedure(String server, String sqlStr ) throws ServletException {
  	try {
- 		IMCServiceInterface imcJanusDB = getInterface( server ) ;
+ 		imcode.server.IMCServiceInterface imcJanusDB = getInterface( server ) ;
    	imcJanusDB.sqlUpdateProcedure(sqlStr) ;
    	return ;
 	} catch (Exception ex) {
@@ -257,7 +257,7 @@ public static void execJanusSqlUpdateProcedure(String server, String sqlStr ) th
 
 public static Hashtable execJanusQueryHash(String server, String sqlStr ) throws ServletException {
  	try {
-		IMCServiceInterface imcJanusDB = getInterface( server ) ;
+		imcode.server.IMCServiceInterface imcJanusDB = getInterface( server ) ;
 		 	return imcJanusDB.sqlQueryHash(sqlStr) ;
 	} catch (Exception ex) {
         ex.printStackTrace();
@@ -272,7 +272,7 @@ public static Hashtable execJanusQueryHash(String server, String sqlStr ) throws
 
 public static Hashtable execJanusProcedureHash(String server, String sqlStr ) throws ServletException {
  	try {
-		IMCServiceInterface imcJanusDB = getInterface( server ) ;
+		imcode.server.IMCServiceInterface imcJanusDB = getInterface( server ) ;
 		 	return imcJanusDB.sqlProcedureHash(sqlStr) ;
  		} catch (Exception ex) {
         ex.printStackTrace();
@@ -286,7 +286,7 @@ public static Hashtable execJanusProcedureHash(String server, String sqlStr ) th
 */
 public static String[][] execJanusProcedureMulti(String server, String sqlStr ) throws ServletException {
  	try {
-		IMCServiceInterface imcJanusDB = getInterface( server ) ;
+		imcode.server.IMCServiceInterface imcJanusDB = getInterface( server ) ;
 	 	return imcJanusDB.sqlProcedureMulti(sqlStr) ;
 	} catch (Exception ex) {
        ex.printStackTrace();
@@ -301,7 +301,7 @@ public static String[][] execJanusProcedureMulti(String server, String sqlStr ) 
 
 	public void activateChild(String server, String meta_id ) throws ServletException {
  		try {
- 			IMCServiceInterface imcJanusDB = getInterface( server ) ;
+ 			imcode.server.IMCServiceInterface imcJanusDB = getInterface( server ) ;
    		imcJanusDB.activateChild(Integer.parseInt(meta_id), user) ;
   	} catch (Exception ex) {
       ex.printStackTrace();
@@ -318,7 +318,7 @@ public static String[][] execJanusProcedureMulti(String server, String sqlStr ) 
 
 public static String execSqlProcedureStr(String server, String sqlStr ) throws ServletException {
  	try {
-	  IMCPoolInterface imc = getPoolInterface( server ) ;
+	  imcode.server.IMCPoolInterface imc = getPoolInterface( server ) ;
 	  return imc.sqlProcedureStr(sqlStr) ;
   } catch (Exception ex) {
     ex.printStackTrace();
@@ -332,7 +332,7 @@ public static String execSqlProcedureStr(String server, String sqlStr ) throws S
 
 public static String[] execSqlProcedure(String server, String sqlStr ) throws ServletException {
 	try {
-	  IMCPoolInterface imc = getPoolInterface( server ) ;
+	  imcode.server.IMCPoolInterface imc = getPoolInterface( server ) ;
   	String[] answer = imc.sqlProcedure(sqlStr) ;
    	return answer ;
  	} catch (Exception ex) {
@@ -357,13 +357,18 @@ public static String[] execSqlProcedure(String server, String sqlStr ) throws Se
 */
 
 public static String[] execSqlProcedureExt(String server, String sqlStr ) throws ServletException {
- 	 try {
- 	 	  IMCPoolInterface imc = getPoolInterface( server ) ;
- 	   	return imc.sqlProcedureExt(sqlStr) ;
-   } catch (Exception ex) {
-        ex.printStackTrace();
-        throw new ServletException(ex.getMessage());
-   }
+  try {
+    imcode.server.IMCPoolInterface imc = getPoolInterface( server ) ;
+    return imc.sqlProcedureExt(sqlStr) ;
+  } catch (java.rmi.RemoteException ex) {
+      log(ex.getMessage()) ;
+      ex.printStackTrace();
+      throw new ServletException(ex.getMessage());
+  } catch (java.io.IOException ex) {
+     log(ex.getMessage()) ;
+     ex.printStackTrace();
+     throw new ServletException(ex.getMessage());
+  }
 } // execSql
 
 
@@ -374,7 +379,7 @@ public static String[] execSqlProcedureExt(String server, String sqlStr ) throws
 
 public static void execSqlUpdateProcedure(String server, String sqlStr ) throws ServletException {
  	 try {
- 	 	  IMCPoolInterface imc = getPoolInterface( server ) ;
+ 	 	  imcode.server.IMCPoolInterface imc = getPoolInterface( server ) ;
  	   	imc.sqlUpdateProcedure(sqlStr) ;
     	return ;
 		} catch (Exception ex) {
@@ -389,7 +394,7 @@ public static void execSqlUpdateProcedure(String server, String sqlStr ) throws 
 
 public static String execSqlQueryStr(String server, String sqlStr ) throws ServletException {
 	try {
- 	 	  IMCPoolInterface imc = getPoolInterface( server ) ;
+ 	 	  imcode.server.IMCPoolInterface imc = getPoolInterface( server ) ;
     	return imc.sqlQueryStr(sqlStr) ;
   } catch (Exception ex) {
        ex.printStackTrace();
@@ -405,7 +410,7 @@ public static String execSqlQueryStr(String server, String sqlStr ) throws Servl
 
 public static String[] execSqlQuery(String server, String sqlStr ) throws ServletException {
 	try {
- 	 	 IMCPoolInterface imc = getPoolInterface( server ) ;
+ 	 	 imcode.server.IMCPoolInterface imc = getPoolInterface( server ) ;
      return imc.sqlQuery(sqlStr) ;
 	} catch (Exception ex) {
       ex.printStackTrace();
@@ -434,8 +439,8 @@ public static String[] execSqlQuery(String server, String sqlStr ) throws Servle
 
 public static String[] execSqlQueryExt(String server, String sqlStr ) throws ServletException {
 		try {
- 	 	  IMCPoolInterface imc = getPoolInterface( server ) ;
-      return imc.sqlQueryExt(sqlStr) ;
+ 	 	  imcode.server.IMCPoolInterface imc = getPoolInterface( server ) ;
+                  return imc.sqlQueryExt(sqlStr) ;
  		} catch (Exception ex) {
      		ex.printStackTrace();
      		throw new ServletException(ex.getMessage());
@@ -449,7 +454,7 @@ public static String[] execSqlQueryExt(String server, String sqlStr ) throws Ser
 
 public static void execSqlUpdateQuery(String server, String sqlStr ) throws ServletException {
  		try {
- 		  IMCPoolInterface imc = getPoolInterface( server ) ;
+ 		  imcode.server.IMCPoolInterface imc = getPoolInterface( server ) ;
  			imc.sqlUpdateQuery(sqlStr) ;
     	return ;
 		} catch (Exception ex) {
@@ -465,7 +470,7 @@ public static void execSqlUpdateQuery(String server, String sqlStr ) throws Serv
 
 public static Hashtable execSqlQueryHash(String server, String sqlStr ) throws ServletException {
 	try {
-	  	IMCPoolInterface imc = getPoolInterface( server ) ;
+	  	imcode.server.IMCPoolInterface imc = getPoolInterface( server ) ;
 	 		return imc.sqlQueryHash(sqlStr) ;
  	} catch (Exception ex) {
        ex.printStackTrace();
@@ -480,7 +485,7 @@ public static Hashtable execSqlQueryHash(String server, String sqlStr ) throws S
 
 public static Hashtable execSqlProcedureHash(String server, String sqlStr ) throws ServletException {
 	try {
-	  IMCPoolInterface imcConferenceDB = getPoolInterface( server ) ;
+	  imcode.server.IMCPoolInterface imcConferenceDB = getPoolInterface( server ) ;
 		return imcConferenceDB.sqlProcedureHash(sqlStr) ;
   } catch (Exception ex) {
        ex.printStackTrace();
@@ -495,7 +500,7 @@ public static Hashtable execSqlProcedureHash(String server, String sqlStr ) thro
 
 public static String[][] execProcedureMulti(String server, String sqlStr ) throws ServletException {
 	try {
-	  IMCPoolInterface imcConferenceDB = getPoolInterface( server ) ;
+	  imcode.server.IMCPoolInterface imcConferenceDB = getPoolInterface( server ) ;
 	 	return imcConferenceDB.sqlProcedureMulti(sqlStr) ;
   } catch (Exception ex) {
        ex.printStackTrace();
@@ -516,7 +521,7 @@ public static String[][] execProcedureMulti(String server, String sqlStr ) throw
 
 public static String getExternalTemplateFolder(String imcServer, int meta_id) throws ServletException {
   try {
-  		IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
+  		imcode.server.IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
     	return imcJanusDB.getExternalTemplateFolder(meta_id) ;
 		} catch (Exception ex) {
        ex.printStackTrace();
@@ -532,7 +537,7 @@ public static String getExternalTemplateFolder(String imcServer, int meta_id) th
 
 public static String getInternalTemplateFolder(String imcServer, int meta_id) throws ServletException {
 	try {
-		IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
+		imcode.server.IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
     return imcJanusDB.getInternalTemplateFolder(meta_id) ;
 	} catch (Exception ex) {
        ex.printStackTrace();
@@ -548,8 +553,8 @@ public static String getInternalTemplateFolder(String imcServer, int meta_id) th
 public static String getInternalTemplateFolder(HttpServletRequest req) throws ServletException {
   try {
  		String host = req.getHeader("Host") ;
-  	String imcServer = Utility.getDomainPref("userserver",host) ;
-  	IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
+  	String imcServer = imcode.util.Utility.getDomainPref("userserver",host) ;
+  	imcode.server.IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
 
   // Lets get the metaid
    	String meta_id = req.getParameter("meta_id") ;
@@ -572,7 +577,7 @@ public static String getInternalTemplateFolder(HttpServletRequest req) throws Se
 
 public static String getInternalImageFolder(String imcServer) throws ServletException {
 	try {
-		IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
+		imcode.server.IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
 
     // Lets get the imageTemplateFolder from Janus,
     return imcJanusDB.getImageHome() ;
@@ -612,7 +617,7 @@ public static String getExternalImageFolder(String imcServer, String metaId) thr
 public static boolean checkAdminRights(String imcServer, String metaId, imcode.server.User user) throws ServletException {
 	boolean admin = false ;
 	try {
-	 	IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
+	 	imcode.server.IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
 
 	// Lets check if the user is an admin
 		int newMetaId = Integer.parseInt(metaId) ;
@@ -631,7 +636,7 @@ public static boolean checkAdminRights(String imcServer, String metaId, imcode.s
 public static boolean checkDocRights(String imcServer, String metaId, imcode.server.User user) throws ServletException {
 
 	try {
-	 	IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
+	 	imcode.server.IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
 	// Lets check if the user is an admin
 		int newMetaId = Integer.parseInt(metaId) ;
 		return imcJanusDB.checkDocRights(newMetaId, user) ;
@@ -649,7 +654,7 @@ public static String parseDoc(String imcServer, String htmlStr, java.util.Vector
 	java.util.Vector data ) throws ServletException {
 
   try {
-   	IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
+   	imcode.server.IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
    	return imcJanusDB.parseDoc(htmlStr, variables, data) ;
 	 } catch (Exception ex) {
        ex.printStackTrace();
@@ -667,7 +672,7 @@ public static String parseDoc(String imcServer, String htmlStr, java.util.Vector
 	throws ServletException {
 
   try {
-   	IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
+   	imcode.server.IMCServiceInterface imcJanusDB = getInterface( imcServer ) ;
 
   // Lets parse
     	return imcJanusDB.parseDoc(htmlStr, variables) ;
@@ -704,12 +709,13 @@ public static String parseDoc(String imcServer, String htmlStr, java.util.Vector
 */
 
  public static String getLoginUrl( String host) {
- 	try {
-		//String host = req.getHeader("Host") ;
- 		return Utility.getDomainPref("conference_starturl",host) ;
+  try {
+    //String host = req.getHeader("Host") ;
+    // log("start_url: " + imcode.util.Utility.getDomainPref("start_url",host)) ;
+    return imcode.util.Utility.getDomainPref("start_url",host) ;
   } catch(Exception e) {
-		log("Error in the getLoginUrl method") ;
- 		return "Error" ;
+      log("Error in the getLoginUrl method") ;
+      return "Error" ;
   }
  		//return getPrefs("start_url" , "CONFERENCE.CFG" ) ;
  } // end getLoginUrl
@@ -724,7 +730,7 @@ public static String parseDoc(String imcServer, String htmlStr, java.util.Vector
 	 // Lets get the path to the diagramfiles
  		// String host = req.getHeader("Host") ;
  		try {
- 			return Utility.getDomainPref("conference_loginpage",host) ;
+ 			return imcode.util.Utility.getDomainPref("login_page",host) ;
     } catch(Exception e) {
 			log("Error in the getLoginUrl method") ;
  			return "Error" ;
@@ -739,7 +745,7 @@ public static String parseDoc(String imcServer, String htmlStr, java.util.Vector
 
  public static String getImageHomeFolder(String host ) {
  		try {
- 			return Utility.getDomainPref("image_path",host) ;
+ 			return imcode.util.Utility.getDomainPref("image_path",host) ;
  		} catch(Exception e) {
  			log("Error in the getImageHomeFolder method") ;
  			return "Error" ;

@@ -8,7 +8,7 @@ import imcode.util.* ;
 public class HtmlGenerator {
 
 	String HTML_TEMPLATE ;
-	
+
 	public HtmlGenerator(String path, String file){
 		this(path + file) ;
 	}
@@ -21,29 +21,29 @@ public class HtmlGenerator {
 	  HTML_TEMPLATE = null ;
 	}
 
-	
+
 /**
 	Opens a tableFile, creating a vector and returns a complete table
 **/
 
 public String createTable(Properties params, String dbPath, String tablePath) {
-		  
+
 	 	// Lets get the fileName
 	 		String metaId = params.getProperty("META_ID");
 		  MetaTranslator meta = new MetaTranslator(dbPath + "DIAGRAM_DB.INI") ;
       synchronized(meta) {
      		meta.loadSettings() ;
       }
-	 	
+
 	 	 	String aTableFile = meta.getFileName("TABLE_DATA", metaId) ;
       if( aTableFile.equals("") ) {
       	String aMsg = "MetaID: " + metaId + " kunde inte hittas i databasen!" ;
       	log(aMsg) ;
-      	return "" ;  
+      	return "" ;
       }
-    
+
 	 	// Ok, Lets get the values from the file into a vector
-	 	
+
 	 		ValueAccessor valAcc = new ValueAccessor(tablePath + aTableFile) ;
 			valAcc.load() ;
 	  	Vector v = valAcc.getAllValues() ;
@@ -53,22 +53,22 @@ public String createTable(Properties params, String dbPath, String tablePath) {
 	    	this.log(anMsg) ;
 	    	return "" ;
 	    }
-	   	    
+
 	  // Ok, lets generate a table from the vector
-	
+
 			int rowCount = v.size() ;
-			StringManager strMan = new StringManager(v.get(0).toString(), "|") ; 
+			StringManager strMan = new StringManager(v.get(0).toString(), "|") ;
 			int columnCount = strMan.getTotalItems() ;
-	 	   
+
 	 	  // this.log("rows:"+ rowCount) ;
 	 		// this.log("columnCount:"+ rowCount) ;
 
 	 	//	String table = " " ;
    		String aTableStr = generateTable(v, rowCount, columnCount) ;
-   	//	if(aTableStr.equals("")) 
+   	//	if(aTableStr.equals(""))
    	//		aTableStr = "-" ;
    		return aTableStr ;
-		
+
 } // End getTable
 
 /**
@@ -78,57 +78,57 @@ public String createTable(Properties params, String dbPath, String tablePath) {
 **/
 
 	public String createTableHeader(Properties params, String dbPath, String tablePath) {
-		
+
 			String retStr = "" ;
-		  
+
 	 	// Lets get the fileName
 	 		String metaId = params.getProperty("META_ID");
 		  MetaTranslator meta = new MetaTranslator(dbPath + "DIAGRAM_DB.INI") ;
       synchronized(meta) {
      		meta.loadSettings() ;
       }
-	 		 
+
 	 	  retStr += "MetaId: " + metaId + "\n" ;
 	 	 	String aTablePrefsFile = meta.getFileName("TABLE_PREFS", metaId) ;
       if( aTablePrefsFile.equals("") ) {
-    	  String msg = "MetaID: " + metaId + " kunde inte hittas i databasen!" ; 
+    	  String msg = "MetaID: " + metaId + " kunde inte hittas i databasen!" ;
       	this.log(msg) ;
       	return "" ;
       }
-    	
+
     //	retStr += "String + TablePrefsFile: " + path + aTablePrefsFile + "\n";
-    	
+
 	 	// Ok, Lets get the values from the file into a vector
 	 	  SettingsAccessor mySetAcc = new SettingsAccessor(tablePath + aTablePrefsFile) ;
 			synchronized(mySetAcc) {
 				mySetAcc.loadSettings() ;
 			}
-			
+
 			String header = mySetAcc.getSetting("TABLEHEADER") ;
 			retStr += "header: " + header ;
-			
+
 			if(header == null) {
 				header = " " ;
 			}
 			this.log(retStr) ;
 		//	return retStr ;
 	 	 return header ;
-		
+
 } // End getTableHeader
 
 
-/** 
+/**
 	This function is probably used in the diagramplugin. DONT USE it!!
 */
 
 public String generateTable(Vector src, int rows, int columns) {
- 	 	
+
  	 //	this.log("Antal rader: " + rows) ;
  	//	this.log("Antal kolumner: " + columns) ;
-		
+
 		// Lets adjust the nbr of columns, really strange why we'll have to do it...?
 		columns += 1 ;
-				
+
 		String htmlStr = " " ;
  	  htmlStr += "<TABLE BORDER=1 CELLSPACING=1 CELLPADDING=2 width=\"*\" align=\"center\">\n" ;
  	  String color = "" ;
@@ -136,40 +136,40 @@ public String generateTable(Vector src, int rows, int columns) {
 		String alignStop = "" ;
 		String fontStart = " font face=\"Arial,Helvetica\"><font size=2" ;
 		String fontStop = "</font>" ;
- 	
+
  	// For each row...
  	  for( int i = 0 ; i < rows ; i++) {
  	 		StringManager aRow = new StringManager(src.get(i).toString(), "|") ;
   //		this.log("aRow innehåller:" + aRow.toString()) ;
-  			  	
+
  	 	 	// Lets verify if the row is empty
  	 		if(this.isRowEmpty(	aRow.toString()) != false){
   			htmlStr += "<TR>\n" ;
   			// for each column
  	 	  	for( int j = 1 ; j < columns ; j++) {
- 	 	  	
+
  	 	    	double anDouble = (java.lang.Math.IEEEremainder(i, 2)) ;
  	 	   		if(j == 1)
  	 	   			alignStart = "<div align=\"left\"" ;
  	 	   		else
- 	 	   			alignStart = "<div align=\"right\"" ;	   			
- 	 	   		
- 	 	   		alignStop = "</div>" ;	
- 	 	   		if(anDouble == 0) 
+ 	 	   			alignStart = "<div align=\"right\"" ;
+
+ 	 	   		alignStop = "</div>" ;
+ 	 	   		if(anDouble == 0)
  	 				  color = "bgcolor=\"#CCCCCC\"" ;
- 	 	    	else 
+ 	 	    	else
  	 	    		color = "bgcolor=\"#FFFFFF\"" ;
- 	 	    		
+
  	 	    	String aColumnItem = aRow.getItem(j).toString() ;
  	 	    	if(!aColumnItem.trim().equals(""))
- 	 	  			htmlStr += "<TD "+ color + ">" + alignStart + fontStart +">" + 
+ 	 	  			htmlStr += "<TD "+ color + ">" + alignStart + fontStart +">" +
  	 	  				aColumnItem + alignStop + fontStop + "</TD>\n" ;
- 	 	 		}	
+ 	 	 		}
  	 	  	htmlStr += "</TR>\n" ;
  	 		} //else
  	 		//		this.log("denna rad var tom: " + i) ;
- 	 			 
- 	 	}	 
+
+ 	 	}
  	 	htmlStr += "</TABLE>\n" ;
  	return htmlStr ;
 }
@@ -177,13 +177,13 @@ public String generateTable(Vector src, int rows, int columns) {
 public boolean isRowEmpty(String str) {
 		StringManager aRow = new StringManager(str, ";") ;
 		int nbrOfItems = aRow.getTotalItems() ;
-		
+
 		for(int i = 0; i < nbrOfItems; i++) {
 			String aStr = aRow.getItem(i) ;
 		//	System.out.println("En item är:" + aStr) ;
 			if(!aStr.trim().equals(""))
 				return false ;
-		}	
+		}
 		return true ;
 }
 
@@ -197,18 +197,18 @@ public void sendToBrowser(HttpServletRequest req, HttpServletResponse res, Strin
 		out.println(str) ;
 	}
 
-	
+
 public void log(String msg) {
 	//	super.log(msg) ;
-		System.out.println("HtmlGenerator: " + msg) ;	
-	//	saveLog(msg) ;	
+		System.out.println("HtmlGenerator: " + msg) ;
+	//	saveLog(msg) ;
 }
 
-		
+
 // ************************** CREATE HTML STRING *******************
 
-	
-	
+
+
 /**
 	Returns a RmiLayer object which is used to call the
 	Janus system or the janus database. if the user isnt logged in
@@ -227,8 +227,8 @@ public RmiLayer getRmiObj(HttpServletRequest req)
       // No logon.isDone means he hasn't logged in.
       // Save the request URL as the true target and redirect to the login page.
     	return null;
-    } 	
-	
+    }
+
 	// Ok, were done verifying stuff. Lets add the new user to the db
 		RmiLayer imc = new RmiLayer(user) ;
 		return imc ;
@@ -242,11 +242,11 @@ public RmiLayer getRmiObj(HttpServletRequest req)
 
 	public String createHtmlString(VariableManager vMan, HttpServletRequest req)
 	   throws ServletException, IOException {
-		
+
 		Vector htmlTags = vMan.getAllProps() ;
 		Vector data = vMan.getAllValues() ;
 		return createHtmlString(htmlTags, data, req) ;
-		
+
 	} // End of createHtmlString
 
 
@@ -258,24 +258,24 @@ public RmiLayer getRmiObj(HttpServletRequest req)
 
 public String createHtmlString(Properties props,Vector data, HttpServletRequest req)
 	   throws ServletException, IOException {
-		
-	   // String htmlFile = HTML_TEMPLATE ; 
+
+	   // String htmlFile = HTML_TEMPLATE ;
 	// Lets convert the properties to 2 vectors
 		Enumeration enumValues = props.elements() ;
 		Enumeration enumKeys = props.keys() ;
 		Vector propVector = new Vector() ;
 		Vector valueVector = new Vector() ;
-	  
+
 		while((enumValues.hasMoreElements() && enumKeys.hasMoreElements())) {
-         Object oKeys = (enumKeys.nextElement()) ;		 
+         Object oKeys = (enumKeys.nextElement()) ;
 				 Object oValue = (enumValues.nextElement()) ;
 				 //String aLine = new String(oKeys.toString() + "=" + oValue.toString());
      		 propVector.add(oKeys) ;
 				 valueVector.add(oValue) ;
 		}
 		return createHtmlString(propVector, valueVector, req) ;
-		
-/*				
+
+/*
 // Lets insert hertzmarks to the tags vector
 		String tmp = new String() ;
 		for(int i = 0 ; i < propVector.size() ; i++){
@@ -283,15 +283,15 @@ public String createHtmlString(Properties props,Vector data, HttpServletRequest 
 				tmp = "#" + tmp +"#" ;
 				propVector.set(i, tmp) ;
 		}
-	
+
 		// ParseServlet parser = new ParseServlet(htmlFile, propVector, valueVector) ;
 		// return parser.getHtmlDoc() ;
 	// Lets get the html file into an string
 		String srcHtml = ReadTextFile.getFile(HTML_TEMPLATE) ;
 		Rmi Interface rmiObj = this.getRmiObj(req) ;
-		String theHtml = rmiObj.parseDoc(srcHtml, propVector, valueVector) ; 
+		String theHtml = rmiObj.parseDoc(srcHtml, propVector, valueVector) ;
 		return theHtml ;
-		
+
 //	return "" ;
 */
 } // End of createHtmlString
@@ -317,33 +317,33 @@ public String createHtmlString(Properties props,Vector data, HttpServletRequest 
 				tmp = "#" + tmp +"#" ;
 				htmlTags.set(i, tmp) ;
 		}
-		
+
 	// Lets get the html file into an string
 		String srcHtml = ReadTextFile.getFile(HTML_TEMPLATE) ;
-		
+
 // Lets check that we really got something from ReadTextFile, if the template is not
 // found for example
 		if( srcHtml.equals("")) {
 			String msg = "Nothing was returned from ReadTextFile. Template probably not found " ;
 			msg += "The html file was: " + HTML_TEMPLATE ;
 			return msg ;
-		}		
+		}
 
-/* OLD STYLE, one server solution		
+/* OLD STYLE, one server solution
 		Rmi Interface rmiObj = this.getRmiObj(req) ;
-		String theHtml = rmiObj.parseDoc(srcHtml, htmlTags, data) ; 
+		String theHtml = rmiObj.parseDoc(srcHtml, htmlTags, data) ;
 		return theHtml ;
 */
 	/* NEW STYLE, unlimited domains solution		*/
-	  
+
     String host 				= req.getHeader("Host") ;
-		String server 			= Utility.getDomainPref("userserver",host) ;
+		String server 			= imcode.util.Utility.getDomainPref("userserver",host) ;
   	RmiLayer rmiObj = this.getRmiObj(req) ;
-		String theHtml = rmiObj.parseDoc(server, srcHtml, htmlTags, data) ; 
+		String theHtml = rmiObj.parseDoc(server, srcHtml, htmlTags, data) ;
 		return theHtml ;
-	
+
 	} // End of createHtmlString
 
 
-		
+
 } // END CLASS HtmlGenerator
