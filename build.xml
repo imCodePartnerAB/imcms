@@ -535,8 +535,13 @@
 
         <copy todir="${imcmsimages}/${defaultlanguage}/admin">
             <fileset dir="install/htdocs/imcms/images"/>
-            <fileset dir="install/htdocs/imcmsimages"/>
-            <fileset dir="install/htdocs/sv/images"/>
+            <fileset dir="install/htdocs/en/images"/>
+            <fileset dir="install/htdocs/en/fileadmin">
+                <patternset>
+                    <include name="*.gif"/>
+                    <include name="*.jpg"/>
+                </patternset>
+            </fileset>
         </copy>
 
         <copy todir="${imcmscss}" filtering="true">
@@ -584,7 +589,7 @@
         </copy>
 
         <copy todir="${adminbuttons}">
-            <fileset dir="install/htdocs/sv/adminbuttons">
+            <fileset dir="install/htdocs/en/adminbuttons">
             <patternset>
                 <include name="*.gif"/>
             </patternset>
@@ -594,8 +599,12 @@
         <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${imcmsimages}/${defaultlanguage}/admin" filtering="true">
-            <fileset dir="install/htdocs/sv/imagebrowse"/>
-            <fileset dir="install/htdocs/sv/fileadmin"/>
+            <fileset dir="install/htdocs/sv/fileadmin">
+                <patternset>
+                    <exclude name="*.gif"/>
+                </patternset>
+            </fileset>
+            
         </imtranslate>
 
         <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
