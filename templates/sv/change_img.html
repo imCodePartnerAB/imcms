@@ -9,8 +9,8 @@
 
 <script language="JavaScript">
 <!--
-var re     = /[a-z0-9\(\)\[\]_-]/i ; // ImageName check
-var reInfo = "a-z A-Z 0-9 ( ) [ ] _ -" ; // For alertBox
+var re     = /[a-z0-9\(\)\[\]_-]/i ;     // ImageName check
+var reInfo = "a-z A-Z 0-9 ( ) [ ] _ -" ; // For alertBox - If error
 
 function doClear(){
 	var f = document.forms.imgProp;
@@ -42,7 +42,7 @@ function checkFileName() {
 	var thePath = f.file.value ;
 	var theFile = thePath;
 	var isValid = true ;
-    theFile = theFile.substring(theFile.lastIndexOf("/") + 1) ;
+	theFile = theFile.substring(theFile.lastIndexOf("/") + 1) ;
 	theFile = theFile.substring(theFile.lastIndexOf("\\") + 1) ;
 	theFile = theFile.substring(0, theFile.lastIndexOf(".")) ;
 	theFile = unescape(theFile) ;
@@ -63,24 +63,57 @@ function checkFileName() {
 	}
 }
 
-function changeLinkType(val) {
-	var defVals = new Array("meta_id","http://") ;
-	var f = document.forms.imgProp ;
+/* *******************************************************************************************
+ *         Image-Link functions                                                              *
+ ******************************************************************************************* */
+
+var defValues = new Array("meta_id","http://") ;
+
+function changeLinkType(idx) {
+	var f   = document.forms.imgProp ;
 	var rad = f.linkType ;
 	var url = f.imageref_link ;
-	if (url.value == "" || url.value == "meta_id" || url.value == "http://") {
-		url.value = defVals[val] ;
-		rad[val].checked = 1 ;
+	var val = url.value ;
+	var re  = /^GetDoc\?meta_id=(\d{4,5})$/ ;
+	if (val == "" || val == defValues[0] || val == defValues[1]) {
+		url.value = defValues[idx] ;
+		rad[idx].checked = 1 ;
+	} else if (re.test(val)) {
+		url.value = val.replace(re, "$1") ;
+		rad[idx].checked = 1 ;
 	}
 }
 
 function checkLinkType() {
 	var f = document.forms.imgProp ;
 	var url = f.imageref_link ;
-	if (url.value == "meta_id" || url.value == "http://") {
+	var val = url.value ;
+	if (val == defValues[0] || val == defValues[1]) {
 		url.value = "" ;
+	} else if (/^\d{4,5}$/.test(val)) {
+		url.value = "GetDoc?meta_id=" + val ;
 	}
 	return true ;
+}
+
+function checkLinkOnFocus() {
+	var f = document.forms.imgProp ;
+	var url = f.imageref_link ;
+	var val = url.value ;
+	if (val == defValues[0]) {
+		url.value = "" ;
+	}
+}
+
+function checkLinkOnBlur() {
+	var f = document.forms.imgProp ;
+	var rad = f.linkType ;
+	var url = f.imageref_link ;
+	var val = url.value ;
+	if (val == "") {
+		url.value = defValues[0] ;
+		rad[0].checked = 1 ;
+	}
 }
 //-->
 </script>
@@ -300,7 +333,7 @@ writeFormField("TEXT","alt_text",92,255,"100%","#imgAltText#");
 	</tr>
 	</table></td>
 	<td><script>
-writeFormField("TEXT","imageref_link",92,255,"100%","#imgRefLink#");
+writeFormField("TEXT","imageref_link",92,255,"100%","#imgRefLink#\" onFocus=\"checkLinkOnFocus()\" onBlur=\"checkLinkOnBlur()");
 </script></td>
 </tr>
 <tr>
