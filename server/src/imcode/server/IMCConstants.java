@@ -4,9 +4,6 @@ import java.text.SimpleDateFormat;
 
 public interface IMCConstants {
 
-    final static String CVS_REV = "$Revision$" ;
-    final static String CVS_DATE = "$Date$" ;
-
     /* Documenttypes */
 
     /** Document-type for text-documents. **/
@@ -148,6 +145,10 @@ public interface IMCConstants {
     public final static String HOST_PROPERTIES           = "host.properties" ;
 
     int PASSWORD_MINIMUM_LENGTH = 4;
+
+    /** start using theses instead in all places suitable */
     SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd" );
     SimpleDateFormat TIME_FORMAT = new SimpleDateFormat( "HH:mm" );
+    SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
+    SimpleDateFormat LOG_DATE_TIME_FORMAT = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS " );
 }
