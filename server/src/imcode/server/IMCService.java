@@ -1329,19 +1329,24 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
     public String getMenuButtons(int meta_id, User user) {
 	return getMenuButtons(String.valueOf(meta_id),user) ;
     }
-
-	protected StringBuffer loadFile(String file) throws IOException {
-		StringBuffer tempbuffer = new StringBuffer() ;
-		char[] charbuffer = new char[4096] ;
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file),"8859_1"));
-		// Load the file
-		int chars_read = 0 ;
-		while (-1 < (chars_read = br.read(charbuffer))) {
-			tempbuffer.append(charbuffer,0,chars_read) ;
-		}
-		br.close();
-		return tempbuffer ;
+    
+    protected StringBuffer loadFile(String file) {
+	StringBuffer tempbuffer = new StringBuffer() ;
+	try {
+	    char[] charbuffer = new char[4096] ;
+	    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file),"8859_1"));
+	    // Load the file
+	    int chars_read = 0 ;
+	    while (-1 < (chars_read = br.read(charbuffer))) {
+		tempbuffer.append(charbuffer,0,chars_read) ;
+	    }
+	    br.close();
+	} catch (IOException ex) {
+	    log.log(Log.ERROR, "File not found during parsing.", ex) ;
+	    tempbuffer.append(ex.getMessage()) ;
 	}
+	return tempbuffer ;
+    }
 
 	/**
 	* <p>Replace a variable in a template with data.
