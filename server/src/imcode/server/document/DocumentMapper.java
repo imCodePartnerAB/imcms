@@ -167,6 +167,7 @@ public class DocumentMapper {
                 newTextDocument.removeAllTexts();
                 newTextDocument.removeAllImages();
                 newTextDocument.removeAllIncludes();
+                newTextDocument.removeAllMenus();
                 int permissionSetId = getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
                 TemplateMapper templateMapper = service.getTemplateMapper();
                 TemplateDomainObject template = null;
