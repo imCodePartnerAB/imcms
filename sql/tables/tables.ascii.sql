@@ -1,269 +1,312 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_classification_classification]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[meta_classification] DROP CONSTRAINT FK_meta_classification_classification
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_doc_permission_sets_ex_doc_permission_sets1]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[doc_permission_sets_ex] DROP CONSTRAINT FK_doc_permission_sets_ex_doc_permission_sets1
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_display_name_lang_prefixes]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[display_name] DROP CONSTRAINT FK_display_name_lang_prefixes
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_browser_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[browser_docs] DROP CONSTRAINT FK_browser_docs_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_childs_meta1]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[childs] DROP CONSTRAINT FK_childs_meta1
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_permission_sets_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[doc_permission_sets] DROP CONSTRAINT FK_permission_sets_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_frameset_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[frameset_docs] DROP CONSTRAINT FK_frameset_docs_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_images_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[images] DROP CONSTRAINT FK_images_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_includes_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[includes] DROP CONSTRAINT FK_includes_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_includes_meta1]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[includes] DROP CONSTRAINT FK_includes_meta1
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_meta_classification_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[meta_classification] DROP CONSTRAINT FK_meta_classification_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_new_doc_permission_sets_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[new_doc_permission_sets] DROP CONSTRAINT FK_new_doc_permission_sets_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_roles_rights_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[roles_rights] DROP CONSTRAINT FK_roles_rights_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_text_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[text_docs] DROP CONSTRAINT FK_text_docs_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_texts_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[texts] DROP CONSTRAINT FK_texts_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_url_docs_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[url_docs] DROP CONSTRAINT FK_url_docs_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_rights_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[user_rights] DROP CONSTRAINT FK_user_rights_meta
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_new_doc_permission_sets_ex_new_doc_permission_sets]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[new_doc_permission_sets_ex] DROP CONSTRAINT FK_new_doc_permission_sets_ex_new_doc_permission_sets
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_doc_permission_sets_permission_types]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[doc_permission_sets] DROP CONSTRAINT FK_doc_permission_sets_permission_types
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_doc_permission_sets_ex_permission_sets]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[doc_permission_sets_ex] DROP CONSTRAINT FK_doc_permission_sets_ex_permission_sets
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_new_doc_permission_sets_permission_sets]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[new_doc_permission_sets] DROP CONSTRAINT FK_new_doc_permission_sets_permission_sets
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_new_doc_permission_sets_ex_permission_sets]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[new_doc_permission_sets_ex] DROP CONSTRAINT FK_new_doc_permission_sets_ex_permission_sets
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_roles_rights_roles]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[roles_rights] DROP CONSTRAINT FK_roles_rights_roles
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_roles_crossref_roles]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[user_roles_crossref] DROP CONSTRAINT FK_user_roles_crossref_roles
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_display_name_sort_by]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[display_name] DROP CONSTRAINT FK_display_name_sort_by
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_sys_data_sys_types]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[sys_data] DROP CONSTRAINT FK_sys_data_sys_types
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_templates_cref_templategroups]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[templates_cref] DROP CONSTRAINT FK_templates_cref_templategroups
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_templates_cref_templates]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[templates_cref] DROP CONSTRAINT FK_templates_cref_templates
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_text_docs_templates]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[text_docs] DROP CONSTRAINT FK_text_docs_templates
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_phones_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[phones] DROP CONSTRAINT FK_phones_users
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_rights_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[user_rights] DROP CONSTRAINT FK_user_rights_users
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_roles_crossref_users]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[user_roles_crossref] DROP CONSTRAINT FK_user_roles_crossref_users
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[browser_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[Results]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[Results]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[browser_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[browser_docs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[browsers]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[browsers]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[browsers]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[childs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[childs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[childs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[classification]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[display_name]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[display_name]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[display_name]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[doc_permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[doc_permission_sets]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[doc_permission_sets_ex]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_permission_sets_ex]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[doc_permission_sets_ex]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[doc_permissions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_permissions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[doc_permissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[doc_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[doc_types]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[fileupload_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[fileupload_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[fileupload_docs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[frameset_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[frameset_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[frameset_docs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[images]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[images]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[images]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[includes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[includes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[includes]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ip_accesses]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ip_accesses]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[ip_accesses]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[lang_prefixes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[lang_prefixes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[lang_prefixes]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[languages]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[languages]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[languages]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[main_log]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[main_log]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[main_log]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[meta]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[meta]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[meta_classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[meta_classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[meta_classification]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[mime_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[mime_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[mime_types]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[new_doc_permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[new_doc_permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[new_doc_permission_sets]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[new_doc_permission_sets_ex]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[new_doc_permission_sets_ex]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[new_doc_permission_sets_ex]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[permission_sets]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[permissions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[permissions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[permissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[phones]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phones]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[phones]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[roles]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[roles]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[roles_permissions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles_permissions]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[roles_permissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[roles_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[roles_rights]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[sort_by]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sort_by]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[sort_by]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[stats]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[stats]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[stats]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[sys_data]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sys_data]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[sys_data]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[sys_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sys_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[sys_types]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[templategroups]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[templategroups]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[templategroups]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[templates]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[templates]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[templates]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[templates_cref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[templates_cref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[templates_cref]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[text_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[text_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[text_docs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[texts]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[texts]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[texts]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[track_log]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[track_log]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[track_log]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[url_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[url_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[url_docs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[user_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[user_rights]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[user_roles_crossref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_roles_crossref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[user_roles_crossref]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[user_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[user_types]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[users]
+GO
+
+CREATE TABLE [dbo].[Results] (
+	[user_type] [int] NOT NULL ,
+	[type_name] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[lang_prefix] [char] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[browser_docs] (
@@ -275,8 +318,8 @@ GO
 
 CREATE TABLE [dbo].[browsers] (
 	[browser_id] [int] NOT NULL ,
-	[name] [varchar] (50) NOT NULL ,
-	[user_agent] [varchar] (50) NOT NULL ,
+	[name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[user_agent] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[value] [tinyint] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -291,14 +334,14 @@ GO
 
 CREATE TABLE [dbo].[classification] (
 	[class_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[code] [varchar] (30) NOT NULL 
+	[code] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[display_name] (
 	[sort_by_id] [int] NOT NULL ,
 	[lang_id] [int] NOT NULL ,
-	[display_name] [varchar] (30) NOT NULL 
+	[display_name] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -320,28 +363,28 @@ GO
 CREATE TABLE [dbo].[doc_permissions] (
 	[permission_id] [int] NOT NULL ,
 	[doc_type] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[description] [varchar] (50) NOT NULL 
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[description] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[doc_types] (
 	[doc_type] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[type] [varchar] (50) NULL 
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[type] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[fileupload_docs] (
 	[meta_id] [int] NOT NULL ,
-	[filename] [varchar] (50) NOT NULL ,
-	[mime] [varchar] (50) NOT NULL 
+	[filename] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[mime] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[frameset_docs] (
 	[meta_id] [int] NOT NULL ,
-	[frame_set] [text] NULL 
+	[frame_set] [text] COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -353,14 +396,14 @@ CREATE TABLE [dbo].[images] (
 	[v_space] [int] NOT NULL ,
 	[h_space] [int] NOT NULL ,
 	[name] [int] NOT NULL ,
-	[image_name] [varchar] (40) NOT NULL ,
-	[target] [varchar] (15) NOT NULL ,
-	[target_name] [varchar] (80) NOT NULL ,
-	[align] [varchar] (15) NOT NULL ,
-	[alt_text] [varchar] (255) NOT NULL ,
-	[low_scr] [varchar] (255) NOT NULL ,
-	[imgurl] [varchar] (255) NOT NULL ,
-	[linkurl] [varchar] (255) NOT NULL 
+	[image_name] [varchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[target] [varchar] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[target_name] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[align] [varchar] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[alt_text] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[low_scr] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[imgurl] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[linkurl] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -381,30 +424,30 @@ GO
 
 CREATE TABLE [dbo].[lang_prefixes] (
 	[lang_id] [int] NOT NULL ,
-	[lang_prefix] [char] (3) NULL 
+	[lang_prefix] [char] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[languages] (
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[user_prefix] [varchar] (3) NOT NULL ,
-	[language] [varchar] (30) NULL 
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[user_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[language] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[main_log] (
 	[log_datetime] [datetime] NULL ,
-	[event] [varchar] (255) NULL 
+	[event] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[meta] (
 	[meta_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[description] [varchar] (80) NOT NULL ,
+	[description] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[doc_type] [int] NOT NULL ,
-	[meta_headline] [varchar] (255) NOT NULL ,
-	[meta_text] [varchar] (1000) NOT NULL ,
-	[meta_image] [varchar] (255) NOT NULL ,
+	[meta_headline] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[meta_text] [varchar] (1000) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[meta_image] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[owner_id] [int] NOT NULL ,
 	[permissions] [int] NOT NULL ,
 	[shared] [int] NOT NULL ,
@@ -413,19 +456,19 @@ CREATE TABLE [dbo].[meta] (
 	[help_text_id] [int] NOT NULL ,
 	[archive] [int] NOT NULL ,
 	[status_id] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[classification] [varchar] (200) NOT NULL ,
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[classification] [varchar] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[date_created] [datetime] NOT NULL ,
 	[date_modified] [datetime] NOT NULL ,
 	[sort_position] [int] NOT NULL ,
 	[menu_position] [int] NOT NULL ,
 	[disable_search] [int] NOT NULL ,
-	[activated_date] [varchar] (10) NOT NULL ,
-	[activated_time] [varchar] (6) NOT NULL ,
-	[archived_date] [varchar] (10) NOT NULL ,
-	[archived_time] [varchar] (6) NOT NULL ,
-	[target] [varchar] (10) NOT NULL ,
-	[frame_name] [varchar] (20) NOT NULL ,
+	[activated_date] [varchar] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[activated_time] [varchar] (6) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[archived_date] [varchar] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[archived_time] [varchar] (6) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[target] [varchar] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[frame_name] [varchar] (20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[activate] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -438,9 +481,9 @@ GO
 
 CREATE TABLE [dbo].[mime_types] (
 	[mime_id] [int] IDENTITY (0, 1) NOT NULL ,
-	[mime_name] [varchar] (50) NOT NULL ,
-	[mime] [varchar] (50) NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL 
+	[mime_name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[mime] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -461,37 +504,37 @@ GO
 
 CREATE TABLE [dbo].[permission_sets] (
 	[set_id] [int] NOT NULL ,
-	[description] [varchar] (30) NOT NULL 
+	[description] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[permissions] (
 	[permission_id] [tinyint] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[description] [varchar] (50) NOT NULL 
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[description] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[phones] (
 	[phone_id] [int] NOT NULL ,
-	[country_code] [varchar] (4) NOT NULL ,
-	[area_code] [char] (8) NOT NULL ,
-	[number] [char] (25) NOT NULL ,
+	[country_code] [varchar] (4) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[area_code] [char] (8) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[number] [char] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[user_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[roles] (
 	[role_id] [int] NOT NULL ,
-	[role_name] [char] (25) NOT NULL ,
+	[role_name] [char] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[permissions] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[roles_permissions] (
 	[permission_id] [int] NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
-	[description] [varchar] (40) NOT NULL 
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[description] [varchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -504,12 +547,12 @@ GO
 
 CREATE TABLE [dbo].[sort_by] (
 	[sort_by_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[sort_by_type] [varchar] (30) NOT NULL 
+	[sort_by_type] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[stats] (
-	[name] [varchar] (120) NOT NULL ,
+	[name] [varchar] (120) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[num] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -517,27 +560,27 @@ GO
 CREATE TABLE [dbo].[sys_data] (
 	[sys_id] [tinyint] IDENTITY (1, 1) NOT NULL ,
 	[type_id] [tinyint] NOT NULL ,
-	[value] [varchar] (80) NULL 
+	[value] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[sys_types] (
 	[type_id] [tinyint] IDENTITY (1, 1) NOT NULL ,
-	[name] [varchar] (50) NULL 
+	[name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[templategroups] (
 	[group_id] [int] NOT NULL ,
-	[group_name] [varchar] (50) NOT NULL 
+	[group_name] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[templates] (
 	[template_id] [int] NOT NULL ,
-	[template_name] [varchar] (80) NOT NULL ,
-	[simple_name] [varchar] (80) NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL ,
+	[template_name] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[simple_name] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[no_of_txt] [int] NULL ,
 	[no_of_img] [int] NULL ,
 	[no_of_url] [int] NULL 
@@ -554,14 +597,16 @@ CREATE TABLE [dbo].[text_docs] (
 	[meta_id] [int] NOT NULL ,
 	[template_id] [int] NOT NULL ,
 	[group_id] [int] NOT NULL ,
-	[sort_order] [int] NOT NULL 
+	[sort_order] [int] NOT NULL ,
+	[default_template_1] [int] NOT NULL ,
+	[default_template_2] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[texts] (
 	[meta_id] [int] NOT NULL ,
 	[name] [int] NOT NULL ,
-	[text] [text] NOT NULL ,
+	[text] [text] COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[type] [int] NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -577,11 +622,11 @@ GO
 
 CREATE TABLE [dbo].[url_docs] (
 	[meta_id] [int] NOT NULL ,
-	[frame_name] [varchar] (80) NOT NULL ,
-	[target] [varchar] (15) NOT NULL ,
-	[url_ref] [varchar] (255) NOT NULL ,
-	[url_txt] [varchar] (255) NOT NULL ,
-	[lang_prefix] [varchar] (3) NOT NULL 
+	[frame_name] [varchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[target] [varchar] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[url_ref] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[url_txt] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[lang_prefix] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -600,25 +645,25 @@ GO
 
 CREATE TABLE [dbo].[user_types] (
 	[user_type] [int] NOT NULL ,
-	[type_name] [char] (30) NULL ,
-	[lang_prefix] [char] (3) NOT NULL 
+	[type_name] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[lang_prefix] [char] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[users] (
 	[user_id] [int] NOT NULL ,
-	[login_name] [char] (15) NOT NULL ,
-	[login_password] [char] (15) NOT NULL ,
-	[first_name] [char] (25) NOT NULL ,
-	[last_name] [char] (30) NOT NULL ,
-	[title] [char] (30) NOT NULL ,
-	[company] [char] (30) NOT NULL ,
-	[address] [char] (40) NOT NULL ,
-	[city] [char] (30) NOT NULL ,
-	[zip] [char] (15) NOT NULL ,
-	[country] [char] (30) NOT NULL ,
-	[county_council] [char] (30) NOT NULL ,
-	[email] [char] (50) NOT NULL ,
+	[login_name] [char] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[login_password] [char] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[first_name] [char] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[last_name] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[title] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[company] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[address] [char] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[city] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[zip] [char] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[country] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[county_council] [char] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[email] [char] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
 	[admin_mode] [int] NOT NULL ,
 	[last_page] [int] NOT NULL ,
 	[archive_mode] [int] NOT NULL ,
@@ -924,6 +969,8 @@ GO
 
 ALTER TABLE [dbo].[text_docs] WITH NOCHECK ADD 
 	CONSTRAINT [DF_text_docs_group_id] DEFAULT (1) FOR [group_id],
+	CONSTRAINT [DF_text_docs_default_template_1] DEFAULT ((-1)) FOR [default_template_1],
+	CONSTRAINT [DF_text_docs_default_template_2] DEFAULT ((-1)) FOR [default_template_2],
 	CONSTRAINT [PK_text_docs] PRIMARY KEY  NONCLUSTERED 
 	(
 		[meta_id]
@@ -985,6 +1032,8 @@ GO
  CREATE  INDEX [IX_browsers] ON [dbo].[browsers]([value]) ON [PRIMARY]
 GO
 
+/****** The index created by the following statement is for internal use only. ******/
+/****** It is not a real index but exists as statistics only. ******/
 if (@@microsoftversion > 0x07000000 )
 EXEC ('CREATE STATISTICS [Statistic_type] ON [dbo].[doc_types] ([type]) ')
 GO
