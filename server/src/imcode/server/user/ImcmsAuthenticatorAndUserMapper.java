@@ -73,10 +73,10 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
         String[] user_data = service.sqlProcedure( SPROC_GET_USER_BY_LOGIN, new String[]{loginName} );
 
-        return getUserFromSqlResult( user_data );
+        return getUserFromSqlRow( user_data );
     }
 
-    private UserDomainObject getUserFromSqlResult( String[] sqlResult ) {
+    private UserDomainObject getUserFromSqlRow( String[] sqlResult ) {
         UserDomainObject user;
 
         if ( sqlResult.length == 0 ) {
@@ -253,11 +253,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public UserDomainObject[] getUsers( boolean includeUserExtern, boolean includeInactiveUsers ) {
         String[][] allUsersSqlResult = sqlSelectAllUsers( includeUserExtern, includeInactiveUsers );
-        UserDomainObject[] result = new UserDomainObject[allUsersSqlResult.length];
-        for ( int i = 0; i < allUsersSqlResult.length; i++ ) {
-            result[i] = getUserFromSqlResult( allUsersSqlResult[i] );
-        }
-        return result;
+        return getUsersFromSqlRows( allUsersSqlResult );
     }
 
     public void setUserRoles( UserDomainObject user, String[] roleNames ) {
@@ -382,5 +378,23 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public UserDomainObject[] getAllUsers() {
         return getUsers( true, true );
+    }
+
+    public UserDomainObject[] findUsersByNamePrefix( String namePrefix, boolean includeInactiveUsers ) {
+        String sql = SQL_SELECT_USERS + " AND user_id != " + USER_EXTERN_ID
+                     + " AND ( login_name LIKE ? + '%' OR first_name LIKE ? + '%' OR last_name LIKE ? + '%' )";
+        if ( !includeInactiveUsers ) {
+            sql += " AND active = 1";
+        }
+        String[][] sqlRows = service.sqlQueryMulti( sql, new String[]{namePrefix, namePrefix, namePrefix} );
+        return getUsersFromSqlRows( sqlRows );
+    }
+
+    private UserDomainObject[] getUsersFromSqlRows( String[][] sqlRows ) {
+        UserDomainObject[] users = new UserDomainObject[sqlRows.length];
+        for ( int i = 0; i < sqlRows.length; i++ ) {
+            users[i] = getUserFromSqlRow( sqlRows[i] );
+        }
+        return users;
     }
 }

@@ -1243,7 +1243,7 @@ public class AdminUserProps extends Administrator {
         userFromRequest.setCountyCouncil( req.getParameter( REQUEST_PARAMETER__COUNTY_COUNCIL ) );
         userFromRequest.setEmailAddress( req.getParameter( REQUEST_PARAMETER__EMAIL ) );
         userFromRequest.setLangId( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__LANGUAGE_ID ) ) );
-        userFromRequest.setActive( BooleanUtils.toBoolean( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__ACTIVE ) ) ) );
+        userFromRequest.setActive( null != req.getParameter( REQUEST_PARAMETER__ACTIVE ) );
 
         return userFromRequest;
     }

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 public class UserBrowser extends HttpServlet {
 
@@ -34,8 +35,7 @@ public class UserBrowser extends HttpServlet {
             String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
             ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
             boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS ) ;
-            UserDomainObject[] users = userMapper.getUsers(false, includeInactiveUsers);
-
+            UserDomainObject[] users = userMapper.findUsersByNamePrefix(searchString, includeInactiveUsers);
             FormData formData = new FormData();
             formData.setSearchString( searchString );
             formData.setUsers( users );
