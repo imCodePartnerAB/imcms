@@ -246,3 +246,15 @@ Standards to follow:
     We must try our hardest to use and follow the standards set up by
     the World Wide Web Consortium, (http://www.w3.org/),
     for XHTML/HTML 4.01, as well as other standards.
+
+URIs/URLs:
+
+    Learn the differences between URIs, URLs and URNs, and how they work.
+    
+    All URLs or URNs are URIs, but not all URIs are URLs or URNs.
+    Some URLs are also URNs, and vice versa.
+
+    More importantly, learn the difference between relative UR*s and
+    absolute UR*s, and when to put a slash in front of one, and when not to.
+
+    More information at http://www.w3.org/Addressing/ .
