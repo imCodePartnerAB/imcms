@@ -210,6 +210,15 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         return isPublished() && !isArchived();
     }
 
+    public boolean isNoLongerPublished() {
+        return isNoLongerPublishedAtTime( new Date() ) ;
+    }
+
+    private boolean isNoLongerPublishedAtTime( Date date ) {
+        Date publicationEndDatetime = getDocumentProperties().publicationEndDatetime;
+        return publicationEndDatetime != null && publicationEndDatetime.before( date ) ;
+    }
+
     public boolean isSearchDisabled() {
         return getDocumentProperties().isSearchDisabled();
     }

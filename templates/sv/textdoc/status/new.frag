@@ -1,0 +1,1 @@
+<img src="@imcmsimageurl@/admin/status/new.gif" border="0" alt="<? templates/sv/textdoc/status/new.frag/description ?>" title="<? templates/sv/textdoc/status/new.frag/description ?>">

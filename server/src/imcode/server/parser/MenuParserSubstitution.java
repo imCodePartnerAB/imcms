@@ -2,6 +2,7 @@ package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
 import imcode.server.IMCConstants;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import org.apache.oro.text.regex.*;
@@ -19,6 +20,13 @@ class MenuParserSubstitution implements Substitution {
     private Properties tags;
     private int[] implicitMenus = {1};
     private DocumentRequest documentRequest;
+
+    public static final String TEMPLATE__STATUS_NEW = "textdoc/status/new.frag";
+    public static final String TEMPLATE__STATUS_DISAPPROVED = "textdoc/status/disapproved.frag";
+    public static final String TEMPLATE__STATUS_PUBLISHED = "textdoc/status/published.frag";
+    public static final String TEMPLATE__STATUS_UNPUBLISHED = "textdoc/status/unpublished.frag";
+    public static final String TEMPLATE__STATUS_ARCHIVED = "textdoc/status/archived.frag";
+    public static final String TEMPLATE__STATUS_APPROVED = "textdoc/status/approved.frag";
 
     public MenuParserSubstitution( DocumentRequest documentRequest, Map menus, boolean menumode, Properties tags ) {
         this.documentRequest = documentRequest;
@@ -234,52 +242,53 @@ class MenuParserSubstitution implements Substitution {
      */
     private Substitution getMenuItemSubstitution( MenuItem menuItem, Properties parameters, int menuItemIndex ) {
 
-        String imageUrl = menuItem.getDocument().getMenuImage();
+        DocumentDomainObject document = menuItem.getDocument();
+        String imageUrl = document.getMenuImage();
         String imageTag = ( imageUrl != null && imageUrl.length() > 0 )
                           ? ( "<img src=\"" + imageUrl + "\" border=\"0\">" ) : "";
-        String headline = menuItem.getDocument().getHeadline();
+        String headline = document.getHeadline();
         if ( headline.length() == 0 ) {
             headline = "&nbsp;";
         } else {
-            if ( !menuItem.getDocument().isPublished() ) {
+            if ( !document.isPublished() ) {
                 headline = "<em><i>" + headline;
                 headline += "</i></em>";
             }
-            if ( menuItem.getDocument().isArchived() ) {
+            if ( document.isArchived() ) {
                 headline = "<strike>" + headline;
                 headline += "</strike>";
             }
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-        String createdDate = dateFormat.format( menuItem.getDocument().getCreatedDatetime() );
-        String modifiedDate = dateFormat.format( menuItem.getDocument().getModifiedDatetime() );
+        String createdDate = dateFormat.format( document.getCreatedDatetime() );
+        String modifiedDate = dateFormat.format( document.getModifiedDatetime() );
 
         Properties tags = new Properties();
-        tags.setProperty( "#childMetaId#", "" + menuItem.getDocument().getId() );
+        tags.setProperty( "#childMetaId#", "" + document.getId() );
         tags.setProperty( "#childMetaHeadline#", headline );
-        tags.setProperty( "#childMetaText#", menuItem.getDocument().getMenuText() );
+        tags.setProperty( "#childMetaText#", document.getMenuText() );
         tags.setProperty( "#childMetaImage#", imageTag );
         tags.setProperty( "#childCreatedDate#", createdDate );
         tags.setProperty( "#childModifiedDate#", modifiedDate );
         tags.setProperty( "#menuitemindex#", "" + menuItemIndex );
         tags.setProperty( "#menuitemtreesortkey#", menuItem.getTreeSortKey() );
-        tags.setProperty( "#menuitemmetaid#", "" + menuItem.getDocument().getId() );
+        tags.setProperty( "#menuitemmetaid#", "" + document.getId() );
         tags.setProperty( "#menuitemheadline#", headline );
-        tags.setProperty( "#menuitemtext#", menuItem.getDocument().getMenuText() );
+        tags.setProperty( "#menuitemtext#", document.getMenuText() );
         tags.setProperty( "#menuitemimage#", imageTag );
         tags.setProperty( "#menuitemimageurl#", imageUrl );
-        tags.setProperty( "#menuitemtarget#", menuItem.getDocument().getTarget() );
+        tags.setProperty( "#menuitemtarget#", document.getTarget() );
         tags.setProperty( "#menuitemdatecreated#", createdDate );
         tags.setProperty( "#menuitemdatemodified#", modifiedDate );
 
         String template = parameters.getProperty( "template" );
-        String href = "GetDoc?meta_id=" + menuItem.getDocument().getId() + ( template != null ? "&template=" + URLEncoder.encode( template ) : "" );
+        String href = "GetDoc?meta_id=" + document.getId() + ( template != null ? "&template=" + URLEncoder.encode( template ) : "" );
 
         List menuItemAHref = new ArrayList( 4 );
         menuItemAHref.add( "#href#" );
         menuItemAHref.add( href );
         menuItemAHref.add( "#target#" );
-        menuItemAHref.add( menuItem.getDocument().getTarget() );
+        menuItemAHref.add( document.getTarget() );
 
         UserDomainObject user = documentRequest.getUser();
 
@@ -305,7 +314,7 @@ class MenuParserSubstitution implements Substitution {
                 }
                 List menuItemSortKeyTags = new ArrayList( 4 );
                 menuItemSortKeyTags.add( "#meta_id#" );
-                menuItemSortKeyTags.add( "" + menuItem.getDocument().getId() );
+                menuItemSortKeyTags.add( "" + document.getId() );
                 menuItemSortKeyTags.add( "#sortkey#" );
                 menuItemSortKeyTags.add( sortKey );
 
@@ -314,9 +323,11 @@ class MenuParserSubstitution implements Substitution {
 
             List menuItemCheckboxTags = new ArrayList( 2 );
             menuItemCheckboxTags.add( "#meta_id#" );
-            menuItemCheckboxTags.add( "" + menuItem.getDocument().getId() );
+            menuItemCheckboxTags.add( "" + document.getId() );
 
             a_href = documentRequest.getServerObject().getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags ) + a_href;
+
+            a_href = getStatusIconTemplate( document, user ) + a_href ;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );
@@ -325,11 +336,30 @@ class MenuParserSubstitution implements Substitution {
                           ? "</a>"
                             + documentRequest.getServerObject().getAdminTemplate( "textdoc/admin_menuitem.frag", user, Arrays.asList( new String[]{
                                 "#meta_id#", ""
-                                             + menuItem.getDocument().getId()
+                                             + document.getId()
                             } ) )
                           : "</a>" );
 
         return new MapSubstitution( tags, true );
+    }
+
+    private String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
+        String statusIconTemplateName = null ;
+        if (DocumentDomainObject.STATUS_NEW == document.getStatus()) {
+            statusIconTemplateName = TEMPLATE__STATUS_NEW ;
+        } else if (DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus()) {
+            statusIconTemplateName = TEMPLATE__STATUS_DISAPPROVED ;
+        } else if (document.isPublishedAndNotArchived()) {
+            statusIconTemplateName = TEMPLATE__STATUS_PUBLISHED ;
+        } else if (document.isNoLongerPublished()) {
+            statusIconTemplateName = TEMPLATE__STATUS_UNPUBLISHED ;
+        } else if (document.isArchived()) {
+            statusIconTemplateName = TEMPLATE__STATUS_ARCHIVED ;
+        } else {
+            statusIconTemplateName = TEMPLATE__STATUS_APPROVED ;
+        }
+        String statusIconTemplate = documentRequest.getServerObject().getAdminTemplate( statusIconTemplateName , user, null );
+        return statusIconTemplate;
     }
 
 }
