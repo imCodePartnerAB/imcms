@@ -1,11 +1,9 @@
-<%@ page import="com.imcode.imcms.DocumentMapperBean,
-                 com.imcode.imcms.TextDocumentBean,
-                 com.imcode.imcms.WebAppConstants,
-                 com.imcode.imcms.DocumentBean"%>
+<%@ page import="com.imcode.imcms.*"%>
 
 
 <%
-    DocumentMapperBean documentMapper = (DocumentMapperBean)request.getAttribute(WebAppConstants.DOCUMENT_MAPPER_ATTRIBUTE_NAME) ;
+    ImcmsSystem imcmsSystem = (ImcmsSystem)request.getAttribute(RequestConstants.SYSTEM);
+    DocumentMapperBean documentMapper = imcmsSystem.getDocumentMapper() ;
     int metaId = 1001 ;
     TextDocumentBean document = (TextDocumentBean)documentMapper.getDocument(metaId) ;
 

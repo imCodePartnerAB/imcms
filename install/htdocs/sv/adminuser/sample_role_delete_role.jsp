@@ -3,7 +3,8 @@
 <H3>Delete a role named "Test role"</H3>
 
 <%
-    UserMapperBean userMapper = (UserMapperBean)request.getAttribute( WebAppConstants.USER_MAPPER_ATTRIBUTE_NAME );
+    ImcmsSystem imcmsSystem = (ImcmsSystem)request.getAttribute(RequestConstants.SYSTEM);
+    UserMapperBean userMapper = imcmsSystem.getUserMapperBean();
 %>
 Before:<br>
 <%=java.util.Arrays.asList( userMapper.getAllRolesNames() )%>

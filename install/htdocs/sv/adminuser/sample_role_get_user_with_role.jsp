@@ -1,10 +1,8 @@
-<%@ page import="com.imcode.imcms.Role,
-                 com.imcode.imcms.UserBean,
-                 com.imcode.imcms.UserMapperBean,
-                 com.imcode.imcms.WebAppConstants"%><H3>Getting all users with a specific role</H3>
+<%@ page import="com.imcode.imcms.*"%><H3>Getting all users with a specific role</H3>
 Users with role "<%= Role.USERS %>"
 <%
-    UserMapperBean userMapper = (UserMapperBean)request.getAttribute( WebAppConstants.USER_MAPPER_ATTRIBUTE_NAME );
-   UserBean[] usersWithASpecificRole = userMapper.getAllUserWithRole( Role.USERS );
+    ImcmsSystem imcmsSystem = (ImcmsSystem)request.getAttribute(RequestConstants.SYSTEM);
+    UserMapperBean userMapper = imcmsSystem.getUserMapperBean();
+    UserBean[] usersWithASpecificRole = userMapper.getAllUserWithRole( Role.USERS );
 %>
 <%= java.util.Arrays.asList( usersWithASpecificRole ) %>

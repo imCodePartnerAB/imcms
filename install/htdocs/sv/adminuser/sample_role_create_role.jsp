@@ -4,7 +4,8 @@
 <H3>Create a new role</H3>
 
 <%
-    UserMapperBean userMapper = (UserMapperBean)request.getAttribute( WebAppConstants.USER_MAPPER_ATTRIBUTE_NAME );
+    ImcmsSystem imcmsSystem = (ImcmsSystem)request.getAttribute(RequestConstants.SYSTEM);
+    UserMapperBean userMapper = imcmsSystem.getUserMapperBean();
 %>
 Before:<br>
 <%=java.util.Arrays.asList( userMapper.getAllRolesNames() )%>
