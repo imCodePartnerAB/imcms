@@ -28,7 +28,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
 	try {
 
-	    IMCMS_TAG_ATTRIBUTES_PATTERN = patComp.compile("\\s*(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.READ_ONLY_MASK) ;
+	    IMCMS_TAG_ATTRIBUTES_PATTERN = patComp.compile("\\s*(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	    HTML_PREBODY_PATTERN = patComp.compile("^.*?<[Bb][Oo][Dd][Yy].*?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	    HTML_POSTBODY_PATTERN = patComp.compile("<\\/[Bb][Oo][Dd][Yy]>.*$", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 
@@ -143,7 +143,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	if (null != (attributevalue = attributes.getProperty("no"))) {	    // If we have the attribute no="number"...
 	    // Set the number of this include-tag
 	    try {
-		no = Integer.parseInt(attributevalue) ; // Then set the number wanted
+		no = Integer.parseInt(attributevalue.trim()) ; // Then set the number wanted
 		implicitIncludeNumber = no + 1 ;
 	    }
 	    catch (NumberFormatException ex) {
@@ -253,6 +253,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	String noStr = attributes.getProperty("no") ;
 	IMCText text = null ;
 	if (null != noStr) {
+	    noStr = noStr.trim() ;
 	    text = (IMCText)textMap.get(noStr) ;
 	    implicitTextNumber = Integer.parseInt(noStr) + 1 ;
 	} else {
@@ -328,6 +329,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	String noStr = attributes.getProperty("no") ;
 	String result = null ;
 	if (null != noStr) {
+	    noStr = noStr.trim() ;
 	    result = (String)imageMap.get(noStr) ;
 	    implicitImageNumber = Integer.parseInt(noStr) + 1 ;
 	} else {

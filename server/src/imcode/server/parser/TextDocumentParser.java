@@ -41,7 +41,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    // Very good. Very good. Know something? NO SOUP FOR YOU!
 	    HTML_TAG_PATTERN = patComp.compile("<[^>]+?>",Perl5Compiler.READ_ONLY_MASK) ;
 
-	    IMCMS_TAG_PATTERN = patComp.compile("<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.READ_ONLY_MASK) ;
+	    IMCMS_TAG_PATTERN = patComp.compile("<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	    MENU_NO_PATTERN = patComp.compile("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
 	    HASHTAG_PATTERN = patComp.compile("#[^ #\"<>&;\\t\\r\\n]+#",Perl5Compiler.READ_ONLY_MASK) ;
 	    MENU_PATTERN = patComp.compile("<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
