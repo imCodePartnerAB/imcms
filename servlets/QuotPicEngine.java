@@ -15,17 +15,11 @@ import imcode.util.* ;
 
 public class QuotPicEngine extends HttpServlet 
 {
-
-
 	String inFile = "";
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{	
-		
-	res.setContentType("text/html");
-	PrintWriter out = res.getWriter();
-		
 		
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
@@ -82,9 +76,6 @@ public class QuotPicEngine extends HttpServlet
 		String theText;
 		int the_row;
 		
-		//format the dates
-	
-		
 		if (!(nr>0))
 		{
 			//no question was found
@@ -106,8 +97,8 @@ public class QuotPicEngine extends HttpServlet
 			theText = (String)row_texts.get(new Integer(the_row));
 		}
 		
-//		res.setContentType("text/html");
-//		PrintWriter out = res.getWriter();
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
 
 		if( type.equals("pic"))
 		{
