@@ -7156,4 +7156,46 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	sqlStr = "SystemMessageSet '"+sd.getSystemMessage()+"'" ;
 	sqlUpdateProcedure(sqlStr) ;
     }
+
+    /**
+       Returns the information for each meta id passed as argument.
+    */
+    public Hashtable ExistingDocsGetMetaIdInfo(String[] meta_id) {
+
+            // Lets build a comma separed string to send to the sproc
+            StringBuffer sBuf = new StringBuffer() ;
+            for( int i = 0; i< meta_id.length; i++ ) {
+              sBuf.append(meta_id[i])  ;
+              if(i != meta_id.length)
+                sBuf.append(",") ;
+            }
+
+            DBConnect dbc = new DBConnect(m_conPool) ;
+	    dbc.getConnection() ;
+	    dbc.setProcedure("ExistingDocsGetSelectedMetaIds ", sBuf.toString() ) ;
+            Vector data = (Vector)dbc.executeProcedure() ;
+	    String[] meta = (String[])dbc.getMetaData() ;
+	    int columns = dbc.getColumnCount() ;
+       	    dbc.clearResultSet() ;
+	    dbc.closeConnection() ;
+            dbc = null ;
+
+            // Lets build the result into an hashtable
+	    Hashtable result = new Hashtable(columns,0.5f) ;
+            if ( data.size() > 0 ) {
+		for ( int i = 0 ; i < columns ; i++ ) {
+    		  String temp_str[] = new String[data.size() / columns] ;
+		  int counter = 0 ;
+                    for ( int j =  i ; j < data.size()  ; j+=columns )
+			temp_str[counter++] = data.elementAt(j).toString() ;
+			result.put(meta[i],temp_str) ;
+		    }
+    	        return result ;
+	    } else {
+		return new Hashtable(1,0.5f)   ;
+            }
+    }
+
+
+
 } // END CLASS IMCService

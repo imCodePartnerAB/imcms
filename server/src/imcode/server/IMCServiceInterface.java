@@ -393,4 +393,8 @@ public interface IMCServiceInterface extends java.rmi.Remote {
     public SystemData getSystemData()     throws java.rmi.RemoteException ;
 
     public void setSystemData(SystemData sd)     throws java.rmi.RemoteException ;
+
+    // Get the information for each selected metaid. Used by existing documents
+    public Hashtable ExistingDocsGetMetaIdInfo( String[] meta_id)  throws java.rmi.RemoteException ;
+
 }

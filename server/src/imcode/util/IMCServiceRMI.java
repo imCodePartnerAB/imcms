@@ -874,4 +874,18 @@ public class IMCServiceRMI {
 		}
 	}
 
+        /*
+
+        */
+      	public static Hashtable ExistingDocsGetMetaIdInfo (String server,String[] meta_id) throws IOException {
+                IMCServiceInterface imc = getInterface( server ) ;
+		try {
+			return imc.ExistingDocsGetMetaIdInfo(meta_id) ;
+		} catch ( IOException ex ) {
+			imc = renewInterface(server) ;
+			return imc.ExistingDocsGetMetaIdInfo(meta_id) ;
+		}
+	}
+
+
 }
