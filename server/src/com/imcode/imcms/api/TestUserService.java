@@ -44,20 +44,31 @@ public class TestUserService extends TestCase {
     }
 
     public void testUserCanEditSelf() throws SaveException, NoPermissionException {
+        String loginName = "loginName";
+        String firstName = "firstName";
+
         UserDomainObject internalUser = new UserDomainObject();
         internalUser.setId( 3 );
-        internalUser.setLoginName( "loginName" );
-        internalUser.setFirstName( "firstName" );
+        internalUser.setLoginName( loginName );
+        internalUser.setFirstName( firstName );
         internalUser.setLastName( "lastName" );
         contentManagementSystem.setCurrentUser( new User( internalUser ) );
 
         User user = contentManagementSystem.getCurrentUser() ;
 
-        assertEquals( "firstName", user.getFirstName() );
-        user.setFirstName( "testuser" );
+        String newLoginName = "newLoginName";
+        String newFirstName = "newFirstName";
+        assertEquals( loginName, user.getLoginName() );
+        assertEquals( firstName, user.getFirstName() );
+        user.setLoginName( newLoginName );
+        user.setFirstName( newFirstName );
         userService.saveUser( user );
-        assertTrue( "User can update contents of users table.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", "testuser" ) )) ;
-        assertFalse( "First name changed.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", "firstName" ) ) );
+
+        assertTrue( "User can update contents of users table.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", "3" ) )) ;
+        assertFalse( "Old login name set.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", loginName ) ) );
+        assertTrue( "New login name not set.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", newLoginName ) ) );
+        assertFalse( "Old first name set.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", firstName ) ) );
+        assertTrue( "New first name not set.", containsSqlCall( new UpdateTableSqlCallPredicate( "users", newFirstName ) ) );
         assertFalse( "User can not change own roles.", containsSqlCall( new SqlCallStringPredicate( "role" ) ) );
     }
 

@@ -221,6 +221,10 @@ public class User {
         internalUser.setLastName( lastName );
     }
 
+    public void setLoginName( String loginName ) {
+        internalUser.setLoginName( loginName );
+    }
+
     public void setMobilePhone( String mobilephone ) {
         internalUser.setMobilePhone( mobilephone );
     }
