@@ -52,7 +52,10 @@ public class PollReader {
 	StringTokenizer tokenizer = new StringTokenizer(aQuote.getText(),"#") ;
 
 	// The first token is the question.
-	String question = tokenizer.nextToken() ;
+	String question = "" ;
+	if ( tokenizer.hasMoreTokens() ) {
+	    question = tokenizer.nextToken() ;
+	}
 
 	// Create the poll
 	Poll thePoll = new Poll(question,aQuote.getDateRange()) ;

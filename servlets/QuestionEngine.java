@@ -57,9 +57,11 @@ public class QuestionEngine extends HttpServlet
 	if ( ! thePoll.getDateRange().contains( now ) ) {
 
 	    // The poll was no longer current, archive it...
-	    List pollStatsList = IMCServiceRMI.getPollList(imcserver,inFile+".stat.txt") ;
-	    pollStatsList.add(thePoll) ;
-	    IMCServiceRMI.setPollList(imcserver,inFile+".stat.txt",pollStatsList) ;
+	    if (!"".equals(thePoll.getQuestion())) {
+		List pollStatsList = IMCServiceRMI.getPollList(imcserver,inFile+".stat.txt") ;
+		pollStatsList.add(thePoll) ;
+		IMCServiceRMI.setPollList(imcserver,inFile+".stat.txt",pollStatsList) ;
+	    }
 
 	    // ... and replace it.
 	    pollList = this.getNewQuestion(imcserver,inFile) ;
@@ -126,3 +128,4 @@ public class QuestionEngine extends HttpServlet
 
     }
 } // End class
+

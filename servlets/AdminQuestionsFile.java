@@ -87,7 +87,13 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 	    // Replace the current poll if it changed.
 	    if (!newCurrentPoll.getQuestion().equals(currentPoll.getQuestion())) {
-		IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
+		if (!"".equals(currentPoll.getQuestion()) && !"".equals(newCurrentPoll.getQuestion())) {
+		    IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
+
+		    List statsList = IMCServiceRMI.getPollList(imcserver,whichFile+".stat.txt") ;
+		    statsList.add(currentPoll) ;
+		    IMCServiceRMI.setPollList(imcserver,whichFile+".stat.txt", statsList) ;
+		}
 	    }
 
 	    //tillbaks till
