@@ -32,6 +32,10 @@ public class AdminDoc extends HttpServlet {
 
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        if (!documentMapper.userHasMoreThanReadPermissionOnDocument( user, document )) {
+            flags = 0 ;
+        }
         if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
             HttpPageFlow httpPageFlow = new EditDocumentInformationPageFlow(document) ;
             forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
@@ -66,8 +70,6 @@ public class AdminDoc extends HttpServlet {
             } else {
                 parent_meta_id = start_doc;
             }
-
-            UserDomainObject user = Utility.getLoggedOnUser( req );
 
             String tempstring = AdminDoc.adminDoc( meta_id, parent_meta_id, user, req, res );
 
@@ -115,7 +117,7 @@ public class AdminDoc extends HttpServlet {
         } catch ( NumberFormatException ex ) {
             if ( flags == 0 ) {
                 if ( doc_type != 1 && doc_type != 2 ) {
-                    Vector vec = new Vector( 2 );
+                    List vec = new ArrayList( 4 );
                     vec.add( "#adminMode#" );
                     vec.add( imcref.getAdminButtons( user, document ) );
                     vec.add( "#doc_type_description#" );
