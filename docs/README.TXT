@@ -1,6 +1,6 @@
 Welcome to the imCMS Content Management System.
 
-For changes, see CHANGES.TXT
+For changes, see CHANGES.HTML
 For information about licensing, see LICENSE.TXT
 For install instructions, see INSTALL.TXT
 To upgrade from a previous version, see UPGRADE.TXT

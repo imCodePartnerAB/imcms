@@ -1,6 +1,6 @@
 Upgrading imCMS:
 
-* First check CHANGES.TXT to see if there's anything you have to do that is not noted in this file.
+* First check CHANGES.HTML to see if there's anything you have to do that is not noted in this file.
 
 * If you have a version of imCMS older than 1.7.5,
   you must delete any documents of the types "diagram" (101) or "calendar" (107).
@@ -42,7 +42,7 @@ Upgrading imCMS:
 
 * Restart tomcat.
 
-* Make sure you did everything outlined as important in CHANGES.TXT.
+* Make sure you did everything outlined as important in CHANGES.HTML.
 
 * If you want to make sure searches work properly, and don't want to wait for the automatic (usually daily) reindexing,
   access "/servlet/RebuildIndex" as superadmin to rebuild the search index.
