@@ -412,7 +412,46 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			return ;
 			
 		}
-		
+	
+		// ********* MOVE A BILL TO ANITHER SECTION ******** Peter says OK!!!!
+		if (req.getParameter("MOVE_A_BILL") != null)
+		{
+			//log("Nu tar vi och flyttar bills till en annan avdelning");
+			if (super.checkParameters(req, res, params) == false ) {
+				/*
+				String header = "ConfAdmin servlet. " ;
+				String msg = params.toString() ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
+				*/
+				return ;
+			}
+			
+			// Lets get the section_id and set our session object before updating			
+			String aSectionId = params.getProperty("SECTION_ID") ;
+			
+			//lets get the bill_id
+			String repliesId = req.getParameter("bill_id") ;
+			
+			
+			String moveToId = req.getParameter("MOVE_TO_SECTION") == null ? aSectionId:req.getParameter("MOVE_TO_SECTION");
+			
+			//Lets move all the bills to the section admin wants
+			
+				String sqlQ = "B_ChangeSection " + repliesId +", "+moveToId ;//DeleteDiscussion
+				rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
+			
+			
+			//Lets update the session in case we moved the shown bill
+			HttpSession session = req.getSession(false);
+			String sqlStr = "B_GetLastDiscussionId " +params.getProperty("META_ID") + ", " + aSectionId;
+			String aDiscId = rmi.execSqlProcedureStr(confPoolServer, sqlStr) ;
+			session.putValue("BillBoard.disc_id", aDiscId) ;
+			
+			//ok lets rebuild the page
+			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardDiscView") ;
+			return ;
+			
+		}
 
 
 		// ********* DELETE SECTION ******** 	Peter says OK!!!!
@@ -913,6 +952,12 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			// Lets get the part of an html page, wich will be parsed for every a Href reference
 			String templateLib = super.getExternalTemplateFolder(req) ;
 			String aSnippetFile = templateLib + adminReplyList ;
+			
+			//lets get all the sections and the code for the selectlist
+			String sqlStoredProc = "B_GetAllSection "+params.getProperty("META_ID");
+			String sqlSections[] = rmi.execSqlProcedure(confPoolServer, sqlStoredProc ) ;			
+			Vector sectionV = super.convert2Vector(sqlSections) ;
+			String sectionListStr = Html.createHtmlCode("ID_OPTION", params.getProperty("SECTION_ID"), sectionV ) ;
 
 			// Lets preparse all records
 			String allRecs = " " ;
@@ -922,6 +967,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			//VariableManager vm = new VariableManager() ;
 			//vm.addProperty("USER_SORT_ORDER", sortOrderVal) ;
 			//vm.addProperty("CHECKBOX_STATE", checkBoxStr) ;
+			vm.addProperty("SECTION_LIST", sectionListStr  ) ;
 			vm.addProperty("REPLIES_RECORDS", allRecs  ) ;
 			vm.addProperty("UNADMIN_LINK_HTML", this.REPLY_UNADMIN_LINK_TEMPLATE );
 			//this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
