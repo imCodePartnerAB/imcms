@@ -5,6 +5,24 @@ import javax.servlet.http.*;
 import imcode.external.diverse.*;
 import imcode.util.* ;
 
+/**
+ *
+ * Html template in use:
+ * BILLBOARD_CREATOR.HTM
+ *
+ * Html parstags in use:
+ * #BILLBOARD_NAME#
+ * #SECTION_NAME#
+ *
+ * stored procedures in use:
+ * B_AddNewBillBoard
+ * B_AddNewSection
+
+ *
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson, Jerker Drottenmyr, REBUILD TO BillBoardCreator BY Peter Östergren
+*/
+
 public class BillBoardCreator extends BillBoard
 {//BillBoardCreator
 	String HTML_TEMPLATE ;
@@ -70,7 +88,7 @@ public class BillBoardCreator extends BillBoard
 			{
 				action = "" ;
 				String header = "BillBoardCreator servlet. " ;
-				ConfError err = new ConfError(req,res,header,90) ;
+				BillBoardError err = new BillBoardError(req,res,header,90) ;
 				log(header + err.getErrorMsg()) ;
 				return ;
 			}
@@ -96,11 +114,6 @@ public class BillBoardCreator extends BillBoard
 
 			// Lets get the administrators user_id
 			String user_id = user.getString("user_id") ;
-
-//remove?			// Lets get the recently added section id
-//remove?			//String forum_id = rmi.execSqlProcedureStr(confPoolServer, "B_GetFirstSection " + metaId) ;//GetFirstForum
-//remove?			//sql B_GetFirstSection är inte implementerad 
-
 
 			// Ok, were done creating the billBoard. Lets tell Janus system to show this child.
 			rmi.activateChild(imcServer, metaId) ;

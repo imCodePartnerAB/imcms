@@ -8,6 +8,29 @@ import java.rmi.registry.* ;
 import java.net.InetAddress;
 import imcode.util.* ;
 import imcode.server.HTMLConv;
+import java.net.*;
+
+
+/**
+ *
+ * Html template in use:
+ * BillBoard_Add.htm
+ *
+ * Html parstags in use:
+ * #ADD_TYPE#
+ * #CURRENT_SECTION_NAME#
+ *
+ * stored procedures in use:
+ * B_AddNewBill
+ * B_GetLastDiscussionId
+ * B_GetEmail
+ * B_GetSubjectStr
+ * B_AddReply
+ * B_GetSectionName
+ *
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson, Jerker Drottenmyr, REBUILD TO BillBoardAdd BY Peter Östergren
+*/
 
 public class BillBoardAdd extends BillBoard
 {//ConfAdd
@@ -279,17 +302,7 @@ public class BillBoardAdd extends BillBoard
 
 			// Lets get the users first and last names
 			RmiConf rmi = new RmiConf(user) ;
-			//String sqlName = "GetBillBoardLoginNames " + params.getProperty("META_ID") ;//GetConfLoginNames
-			//sqlName += ", " + loginUserId + ", " +  1 ;
-			//String firstName = (String) rmi.execSqlProcedureStr(confPoolServer, sqlName ) ;
-			//sqlName = "GetBillBoardLoginNames " + params.getProperty("META_ID") ;
-			//sqlName += ", " + loginUserId + ", " +  2 ;
-			//String lastName = (String) rmi.execSqlProcedureStr(confPoolServer, sqlName ) ;
-
-			// 	log("Användare: " + firstName + " " + lastName) ;
-
-			//vm.addProperty("FIRST_NAME", firstName ) ;
-			//vm.addProperty("LAST_NAME",	lastName ) ;
+			
 			vm.addProperty("ADD_TYPE", params.getProperty("ADD_TYPE")) ;
 
 			// Lets add the current forum name
@@ -315,20 +328,7 @@ public class BillBoardAdd extends BillBoard
 
 			vm.addProperty("ADD_TYPE_HEADER", addTypeHeader) ;
 
-			// If addtype is reply, then lets get the header for the discussion
-			// from the db and suggest it to the user
-			//String discHeader = "" ;
-			//if( params.getProperty("ADD_TYPE").equalsIgnoreCase("REPLY") ) {
-			//	String aDiscId = params.getProperty("DISC_ID") ;
-			//	String sqlQ = "GetDiscussionHeader " + aDiscId ;
-			//	String arr[] = rmi.execSqlProcedure(confPoolServer, sqlQ) ;
-			//	if( arr != null) {
-			//		if(arr.length > 0) {
-			//			discHeader = (String) arr[0] ;
-			//		}
-			//	}
-			//}
-			//vm.addProperty("DISC_HEADER", discHeader) ;
+			
 			this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 			//	log("ConfAdd OK") ;
 			return ;
@@ -440,10 +440,17 @@ public class BillBoardAdd extends BillBoard
 
 
 		/* send mail */
-		//			try {
-		SMTP smtp = new SMTP( mailserver, mailport, mailtimeout );					
+		//try {			
+			SMTP smtp = new SMTP( mailserver, mailport, mailtimeout );					
 
 			smtp.sendMailWait( fromEmail, toEmail ,header , text );
+		//}catch (ProtocolException pe)
+		//{
+			//ok something whent wrong
+		//	BillBoardError err = new BillBoardError(req,res,"BillBoardAdd servlet. ",pe.getMessage()) ;
+		//	log(pe.getMessage());
+		//	return;
+		//}
 			
 			//smtp.sendMailWait (String from, String to, String subject, String msg)
 
@@ -588,25 +595,8 @@ public class BillBoardAdd extends BillBoard
 	throws ServletException
 	{
 		super.init(config);
-		HTML_TEMPLATE = "BillBoard_Add.htm" ;//Conf_Add.htm
-		SERVLET_NAME = "BillBoardAdd" ;//ConfAdd
-		/*
-		HTML_TEMPLATE = getInitParameter("html_template") ;
-		SERVLET_NAME = "ConfAdd" ;
-
-		if( HTML_TEMPLATE == null) {
-		    Enumeration initParams = getInitParameterNames();
-		    System.err.println(SERVLET_NAME + " The init parameters were: ");
-		    while (initParams.hasMoreElements()) {
-		System.err.println(initParams.nextElement());
-		    }
-		    System.err.println(SERVLET_NAME + " Should have seen one parameter name");
-		    throw new UnavailableException (this,
-		SERVLET_NAME + " Should have seen one parameter name");
-		}
-
-		  this.log("HtmlTemplate:" + getInitParameter("html_template")) ;
-		*/
+		HTML_TEMPLATE = "BillBoard_Add.htm" ;
+		SERVLET_NAME = "BillBoardAdd" ;
 	}
 
 	/**

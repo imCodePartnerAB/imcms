@@ -1,6 +1,6 @@
 /*
  *
- * @(#)ConfReply.java
+ * @(#)BillBoardReply.java
  *
  *
  *
@@ -17,20 +17,33 @@ import java.rmi.* ;
 import java.rmi.registry.* ;
 import imcode.util.*;
 
+
 /**
  *
  *
  * Html template in use:
- * Conf_Reply_New_Comment.htm
+ * BillBoard_Reply_New_Comment.htm
+ * BillBoard_Reply_Admin_Link.htm
  *
  * Html parstags in use:
- * #NEW_COMMENT#
+ * #REPLY_BILL_ID#
+ * #REPLY_HEADER#
+ * #REPLY_TEXT#
+ * #C_REPLIES#
+ * #REPLY_DATE#
+ * #SERVLET_URL#
+ * #IMAGE_URL#
+ * #NEW_REPLIE#
+ * #REPLIE_RECORD#
+ * #CURRENT_BILL_HEADER#
+ * #ADMIN_LINK_HTML#
  *
  * stored procedures in use:
- * -
+ * B_GetCurrentBill
+ * B_GetBillHeader
  *
- * @version 1.5 21 Nov 2000
- * @author Rickard Larsson, Jerker Drottenmyr
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson, Jerker Drottenmyr REBUILD TO BillBoardReply BY Peter Östergren
  *
 */
 
@@ -50,7 +63,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-		//log("START BillBoardReply doPost");
+		log("START BillBoardReply doPost");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -98,15 +111,15 @@ public class BillBoardReply extends BillBoard {//ConfReply
 			*/
 
 			// THIS CODE IS USED IF WE WANT RADIOBUTTONS
-			String ascSortOrder = (req.getParameter("SORT_ORDER")==null) ? "0" : (req.getParameter("SORT_ORDER")) ;
+			//String ascSortOrder = (req.getParameter("SORT_ORDER")==null) ? "0" : (req.getParameter("SORT_ORDER")) ;
 			//log("AscSortOrder: " + ascSortOrder) ;
 
 			// Ok, Lets set the users sortorder preference
-			RmiConf rmi = new RmiConf(user) ;
-			String sqlQ = "BillBoardUsersSetReplyOrder " + metaId + ", " + userId ;//
-			sqlQ += ", " + ascSortOrder ;
+			//RmiConf rmi = new RmiConf(user) ;
+			//String sqlQ = "BillBoardUsersSetReplyOrder " + metaId + ", " + userId ;//
+			//sqlQ += ", " + ascSortOrder ;
 			//	log("Sql quest: " + sqlQ) ;
-			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
+			//rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 			this.doGet(req, res) ;
 			return ;
 		}
@@ -201,11 +214,11 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 
 		// Lets get the current time from the sql server
-		String sqlTimeStr = rmi.execSqlProcedureStr(confPoolServer, "GetTime") ;
+		//String sqlTimeStr = rmi.execSqlProcedureStr(confPoolServer, "GetTime") ;
 
 		// String dateString = formatter.format(sqlTime);
 		// Lets update the discussion list
-		this.updateDiscFlagList(req,discId,sqlTimeStr) ;
+		//this.updateDiscFlagList(req,discId,sqlTimeStr) ;
 
 		// Lets preparse all records
 		String currentRec = " " ;

@@ -1,6 +1,6 @@
 /*
  *
- * @(#)Conference.java
+ * @(#)BillBoard.java
  *
  *
  *
@@ -18,27 +18,35 @@ import imcode.util.IMCServiceRMI;
 import imcode.util.Parser;
 
 /**
- * superclas for conference servlets.
+ * superclas for billboard servlets.
  *
  * Html template in use:
- * Conf_Admin_Button.htm
+ * BillBoard_Admin_Button.htm
+ * BillBoard_Unadmin_Button.htm
  *
  * Html parstags in use:
- * #ADMIN_TYPE#
- * #TARGET#
+ * #IMAGE_URL#
+ * #SERVLET_URL#
+ * #ADMIN_LINK_HTML#
+ * #SECTION_ADMIN_LINK#
+ * #SECTION_UNADMIN_LINK#
+ * #UNADMIN_LINK_HTML#
+ # #UNADMIN_BUTTON#
  *
  * stored procedures in use:
- * -
+ * CheckAdminRights
+ * B_GetTemplateLib
+ * B_GetFirstSection
+ * B_GetLastDiscussionId
  *
- * @version 1.5 20 Nov 2000
- * @author Rickard Larsson, Jerker Drottenmyr
- *
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson, Jerker Drottenmyr, REBUILD TO BILLBOARD BY Peter Östergren
 */
 
 
 public class BillBoard extends HttpServlet { //Conference
-	private final static String ADMIN_BUTTON_TEMPLATE = "BillBoard_Admin_Button.htm";//"Conf_Admin_Button.htm";
-	private final static String UNADMIN_BUTTON_TEMPLATE = "BillBoard_Unadmin_Button.htm";//"Conf_Unadmin_Button.htm";
+	private final static String ADMIN_BUTTON_TEMPLATE = "BillBoard_Admin_Button.htm";
+	private final static String UNADMIN_BUTTON_TEMPLATE = "BillBoard_Unadmin_Button.htm";
 
 	/**
 	Returns the metaId from a request object, if not found, we will
@@ -55,7 +63,7 @@ public class BillBoard extends HttpServlet { //Conference
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
 			{
-				metaId =	(String) session.getValue("BillBoard.meta_id") ;//"Conference.meta_id"
+				metaId =	(String) session.getValue("BillBoard.meta_id") ;
 			}
 		}
 		if( metaId == null)
@@ -67,21 +75,21 @@ public class BillBoard extends HttpServlet { //Conference
 	}
 
 	/**
-	Returns the ForumId from a request object, if not found, we will
+	Returns the section_id from a request object, if not found, we will
 	get the one from our session object. If still not found then null is returned.
 	*/
 
-	public String getForumId (HttpServletRequest req)
+/*	public String getSectionId (HttpServletRequest req)
 	throws ServletException, IOException
 	{
 
-		String forumId = req.getParameter("forum_id") ;
+		String forumId = req.getParameter("section_id") ;
 		if( forumId == null )
 		{
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
 			{
-				forumId =	(String) session.getValue("BillBoard.forum_id") ;//Conference.forum_id
+				forumId =	(String) session.getValue("BillBoard.section_id") ;
 			}
 		}
 		if( forumId == null)
@@ -91,7 +99,7 @@ public class BillBoard extends HttpServlet { //Conference
 		}
 		return forumId ;
 	}
-
+*/
 	/**
 	Collects all information from the user object. To get information from
 	Janus's userobject.

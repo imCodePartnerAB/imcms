@@ -7,6 +7,64 @@ import java.rmi.* ;
 import java.rmi.registry.* ;
 import imcode.util.*;
 
+/**
+ *
+ * Html template in use:
+ * BillBoard_Section_Unadmin_Link.htm
+ * BillBoard_Section_Template1_Unadmin_Link.htm
+ * BillBoard_Section_Template2_Unadmin_Link.htm
+ * BillBoard_Disc_Unadmin_Link.htm
+ * BillBoard_Reply_Unadmin_Link.htm
+ *
+ * Html parstags in use:
+ * #EXTERNAL_PATH#
+ * #UNADMIN_LINK_HTML#
+ * #TEMPLATE_LIST#
+ * #A_META_ID#
+ * #CURRENT_TEMPLATE_SET#
+ * #SECTION_LIST#
+ * #NBR_OF_DISCS_TO_SHOW_LIST#
+ * #NBR_OF_DAYS_TO_SHOW_LIST#
+ * #NEW_A_HREF_LIST#
+ * #REPLY_ID#
+ * #REPLY_HEADER#
+ * #REPLY_TEXT#
+ * #REPLY_COUNT#
+ * #REPLY_EMAIL#
+ * #REPLY_DATE#
+ * #REPLY_IPADR#
+ * #REPLIES_RECORDS#
+ * #DISC_DEL_ID#
+ * #HEADLINE#
+ * #COUNT_REPLIES#
+ * #ARCHIVE_DATE#
+ *
+ * stored procedures in use:
+ * B_AddNewSection
+ * B_DeleteBill
+ * B_DeleteSection
+ * B_UpdateBill
+ * B_FindSectionName
+ * B_GetAllTemplateLibs
+ * B_GetAllSection
+ * B_GetAllNbrOfDaysToShow
+ * B_GetAllNbrOfDiscsToShow
+ * B_GetAllBillsToShow
+ * B_GetAllOldBills
+ * B_GetAdminBill
+ * B_GetSectionName
+ * B_GetNbrOfDiscsToShow
+ * B_GetTemplateIdFromName
+ * B_RenameSection
+ * B_SetNbrOfDiscsToShow
+ * B_SetNbrOfDaysToShow
+ * B_SetTemplateLib
+ * 
+ *
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson, Jerker Drottenmyr, REBUILD TO BillBoardAdmin BY Peter Östergren
+*/
+
 public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 	private final static String FORUM_UNADMIN_LINK_TEMPLATE = "BillBoard_Section_Unadmin_Link.htm";//"Conf_Forum_Unadmin_Link.htm";
@@ -114,11 +172,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String templateTarget = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + newLibName + "/" ;
 			String imageTarget = rmi.getExternalImageHomeFolder(host,imcServer, metaId) + newLibName + "/" ;
 
-			//this.log("TemplateSrc: " + templateSrc ) ;
-			//this.log("templateTarget: " + templateTarget) ;
-			//this.log("imageSrc: " + imageSrc ) ;
-			//this.log("imageTarget: " + imageTarget ) ;
-
+			
 			fileObj.copyDirectory(templateSrc, templateTarget) ;
 			fileObj.copyDirectory(imageSrc, imageTarget) ;
 
@@ -172,7 +226,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 			// Lets find the selected template in the database and get its id
 			// if not found, -1 will be returned
-			String sqlQ = "GetBillBoardTemplateIdFromName '" + newLibName + "'" ;//GetTemplateIdFromName
+			String sqlQ = "B_GetTemplateIdFromName '" + newLibName + "'" ;//GetTemplateIdFromName
 			String templateId = rmi.execSqlProcedureStr(confPoolServer, sqlQ) ;
 			if(templateId.equalsIgnoreCase("-1")) {
 				String header = "BillBoardAdmin servlet. " ;
@@ -181,7 +235,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				return ;
 			}
 			// Ok, lets update the conference with this new templateset.
-			String updateSql = "SetBillBoardTemplateLib " + params.getProperty("META_ID") ;//SetTemplateLib
+			String updateSql = "B_SetTemplateLib " + params.getProperty("META_ID") ;//SetTemplateLib
 			updateSql += ", '" + newLibName + "'" ;
 			rmi.execSqlUpdateProcedure(confPoolServer, updateSql) ;
 
@@ -640,13 +694,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String sqlStoredProc = "B_GetAllBillsToShow " +aMetaId+ ", "+ aSectionId;//GetAllNewDiscussions
 			//log("SQL new: " + sqlStoredProc) ;
 			String sqlAnswerNew[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProc ) ;
-			//log("sqlAnswerNew: "+sqlAnswerNew);
-			// Lets get all Old Discussions
-			//String sqlStoredProcOld = "GetAllOldBillBoardDiscussions " + aMetaId + ", " + aSectionId +", '"+ aLoginDate + "'"  ;//GetAllOldDiscussions
-			// log("SQL OLD: " + sqlStoredProcOld ) ;
-			//String sqlAnswerOld[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProcOld ) ;
-			//String sqlAnswerOld[] = null ;
-
+			
 			// Lets build our tags vector.
 			Vector tagsV = this.buildAdminTags() ;
 
@@ -656,13 +704,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				if( sqlAnswerNew.length > 0)
 					allNewRecs = discPreParse(req, sqlAnswerNew, tagsV, aHrefHtmlFile) ;
 			}
-			// Lets preparse all OLD records
-			//String allOldRecs  = "" ;
-			//if( sqlAnswerOld != null ) {
-			//	if( sqlAnswerOld.length > 0)
-			//		allOldRecs = discPreParse(req, sqlAnswerOld, tagsV, aHrefHtmlFile, imagePath , 0) ;
-			//}
-
+			
 			// Lets build the Responsepage
 			//VariableManager vm = new VariableManager() ;
 			//log("allNewRecs: "+allNewRecs);
@@ -703,12 +745,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String sqlStoredProc = "B_GetAllOldBills " +aMetaId+ ", "+ aSectionId;//GetAllNewDiscussions
 			//log("SQL new: " + sqlStoredProc) ;
 			String sqlAnswerNew[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProc ) ;
-			//log("sqlAnswerNew: "+sqlAnswerNew);
-			// Lets get all Old Discussions
-			//String sqlStoredProcOld = "GetAllOldBillBoardDiscussions " + aMetaId + ", " + aSectionId +", '"+ aLoginDate + "'"  ;//GetAllOldDiscussions
-			// log("SQL OLD: " + sqlStoredProcOld ) ;
-			//String sqlAnswerOld[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProcOld ) ;
-			//String sqlAnswerOld[] = null ;
+		
 
 			// Lets build our tags vector.
 			Vector tagsV = this.buildAdminTags() ;
@@ -719,12 +756,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				if( sqlAnswerNew.length > 0)
 					allNewRecs = discPreParse(req, sqlAnswerNew, tagsV, aHrefHtmlFile) ;
 			}
-			// Lets preparse all OLD records
-			//String allOldRecs  = "" ;
-			//if( sqlAnswerOld != null ) {
-			//	if( sqlAnswerOld.length > 0)
-			//		allOldRecs = discPreParse(req, sqlAnswerOld, tagsV, aHrefHtmlFile, imagePath , 0) ;
-			//}
+			
 
 			// Lets build the Responsepage
 			//VariableManager vm = new VariableManager() ;
@@ -755,16 +787,8 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String discId = params.getProperty("DISC_ID") ;
 
 			String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, "B_GetAdminBill " + discId) ;//GetAllRepliesInDiscAdmin
-			//for(int m=0; m<sqlAnswer.length ; m++) {
-			//	log("VARDE: " + m + " : " +  sqlAnswer[m]) ;
-			//} // End of one records for
-
-			// Lets get the users sortorder from DB
-			//String metaId = params.getProperty("META_ID") ;
-			//String sqlQ = "BillBoardUsersGetReplyOrderSel " + metaId + ", " + userId  ;//ConfUsersGetReplyOrderSel
-			// log("Sql: " + sqlQ) ;
-			//String sortOrderVal = (String) rmi.execSqlProcedureStr(confPoolServer, sqlQ) ;
-			String checkBoxStr = "" ;
+			
+			//String checkBoxStr = "" ;
 			// log("Sortorder: " + sortOrderVal) ;
 			//if( sortOrderVal.equalsIgnoreCase("1")) checkBoxStr = "checked" ;
 
@@ -793,7 +817,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			// Lets build the Responsepage
 			//VariableManager vm = new VariableManager() ;
 			//vm.addProperty("USER_SORT_ORDER", sortOrderVal) ;
-			vm.addProperty("CHECKBOX_STATE", checkBoxStr) ;
+			//vm.addProperty("CHECKBOX_STATE", checkBoxStr) ;
 			vm.addProperty("REPLIES_RECORDS", allRecs  ) ;
 			vm.addProperty("UNADMIN_LINK_HTML", this.REPLY_UNADMIN_LINK_TEMPLATE );
 			//this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
@@ -848,18 +872,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 					 //log("VÄRDE: " + j + " : " +  DBArr[j]) ;
 				} // End of one records for
 
-				// Lets check if the user is some kind of "Master" eg. if he's
-				// reply_level is equal to 1 and add the code returned to data.
-				//dataV.set(5, this.getReplyLevelCode(req, dataV, imagePath)) ;
-				//	for(int m=0 ; m < dataV.size() ; m++) {
-				//		log( (String)tagsV.get(m) + " :" + (String)dataV.get(m) ) ;
-				//	}
-
-				// Lets the id two more times, since our parser cant replace one tag
-				// more than once
-				//log("Här är replyId: " + dataV.get(5)) ;
-				//dataV.add(dataV.get(5)) ;
-				//dataV.add(dataV.get(5)) ;
+				
 
 				// Lets parse one record
 				oneParsedRecordStr = this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
@@ -874,27 +887,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		return htmlStr ;
 	} // End of
 
-	/**
-	Returns the users Replylevel htmlcode. If the user is marked with something
-	a bitmap will occur, otherwise nothing will occur.
 	
-	protected String getReplyLevelCode (HttpServletRequest req, Vector dataV, String ImagePath)
-	throws ServletException, IOException {
-
-		// Lets get the information regarding the replylevel
-		int index = 5 ;
-		String replyLevel = (String) dataV.elementAt(index) ;
-		String htmlCode = "" ;
-		String imageStart = "<img src=\"" ;
-		String imageEnd = "\">" ;
-
-		if (replyLevel.equals("1"))
-			htmlCode = imageStart + ImagePath + imageEnd;
-		else
-			htmlCode = "" ;
-		return htmlCode ;
-	}
-	 */
 	// ****************** END OF PARSE REPLIES FUNCTIONS ****************
 
 	// ****************** PARSE DISCUSSIONS FUNCTIONS *******************
@@ -940,13 +933,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 					//log("DATA nr:"+j+" = "+DBArr[j]);
 				} // End of one records for
 
-				// Lets check if set new Disclflag should run
-				//if ( newDiscFlag  == 1 ) {
-				// dataV.removeElementAt(0) ;
-				// dataV.setElementAt(this.setNewDiscFlag( dataV, imagePath), 0 ) ;
-				// showIt(tagsV, dataV) ;
-				// }
-				// showIt(tagsV, dataV) ;
+				
 				// Lets parse one record
 				oneParsedRecordStr = this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
 				//log("Ett record: " + oneParsedRecordStr);

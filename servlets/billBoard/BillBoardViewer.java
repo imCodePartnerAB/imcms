@@ -6,6 +6,24 @@ import imcode.external.diverse.* ;
 import java.rmi.* ;
 import java.rmi.registry.* ;
 
+
+/**
+ *
+ *
+ * Html template in use:
+ * BillBoard_set.htm
+ *
+ * Html parstags in use:
+ * #BILLBOARD_SECTION#
+ * #BILLBOARD_DISC_VIEW#
+ * stored procedures in use:
+ * -
+ *
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson, Jerker Drottenmyr REBUILD TO BillBoardViewer BY Peter Östergren
+ *
+*/
+
 public class BillBoardViewer extends BillBoard {//ConfViewer
 
 	String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are

@@ -20,15 +20,17 @@ import java.rmi.registry.* ;
  * 
  *
  * Html template in use:
- * 
+ * BillBoard_Disc_View.htm
  *
  * Html parstags in use:
+ * #BILLBOARD_DISC#
+ * #BILLBOARD_REPLY#
  * 
  * stored procedures in use:
  * - 
  *
- * @version 1.0 21 Nov 2000
- * @author Rickard Larsson
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson REBUILD TO BillBoardDiscView BY Peter Östergren
  *
 */
 

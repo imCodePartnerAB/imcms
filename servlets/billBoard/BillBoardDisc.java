@@ -1,6 +1,6 @@
 /*
  *
- * @(#)ConfDisc.java
+ * @(#)BillBoardDisc.java
  *
  *
  *
@@ -22,25 +22,33 @@ import imcode.util.IMCServiceRMI;
  *
  *
  * Html template in use:
- * Conf_Disc_List_New.htm
- * Conf_Disc_List_Previous.htm
- * Conf_Disc_List_Next.htm
- * Conf_Disc_New_Button.htm
+ * BillBoard_Disc_List_New.htm
+ * BillBoard_Disc_List_Previous.htm
+ * BillBoard_Disc_List_Next.htm
+ * BillBoard_Disc_New_Button.htm
+ * BillBoard_Disc_Admin_Link
  *
  * Html parstags in use:
- * #ADMIN_TYPE#
- * #TARGET#
- * #PREVIOUS_BUTTON#
+ * #SERVLET_URL#
+ * #IMAGE_URL#
  * #NEXT_BUTTON#
  * #PREVIOUS_BUTTON#
  * #NEW_DISC_BUTTON#
  * #A_HREF_LIST#
+ * #CURRENT_SECTION_NAME#
+ * #ADMIN_LINK_HTML#
  *
  * stored procedures in use:
- * -
+ * B_GetLastDiscussionId
+ * B_GetNbrOfDiscsToShow
+ * B_GetSectionName
+ * B_SearchText
+ * B_GetAllBillsToShow
+ * B_GetFirstSection
  *
- * @version 1.6 21 Nov 2000
- * @author Rickard Larsson, Jerker Drottenmyr
+ *
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson, Jerker Drottenmyr, REBUILD TO BILLBOARD BY Peter Östergren
  *
 */
 
@@ -81,7 +89,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		if (super.checkParameters(req, res, params) == false)
 		{
 
-			String header = "ConfDisc servlet. " ;
+			String header = "BillBoardDisc servlet. " ;
 			String msg = params.toString() ;
 			BillBoardError err = new BillBoardError(req,res,header,1) ;
 
@@ -292,10 +300,10 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 				if(params.getProperty("CATEGORY").equals("2"))
 				{
 					log("skall aldrig inträffa vad jag vet");
-					String sqlQ = this.buildSearchUserSql(params) ;
+					//String sqlQ = this.buildSearchUserSql(params) ;
 					//log("SQL: " + sqlQ) ;
 					//RmiConf rmi = new RmiConf(user) ;
-					sqlAnswer = rmi.execSqlQueryExt(confPoolServer, sqlQ) ;
+					//sqlAnswer = rmi.execSqlQueryExt(confPoolServer, sqlQ) ;
 				}
 				else
 				{
@@ -983,15 +991,9 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		{
 			// Lets get the parameters we know we are supposed to get from the request object
 			String sectionId = ( (String) session.getValue("BillBoard.section_id")==null) ? "" : ((String) session.getValue("BillBoard.section_id")) ;
-			//	String discId = (	(String) session.getValue("BillBoard.forum_id")==null) ? "" : ((String) session.getValue("BillBoard.forum_id")) ;
-//			String discId = (	(String) session.getValue("BillBoard.disc_id")==null) ? "" : ((String) session.getValue("BillBoard.disc_id")) ;
-//			String lastLogindate = (	(String) session.getValue("BillBoard.last_login_date")==null) ? "" : ((String) session.getValue("BillBoard.last_login_date")) ;
 			String discIndex = (	(String) session.getValue("BillBoard.disc_index")==null) ? "" : ((String) session.getValue("BillBoard.disc_index")) ;
-
 			reqParams.setProperty("DISC_INDEX", discIndex) ;
-//			reqParams.setProperty("LAST_LOGIN_DATE", lastLogindate) ;
 			reqParams.setProperty("SECTION_ID", sectionId) ;
-//			reqParams.setProperty("DISC_ID", discId) ;
 
 		}
 		return reqParams ;
@@ -1068,14 +1070,10 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
 		// Lets build our tags vector.
 		Vector tagsV = new Vector() ;
-//		tagsV.add("#NEW_DISC_FLAG#") ;
 		tagsV.add("#DISC_ID#") ;		
 		tagsV.add("#HEADLINE#") ;		
 		tagsV.add("#C_REPLIES#") ;	
-		 tagsV.add("#A_DATE#") ;
-//		tagsV.add("#FIRST_NAME#") ;
-//		tagsV.add("#LAST_NAME#") ;
-//		tagsV.add("#LAST_UPDATED#") ;    // The discussion_update date
+		tagsV.add("#A_DATE#") ;
 		tagsV.add("#REPLY_URL#") ;
 		return tagsV ;
 	} // End of buildstags

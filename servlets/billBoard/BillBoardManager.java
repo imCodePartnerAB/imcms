@@ -5,6 +5,30 @@ import javax.servlet.http.*;
 import imcode.external.diverse.*;
 import imcode.util.* ;
 
+
+/**
+ * The class is the link between imCMS and the billboard-system
+ * Commands: NEW, VIEW, CHANGE, STATISTICS
+ * OBS STATISTICS is not done yet sense I dont realy know what it will do
+ * 
+ * 
+ * TEMPLATES: The following html files and fragments are used by this servlet.
+ * 	BillBoard_Login_Error.htm 
+ *
+ *
+ * Html parstags in use:
+ * -
+ *	
+ * stored procedures in use:
+ * B_AdminStatistics1 
+ *
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson REBUILD TO BillBoardLogin BY Peter Östergren
+ *
+ */
+
+
+
 public class BillBoardManager extends BillBoard	  //ConfManager
 {
 	String HTML_TEMPLATE ;
@@ -148,7 +172,7 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 			if( mode == null) mode  = "1" ;
 
 			StringBuffer sql = new StringBuffer() ;
-			sql.append("AdminStatistics1" + " " + metaId + ", '" + frDate + "', '" );
+			sql.append("B_AdminStatistics1" + " " + metaId + ", '" + frDate + "', '" );
 			sql.append(toDate + "', " + mode) ;
 			//log("AdminStatistics sql: " + sql.toString()) ;
 			String[][] arr = BillBoardManager.getStatistics(ConfPoolServer, sql.toString()) ;

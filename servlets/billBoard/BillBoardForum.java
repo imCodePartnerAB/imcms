@@ -7,6 +7,26 @@ import java.rmi.* ;
 import java.rmi.registry.* ;
 import imcode.util.* ;
 
+/**
+ * 
+ *
+ * Html template in use:
+ * BillBoard_Section.htm
+ * BillBoard_Section_ext.htm
+ * BillBoardSectionSnippet.htm not in use for the moment
+ *
+ * Html parstags in use:
+ * #SECTION_LIST#
+ * #ADMIN_LINK_HTML#
+ * 
+ * stored procedures in use:
+ * B_GetAllSection
+ *
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson REBUILD TO BillBoardForum BY Peter Östergren
+ *
+*/
+
 public class BillBoardForum extends BillBoard {//ConfForum
 
 	private final static String ADMIN_LINK_TEMPLATE = "BillBoard_Section_Admin_Link.htm";//Conf_Forum_Admin_Link.htm
@@ -29,7 +49,7 @@ public class BillBoardForum extends BillBoard {//ConfForum
 		Properties params = super.getSessionParameters(req) ;
 		if (super.checkParameters(req, res, params) == false) {
 			
-			String header = "ConfForum servlet. " ;
+			String header = "BillBoardForum servlet. " ;
 			String msg = params.toString() ;
 			BillBoardError err = new BillBoardError(req,res,header,1) ;
 			

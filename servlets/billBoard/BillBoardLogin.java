@@ -7,18 +7,13 @@ import imcode.util.* ;
 
 /**
  * The class used to generate login pages, and administrate users page
- * <pre>
-  TEMPLATES: The following html files and fragments are used by this servlet.
-
- 	Conf_admin_user.htm : Used to generate a selection list of users
-  Conf_admin_user_resp.htm : Used to administrate a user
- 	Conf_Login.htm : Html file used to prompt the user for username / password (usermode)
- 	Conf_Add_User.htm : Html file used to add a new user (adminmode)
- 	Conf_Login_Error.htm : Html file used to generate a login failure. (adminmode)
- </pre>
- * @author  Rickard Larsson
- * @version 1.0
- * Date : 2000-06-16
+ * 
+ * TEMPLATES: The following html files and fragments are used by this servlet.
+ * 	BillBoard_Login_Error.htm 
+ *	
+ * @version 1.2 20 Aug 2001
+ * @author Rickard Larsson REBUILD TO BillBoardLogin BY Peter Östergren
+ *
  */
 
 public class BillBoardLogin extends BillBoard {//ConfLogin
@@ -26,34 +21,15 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	private final static String USER_UNADMIN_LINK_TEMPLATE = "BillBoard_User_Unadmin_Link.htm";//Conf_User_Unadmin_Link.htm
 	private static Vector test;
 	
-	String LOGIN_HTML = "BillBoard_Login.htm" ;	   // The login page Conf_Login.htm
-	String CREATE_HTML = "BillBoard_Add_User.htm" ;   // The create new user page Conf_Add_User.htm
+
+	//String CREATE_HTML = "BillBoard_Add_User.htm" ;   // The create new user page Conf_Add_User.htm
 	String LOGIN_ERROR_HTML = "BillBoard_Login_Error.htm" ;  // The error Conf_Login_Error.htm
 	// page used for specialized messages to user
-	String ADMIN1_HTML = "BillBoard_admin_user.htm" ;//Conf_admin_user.htm
-	String ADMIN2_HTML = "BillBoard_admin_user_resp.htm" ;//Conf_admin_user_resp.htm
-	String ADD_USER_OK_HTML = "BillBoard_Login_add_ok.htm" ;//Conf_Login_add_ok.htm
+	//String ADMIN1_HTML = "BillBoard_admin_user.htm" ;//Conf_admin_user.htm
+	//String ADMIN2_HTML = "BillBoard_admin_user_resp.htm" ;//Conf_admin_user_resp.htm
+	//String ADD_USER_OK_HTML = "BillBoard_Login_add_ok.htm" ;//Conf_Login_add_ok.htm
 
-	/**
-	* <pre>
-	Generates html pages used to handle users. Login, add new users, administrate users
 
-	PARAMETERS:
-		login_type : Flag used to generate a html page. Default is no value at all.
-		If the value is missing, a login page will be generated. Case-insensitive. </LI>
-
-	Expected values
-		ADMIN_USER : Generates html page used to administrate users.
-	ADD_USER : Generates html page used to add new users
-
-	Example: /ConfLogin?login_type=ADMIN_USER
-
-	TAGS:
-		#USERS_MENU# : Inserts an optionlist with all the conference  users
-	Example: /ConfLogin?login_type=ADMIN_USER
-
-	* </pre>
-	**/
 	
 	public void init(ServletConfig config)
 	throws ServletException {
@@ -95,16 +71,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 				log("Error in prepareUserFor Conf" ) ;
 		}
 		return ;
-
-
-		// ********** LOGIN PAGE *********
-		// Lets build the Responsepage to the loginpage
-//		VariableManager vm = new VariableManager() ;
-
-//		vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
-//		vm.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
-//		sendHtml(req,res,vm, LOGIN_HTML) ;
-//		return ;
+		
 	} // End doGet
 
 	/**
@@ -246,7 +213,6 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	super.init(config);
 	ADMIN1_HTML = "Conf_admin_user.htm" ;
 	ADMIN2_HTML = "Conf_admin_user_resp.htm" ;
-	LOGIN_HTML = "Conf_Login.htm" ;
 	CREATE_HTML = "Conf_Add_User.htm" ;
 	LOGIN_ERROR_HTML = "Conf_Login_Error.htm" ;
 	ADD_USER_OK_HTML = "Conf_Login_add_ok.htm" ;
