@@ -219,7 +219,7 @@
 #macro( gui_start_of_page $titleAndHeading $backServlet $action $helpPageNo $bodyOnLoad )
 <html>
     <head>
-        <title><? global/administer ?> $titleAndHeading</title>
+        <title>$titleAndHeading</title>
         <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
         <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
     </head>

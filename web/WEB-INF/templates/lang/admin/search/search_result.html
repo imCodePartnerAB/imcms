@@ -1,10 +1,9 @@
 <html>
 <head>
+<title><? templates/sv/search/search_documents.html/1 ?></title>
 
-
-
-
-<title><? templates/sv/search/search_result.html/1 ?></title>
+<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 <STYLE TYPE="text/css">
 <!-- 
@@ -44,111 +43,117 @@ function setValues(blnPrev,sNr){
 
 <body bgcolor="#ffffff" onLoad="document.forms[0].question_field.focus()">
 
+#gui_outer_start()
+#gui_head( "<? templates/sv/search/search_documents.html/1 ?>" )
 
-<form method="post" action="SearchDocuments" >
+<table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW(101)"></td>
+    </tr>
+</table>
+
+#gui_mid()
+
+<form method="post" action="SearchDocuments">
 <input type="hidden" name="fromDoc" value="1001">
 <input type="hidden" name="toDoc" value="-1">
 <input type="hidden" name="template" value="search_result.html">
 <input type="hidden" name="template_list" value="search_result_list.html">
 <input type="hidden" name="template_no_hit" value="search_result_no_hit.html">
-<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><? templates/sv/search/search_result.html/2 ?></font></td>
-	<td width="5%">&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="4">&nbsp;</td>
-</tr>
-<tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/search/search_result.html/3 ?></font>
-	<input type="Text" name="question_field" value='#searchstring#' size="65" style="width: 100%"></td>
-	<td width="5%">&nbsp;</td>
-</tr>
-<tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2">
-	<table border="0" cellpadding="0" cellspacing="0" width="100%">
-	<tr>
-		<td>
-		<table border="0" cellpadding="0" cellspacing="0">
-		<tr>
-			<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/search/search_result.html/1001 ?>&nbsp;</font></td>
-			<td>
-			<select name="no_of_hits" size="1">
-				#noofhits_list#				
-			</select></td>
-			<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<? templates/sv/search/search_result.html/1002 ?>&nbsp;</font></td>
-			<td>
-			<select name="section">
-				<option value="-1"><? templates/sv/search/search_result.html/5 ?></option>
-				#section_list#				
-			</select></td>
-		</tr>
-		</table></td>
-		<td align="right"><a href="@documentationurl@/GetDoc?meta_id=101" target="_blank"><img src="$contextPath/imcms/$language/images/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/search/search_result.html/2001 ?>"></a> &nbsp;<input type="submit" name="search" value="<? templates/sv/search/search_result.html/2002 ?>"></td>
-	</tr>
-	</table></td>
-	<td width="5%">&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="4">&nbsp;</td>
-</tr>
+
+<table width="550" border="0" cellspacing="0">
+    <tr>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="2" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/search/search_documents.html/2 ?></font>
+    </tr>
+    <tr>
+        <td colspan="2" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif">
+            <input type="Text" name="question_field" size="65" style="width: 100%" value="#searchstring#"></font></td>
+    </tr>
+    <tr>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="2">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td>
+            <table border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td class="imcmsAdmText"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/search/search_documents.html/4 ?>&nbsp;</font></td>
+                <td class="imcmsAdmText">
+                    <select name="no_of_hits" size="1">
+                    #noofhits_list#
+                    </select></td>
+                <td class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<? templates/sv/search/search_documents.html/5 ?>&nbsp;</font></td>
+                <td class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif">
+                <select name="section">
+                    <option value="-1"><? templates/sv/search/search_documents.html/3 ?></option>
+                    #section_list#
+                </select></font></td>
+            </tr>
+            </table></td>
+        </tr>
+        </table>
+        </td>
+    </tr>
+    <tr>
+      <td colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="2">#gui_hr( "blue" )</td>
+    </tr>
+    <tr>
+	   <td colspan="2" align="right">
+	        <input type="submit" name="search" class="imcmsFormBtn" value="<? templates/sv/search/search_documents.html/1 ?>"></td>
+    <tr>
 </table>
 </form>
 
 
-
-<table border="0" cellpadding="0" cellspacing="0" width="550" bgcolor="#bababa">
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><? templates/sv/search/search_result.html/7 ?></font></td>
-	<td width="5%">&nbsp;</td>
+<table border="0" cellpadding="0" cellspacing="0" width="550">
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4" class="imcmsAdmText"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><? templates/sv/search/search_result.html/7 ?></b></font></td>
 </tr>
 <tr>
 	<td colspan="4">&nbsp;</td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
 	<td colspan="2">
-	<table border="0" cellpadding="0" cellspacing="0">
-	<tr>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/search/search_result.html/1003 ?>&nbsp;&nbsp;</font></td>
-		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#nrhits#</font></td>
-	</tr>
-	</table>
-</td>
-	<td width="5%">&nbsp;</td>
+        <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="imcmsAdmText"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><? templates/sv/search/search_result.html/1003 ?></b>&nbsp;&nbsp;</font></td>
+            <td class="imcmsAdmText"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#nrhits#</font></td>
+        </tr>
+        </table>
+    </td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
 	<td colspan="2"><hr></td>
-	<td width="5%">&nbsp;</td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
 	<td colspan="2">
-	<table border="0" cellpadding="1" cellspacing="0">
-	#search_list#
-	</table></td>
-	<td width="5%">&nbsp;</td>
+        <table border="0" cellpadding="1" cellspacing="0">
+        #search_list#
+        </table>
+    </td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
 	<td colspan="2"><hr></td>
-	<td width="5%">&nbsp;</td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
 	<td colspan="2">#page_buttons#</td>
-	<td width="5%">&nbsp;</td>
 </tr>
 <tr>
-	<td colspan="4">&nbsp;</td>
+	<td colspan="2">&nbsp;</td>
 </tr>
-
 </table>
+
 <form name="navForm" action="SearchDocuments" method="post">
 <input type="hidden" name="prev_button" value="">
 <input type="hidden" name="next_button" value="">
@@ -164,8 +169,4 @@ function setValues(blnPrev,sNr){
 <input type="hidden" name="template_no_hit" value="search_result_no_hit.html">
 </form>
 
-
-
-
-</body>
-</html>
+#gui_end_of_page()
