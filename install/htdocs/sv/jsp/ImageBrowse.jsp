@@ -1,5 +1,6 @@
 <%@ page import="com.imcode.imcms.servlet.admin.ImageBrowse,
-                 com.imcode.imcms.servlet.admin.ImageBrowse"%>
+                 com.imcode.imcms.servlet.admin.ImageBrowse,
+                 org.apache.commons.lang.StringEscapeUtils"%>
 
 <html>
 <head>
@@ -29,7 +30,7 @@ imcmsGui("head", null);
 <% if (null != imageBrowseFormData.getImageNumber() ) { %><input type="HIDDEN" name="img_no" value="<%=imageBrowseFormData.getImageNumber()%>"><% } %>
 <% if (null != imageBrowseFormData.getLabel() ) { %><input type="HIDDEN" name="label" value="<%=imageBrowseFormData.getLabel()%>"><% } %>
 <tr>
-	<td><input type="Submit" class="imcmsFormBtn" name="avbryt" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2001 ?>"></td>
+	<td><input type="Submit" class="imcmsFormBtn" name="<%= ImageBrowse.PARAMETER_BUTTON__CANCEL %>" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2001 ?>"></td>
 	<td>&nbsp;</td>
     <td><input type="button" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2002 ?>" title="<? install/htdocs/sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
 </tr>
@@ -53,7 +54,7 @@ imcmsGui("mid", null);
 	</tr>
 	<tr>
 		<td>
-		<select name="dirlist" size="15" onDblClick="document.forms.folder.change.click();" style="width:270">
+		<select name="dirlist" size="15" onDblClick="document.forms[0].change.click();" style="width:270">
 			<%=imageBrowseFormData.getFolders()%>
 		</select></td>
 	</tr>
@@ -67,7 +68,7 @@ imcmsGui("mid", null);
 	</tr>
 	<tr>
 		<td>
-		<select name="imglist" size="15" onDblClick="document.forms.imageForm.preview.click();" style="width:270">
+		<select name="imglist" size="15" onDblClick="document.forms[0].<%= StringEscapeUtils.escapeJavaScript( ImageBrowse.PARAMETER_BUTTON__PREVIEW ) %>.click();" style="width:270">
 		<%=imageBrowseFormData.getOptions()%>
 		</select></td>
 	</tr>
