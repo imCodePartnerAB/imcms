@@ -1443,7 +1443,6 @@ public class AdminUserProps extends Administrator {
 			userType = (String)session.getAttribute("tempUserType");
 			userInfo = (Properties)session.getAttribute("tempUser");
 		}
-			
 		
 		// Lets get ROLES from DB
 		String[] rolesArr = {};
@@ -1550,7 +1549,6 @@ public class AdminUserProps extends Administrator {
 		
 		}else{   // CHANGE_USER mode
 		
-			
 			String active = "";
 		
 			// if OK_PHONES or DELETE_PHONES or EDIT_PHONES  was pressed we have to get values from req object		
@@ -1560,11 +1558,11 @@ public class AdminUserProps extends Administrator {
 				if ( ("1").equals(req.getParameter("active") ) ){
 					active = "1";
 				}
-				   
-				userRoles = req.getParameterValues("roles");
-				useradminRoles = req.getParameterValues("useradmin_roles");
+			   
+				userRoles = (req.getParameterValues("roles")==null) ? new String[0] : req.getParameterValues("roles");
+				useradminRoles = (req.getParameterValues("useradmin_roles")==null) ? new String[0] : req.getParameterValues("useradmin_roles");
 				userType = req.getParameter("user_type");
-				
+
 			}else{
 			
 				// Lets get this user usertype from DB if we don´t have got them from session.
@@ -1601,7 +1599,6 @@ public class AdminUserProps extends Administrator {
 			
 			// Lets create html option for user roles
 			rolesMenuStr = htm.createHtmlCode("ID_OPTION",userRolesV, allRolesV) ;
-			
 			
 			if ( isSuperadmin ){
 				// Lets put the roles that useradmin is allow to administrate in a vector
