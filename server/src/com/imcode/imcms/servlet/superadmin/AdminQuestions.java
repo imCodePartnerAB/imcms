@@ -1,24 +1,29 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import java.util.*;
-import java.text.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.*;
-import imcode.util.fortune.*;
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
-import com.imcode.imcms.servlet.superadmin.AdminError;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.AdminError;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+import imcode.util.fortune.DateRange;
+import imcode.util.fortune.Poll;
+import org.apache.log4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class AdminQuestions extends Administrator implements imcode.server.IMCConstants {
+
+    private final static Logger log = Logger.getLogger( AdminQuestions.class.getName() );
 
     private final static String ADMIN_QUESTION_FILE = "admin_questions_file.html";
     private final static String ADMIN_QUESTION = "admin_questions.html";
@@ -43,7 +48,7 @@ public class AdminQuestions extends Administrator implements imcode.server.IMCCo
             String header = "Error in AdminQuestions.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            this.log(header + "- user is not an administrator");
+            log.debug(header + "- user is not an administrator");
 
             new AdminError(req, res, header, msg);
             return;

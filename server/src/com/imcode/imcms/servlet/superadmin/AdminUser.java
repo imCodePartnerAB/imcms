@@ -1,22 +1,29 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.util.*;
-
-import imcode.external.diverse.*;
-import imcode.server.*;
+import imcode.external.diverse.Html;
+import imcode.external.diverse.VariableManager;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.log4j.Logger;
 
-import org.apache.log4j.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class AdminUser extends Administrator {
 
     private final static String HTML_TEMPLATE = "AdminChangeUser.htm";
-    private static Category log = Logger.getInstance( AdminUser.class.getName() );
-    private String CHANGE_EXTERNAL_USER_URL = "/adminuser/changeexternaluser.jsp";
+    private final static Logger log = Logger.getLogger( AdminUser.class.getName() );
+    private String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -34,31 +41,12 @@ public class AdminUser extends Administrator {
             String header = "Error in AdminUser.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            this.log( header + "- user is not an administrator" );
+            log.debug( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
             return;
         }
 
         VariableManager vm = new VariableManager();
-
-        // Lets get the category from the request Object.
-        String category = req.getParameter( "category" );
-        if ( category == null ) {
-            category = ""; // all category
-        }
-
-        if ( ( "All_Choice" ).equals( category ) ) {
-            category = "-1";
-        }
-
-        String lang_prefix = user.getLanguageIso639_2();
-
-        // Lets get all USERTYPES from DB
-        String[] userTypes = imcref.sqlProcedure( "GetUserTypes", new String[]{lang_prefix} );
-        Vector userTypesV = new Vector( java.util.Arrays.asList( userTypes ) );
-        String user_type = Html.createOptionList( category, userTypesV );
-        vm.addProperty( "USER_TYPES", user_type );
-
 
         // Lets get all USERS from DB with firstname or lastname or login name like the searchString
 
@@ -77,9 +65,9 @@ public class AdminUser extends Administrator {
         String active = ( req.getParameter( "active" ) == null ) ? "1" : req.getParameter( "active" );
         String activeChecked = ( "0".equals( active ) ) ? "checked" : "";
         if ( req.getParameter( "showUsers" ) != null ) {
-            String[] usersArr = imcref.sqlProcedure( "GetCategoryUsers", new String[]{category, searchString, "" + user.getId(), "" + showAll, active} );
+            String[] usersArr = imcref.sqlProcedure( "GetCategoryUsers", new String[]{"-1", searchString, "" + user.getId(), "" + showAll, active} );
 
-            Vector usersV = new Vector( java.util.Arrays.asList( usersArr ) );
+            List usersV = new ArrayList( java.util.Arrays.asList( usersArr ) );
             String usersOption = Html.createOptionList( "", usersV );
             vm.addProperty( "USERS_MENU", usersOption );
             vm.addProperty( "active", activeChecked );
@@ -106,7 +94,7 @@ public class AdminUser extends Administrator {
             session.removeAttribute( "Ok_phoneNumbers" );
 
         } catch ( IllegalStateException ise ) {
-            log( "session has been invalidated so no need to remove parameters" );
+            log.debug( "session has been invalidated so no need to remove parameters" );
         }
 
         // check if user is a Useradmin, adminRole = 2
@@ -121,14 +109,14 @@ public class AdminUser extends Administrator {
             String header = "Error in AdminUser.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            this.log( header + "- user is not an administrator" );
+            log.debug( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
             return;
         }
 
         if ( req.getParameter( "searchstring" ) != null ) {
             String active = ( req.getParameter( "active" ) == null ) ? "1" : req.getParameter( "active" );
-            res.sendRedirect( "AdminUser?search=" + req.getParameter( "searchstring" ).trim().replaceAll( "'", "''" ) + "&category=" + req.getParameter( "user_categories" ) + "&active=" + active + "&showUsers=true" );
+            res.sendRedirect( "AdminUser?search=" + req.getParameter( "searchstring" ).trim().replaceAll( "'", "''" ) + "&active=" + active + "&showUsers=true" );
             return;
         }
 
@@ -143,7 +131,7 @@ public class AdminUser extends Administrator {
                 redirectChangeUser( req, res, imcref, user, isUseradmin, session, userToChangeId );
             } else {
                 String queryString = "?" + java.net.URLEncoder.encode( WebAppGlobalConstants.USER_LOGIN_NAME_PARAMETER_NAME, "UTF-8" ) + "=" + java.net.URLEncoder.encode( userToChange.getLoginName(), "UTF-8" );
-                RequestDispatcher rd = req.getRequestDispatcher( CHANGE_EXTERNAL_USER_URL + queryString );
+                RequestDispatcher rd = req.getRequestDispatcher( "/imcms/"+user.getLanguageIso639_2() + CHANGE_EXTERNAL_USER_URL + queryString );
                 rd.forward( req, res );
             }
         } else if ( req.getParameter( "DELETE_USER" ) != null ) {
@@ -156,18 +144,18 @@ public class AdminUser extends Administrator {
 
     private void redirectChangeUser( HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref, UserDomainObject user, boolean useradmin, HttpSession session, String userToChangeId ) throws IOException {
         // ******* GENERATE AN CHANGE_USER PAGE**********
-        log( "Change_User" );
+        log.debug( "Change_User" );
 
         // return if we don´t get a user
         if ( userToChangeId != null ) {
             // Lets check if the user has right to do changes
             // only if he is an superadmin, useradmin or if he try to change his own values
             // otherwise throw him out.
-            if ( user.isSuperAdmin() == false && !useradmin && !userToChangeId.equals( "" + user.getId() ) ) {
+            if ( !user.isSuperAdmin() && !useradmin && !userToChangeId.equals( "" + user.getId() ) ) {
                 String header = "Error in AdminUser, change user.";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";
-                this.log( header + "- user have no permission to edit user values" );
+                log.debug( header + "- user have no permission to edit user values" );
                 new AdminError( req, res, header, msg );
             } else {
                 // get a user object by userToChangeId
@@ -179,7 +167,7 @@ public class AdminUser extends Administrator {
     }
 
     private void redirectAddUser( HttpServletResponse res ) throws IOException {
-        log( "Add_User" );
+        log.debug( "Add_User" );
 
         // Lets redirect to AdminUserProps and get the HTML page to add a new user.
         res.sendRedirect( "AdminUserProps?ADD_USER=true" );
@@ -207,18 +195,14 @@ public class AdminUser extends Administrator {
             String header = "Error in AdminUser. ";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/AdminUser/user_to_change_id_missing") + "<br>";
-            this.log( header + "- user to change id is missing " );
+            log.debug( header + "- user to change id is missing " );
             new AdminError( req, res, header, msg );
             return null;
         } else {
-            this.log( "UserId=" + userId );
+            log.debug( "UserId=" + userId );
         }
 
         return userId;
     } // End getCurrentUserId
-
-    public void log( String str ) {
-        log.debug( "AdminUser: " + str );
-    }
 
 }

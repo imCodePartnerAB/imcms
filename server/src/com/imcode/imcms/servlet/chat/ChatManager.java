@@ -23,7 +23,7 @@ public class ChatManager extends ChatBase {
 
         // Lets get the standard parameters and validate them
         MetaInfo.Parameters params = MetaInfo.getParameters( req );
-        //if (super.checkParameters(req, res, params) == false) return ;
+        //if (super.assertNoEmptyStringsInPropertyValues(req, res, params) == false) return ;
 
         // Lets get an user object
         imcode.server.user.UserDomainObject user = super.getUserObj( req );

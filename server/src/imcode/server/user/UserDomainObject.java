@@ -13,7 +13,7 @@ public class UserDomainObject extends Hashtable {
 
     private String currentContextPath;
 
-    UserDomainObject() {
+    public UserDomainObject() {
         lazilyLoadedUserAttributes = new LazilyLoadedUserAttributes();
     }
 
@@ -41,7 +41,6 @@ public class UserDomainObject extends Hashtable {
         private String mobilePhone = "";
         private String homePhone = "";
         private int lang_id;
-        private int user_type;
         private boolean active;
         private String create_date;
 
@@ -51,7 +50,7 @@ public class UserDomainObject extends Hashtable {
         private String loginType;
 
         private boolean imcmsExternal = false;
-        private Set roles;
+        private Set roles = new HashSet();
     }
 
     private LazilyLoadedUserAttributes lazilyLoadedUserAttributes = null ;
@@ -312,20 +311,6 @@ public class UserDomainObject extends Hashtable {
     }
 
     /**
-     * set user_type
-     */
-    public void setUserType( int user_type ) {
-        this.getLazilyLoadedUserAttributes().user_type = user_type;
-    }
-
-    /**
-     * get user_type
-     */
-    public int getUserType() {
-        return this.getLazilyLoadedUserAttributes().user_type;
-    }
-
-    /**
      * Set whether the user is allowed to log in
      */
     public void setActive( boolean active ) {
@@ -401,6 +386,10 @@ public class UserDomainObject extends Hashtable {
 
     public void setImcmsExternal( boolean external ) {
         this.getLazilyLoadedUserAttributes().imcmsExternal = external;
+    }
+
+    public void addRole( RoleDomainObject role ) {
+        getLazilyLoadedUserAttributes().roles.add( role ) ;
     }
 
     public void setRoles( RoleDomainObject[] rolesForUser ) {

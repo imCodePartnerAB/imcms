@@ -12,6 +12,7 @@ public class RoleDomainObject implements Serializable {
 
     public final static RoleDomainObject SUPERADMIN = new RoleDomainObject( 0, RoleConstants.SUPER_ADMIN, 1 );
     public final static RoleDomainObject USERADMIN = new RoleDomainObject( 0, RoleConstants.USER_ADMIN, 2 );
+    public static final RoleDomainObject USERS = new RoleDomainObject( 2, RoleConstants.USERS, 0 );
 
     private int id;
     private String name;
@@ -60,4 +61,7 @@ public class RoleDomainObject implements Serializable {
         return "(role " + id + " \"" + name + "\" " + adminRoleId + ")";
     }
 
+    public boolean isAdminRole() {
+        return 0 != adminRoleId ;
+    }
 }

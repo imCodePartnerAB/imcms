@@ -11,21 +11,18 @@ package com.imcode.imcms.servlet.superadmin;
  *
  */
 
-import java.io.IOException;
-import java.util.Properties;
+import imcode.external.diverse.VariableManager;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+import org.apache.log4j.Logger;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import imcode.external.diverse.VariableManager;
-import imcode.util.Utility;
-
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
-import com.imcode.imcms.servlet.superadmin.AdminError;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.AdminError;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Takes care of administration of users by roles.
@@ -57,6 +54,8 @@ import com.imcode.imcms.servlet.superadmin.AdminError;
  */
 
 public class AdminRoleBelongings extends Administrator {
+
+    private final static Logger log = Logger.getLogger( AdminRoleBelongings.class.getName() );
 
     private static final String HTML_ADMIN_ROLE_BELONGING = "AdminRoleBelongings.html";
     private static final String HTML_ADMIN_ROLE_BELONGING_EDIT = "AdminRoleBelongings_edit.html";
@@ -106,8 +105,8 @@ public class AdminRoleBelongings extends Administrator {
         if ( user.isSuperAdmin() == false ) {
             String header = "Error in AdminRoleBelongings.";
             Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            this.log( header + "- user is not an administrator" );
+            String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
+            log.debug( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
             return;
         }
@@ -147,7 +146,9 @@ public class AdminRoleBelongings extends Administrator {
                 curentRoleId = "0";
             }
 
-            String[][] roleQueryResult = imcref.sqlProcedureMulti( "RoleGetAllApartFromRole", new String[]{curentRoleId} );
+            String[][] roleQueryResult = imcref.sqlProcedureMulti( "RoleGetAllApartFromRole", new String[]{
+                curentRoleId
+            } );
 
             String roleOptionList = createListOfOptions( roleQueryResult );
             String curentRoleName = getRoleName( roleId, imcref );

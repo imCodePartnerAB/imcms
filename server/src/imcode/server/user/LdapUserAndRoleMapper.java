@@ -195,8 +195,6 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
 
             result.setLoginName( loginName );
             result.setActive( true );
-            result.setUserType( USER_TYPE_AUTHENTICATED );
-
         }
         return result;
     }

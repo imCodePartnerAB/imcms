@@ -9,18 +9,24 @@ package com.imcode.imcms.servlet.superadmin;
  *
  */
 
-import java.io.*;
-import java.util.*;
-
-import javax.servlet.http.*;
-import javax.servlet.ServletOutputStream;
-
-import imcode.external.diverse.*;
-import imcode.server.*;
+import imcode.external.diverse.SettingsAccessor;
+import imcode.external.diverse.VariableManager;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
-import org.apache.log4j.*;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * Parent servlet for administration.
@@ -39,9 +45,7 @@ public class Administrator extends HttpServlet {
 
     private static final String TEMPLATE_ERROR = "Error.html";
 
-    private static Category log = Logger.getInstance( Administrator.class.getName() );
-
-    protected boolean checkParameters(Properties aPropObj) {
+    protected boolean assertNoEmptyStringsInPropertyValues(Properties aPropObj) {
         // Ok, lets check that the user has typed anything in all the fields
         Enumeration enumValues = aPropObj.elements();
         Enumeration enumKeys = aPropObj.keys();
@@ -60,7 +64,6 @@ public class Administrator extends HttpServlet {
      False if the user isn't an administrator
      */
     public static boolean checkAdminRights(HttpServletRequest req) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         return user.isSuperAdmin();
     }
@@ -113,14 +116,6 @@ public class Administrator extends HttpServlet {
         PrintWriter out = res.getWriter();
         Utility.setDefaultHtmlContentType( res );
         out.println(str);
-    }
-
-    /**
-     Log function. Logs the message to the log file and console
-     */
-
-    public void log( String msg ) {
-        log.debug( "Administrator: " + msg );
     }
 
     /**

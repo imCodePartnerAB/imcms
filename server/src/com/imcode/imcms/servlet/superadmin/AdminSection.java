@@ -13,7 +13,11 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 public class AdminSection extends Administrator {
+
+    private final static Logger log = Logger.getLogger( AdminSection.class.getName() );
 
     private final static String ADMIN_TEMPLATE = "sections/admin_section.html";
     private final static String ADD_TEMPLATE = "sections/admin_section_add.html";
@@ -31,7 +35,7 @@ public class AdminSection extends Administrator {
 
         //lets see if its a super admin we got otherwise get rid of him fast
         if (user.isSuperAdmin() == false) {
-            log("the user wasn't a administrator so lets get rid of him");
+            log.debug("the user wasn't a administrator so lets get rid of him");
             res.sendRedirect("StartDoc");
             return;
         }
@@ -51,7 +55,7 @@ public class AdminSection extends Administrator {
         //lets see if its a super admin we got outherwise get rid of him fast
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if (user.isSuperAdmin() == false) {
-            log("the user wasn't a administrator so lets get rid of him");
+            log.debug("the user wasn't a administrator so lets get rid of him");
             res.sendRedirect("StartDoc");
             return;
         }
@@ -132,7 +136,7 @@ public class AdminSection extends Administrator {
             String new_sections = req.getParameter("new_section_confirm");
             String del_section = req.getParameter("delete_section");
             if (del_section == null || new_sections == null) {
-                log("new_section_confirm or delete_section was null so return");
+                log.debug("new_section_confirm or delete_section was null so return");
                 return;
             }
             if (new_sections.equals("-1")) {

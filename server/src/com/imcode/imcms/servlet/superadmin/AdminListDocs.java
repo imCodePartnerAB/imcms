@@ -9,6 +9,7 @@ import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,8 @@ import java.util.*;
  * @version 1.04 11 Nov 2000
  */
 public class AdminListDocs extends Administrator {
+
+    private final static Logger log = Logger.getLogger( AdminListDocs.class.getName() );
 
     private static final String TEMPLATE_LISTDOC = "AdminListDocs.html";
     private static final String TEMPLATE_LISTDOC_LIST_MODIFIED = "AdminListDocs_doclList_modified.html";
@@ -91,7 +94,7 @@ public class AdminListDocs extends Administrator {
             String header = "Error in AdminListDocs. ";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
-            this.log( header + "- user is not an administrator" );
+            log.debug( header + "- user is not an administrator" );
             new AdminError( request, response, header, msg );
 
             return;

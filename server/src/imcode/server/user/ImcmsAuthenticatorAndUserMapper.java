@@ -97,7 +97,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         user.setEmailAddress( sqlResult[12] );
         user.setLangId( Integer.parseInt( sqlResult[13] ) );
         user.setLanguageIso639_2( (String)ObjectUtils.defaultIfNull( sqlResult[14], service.getDefaultLanguageAsIso639_2() ) );
-        user.setUserType( Integer.parseInt( sqlResult[15] ) );
         user.setActive( 0 != Integer.parseInt( sqlResult[16] ) );
         user.setCreateDate( sqlResult[17] );
         user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[18] ) );
@@ -164,24 +163,22 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     public void updateUser( String loginName, UserDomainObject newUser ) {
-        String updateUserPRCStr = SPROC_UPDATE_USER;
         UserDomainObject imcmsUser = getUser( loginName );
         UserDomainObject tempUser = (UserDomainObject)newUser.clone();
         tempUser.setId( imcmsUser.getId() );
         tempUser.setLoginName( loginName );
 
-        callSprocModifyUserProcedure( updateUserPRCStr, tempUser );
+        callSprocModifyUserProcedure( SPROC_UPDATE_USER, tempUser );
         removePhoneNumbers( tempUser );
         addPhoneNumbers( tempUser );
     }
 
     public synchronized void addUser( UserDomainObject newUser ) {
-        String updateUserPRCStr = SPROC_ADD_NEW_USER;
         String newUserId = service.sqlProcedureStr( SPROC_GET_HIGHEST_USER_ID, new String[]{} );
         int newIntUserId = Integer.parseInt( newUserId );
         newUser.setId( newIntUserId );
 
-        callSprocModifyUserProcedure( updateUserPRCStr, newUser );
+        callSprocModifyUserProcedure( SPROC_ADD_NEW_USER, newUser );
         addPhoneNumbers( newUser );
     }
 
@@ -228,11 +225,14 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     public void addRoleToUser( UserDomainObject user, String roleName ) {
-        String userIdStr = String.valueOf( user.getId() );
         addRole( roleName );
         log.debug( "Trying to assign role " + roleName + " to user " + user.getLoginName() );
         RoleDomainObject role = getRoleByName( roleName );
-        service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{userIdStr, "" + role.getId()} );
+        sqlAddRoleToUser( role, user );
+    }
+
+    private void sqlAddRoleToUser( RoleDomainObject role, UserDomainObject user ) {
+        service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{String.valueOf( user.getId() ), "" + role.getId()} );
     }
 
     // todo: make a quicker version that not loops over all of the user_ids and makes a new db searc
@@ -266,7 +266,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     public void setUserRoles( UserDomainObject user, String[] roleNames ) {
-        this.removeAllRoles( user );
+        this.sqlRemoveAllRoles( user );
 
         for ( int i = 0; i < roleNames.length; i++ ) {
             String roleName = roleNames[i];
@@ -274,7 +274,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         }
     }
 
-    private void removeAllRoles( UserDomainObject user ) {
+    private void sqlRemoveAllRoles( UserDomainObject user ) {
         service.sqlUpdateProcedure( SPROC_DEL_USER_ROLES, new String[]{"" + user.getId(), "-1"} );
     }
 
@@ -308,12 +308,13 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         service.sqlUpdateProcedure( SPROC_DEL_PHONE_NR, sprocParameters );
     }
 
-    public synchronized void addRole( String roleName ) {
+    public synchronized RoleDomainObject addRole( String roleName ) {
         RoleDomainObject role = getRoleByName( roleName );
         boolean roleExists = null != role;
         if ( !roleExists ) {
             service.sqlUpdateProcedure( SPROC_ROLE_ADD_NEW, new String[]{roleName} );
         }
+        return getRoleByName( roleName ) ;
     }
 
     public void deleteRole( String roleName ) {
@@ -366,10 +367,24 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
             "1001",
             "0",
             String.valueOf( tempUser.getLangId() ),
-            String.valueOf( tempUser.getUserType() ),
+            "0",
             tempUser.isActive() ? "1" : "0"
         };
         service.sqlUpdateProcedure( modifyUserProcedureName, params );
+
+        sqlRemoveAllRoles( tempUser );
+        sqlAddAllRoles( tempUser );
+
+    }
+
+    private void sqlAddAllRoles( UserDomainObject tempUser ) {
+        tempUser.addRole( RoleDomainObject.USERS );
+
+        RoleDomainObject[] userRoles = tempUser.getRoles() ;
+        for ( int i = 0; i < userRoles.length; i++ ) {
+            RoleDomainObject userRole = userRoles[i];
+            sqlAddRoleToUser( userRole, tempUser );
+        }
     }
 
 }

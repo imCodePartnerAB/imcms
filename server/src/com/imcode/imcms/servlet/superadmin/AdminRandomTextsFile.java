@@ -1,18 +1,22 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
-import imcode.util.*;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+import imcode.util.fortune.DateRange;
+import imcode.util.fortune.Quote;
 
-import java.text.*;
-
-import imcode.util.fortune.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class AdminRandomTextsFile extends Administrator {
 
@@ -212,14 +216,6 @@ public class AdminRandomTextsFile extends Administrator {
             buff.append( "<option value=\"" + counter++ + "\">" + dateForm.format( dates.getStartDate() ) + " " + dateForm.format( new Date( dates.getEndDate().getTime() - ONE_DAY ) ) + " " + quote.getText() + "</option>" );
         }
         return buff;
-    }
-
-    /**
-     * Log function, will work for both servletexec and Apache
-     */
-    public void log( String str ) {
-        super.log( str );
-        System.out.println( "AdminRandomTextsFile: " + str );
     }
 
 } // End of class

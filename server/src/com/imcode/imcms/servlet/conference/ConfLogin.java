@@ -251,7 +251,7 @@ public class ConfLogin extends Conference {
             }
 
             // Lets validate the passwords. Error message will be generated in method
-            if ( AdminUserProps.verifyPassword( userParams, req, res ) == false ) {
+            if ( !AdminUserProps.verifyPassword( userParams.getProperty( "password1" ), userParams.getProperty( "password2" ), req, res ) ) {
                 return;
             }
 

@@ -1,17 +1,21 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import java.util.Properties;
-import java.util.regex.Pattern;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.util.*;
-import imcode.server.*;
+import imcode.external.diverse.VariableManager;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+import org.apache.log4j.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Properties;
 
 public class AdminSystemInfo extends Administrator {
+
+    private final static Logger log = Logger.getLogger( AdminSystemInfo.class.getName() );
 
     private final static String HTML_TEMPLATE = "AdminSystemMessage.htm";
 
@@ -59,7 +63,7 @@ public class AdminSystemInfo extends Administrator {
             String header = "Error in AdminSystemInfo. ";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            this.log( header + "- user is not an administrator" );
+            log.debug( header + "- user is not an administrator" );
             new AdminError(req, res, header, msg);
             return;
         }

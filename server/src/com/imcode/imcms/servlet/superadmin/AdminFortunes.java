@@ -10,10 +10,12 @@ import imcode.util.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import com.imcode.imcms.servlet.superadmin.Administrator;
+import org.apache.log4j.Logger;
 
 
 public class AdminFortunes extends Administrator {
 
+    private final static Logger log = Logger.getLogger( AdminFortunes.class.getName() );
     /**
      * The GET method creates the html page when this side has been
      * redirected from somewhere else.
@@ -34,7 +36,7 @@ public class AdminFortunes extends Administrator {
             String header = "Error in AdminFortunes.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+"<br>";
-            this.log(header + msg);
+            log.debug(header + msg);
             new AdminError(req, res, header, msg);
             return;
         }

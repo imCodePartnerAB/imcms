@@ -19,20 +19,15 @@ public class AdminError2 extends Administrator {
         VariableManager vm = new VariableManager();
 
         // Lets get the errormessage from the error file
-        try {
-            UserDomainObject user = Utility.getLoggedOnUser( req );
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
-            // Lets get the error code
-            SettingsAccessor setObj = new SettingsAccessor( "ADMINERRMSG.INI", user, "admin" );
-            setObj.setDelimiter( "=" );
-            setObj.loadSettings();
-            myErrorMessage = setObj.getSetting( "" + errorCode );
-            if ( myErrorMessage == null ) {
-                myErrorMessage = "Missing Errorcode";
-            }
-
-        } catch ( Exception e ) {
-            log( "An error occured while reading the ADMINERRMSG.ini file" );
+        // Lets get the error code
+        SettingsAccessor setObj = new SettingsAccessor( "adminerrmsg.ini", user, "admin" );
+        setObj.setDelimiter( "=" );
+        setObj.loadSettings();
+        myErrorMessage = setObj.getSetting( "" + errorCode );
+        if ( myErrorMessage == null ) {
+            myErrorMessage = "Missing Errorcode";
         }
 
         vm.addProperty( "ERROR_HEADER", header );
@@ -41,8 +36,6 @@ public class AdminError2 extends Administrator {
 
         // Lets send a html string to the browser
         super.sendHtml( req, res, vm, "Admin_Error2.htm" );
-        return;
-
     }
 
     /**

@@ -1,15 +1,14 @@
 package imcode.server.user;
 
+import imcode.server.IMCConstants;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.imcode.imcms.api.RoleConstants;
-import imcode.server.IMCConstants;
-
 public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
+
     private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
     private Authenticator externalAuthenticator;
     private UserAndRoleMapper externalUserMapper;
@@ -17,8 +16,10 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
 
     private Logger log = Logger.getLogger( ExternalizedImcmsAuthenticatorAndUserMapper.class );
 
-    public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms, Authenticator externalAuthenticator, UserAndRoleMapper externalUserMapper, String defaultLanguage ) throws IllegalArgumentException {
-        if( (null == externalAuthenticator) != (null == externalUserMapper) ) {
+    public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms,
+                                                        Authenticator externalAuthenticator,
+                                                        UserAndRoleMapper externalUserMapper, String defaultLanguage ) throws IllegalArgumentException {
+        if ( ( null == externalAuthenticator ) != ( null == externalUserMapper ) ) {
             throw new IllegalArgumentException( "External authenticator and external usermapper should both be either set or not set." );
         }
 
@@ -29,71 +30,71 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
     }
 
     public void synchRolesWithExternal() {
-        if( null != externalUserMapper ) {
+        if ( null != externalUserMapper ) {
             String[] externalRoleNames = externalUserMapper.getAllRoleNames();
             imcmsAuthenticatorAndUserMapper.addRoleNames( externalRoleNames );
         }
     }
 
     public boolean authenticate( String loginName, String password ) {
-        NDC.push("authenticate") ;
+        NDC.push( "authenticate" );
         // this is a fix. Because external users gets the password empty string "" we need to check that the
         // password exeedes 0 lenght.
         boolean userAuthenticatesInImcms = false;
-        if( password.length() >= IMCConstants.PASSWORD_MINIMUM_LENGTH ) {
+        if ( password.length() >= IMCConstants.PASSWORD_MINIMUM_LENGTH ) {
             userAuthenticatesInImcms = imcmsAuthenticatorAndUserMapper.authenticate( loginName, password );
         }
         boolean userAuthenticatesInExternal = false;
-        if( !userAuthenticatesInImcms && null != externalAuthenticator ) {
+        if ( !userAuthenticatesInImcms && null != externalAuthenticator ) {
             userAuthenticatesInExternal = externalAuthenticator.authenticate( loginName, password );
         }
-        NDC.pop() ;
+        NDC.pop();
         return userAuthenticatesInImcms || userAuthenticatesInExternal;
     }
 
     public UserDomainObject getUser( String loginName ) {
-        NDC.push("getUser") ;
+        NDC.push( "getUser" );
         UserDomainObject imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
         UserDomainObject externalUser = getUserFromOtherUserMapper( loginName );
         boolean imcmsUserExists = null != imcmsUser;
         boolean externalUserExists = null != externalUser;
-        boolean imcmsUserIsInternal = (null != imcmsUser) && !imcmsUser.isImcmsExternal();
+        boolean imcmsUserIsInternal = ( null != imcmsUser ) && !imcmsUser.isImcmsExternal();
 
         UserDomainObject result = null;
 
-        if( !imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
+        if ( !imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
             result = null;
-        } else if( !imcmsUserIsInternal && !externalUserExists && imcmsUserExists ) {
+        } else if ( !imcmsUserIsInternal && !externalUserExists && imcmsUserExists ) {
             deactivateExternalUserInImcms( loginName, imcmsUser );
             result = null;
-        } else if( !imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
+        } else if ( !imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
             result = synchExternalUserInImcms( loginName, externalUser, imcmsUserExists );
-        } else if( !imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
+        } else if ( !imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
             result = synchExternalUserInImcms( loginName, externalUser, imcmsUserExists );
-        } else if( imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
+        } else if ( imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
             throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
-        } else if( imcmsUserIsInternal && !externalUserExists && imcmsUserExists ) {
+        } else if ( imcmsUserIsInternal && !externalUserExists && imcmsUserExists ) {
             result = imcmsUser;
-        } else if( imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
+        } else if ( imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
             throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
-        } else if( imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
+        } else if ( imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
             result = imcmsUser;
             //throw new UserConflictException( "An imcmsAuthenticatorAndUserMapper-internal user was found in external directory.", null );
         }
-        NDC.pop() ;
+        NDC.pop();
         return result;
     }
 
     private UserDomainObject getUserFromOtherUserMapper( String loginName ) {
         UserDomainObject result = null;
-        if( null != externalUserMapper ) {
+        if ( null != externalUserMapper ) {
             result = externalUserMapper.getUser( loginName );
         }
-        if( null != result && null == result.getLanguageIso639_2() ) {
+        if ( null != result && null == result.getLanguageIso639_2() ) {
             result.setLanguageIso639_2( defaultLanguage );
-            if( "swe".equalsIgnoreCase( defaultLanguage ) ) {
+            if ( "swe".equalsIgnoreCase( defaultLanguage ) ) {
                 result.setLangId( 1 );
-            } else if ("eng".equalsIgnoreCase( defaultLanguage )) {
+            } else if ( "eng".equalsIgnoreCase( defaultLanguage ) ) {
                 result.setLangId( 2 );
             } else {
                 // FIXME: Make this general for all languages
@@ -104,30 +105,30 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
         return result;
     }
 
-    private UserDomainObject synchExternalUserInImcms( String loginName, UserDomainObject externalUser, boolean imcmsUserExists ) {
+    private UserDomainObject synchExternalUserInImcms( String loginName, UserDomainObject externalUser,
+                                                       boolean imcmsUserExists ) {
         externalUser.setImcmsExternal( true );
 
-        if( imcmsUserExists ) {
+        addExternalRolesToUser( externalUser );
+        if ( imcmsUserExists ) {
             imcmsAuthenticatorAndUserMapper.updateUser( loginName, externalUser );
         } else {
             imcmsAuthenticatorAndUserMapper.addUser( externalUser );
         }
 
-        UserDomainObject synchedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
-        updateRoleAssignments( synchedUser );
-        return synchedUser;
+        return imcmsAuthenticatorAndUserMapper.getUser( loginName );
     }
 
-    private void updateRoleAssignments( UserDomainObject user ) {
-        imcmsAuthenticatorAndUserMapper.addRoleToUser( user, RoleConstants.USERS );
-
+    private void addExternalRolesToUser( UserDomainObject user ) {
         String[] externalRoleNames = externalUserMapper.getRoleNames( user );
-        for( int i = 0; i < externalRoleNames.length; i++ ) {
+        for ( int i = 0; i < externalRoleNames.length; i++ ) {
             String externalRoleName = externalRoleNames[i];
-            boolean hasNameConflictWithSuperAdmin = RoleConstants.SUPER_ADMIN.equalsIgnoreCase( externalRoleName );
-            boolean hasNameConflictWithUserAdmin = RoleConstants.USER_ADMIN.equalsIgnoreCase( externalRoleName );
-            if( !hasNameConflictWithSuperAdmin && !hasNameConflictWithUserAdmin ) {
-                imcmsAuthenticatorAndUserMapper.addRoleToUser( user, externalRoleName );
+            RoleDomainObject externalRole = imcmsAuthenticatorAndUserMapper.getRoleByName( externalRoleName );
+            if ( null == externalRole ) {
+                externalRole = imcmsAuthenticatorAndUserMapper.addRole( externalRoleName );
+            }
+            if ( !externalRole.isAdminRole() ) {
+                user.addRole( externalRole );
             }
         }
     }
@@ -161,7 +162,7 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
     }
 
     public RoleDomainObject getRoleByName( String roleName ) {
-        return imcmsAuthenticatorAndUserMapper.getRoleByName(roleName) ;
+        return imcmsAuthenticatorAndUserMapper.getRoleByName( roleName );
     }
 
 }

@@ -9,8 +9,11 @@ import imcode.external.diverse.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.log4j.Logger;
 
 public class AdminDeleteDoc extends Administrator {
+
+    private final static Logger log = Logger.getLogger( AdminDeleteDoc.class.getName() );
 
     private final static String HTML_TEMPLATE = "AdminDeleteDoc.htm";
 
@@ -29,7 +32,7 @@ public class AdminDeleteDoc extends Administrator {
             String header = "Error in AdminCounter.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+ "<br>";
-            this.log(header + "- user is not an administrator");
+            log.debug(header + "- user is not an administrator");
             new AdminError(req, res, header, msg);
             return;
         }
@@ -50,7 +53,7 @@ public class AdminDeleteDoc extends Administrator {
             String header = "Error in AdminCounter.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+"<br>";
-            this.log(header + "- user is not an administrator");
+            log.debug(header + "- user is not an administrator");
             new AdminError(req, res, header, msg);
             return;
         }
@@ -65,7 +68,7 @@ public class AdminDeleteDoc extends Administrator {
                 String header = "Error in AdminDeleteDoc.";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_valid_metaid")+ "<br>";
-                this.log(header + "- no valid metaid");
+                log.debug(header + "- no valid metaid");
                 new AdminError(req, res, header, msg);
                 return;
             }
@@ -73,19 +76,19 @@ public class AdminDeleteDoc extends Administrator {
             // OK, Lets check that the metaid were gonna delete exists in db
             int metaId = Integer.parseInt(params.getProperty("DEL_META_ID"));
             String foundMetaId = imcref.sqlProcedureStr("FindMetaId", new String[]{"" + metaId});
-            log("FoundMetaId: " + foundMetaId);
+            log.debug("FoundMetaId: " + foundMetaId);
 
             if (foundMetaId == null) {
                 String header = "Error in AdminUserProps. ";
                 Properties langproperties = imcref.getLanguageProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminDeleteDoc/no_metaid_in_db") + "( " + metaId + " ) <br>";
-                this.log(header + "- metaid could not be found in db");
+                log.debug(header + "- metaid could not be found in db");
                 new AdminError(req, res, header, msg);
                 return;
             }
 
             // Ok, Lets delete the meta id
-            log("Nu försöker vi ta bort ett meta id");
+            log.debug("Nu försöker vi ta bort ett meta id");
             imcref.deleteDocAll(metaId, user);
             this.doGet(req, res);
             //this.goAdminUsers(req, res) ;
@@ -100,7 +103,7 @@ public class AdminDeleteDoc extends Administrator {
         }
 
         // ******** UNIDENTIFIED ARGUMENT TO SERVER ********
-        this.log("Unidentified argument was sent!");
+        log.debug("Unidentified argument was sent!");
         doGet(req, res);
         return;
     } // end HTTP POST
@@ -126,7 +129,7 @@ public class AdminDeleteDoc extends Administrator {
 
     private boolean validateParameters(Properties params) {
 
-        if (super.checkParameters(params) == false) return false;
+        if (super.assertNoEmptyStringsInPropertyValues(params) == false) return false;
         try {
             Integer.parseInt(params.getProperty("DEL_META_ID"));
         } catch (NumberFormatException e) {

@@ -6,7 +6,6 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +15,11 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.Arrays;
 
+import org.apache.log4j.Logger;
+
 public class AdminManager extends Administrator {
+
+    private final static Logger log = Logger.getLogger( AdminManager.class.getName() );
 
     private final static String HTML_TEMPLATE = "AdminManager.htm"; ;
     private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm" ;
@@ -38,7 +41,7 @@ public class AdminManager extends Administrator {
             String header = "Error in AdminManager.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            this.log(header + "- user is not an administrator");
+            log.debug(header + "- user is not an administrator");
 
             new AdminError(req, res, header, msg);
             return;
@@ -117,7 +120,7 @@ public class AdminManager extends Administrator {
         out.println("url" + url);
 
         // Ok, Lets redirect the user to the right adminservlet
-        this.log("redirects + to:" + url);
+        log.debug("redirects + to:" + url);
         res.sendRedirect(url);
     }
 

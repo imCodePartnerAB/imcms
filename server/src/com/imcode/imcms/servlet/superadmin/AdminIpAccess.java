@@ -250,8 +250,8 @@ public class AdminIpAccess extends Administrator {
 
     private Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
 
-        if (checkParameters( aPropObj ) == false) {
-            String header = "Error in AdminIpAccess, checkParameters.";
+        if (assertNoEmptyStringsInPropertyValues( aPropObj ) == false) {
+            String header = "Error in AdminIpAccess, assertNoEmptyStringsInPropertyValues.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/AdminIpAccess/vaidate_form_parameters" ) + "<br>";
             log.debug( header + "- values is missing for some parameters" );

@@ -14,11 +14,13 @@ import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.DateConstants;
+import org.apache.log4j.Logger;
 
 
 
 public class AdminCounter extends Administrator {
 
+    private final static Logger log = Logger.getLogger( AdminCounter.class.getName() );
     private final static String HTML_TEMPLATE = "AdminCounter.htm";
 
 
@@ -40,7 +42,7 @@ public class AdminCounter extends Administrator {
             String header = "Error in AdminCounter.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+ "<BR>";
-            this.log(header + "- user is not an administrator");
+            log.debug( header + "- user is not an administrator");
             new AdminError(req, res, header, msg);
             return;
         }
