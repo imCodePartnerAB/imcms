@@ -1,6 +1,6 @@
 <%@ page
     contentType="text/html;
-    charset=cp1252"
+    charset=windows-1252"
 
     import="imcode.server.Imcms,
             org.apache.commons.lang.StringEscapeUtils,
