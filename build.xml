@@ -483,13 +483,10 @@
             <fileset file="sql/tables/tables.ascii.sql"/>
             <fileset  dir="sql/sprocs"/>
 
-            <fileset file="sql/conf/conf_tables.sql"/>
             <fileset file="sql/conf/conf_sprocs.sql"/>
 
-            <fileset file="sql/billboard/billboard_tables.sql"/>
             <fileset file="sql/billboard/billboard_sprocs.sql"/>
 
-            <fileset file="sql/chat/chat_tables.sql"/>
             <fileset file="sql/chat/chat_sprocs.sql"/>
             <fileset file="sql/chat/chat_newdb.sql"/>
 
