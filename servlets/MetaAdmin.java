@@ -89,9 +89,10 @@ public class MetaAdmin extends HttpServlet {
 		String[] hl = (String[])hash.get("meta_headline") ;
 		String[] types = (String[])hash.get("doc_type") ;
 
-		out.println("<hr><ul>") ;
+		out.println("<hr>") ;
 		
 		for ( int i = 0 ; i < meta_id.length ; i++ ) {
+		out.println("<table border=\"0\" cellspacing=\"0\"><tr bgcolor=\"#bababa\"><td width=\"500\" nowrap><ul>") ;
 			if ( Integer.parseInt(meta_id[i]) < start ) {
 				continue ;
 			}
@@ -155,9 +156,9 @@ public class MetaAdmin extends HttpServlet {
 					out.println("</ul>") ;
 				}
 			}
-			out.println("</li><br>") ;
+			out.println("<br></li></ul></td></tr></table>") ;
 			out.flush() ;
 		}
-		out.println("</ul>") ;
+		out.println("</body></html>") ;
 	}
 }
