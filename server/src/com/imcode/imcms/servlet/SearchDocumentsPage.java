@@ -71,7 +71,6 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String USER_DOCUMENTS_RESTRICTION__NONE = "";
     public static final String USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER = "created";
     public static final String USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER = "published";
-    public static final String USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER = "editable";
 
     public static final String DATE_TYPE__PUBLICATION_START = "publication_start";
     public static final String DATE_TYPE__PUBLICATION_END = "publication_end" ;

@@ -69,7 +69,6 @@
                     <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__NONE %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__NONE.equals( userDocumentsRestriction ) ? "selected" : "" %>></option>
                     <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals( userDocumentsRestriction ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option1 ?></option>
                     <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER.equals( userDocumentsRestriction ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option2 ?></option>
-                    <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_EDITABLE_BY_USER.equals( userDocumentsRestriction ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option3 ?></option>
                 </select>
             </td>
         </tr>
