@@ -88,7 +88,7 @@ public class PostcardServlet extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException
     {
 	String host					= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url			= imcref.getStartUrl() ;
 	String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
 	File image_folder_path      = Utility.getDomainPrefPath( "image_path", host );
@@ -258,7 +258,7 @@ public class PostcardServlet extends HttpServlet {
     private File getExternalTemplateFolder(HttpServletRequest req) throws ServletException, IOException
     {
 	String host					= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession(true);
 	Object done = session.getAttribute("logon.isDone");
@@ -287,7 +287,7 @@ public class PostcardServlet extends HttpServlet {
     {
 	/* mailserver info */
 	String host					= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String mailserver			= Utility.getDomainPref( "smtp_server", host );
 	String stringMailPort		= Utility.getDomainPref( "smtp_port", host );
 	String stringMailtimeout	= Utility.getDomainPref( "smtp_timeout", host );

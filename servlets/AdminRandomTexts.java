@@ -33,7 +33,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	String host = req.getHeader("host") ;
 
 	// Lets get the server this request was aimed for
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets validate the session
 	if (super.checkSession(req,res) == false)	return ;
@@ -95,7 +95,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	res.setContentType("text/html");
 	Writer out = res.getWriter();
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	imcode.server.user.UserDomainObject user ;
 

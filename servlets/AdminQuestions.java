@@ -34,7 +34,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	Writer out = res.getWriter();
 
 	// Lets get the server this request was aimed for
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets validate the session
 	if (super.checkSession(req,res) == false)	return ;
@@ -101,7 +101,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	PrintWriter out = res.getWriter();
 
 	// Lets get the server this request was aimed for
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	imcode.server.user.UserDomainObject user ;
 

@@ -103,7 +103,7 @@ public class PasswordMailReminder extends HttpServlet {
 
 	/* server info */
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String deafultLanguagePrefix = imcref.getLanguage();
 
 	res.setContentType("text/html");
@@ -127,7 +127,7 @@ public class PasswordMailReminder extends HttpServlet {
 
 	/* server info */
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String hostName = emptyString;
 	try {
 	    hostName = InetAddress.getLocalHost().getHostName();

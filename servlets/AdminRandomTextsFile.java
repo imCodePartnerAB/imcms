@@ -36,7 +36,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
     */
     public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
 	// Lets get the server this request was aimed for
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession();
 	imcode.server.user.UserDomainObject user ;

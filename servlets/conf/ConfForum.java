@@ -48,7 +48,7 @@ public class ConfForum extends Conference {
 	String discIndex = params.getProperty("DISC_INDEX") ;
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	// Lets get the information from DB

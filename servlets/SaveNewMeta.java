@@ -32,7 +32,7 @@ public class SaveNewMeta extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         String host = req.getHeader( "Host" );
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
         String htmlStr = "";
@@ -188,7 +188,7 @@ public class SaveNewMeta extends HttpServlet {
             DocumentMapper.sqlUpdateModifiedDate( imcref, Integer.parseInt(parent_meta_id), dateModified );
 
             //lets log to mainLog the stuff done
-            mainLog.info( DateHelper.LOG_DATE_TIME_FORMAT.format( new java.util.Date() ) + "Document [" + meta_id + "] of type [" + doc_type + "] created on [" + parent_meta_id + "] by user: [" + user.getFullName() + "]" );
+            mainLog.info( "Document [" + meta_id + "] of type [" + doc_type + "] created on [" + parent_meta_id + "] by user: [" + user.getFullName() + "]" );
 
             //ok lets handle the the section stuff save to db and so on
             //lets start an see if we got any request to change the inherit one

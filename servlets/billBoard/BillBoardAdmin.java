@@ -100,7 +100,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 	// Lets check that the user is an administrator
@@ -576,7 +576,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 	// Lets check that the user is an administrator

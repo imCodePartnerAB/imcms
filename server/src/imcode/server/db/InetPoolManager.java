@@ -122,7 +122,7 @@ public class InetPoolManager implements ConnectionPool {
         return pds;
     }
 
-    public void testConnectionAndLoggResultToTheErrorLog() {
+    public void testConnectionAndLogResultToTheErrorLog() {
 
         try {
             testConnectionAndLogMetaData( "Bla" );

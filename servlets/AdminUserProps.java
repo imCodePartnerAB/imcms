@@ -41,7 +41,7 @@ public class AdminUserProps extends Administrator {
             return;
         }
 
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         // check if user is a Useradmin, adminRole = 2
         boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
@@ -439,7 +439,7 @@ public class AdminUserProps extends Administrator {
      **/
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         String host = req.getHeader( "Host" );
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost( host );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         // Lets validate the session
         if( super.checkSession( req, res ) == false )

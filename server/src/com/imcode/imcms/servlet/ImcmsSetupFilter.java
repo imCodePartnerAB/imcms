@@ -2,6 +2,8 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.*;
 import imcode.server.IMCService;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IMCServiceRMI;
 import org.apache.log4j.Logger;
@@ -28,7 +30,7 @@ public class ImcmsSetupFilter implements Filter {
     private void initRequestWithImcmsSystemAPI( UserDomainObject currentUser, ServletRequest request ) {
         if( null != currentUser ) {
             try {
-                IMCService service = (IMCService)IMCServiceRMI.getIMCServiceInterface( (HttpServletRequest)request );
+                IMCService service = (IMCService)ApplicationServer.getIMCServiceInterface();
                 ContentManagementSystem imcmsSystem = new ContentManagementSystem( service, currentUser );
                 request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
             } catch( IOException e ) {

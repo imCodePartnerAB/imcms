@@ -22,7 +22,7 @@ public class MetaDataParser {
     */
     static public String parseMetaData (String meta_id, String parent_meta_id, UserDomainObject user, String host) throws IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Now watch as i fetch the permission_set for the user...
 	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
@@ -56,7 +56,7 @@ public class MetaDataParser {
     static public String getMetaDataFromDb (String meta_id, String parent_meta_id, UserDomainObject user, String host,
 					    String htmlFile, boolean showRoles ) throws IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	final String NORMAL	= "NORMAL" ;
 	final String CHECKBOX	= "CHECKBOX" ;
@@ -343,7 +343,7 @@ public class MetaDataParser {
     */
     static public void getRolesFromDb( String meta_id, UserDomainObject user, String host, Vector vec	) throws IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets get the langprefix
 	final String lang_prefix = user.getLangPrefix() ;
@@ -589,7 +589,7 @@ public class MetaDataParser {
     */
 
     public static String parsePermissionSet (int meta_id, UserDomainObject user, String host, int set_id, boolean for_new) throws IOException {
-	final IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        final IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets get the langprefix
 	final String lang_prefix = user.getLangPrefix() ;

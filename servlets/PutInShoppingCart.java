@@ -160,7 +160,7 @@ public class PutInShoppingCart extends HttpServlet {
 
 	if (null != req.getParameter("send") || null != req.getParameter("send.x")) {
 	    forwardTo = req.getParameter("send_next") ;
-	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    UserDomainObject user = null ;
 	    // Check if user logged on
 	    if ( (user=Check.userLoggedOn(req,res,forwardTo))==null ) {
@@ -221,7 +221,7 @@ public class PutInShoppingCart extends HttpServlet {
     private void sendMail (HttpServletRequest req, UserDomainObject user) throws IOException {
 
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	String mailServer = Utility.getDomainPref( "smtp_server", host );
 	String stringMailPort = Utility.getDomainPref( "smtp_port", host );

@@ -66,7 +66,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 		String userId = ""+user.getUserId();
@@ -124,7 +124,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 		// ************* VERIFY LOGIN TO CONFERENCE **************

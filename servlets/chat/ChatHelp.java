@@ -60,7 +60,7 @@ public class ChatHelp extends ChatBase
 
 			//lets se if user has adminrights
 			String metaId = getMetaId( req );
-			IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 			if ( metaId != null && userHasAdminRights( imcref, Integer.parseInt( metaId ), user ) )
 			    {
 				file = ADMIN_TEMPLATE ;

@@ -146,7 +146,7 @@ public class ChatControl extends ChatBase
 	String chatAdminLink =  "";
 	File templateLib = super.getExternalTemplateFolder(req) ;
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	if(userHasAdminRights( imcref, meta_Id, user )){
 	    chatAdminLink = createAdminButton(req, ADMIN_BUTTON,metaId,chatName);
@@ -175,7 +175,7 @@ public class ChatControl extends ChatBase
 
     private String settingsButton(HttpServletRequest req, imcode.external.chat.Chat chat)throws ServletException, IOException {
 	if (chat.settingsPage() ) {
-	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 	    int metaId = chat.getChatId();
 	    return imcref.parseExternalDoc(null, SETTINGS_BUTTON , imcref.getLanguage(), "103", getTemplateLibName(chatref,metaId+""));
@@ -216,7 +216,7 @@ public class ChatControl extends ChatBase
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 
 	// Lets get parameters
@@ -486,7 +486,7 @@ public class ChatControl extends ChatBase
     {
 	Vector vect = new Vector();
 	File templetUrl =	super.getExternalTemplateFolder(req);
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 	Hashtable hash = member.getProperties();
 	if (hash == null) {

@@ -11,7 +11,7 @@ public class Restart extends HttpServlet {
 
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		String start_url        	= imcref.getStartUrl() ;
 
 		UserDomainObject user ;
@@ -33,8 +33,6 @@ public class Restart extends HttpServlet {
 		log ("Restarting...") ;
 		Prefs.flush() ;
 		log ("Flushed preferencescache") ;
-		IMCServiceRMI.flush() ;
-		log ("Flushed RMI-interfacecache") ;
 		log ("Restart Complete.") ;
 		res.getOutputStream().println("Restart complete.") ;
 	}

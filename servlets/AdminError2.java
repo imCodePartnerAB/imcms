@@ -118,7 +118,7 @@ public class AdminError2 extends Administrator {
     public String getErrorMessage(HttpServletRequest req, HttpServletResponse res,int errCode) {
 	try {
 	    // Lets get the path to the admin templates folder
-	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	    imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	    File folder = this.getAdminTemplateFolder(imcref, user) ;

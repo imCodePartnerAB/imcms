@@ -3,7 +3,7 @@ import="java.util.*, java.text.*, imcode.server.*, imcode.util.*, imcode.util.po
 %><%
 
 // Get a reference to IMCServiceInterface //
-IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 //Get a PollHandlingSystem
 PollHandlingSystem poll = imcref.getPollHandlingSystem();

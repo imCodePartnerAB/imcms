@@ -19,7 +19,7 @@ public class AdminSection extends Administrator {
     public final static String DELETE_CONFIRM_TEMPLATE	= "sections/admin_section_delete_confirm.html";
 
     public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String host		   = req.getHeader("Host") ;
 	String start_url	   = imcref.getStartUrl() ;
 
@@ -52,7 +52,7 @@ public class AdminSection extends Administrator {
 
     public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host			= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 
 	imcode.server.user.UserDomainObject user ;
@@ -200,7 +200,7 @@ public class AdminSection extends Administrator {
 
     //method that creates an option list of all the sections in db
     private String createOptionList(HttpServletRequest req, String[][] arr, String lang_prefix, String not_id) throws ServletException, IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	StringBuffer buff = new StringBuffer("");
 	if (arr != null) {

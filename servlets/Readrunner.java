@@ -31,7 +31,7 @@ public class Readrunner extends HttpServlet {
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url = imcref.getStartUrl() ;
 	String host = req.getHeader("host") ;
 	File   readrunnerPath = Utility.getDomainPrefPath("readrunner_preparsed_path",host) ;

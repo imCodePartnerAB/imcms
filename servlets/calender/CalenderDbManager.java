@@ -17,7 +17,7 @@ public class CalenderDbManager
     private IMCPoolInterface calref ;
 
     public CalenderDbManager (HttpServletRequest req) throws IOException {
-	imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        imcref = ApplicationServer.getIMCServiceInterface() ;
 	calref = IMCServiceRMI.getCalendarIMCPoolInterface(req) ;
     }
 

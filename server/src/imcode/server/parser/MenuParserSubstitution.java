@@ -152,7 +152,7 @@ public class MenuParserSubstitution implements Substitution {
        @param menuItemNode       The imcms:menuitem-element
        @param result             The StringBuffer to which to append the result
        @param menuItem           The current menuitem
-       @param menuItemAttributes The attributes passed down from the imcms:menu-element. Any attributes in the imcms:menuitem-element will override these.
+       @param menuAttributes The attributes passed down from the imcms:menu-element. Any attributes in the imcms:menuitem-element will override these.
        @param patMat             The patternmatcher used for pattern matching.
     **/
     private void nodeMenuItem(Element menuItemNode, StringBuffer result, MenuItem menuItem, Properties menuAttributes, PatternMatcher patMat) {

@@ -20,7 +20,7 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
     }
 
     public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	String host		= req.getHeader("Host") ;
 	String start_url	= imcref.getStartUrl() ;

@@ -50,7 +50,7 @@ public class CalenderOverview
 
 	// Check the permission status
 	int meta_Id = Integer.parseInt("" + prop.getProperty("calender_meta_id"));
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	int highestPermission = imcref.getUserHighestPermissionSet(meta_Id, user.getUserId());
 
 
@@ -581,7 +581,7 @@ public class CalenderOverview
     {
 	String lang_prefix	= user.getLangPrefix();
 	String host		= req.getHeader("Host");
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	return imcref.parseExternalDoc(variables, template_name, lang_prefix, "107");
     }

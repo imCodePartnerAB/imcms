@@ -20,7 +20,7 @@ public class TemplateChange extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         String host = req.getHeader( "host" );
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost( host );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
         // Check if user logged on
@@ -417,7 +417,7 @@ public class TemplateChange extends HttpServlet {
     }
 
     private String parseAssignTemplates( String grp_id, String language, String lang_prefix, String host ) throws IOException {
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost( host );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String temp[];
         temp = imcref.sqlProcedure( "getTemplategroups" );
         String temps = "";

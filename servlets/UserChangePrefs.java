@@ -23,7 +23,7 @@ public class UserChangePrefs extends Administrator {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets get an user object
 	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;

@@ -14,7 +14,7 @@ String lable_width = request.getParameter("lableWidth") != null ? request.getPar
 String meta_id = request.getHeader("X-Meta-Id");
 
 // Get a reference to IMCServiceInterface //
-IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 //Get a PollHandlingSystem
 PollHandlingSystem poll = imcref.getPollHandlingSystem();

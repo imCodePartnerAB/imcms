@@ -203,7 +203,7 @@ public class BillBoardError extends BillBoard
 	{
 
 		String host = req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid

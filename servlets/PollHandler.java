@@ -29,7 +29,7 @@ public class PollHandler extends HttpServlet {
 
 
 	// Get a reference to IMCServiceInterface //
- 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	
 	// Get a new PollHandlingSystem 
 	PollHandlingSystem poll = imcref.getPollHandlingSystem();

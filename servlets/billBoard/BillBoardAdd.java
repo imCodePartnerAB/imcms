@@ -79,7 +79,7 @@ public class BillBoardAdd extends BillBoard	{
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 	int metaId = Integer.parseInt( params.getProperty("META_ID") );
@@ -411,7 +411,7 @@ public class BillBoardAdd extends BillBoard	{
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 	int metaId = Integer.parseInt( params.getProperty("META_ID") );

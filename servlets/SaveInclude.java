@@ -31,7 +31,7 @@ public class SaveInclude extends HttpServlet {
 
     public void doPost (HttpServletRequest req, HttpServletResponse res) throws ServletException, java.io.IOException {
 	String host			= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 
 	res.setContentType("text/html") ;

@@ -33,7 +33,7 @@ public class AdminFortuneFile extends Administrator {
 
 	// Lets get the server this request was aimed for
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession();
 

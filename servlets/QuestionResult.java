@@ -27,7 +27,7 @@ public class QuestionResult extends HttpServlet
 	throws ServletException, IOException
 	{
 		String host = req.getHeader("Host");
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 		//get answer
 		String file = req.getParameter("file");

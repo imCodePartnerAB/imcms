@@ -67,7 +67,7 @@ public class AdminRoleBelongings extends Administrator {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets validate the session
 	if ( super.checkSession( req, res ) == false ) {
@@ -110,7 +110,7 @@ public class AdminRoleBelongings extends Administrator {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	String host = req.getHeader("host") ;
 	String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );

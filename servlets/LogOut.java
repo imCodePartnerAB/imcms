@@ -22,7 +22,7 @@ public class LogOut extends HttpServlet {
 	*/
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		String login_url        	= Utility.getDomainPref( "admin_url",host ) ;
 		String start_url        	= imcref.getStartUrl() ;
 		res.setContentType("text/html") ;

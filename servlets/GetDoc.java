@@ -40,7 +40,7 @@ public class GetDoc extends HttpServlet {
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         int meta_id;
 
@@ -66,7 +66,7 @@ public class GetDoc extends HttpServlet {
     }
 
     public static String getDoc( int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res ) throws IOException {
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
         String host = req.getHeader( "host" );
         String no_permission_url = Utility.getDomainPref( "no_permission_url", host );

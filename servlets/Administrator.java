@@ -93,7 +93,7 @@ public class Administrator extends HttpServlet {
 	    // No logon.isDone means he hasn't logged in.
 
 	    // Lets get the login page
-	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	    // Save the request URL as the true target and redirect to the login page.
 	    session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString());
@@ -115,7 +115,7 @@ public class Administrator extends HttpServlet {
     protected static boolean checkAdminRights(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	if(user == null) {
 	    return false ;
@@ -152,7 +152,7 @@ public class Administrator extends HttpServlet {
 			      VariableManager vm, String htmlFile) throws ServletException, IOException {
 
 	// Lets get the path to the admin templates folder
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	File templateLib = this.getAdminTemplateFolder(imcref, user) ;
 

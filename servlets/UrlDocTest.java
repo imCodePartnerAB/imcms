@@ -22,7 +22,7 @@ public class UrlDocTest extends HttpServlet {
 
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		String start_url        	= imcref.getStartUrl() ;
 
 		String sqlStr = "select meta_id, url_ref from url_docs order by meta_id" ;

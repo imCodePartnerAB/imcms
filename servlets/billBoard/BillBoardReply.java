@@ -92,7 +92,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 	// ********* UPDATE DISCUSSIONS ********
@@ -141,7 +141,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 	// Lets get path to the imagefolder. http://dev.imcode.com/images/102/ConfDiscNew.gif

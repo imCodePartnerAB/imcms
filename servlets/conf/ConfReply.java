@@ -67,7 +67,7 @@ public class ConfReply extends Conference {
 	}
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	// ********* UPDATE DISCUSSIONS ********
@@ -130,7 +130,7 @@ public class ConfReply extends Conference {
 	}
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	String sqlQ = "A_GetAllRepliesInDisc " + discId + ", " + userId ;

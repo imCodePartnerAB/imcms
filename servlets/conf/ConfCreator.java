@@ -48,7 +48,7 @@ public class ConfCreator extends Conference {
 	}
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	// ********* NEW ********

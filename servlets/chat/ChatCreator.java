@@ -116,7 +116,7 @@ public class ChatCreator extends ChatBase
 		myChat.setfont(Integer.parseInt(req.getParameter("font")));
 	    }
 
-	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 
 	    //lets save to db
@@ -389,7 +389,7 @@ public class ChatCreator extends ChatBase
     } // End doGet
 
     public String getTemplateButtonHtml(HttpServletRequest req,String metaId) throws ServletException, IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 	return imcref.parseExternalDoc(null, HTML_TEMPLATES_BUTTON , imcref.getLanguage(), "103", getTemplateLibName(chatref,metaId));
     }

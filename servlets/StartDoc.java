@@ -21,7 +21,7 @@ public class StartDoc extends HttpServlet {
     */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host = req.getHeader("host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 
 	long time = System.currentTimeMillis() ;
@@ -99,7 +99,7 @@ public class StartDoc extends HttpServlet {
        Check if user exist in database
     */
     static protected imcode.server.user.UserDomainObject allowUser( String user_name, String passwd, String host ) throws IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// user information
 	return imcref.verifyUser( user_name,passwd ) ;
@@ -109,7 +109,7 @@ public class StartDoc extends HttpServlet {
        Ip login  - check if user exist in ip-table
     */
     static protected imcode.server.user.UserDomainObject ipAssignUser( String remote_ip , String host) throws IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	imcode.server.user.UserDomainObject user = null;
 
 	long ip = Utility.ipStringToLong(remote_ip) ;

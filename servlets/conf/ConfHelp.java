@@ -42,7 +42,7 @@ public class ConfHelp extends Conference {
 
 	    // Lets get serverinformation
 	    String host = req.getHeader("Host") ;
-	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	    // Lets get a VariableManager
 	    VariableManager vm = new VariableManager() ;

@@ -60,7 +60,7 @@ public class ChatAdmin extends Administrator{
 
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String host = request.getHeader("host") ;
 	String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
 
@@ -130,7 +130,7 @@ public class ChatAdmin extends Administrator{
      *
      */
     private void listChats( HttpServletRequest request, HttpServletResponse response, String languagePrefix ) throws ServletException, IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(request) ;
 
 	String host = request.getHeader( "Host" );

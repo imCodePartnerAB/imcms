@@ -26,7 +26,7 @@ public class AdminDoc extends HttpServlet {
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         String host = req.getHeader( "Host" );
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost( host );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
         // Find the start-page
@@ -62,7 +62,7 @@ public class AdminDoc extends HttpServlet {
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String host = req.getHeader( "host" );
 
         String htmlStr = "";

@@ -70,7 +70,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
 		log("START AdminBillBoard doPost");
 
         String host = request.getHeader( "Host" );
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
 
         // lets get ready for errors
@@ -146,7 +146,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
     private void listConferences( HttpServletRequest request, HttpServletResponse response, String languagePrefix )
     throws ServletException, IOException {
         String host = request.getHeader( "Host" );
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
         boolean noErrors = true;
 

@@ -18,7 +18,7 @@ public class AdminUserReadrunner extends HttpServlet {
 
     public void doGet (HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		UserDomainObject user = null ;
 
 		if( null == (user = Check.userLoggedOn(req,res,imcref.getStartUrl())) ) {
@@ -45,7 +45,7 @@ public class AdminUserReadrunner extends HttpServlet {
     public void doPost(HttpServletRequest req,HttpServletResponse res) 
 	throws ServletException, IOException {
 
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		UserDomainObject user = null ;
 
 		HttpSession session = req.getSession( false );

@@ -72,7 +72,7 @@ public class AdminListDocs extends Administrator {
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
 	throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets validate the session
 	if ( super.checkSession( request, response ) == false ) {
@@ -112,7 +112,7 @@ public class AdminListDocs extends Administrator {
     protected void doPost( HttpServletRequest request, HttpServletResponse response )
 	throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	String host = request.getHeader("Host") ;
 	String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );

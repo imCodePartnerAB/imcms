@@ -39,7 +39,7 @@ public class ConfAdmin extends Conference {
 	Properties params = this.getStandardParameters(req) ;
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	// Lets check that the user is an administrator
@@ -419,7 +419,7 @@ public class ConfAdmin extends Conference {
 	}
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	// Lets check that the user is an administrator

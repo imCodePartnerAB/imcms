@@ -23,7 +23,7 @@ public class SaveFrameset extends HttpServlet {
 	doPost()
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		String start_url        	= imcref.getStartUrl() ;
 
 		imcode.server.user.UserDomainObject user ;

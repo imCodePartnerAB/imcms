@@ -61,7 +61,7 @@ public class CalenderManager extends Calender
 	throws ServletException, IOException {
 	// Get info and check login
 	HttpSession session = req.getSession(true);
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	Properties prop = super.getSessionParams(req, res);
 	imcode.server.user.UserDomainObject user = super.checkLogin(req, res, imcref.getStartUrl());

@@ -59,7 +59,7 @@ public class SendMailServlet extends HttpServlet {
 
 	/* server info */
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String lang_prefix = imcref.getLanguage() ;
 	SystemData sysData	= imcref.getSystemData();
 

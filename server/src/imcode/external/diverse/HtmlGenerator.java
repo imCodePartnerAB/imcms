@@ -376,7 +376,7 @@ public class HtmlGenerator {
         }
 
         String host = req.getHeader("Host");
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         String theHtml = imcref.parseDoc(srcHtml, htmlTags, data);
         return theHtml;
     }

@@ -44,7 +44,7 @@ public class ConfAdd extends Conference {
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	int metaId = Integer.parseInt( params.getProperty("META_ID") );
@@ -190,7 +190,7 @@ public class ConfAdd extends Conference {
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	int metaId = Integer.parseInt( params.getProperty("META_ID") );

@@ -41,7 +41,7 @@ public class MetaInfo extends HttpServlet {
 	    // Save the request URL as the true target and redirect to the login page.
 	    session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString());
 	    String serverName = getServerName(req) ;
-	    imcode.server.IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req ) ;
+        imcode.server.IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    String startUrl = imcref.getStartUrl() ;
 	    res.sendRedirect(serverName + startUrl);
 	    return false ;

@@ -55,7 +55,7 @@ public class Calender extends HttpServlet
 	Properties prop = new Properties();
 	String host = req.getHeader("Host");
 	String meta_id = req.getParameter("meta_id");
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	if (session != null) {
 	    if (meta_id != null) {
@@ -96,7 +96,7 @@ public class Calender extends HttpServlet
 				imcode.server.user.UserDomainObject user) throws IOException
     {
 	String lang_prefix	= user.getLangPrefix();
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	return imcref.parseExternalDoc(variables, template_name, lang_prefix, "107");
     }

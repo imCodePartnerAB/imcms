@@ -33,7 +33,7 @@ public class SaveMeta extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         String host = req.getHeader( "Host" );
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
         UserDomainObject user;

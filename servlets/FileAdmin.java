@@ -19,7 +19,7 @@ public class FileAdmin extends HttpServlet {
 
     public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String rootpaths			= Utility.getDomainPref( "fileadmin_rootpaths",host ) ;
 	String start_url	= imcref.getStartUrl() ;
 
@@ -80,7 +80,7 @@ public class FileAdmin extends HttpServlet {
 
     public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String rootpaths			= Utility.getDomainPref( "fileadmin_rootpaths",host ) ;
 	String start_url	= imcref.getStartUrl() ;
 
@@ -791,7 +791,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private String parseFileAdmin (UserDomainObject user, String host, File fd1, File fd2) throws IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String rootpaths			= Utility.getDomainPref( "fileadmin_rootpaths",host ) ;
 
 	String files1 = "" ;

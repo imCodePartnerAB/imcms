@@ -190,7 +190,7 @@ public class Conference extends HttpServlet {
 	    // Save the request URL as the true target and redirect to the login page.
 	    session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString());
 	    String serverName = MetaInfo.getServerName(req) ;
-	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    String startUrl = imcref.getStartUrl() ;
 	    res.sendRedirect(serverName + startUrl) ;
 
@@ -290,7 +290,7 @@ public class Conference extends HttpServlet {
 	throws ServletException, IOException {
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	if(user == null) {
@@ -309,7 +309,7 @@ public class Conference extends HttpServlet {
 
     public File getExternalTemplateRootFolder (HttpServletRequest req) throws ServletException, IOException {
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	String metaId = this.getMetaId(req) ;
 	if( metaId == null) {
@@ -335,7 +335,7 @@ public class Conference extends HttpServlet {
 	    throw new IOException( "No meta_id could be found!" ) ;
 	}
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 	File extFolder = imcref.getExternalTemplateFolder(Integer.parseInt(metaId)) ;
 	return new File(extFolder, this.getTemplateLibName(confref, metaId)) ;
@@ -588,7 +588,7 @@ public class Conference extends HttpServlet {
 	String metaId = params.getProperty("META_ID") ;
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	// Ok, Lets prepare the user for the conference.
@@ -689,7 +689,7 @@ public class Conference extends HttpServlet {
 	}
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	String extFolder = RmiConf.getExternalImageFolder(imcref, metaId) ;
@@ -725,7 +725,7 @@ public class Conference extends HttpServlet {
 	throws ServletException, IOException {
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	String adminLink = "&nbsp;";
 	String metaId = getMetaId( req );
@@ -765,7 +765,7 @@ public class Conference extends HttpServlet {
 	throws ServletException, IOException {
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	String unAdminLink = "&nbsp;";
 	String metaId = getMetaId(req);
@@ -874,7 +874,7 @@ public class Conference extends HttpServlet {
 	    //lets send unauthorized users out
 	    String serverName = MetaInfo.getServerName(req) ;
 
-	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    String startUrl = imcref.getStartUrl() ;
 	    res.sendRedirect(serverName + startUrl) ;
 	} else {
@@ -897,7 +897,7 @@ public class Conference extends HttpServlet {
 
 	// Lets get serverinformation
 	String host = req.getHeader( "Host" ) ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession( true );
 

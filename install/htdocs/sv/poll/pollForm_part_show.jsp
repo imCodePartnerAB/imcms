@@ -7,7 +7,7 @@ final String RESULT_DEFAULT_TEMPLATE = "poll_result_default_template";
 final String CONFIRMATION_TEMPLATE = "poll_confirmation_template";
 
 // Get a reference to IMCServiceInterface //
-IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(request) ;
+    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 //Get a PollHandlingSystem
 PollHandlingSystem poll = imcref.getPollHandlingSystem();

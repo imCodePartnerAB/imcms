@@ -150,7 +150,7 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 		String metaId = req.getParameter("meta_id") ;

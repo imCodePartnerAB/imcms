@@ -21,7 +21,7 @@ public class SaveText extends HttpServlet {
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url = imcref.getStartUrl() ;
 
 	res.setContentType( "text/html" );

@@ -164,7 +164,7 @@ public class ChatLogin extends ChatBase {
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 
 	// Lets validate the session, e.g has the user logged in to Janus?

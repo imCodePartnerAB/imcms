@@ -30,7 +30,7 @@ public class QuestionEngine extends HttpServlet
     {
 
 	String host = req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
 
 	res.setContentType("text/html");

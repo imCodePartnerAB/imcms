@@ -26,7 +26,7 @@ public class CalenderCreator extends Calender
 	throws ServletException, IOException
     {
 	// Get info and check login
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	Properties prop = getSessionParams(req, res);
 	imcode.server.user.UserDomainObject user = super.checkLogin(req, res, imcref.getStartUrl());
 

@@ -29,7 +29,7 @@ public class ImageBrowse extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
 	String host				= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 
 	// Get the session
@@ -56,7 +56,7 @@ public class ImageBrowse extends HttpServlet {
 
     public static String getPage(HttpServletRequest req, HttpServletResponse res) throws ServletException,IOException {
 	String host				= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String image_url                = imcref.getImageUrl() ;
 	File file_path                  = Utility.getDomainPrefPath( "image_path", host );
 

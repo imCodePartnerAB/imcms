@@ -39,7 +39,7 @@ public class AdminRoles extends Administrator {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 
-	IMCServiceInterface imcref             = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref             = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets validate the session
 	if (super.checkSession(req,res) == false)	return ;
@@ -98,7 +98,7 @@ public class AdminRoles extends Administrator {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 
-	IMCServiceInterface imcref             = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref             = ApplicationServer.getIMCServiceInterface() ;
 	// Lets validate the session
 	if (super.checkSession(req,res) == false) return ;
 

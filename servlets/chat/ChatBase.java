@@ -291,7 +291,7 @@ public class ChatBase extends HttpServlet {
 	    String serverName = MetaInfo.getServerName(req) ;
 	    String host = req.getHeader("host") ;
 
-	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    String startUrl = imcref.getStartUrl() ;
 	    res.sendRedirect(serverName + startUrl) ;
 	    return false;
@@ -377,7 +377,7 @@ public class ChatBase extends HttpServlet {
     {
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
 	if(user == null)
@@ -396,7 +396,7 @@ public class ChatBase extends HttpServlet {
     */
     public File getExternalTemplateRootFolder (HttpServletRequest req) throws ServletException, IOException	{
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	// Lets get serverinformation
 	String metaId = this.getMetaId(req) ;
 	if( metaId == null)	{
@@ -413,7 +413,7 @@ public class ChatBase extends HttpServlet {
        name of the folder which contains the templates for a certain meta id
     */
     public File getExternalTemplateFolder (HttpServletRequest req) throws ServletException, IOException	{
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 
 	String externalTemplateLib = "" ;
@@ -481,7 +481,7 @@ public class ChatBase extends HttpServlet {
     public void sendHtml (HttpServletRequest req, HttpServletResponse res,
 			  Vector vect, String template, Chat chat) throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 
 	String metaId;
@@ -591,7 +591,7 @@ public class ChatBase extends HttpServlet {
 
     public String getExternalImageFolder (HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
 
 	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
@@ -676,7 +676,7 @@ public class ChatBase extends HttpServlet {
 		authorized = false;
 		//lets send unauthorized users out
 		String serverName = MetaInfo.getServerName(req) ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		String startUrl = imcref.getStartUrl() ;
 		res.sendRedirect(serverName + startUrl) ;
 	    }
@@ -703,7 +703,7 @@ public class ChatBase extends HttpServlet {
 
 	// Lets get serverinformation
 	String host = req.getHeader( "Host" ) ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession( true );
 

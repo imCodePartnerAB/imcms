@@ -37,7 +37,7 @@ public class AdminError extends Administrator {
 
 
 	// Lets get the path to the admin templates folder
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	File templateLib = super.getAdminTemplateFolder(imcref, user) ;
 
 	HtmlGenerator htmlObj = new HtmlGenerator(templateLib, fileName) ;

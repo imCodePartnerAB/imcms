@@ -20,7 +20,7 @@ public class QEngine extends HttpServlet
 	{
 
 		String host = req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 		//get parameters
 		String type = req.getParameter("type");

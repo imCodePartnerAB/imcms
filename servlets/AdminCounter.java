@@ -21,7 +21,7 @@ public class AdminCounter extends Administrator {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets validate the session
 	if (super.checkSession(req,res) == false)	return ;
@@ -66,7 +66,7 @@ public class AdminCounter extends Administrator {
 	// Lets validate the session
 	if (super.checkSession(req,res) == false) return ;
 
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets get an user object
 	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;

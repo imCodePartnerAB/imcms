@@ -2,6 +2,7 @@
 import imcode.server.IMCServiceInterface;
 import imcode.server.Table;
 import imcode.server.IMCService;
+import imcode.server.ApplicationServer;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Check;
@@ -33,7 +34,7 @@ public class SaveInPage extends HttpServlet {
      doPost()
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
         UserDomainObject user;

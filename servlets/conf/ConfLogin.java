@@ -81,7 +81,7 @@ public class ConfLogin extends Conference {
 	//log("Logintype är nu: " + loginType) ;
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	// ******** ADD USER PAGE *********
@@ -174,7 +174,7 @@ public class ConfLogin extends Conference {
 	//log("tmp: " + tmp) ;
 
 	// Lets get serverinformation
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 	// ************* VERIFY LOGIN TO CONFERENCE **************

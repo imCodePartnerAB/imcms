@@ -27,7 +27,7 @@ public class AdminFortunes extends Administrator {
 	PrintWriter out = res.getWriter();
 
 	// Lets get the server this request was aimed for
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets validate the session
 	if (super.checkSession(req,res) == false)	return ;
@@ -103,7 +103,7 @@ public class AdminFortunes extends Administrator {
 	PrintWriter out = res.getWriter();
 
 	// Lets get the server this request was aimed for
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession();
 

@@ -60,7 +60,7 @@ public class TellaFriendMail extends HttpServlet {
 
 	      /* server info */
 		String host = req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
                 Vector vec = new Vector() ;
                 String htmlStr = "" ;
                 String lang_prefix = imcref.getLanguage() ;

@@ -84,7 +84,7 @@ public class ConfDisc extends Conference {
 		}
 
 		// Lets get serverinformation
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 		// ********* UPDATE DISCUSSIONS ********
@@ -342,7 +342,7 @@ public class ConfDisc extends Conference {
 		}
 
 		// Lets get serverinformation
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
 		// Lets get parameters

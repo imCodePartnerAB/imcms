@@ -28,7 +28,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 	String host				= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 	String image_url			= imcref.getImageUrl() ;
 	File image_path			= Utility.getDomainPrefPath( "image_path",host ) ;
