@@ -195,7 +195,7 @@ public class ChatBoard extends ChatBase {
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty("CHAT_MESSAGES", sendMsgString  );
 		
-		this.sendHtml(req,res,vm, HTML_TEMPLATE+paramString) ;
+		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 		//	this.showSession(req) ;
 		log("ChatBoard doGet är färdig") ;
 		
