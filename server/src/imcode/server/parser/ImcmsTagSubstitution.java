@@ -274,6 +274,29 @@ public class ImcmsTagSubstitution implements Substitution {
 	return result ;
     }
 
+	/**
+       Handle a <?imcms:datetime ...?> tag
+
+       @param attributes The attributes of the datetime tag
+    **/
+    public String tagDatetime (Properties attributes) {
+		String format =  attributes.getProperty("format") ;
+		Date date = new Date();
+		java.text.SimpleDateFormat formatter;
+
+		if (format == null){
+			formatter = new java.text.SimpleDateFormat();			
+		}else{
+			formatter = new java.text.SimpleDateFormat(format);
+		}
+		
+		try{
+			return formatter.format(date);
+		}catch(IllegalArgumentException ex){			
+			return "<!-- imcms:datetime failed: "+ex.getMessage()+" -->";
+		}
+    }
+
     public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
 	String tagname = matres.group(1) ;
 	String tagattributes = matres.group(2) ;
@@ -292,6 +315,8 @@ public class ImcmsTagSubstitution implements Substitution {
 	    result = tagInclude(attributes, patMat) ;
 	} else if ("metaid".equals(tagname)) {
 	    result = tagMetaId() ;
+	} else if ("datetime".equals(tagname)) {
+	    result = tagDatetime(attributes) ;
 	} else {
 	    result = matres.group(0) ;
 	}
