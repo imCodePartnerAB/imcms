@@ -102,8 +102,8 @@
                     <% out.flush(); %>
                 </tr>
                 <% } %>
-            <% } %>
-        </table>
+            </table>
+        <% } %>
     <% } %>
 <vel:velocity>
 
