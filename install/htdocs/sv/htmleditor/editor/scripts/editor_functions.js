@@ -718,19 +718,19 @@ function changeLinkType(what){
 		theField = document.getElementById("createLinkField");
 		switch(what){
 			case 'GetDoc':
-				theDescr.innerHTML = '<b>Meta_id:</b>';
+				theDescr.innerHTML = '<b><? sv/htmleditor/scripts/editor_functions.js/10 ?>:</b>';
 				theField.innerHTML = '<input type="text" name="createLinkValue" value="" size="5" maxlength="6" style="width:42\; text-align:right">';
 			break;
 			case 'http':
-				theDescr.innerHTML = '<b>Webadress:</b>';
+				theDescr.innerHTML = '<b><? sv/htmleditor/scripts/editor_functions.js/11 ?>:</b>';
 				theField.innerHTML = '<input type="text" name="createLinkValue" value="http://" size="12" maxlength="100" style="width:140">';
 			break;
 			case 'mailto':
-				theDescr.innerHTML = '<b>Mailadress:</b>';
+				theDescr.innerHTML = '<b><? sv/htmleditor/scripts/editor_functions.js/12 ?>:</b>';
 				theField.innerHTML = '<input type="text" name="createLinkValue" value="" size="12" maxlength="100" style="width:140">';
 			break;
 			case 'ftp':
-				theDescr.innerHTML = '<b>FTP adress:</b>';
+				theDescr.innerHTML = '<b><? sv/htmleditor/scripts/editor_functions.js/13 ?>:</b>';
 				theField.innerHTML = '<input type="text" name="createLinkValue" value="ftp://" size="12" maxlength="100" style="width:140">';
 			break;
 		}

@@ -18,7 +18,7 @@ function closeThisWindow() {
 } //END FUNCTION CloseThisWindow
 
 function confirmDeleteUser(){
-	if(confirm("Varning! Användaren kommer att tas bort från systemet! Fortsätta?")) {
+	if(confirm("<? sv/AdminChangeUser.htm/3000 ?>")) {
 		return true;
 	} else {
 		return false;
@@ -28,7 +28,7 @@ function confirmDeleteUser(){
 function evalEditUser() {
 	var userId = document.forms.argumentForm.user_Id.selectedIndex;
 	if( userId == -1 ) {
-		alert("Du måste först välja en användare!");
+		alert("<? sv/AdminChangeUser.htm/3001 ?>");
 		return false;
 	} else {
 		return true;

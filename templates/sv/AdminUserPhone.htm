@@ -11,7 +11,7 @@ function closeThisWindow() {
 } //END FUNCTION CloseThisWindow
 
 function confirmDeletetion(){
-	if(confirm("Varning! Du är på väg att ta bort IP-accesser! Vill du fortsätta?"))
+	if(confirm("<? sv/AdminUserPhone.htm/3000 ?>"))
 		return true
 	else 
 		return false
@@ -21,7 +21,7 @@ function evalEditUser() {
 	var userId
 	userId = document.argumentForm.user_Id.selectedIndex
 	if(userId == "-1" ) {
-		alert("Du måste först välja en användare!")
+		alert("<? sv/AdminUserPhone.htm/3001 ?>")
 		return false
 	} else
 		return true
