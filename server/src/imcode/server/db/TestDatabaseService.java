@@ -8,7 +8,6 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private final boolean testMimer = true;  // because it is so slow to test this database we need sometimes to turn those tests off.
 
-
     static final String DB_HOST = "localhost";
 
     static final int SQLSERVER_PORT = 1433;
@@ -192,6 +191,22 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         dbService.sproc_phoneNbrAdd( 2, "9887655", 0 );
         dbService.sproc_phoneNbrAdd( 2, "123456", 1 );
         rowCount = dbService.sproc_DelPhoneNr( 2 );
+        assertEquals( 2, rowCount );
+    }
+
+    public void test_sproc_PhoneNbrDelete() {
+        static_test_sproc_PhoneNbrDelete( sqlServer );
+        static_test_sproc_PhoneNbrDelete( mySql );
+        if( testMimer ) static_test_sproc_PhoneNbrDelete( mimer );
+    }
+
+    private void static_test_sproc_PhoneNbrDelete( DatabaseService dbService ) {
+        int rowCount = dbService.sproc_PhoneNbrDelete( 1 );
+        assertEquals( 0, rowCount );
+        dbService.sproc_phoneNbrAdd( 2, "9887655", 0 );
+        dbService.sproc_phoneNbrAdd( 2, "123456", 1 );
+        rowCount = dbService.sproc_PhoneNbrDelete( 1 );
+        rowCount += dbService.sproc_PhoneNbrDelete( 2 );
         assertEquals( 2, rowCount );
     }
 

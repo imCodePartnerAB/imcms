@@ -520,7 +520,7 @@ public class DatabaseService {
     /**
      * Adds a role to a particular user
      */
-    int sproc_AddUserRole(  Table_user_roles_crossref userRoleTupple ) {
+    int sproc_AddUserRole( Table_user_roles_crossref userRoleTupple ) {
         // Lets check if the role already exists
        ArrayList querryResult = sql_selectUserAndRoleFrom_user_roles_crossref( userRoleTupple );
 
@@ -573,11 +573,17 @@ public class DatabaseService {
         }
     }
 
-    // todo döp om till deleteAllPhonenumbers eller nåt
+    // todo döp om till deleteAllPhonenumbersForUser eller nåt
     // todo klumpa ihop med delete userses?
     int sproc_DelPhoneNr( int user_id ) {
-        String sql = " DELETE FROM phones WHERE user_id = ? ";
+        String sql = "DELETE FROM phones WHERE user_id = ? ";
         Object[] paramValues = new Object[]{ new Integer( user_id ) };
+        return sqlProcessor.executeUpdate( sql, paramValues );
+    }
+
+    int sproc_PhoneNbrDelete( int phone_id ) {
+        String sql = "DELETE FROM PHONES WHERE phone_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( phone_id ) };
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 }
