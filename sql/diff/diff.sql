@@ -3818,3 +3818,18 @@ go
 
 
 -- 2002-03-07
+
+
+--
+-- Change primary key of table mime_types from
+-- mime_id, to mime_id and lang_prefix combined.
+-- 2002-03-12
+--
+
+ -- Drop the primary key
+ALTER TABLE mime_types DROP CONSTRAINT PK_mime_types
+GO
+
+ -- Add a new primary key
+ALTER TABLE mime_types ADD CONSTRAINT PK_mime_types PRIMARY KEY NONCLUSTERED ( mime_id, lang_prefix )
+GO
