@@ -4,18 +4,28 @@ use strict;
 use warnings;
 
 use HTML::TokeParser::Simple;
+use File::Basename ;
 use File::Find;
 use Cwd;
+use Getopt::Std ;
 
 use Properties ;
 
 my $tagstarttoken = '<? ';
 my $tagendtoken   = ' ?>';
-my $tagindexstart = 2000;
+my $tagindexstart = 0;
 
 my $currentdir = getcwd;
 
 undef $/;
+
+my %options ;
+
+getopt('o', \%options) ;
+
+my $properties_filename = $options{o} ;
+
+die "No properties output file! Specify with -o <file>!\n" unless $properties_filename ;
 
 my $properties ;
 
@@ -116,14 +126,15 @@ sub handle_attributes {
 
 sub wanted {
 
-    $File::Find::prune = 1 if $_ eq 'CVS';
+    my $filepath = $File::Find::name;
+    my $filename = $_;
+    
+    $File::Find::prune = 1 if $filename eq 'CVS';
     return if -d;
     return if -B;
     return if /^\./;
     return if /\.(?:out|css|js|vbs|properties|old|new)$/;
 
-    my $filename = $_;
-    my $filepath = $File::Find::name;
     $filepath =~ s!^./!!;
 
     my $htmlparser = HTML::TokeParser::Simple->new($filename) || die $!;
@@ -161,10 +172,14 @@ sub wanted {
 
 @ARGV = '.' unless @ARGV;
 
-foreach my $directory (@ARGV) {
+foreach my $filepath (@ARGV) {
     chdir $currentdir;
-    chdir $directory or die $!;
     $properties = new Properties() ;
-    find( { wanted => \&wanted }, '.' );
-    $properties->save('imcms_sv.properties2') ;
+    my $dir = -d $filepath ? $filepath : dirname $filepath ;
+    my $findpath = -d $filepath ? '.' : basename $filepath ;
+    chdir $dir or die $!;
+
+    $properties->load($properties_filename) if -f $properties_filename && -r _ ;
+    find( { wanted => \&wanted }, $findpath );
+    $properties->save($properties_filename) ;
 }
