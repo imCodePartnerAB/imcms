@@ -922,25 +922,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * checkDocRights
-     */
-    public boolean checkDocRights( int meta_id, UserDomainObject user ) {
-        try {
-            String[] perms = sqlProcedure( "GetUserPermissionSet",
-                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getUserId() )} );
-
-            if ( perms.length > 0 && Integer.parseInt( perms[0] ) < 4 ) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch ( RuntimeException ex ) {
-            log.error( "Exception in checkDocRights(int,User)", ex );
-            throw ex;
-        }
-    }
-
-    /**
      * Checks to see if a user has any permission of a particular set of permissions for a document.
      *
      * @param meta_id    The document-id

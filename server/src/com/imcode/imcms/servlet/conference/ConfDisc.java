@@ -10,16 +10,25 @@ package com.imcode.imcms.servlet.conference;
  *
 */
 
-import imcode.server.*;
+import imcode.external.diverse.HtmlGenerator;
+import imcode.external.diverse.MetaInfo;
+import imcode.external.diverse.ParseServlet;
+import imcode.external.diverse.VariableManager;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCPoolInterface;
+import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
-
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
 import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Html template in use:
@@ -82,7 +91,9 @@ public class ConfDisc extends Conference {
 
             HttpSession session = req.getSession( false );
             if ( session != null ) {
-                String latestDiscId = confref.sqlProcedureStr( "A_GetLastDiscussionId", new String[]{params.getProperty( "META_ID" ), aForumId} );
+                String latestDiscId = confref.sqlProcedureStr( "A_GetLastDiscussionId", new String[]{
+                    params.getProperty( "META_ID" ), aForumId
+                } );
 
                 if ( latestDiscId == null ) {
                     log( "LatestDiscID saknas, det kan saknas diskussioner i forumet:" + aForumId );
@@ -119,12 +130,16 @@ public class ConfDisc extends Conference {
 
             // Lets get the total nbr of discs in the forum
             // RmiConf rmi = new RmiConf(user) ;
-            String nbrOfDiscsStr = confref.sqlProcedureStr( "A_GetNbrOfDiscs", new String[]{params.getProperty( "FORUM_ID" )} );
+            String nbrOfDiscsStr = confref.sqlProcedureStr( "A_GetNbrOfDiscs", new String[]{
+                params.getProperty( "FORUM_ID" )
+            } );
             int nbrOfDiscs;
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = confref.sqlProcedureStr( "A_GetNbrOfDiscsToShow", new String[]{params.getProperty( "FORUM_ID" )} );
+            String showDiscsStr = confref.sqlProcedureStr( "A_GetNbrOfDiscsToShow", new String[]{
+                params.getProperty( "FORUM_ID" )
+            } );
             int showDiscsCounter = Integer.parseInt( showDiscsStr );
 
             try {
@@ -151,7 +166,9 @@ public class ConfDisc extends Conference {
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = confref.sqlProcedureStr( "A_GetNbrOfDiscsToShow", new String[]{params.getProperty( "FORUM_ID" )} );
+            String showDiscsStr = confref.sqlProcedureStr( "A_GetNbrOfDiscsToShow", new String[]{
+                params.getProperty( "FORUM_ID" )
+            } );
             int showDiscsCounter = Integer.parseInt( showDiscsStr );
 
             this.decreaseDiscIndex( req, showDiscsCounter );
@@ -211,11 +228,23 @@ public class ConfDisc extends Conference {
                 // IF WE ARE LOOKING FOR USERS ACTIVITY
                 if ( params.getProperty( "CATEGORY" ).equals( "2" ) ) {
 
-                    StringBuffer sqlQ = new StringBuffer( "SELECT DISTINCT '0' as 'newflag', disc.discussion_id, SUBSTRING( CONVERT(char(16), rep.create_date,20), 6, 16) AS 'create_date',\n" + "rep.headline, disc.count_replies, usr.first_name, usr.last_name, SUBSTRING( CONVERT(char(20), disc.last_mod_date,20),1, 20) as 'updated_date'\n" + "FROM A_replies rep, A_discussion disc, A_conf_users usr, A_conference conf, A_conf_forum cf, A_forum, A_conf_users_crossref crossref \n" + "WHERE  rep.parent_id = disc.discussion_id \n" + "AND disc.forum_id = A_forum.forum_id \n" + "AND A_forum.forum_id = ? \n" + "AND A_forum.forum_id = cf.forum_id \n" + "AND cf.conf_id = ? \n"
+                    StringBuffer sqlQ = new StringBuffer( "SELECT DISTINCT '0' as 'newflag', disc.discussion_id, SUBSTRING( CONVERT(char(16), rep.create_date,20), 6, 16) AS 'create_date',\n"
+                                                          + "rep.headline, disc.count_replies, usr.first_name, usr.last_name, SUBSTRING( CONVERT(char(20), disc.last_mod_date,20),1, 20) as 'updated_date'\n"
+                                                          + "FROM A_replies rep, A_discussion disc, A_conf_users usr, A_conference conf, A_conf_forum cf, A_forum, A_conf_users_crossref crossref \n"
+                                                          + "WHERE  rep.parent_id = disc.discussion_id \n"
+                                                          + "AND disc.forum_id = A_forum.forum_id \n"
+                                                          + "AND A_forum.forum_id = ? \n"
+                                                          + "AND A_forum.forum_id = cf.forum_id \n"
+                                                          + "AND cf.conf_id = ? \n"
                                                           // Lets check for the date
                                                           + "AND rep.create_date > ? AND rep.create_date <= ? \n"
 
-                                                          + "AND rep.user_id = usr.user_id \n" + "AND usr.user_id = crossref.user_id \n" + "AND crossref.conf_id = " + metaId + "\n" + "AND (\n" );
+                                                          + "AND rep.user_id = usr.user_id \n"
+                                                          + "AND usr.user_id = crossref.user_id \n"
+                                                          + "AND crossref.conf_id = "
+                                                          + metaId
+                                                          + "\n"
+                                                          + "AND (\n" );
 
                     ArrayList sqlParameters = new ArrayList();
                     sqlParameters.add( aForumId );
@@ -238,7 +267,9 @@ public class ConfDisc extends Conference {
                 } else {
                     // Ok, Lets build the search string
 
-                    sqlAnswer = confref.sqlProcedureMulti( "A_SearchText", new String[]{metaId, aForumId, category, searchW, frDate, toDate + " 23:59:59"} );
+                    sqlAnswer = confref.sqlProcedureMulti( "A_SearchText", new String[]{
+                        metaId, aForumId, category, searchW, frDate, toDate + " 23:59:59"
+                    } );
                 } // End if
             } // End if
 
@@ -254,10 +285,10 @@ public class ConfDisc extends Conference {
             // Lets preparse all records, if any returned get an error mesage
             String allRecs = "";
             //	log("SqlAnswer: " + sqlAnswer) ;
-            if (sqlAnswer != null) {
-                if (sqlAnswer.length > 0) {
+            if ( sqlAnswer != null ) {
+                if ( sqlAnswer.length > 0 ) {
                     allRecs = preParse( req, sqlAnswer, tagsV, aHreHtmlFile, "" );
-                    if (allRecs == null) {
+                    if ( allRecs == null ) {
                         ConfError msgErr = new ConfError();
                         allRecs = msgErr.getErrorMessage( req, 41 );
                     }
@@ -278,15 +309,18 @@ public class ConfDisc extends Conference {
 
             // Lets build the Responsepage
             VariableManager vm = new VariableManager();
-            if ( allRecs == null || allRecs.equals( "" ) )
+            if ( allRecs == null || allRecs.equals( "" ) ) {
                 vm.addProperty( "A_HREF_LIST", searchMsg );
-            else
+            } else {
                 vm.addProperty( "A_HREF_LIST", allRecs );
+            }
 
             //lets show newbutton if user has more than readrights
             String newDiscButton = "&nbsp;";
             int intMetaId = Integer.parseInt( metaId );
-            if ( imcref.checkDocRights( intMetaId, user ) && imcref.checkDocAdminRights( intMetaId, user ) ) {
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DocumentDomainObject document = documentMapper.getDocument( intMetaId );
+            if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document) && imcref.checkDocAdminRights( intMetaId, user ) ) {
 
                 VariableManager vmButtons = new VariableManager();
                 vmButtons.addProperty( "#SERVLET_URL#", "" );
@@ -336,7 +370,9 @@ public class ConfDisc extends Conference {
         File aHrefHtmlFile = new File( super.getExternalTemplateFolder( req ), A_HREF_HTML );
 
         // Lets get all Discussions
-        String[][] sqlAnswer = confref.sqlProcedureMulti( "A_GetAllDiscussions", new String[]{aMetaId, aForumId, aLoginDate} );
+        String[][] sqlAnswer = confref.sqlProcedureMulti( "A_GetAllDiscussions", new String[]{
+            aMetaId, aForumId, aLoginDate
+        } );
 
         //lets generate the buttons that should appear
         File templateLib = this.getExternalTemplateFolder( req );
@@ -362,7 +398,9 @@ public class ConfDisc extends Conference {
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = confref.sqlProcedureStr( "A_GetNbrOfDiscsToShow", new String[]{params.getProperty( "FORUM_ID" )} );
+            String showDiscsStr = confref.sqlProcedureStr( "A_GetNbrOfDiscsToShow", new String[]{
+                params.getProperty( "FORUM_ID" )
+            } );
             showDiscsCounter = Integer.parseInt( showDiscsStr );
 
             // Lets create an array
@@ -386,7 +424,9 @@ public class ConfDisc extends Conference {
         String currForum = confref.sqlProcedureStr( "A_GetForumName", new String[]{params.getProperty( "FORUM_ID" )} );
 
         //lets show newdiscbutton if user has more than readrights
-        if ( imcref.checkDocRights( metaId, user ) && imcref.checkDocAdminRights( metaId, user ) ) {
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( metaId );
+        if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document) && imcref.checkDocAdminRights( metaId, user ) ) {
             HtmlGenerator newButtonHtmlObj = new HtmlGenerator( templateLib, NEW_DISC_TEMPLATE );
             newDiscButton = newButtonHtmlObj.createHtmlString( vmButtons, req );
         }
@@ -405,7 +445,8 @@ public class ConfDisc extends Conference {
      * Parses the Extended array with the htmlcode, which will be parsed
      * for all records in the array
      */
-    private String preParse( HttpServletRequest req, String[][] DBArr, Vector tagsV, File htmlCodeFile, String imagePath ) throws IOException {
+    private String preParse( HttpServletRequest req, String[][] DBArr, Vector tagsV, File htmlCodeFile,
+                             String imagePath ) throws IOException {
         String htmlStr = "";
         for ( int i = 0; i < DBArr.length; i++ ) {
             Vector dataV = new Vector();
@@ -428,8 +469,9 @@ public class ConfDisc extends Conference {
                 String newFlag = htmlObj.createHtmlString( newFlagVM, req );
 
                 dataV.setElementAt( newFlag, 0 );
-            } else
+            } else {
                 dataV.setElementAt( "", 0 );
+            }
 
             htmlStr += this.parseOneRecord( tagsV, dataV, htmlCodeFile );
         } // end of the big for
@@ -530,8 +572,9 @@ public class ConfDisc extends Conference {
 
         while ( st.hasMoreTokens() ) {
             String tmp = st.nextToken();
-            if ( counter == itemNbr )
+            if ( counter == itemNbr ) {
                 tmpVal = tmp;
+            }
             counter = counter + 1;
         }
 
@@ -574,7 +617,9 @@ public class ConfDisc extends Conference {
             if ( session != null ) {
                 String indexStr = (String)session.getAttribute( "Conference.disc_index" );
                 int anInt = Integer.parseInt( indexStr ) - incFactor;
-                if ( anInt < 0 ) anInt = 0;
+                if ( anInt < 0 ) {
+                    anInt = 0;
+                }
                 session.setAttribute( "Conference.disc_index", "" + anInt );
             }
         } catch ( Exception e ) {
@@ -627,11 +672,15 @@ public class ConfDisc extends Conference {
         HttpSession session = req.getSession( false );
         if ( session != null ) {
             // Lets get the parameters we know we are supposed to get from the request object
-            String forumId = ( (String)session.getAttribute( "Conference.forum_id" ) == null ) ? "" : ( (String)session.getAttribute( "Conference.forum_id" ) );
+            String forumId = ( (String)session.getAttribute( "Conference.forum_id" ) == null )
+                             ? "" : ( (String)session.getAttribute( "Conference.forum_id" ) );
             //	String discId = (	(String) session.getAttribute("Conference.forum_id")==null) ? "" : ((String) session.getAttribute("Conference.forum_id")) ;
-            String discId = ( (String)session.getAttribute( "Conference.disc_id" ) == null ) ? "" : ( (String)session.getAttribute( "Conference.disc_id" ) );
-            String lastLogindate = ( (String)session.getAttribute( "Conference.last_login_date" ) == null ) ? "" : ( (String)session.getAttribute( "Conference.last_login_date" ) );
-            String discIndex = ( (String)session.getAttribute( "Conference.disc_index" ) == null ) ? "" : ( (String)session.getAttribute( "Conference.disc_index" ) );
+            String discId = ( (String)session.getAttribute( "Conference.disc_id" ) == null )
+                            ? "" : ( (String)session.getAttribute( "Conference.disc_id" ) );
+            String lastLogindate = ( (String)session.getAttribute( "Conference.last_login_date" ) == null )
+                                   ? "" : ( (String)session.getAttribute( "Conference.last_login_date" ) );
+            String discIndex = ( (String)session.getAttribute( "Conference.disc_index" ) == null )
+                               ? "" : ( (String)session.getAttribute( "Conference.disc_index" ) );
 
             reqParams.setProperty( "DISC_INDEX", discIndex );
             reqParams.setProperty( "LAST_LOGIN_DATE", lastLogindate );
@@ -660,10 +709,13 @@ public class ConfDisc extends Conference {
         String discIndex = "";
         HttpSession session = req.getSession( false );
         if ( session != null ) {
-            if ( confForumId == null )
+            if ( confForumId == null ) {
                 confForumId = (String)session.getAttribute( "Conference.forum_id" );
+            }
             discIndex = (String)session.getAttribute( "Conference.disc_index" );
-            if ( discIndex == null || discIndex.equalsIgnoreCase( "null" ) ) discIndex = "0";
+            if ( discIndex == null || discIndex.equalsIgnoreCase( "null" ) ) {
+                discIndex = "0";
+            }
         }
         reqParams.setProperty( "FORUM_ID", confForumId );
         reqParams.setProperty( "DISC_INDEX", discIndex );
@@ -741,7 +793,7 @@ public class ConfDisc extends Conference {
         // if "idag" is 2000-05-01, then it means at the time 00.00.
         // So thats why we add a day, so 2000-05-01 -> 2000-05-02 to cover the hole day!
         GregorianCalendar today = new GregorianCalendar();
-        today.set( Calendar.DATE, (today.get( Calendar.DATE ) ) );
+        today.set( Calendar.DATE, ( today.get( Calendar.DATE ) ) );
         int tYear = today.get( Calendar.YEAR );
         int tMonth = 1 + today.get( Calendar.MONTH );
         int tDay = today.get( Calendar.DATE );
@@ -754,10 +806,14 @@ public class ConfDisc extends Conference {
         int yDay = today.get( Calendar.DATE );
 
         // Lets analyze the startdate params. if it is "idag" resp "igår"
-        if ( p.getProperty( "TO_DATE" ).equals( "" ) || p.getProperty( "TO_DATE" ).equalsIgnoreCase( p.getProperty( "TO_VALUE" ) ) )
+        if ( p.getProperty( "TO_DATE" ).equals( "" )
+             || p.getProperty( "TO_DATE" ).equalsIgnoreCase( p.getProperty( "TO_VALUE" ) ) ) {
             p.setProperty( "TO_DATE", "" + tYear + "-" + tMonth + "-" + tDay  /*+ " 23:59:59"*/ );
-        if ( p.getProperty( "FR_DATE" ).equals( "" ) || p.getProperty( "FR_DATE" ).equalsIgnoreCase( p.getProperty( "FR_VALUE" ) ) )
+        }
+        if ( p.getProperty( "FR_DATE" ).equals( "" )
+             || p.getProperty( "FR_DATE" ).equalsIgnoreCase( p.getProperty( "FR_VALUE" ) ) ) {
             p.setProperty( "FR_DATE", "" + yYear + "-" + yMonth + "-" + yDay /*+ " 00:00"*/ );
+        }
 
         // Lets check if we can create a valid sql date from our date params
         java.sql.Date fromDate = null;

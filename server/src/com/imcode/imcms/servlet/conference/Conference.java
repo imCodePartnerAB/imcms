@@ -4,6 +4,8 @@ import imcode.external.diverse.*;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCPoolInterface;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -490,7 +492,9 @@ public class Conference extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         //is user authorized?
-        boolean authorized = imcref.checkDocRights( metaId, user );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(metaId);
+        boolean authorized = documentMapper.userHasAtLeastDocumentReadPermission( user, document);
 
         //lets send unauthorized users out
         if ( !authorized ) {
@@ -511,7 +515,9 @@ public class Conference extends HttpServlet {
     boolean userHasRightToEdit( IMCServiceInterface imcref, int metaId,
                                 imcode.server.user.UserDomainObject user ) {
 
-        return ( imcref.checkDocRights( metaId, user ) &&
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(metaId);
+        return ( documentMapper.userHasAtLeastDocumentReadPermission( user, document) &&
                 imcref.checkDocAdminRights( metaId, user ) );
     }
 

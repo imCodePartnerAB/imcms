@@ -18,6 +18,8 @@ import imcode.server.ApplicationServer;
 import imcode.server.HTMLConv;
 import imcode.server.IMCPoolInterface;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -180,7 +182,9 @@ public class ConfReply extends Conference {
         String commentButton = "&nbsp;";
 
         //lets show comment button if user has more than readrights
-        if ( imcref.checkDocRights( intMetaId, user ) && imcref.checkDocAdminRights( intMetaId, user ) ) {
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(intMetaId);
+        if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document) && imcref.checkDocAdminRights( intMetaId, user ) ) {
 
             VariableManager vmButtons = new VariableManager();
             vmButtons.addProperty( "#SERVLET_URL#", "" );

@@ -165,10 +165,6 @@ public interface IMCServiceInterface {
     public Object[] getDemoTemplate(int template_id)
 	throws IOException ;
 
-    // check if user can view document
-    public boolean checkDocRights(int meta_id, UserDomainObject user)
-	;
-
     public boolean checkDocAdminRights(int meta_id, UserDomainObject user, int permissions)
 	;
 

@@ -1,14 +1,23 @@
 package com.imcode.imcms.servlet.billboard;
 
-import imcode.server.*;
+import imcode.external.diverse.HtmlGenerator;
+import imcode.external.diverse.MetaInfo;
+import imcode.external.diverse.VariableManager;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCPoolInterface;
+import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import com.imcode.imcms.servlet.billboard.BillBoard;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * Html template in use:
@@ -54,157 +63,171 @@ public class BillBoardReply extends BillBoard {//ConfReply
      * DoPost
      */
 
-    public void doPost(HttpServletRequest req, HttpServletResponse res)
+    public void doPost( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
-	//log("START BillBoardReply doPost");
+        //log("START BillBoardReply doPost");
 
-	// Lets validate the session, e.g has the user logged in to Janus?
-	if (super.checkSession(req,res) == false)	return ;
+        // Lets validate the session, e.g has the user logged in to Janus?
+        if ( super.checkSession( req, res ) == false ) {
+            return;
+        }
 
-	// Lets get an user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
-	if(user == null) return ;
+        // Lets get an user object
+        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
+        if ( user == null ) {
+            return;
+        }
 
-	if ( !isUserAuthorized( req, res, user ) ) {
-	    return;
-	}
+        if ( !isUserAuthorized( req, res, user ) ) {
+            return;
+        }
 
-	// ********* UPDATE DISCUSSIONS ********
-	if(req.getParameter("UPDATE") !=null ) {
-            this.doGet(req, res);
-	    return ;
-	}
+        // ********* UPDATE DISCUSSIONS ********
+        if ( req.getParameter( "UPDATE" ) != null ) {
+            this.doGet( req, res );
+            return;
+        }
 
     }
 
     /**
-       DoGet
-    **/
+     * DoGet
+     */
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
+    public void doGet( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
-	//log("START BillBoardReply doGet");
+        //log("START BillBoardReply doGet");
 
-	// Lets validate the session, e.g has the user logged in to Janus?
-	if (super.checkSession(req,res) == false)	return ;
+        // Lets validate the session, e.g has the user logged in to Janus?
+        if ( super.checkSession( req, res ) == false ) {
+            return;
+        }
 
-	HttpSession session = req.getSession(false) ;
+        HttpSession session = req.getSession( false );
 
-	// Lets get the parameters and validate them
-	Properties params = this.getParameters(req) ;
+        // Lets get the parameters and validate them
+        Properties params = this.getParameters( req );
 
-	// Lets get an user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
-	if(user == null) return ;
+        // Lets get an user object
+        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
+        if ( user == null ) {
+            return;
+        }
 
-	if ( !isUserAuthorized( req, res, user ) ) {
-	    return;
-	}
+        if ( !isUserAuthorized( req, res, user ) ) {
+            return;
+        }
 
-	// Lets get serverinformation
+        // Lets get serverinformation
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	IMCPoolInterface billref = ApplicationServer.getIMCPoolInterface() ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        IMCPoolInterface billref = ApplicationServer.getIMCPoolInterface();
 
-	// Lets get path to the imagefolder. http://dev.imcode.com/images/102/ConfDiscNew.gif
+        // Lets get path to the imagefolder. http://dev.imcode.com/images/102/ConfDiscNew.gif
 
-	// Lets get the part of an html page, wich will be parsed for every a Href reference
-	File templateLib = super.getExternalTemplateFolder(req) ;
-	File aSnippetFile = new File(templateLib, RECS_PREV_HTML) ;
+        // Lets get the part of an html page, wich will be parsed for every a Href reference
+        File templateLib = super.getExternalTemplateFolder( req );
+        File aSnippetFile = new File( templateLib, RECS_PREV_HTML );
 
-	//ok here we see     if we have a prevue to handle
-	Hashtable billPrevData = (Hashtable) session.getAttribute("billPrevData");
-	//log("PREVIEWMODE: "+req.getParameter("PREVIEWMODE"));
-        if (billPrevData != null && req.getParameter("PREVIEWMODE") != null) { //ok PREVIEW-mode
-		//log("ok PREVIEW-mode");
-		String addHeader = (String)billPrevData.get(header );
-		String addText = (String)billPrevData.get(text );
-            String datum = billref.sqlProcedureStr("B_GetTime", new String[]{});
-		//log(addHeader+"\n"+addText+"\n"+datum);
-		String addType = req.getParameter("ADDTYPE");
-		String addType2 = req.getParameter("ADDTYPE");
-		//log("aaaaaaaaa: "+addType);
-		//lets simulate the original sql answer
-            String[][] tempArr = { { "", addHeader, addText, "", datum, addType, addType2 } };
-		//log("aSnippetFile: "+aSnippetFile);
-		Vector tags = buildTagsV();
-		tags.add("#ADD_TYPE#");
-		tags.add("#ADD_TYPE2#");
-		String currRec1 = preParse( tempArr, tags, aSnippetFile ) ;
-		//	log(currRec1);
-		VariableManager vm1 = new VariableManager() ;
-		//vm1.addProperty("NEW_REPLIE", commentButton ) ;//ska bort
-		vm1.addProperty("REPLIE_RECORD", currRec1  ) ;
-		vm1.addProperty( "CURRENT_BILL_HEADER", billPrevData.get(header) ) ;
-		vm1.addProperty( "ADMIN_LINK_HTML", "" );//måste byta template
+        //ok here we see     if we have a prevue to handle
+        Hashtable billPrevData = (Hashtable)session.getAttribute( "billPrevData" );
+        //log("PREVIEWMODE: "+req.getParameter("PREVIEWMODE"));
+        if ( billPrevData != null && req.getParameter( "PREVIEWMODE" ) != null ) { //ok PREVIEW-mode
+            //log("ok PREVIEW-mode");
+            String addHeader = (String)billPrevData.get( header );
+            String addText = (String)billPrevData.get( text );
+            String datum = billref.sqlProcedureStr( "B_GetTime", new String[]{} );
+            //log(addHeader+"\n"+addText+"\n"+datum);
+            String addType = req.getParameter( "ADDTYPE" );
+            String addType2 = req.getParameter( "ADDTYPE" );
+            //log("aaaaaaaaa: "+addType);
+            //lets simulate the original sql answer
+            String[][] tempArr = {{"", addHeader, addText, "", datum, addType, addType2}};
+            //log("aSnippetFile: "+aSnippetFile);
+            Vector tags = buildTagsV();
+            tags.add( "#ADD_TYPE#" );
+            tags.add( "#ADD_TYPE2#" );
+            String currRec1 = preParse( tempArr, tags, aSnippetFile );
+            //	log(currRec1);
+            VariableManager vm1 = new VariableManager();
+            //vm1.addProperty("NEW_REPLIE", commentButton ) ;//ska bort
+            vm1.addProperty( "REPLIE_RECORD", currRec1 );
+            vm1.addProperty( "CURRENT_BILL_HEADER", billPrevData.get( header ) );
+            vm1.addProperty( "ADMIN_LINK_HTML", "" );//måste byta template
 
-		this.sendHtml(req,res,vm1, HTML_TEMPLATE) ;
-		return;
-	    }//end PREVIEW-mode
+            this.sendHtml( req, res, vm1, HTML_TEMPLATE );
+            return;
+        }//end PREVIEW-mode
 
-	// Lets get the users userId
+        // Lets get the users userId
 
-	String discId = params.getProperty("DISC_ID") ;
+        String discId = params.getProperty( "DISC_ID" );
 
-	// Lets update the sessions DISC_ID
+        // Lets update the sessions DISC_ID
 
-	if(session != null  ) {
-	    session.setAttribute("BillBoard.disc_id", discId) ;
-	}
+        if ( session != null ) {
+            session.setAttribute( "BillBoard.disc_id", discId );
+        }
 
-        if (discId.equals("-1")) { //ok lets get the start page
+        if ( discId.equals( "-1" ) ) { //ok lets get the start page
             VariableManager vm = new VariableManager();
-            this.sendHtml(req, res, vm, HTML_TEMPLATE_START);
-		return;
-	    }
+            this.sendHtml( req, res, vm, HTML_TEMPLATE_START );
+            return;
+        }
 
-        if (req.getParameter("MAIL_SENT") != null) {
-		//ok lets get the sent msg page
-		VariableManager vm = new VariableManager() ;
-		this.sendHtml(req,res,vm, HTML_TEMPLATE_MAIL_SENT) ;
-		return;
-	    }
+        if ( req.getParameter( "MAIL_SENT" ) != null ) {
+            //ok lets get the sent msg page
+            VariableManager vm = new VariableManager();
+            this.sendHtml( req, res, vm, HTML_TEMPLATE_MAIL_SENT );
+            return;
+        }
 
-        String[][] sqlAnswer = billref.sqlProcedureMulti("B_GetCurrentBill", new String[]{discId});
+        String[][] sqlAnswer = billref.sqlProcedureMulti( "B_GetCurrentBill", new String[]{discId} );
 
-	// Lets get the discussion header
-        String discHeader = billref.sqlProcedureStr("B_GetBillHeader", new String[]{discId} );//GetDiscussionHeader
+        // Lets get the discussion header
+        String discHeader = billref.sqlProcedureStr( "B_GetBillHeader", new String[]{discId} );//GetDiscussionHeader
 
-	if (discHeader == null || discId.equalsIgnoreCase("-1") )discHeader = " " ;
+        if ( discHeader == null || discId.equalsIgnoreCase( "-1" ) ) {
+            discHeader = " ";
+        }
 
 
-	// UsersSortOrderRadioButtons
-	String metaId = params.getProperty("META_ID") ;
-	int intMetaId = Integer.parseInt( metaId );
+        // UsersSortOrderRadioButtons
+        String metaId = params.getProperty( "META_ID" );
+        int intMetaId = Integer.parseInt( metaId );
 
-	// Lets preparse all records
-	aSnippetFile = new File(templateLib, RECS_HTML) ;
-	String currentRec = " " ;
-	if (sqlAnswer != null) currentRec = preParse( sqlAnswer, buildTagsV(), aSnippetFile ) ;
+        // Lets preparse all records
+        aSnippetFile = new File( templateLib, RECS_HTML );
+        String currentRec = " ";
+        if ( sqlAnswer != null ) {
+            currentRec = preParse( sqlAnswer, buildTagsV(), aSnippetFile );
+        }
 
-	// Lets build the Responsepage
+        // Lets build the Responsepage
 
-	//lets generate the buttons that should appear
-	String commentButton = "&nbsp;";
+        //lets generate the buttons that should appear
+        String commentButton = "&nbsp;";
 
-	//lets show comment button if user has more than readrights
-	if ( imcref.checkDocRights( intMetaId, user ) &&
-	     imcref.checkDocAdminRights( intMetaId, user ) ) {
+        //lets show comment button if user has more than readrights
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( intMetaId );
+        if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document) &&
+             imcref.checkDocAdminRights( intMetaId, user ) ) {
 
-	    VariableManager vmButtons = new VariableManager();
-	    vmButtons.addProperty( "#SERVLET_URL#", "" );
-	    vmButtons.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
-	    HtmlGenerator commentButtonHtmlObj = new HtmlGenerator( templateLib, NEW_COMMENT_TEMPLATE );
-	    commentButton = commentButtonHtmlObj.createHtmlString( vmButtons, req );
-	}
+            VariableManager vmButtons = new VariableManager();
+            vmButtons.addProperty( "#SERVLET_URL#", "" );
+            vmButtons.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
+            HtmlGenerator commentButtonHtmlObj = new HtmlGenerator( templateLib, NEW_COMMENT_TEMPLATE );
+            commentButton = commentButtonHtmlObj.createHtmlString( vmButtons, req );
+        }
 
-	VariableManager vm = new VariableManager() ;
-	vm.addProperty("NEW_REPLIE", commentButton ) ;
-	vm.addProperty("REPLIE_RECORD", currentRec  ) ;
-	vm.addProperty("CURRENT_BILL_HEADER", discHeader  ) ;
-	vm.addProperty( "ADMIN_LINK_HTML", ADMIN_LINK_TEMPLATE );
+        VariableManager vm = new VariableManager();
+        vm.addProperty( "NEW_REPLIE", commentButton );
+        vm.addProperty( "REPLIE_RECORD", currentRec );
+        vm.addProperty( "CURRENT_BILL_HEADER", discHeader );
+        vm.addProperty( "ADMIN_LINK_HTML", ADMIN_LINK_TEMPLATE );
 
-        this.sendHtml(req, res, vm, HTML_TEMPLATE);
+        this.sendHtml( req, res, vm, HTML_TEMPLATE );
 
         //	log("Get är klar") ;
         return;
@@ -214,11 +237,11 @@ public class BillBoardReply extends BillBoard {//ConfReply
         // SYNTAX: id  headline  text replies date
         // Lets build our variable list
         Vector tagsV = new Vector();
-        tagsV.add("#REPLY_BILL_ID#");
-        tagsV.add("#REPLY_HEADER#");
-        tagsV.add("#REPLY_TEXT#");
-        tagsV.add("#C_REPLIES#");
-        tagsV.add("#REPLY_DATE#");
+        tagsV.add( "#REPLY_BILL_ID#" );
+        tagsV.add( "#REPLY_HEADER#" );
+        tagsV.add( "#REPLY_TEXT#" );
+        tagsV.add( "#C_REPLIES#" );
+        tagsV.add( "#REPLY_DATE#" );
         return tagsV;
     }
 
@@ -227,18 +250,18 @@ public class BillBoardReply extends BillBoard {//ConfReply
      * for all records in the array
      */
     private String preParse( String[][] DBArr, Vector tagsV,
-                           File htmlCodeFile ) {
+                             File htmlCodeFile ) {
 
-        StringBuffer htmlStr = new StringBuffer("");
+        StringBuffer htmlStr = new StringBuffer( "" );
         // Lets do for all records...
-        for (int i = 0; i < DBArr.length; i++) {
+        for ( int i = 0; i < DBArr.length; i++ ) {
             Vector dataV = new Vector();
 
-            for (int j = 0; j < DBArr[i].length; j++) {
-                dataV.add(DBArr[i][j]);
+            for ( int j = 0; j < DBArr[i].length; j++ ) {
+                dataV.add( DBArr[i][j] );
             }
 
-            htmlStr.append(this.parseOneRecord(tagsV, dataV, htmlCodeFile));
+            htmlStr.append( this.parseOneRecord( tagsV, dataV, htmlCodeFile ) );
             //	log("Ett record: " + oneParsedRecordStr);
         } // end of the big for
         return htmlStr.toString();
@@ -249,23 +272,23 @@ public class BillBoardReply extends BillBoard {//ConfReply
      * request object, then that discId will be used instead of the session parameter.
      */
 
-    private Properties getParameters(HttpServletRequest req) {
+    private Properties getParameters( HttpServletRequest req ) {
 
         // Lets get the standard metainformation
-        Properties reqParams = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req));
+        Properties reqParams = MetaInfo.createPropertiesFromMetaInfoParameters( super.getBillBoardSessionParameters( req ) );
 
         /* Lets get our own variables. We will first look for the discussion_id
            in the request object, other wise, we will get the one from our session object
         */
-        String confDiscId = (req.getParameter("disc_id") == null) ? "" : (req.getParameter("disc_id"));
-        if (confDiscId.equals("")) {
-            HttpSession session = req.getSession(false);
-            if (session != null) {
-                confDiscId = (String) session.getAttribute("BillBoard.disc_id");
+        String confDiscId = ( req.getParameter( "disc_id" ) == null ) ? "" : ( req.getParameter( "disc_id" ) );
+        if ( confDiscId.equals( "" ) ) {
+            HttpSession session = req.getSession( false );
+            if ( session != null ) {
+                confDiscId = (String)session.getAttribute( "BillBoard.disc_id" );
             }
         }
         //log("GetParameters: " + confDiscId) ;
-        reqParams.setProperty("DISC_ID", confDiscId);
+        reqParams.setProperty( "DISC_ID", confDiscId );
         return reqParams;
     }
 
@@ -273,8 +296,8 @@ public class BillBoardReply extends BillBoard {//ConfReply
      * Log function, will work for both servletexec and Apache
      */
 
-    public void log(String msg) {
-        super.log("BillBoardReply: " + msg);
+    public void log( String msg ) {
+        super.log( "BillBoardReply: " + msg );
 
     }
 } // End of class

@@ -135,7 +135,7 @@ public class GetDoc extends HttpServlet {
 
         // String no_permission_url = Utility.getDomainPref("no_permission_url");
         String no_permission_url = imcref.getImcmsUrl() + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL;
-        if ( !imcref.checkDocRights( meta_id, user ) ) {
+        if ( !documentMapper.userHasAtLeastDocumentReadPermission( user, document) ) {
             session.setAttribute( "login.target",
                                   req.getRequestURL().append( "?" ).append( req.getQueryString() ).toString() );
             String redirect = no_permission_url;

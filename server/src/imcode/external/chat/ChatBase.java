@@ -5,6 +5,8 @@ import imcode.server.IMCPoolInterface;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.ApplicationServer;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.log.DailyRollingFileAppender;
 import imcode.util.Utility;
@@ -424,7 +426,9 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         //is user authorized?
-        boolean authorized = imcref.checkDocRights( metaId, user );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument(metaId);
+        boolean authorized = documentMapper.userHasAtLeastDocumentReadPermission( user, document);
 
         //lets send unauthorized users out
         if ( !authorized ) {

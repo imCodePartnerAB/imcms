@@ -16,6 +16,8 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCPoolInterface;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,8 +29,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 import java.util.Vector;
-
-import com.imcode.imcms.servlet.billboard.BillBoard;
 
 /**
  * Html template in use:
@@ -75,11 +75,15 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         //log("START BillBoardDisc doPost");
         // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
+        if ( super.checkSession( req, res ) == false ) {
+            return;
+        }
 
         // Lets get the user object
         imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
+        if ( user == null ) {
+            return;
+        }
 
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
@@ -130,12 +134,16 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         if ( ( req.getParameter( "NEXT" ) != null || req.getParameter( "NEXT.x" ) != null ) ) {
 
             // Lets get the total nbr of discs in the forum
-            String nbrOfDiscsStr = billref.sqlProcedureStr( "B_GetNbrOfDiscs", new String[]{params.getProperty( "SECTION_ID" )} );
+            String nbrOfDiscsStr = billref.sqlProcedureStr( "B_GetNbrOfDiscs", new String[]{
+                params.getProperty( "SECTION_ID" )
+            } );
             int nbrOfDiscs = 0;
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = billref.sqlProcedureStr( "B_GetNbrOfDiscsToShow", new String[]{params.getProperty( "SECTION_ID" )} );//GetNbrOfDiscsToShow, FORUM_ID
+            String showDiscsStr = billref.sqlProcedureStr( "B_GetNbrOfDiscsToShow", new String[]{
+                params.getProperty( "SECTION_ID" )
+            } );//GetNbrOfDiscsToShow, FORUM_ID
 
             int showDiscsCounter = Integer.parseInt( showDiscsStr );
 
@@ -163,7 +171,9 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         if ( ( req.getParameter( "PREVIOUS" ) != null || req.getParameter( "PREVIOUS.x" ) != null ) ) {
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = billref.sqlProcedureStr( "B_GetNbrOfDiscsToShow", new String[]{params.getProperty( "SECTION_ID" )} );
+            String showDiscsStr = billref.sqlProcedureStr( "B_GetNbrOfDiscsToShow", new String[]{
+                params.getProperty( "SECTION_ID" )
+            } );
 
             int showDiscsCounter = Integer.parseInt( showDiscsStr );
 
@@ -198,7 +208,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
             if ( params == null ) {
                 log( "An illegal searchdateparameter was sent to server" );
                 BillBoardError msgErr = new BillBoardError();
-                searchMsg = msgErr.getErrorMessage( req, 42, user.getLanguageIso639_2());
+                searchMsg = msgErr.getErrorMessage( req, 42, user.getLanguageIso639_2() );
                 searchParamsOk = false;
             }
 
@@ -210,7 +220,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
                 //this.log("ItsOk: " + itsOk) ;
                 if ( !itsOk ) {
                     BillBoardError msgErr = new BillBoardError();
-                    searchMsg = msgErr.getErrorMessage( req, 40, user.getLanguageIso639_2());
+                    searchMsg = msgErr.getErrorMessage( req, 40, user.getLanguageIso639_2() );
                     //log("searchMsg: " + searchMsg) ;
                     searchParamsOk = false;
                 }
@@ -233,7 +243,9 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
 
                 // Ok, Lets build the search string
-                sqlAnswer = billref.sqlProcedureMulti( "B_SearchText", new String[]{metaId, aSectionId, category, searchW, frDate, toDate + " 23:59:59"} );
+                sqlAnswer = billref.sqlProcedureMulti( "B_SearchText", new String[]{
+                    metaId, aSectionId, category, searchW, frDate, toDate + " 23:59:59"
+                } );
 
             } // End if
 
@@ -256,7 +268,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
                     allRecs = preParse( sqlAnswer, tagsV, aHreHtmlFile );
                     if ( allRecs == null ) {
                         BillBoardError msgErr = new BillBoardError();
-                        allRecs = msgErr.getErrorMessage( req, 41, user.getLanguageIso639_2());
+                        allRecs = msgErr.getErrorMessage( req, 41, user.getLanguageIso639_2() );
                         msgErr = null;
                     }
                 }
@@ -265,7 +277,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
                 // Ok, we coulnt find anything
                 if ( searchParamsOk ) {
                     BillBoardError msgErr = new BillBoardError();
-                    allRecs = msgErr.getErrorMessage( req, 41, user.getLanguageIso639_2());
+                    allRecs = msgErr.getErrorMessage( req, 41, user.getLanguageIso639_2() );
                     msgErr = null;
                 }
             }
@@ -276,15 +288,18 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
             // Lets build the Responsepage
             VariableManager vm = new VariableManager();
-            if ( allRecs == null || allRecs.equals( "" ) )
+            if ( allRecs == null || allRecs.equals( "" ) ) {
                 vm.addProperty( "A_HREF_LIST", searchMsg );
-            else
+            } else {
                 vm.addProperty( "A_HREF_LIST", allRecs );
+            }
 
             //lets show newbutton if user has more than readrights
             String newDiscButton = "&nbsp;";
             int intMetaId = Integer.parseInt( metaId );
-            if ( imcref.checkDocRights( intMetaId, user ) && imcref.checkDocAdminRights( intMetaId, user ) ) {
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DocumentDomainObject document = documentMapper.getDocument( intMetaId );
+            if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document) && imcref.checkDocAdminRights( intMetaId, user ) ) {
 
                 VariableManager vmButtons = new VariableManager();
                 vmButtons.addProperty( "#SERVLET_URL#", "" );
@@ -373,14 +388,16 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
-            String showDiscsStr = billref.sqlProcedureStr( "B_GetNbrOfDiscsToShow", new String[]{params.getProperty( "SECTION_ID" )} );
+            String showDiscsStr = billref.sqlProcedureStr( "B_GetNbrOfDiscsToShow", new String[]{
+                params.getProperty( "SECTION_ID" )
+            } );
             //int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
             showDiscsCounter = Integer.parseInt( showDiscsStr );
 
             // Lets create an array
-            if (sqlAnswer.length > 0){
-                String[][] newArr =  sqlAnswer ;
-                allRecs = preParse(newArr, tagsV, aHrefHtmlFile);
+            if ( sqlAnswer.length > 0 ) {
+                String[][] newArr = sqlAnswer;
+                allRecs = preParse( newArr, tagsV, aHrefHtmlFile );
             }
 
             //lets show previousbutton if not first set of discussions
@@ -398,11 +415,16 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         }
 
         // Lets get the forumname for the current forum
-        String currSection = "" + billref.sqlProcedureStr( "B_GetSectionName", new String[]{params.getProperty( "SECTION_ID" )} );
+        String currSection = ""
+                             + billref.sqlProcedureStr( "B_GetSectionName", new String[]{
+                                 params.getProperty( "SECTION_ID" )
+                             } );
         //log("currSection: " + currSection) ;
 
         //lets show newdiscbutton if user has more than readrights
-        if ( imcref.checkDocRights( metaId, user ) && imcref.checkDocAdminRights( metaId, user ) ) {
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        DocumentDomainObject document = documentMapper.getDocument( metaId );
+        if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document) && imcref.checkDocAdminRights( metaId, user ) ) {
             HtmlGenerator newButtonHtmlObj = new HtmlGenerator( templateLib, NEW_DISC_TEMPLATE );
             newDiscButton = newButtonHtmlObj.createHtmlString( vmButtons, req );
         }
@@ -473,7 +495,9 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
             if ( session != null ) {
                 String indexStr = (String)session.getAttribute( "BillBoard.disc_index" );
                 int anInt = Integer.parseInt( indexStr ) - incFactor;
-                if ( anInt < 0 ) anInt = 0;
+                if ( anInt < 0 ) {
+                    anInt = 0;
+                }
                 session.setAttribute( "BillBoard.disc_index", "" + anInt );
             }
         } catch ( Exception e ) {
@@ -515,8 +539,10 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         HttpSession session = req.getSession( false );
         if ( session != null ) {
             // Lets get the parameters we know we are supposed to get from the request object
-            String sectionId = ( (String)session.getAttribute( "BillBoard.section_id" ) == null ) ? "" : ( (String)session.getAttribute( "BillBoard.section_id" ) );
-            String discIndex = ( (String)session.getAttribute( "BillBoard.disc_index" ) == null ) ? "" : ( (String)session.getAttribute( "BillBoard.disc_index" ) );
+            String sectionId = ( (String)session.getAttribute( "BillBoard.section_id" ) == null )
+                               ? "" : ( (String)session.getAttribute( "BillBoard.section_id" ) );
+            String discIndex = ( (String)session.getAttribute( "BillBoard.disc_index" ) == null )
+                               ? "" : ( (String)session.getAttribute( "BillBoard.disc_index" ) );
             reqParams.setProperty( "DISC_INDEX", discIndex );
             reqParams.setProperty( "SECTION_ID", sectionId );
 
@@ -542,10 +568,13 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         String discIndex = "";
         HttpSession session = req.getSession( false );
         if ( session != null ) {
-            if ( confForumId == null )
+            if ( confForumId == null ) {
                 confForumId = (String)session.getAttribute( "BillBoard.section_id" );
+            }
             discIndex = (String)session.getAttribute( "BillBoard.disc_index" );
-            if ( discIndex == null || discIndex.equalsIgnoreCase( "null" ) ) discIndex = "0";
+            if ( discIndex == null || discIndex.equalsIgnoreCase( "null" ) ) {
+                discIndex = "0";
+            }
         }
         reqParams.setProperty( "SECTION_ID", confForumId );
         reqParams.setProperty( "DISC_INDEX", discIndex );
@@ -632,10 +661,14 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         int yDay = today.get( Calendar.DATE );
 
         // Lets analyze the startdate params. if it is "idag" resp "igår"
-        if ( p.getProperty( "TO_DATE" ).equals( "" ) || p.getProperty( "TO_DATE" ).equalsIgnoreCase( p.getProperty( "TO_VALUE" ) ) )
+        if ( p.getProperty( "TO_DATE" ).equals( "" )
+             || p.getProperty( "TO_DATE" ).equalsIgnoreCase( p.getProperty( "TO_VALUE" ) ) ) {
             p.setProperty( "TO_DATE", "" + tYear + "-" + tMonth + "-" + tDay  /*+ " 23:59:59"*/ );
-        if ( p.getProperty( "FR_DATE" ).equals( "" ) || p.getProperty( "FR_DATE" ).equalsIgnoreCase( p.getProperty( "FR_VALUE" ) ) )
+        }
+        if ( p.getProperty( "FR_DATE" ).equals( "" )
+             || p.getProperty( "FR_DATE" ).equalsIgnoreCase( p.getProperty( "FR_VALUE" ) ) ) {
             p.setProperty( "FR_DATE", "" + yYear + "-" + yMonth + "-" + yDay /*+ " 00:00"*/ );
+        }
 
         // Lets check if we can create a valid sql date from our date params
         java.sql.Date fromDate = null;
