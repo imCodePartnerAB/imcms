@@ -147,7 +147,7 @@
       <filterset>
 
         <filter token="webapproot" value="${webapproot}"/>
-        <filter token="serverobject" value="${serverobject}"/>
+
         <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
