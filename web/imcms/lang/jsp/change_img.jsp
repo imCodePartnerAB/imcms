@@ -43,10 +43,11 @@ function changeLinkType(idx) {
 	var rad = f.linkType ;
 	var url = f.imageref_link ;
 	var val = url.value ;
+	var re  = /^GetDoc\?meta_id=(\d+)$/ ;
 	if (val == "" || val == defValues[0] || val == defValues[1]) {
 		url.value = defValues[idx] ;
 		rad[idx].checked = 1 ;
-	} else if (/^GetDoc\?meta_id=(\d+)$/.test(val)) {
+	} else if (re.test(val)) {
 		url.value = val.replace(re, "$1") ;
 		rad[0].checked = 1 ;
 	}
