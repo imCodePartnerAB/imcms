@@ -574,6 +574,27 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			return ;
 		}
 		
+		// ********* CHANGE SUBJECT STRING ******** 
+		if (req.getParameter("CHANGE_SUBJECT_NAME") != null) {
+			// Lets get the meta_id and the new subject string
+			String meta_id = req.getParameter("meta_id");
+			String new_subject = req.getParameter("NEW_SUBJECT_NAME");
+			if (meta_id == null || new_subject == null) {
+				/*
+				String header = "ConfAdmin servlet. " ;
+				String msg = params.toString() ;
+				BillBoardError err = new BillBoardError(req,res,header,1) ;
+				*/
+				return ;
+			}
+
+			String sqlSubjAddQ = "B_SetNewSubjectString " + meta_id + ", '"+new_subject +"'";		
+			//log("B_SetShowDiscussionNbrSql: " + sqlAddQ) ;
+			rmi.execSqlUpdateProcedure(confPoolServer, sqlSubjAddQ) ;
+			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardAdmin?ADMIN_TYPE=SECTION") ;
+			return ;
+		}
+		
 		// ********* SET SHOW_DISCUSSION_COUNTER ******** Peter says OK!!!!
 		if (req.getParameter("SHOW_DISCUSSION_NBR") != null) {
 			//log("Lets set the nbr of discussions to show") ;
@@ -773,7 +794,13 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			//lets get all the daysnumber values
 			String sqlAllDaysSql = "B_GetAllNbrOfDaysToShow " + params.getProperty("META_ID") ;
 			String sqlAllDays[] = rmi.execSqlProcedure(confPoolServer, sqlAllDaysSql ) ;
-
+			
+			//lets get the startstring of the mail subject
+			String sqlSubjStr = "B_GetStartSubjectString " + params.getProperty("META_ID") ;
+			String subject_name = rmi.execSqlProcedureStr(confPoolServer, sqlSubjStr ) ;
+			if(subject_name ==null)subject_name = "";
+			
+			
 			Vector sqlAllDaysV = new Vector() ;
 			if (sqlAllDays != null) {
 				sqlAllDaysV = super.convert2Vector(sqlAllDays) ;
@@ -794,6 +821,8 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 			// Lets build the Responsepage
 			//VariableManager vm = new VariableManager() ;
+			vm.addProperty("SUBJECT_NAME",subject_name);
+			vm.addProperty("META_ID",params.getProperty("META_ID"));
 			vm.addProperty("SECTION_LIST", forumList ) ;//FORUM_LIST", forumList
 			vm.addProperty("NBR_OF_DISCS_TO_SHOW_LIST", discToShowList );
 			vm.addProperty("NBR_OF_DAYS_TO_SHOW_LIST", daysToShowList  );

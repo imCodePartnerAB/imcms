@@ -224,7 +224,7 @@ public class BillBoardAdd extends BillBoard
 				String subjectStr = rmi.execSqlProcedureStr(confPoolServer, sqlQuest);	
 				try
 				{			
-					this.sendReplieEmail(req,res,toEmail,addEpost,subjectStr,addText);
+					this.sendReplieEmail(req,res,toEmail,addEpost,subjectStr,addText,addHeader);
 				}catch (ProtocolException pe)
 				{
 					BillBoardError err = new BillBoardError(req,res,"BillBoardAdd servlet. ",76) ;
@@ -394,7 +394,8 @@ public class BillBoardAdd extends BillBoard
 								 String toEmail,
 								 String fromEmail,
 								 String header,
-								 String text ) 
+								 String text, 
+								 String replyHeader) 
 	throws ServletException, IOException
 	{
 
@@ -435,7 +436,7 @@ public class BillBoardAdd extends BillBoard
 		
 		SMTP smtp = new SMTP( mailserver, mailport, mailtimeout );					
 
-		smtp.sendMailWait( fromEmail, toEmail ,header , text );				
+		smtp.sendMailWait( fromEmail, toEmail ,header ,replyHeader+"\n"+text+"\n\n"+fromEmail );				
 	}
 
 

@@ -62,7 +62,7 @@ public class BillBoardCreator extends BillBoard
 		{
 			action = "" ;
 			String header = "BillBoardCreator servlet. " ;
-			ConfError err = new ConfError(req,res,header,3) ;
+			BillBoardError err = new BillBoardError(req,res,header,3) ;
 			log(header + err.getErrorMsg()) ;
 			return ;
 		}
@@ -158,7 +158,7 @@ public class BillBoardCreator extends BillBoard
 		{
 			action = "" ;
 			String header = "BillBoardCreator servlet. " ;
-			ConfError err = new ConfError(req,res,header,3) ;
+			BillBoardError err = new BillBoardError(req,res,header,3) ;
 			log(header + err.getErrorMsg()) ;
 			return ;
 		}

@@ -224,8 +224,8 @@ public class AdminBillBoard extends Administrator { //AdminConference
             for ( int i = 0 ; i < listOfBillBoards.length ; i++ ) {
 
                 String metaId = listOfBillBoards[i][0];
-                String sprocetForum = "AdminStatistics1 " + metaId + ", '" + startDate + "', '" + endDate + "', " + listMode;
-                String[][] queryResultForum = ConfManager.getStatistics( ConfPoolServer, sprocetForum );
+                String sprocetForum = "B_AdminStatistics1 " + metaId + ", '" + startDate + "', '" + endDate + "', " + listMode;
+                String[][] queryResultForum = BillBoardManager.getStatistics( ConfPoolServer, sprocetForum );
 
                 //lets create sectionList for this conference
                 StringBuffer sectionList = new StringBuffer();
@@ -233,8 +233,8 @@ public class AdminBillBoard extends Administrator { //AdminConference
                 for ( int j = 0 ; j < queryResultForum.length ; j++ ) {
 
                     String forumId = queryResultForum[j][0];
-                    String sprocetDebate = "AdminStatistics2 " + metaId + ", " + forumId + ", '" + startDate + "', '" + endDate + "', " + listMode;
-                    String[][] queryResultDebate = ConfManager.getStatistics( ConfPoolServer, sprocetDebate );
+                    String sprocetDebate = "B_AdminStatistics2 " + metaId + ", " + forumId + ", '" + startDate + "', '" + endDate + "', " + listMode;
+                    String[][] queryResultDebate = BillBoardManager.getStatistics( ConfPoolServer, sprocetDebate );
 
                     // lets create debatelist for this forum
                     StringBuffer debateList = new StringBuffer();
