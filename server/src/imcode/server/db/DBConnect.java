@@ -61,7 +61,7 @@ class DBConnect {
             ps.close();
 
         } catch (SQLException ex) {
-            log.error("Error in executeQuery()",ex);
+            throw new RuntimeException( ex ) ;
         } finally {
             closeConnection();
         }
@@ -79,8 +79,7 @@ class DBConnect {
             ps.close();
             return result;
         } catch (SQLException ex) {
-            log.error("Error in executeUpdateQuery()", ex);
-            return -1;
+            throw new RuntimeException( ex ) ;
         } finally {
             closeConnection();
         }
@@ -120,7 +119,7 @@ class DBConnect {
             rs.close();
             cs.close();
         } catch (SQLException ex) {
-            log.error("Error in executeProcedure().",ex);
+            throw new RuntimeException( ex ) ;
         } finally {
             closeConnection();
         }
@@ -139,7 +138,7 @@ class DBConnect {
             res = cs.executeUpdate();
             cs.close();
         } catch (SQLException ex) {
-            log.error("Error in executeUpdateProcedure().", ex);
+            throw new RuntimeException( ex ) ;
         } finally {
             closeConnection();
         }

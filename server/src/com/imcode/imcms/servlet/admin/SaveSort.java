@@ -5,6 +5,7 @@ import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -33,10 +34,10 @@ public class SaveSort extends HttpServlet {
         Writer out = res.getWriter();
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
+        int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !imcref.checkDocAdminRights( meta_id, user, 262144 ) ) {	// Checking to see if user may edit this
-            String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
+        if ( !imcref.checkDocAdminRights( documentId, user, 262144 ) ) {	// Checking to see if user may edit this
+            String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }
@@ -46,16 +47,17 @@ public class SaveSort extends HttpServlet {
         String temp_str;
         String[] childsThisMenu;
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
+        DocumentDomainObject document = documentMapper.getDocument( documentId );
+        documentMapper.touchDocument( document );
 
-        String[] foo = imcref.sqlQuery( "select to_meta_id from childs where meta_id = ?", new String[]{"" + meta_id} );
+        String[] children = imcref.sqlQuery( "select to_meta_id from childs, menus where childs.menu_id = menus.menu_id AND meta_id = ?", new String[]{"" + documentId} );
 
         Vector childs = new Vector();
         Vector sort_no = new Vector();
-        for ( int i = 0; i < foo.length; ++i ) {
-            temp_str = req.getParameter( foo[i] );
+        for ( int i = 0; i < children.length; ++i ) {
+            temp_str = req.getParameter( children[i] );
             if ( temp_str != null ) {
-                childs.add( foo[i] );
+                childs.add( children[i] );
                 sort_no.add( temp_str );
             }
         }
@@ -64,39 +66,39 @@ public class SaveSort extends HttpServlet {
 
         user.put( "flags", new Integer( 262144 ) );
 
-        int doc_menu_no = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
+        int menuIndex = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
         String sortParam = req.getParameter( "sort" );
         if ( sortParam != null ) {
             int sort_order = Integer.parseInt( req.getParameter( "sort_order" ) );
-            String[] queryResult = imcref.sqlQuery( "select sort_order from text_docs where meta_id = ?",
-                                                    new String[]{"" + meta_id} );
+            String[] queryResult = imcref.sqlQuery( "select sort_order from menus where meta_id = ? AND menu_index = ?",
+                                                    new String[]{"" + documentId, ""+menuIndex} );
             String currentSortOrderStr = queryResult[0];
             int currentSortOrder = Integer.parseInt( currentSortOrderStr );
             if ( currentSortOrder != sort_order ) {
-                imcref.sqlUpdateQuery( "update text_docs set sort_order = ? where meta_id = ?",
-                                       new String[]{"" + sort_order, "" + meta_id} );
+                imcref.sqlUpdateQuery( "update menus set sort_order = ? where meta_id = ? AND menu_index = ?",
+                                       new String[]{"" + sort_order, "" + documentId, ""+menuIndex} );
             } else {
                 if ( childs.size() > 0 ) {
                     if ( IMCConstants.MENU_SORT_BY_MANUAL_ORDER == sort_order ) {
-                        imcref.saveManualSort( meta_id, user, childs, sort_no, doc_menu_no );
+                        imcref.saveManualSort( documentId, user, childs, sort_no, menuIndex );
                     } else if ( IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER == sort_order ) {
-                        imcref.saveTreeSortIndex( meta_id, user, childs, sort_no, doc_menu_no );
+                        imcref.saveTreeSortIndex( documentId, user, childs, sort_no, menuIndex );
                     }
                 }
             }
         } else if ( req.getParameter( "delete" ) != null ) {
             if ( childsThisMenu != null ) {
-                imcref.deleteChilds( meta_id, doc_menu_no, user, childsThisMenu );
+                imcref.deleteChilds( documentId, menuIndex, user, childsThisMenu );
             }
         } else if ( req.getParameter( "archive" ) != null ) {
             if ( childsThisMenu != null ) {
-                imcref.archiveChilds( meta_id, user, childsThisMenu );
+                imcref.archiveChilds( documentId, user, childsThisMenu );
             }
         } else if ( req.getParameter( "copy" ) != null ) {
             if ( childsThisMenu != null ) {
                 String copyPrefix = imcref.getAdminTemplate( COPY_PREFIX_TEMPLATE, user, null );
 
-                String[] file_meta_ids = imcref.copyDocs( meta_id, doc_menu_no, user, childsThisMenu, copyPrefix );
+                String[] file_meta_ids = imcref.copyDocs( documentId, menuIndex, user, childsThisMenu, copyPrefix );
                 if ( file_meta_ids.length > 0 ) {
                     // Build an option-list
                     StringBuffer fileMetaIds = new StringBuffer();
@@ -107,7 +109,7 @@ public class SaveSort extends HttpServlet {
                     }
                     Vector vec = new Vector();
                     vec.add( "#meta_id#" );
-                    vec.add( "" + meta_id );
+                    vec.add( "" + documentId );
                     vec.add( "#filedocs#" );
                     vec.add( fileMetaIds.toString() );
                     String fileWarning = imcref.getAdminTemplate( FILE_WARNING_TEMPLATE, user, vec );
@@ -117,7 +119,7 @@ public class SaveSort extends HttpServlet {
             }
         }
 
-        String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
+        String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
         if ( output != null ) {
             out.write( output );
         }

@@ -203,8 +203,8 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     }
 
     // get templatehome
-   public byte[] getTemplateData( int template_id ) throws IOException {
-      return new byte[0];
+   public String getTemplateData( int template_id ) throws IOException {
+      return null;
    }
 
    // get templatehome

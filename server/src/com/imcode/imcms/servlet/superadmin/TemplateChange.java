@@ -221,7 +221,7 @@ public class TemplateChange extends HttpServlet {
         if ( filename == null ) {
             filename = "";
         }
-        byte[] file = imcref.getTemplateData( template_id );
+        byte[] file = imcref.getTemplateData( template_id ).getBytes();
         res.setContentType( "application/octet-stream; name=\"" + filename + "\"" );
         res.setContentLength( file.length );
         res.setHeader( "Content-Disposition", "attachment; filename=\"" + filename + "\";" );

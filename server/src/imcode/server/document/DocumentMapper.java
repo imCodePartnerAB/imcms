@@ -147,7 +147,7 @@ public class DocumentMapper {
             String permissionBitsString = service.sqlQueryStr( sqlSelectPermissionBits, new String[]{
                 "" + document.getId(), "" + user_permission_set_id
             } );
-            if (null != permissionBitsString) {
+            if ( null != permissionBitsString ) {
                 user_permission_set = Integer.parseInt( permissionBitsString );
             }
         }
@@ -424,18 +424,16 @@ public class DocumentMapper {
 
     void initTextDocument( TextDocumentDomainObject document ) {
         // all from the table text_doc
-        String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, sort_order, default_template_1, default_template_2 FROM text_docs WHERE meta_id = ?",
+        String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, default_template_1, default_template_2 FROM text_docs WHERE meta_id = ?",
                                                new String[]{String.valueOf( document.getId() )} );
         if ( sqlResult.length >= 4 ) {
             int template_id = Integer.parseInt( sqlResult[0] );
             int group_id = Integer.parseInt( sqlResult[1] );
-            int sort_order = Integer.parseInt( sqlResult[2] );
-            int defaultTemplateIdForRestrictedPermissionSetOne = Integer.parseInt( sqlResult[3] );
-            int defaultTemplateIdForRestrictedPermissionSetTwo = Integer.parseInt( sqlResult[4] );
+            int defaultTemplateIdForRestrictedPermissionSetOne = Integer.parseInt( sqlResult[2] );
+            int defaultTemplateIdForRestrictedPermissionSetTwo = Integer.parseInt( sqlResult[3] );
 
             TemplateDomainObject template = service.getTemplateMapper().getTemplateById( template_id );
             document.setTemplate( template );
-            document.setMenuSortOrder( sort_order );
             document.setTemplateGroupId( group_id );
             document.setDefaultTemplateIdForRestrictedPermissionSetOne( defaultTemplateIdForRestrictedPermissionSetOne );
             document.setDefaultTemplateIdForRestrictedPermissionSetTwo( defaultTemplateIdForRestrictedPermissionSetTwo );
@@ -539,20 +537,19 @@ public class DocumentMapper {
         DocumentDomainObject parent = getDocument( parentId );
         int sortOrder = getSortOrderOfDocument( parentId );
         String orderBy = getSortOrderAsSqlOrderBy( sortOrder );
-        String sqlStr = "select to_meta_id, menu_sort, manual_sort_order, tree_sort_index from childs,meta where childs.meta_id = meta.meta_id and childs.meta_id = ? and menu_sort = ? order by "
+        String sqlStr = "select to_meta_id, menu_index, manual_sort_order, tree_sort_index from childs,menus where childs.menu_id = menus.menu_id AND menus.meta_id = ? and menu_index = ? order by "
                         + orderBy;
-        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{"" + parentId, "" + menuIndex} );
-        MenuItemDomainObject[] menuItems = new MenuItemDomainObject[sqlResult.length / 4];
-        for ( int i = 0; i < sqlResult.length; i += 4 ) {
-            int to_meta_id = Integer.parseInt( sqlResult[i] );
-            int menu_sort = Integer.parseInt( sqlResult[i + 1] );
-            int manual_sort_order = Integer.parseInt( sqlResult[i + 2] );
-            String tree_sort_index = sqlResult[i + 3];
+        String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + parentId, "" + menuIndex} );
+        MenuItemDomainObject[] menuItems = new MenuItemDomainObject[sqlResult.length];
+        for ( int i = 0; i < sqlResult.length; i++ ) {
+            int to_meta_id = Integer.parseInt( sqlResult[i][0] );
+            int menu_index = Integer.parseInt( sqlResult[i][1] );
+            int manual_sort_order = Integer.parseInt( sqlResult[i][2] );
+            String tree_sort_index = sqlResult[i][3];
             DocumentDomainObject child = getDocument( to_meta_id );
-            menuItems[i / 4] =
-            new MenuItemDomainObject( parent, child, menu_sort, manual_sort_order, tree_sort_index );
+            menuItems[i] = new MenuItemDomainObject( parent, child, menu_index, manual_sort_order, tree_sort_index );
         }
-        Arrays.sort( menuItems, new MenuItemDomainObject.TreeKeyCoparator() );
+        Arrays.sort( menuItems, new MenuItemDomainObject.TreeKeyComparator() );
 
         return menuItems;
     }
@@ -735,12 +732,11 @@ public class DocumentMapper {
     }
 
     void saveNewTextDocument( TextDocumentDomainObject textDocument ) {
-        String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, sort_order, default_template_1, default_template_2) VALUES (?,?,?,?,?,?)";
+        String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template_1, default_template_2) VALUES (?,?,?,?,?)";
         service.sqlUpdateQuery( sqlTextDocsInsertStr,
                                 new String[]{
                                     "" + textDocument.getId(), "" + textDocument.getTemplate().getId(),
                                     "" + textDocument.getTemplateGroupId(),
-                                    "" + textDocument.getMenuSortOrder(),
                                     "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
                                     "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo()
                                 } );
@@ -1220,7 +1216,8 @@ public class DocumentMapper {
 
     private static void removeDocumentFromMenu( IMCServiceInterface service, UserDomainObject user, int menuDocumentId,
                                                 int menuIndex, int toBeRemovedId ) {
-        String sqlStr = "delete from childs\n" + "where to_meta_id = ?\n" + "and meta_id = ?\n" + "and menu_sort = ?";
+        String sqlStr = "delete from childs\n" + "where to_meta_id = ?\n"
+                        + "and menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
 
         int updatedRows = service.sqlUpdateQuery( sqlStr,
                                                   new String[]{
@@ -1445,7 +1442,7 @@ public class DocumentMapper {
     }
 
     String[][] getParentDocumentAndMenuIdsForDocument( DocumentDomainObject document ) {
-        String sqlStr = "SELECT meta_id,menu_sort FROM childs WHERE to_meta_id = ?";
+        String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
         return service.sqlQueryMulti( sqlStr, new String[]{"" + document.getId()} );
     }
 
@@ -1594,11 +1591,10 @@ public class DocumentMapper {
     }
 
     void saveTextDocument( TextDocumentDomainObject textDocument ) {
-        String sqlStr = "UPDATE text_docs SET template_id = ?, sort_order = ?, group_id = ?,\n"
+        String sqlStr = "UPDATE text_docs SET template_id = ?, group_id = ?,\n"
                         + "default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
             "" + textDocument.getTemplate().getId(),
-            "" + textDocument.getMenuSortOrder(),
             "" + textDocument.getTemplateGroupId(),
             "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
             "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo(),

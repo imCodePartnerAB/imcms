@@ -290,6 +290,11 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
        		section_id
 	FROM   	meta_section
 	WHERE  	meta_id = @meta_id
+	INSERT INTO menus
+	SELECT  @copy_id
+	        menu_index,
+	        sort_order
+	FROM menus
 	INSERT INTO childs
 	SELECT	@copy_id,
 			to_meta_id,

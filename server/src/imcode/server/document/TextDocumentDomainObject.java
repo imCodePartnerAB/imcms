@@ -20,20 +20,11 @@ import java.util.Map;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
-    private int menuSortOrder;
     private TemplateDomainObject template;
     private int templateGroupId;
     private int defaultTemplateIdForRestrictedPermissionSetOne;
     private int defaultTemplateIdForRestrictedPermissionSetTwo;
     private Map texts = new HashMap();
-
-    public int getMenuSortOrder() {
-        return menuSortOrder;
-    }
-
-    public void setMenuSortOrder( int v ) {
-        this.menuSortOrder = v;
-    }
 
     public TemplateDomainObject getTemplate() {
         return template;

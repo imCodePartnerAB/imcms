@@ -124,10 +124,12 @@ public class TextDocument extends Document {
      *                  {@link TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING},
      *                  or {@link TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING}.
      * @throws NoPermissionException if the current user lacks permission to edit this owner.
+     * @deprecated
      */
     public void setMenuSortOrder(int sortOrder) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        ((TextDocumentDomainObject)internalDocument).setMenuSortOrder(sortOrder);
+        // TODO: FIXME: Set sort order of all menus on document
+        //((TextDocumentDomainObject)internalDocument).setMenuSortOrder(sortOrder);
     }
 
     /**
@@ -137,10 +139,12 @@ public class TextDocument extends Document {
      *         one of {@link TextDocument.Menu.SORT_BY_HEADLINE},
      *         {@link TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING},
      *         or {@link TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING}.
+     * @deprecated
      */
     public int getMenuSortOrder() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        return ((TextDocumentDomainObject)internalDocument).getMenuSortOrder();
+        //return ((TextDocumentDomainObject)internalDocument).getMenuSortOrder();
+        return TextDocument.Menu.SORT_BY_HEADLINE ;
     }
 
     /**

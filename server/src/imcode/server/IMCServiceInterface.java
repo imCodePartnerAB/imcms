@@ -116,7 +116,7 @@ public interface IMCServiceInterface {
 	;
 
     // get templatehome
-    public byte[] getTemplateData(int template_id)
+    public String getTemplateData(int template_id)
 	throws IOException ;
 
     // get templatehome

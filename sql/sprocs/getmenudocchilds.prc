@@ -13,9 +13,11 @@ CREATE PROCEDURE getMenuDocChilds @meta_id int, @user_id int AS
 SELECT DISTINCT to_meta_id,
    meta_headline
 FROM  childs c
+JOIN menus
+     ON c.menu_id = menus.menu_id
 JOIN  meta m
      ON c.to_meta_id = m.meta_id
-           AND c.meta_id = @meta_id
+           AND menus.meta_id = @meta_id
 LEFT JOIN roles_rights rr
      ON rr.meta_id = m.meta_id
      AND rr.set_id < 4

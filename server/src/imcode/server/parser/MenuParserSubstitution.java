@@ -17,7 +17,6 @@ class MenuParserSubstitution implements Substitution {
 
     private Map menus;
     private boolean menumode;
-    private Properties tags;
     private int[] implicitMenus = {1};
     private DocumentRequest documentRequest;
 
@@ -28,31 +27,100 @@ class MenuParserSubstitution implements Substitution {
     public static final String TEMPLATE__STATUS_ARCHIVED = "textdoc/status/archived.frag";
     public static final String TEMPLATE__STATUS_APPROVED = "textdoc/status/approved.frag";
 
-    public MenuParserSubstitution( DocumentRequest documentRequest, Map menus, boolean menumode, Properties tags ) {
+    public MenuParserSubstitution( DocumentRequest documentRequest, Map menus, boolean menumode ) {
         this.documentRequest = documentRequest;
         this.menumode = menumode;
         this.menus = menus;
-        this.tags = tags;
     }
 
-    private Menu getMenuById( int id ) {
+    private Menu getMenuByIndex( int id ) {
         return (Menu)menus.get( new Integer( id ) );
     }
 
-    private String getMenuModePrefix( int menu_id, String labelAttribute ) {
-        String temp = tags.getProperty( "addDoc" ) +
-                      tags.getProperty( "saveSortStart" );
+    private String getMenuModePrefix( int menuIndex, String labelAttribute ) {
+        String temp = documentRequest.getServerObject().getAdminTemplate( "textdoc/add_doc.html", documentRequest.getUser(), null )
+                      +
+                      documentRequest.getServerObject().getAdminTemplate( "textdoc/sort_order.html", documentRequest.getUser(), null );
 
         String[] parseTags = new String[]{
-            "#doc_menu_no#", "" + menu_id,
-            "#label#", labelAttribute
+            "#doc_menu_no#", "" + menuIndex,
+            "#label#", labelAttribute,
+            "#sortOrder" + getMenuByIndex( menuIndex ).getSortOrder() + "#", "checked",
+            "#doc_types#", createDocumentTypesOptionList(),
+            "#getMetaId#", ""+documentRequest.getDocument().getId()
         };
 
         return Parser.parseDoc( temp, parseTags );
     }
 
+    class DocumentTypeIdNamePair {
+
+        Integer id;
+        String name;
+    }
+
+    private String createDocumentTypesOptionList() {
+        int documentId = documentRequest.getDocument().getId();
+        String[] docTypes = documentRequest.getServerObject().sqlProcedure( "GetDocTypesForUser", new String[]{
+            "" + documentId, "" + documentRequest.getUser().getUserId(),
+            documentRequest.getUser().getLanguageIso639_2()
+        } );
+        List docTypesList = new ArrayList( Arrays.asList( docTypes ) );
+
+        String existing_doc_name = documentRequest.getServerObject().getAdminTemplate( "textdoc/existing_doc_name.html", documentRequest.getUser(), null );
+        docTypesList.add( 0, "0" );
+        docTypesList.add( 1, existing_doc_name );
+
+        final int[] docTypesSortOrder = {
+            DocumentDomainObject.DOCTYPE_TEXT,
+            0, // "Existing document"
+            DocumentDomainObject.DOCTYPE_URL,
+            DocumentDomainObject.DOCTYPE_FILE,
+            DocumentDomainObject.DOCTYPE_BROWSER,
+            DocumentDomainObject.DOCTYPE_HTML,
+            DocumentDomainObject.DOCTYPE_CHAT,
+            DocumentDomainObject.DOCTYPE_BILLBOARD,
+            DocumentDomainObject.DOCTYPE_CONFERENCE,
+            DocumentDomainObject.DOCTYPE_DIAGRAM,
+        };
+        Map sortOrderMap = new HashMap();
+        for ( int i = 0; i < docTypesSortOrder.length; i++ ) {
+            int docTypeId = docTypesSortOrder[i];
+            sortOrderMap.put( new Integer( docTypeId ), new Integer( i ) );
+        }
+
+        TreeMap sortedIds = new TreeMap();
+        for ( Iterator iterator = docTypesList.iterator(); iterator.hasNext(); ) {
+            DocumentTypeIdNamePair documentTypeIdNamePair = new DocumentTypeIdNamePair();
+            documentTypeIdNamePair.id = new Integer( (String)iterator.next() );
+            documentTypeIdNamePair.name = (String)iterator.next();
+
+            Integer sortKey = (Integer)sortOrderMap.get( documentTypeIdNamePair.id );
+            if ( null != sortKey ) {
+                sortedIds.put( sortKey, documentTypeIdNamePair );
+            }
+        }
+
+        Collection sortedTuplesOfDocumentTypes = sortedIds.values();
+        Iterator docTypesIter = sortedTuplesOfDocumentTypes.iterator();
+        StringBuffer doc_types_sb = new StringBuffer( 256 );
+        while ( docTypesIter.hasNext() ) {
+            DocumentTypeIdNamePair temp = (DocumentTypeIdNamePair)docTypesIter.next();
+            Integer documentTypeId = temp.id;
+            String documentTypeName = temp.name;
+            doc_types_sb.append( "<option value=\"" );
+            doc_types_sb.append( documentTypeId );
+            doc_types_sb.append( "\">" );
+            doc_types_sb.append( documentTypeName );
+            doc_types_sb.append( "</option>" );
+        }
+
+        String doctypesOptionList = doc_types_sb.toString();
+        return doctypesOptionList;
+    }
+
     private String getMenuModeSuffix() {
-        return tags.getProperty( "saveSortStop" );
+        return documentRequest.getServerObject().getAdminTemplate( "textdoc/archive_del_button.html", documentRequest.getUser(), null );
     }
 
     private String nodeMenuParser( int menuId, String menutemplate, Properties menuattributes, PatternMatcher patMat ) {
@@ -62,7 +130,7 @@ class MenuParserSubstitution implements Substitution {
         if ( menumode && modeIsRead || !menumode && modeIsWrite ) {
             return "";
         }
-        Menu currentMenu = getMenuById( menuId ); 	// Get the menu
+        Menu currentMenu = getMenuByIndex( menuId ); 	// Get the menu
         StringBuffer result = new StringBuffer(); // Allocate a buffer for building our return-value in.
         NodeList menuNodes = new NodeList( menutemplate ); // Build a tree-structure of nodes in memory, which "only" needs to be traversed. (Vood)oo-magic.
         nodeMenu( new SimpleElement( "menu", menuattributes, menuNodes ), result, currentMenu, patMat ); // Create an artificial root-node of this tree. An "imcms:menu"-element.
@@ -282,7 +350,8 @@ class MenuParserSubstitution implements Substitution {
         tags.setProperty( "#menuitemdatemodified#", modifiedDate );
 
         String template = parameters.getProperty( "template" );
-        String href = "GetDoc?meta_id=" + document.getId() + ( template != null ? "&template=" + URLEncoder.encode( template ) : "" );
+        String href = "GetDoc?meta_id=" + document.getId()
+                      + ( template != null ? "&template=" + URLEncoder.encode( template ) : "" );
 
         List menuItemAHref = new ArrayList( 4 );
         menuItemAHref.add( "#href#" );
@@ -318,16 +387,18 @@ class MenuParserSubstitution implements Substitution {
                 menuItemSortKeyTags.add( "#sortkey#" );
                 menuItemSortKeyTags.add( sortKey );
 
-                a_href = documentRequest.getServerObject().getAdminTemplate( sortKeyTemplate, user, menuItemSortKeyTags ) + a_href;
+                a_href = documentRequest.getServerObject().getAdminTemplate( sortKeyTemplate, user, menuItemSortKeyTags )
+                         + a_href;
             }
 
             List menuItemCheckboxTags = new ArrayList( 2 );
             menuItemCheckboxTags.add( "#meta_id#" );
             menuItemCheckboxTags.add( "" + document.getId() );
 
-            a_href = documentRequest.getServerObject().getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags ) + a_href;
+            a_href = documentRequest.getServerObject().getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags )
+                     + a_href;
 
-            a_href = getStatusIconTemplate( document, user ) + a_href ;
+            a_href = getStatusIconTemplate(menuItem.getDocument()) + a_href;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );
@@ -343,22 +414,22 @@ class MenuParserSubstitution implements Substitution {
         return new MapSubstitution( tags, true );
     }
 
-    private String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
-        String statusIconTemplateName = null ;
-        if (DocumentDomainObject.STATUS_NEW == document.getStatus()) {
-            statusIconTemplateName = TEMPLATE__STATUS_NEW ;
-        } else if (DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus()) {
-            statusIconTemplateName = TEMPLATE__STATUS_DISAPPROVED ;
-        } else if (document.isPublishedAndNotArchived()) {
-            statusIconTemplateName = TEMPLATE__STATUS_PUBLISHED ;
-        } else if (document.isNoLongerPublished()) {
-            statusIconTemplateName = TEMPLATE__STATUS_UNPUBLISHED ;
-        } else if (document.isArchived()) {
-            statusIconTemplateName = TEMPLATE__STATUS_ARCHIVED ;
+    private String getStatusIconTemplate(DocumentDomainObject document) {
+        String statusIconTemplateName = null;
+        if ( DocumentDomainObject.STATUS_NEW == document.getStatus() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_NEW;
+        } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_DISAPPROVED;
+        } else if ( document.isPublishedAndNotArchived() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_PUBLISHED;
+        } else if ( document.isNoLongerPublished() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_UNPUBLISHED;
+        } else if ( document.isArchived() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_ARCHIVED;
         } else {
-            statusIconTemplateName = TEMPLATE__STATUS_APPROVED ;
+            statusIconTemplateName = TEMPLATE__STATUS_APPROVED;
         }
-        String statusIconTemplate = documentRequest.getServerObject().getAdminTemplate( statusIconTemplateName , user, null );
+        String statusIconTemplate = documentRequest.getServerObject().getAdminTemplate( statusIconTemplateName, documentRequest.getUser(), null );
         return statusIconTemplate;
     }
 

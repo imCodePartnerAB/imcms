@@ -14,16 +14,16 @@ import imcode.util.poll.PollHandlingSystem;
 import imcode.util.poll.PollHandlingSystemImpl;
 import imcode.util.shop.ShoppingOrderSystem;
 import imcode.util.shop.ShoppingOrderSystemImpl;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
-import java.util.*;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 final public class IMCService implements IMCServiceInterface, IMCConstants {
 
@@ -46,7 +46,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private static final int DEFAULT_STARTDOCUMENT = 1001;
 
     private String smtpServer;
-    private int smtpPort ;
+    private int smtpPort;
 
     private SystemData sysData;
 
@@ -94,8 +94,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         startUrl = getPropertyAndLogIt( props, "StartUrl" );
         imageUrl = getPropertyAndLogIt( props, "ImageUrl" );
         imcmsUrl = getPropertyAndLogIt( props, "ImcmsUrl" );
-        smtpServer = getPropertyAndLogIt( props, "SmtpServer" ) ;
-        smtpPort = getIntPropertyAndLogIt( props, "SmtpPort", 25 ) ;
+        smtpServer = getPropertyAndLogIt( props, "SmtpServer" );
+        smtpPort = getIntPropertyAndLogIt( props, "SmtpPort", 25 );
 
         defaultLanguageAsIso639_2 = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
         try {
@@ -130,7 +130,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     private void initExternalDocTypes( Properties props ) {
 
-        String externalDocTypes = getPropertyAndLogIt( props, "ExternalDoctypes" ) ;
+        String externalDocTypes = getPropertyAndLogIt( props, "ExternalDoctypes" );
 
         StringTokenizer doc_types = new StringTokenizer( externalDocTypes, ";", false );
         externalDocumentTypes = new ExternalDocType[doc_types.countTokens()];
@@ -144,36 +144,37 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
     }
 
-    private void initLangProperties( String LanguageIso639_2 ){
+    private void initLangProperties( String LanguageIso639_2 ) {
 
-        if ( "swe".equals(LanguageIso639_2)){
+        if ( "swe".equals( LanguageIso639_2 ) ) {
             try {
-                langproperties_swe = Prefs.getProperties("swe.properties");;
+                langproperties_swe = Prefs.getProperties( "swe.properties" );
+                ;
             } catch ( IOException e ) {
-                log.fatal( "Failed to initialize swe.properties", e);
+                log.fatal( "Failed to initialize swe.properties", e );
             }
         }
-        if( "eng".equals(LanguageIso639_2)){
+        if ( "eng".equals( LanguageIso639_2 ) ) {
             try {
-                langproperties_eng = Prefs.getProperties("eng.properties");;
+                langproperties_eng = Prefs.getProperties( "eng.properties" );
+                ;
             } catch ( IOException e ) {
-                log.fatal( "Failed to initialize eng.properties", e);
+                log.fatal( "Failed to initialize eng.properties", e );
             }
         }
-
 
     }
 
     private int getIntPropertyAndLogIt( Properties props, final String property, int defaultValue ) {
         final String propertyValueString = props.getProperty( property ).trim();
-        int result = defaultValue ;
+        int result = defaultValue;
         try {
-            result = Integer.parseInt(propertyValueString);
-        } catch( NumberFormatException nfe) {
-            log.warn("Illegal value for "+property+": "+propertyValueString+". Using default: "+defaultValue);
+            result = Integer.parseInt( propertyValueString );
+        } catch ( NumberFormatException nfe ) {
+            log.warn( "Illegal value for " + property + ": " + propertyValueString + ". Using default: " + defaultValue );
         }
         log.info( property + ": " + result );
-        return result ;
+        return result;
     }
 
     private String getPropertyAndLogIt( Properties props, final String property ) {
@@ -212,8 +213,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             externalUserAndRoleMapper =
             initExternalUserAndRoleMapper( externalUserAndRoleMapperName, props );
             if ( null == externalAuthenticator || null == externalUserAndRoleMapper ) {
-                log.error(
-                        "Failed to initialize both authenticator and user-and-role-documentMapper, using default implementations." );
+                log.error( "Failed to initialize both authenticator and user-and-role-documentMapper, using default implementations." );
                 externalAuthenticator = null;
                 externalUserAndRoleMapper = null;
             }
@@ -222,8 +222,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             log.info( "ExternalUserAndRoleMapper not set." );
         } else {
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
-            log.error(
-                    "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
+            log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
         }
         imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( this );
         externalizedImcmsAuthAndMapper =
@@ -253,7 +252,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             result = user;
             if ( "user".equalsIgnoreCase( user.getLoginName() ) ) {
                 sessionCounter += 1;
-                sqlUpdateProcedure("IncSessionCounter", new String[0]);
+                sqlUpdateProcedure( "IncSessionCounter", new String[0] );
             }
             mainLog.info( "->User '" + login + "' successfully logged in." );
         } else if ( null == user ) {
@@ -290,22 +289,22 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                                                      Properties authenticatorPropertiesSubset ) {
         Authenticator externalAuthenticator = null;
         try {
-        if ( null == externalAuthenticatorName ) {
-            externalAuthenticator = null;
-        } else if ( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
-            externalAuthenticator = new SmbAuthenticator( authenticatorPropertiesSubset );
-        } else if ( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
-            try {
-                externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
-            } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
-                log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.",
-                           e );
+            if ( null == externalAuthenticatorName ) {
+                externalAuthenticator = null;
+            } else if ( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
+                externalAuthenticator = new SmbAuthenticator( authenticatorPropertiesSubset );
+            } else if ( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
+                try {
+                    externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
+                } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
+                    log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.",
+                               e );
+                }
+            } else {
+                externalAuthenticator = (Authenticator)createInstanceOfClass( externalAuthenticatorName );
             }
-        } else {
-            externalAuthenticator = (Authenticator)createInstanceOfClass( externalAuthenticatorName );
-        }
-        } catch (Exception e) {
-            log.error("Failed to initialize external authenticator.",e) ;
+        } catch ( Exception e ) {
+            log.error( "Failed to initialize external authenticator.", e );
         }
         return externalAuthenticator;
     }
@@ -340,8 +339,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Returns the menubuttonrow
      */
     public String getMenuButtons( UserDomainObject user, DocumentDomainObject document ) {
-        int user_permission_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument(user, document) ;
-        if (user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ) {
+        int user_permission_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
+        if ( user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ ) {
             return "";
         }
 
@@ -351,7 +350,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         StringBuffer tempbuffer;
         StringBuffer templatebuffer;
         StringBuffer superadmin;
-        int doc_type = document.getDocumentTypeId() ;
+        int doc_type = document.getDocumentTypeId();
         try {
 
             String tempbuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons" + doc_type + ".html";
@@ -372,18 +371,20 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         int user_permission_set = documentMapper.getUsersPermissionBitsOnDocumentIfRestricted( user_permission_set_id, document );
 
-        AdminButtonParser doc_tags = new AdminButtonParser(
-                new File( templatePath, lang_prefix + "/admin/adminbuttons/adminbutton" + doc_type + "_" ).toString(),
-                ".html", user_permission_set_id, user_permission_set );
+        AdminButtonParser doc_tags = new AdminButtonParser( new File( templatePath, lang_prefix
+                                                                                    + "/admin/adminbuttons/adminbutton"
+                                                                                    + doc_type
+                                                                                    + "_" ).toString(),
+                                                            ".html", user_permission_set_id, user_permission_set );
 
-        doc_tags.put( "getMetaId", ""+document.getId());
+        doc_tags.put( "getMetaId", "" + document.getId() );
         Parser.parseTags( tempbuffer, '#', " <>\n\r\t", doc_tags, true, 1 );
 
-        AdminButtonParser tags = new AdminButtonParser(
-                new File( templatePath, lang_prefix + "/admin/adminbuttons/adminbutton_" ).toString(), ".html",
-                user_permission_set_id, user_permission_set );
+        AdminButtonParser tags = new AdminButtonParser( new File( templatePath, lang_prefix
+                                                                                + "/admin/adminbuttons/adminbutton_" ).toString(), ".html",
+                                                        user_permission_set_id, user_permission_set );
 
-        tags.put( "getMetaId", ""+document.getId() );
+        tags.put( "getMetaId", "" + document.getId() );
         tags.put( "doc_buttons", tempbuffer.toString() );
 
 
@@ -417,7 +418,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Save an imageref.
      */
     public void saveImage( int meta_id, UserDomainObject user, int img_no, imcode.server.ImageDomainObject image ) {
-        documentMapper.saveDocumentImage(meta_id, img_no, image, user );
+        documentMapper.saveDocumentImage( meta_id, img_no, image, user );
     }
 
     /**
@@ -463,13 +464,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     private void saveChildSortOrder( String columnName, List childs, List sort_no, int meta_id, UserDomainObject user,
-                                     int menuNumber ) {
+                                     int menuIndex ) {
         for ( int i = 0; i < childs.size(); i++ ) {
             String columnValue = sort_no.get( i ).toString();
             String to_meta_id = childs.get( i ).toString();
-            String sql = "update childs set " + columnName
-                         + " = ? WHERE meta_id = ? and to_meta_id = ? and menu_sort = ?";
-            sqlUpdateQuery( sql, new String[]{columnValue, "" + meta_id, to_meta_id, "" + menuNumber} );
+            String sql = "UPDATE childs SET " + columnName
+                         + " = ? WHERE to_meta_id = ? AND menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
+            sqlUpdateQuery( sql, new String[]{columnValue, to_meta_id,"" + meta_id,  "" + menuIndex} );
         }
 
         updateLogs( "Child manualsort for [" + meta_id + "] updated by user: [" +
@@ -503,10 +504,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                                         logchilds.toString(), "" + meta_id, "" + doc_menu_no, "" + user.getUserId(),
                                         copyPrefix
                                     } );
-                this.updateLogs(
-                        "Childs [" + logchilds.toString() + "] on [" + meta_id + "] copied by user: ["
-                        + user.getFullName()
-                        + "]" );
+                this.updateLogs( "Childs [" + logchilds.toString() + "] on [" + meta_id + "] copied by user: ["
+                                 + user.getFullName()
+                                 + "]" );
             }
             return uncopyable;
         }
@@ -523,18 +523,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public void archiveChilds( int meta_id, UserDomainObject user, String[] childsThisMenu ) {
 
-        Date now = getCurrentDate() ;
+        Date now = getCurrentDate();
         for ( int i = 0; i < childsThisMenu.length; i++ ) {
-            DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt( childsThisMenu[i])) ;
+            DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( childsThisMenu[i] ) );
             document.setArchivedDatetime( now );
             try {
                 documentMapper.saveDocument( document, user );
             } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
-                throw new RuntimeException( e ) ;
+                throw new RuntimeException( e );
             }
         }
 
-        this.updateLogs( "Childs [" + StringUtils.join( childsThisMenu, ", ") + "] from " +
+        this.updateLogs( "Childs [" + StringUtils.join( childsThisMenu, ", " ) + "] from " +
                          "[" + meta_id + "] archived by user: [" +
                          user.getFullName() + "]" );
     }
@@ -657,9 +657,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     public SMTP getSMTP() {
         try {
-            return new SMTP(smtpServer, smtpPort, 30000);
+            return new SMTP( smtpServer, smtpPort, 30000 );
         } catch ( IOException e ) {
-            return null ;
+            return null;
         }
     }
 
@@ -679,19 +679,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Parse doc replace variables with data , use template
      */
-    public String getAdminTemplate( String adminTemplateName, UserDomainObject user, java.util.List tagsWithReplacements ) {
+    public String getAdminTemplate( String adminTemplateName, UserDomainObject user,
+                                    java.util.List tagsWithReplacements ) {
         // FIXME Fugly workaround
         String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
         String htmlStr;
         try {
-            if( "logged_out.html".equals(adminTemplateName)){
-                htmlStr = fileCache.getCachedFileString(
-                    new File( imcmsPath, langPrefix + "/login/" + adminTemplateName ) );
-            }else{
-                htmlStr = fileCache.getCachedFileString(
-                    new File( templatePath, langPrefix + "/admin/" + adminTemplateName ) );
+            if ( "logged_out.html".equals( adminTemplateName ) ) {
+                htmlStr = fileCache.getCachedFileString( new File( imcmsPath, langPrefix + "/login/"
+                                                                              + adminTemplateName ) );
+            } else {
+                htmlStr = fileCache.getCachedFileString( new File( templatePath, langPrefix + "/admin/"
+                                                                                 + adminTemplateName ) );
             }
-
 
             if ( tagsWithReplacements == null ) {
                 return htmlStr;
@@ -712,8 +712,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         // FIXME Fugly workaround
         String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
         try {
-            String htmlStr = fileCache.getCachedFileString(
-                    new File( templatePath, langPrefix + "/" + doc_type + "/" + external_template_name ) );
+            String htmlStr = fileCache.getCachedFileString( new File( templatePath, langPrefix + "/" + doc_type + "/"
+                                                                                    + external_template_name ) );
             if ( variables == null ) {
                 return htmlStr;
             }
@@ -737,9 +737,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         String langPrefix = this.getUserLangPrefixOrDefaultLanguage( user );
 
         try {
-            String htmlStr = fileCache.getCachedFileString(
-                    new File( templatePath,
-                              langPrefix + "/" + doc_type + "/" + templateSet + "/" + external_template_name ) );
+            String htmlStr = fileCache.getCachedFileString( new File( templatePath,
+                                                                      langPrefix + "/" + doc_type + "/" + templateSet
+                                                                      + "/"
+                                                                      + external_template_name ) );
             if ( variables == null ) {
                 return htmlStr;
             }
@@ -812,8 +813,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return defaultLanguageAsIso639_2;
     }
 
-    public String getLanguagePrefixByLangId ( int lang_id ) {
-        String lang_prefix = sqlProcedureStr("GetLangPrefixFromId", new String[]{ ""+lang_id} );
+    public String getLanguagePrefixByLangId( int lang_id ) {
+        String lang_prefix = sqlProcedureStr( "GetLangPrefixFromId", new String[]{"" + lang_id} );
         return lang_prefix;
     }
 
@@ -847,8 +848,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Set session counter date.
      */
     public void setCounterDate( Date date ) {
-        DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
-        sessionCounterDate = dateFormat.format(date);
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
+        sessionCounterDate = dateFormat.format( date );
         this.sqlUpdateProcedure( "SetSessionCounterDate", new String[]{sessionCounterDate} );
     }
 
@@ -856,10 +857,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Get session counter date.
      */
     public Date getCounterDate() {
-        DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
-        try{
-            return dateFormat.parse(sessionCounterDate);
-        }catch( ParseException pe){
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
+        try {
+            return dateFormat.parse( sessionCounterDate );
+        } catch ( ParseException pe ) {
             return null;
         }
     }
@@ -1017,7 +1018,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
     }
 
-    public int saveTemplate(String name, String file_name, byte[] template, boolean overwrite, String lang_prefix) {
+    public int saveTemplate( String name, String file_name, byte[] template, boolean overwrite, String lang_prefix ) {
         String sqlStr;
         // check if template exists
         sqlStr = "select template_id from templates where simple_name = ?";
@@ -1103,29 +1104,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * get template
      */
-    public byte[] getTemplateData( int template_id ) throws IOException {
-        String str = "";
-
-        BufferedReader fr;
-
-        try {
-            fr = new BufferedReader( new FileReader( templatePath + "/text/" + template_id + ".html" ) );
-        } catch ( FileNotFoundException e ) {
-            log.info( "Failed to find template number " + template_id );
-            return null;
-        }
-
-        try {
-            int temp;
-            while ( ( temp = fr.read() ) != -1 ) {
-                str += (char)temp;
-            }
-        } catch ( IOException e ) {
-            log.info( "Failed to read template number " + template_id );
-            return null;
-        }
-
-        return str.getBytes( "8859_1" );
+    public String getTemplateData( int template_id ) throws IOException {
+        return fileCache.getCachedFileString( new File( templatePath, "/text/" + template_id + ".html" ) ) ;
     }
 
     /**
@@ -1439,18 +1419,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         documentMapper.sqlUpdateModifiedDatesOnDocumentAndItsParent( metaId, dateTime );
     }
 
-    public Properties getLangProperties(UserDomainObject user){
+    public Properties getLangProperties( UserDomainObject user ) {
 
-        if( langproperties_eng == null){
-            initLangProperties("eng");
+        if ( langproperties_eng == null ) {
+            initLangProperties( "eng" );
         }
-        if( langproperties_swe == null){
-            initLangProperties("swe");
+        if ( langproperties_swe == null ) {
+            initLangProperties( "swe" );
         }
-        if( "swe".equals( user.getLanguageIso639_2()) ){
+        if ( "swe".equals( user.getLanguageIso639_2() ) ) {
             return langproperties_swe;
         }
-         return langproperties_eng;
+        return langproperties_eng;
     }
 
     public File getFilePath() {
