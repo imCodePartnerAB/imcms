@@ -360,11 +360,11 @@ public class DatabaseService {
         return (Table_users[])queryResult.toArray( new Table_users[queryResult.size()] );
     }
 
-    static class ViewTemplateGroup {
+    static class View_TemplateGroup {
         private int id;
         private String simpleName;
 
-        public ViewTemplateGroup( int id, String simpleName ) {
+        public View_TemplateGroup( int id, String simpleName ) {
             this.id = id;
             this.simpleName = simpleName;
         }
@@ -372,10 +372,10 @@ public class DatabaseService {
         public boolean equals( Object o ) {
             if( this == o )
                 return true;
-            if( !(o instanceof ViewTemplateGroup) )
+            if( !(o instanceof View_TemplateGroup) )
                 return false;
 
-            final ViewTemplateGroup viewTemplateGroup = (ViewTemplateGroup)o;
+            final View_TemplateGroup viewTemplateGroup = (View_TemplateGroup)o;
 
             if( id != viewTemplateGroup.id )
                 return false;
@@ -386,22 +386,22 @@ public class DatabaseService {
         }
     }
 
-    ViewTemplateGroup[] sproc_GetTemplatesInGroup( int groupId ) {
+    View_TemplateGroup[] sproc_GetTemplatesInGroup( int groupId ) {
         String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " + "WHERE c.group_id = ? " + "ORDER BY simple_name";
         Object[] paramValues = new Object[]{new Integer( groupId )};
 
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                ViewTemplateGroup result = null;
+                View_TemplateGroup result = null;
                 int templateId = rs.getInt( "template_id" );
                 String simpleName = rs.getString( "simple_name" );
-                result = new ViewTemplateGroup( templateId, simpleName );
+                result = new View_TemplateGroup( templateId, simpleName );
                 return result;
             }
         };
 
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
-        return (ViewTemplateGroup[])queryResult.toArray( new ViewTemplateGroup[queryResult.size()] );
+        return (View_TemplateGroup[])queryResult.toArray( new View_TemplateGroup[queryResult.size()] );
     }
 
     // todo, ska man behöva stoppa in user_id här? Kan man inte bara få ett unikt?
@@ -605,5 +605,28 @@ public class DatabaseService {
             }
         } );
         return (String)queryResult.get(0);
+    }
+
+    static class View_phonetypes {
+        View_phonetypes( int phonetype_id, String typename ) {
+            this.phonetype_id = phonetype_id;
+            this.typename = typename;
+        }
+
+        int phonetype_id;
+        String typename;
+    }
+
+    View_phonetypes[] sproc_GetPhonetypes_ORDER_BY_phonetype_id( int lang_id ) {
+        String sql = " SELECT  phonetype_id, typename FROM phonetypes WHERE lang_id = ? ORDER BY phonetype_id";
+        Object[] paramValues = new Object[]{ new Integer(lang_id)};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int phonetype_id = rs.getInt("phonetype_id");
+                String typename = rs.getString("typename");
+                return new View_phonetypes( phonetype_id, typename );
+            }
+        } );
+        return (View_phonetypes[])queryResult.toArray( new View_phonetypes[queryResult.size()] );
     }
 }

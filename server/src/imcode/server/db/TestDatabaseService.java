@@ -71,28 +71,28 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void nonmodifyingTestSameResultFrom_sproc_getTemplatesInGroup() {
-        DatabaseService.ViewTemplateGroup templateGroupZero = new DatabaseService.ViewTemplateGroup( 1, "Start" );
+        DatabaseService.View_TemplateGroup templateGroupZero = new DatabaseService.View_TemplateGroup( 1, "Start" );
 
-        DatabaseService.ViewTemplateGroup[] sqlServerTemplatesInGroupZero = sqlServer.sproc_GetTemplatesInGroup( 0 );
+        DatabaseService.View_TemplateGroup[] sqlServerTemplatesInGroupZero = sqlServer.sproc_GetTemplatesInGroup( 0 );
         assertEquals( 1, sqlServerTemplatesInGroupZero.length );
         assertEquals( templateGroupZero, sqlServerTemplatesInGroupZero[0] );
-        DatabaseService.ViewTemplateGroup[] sqlServerTemplatesInGroupOneo = sqlServer.sproc_GetTemplatesInGroup( 1 );
-        DatabaseService.ViewTemplateGroup[] sqlServerTemplatesInGroupTwo = sqlServer.sproc_GetTemplatesInGroup( 2 );
+        DatabaseService.View_TemplateGroup[] sqlServerTemplatesInGroupOneo = sqlServer.sproc_GetTemplatesInGroup( 1 );
+        DatabaseService.View_TemplateGroup[] sqlServerTemplatesInGroupTwo = sqlServer.sproc_GetTemplatesInGroup( 2 );
 
-        DatabaseService.ViewTemplateGroup[] mySQLTemplatesInGroupZero = mySql.sproc_GetTemplatesInGroup( 0 );
+        DatabaseService.View_TemplateGroup[] mySQLTemplatesInGroupZero = mySql.sproc_GetTemplatesInGroup( 0 );
         assertEquals( 1, mySQLTemplatesInGroupZero.length );
         assertEquals( templateGroupZero, mySQLTemplatesInGroupZero[0] );
-        DatabaseService.ViewTemplateGroup[] mySQLTemplatesInGroupOne = mySql.sproc_GetTemplatesInGroup( 1 );
-        DatabaseService.ViewTemplateGroup[] mySQLTemplatesInGroupTwo = mySql.sproc_GetTemplatesInGroup( 2 );
+        DatabaseService.View_TemplateGroup[] mySQLTemplatesInGroupOne = mySql.sproc_GetTemplatesInGroup( 1 );
+        DatabaseService.View_TemplateGroup[] mySQLTemplatesInGroupTwo = mySql.sproc_GetTemplatesInGroup( 2 );
 
         if( testMimer ) {
-            DatabaseService.ViewTemplateGroup[] mimerTemplatesInGroupZero = mimer.sproc_GetTemplatesInGroup( 0 );
+            DatabaseService.View_TemplateGroup[] mimerTemplatesInGroupZero = mimer.sproc_GetTemplatesInGroup( 0 );
             assertEquals( 1, mimerTemplatesInGroupZero.length );
             assertEquals( templateGroupZero, mimerTemplatesInGroupZero[0] );
-            DatabaseService.ViewTemplateGroup[] mimerTemplatesInGroupOne = mimer.sproc_GetTemplatesInGroup( 1 );
+            DatabaseService.View_TemplateGroup[] mimerTemplatesInGroupOne = mimer.sproc_GetTemplatesInGroup( 1 );
             assertEquals( mimerTemplatesInGroupOne.length, sqlServerTemplatesInGroupOneo.length );
             assertEquals( mimerTemplatesInGroupOne.length, mySQLTemplatesInGroupOne.length );
-            DatabaseService.ViewTemplateGroup[] mimerTemplatesInGroupTwo = mimer.sproc_GetTemplatesInGroup( 2 );
+            DatabaseService.View_TemplateGroup[] mimerTemplatesInGroupTwo = mimer.sproc_GetTemplatesInGroup( 2 );
             assertEquals( mimerTemplatesInGroupTwo.length, sqlServerTemplatesInGroupTwo.length );
             assertEquals( mimerTemplatesInGroupTwo.length, mySQLTemplatesInGroupTwo.length );
         }
@@ -234,6 +234,12 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertEquals( "Annat", sqlServer.sproc_GetPhonetypeName(0,1));
         assertEquals( "Annat", mySql.sproc_GetPhonetypeName(0,1));
         if( testMimer ) assertEquals( "Annat", mimer.sproc_GetPhonetypeName(0,1));
+    }
+
+    public void test_sproc_GetPhonetypes_ORDER_BY_phonetype_id() {
+        assertEquals( 5, sqlServer.sproc_GetPhonetypes_ORDER_BY_phonetype_id(1).length );
+        assertEquals( 5, mySql.sproc_GetPhonetypes_ORDER_BY_phonetype_id(1).length );
+        if( testMimer ) assertEquals( 5, mimer.sproc_GetPhonetypes_ORDER_BY_phonetype_id(1).length );
     }
 
     public void test_sproc_AddUseradminPermissibleRoles() {
