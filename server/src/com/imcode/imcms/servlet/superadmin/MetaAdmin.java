@@ -88,9 +88,9 @@ public class MetaAdmin extends HttpServlet {
         }
 
         List vec = new ArrayList();
-        vec.add( "#start#" );
+        vec.add( "#rangestart#" );
         vec.add( String.valueOf( start ) );
-        vec.add( "#end#" );
+        vec.add( "#rangeend#" );
         vec.add( String.valueOf( end ) );
 
         vec.add( "#intervals#" );
