@@ -6,7 +6,6 @@ import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;
 import com.imcode.imcms.servlet.admin.AddDoc;
-import com.imcode.imcms.servlet.admin.SaveSort;
 import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
 import com.imcode.imcms.servlet.beans.AdminManagerSubreport;
 import com.imcode.util.ChainableReversibleNullComparator;
@@ -90,7 +89,7 @@ public class AdminManager extends Administrator {
                 DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
                 String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
                 if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) ) {
-                    SaveSort.copyDocument( parentDocument, user );
+                    documentMapper.copyDocument( parentDocument, user );
                     createAndShowAdminManagerPage( request, response, null );
                 } else {
                     int documentTypeId = Integer.parseInt( createDocumentAction );

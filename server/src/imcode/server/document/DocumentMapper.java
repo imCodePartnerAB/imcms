@@ -52,6 +52,7 @@ public class DocumentMapper {
     private static final int DOCUMENT_CACHE_MAX_SIZE = 100;
 
     private DocumentCache documentCache = new DocumentCache( new LRUMap( DOCUMENT_CACHE_MAX_SIZE ), this ) ;
+    private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
     public DocumentMapper( ImcmsServices service ) {
         this.service = service;
@@ -96,15 +97,26 @@ public class DocumentMapper {
             throw new UnhandledException( e );
         }
         newDocument.setId( 0 );
-        newDocument.setCreator( user );
-        newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
         newDocument.setHeadline( "" );
         newDocument.setMenuText( "" );
         newDocument.setMenuImage( "" );
-        newDocument.setPublicationStartDatetime( new Date() );
-        newDocument.setArchivedDatetime( null );
-        newDocument.setPublicationEndDatetime( null );
+        makeDocumentLookNew( newDocument, user );
         return newDocument;
+    }
+
+    private void makeDocumentLookNew( DocumentDomainObject document, UserDomainObject user ) {
+        Date now = new Date() ;
+        makeDocumentLookCreated( document, user, now );
+        document.setPublicationStartDatetime( now );
+        document.setArchivedDatetime( null );
+        document.setPublicationEndDatetime( null );
+        document.setStatus( DocumentDomainObject.STATUS_NEW );
+    }
+
+    private void makeDocumentLookCreated( DocumentDomainObject document, UserDomainObject user, Date now ) {
+        document.setCreator( user );
+        document.setCreatedDatetime( now );
+        document.setModifiedDatetime( now );
     }
 
     public CategoryDomainObject[] getAllCategoriesOfType( CategoryTypeDomainObject categoryType ) {
@@ -426,8 +438,7 @@ public class DocumentMapper {
 
         checkMaxDocumentCategoriesOfType( document );
 
-        document.setCreatedDatetime( new Date() );
-        document.setModifiedDatetime( document.getCreatedDatetime() );
+        makeDocumentLookCreated( document, user, new Date() );
 
         int newMetaId = sqlInsertIntoMeta( document );
 
@@ -1019,6 +1030,15 @@ public class DocumentMapper {
 
     public int getHighestDocumentId() {
         return Integer.parseInt( service.sqlQueryStr( "SELECT MAX(meta_id) FROM meta", new String[0] ) );
+    }
+
+    public void copyDocument( DocumentDomainObject selectedChild,
+                                     UserDomainObject user ) {
+        ImcmsServices services = Imcms.getServices();
+        String copyHeadlineSuffix = services.getAdminTemplate( COPY_HEADLINE_SUFFIX_TEMPLATE, user, null );
+        selectedChild.setHeadline( selectedChild.getHeadline() + copyHeadlineSuffix );
+        makeDocumentLookNew( selectedChild, user );
+        services.getDocumentMapper().saveNewDocument( selectedChild, user );
     }
 
     public static class TextDocumentMenuIndexPair {

@@ -22,8 +22,6 @@ import java.util.*;
  */
 public class SaveSort extends HttpServlet {
 
-    private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
-
     /**
      * service()
      */
@@ -105,7 +103,7 @@ public class SaveSort extends HttpServlet {
                     String selectedChildIdStr = selectedChildrenIds[i];
                     int selectedChildId = Integer.parseInt( selectedChildIdStr );
                     DocumentDomainObject selectedChild = documentMapper.getDocument( selectedChildId );
-                    copyDocument( selectedChild, user );
+                    documentMapper.copyDocument( selectedChild, user );
                     menu.addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( selectedChild ) ) );
                 }
             }
@@ -122,13 +120,4 @@ public class SaveSort extends HttpServlet {
                           + menuIndex );
     }
 
-    public static void copyDocument( DocumentDomainObject selectedChild,
-                                     UserDomainObject user ) {
-        ImcmsServices services = Imcms.getServices();
-        String copyHeadlineSuffix = services.getAdminTemplate( COPY_HEADLINE_SUFFIX_TEMPLATE, user, null );
-        selectedChild.setHeadline( selectedChild.getHeadline() + copyHeadlineSuffix );
-        selectedChild.setStatus( DocumentDomainObject.STATUS_NEW );
-        selectedChild.setPublicationStartDatetime( new Date() );
-        services.getDocumentMapper().saveNewDocument( selectedChild, user );
-    }
 }
