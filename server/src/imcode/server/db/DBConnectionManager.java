@@ -5,5 +5,5 @@ import java.sql.SQLException;
 
 public interface DBConnectionManager {
     Connection getConnection() throws SQLException;
-    void testConnection();
+    void testConnectionAndLogResultToTheErrorLog();
 }

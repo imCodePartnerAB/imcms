@@ -110,7 +110,6 @@ public class ApplicationServer {
         String password = props.getProperty( "Password" );
         int maxConnectionCount = Integer.parseInt(props.getProperty( "MaxConnectionCount" ));
 
-        /*
         log.debug( "Properties values for server '" + servername + "':");
         log.debug( "JdbcDriver=" + jdbcDriver );
         log.debug( "JdbcUrl=" + jdbcUrl );
@@ -120,7 +119,6 @@ public class ApplicationServer {
         log.debug( "User=" + user );
         log.debug( "Password=" + password );
         log.debug( "MaxConnectionCount=" + maxConnectionCount );
-        */
 
         try {
 
@@ -132,7 +130,7 @@ public class ApplicationServer {
             */
             String serverUrl = jdbcUrl + host + ":" + port + ";DatabaseName=" + databaseName;
             result = new NonPoolingDriverDBConnectionManager( servername, jdbcDriver, serverUrl, user, password, maxConnectionCount );
-            result.testConnection();
+            result.testConnectionAndLogResultToTheErrorLog();
 
         } catch( Exception ex ) {
             log.fatal( "Failed to create database connection pool");

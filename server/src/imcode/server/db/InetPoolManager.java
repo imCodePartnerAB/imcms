@@ -120,7 +120,7 @@ public class InetPoolManager implements DBConnectionManager {
         return pds;
     }
 
-    public void testConnection() {
+    public void testConnectionAndLogResultToTheErrorLog() {
         try {
             testConnectionAndLogMetaData( "Bla" );
         }
