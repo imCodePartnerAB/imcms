@@ -283,7 +283,11 @@ writeFormField("TEXT","archived_time",5,5,'4em',"#archived_time#");
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><input type="CHECKBOX" name="show_meta" value="1" #show_meta#></td>
-			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/adv_change_meta.html/1012 ?></td>
+			<td class="imcmsAdmText">&nbsp;<? global/pageinfo/ShowLinkToUnuthorizedUser ?></td>
+   		</tr>
+        <tr>
+			<td><input type="CHECKBOX" name="shared" value="1" #shared#></td>
+			<td class="imcmsAdmText">&nbsp;<? global/pageinfo/share ?></td>
 		</tr>
 		</table></td>
 	</tr>

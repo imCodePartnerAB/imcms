@@ -70,9 +70,14 @@ imcmsGui("mid", null);
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><input type="CHECKBOX" name="show_meta" value="1" #show_meta#></td>
-			<td class="imcmsAdmText">&nbsp;<? sv/docinfo/change_meta_rights.html/1003 ?></td>
+			<td class="imcmsAdmText">&nbsp;<? global/pageinfo/ShowLinkToUnuthorizedUser ?></td>
+   		</tr>
+        <tr>
+			<td><input type="CHECKBOX" name="shared" value="1" #shared#></td>
+			<td class="imcmsAdmText">&nbsp;<? global/pageinfo/share ?></td>
 		</tr>
-		</table></td>
+		</table>
+		</td>
 		<td class="imcmsAdmText" nowrap><? sv/docinfo/change_meta_rights.html/1004 ?></td>
 	</tr>
 	</table></td>
