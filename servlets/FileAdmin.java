@@ -808,7 +808,7 @@ public class FileAdmin extends HttpServlet {
 				String foo = rootlist[i].getCanonicalPath() + File.separator ; 
 				optionlist+="<option value=\""+foo+"\">"+foo+"</option>" ;
 			}
-			optionlist+="<option value=\"..\">..\\</option>" ;
+			optionlist+="<option value=\"..\">.."+File.separator+"</option>" ;
 			File[] filelist = fd1.listFiles(dirfilt) ;
 			for ( int i = 0 ; i < filelist.length ; i++ ) {
 				String foo = filelist[i].getName() + File.separator ; 
@@ -835,7 +835,7 @@ public class FileAdmin extends HttpServlet {
 				String foo = rootlist[i].getCanonicalPath() + File.separator ; 
 				optionlist+="<option value=\""+foo+"\">"+foo+"</option>" ;
 			}
-			optionlist+="<option value=\"..\">..\\</option>" ;
+			optionlist+="<option value=\"..\">.."+File.separator+"</option>" ;
 			File[] filelist = fd2.listFiles(dirfilt) ;
 			for ( int i = 0 ; filelist!=null && i < filelist.length ; i++ ) {
 				String foo = filelist[i].getName() + File.separator ; 
