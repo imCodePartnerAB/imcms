@@ -3,12 +3,16 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetChilds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[GetChilds]
+/****** Object:  Stored Procedure dbo.GetChilds    Script Date: 2002-10-16 13:57:12 ******/
+if exists (select * from sysobjects where id = object_id('dbo.GetChilds') and sysstat & 0xf = 4)
+	drop procedure dbo.GetChilds
 GO
 
 
-CREATE PROCEDURE GetChilds
+/****** Object:  Stored Procedure imcms.GetChilds    Script Date: 2002-10-16 11:26:38 ******/
+
+
+CREATE  PROCEDURE GetChilds
  @meta_id int,
  @user_id int
 AS
@@ -44,7 +48,6 @@ join user_roles_crossref urc           -- This table tells us which users have w
       or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin
       or  (
         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
-       and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1
       )
      )
 left join fileupload_docs fd
@@ -82,7 +85,6 @@ join user_roles_crossref urc           -- This table tells us which users have w
       or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin
       or  (
         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
-       and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1
       )
      )
 left join fileupload_docs fd
@@ -120,7 +122,6 @@ join user_roles_crossref urc           -- This table tells us which users have w
       or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin
       or  (
         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
-       and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1
       )
      )
 left join fileupload_docs fd
@@ -134,7 +135,10 @@ order by  menu_sort,meta_headline
 end
 
 
+
+
 GO
+
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
