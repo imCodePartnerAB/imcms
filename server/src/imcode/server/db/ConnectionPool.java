@@ -12,8 +12,6 @@ public abstract class ConnectionPool {
 
     public abstract Connection getConnection() throws SQLException;
 
-    protected abstract void testConnectionAndLogResultToTheErrorLog() throws SQLException;
-
     public static ConnectionPool createConnectionPool( String jdbcUrl, String host, int port, String databaseName,
                                                        String jdbcDriver, String user, String password,
                                                        int maxConnectionCount ) {
@@ -23,8 +21,6 @@ public abstract class ConnectionPool {
         try {
             String serverUrl = jdbcUrl + host + ":" + port + ";DatabaseName=" + databaseName;
             connectionPool = new ConnectionPoolForNonPoolingDriver( jdbcDriver, serverUrl, user, password, maxConnectionCount );
-            connectionPool.testConnectionAndLogResultToTheErrorLog();
-
         } catch ( Exception ex ) {
             log.fatal( "Failed to create connection pool Url: " + jdbcUrl + " Driver: " + jdbcDriver, ex );
             throw new RuntimeException( ex );

@@ -1,9 +1,10 @@
 package imcode.server.db;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp.PoolableConnection;
+import org.apache.commons.dbcp.DelegatingConnection;
 import org.apache.log4j.Logger;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -15,9 +16,10 @@ import java.sql.SQLException;
  */
 public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
 
-    private DataSource dataSource;
+    private BasicDataSource dataSource;
+    private static int noOfPoolsCreated = 0;
 
-    private final static Logger log = Logger.getLogger( imcode.server.db.ConnectionPoolForNonPoolingDriver.class.getName() );
+    private final static Logger log = Logger.getLogger( ConnectionPoolForNonPoolingDriver.class );
 
     public ConnectionPoolForNonPoolingDriver( String driverClassName, String dbUrl, String userName, String password,
                                               int maxActiveConnections ) throws Exception {
@@ -27,24 +29,23 @@ public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
         basicDataSource.setUsername( userName );
         basicDataSource.setPassword( password );
         basicDataSource.setUrl( dbUrl );
+
         basicDataSource.setMaxActive( maxActiveConnections );
+        basicDataSource.setMaxIdle( maxActiveConnections );
+
         basicDataSource.setPoolPreparedStatements( true );
 
-
         dataSource = basicDataSource;
+        noOfPoolsCreated++;
+        log.debug("Pool no " + noOfPoolsCreated + " created");
 
         Connection connection = getConnection();
         logDatabaseData( connection );
         connection.close();
     }
 
-    public Connection getConnection() throws SQLException {
-        return dataSource.getConnection() ;
-    }
-
-    public void testConnectionAndLogResultToTheErrorLog() throws SQLException {
-        getConnection().close();
-        log.info( "Test Connection OK" );
+    public synchronized Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
     private static void logDatabaseData( Connection connection ) throws SQLException {

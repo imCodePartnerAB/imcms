@@ -114,18 +114,6 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     /**
      * Only used for testing, see main-method above
      */
-    public void testConnectionWithPool() throws Exception {
-        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( driverClassName, dbUrl, userName, passWord, 20 );
-        try {
-            cm.testConnectionAndLogResultToTheErrorLog();
-        } catch (SQLException ex) {
-            fail() ;
-        }
-    }
-
-    /**
-     * Only used for testing, see main-method above
-     */
     public void testListAllTables() throws Exception {
         DatabaseMetaData metaData = getConnectionMetaData( driverClassName, dbUrl, userName, passWord );
         String[] types = {"TABLE"};
