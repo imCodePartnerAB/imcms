@@ -1060,7 +1060,7 @@ final public class IMCService implements IMCServiceInterface {
      * Returns an array with with all the documenttypes stored in the database
      * the array consists of pairs of id:, value. Suitable for parsing into select boxes etc.
      */
-    public String[][] getDocumentTypesInList( String langPrefixStr ) {
+    public String[][] getAllDocumentTypes( String langPrefixStr ) {
         return sqlProcedureMulti( "GetDocTypes", new String[]{langPrefixStr} );
     }
 

@@ -1,24 +1,14 @@
 package com.imcode.imcms.servlet.superadmin;
 
-/*
- *
- * @(#)AdminListDocs.java
- *
- *
- * 2000-10-20
- *
- * Copyright (c)
- *
- */
-
 import imcode.external.diverse.Html;
 import imcode.external.diverse.VariableManager;
-import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
+import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
-import imcode.util.DateConstants;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,15 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Properties;
-
-import org.apache.commons.lang.StringUtils;
-import com.imcode.imcms.servlet.superadmin.AdminError;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.Administrator;
+import java.util.*;
 
 /**
  * Lists document by create or modified date of choisen document types.
@@ -54,8 +36,6 @@ import com.imcode.imcms.servlet.superadmin.Administrator;
  * <p/>
  * stored procedures in use:
  * - ListDocsByDate
- * - ListDocsGetInternalDocTypes
- * - ListDocsGetInternalDocTypesValue
  * - GetLangPrefixFromId
  *
  * @author Jerker Drottenmyr
@@ -75,23 +55,25 @@ public class AdminListDocs extends Administrator {
         // Lets verify that the user who tries to add a new user is an admin
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        if ( user.isSuperAdmin() == false ) {
+        if ( !user.isSuperAdmin() ) {
             return;
         }
 
-        String languagePrefix = user.getLanguageIso639_2();
-
-        // Lets get all doctypes from DB
-        String[][] queryResult = imcref.sqlProcedureMulti( "ListDocsGetInternalDocTypes", new String[]{languagePrefix} );
+        Map allDocumentTypeIdsAndNames = imcref.getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user );
 
         // Lets generate the html page
-        String optionList = Html.createOptionList( queryResult );
+        StringBuffer optionList = new StringBuffer();
+        for ( Iterator iterator = allDocumentTypeIdsAndNames.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            Integer documentTypeId = (Integer)entry.getKey();
+            String documentTypeName = (String)entry.getValue();
+            optionList.append( Html.createOption( "" + documentTypeId, documentTypeName, false ) );
+        }
 
         VariableManager vm = new VariableManager();
-        vm.addProperty( "DOCUMENT_TYPES", optionList );
+        vm.addProperty( "DOCUMENT_TYPES", optionList.toString() );
 
         this.sendHtml( request, response, vm, TEMPLATE_LISTDOC );
-        return;
 
     }
 
@@ -109,7 +91,7 @@ public class AdminListDocs extends Administrator {
         if ( !user.isSuperAdmin() ) {
             String header = "Error in AdminListDocs. ";
             Properties langproperties = imcref.getLanguageProperties( user );
-            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
             this.log( header + "- user is not an administrator" );
             new AdminError( request, response, header, msg );
 
@@ -126,7 +108,7 @@ public class AdminListDocs extends Administrator {
         if ( request.getParameter( "LISTDOC_LIST" ) != null ) {
             boolean noErrors = true;
             String parseTemplate = null;
-            String[] docTypesToShow = null;
+            int[] docTypesToShow = null;
 
             /*
              * 0 = startDate to endDate
@@ -134,7 +116,11 @@ public class AdminListDocs extends Administrator {
              * 2 = all upp to endDate
              * 3 = all down to startDate
              */
-            String[] docTypes = request.getParameterValues( "DOC_TYPES" );
+            String[] docTypeStrings = request.getParameterValues( "DOC_TYPES" );
+            int[] docTypes = new int[docTypeStrings.length];
+            for ( int i = 0; i < docTypeStrings.length; i++ ) {
+                docTypes[i] = Integer.parseInt( docTypeStrings[i] );
+            }
 
             /*
              * 0 = all date !not in use
@@ -169,10 +155,10 @@ public class AdminListDocs extends Administrator {
                 if ( docTypes != null ) {
                     docTypesToShow = docTypes;
                     for ( int i = 0; i < docTypes.length; i++ ) {
-                        int testVar = Integer.parseInt( docTypes[i] );
+                        int testVar = docTypes[i];
                         // if all doctypes choosen then lets get all doctypes
                         if ( testVar == 0 ) {
-                            docTypesToShow = imcref.sqlProcedure( "ListDocsGetInternalDocTypesValue", new String[0] );
+                            docTypesToShow = imcref.getDocumentMapper().getAllDocumentTypeIds();
                         }
                     }
                 } else {
@@ -223,7 +209,10 @@ public class AdminListDocs extends Administrator {
                 String languagePrefix = user.getLanguageIso639_2();
                 for ( int i = 0; i < docTypesToShow.length; i++ ) {
                     String[][] queryResult = imcref.sqlProcedureMulti( "ListDocsByDate",
-                                                                       new String[]{listMod, docTypesToShow[i], startDate, endDate, languagePrefix} );
+                                                                       new String[]{
+                                                                           listMod, "" + docTypesToShow[i], startDate,
+                                                                           endDate, languagePrefix
+                                                                       } );
 
                     for ( int j = 0; j < queryResult.length; j++ ) {
                         tagData[1] = queryResult[j][0];
@@ -234,7 +223,7 @@ public class AdminListDocs extends Administrator {
                     }
                 }
 
-                String selectedDocTypesName = getSelectedDocTypeNames( imcref, docTypes, languagePrefix );
+                String selectedDocTypesName = getSelectedDocTypeNames( imcref, docTypes, user );
 
                 //Lets generate the html page
                 VariableManager vm = new VariableManager();
@@ -250,14 +239,14 @@ public class AdminListDocs extends Administrator {
         }
     }
 
-    private String getSelectedDocTypeNames( IMCServiceInterface imcref, String[] selectedDocTypes, String langPrefix ) {
-        List selectedDocTypeNames = new ArrayList() ;
-        String[][] allDocTypes = imcref.getDocumentTypesInList( langPrefix );
+    private String getSelectedDocTypeNames( IMCServiceInterface imcref, int[] selectedDocTypeIds,
+                                            UserDomainObject user ) {
+        List selectedDocTypeNames = new ArrayList();
+        Map allDocTypes = imcref.getDocumentMapper().getAllDocumentTypeIdsAndNamesInUsersLanguage( user );
 
-        for (int i = 0; i < allDocTypes.length; ++i) {
-            if (Arrays.asList(selectedDocTypes).contains(allDocTypes[i][0])) {
-                selectedDocTypeNames.add(allDocTypes[i][1]) ;
-            }
+        for ( int i = 0; i < selectedDocTypeIds.length; i++ ) {
+            int selectedDocTypeId = selectedDocTypeIds[i];
+            selectedDocTypeNames.add( allDocTypes.get( new Integer( selectedDocTypeId ) ) );
         }
 
         return StringUtils.join( selectedDocTypeNames.iterator(), ", " );

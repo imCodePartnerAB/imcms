@@ -243,7 +243,7 @@ public class GetExistingDoc extends HttpServlet {
         String oneRecHtmlSrc = imcref.getAdminTemplate( ONE_SEARCH_HIT, user, null );
 
         // Lets get all document types and put them in a hashTable
-        String[][] allDocTypesArray = imcref.getDocumentTypesInList( langPrefix );
+        String[][] allDocTypesArray = imcref.getAllDocumentTypes( langPrefix );
         Map allDocTypesHash = convert2Hashtable( allDocTypesArray );
 
         // Lets parse the searchresults

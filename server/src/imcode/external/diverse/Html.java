@@ -82,26 +82,13 @@ public class Html {
     }
 
     /**
-     * creats list of options, no selected options.
-     *
-     * @param options must be in order name, value.
-     */
-    public static String createOptionList( String[][] options ) {
-        StringBuffer optionList = new StringBuffer();
-        for ( int i = 0; i < options.length; i++ ) {
-            optionList.append( createOption( options[i][0], options[i][1], false ) );
-        }
-        return optionList.toString();
-    }
-
-    /**
      * creats option.
      * 
      * @param elementValue - option value
      * @param elementValue - option string
-     * @param selected     - true or falsee
+     * @param selected     - true or false
      */
-    private static String createOption( String elementValue, String elementName, boolean selected ) {
+    public static String createOption( String elementValue, String elementName, boolean selected ) {
 
         StringBuffer option = new StringBuffer();
 

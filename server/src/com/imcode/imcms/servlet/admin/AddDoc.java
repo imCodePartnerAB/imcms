@@ -68,7 +68,7 @@ public class AddDoc extends HttpServlet {
         vec.add(sortOrderStr);
 
         // Lets set all the the documenttypes as selected in the html file
-        String[][] allDocTypesArray = imcref.getDocumentTypesInList(user.getLanguageIso639_2());
+        String[][] allDocTypesArray = imcref.getAllDocumentTypes(user.getLanguageIso639_2());
         for (int i = 0; i < allDocTypesArray.length; ++i) {
             vec.add("#checked_" + allDocTypesArray[i][0] + "#");
             vec.add("checked");

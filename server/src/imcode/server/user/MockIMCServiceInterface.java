@@ -291,7 +291,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void setSystemData( SystemData sd ) {
    }
 
-    public String[][] getDocumentTypesInList( String langPrefixStr ) {
+    public String[][] getAllDocumentTypes( String langPrefixStr ) {
         return new String[0][];  // TODO
     }
 

@@ -1703,7 +1703,7 @@ public class DocumentMapper {
         String[][] rows = service.sqlQueryMulti( "SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", new String[]{
             user.getLanguageIso639_2()
         } );
-        Map allDocumentTypeIdsAndNamesInUsersLanguage = new HashMap() ;
+        Map allDocumentTypeIdsAndNamesInUsersLanguage = new TreeMap() ;
         for ( int i = 0; i < rows.length; i++ ) {
             String[] row = rows[i];
             Integer documentTypeId =  Integer.valueOf( row[0] ) ;

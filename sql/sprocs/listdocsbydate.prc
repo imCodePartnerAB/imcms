@@ -20,52 +20,8 @@ if ( @endDate <> '0') BEGIN
  SET @endDate = @endDate + ' 23:59:59'
  PRINT @endDate
 END 
-/* list all (not in use ) */
-if ( @listMod = 0) begin
- if ( @startDate = '0' ) begin
-  if ( @endDate = '0' ) begin
-   select m.meta_id, dt.type, m.meta_headline, m.date_modified
- 
-   from meta m
-   join doc_types dt
-      on m.doc_type = dt.doc_type
-   where m.doc_type = @doc_type and activate = 1 and dt.lang_prefix = @lang_prefix
-   order by m.date_modified
-  end
-  else begin
-   select m.meta_id, dt.type, m.meta_headline, m.date_modified
- 
-   from meta m
-   join doc_types dt
-      on m.doc_type = dt.doc_type
-   where m.doc_type = @doc_type and m.date_modified <= @endDate and activate = 1 and dt.lang_prefix = @lang_prefix
-   order by m.date_modified
-  end
- end
- else if ( @startDate != '0' ) begin
-  if ( @endDate = '0' ) begin
-   select m.meta_id, dt.type, m.meta_headline, m.date_modified
- 
-   from meta m
-   join doc_types dt
-      on m.doc_type = dt.doc_type
-   where m.doc_type = @doc_type and m.date_modified >= @startDate and activate = 1 and dt.lang_prefix = @lang_prefix
-   order by m.date_modified
-  end
-  else
-  begin
-   select m.meta_id, dt.type, m.meta_headline, m.date_modified
- 
-   from meta m
-   join doc_types dt
-      on m.doc_type = dt.doc_type
-   where m.doc_type = @doc_type and m.date_modified <= @endDate and m.date_modified >= @startDate and activate = 1 and dt.lang_prefix = @lang_prefix
-   order by m.date_modified
-  end
- end
-end
 /* list creatdate */
-else if ( @listMod = 1) begin
+if ( @listMod = 1) begin
  if ( @startDate = '0' ) begin
   if ( @endDate = '0' ) begin
    select m.meta_id, dt.type, m.meta_headline, m.date_created
