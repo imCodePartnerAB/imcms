@@ -125,8 +125,9 @@ public class MetaAdmin extends HttpServlet {
 				if ( childs != null && childs.length !=0 ) {
 					out.println("<ul>") ;
 					for ( int j = 0 ; j < childs.length ; j++ ) {
-						int m_id = Integer.parseInt(childs[j]) ;
-						String address = "MetaAdmin?start="+(m_id - (m_id % interval))+"&interval="+interval+"#"+childs[j] ;
+						String address = "MetaAdmin?start="+childs[j]+"&interval="+interval+"#"+childs[j] ;
+						//int m_id = Integer.parseInt(childs[j]) ;
+						//String address = "MetaAdmin?start="+(m_id - (m_id % interval))+"&interval="+interval+"#"+childs[j] ;
 						if ( hl2[j].length() > 80 ) {
 							hl2[j]=hl2[j].substring(0,77)+"..." ;
 						}
@@ -141,8 +142,9 @@ public class MetaAdmin extends HttpServlet {
 				if ( childs != null && childs.length !=0 ) {
 					out.println("<ul>") ;
 					for ( int j = 0 ; j < childs.length ; j++ ) {
-						int m_id = Integer.parseInt(childs[j]) ;
-						String address = "MetaAdmin?start="+(m_id - (m_id % interval))+"&interval="+interval+"#" ;
+						String address = "MetaAdmin?start="+childs[j]+"&interval="+interval+"#"+childs[j] ;
+						//int m_id = Integer.parseInt(childs[j]) ;
+						//String address = "MetaAdmin?start="+(m_id - (m_id % interval))+"&interval="+interval+"#" ;
 						if ( hl2[j].length() > 80 ) {
 							hl2[j]=hl2[j].substring(0,77)+"..." ;
 						}
