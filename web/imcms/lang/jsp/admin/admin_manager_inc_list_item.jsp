@@ -3,8 +3,9 @@
                  imcode.server.document.DocumentDomainObject,
                  imcode.util.Utility,
                  imcode.server.Imcms,
-                 imcode.util.Html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-<jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.superadmin.AdminManagerSubReportListItemBean" scope="request"/>
+                 imcode.util.Html,
+                 com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request"/>
 <%
     String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
     DocumentDomainObject document = listItemBean.getDocument() ;
@@ -19,9 +20,10 @@
         <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId()%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a><br>
         <%= StringEscapeUtils.escapeHtml(document.getMenuText() ) %></td>
     <td align="left"><img src="<%= imagesPath %>/1x1.gif" width="1" height="3">
-        <jsp:include page="admin_manager_expandable_dates_column.jsp"/>
+        <jsp:useBean id="expandableDatesBean" class="com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean" scope="request"/>
+        <jsp:setProperty name="expandableDatesBean" property="document" value="<%= document %>"/>
+        <jsp:setProperty name="expandableDatesBean" property="expanded" value="<%= listItemBean.isExpanded() %>"/>
+        <jsp:include page="admin_manager_expandable_dates.jsp"/>
     </td>
    </tr>
 </vel:velocity>
-
-

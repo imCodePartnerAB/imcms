@@ -10,7 +10,7 @@
                  imcode.server.Imcms,
                  java.util.HashMap"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-<jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.superadmin.AdminManagerSubReportListItemBean" scope="request" />
+<jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%! private String IMG_PATH;
     private String TAB_TO_SHOW;
     private String LIST_TYPE;

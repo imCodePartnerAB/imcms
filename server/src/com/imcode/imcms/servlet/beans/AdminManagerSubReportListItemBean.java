@@ -1,4 +1,4 @@
-package com.imcode.imcms.servlet.superadmin;
+package com.imcode.imcms.servlet.beans;
 
 import imcode.server.document.DocumentDomainObject;
 
