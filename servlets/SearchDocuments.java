@@ -33,7 +33,7 @@ public class SearchDocuments extends HttpServlet {
 	int nbrToShow = 40 ;  // Keeps track of how many results we should show
 	// The result = nbrToShow / fieldrecSize
 	int meta_id = 0 ;
-	int fieldRecSize = 4 ;  // Keeps track of how many fields a record consists of in the res array
+	int fieldRecSize = 5 ;  // Keeps track of how many fields a record consists of in the res array
 
 	res.setContentType( "text/html" );
 	PrintWriter out = res.getWriter( );
@@ -165,6 +165,7 @@ public class SearchDocuments extends HttpServlet {
 	    v.add(docs.get(i+3)) ;
 	    v.add(""+ (i / fieldRecSize +1) ) ;
 	    v.add(question_field) ;
+	    v.add(docs.get(i+4)) ;
 	    oneRecHtml = parseOneRecord(imcserver, servlet_url, v, "search_list.html",langPrefix) ;
 
 	    htmlStr += oneRecHtml;
@@ -277,7 +278,7 @@ public class SearchDocuments extends HttpServlet {
 
 	    // text fields                 // texts.meta_id
 	    if (tokens.size() > 0) {
-		sqlStr += "SELECT DISTINCT meta.meta_id,meta.meta_headline,meta.meta_text,meta.date_modified " + '\n' ;
+		sqlStr += "SELECT DISTINCT meta.meta_id,meta.meta_headline,meta.meta_text,meta.date_modified,meta.meta_image " + '\n' ;
 		sqlStr += "FROM texts, meta\n" ;
 		sqlStr += "WHERE (" ;
 	    }
@@ -312,7 +313,7 @@ public class SearchDocuments extends HttpServlet {
 
 	    // Lets create the select and from statement
 	    if (tokens.size() > 0) {
-		sqlStr += "SELECT DISTINCT meta.meta_id,meta.meta_headline,meta.meta_text,meta.date_modified \n" ;
+		sqlStr += "SELECT DISTINCT meta.meta_id,meta.meta_headline,meta.meta_text,meta.date_modified,meta.meta_image \n" ;
 		sqlStr += "FROM meta ,childs \n" ;
 		sqlStr += "WHERE " ;
 	    }
@@ -350,7 +351,7 @@ public class SearchDocuments extends HttpServlet {
 
 
 	    // THE NEW CLASSIFICATION STYLE
-	    sqlStr += "SELECT meta.meta_id, meta.meta_headline, meta.meta_text, meta.date_modified\n" ;
+	    sqlStr += "SELECT meta.meta_id, meta.meta_headline, meta.meta_text, meta.date_modified, meta.meta_image\n" ;
 	    sqlStr += "FROM meta\n" ;
 	    sqlStr += "JOIN meta_classification mc\n" ;
 	    sqlStr += "ON  meta.meta_id = mc.meta_id\n" ;
@@ -392,7 +393,7 @@ public class SearchDocuments extends HttpServlet {
 	    }
 
 	    // Lets add the Group by statement
-	    sqlStr += "GROUP BY meta.meta_id, meta.meta_headline, meta.meta_text, meta.date_modified\n" ;
+	    sqlStr += "GROUP BY meta.meta_id, meta.meta_headline, meta.meta_text, meta.date_modified, meta.meta_image\n" ;
 
 	    // Lets check if we have an 'AND' selection. If so, then the 'HAVING COUNT'
 	    // must be equal to the number of parameters we are searching for
@@ -414,7 +415,7 @@ public class SearchDocuments extends HttpServlet {
 	    // log("Running the new search question") ;
 
 	    // THE NEW CLASSIFICATION STYLE
-	    sqlStr = "SELECT meta.meta_id, meta.meta_headline, meta.meta_text, meta.date_modified\n" ;
+	    sqlStr = "SELECT meta.meta_id, meta.meta_headline, meta.meta_text, meta.date_modified, meta.meta_image\n" ;
 	    sqlStr += "FROM meta\n" ;
 	    sqlStr += "JOIN meta_classification mc\n" ;
 	    sqlStr += "ON  meta.meta_id = mc.meta_id\n" ;
@@ -454,7 +455,7 @@ public class SearchDocuments extends HttpServlet {
 	    }
 
 	    // Lets add the Group by statement
-	    sqlStr += "GROUP BY meta.meta_id, meta.meta_headline, meta.meta_text, meta.date_modified\n" ;
+	    sqlStr += "GROUP BY meta.meta_id, meta.meta_headline, meta.meta_text, meta.date_modified, meta.meta_image\n" ;
 
 	    // Lets check if we have an 'AND' selection. If so, then the 'HAVING COUNT'
 	    // must be equal to the number of parameters we are searching for
@@ -507,6 +508,15 @@ public class SearchDocuments extends HttpServlet {
 	}
 	aRecord.add("#EMPHASIZE#") ;
 	aRecord.add( emps.toString() ) ;
+
+	
+	String meta_image = dataV.elementAt(6).toString() ;
+	aRecord.add("#META_IMAGE#") ;
+	if (!"".equals(meta_image)) {
+	    aRecord.add("<img src=\""+meta_image+"\" width=\"32\" height=\"32\">") ;
+	} else {
+	    aRecord.add("") ;
+	}
 
 	try {
 	    return IMCServiceRMI.parseDoc(imcserver,aRecord,htmlFile,langPrefix);
