@@ -10,9 +10,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.TransformerUtils;
+import org.apache.commons.collections.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -51,7 +49,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
 
     private String queryString;
-    private SectionDomainObject section;
+    private Set sections = new HashSet() ;
     private int[] statusIds;
     private int userDocumentsRestriction;
     private int dateTypeRestriction;
@@ -103,7 +101,13 @@ public class SearchDocumentsPage extends OkCancelPage {
         }
 
         try {
-            section = documentMapper.getSectionById( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__SECTION_ID ) ) );
+            sections.clear();
+            int[] sectionIds = Utility.getParameterInts( request, REQUEST_PARAMETER__SECTION_ID ) ;
+            for ( int i = 0; i < sectionIds.length; i++ ) {
+                int sectionId = sectionIds[i];
+                SectionDomainObject section = documentMapper.getSectionById( sectionId );
+                sections.add(section) ;
+            }
         } catch ( NumberFormatException nfe ) {
         }
 
@@ -163,9 +167,13 @@ public class SearchDocumentsPage extends OkCancelPage {
             }
         }
 
-        if ( null != section ) {
-            Query sectionQuery = new TermQuery( new Term( DocumentIndex.FIELD__SECTION, section.getName().toLowerCase() ) );
-            query.add( sectionQuery, true, false );
+        if ( !sections.isEmpty() ) {
+            BooleanQuery sectionQueries = new BooleanQuery();
+            for ( Iterator iterator = sections.iterator(); iterator.hasNext(); ) {
+                SectionDomainObject section = (SectionDomainObject)iterator.next();
+                sectionQueries.add( new TermQuery( new Term( DocumentIndex.FIELD__SECTION, section.getName().toLowerCase() ) ), false, false );
+            }
+            query.add( sectionQueries, true, false ) ;
         }
 
         BooleanQuery statusQueries = new BooleanQuery();
@@ -257,23 +265,26 @@ public class SearchDocumentsPage extends OkCancelPage {
     }
 
     public String getParameterString( HttpServletRequest request ) {
-        return Utility.createQueryStringFromParameterMap( getParameterMap( request ) );
+        return Utility.createQueryStringFromParameterMultiMap( getParameterMap( request ) );
     }
 
     public String getParameterStringWithParameter( HttpServletRequest request,
                                                    String parameterName, String parameterValue ) {
-        Map parameters = getParameterMap( request );
+        MultiMap parameters = getParameterMap( request );
         parameters.put( parameterName, parameterValue );
-        return Utility.createQueryStringFromParameterMap( parameters );
+        return Utility.createQueryStringFromParameterMultiMap( parameters );
     }
 
-    private Map getParameterMap( HttpServletRequest request ) {
-        Map parameters = MapUtils.orderedMap( MapUtils.transformedMap( new HashMap(), TransformerUtils.nopTransformer(), new ToStringArrayTransformer() ) );
+    private MultiMap getParameterMap( HttpServletRequest request ) {
+        MultiMap parameters = new MultiHashMap() ;
         if ( StringUtils.isNotBlank( queryString ) ) {
             parameters.put( REQUEST_PARAMETER__QUERY_STRING, queryString );
         }
-        if ( null != section ) {
-            parameters.put( REQUEST_PARAMETER__SECTION_ID, "" + section.getId() );
+        if ( !sections.isEmpty() ) {
+            for ( Iterator iterator = sections.iterator(); iterator.hasNext(); ) {
+                SectionDomainObject section = (SectionDomainObject)iterator.next();
+                parameters.put( REQUEST_PARAMETER__SECTION_ID, "" + section.getId() );
+            }
         }
         if ( 0 != firstDocumentIndex ) {
             parameters.put( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, "" + firstDocumentIndex );
@@ -293,8 +304,8 @@ public class SearchDocumentsPage extends OkCancelPage {
         putInSessionAndForwardToPath( "/imcms/" + user.getLanguageIso639_2() + "/jsp/search_documents.jsp", request, response );
     }
 
-    public SectionDomainObject getSection() {
-        return section;
+    public Set getSections() {
+        return sections;
     }
 
     public DocumentDomainObject[] getDocumentsFound() {
@@ -381,10 +392,4 @@ public class SearchDocumentsPage extends OkCancelPage {
         return userDocumentsRestriction;
     }
 
-    private static class ToStringArrayTransformer implements Transformer {
-
-        public Object transform( Object input ) {
-            return new String[]{(String)input};
-        }
-    }
 }

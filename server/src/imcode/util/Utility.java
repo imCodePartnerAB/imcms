@@ -6,6 +6,8 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.SetUtils;
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.MultiHashMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -100,19 +102,35 @@ public class Utility {
     }
 
     public static String getQueryStringExcludingParameter( HttpServletRequest request, String parameterNameToExclude ) {
-        Map requestParameters = new HashMap( request.getParameterMap() );
+
+        MultiMap requestParameters = new MultiHashMap();
+        Map parameterMap = request.getParameterMap();
+        convertArrayValuedMapToMultiMap( parameterMap, requestParameters );
+
         requestParameters.remove( parameterNameToExclude );
-        return createQueryStringFromParameterMap( requestParameters );
+        return createQueryStringFromParameterMultiMap( requestParameters );
     }
 
-    public static String createQueryStringFromParameterMap( Map requestParameters ) {
+    private static void convertArrayValuedMapToMultiMap( Map map, MultiMap multiMap ) {
+        for ( Iterator iterator = map.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            Object name = entry.getKey();
+            Object[] values = (Object[])entry.getValue();
+            for ( int i = 0; i < values.length; i++ ) {
+                Object value = values[i];
+                multiMap.put( name, value ) ;
+            }
+        }
+    }
+
+    public static String createQueryStringFromParameterMultiMap( MultiMap requestParameters ) {
         Set requestParameterStrings = SetUtils.orderedSet( new HashSet() );
         for ( Iterator iterator = requestParameters.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             String parameterName = (String)entry.getKey();
-            String[] parameterValues = (String[])entry.getValue();
-            for ( int i = 0; i < parameterValues.length; i++ ) {
-                String parameterValue = parameterValues[i];
+            Collection parameterValues = (Collection)entry.getValue();
+            for ( Iterator valuesIterator = parameterValues.iterator(); valuesIterator.hasNext(); ) {
+                String parameterValue = (String)valuesIterator.next();
                 requestParameterStrings.add( URLEncoder.encode( parameterName ) + "="
                                              + URLEncoder.encode( parameterValue ) );
             }
