@@ -751,30 +751,42 @@ class TagParser {
                 PatternMatcher patternMatcher ) {
         String result = content;
         if ( "menu".equals( tagname ) ) {
-            MenuParserSubstitution menuParserSubstitution = new MenuParserSubstitution( parserParameters );
-            result = menuParserSubstitution.tag( attributes, content, patternMatcher );
+            result = tagMenu( attributes, content, patternMatcher );
         } else if ( "velocity".equals( tagname ) ) {
-            VelocityEngine velocityEngine = service.getVelocityEngine( parserParameters.getDocumentRequest().getUser() ) ;
-            VelocityContext velocityContext = new VelocityContext();
-            velocityContext.put( "request", parserParameters.getDocumentRequest().getHttpServletRequest() );
-            velocityContext.put( "response", parserParameters.getDocumentRequest().getHttpServletResponse() );
-            StringWriter stringWriter = new StringWriter();
-            try {
-                velocityEngine.init();
-                velocityEngine.evaluate( velocityContext, stringWriter, null, content );
-            } catch ( ParseErrorException e ) {
-                throw new UnhandledException( e );
-            } catch ( MethodInvocationException e ) {
-                throw new UnhandledException( e );
-            } catch ( ResourceNotFoundException e ) {
-                throw new UnhandledException( e );
-            } catch ( IOException e ) {
-                throw new UnhandledException( e );
-            } catch ( Exception e ) {
-                throw new UnhandledException( e );
-            }
-            result = stringWriter.toString();
+            result = tagVelocity( content );
         }
+        return result;
+    }
+
+    private String tagMenu( Properties attributes, String content, PatternMatcher patternMatcher ) {
+        String result;
+        MenuParser menuParser = new MenuParser( parserParameters );
+        result = menuParser.tag( attributes, content, patternMatcher );
+        return result;
+    }
+
+    private String tagVelocity( String content ) {
+        String result;
+        VelocityEngine velocityEngine = service.getVelocityEngine( parserParameters.getDocumentRequest().getUser() ) ;
+        VelocityContext velocityContext = new VelocityContext();
+        velocityContext.put( "request", parserParameters.getDocumentRequest().getHttpServletRequest() );
+        velocityContext.put( "response", parserParameters.getDocumentRequest().getHttpServletResponse() );
+        StringWriter stringWriter = new StringWriter();
+        try {
+            velocityEngine.init();
+            velocityEngine.evaluate( velocityContext, stringWriter, null, content );
+        } catch ( ParseErrorException e ) {
+            throw new UnhandledException( e );
+        } catch ( MethodInvocationException e ) {
+            throw new UnhandledException( e );
+        } catch ( ResourceNotFoundException e ) {
+            throw new UnhandledException( e );
+        } catch ( IOException e ) {
+            throw new UnhandledException( e );
+        } catch ( Exception e ) {
+            throw new UnhandledException( e );
+        }
+        result = stringWriter.toString();
         return result;
     }
 

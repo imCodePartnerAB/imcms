@@ -12,13 +12,14 @@ import imcode.util.Html;
 import imcode.util.IdNamePair;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.oro.text.regex.*;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-class MenuParserSubstitution {
+class MenuParser {
 
     private Substitution NULLSUBSTITUTION = new StringSubstitution( "" );
 
@@ -27,7 +28,7 @@ class MenuParserSubstitution {
     private ParserParameters parserParameters;
     private static final int EXISTING_DOCTYPE_ID = 0;
 
-    MenuParserSubstitution( ParserParameters parserParameters ) {
+    MenuParser( ParserParameters parserParameters ) {
         this.parserParameters = parserParameters;
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)parserParameters.getDocumentRequest().getDocument();
         this.menus = textDocument.getMenus();
@@ -37,18 +38,19 @@ class MenuParserSubstitution {
         return (MenuDomainObject)menus.get( new Integer( id ) );
     }
 
-    private String getMenuModePrefix( int menuIndex, String labelAttribute ) {
+    private String getMenuModePrefix( int menuIndex, Properties menuattributes ) {
         Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
         ImcmsServices serverObject = parserParameters.getDocumentRequest().getServerObject();
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
         MenuDomainObject menu = getMenuByIndex( menuIndex );
         List parseTags = Arrays.asList( new String[]{
             "#menuindex#", "" + menuIndex,
-            "#label#", labelAttribute,
+            "#label#", menuattributes.getProperty( "label" ),
             "#flags#", "" + parserParameters.getFlags(),
             "#sortOrder" + ( null != menu ? menu.getSortOrder() : MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) + "#", "checked",
             "#doc_types#", createDocumentTypesOptionList(),
-            "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId()
+            "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId(),
+            "#defaulttemplate#", URLEncoder.encode( StringUtils.defaultString( menuattributes.getProperty( "defaulttemplate" ) ) )
         } );
         String result = serverObject.getAdminTemplate( "textdoc/menulabel.frag", user, parseTags );
         if ( null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex ) {
@@ -129,9 +131,8 @@ class MenuParserSubstitution {
         NodeList menuNodes = new NodeList( menutemplate ); // Build a tree-structure of nodes in memory, which "only" needs to be traversed. (Vood)oo-magic.
         nodeMenu( new SimpleElement( "menu", menuattributes, menuNodes ), result, currentMenu, patMat, menuIndex ); // Create an artificial root-node of this tree. An "imcms:menu"-element.
         if ( menuMode ) { // If in menuMode, make sure to include all the stuff from the proper admintemplates.
-            String labelAttribute = menuattributes.getProperty( "label" );
             result.append( getMenuModeSuffix( menuIndex ) );
-            result.insert( 0, getMenuModePrefix( menuIndex, labelAttribute ) );
+            result.insert( 0, getMenuModePrefix( menuIndex, menuattributes ) );
         }
         return result.toString();
     }

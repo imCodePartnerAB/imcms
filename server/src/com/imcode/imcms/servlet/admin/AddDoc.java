@@ -26,13 +26,15 @@ public class AddDoc extends HttpServlet {
     public static final String REQUEST_PARAMETER__DOCUMENT_TYPE_ID = "edit_menu";
     public static final String REQUEST_PARAMETER__MENU_INDEX = "doc_menu_no";
     public static final String REQUEST_PARAMETER__PARENT_DOCUMENT_ID = "parent_meta_id";
+    public static final String REQUEST_PARAMETER__NEW_TEMPLATE = "defaulttemplate" ;
 
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         int parentMenuIndex = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__MENU_INDEX ) );
         int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__PARENT_DOCUMENT_ID ) );
         int documentTypeId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__DOCUMENT_TYPE_ID ) );
 
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        ImcmsServices services = Imcms.getServices();
+        DocumentMapper documentMapper = services.getDocumentMapper();
 
         DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
         UserDomainObject user = Utility.getLoggedOnUser( request );
@@ -45,7 +47,15 @@ public class AddDoc extends HttpServlet {
             DispatchCommand dispatchToMenuEditCommand = new DispatchToMenuEditCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
             DocumentPageFlow.SaveDocumentCommand saveNewDocumentAndAddToMenuCommand = new SaveNewDocumentAndAddToMenuCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
             if ( document instanceof TextDocumentDomainObject ) {
-                httpPageFlow = new CreateTextDocumentPageFlow( (TextDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
+                TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
+                String templateName = request.getParameter( REQUEST_PARAMETER__NEW_TEMPLATE ) ;
+                if (null != templateName) {
+                    TemplateDomainObject template = services.getTemplateMapper().getTemplateByName( templateName ) ;
+                    if (null != template) {
+                        textDocument.setTemplate( template );
+                    }
+                }
+                httpPageFlow = new CreateTextDocumentPageFlow( textDocument, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
             } else if ( document instanceof UrlDocumentDomainObject ) {
                 httpPageFlow = new CreateDocumentWithEditPageFlow( new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
             } else if ( document instanceof HtmlDocumentDomainObject ) {

@@ -18,13 +18,11 @@ function checkForName() {
 	sFileName = theFile.replace(re2, '');
 	if (re0.test(sFileName)) {
 		sFileName = sFileName.replace(re1, "$1");
-		if (isMac && hasDocumentAll) {
-			arrFileName = sFileName.split("\/");
-		} else if (isMac && hasGetElementById) {
-			arrFileName = sFileName.split(":");
-		} else if (!isMac) {
-			arrFileName = sFileName.split("\\");
-		}
+		arrFileName = sFileName.split("\/") ;
+		sFileName = arrFileName[arrFileName.length-1];
+		arrFileName = sFileName.split(":") ;
+		sFileName = arrFileName[arrFileName.length-1];
+		arrFileName = sFileName.split("\\") ;
 		sFileName = arrFileName[arrFileName.length-1];
 		if (!/[:;\/\.\\]+/gi.test(sFileName)) {
 			document.forms.TemplateAdd.name.value = sFileName;
