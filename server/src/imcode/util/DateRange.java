@@ -49,4 +49,25 @@ public class DateRange {
 	return (startDate.compareTo(date) <= 0) && endDate.after(date) ;
     }
 
+    /**
+       Compares this DateRange to another object.
+
+       @return true If and only if object is a DateRange, and both start-dates and end-dates match.
+    **/
+    public boolean equals(Object object) {
+	if (object instanceof DateRange) {
+	    return equals((DateRange)object) ;
+	} else {
+	    return false ;
+	}
+    }
+
+    /**
+       Compares this DateRange to another.
+
+       @return true If and only if both start-dates and end-dates match.
+    **/
+    public boolean equals(DateRange dateRange) {
+	return this.startDate.equals(dateRange.startDate) && this.endDate.equals(dateRange.endDate) ;
+    }
 }

@@ -37,7 +37,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 	// Lets get the server this request was aimed for
 	String host = req.getHeader("Host") ;
-	String imcServer = Utility.getDomainPref("adminserver",host) ;
+	String imcserver = Utility.getDomainPref("adminserver",host) ;
 
 	HttpSession session = req.getSession();
 
@@ -63,14 +63,31 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	String date1 = "";
 	String date2 = "";
 	String text  = "";
-	String errMsgDate	= IMCServiceRMI.parseExternalDoc(imcServer, null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
-	String errMsgTxt	= IMCServiceRMI.parseExternalDoc(imcServer, null, TEXT_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String errMsgDate	= IMCServiceRMI.parseExternalDoc(imcserver, null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String errMsgTxt	= IMCServiceRMI.parseExternalDoc(imcserver, null, TEXT_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 
 	if (req.getParameter("save")!=null) {
 
 	    addLineToList(req,lines);
 
-	    IMCServiceRMI.setPollList(imcServer, whichFile+".poll.txt", lines);
+	    IMCServiceRMI.setPollList(imcserver, whichFile+".poll.txt", lines);
+
+	    // Get the current poll
+	    List currentPollList = IMCServiceRMI.getPollList(imcserver,whichFile+".current.txt") ;
+	    if ( currentPollList.isEmpty() ) {
+		// There was no poll, get one.
+		currentPollList = this.getNewQuestion(imcserver,whichFile) ;
+	    }
+	    Poll currentPoll = (Poll) currentPollList.get(0) ;
+
+	    // Get a new poll
+	    List newPollList = this.getNewQuestion(imcserver,whichFile) ;
+	    Poll newCurrentPoll = (Poll) newPollList.get(0) ;
+
+	    // Replace the current poll if it changed.
+	    if (!newCurrentPoll.getQuestion().equals(currentPoll.getQuestion())) {
+		IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
+	    }
 
 	    //tillbaks till
 	    res.sendRedirect("AdminQuestions") ;
@@ -159,7 +176,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	//this part is always done its the creation and sending of the page to the browser
 	session.setAttribute("lines",lines);
 
-	StringBuffer buff = createOptionList(req,lines, imcServer, user );
+	StringBuffer buff = createOptionList(req,lines, imcserver, user );
 
 
 	//Add info for parsing to a Vector and parse it with a template to a htmlString that is writeed
@@ -175,7 +192,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	values.add("#options#");
 	values.add(buff.toString());
 
-	String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, ADMIN_TEMPLATE, user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+	String parsed = IMCServiceRMI.parseExternalDoc(imcserver, values, ADMIN_TEMPLATE, user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 	out.write(parsed);
 	return;
 
@@ -220,5 +237,32 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	return true;
     }
 
+    private List getNewQuestion(String imcserver,String whichFile) throws ServletException, IOException
+    {
+
+	List questionList = IMCServiceRMI.getQuoteList(imcserver,whichFile+".poll.txt") ;
+
+	Date date = new Date();
+	Iterator qIterator = questionList.iterator() ;
+
+	while ( qIterator.hasNext() ) {
+	    Quote aPollQuestion = (Quote)qIterator.next() ;
+
+	    if (aPollQuestion.getDateRange().contains(date)) {
+		String questionString = aPollQuestion.getText() ;
+
+		List newPollList = new LinkedList() ;
+		newPollList.add(new Poll(questionString,aPollQuestion.getDateRange())) ;
+		return newPollList ;
+	    }
+	}
+
+	// FIXME: We didn't find a question/poll... what to do, what to do?
+	List newPollList = new LinkedList() ;
+	DateRange dateRange = new DateRange(new Date(0),new Date(0)) ;
+	newPollList.add(new Poll("",dateRange)) ;
+	return newPollList ;
+
+    }
 
 } // End of class
