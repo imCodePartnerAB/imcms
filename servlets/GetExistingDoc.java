@@ -383,7 +383,9 @@ public class GetExistingDoc extends HttpServlet {
                     String doc_type = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
 
                     // Add the document in menu if user is admin for the document OR the document is shared.
-                    if (user_doc_types.contains(doc_type) && IMCServiceRMI.checkUserDocSharePermission(imcserver,user,meta_id)/*("1".equals(shared) || IMCServiceRMI.checkDocAdminRights(imcserver,existing_meta_id,user))*/) {
+		    boolean sharePermission = IMCServiceRMI.checkUserDocSharePermission(imcserver,user,existing_meta_id) ;
+                    if (user_doc_types.contains(doc_type)
+			&& sharePermission) {
                         IMCServiceRMI.addExistingDoc(imcserver,meta_id,user,existing_meta_id,doc_menu_no) ;
                     }
 
