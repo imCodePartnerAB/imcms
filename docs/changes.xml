@@ -60,6 +60,12 @@
             </p>
             <bug id="2882"/>
         </change>
+        <change>
+            <p>
+                Allow role names of up to 60 characters, and display more than three roles at a time.
+            </p>
+            <bug id="2889"/>
+        </change>
     </changes>
 
     <changes for="API-using developers">
