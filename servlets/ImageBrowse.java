@@ -206,10 +206,25 @@ public class ImageBrowse extends HttpServlet {
 			}
 
 			filePath = filePath.replace(File.separatorChar,'/')+fileName ;
+			StringTokenizer tokenizer = new StringTokenizer(filePath, "/", true);
+			StringBuffer filePathSb = new StringBuffer();
+			//the URLEncoder.encode() method replaces '/' whith "%2F" and the can't be red by the browser
+			//that's the reason for the while-loop. 
+			while ( tokenizer.countTokens() > 0 )
+			{
+				String temp = tokenizer.nextToken();
+				if (temp.length() > 1)
+				{	
+					filePathSb.append(java.net.URLEncoder.encode(temp));
+				}else
+				{
+					filePathSb.append(temp);
+				}
+			}
+						
+			//String parsedFilePath = java.net.URLEncoder.encode(filePath) ;
 
-			String parsedFilePath = java.net.URLEncoder.encode(filePath) ;
-
-			StringBuffer filePathSb = new StringBuffer(parsedFilePath) ;
+			//StringBuffer filePathSb = new StringBuffer(parsedFilePath) ;
 			// Replace all '+' and ' ' with '%20'
 			//for (int i=0; i<filePathSb.length() ; ++i) {
 			//    if (filePathSb.charAt(i)=='+') {
@@ -217,7 +232,7 @@ public class ImageBrowse extends HttpServlet {
 			//	i += 2 ;
 			//    }
 			//}
-			parsedFilePath = filePathSb.toString() ;
+			String parsedFilePath = filePathSb.toString() ;
 
 			options.append("<option value=\"" + parsedFilePath + "\"" + (parsedFilePath.equals(img_preset)?" selected":"") + ">" + filePath + "\t[" + fileObj.length() + "]</option>\r\n");
 			
