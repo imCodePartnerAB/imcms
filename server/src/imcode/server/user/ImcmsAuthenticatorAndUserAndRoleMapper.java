@@ -10,7 +10,7 @@ import java.util.*;
 
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserAndRoleRegistry, Authenticator {
 
-    private static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
+    public static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
 
     private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
     private static final String SPROC_ROLE_DELETE = "RoleDelete";

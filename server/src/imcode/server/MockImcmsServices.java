@@ -24,6 +24,7 @@ public class MockImcmsServices implements ImcmsServices {
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
 
     private List sqlCalls = new ArrayList() ;
+    private Map expectedSqlCalls = new HashMap() ;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;  // TODO
@@ -267,8 +268,15 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public String sqlProcedureStr( String procedure, String[] params ) {
-        sqlCalls.add( new SqlCall( procedure, params ) );
-        return null;
+        SqlCall sqlCall = (SqlCall)expectedSqlCalls.remove( procedure ) ;
+        String result = null ;
+        if ( null != sqlCall ) {
+            result = (String)sqlCall.getResult() ;
+        } else {
+            sqlCall = new SqlCall( procedure, params ) ;
+        }
+        sqlCalls.add( sqlCall );
+        return result ;
     }
 
     public int sqlUpdateQuery( String sqlStr, String[] params ) {
@@ -341,13 +349,29 @@ public class MockImcmsServices implements ImcmsServices {
         return sqlCalls;
     }
 
-    public class SqlCall {
-        String string ;
-        String[] parameters ;
+    public void addExpectedSqlCall( SqlCall sqlCall ) {
+        expectedSqlCalls.put(sqlCall.getString(), sqlCall) ;
+    }
+
+    public void verifyExpectedSqlCalls() {
+        if (!expectedSqlCalls.isEmpty()) {
+            throw new junit.framework.AssertionFailedError( "Remaining expected sql calls: "+ expectedSqlCalls.values().toString() );
+        }
+    }
+
+    public static class SqlCall {
+        private String string ;
+        private String[] parameters ;
+        private Object result;
 
         public SqlCall( String string, String[] parameters ) {
             this.string = string ;
             this.parameters = parameters ;
+        }
+
+        public SqlCall( String string, String[] parameters, Object result ) {
+            this(string, parameters) ;
+            this.result = result ;
         }
 
         public String getString() {
@@ -356,6 +380,14 @@ public class MockImcmsServices implements ImcmsServices {
 
         public String[] getParameters() {
             return parameters;
+        }
+
+        public Object getResult() {
+            return result;
+        }
+
+        public String toString() {
+            return getString() ;
         }
     }
 }

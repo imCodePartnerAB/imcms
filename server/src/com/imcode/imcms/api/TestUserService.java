@@ -4,6 +4,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.MockImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleDomainObject;
 import junit.framework.TestCase;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -27,7 +28,29 @@ public class TestUserService extends TestCase {
         userService = new UserService(contentManagementSystem);
     }
 
+    public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
+        UserDomainObject internalUser = new UserDomainObject();
+        internalUser.addRole( RoleDomainObject.SUPERADMIN );
+
+        mockImcmsServices.addExpectedSqlCall(new MockImcmsServices.SqlCall(ImcmsAuthenticatorAndUserAndRoleMapper.SPROC_GET_HIGHEST_USER_ID, null, "3")) ;
+
+        contentManagementSystem.setCurrentUser(new User( internalUser )) ;
+        User user = userService.createNewUser( "test", "test" );
+        user.addRole( new Role( RoleDomainObject.SUPERADMIN ) );
+        userService.saveUser( user );
+
+        mockImcmsServices.verifyExpectedSqlCalls() ;
+        assertTrue( containsSqlCall( new SqlCallStringPredicate( "role" ) ) ) ;
+    }
+
     public void testUserCanEditSelf() throws SaveException, NoPermissionException {
+        UserDomainObject internalUser = new UserDomainObject();
+        internalUser.setId( 3 );
+        internalUser.setLoginName( "loginName" );
+        internalUser.setFirstName( "firstName" );
+        internalUser.setLastName( "lastName" );
+        contentManagementSystem.setCurrentUser( new User( internalUser ) );
+
         User user = contentManagementSystem.getCurrentUser() ;
 
         assertEquals( "firstName", user.getFirstName() );
@@ -45,6 +68,7 @@ public class TestUserService extends TestCase {
     private static class MockContentManagementSystem extends ContentManagementSystem {
 
         private ImcmsServices imcmsServices;
+        private User currentUser;
 
         SecurityChecker getSecurityChecker() {
             return new SecurityChecker( this );
@@ -59,12 +83,7 @@ public class TestUserService extends TestCase {
         }
 
         public User getCurrentUser() {
-            UserDomainObject user = new UserDomainObject() ;
-            user.setId(3) ;
-            user.setLoginName( "loginName" );
-            user.setFirstName( "firstName" );
-            user.setLastName( "lastName" );
-            return new User( user);
+            return currentUser ;
         }
 
         public DatabaseService getDatabaseService() {
@@ -85,6 +104,10 @@ public class TestUserService extends TestCase {
 
         public void setInternal(ImcmsServices imcmsServices) {
             this.imcmsServices = imcmsServices ;
+        }
+
+        public void setCurrentUser( User user ) {
+            currentUser = user ;
         }
     }
 
