@@ -32,7 +32,7 @@
     <property name="webroot" value="${build}"/>
 
     <property name="images" value="${webroot}/images"/>
-    <property name="defaultlogin"   value="${webroot}/login"/>
+    <property name="login"   value="${webroot}/login"/>
     <property name="css" value="${webroot}/css"/>
     <property name="user" value="${webroot}/user"/>
     <property name="javascript" value="${webroot}/javascript"/>
@@ -566,7 +566,7 @@
         description="Creates the public web">
 
         <mkdir dir="${images}"/>
-        <mkdir dir="${defaultlogin}"/>
+        <mkdir dir="${login}"/>
         <mkdir dir="${css}"/>
         <mkdir dir="${user}"/>
         <mkdir dir="${javascript}"/>
@@ -583,7 +583,9 @@
         </antcall>
 
         <!-- copy translated login templates for defaultlanguage to directory /login-->
-        <copy file="${imcms}/${defaultlanguage}/login/index.html" todir="${defaultlogin}"/>
+        <copy todir="${login}">
+            <fileset dir="${imcms}/${defaultlanguage}/login/" />
+        </copy>
 
          <!-- copy and translate texttemplates files -->
         <antcall target="texttemplates">
