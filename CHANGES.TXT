@@ -17,6 +17,8 @@ Version 1.12.0
       Right now the httpservletrequest and the httpservletresponse can be accessed,
       with "$request" and "$response" respectively, almost just like in JSP. (Bug 2668)
     * Attributes "pre" and "post" can now be used on "<?imcms:menu?>". (Bonus from refactorings in bug 2668.)
+    * Attribute "defaulttemplate" can now be used on "<?imcms:menu?>". It should contain the name of a template
+      to use for new text documents.
 
     Of interest to API-using developers:
 
