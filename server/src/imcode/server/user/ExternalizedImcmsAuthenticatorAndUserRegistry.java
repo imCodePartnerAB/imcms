@@ -61,21 +61,21 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
         if ( imcmsUserIsInternal ) {
             result = imcmsUser;
         } else {
-            result = getExternalUser( loginName, imcmsUserExists, imcmsUser );
+            result = getExternalUser( loginName, imcmsUser );
         }
         NDC.pop();
         return result;
     }
 
-    private UserDomainObject getExternalUser( String loginName, boolean imcmsUserExists, UserDomainObject imcmsUser ) {
+    private UserDomainObject getExternalUser( String loginName, UserDomainObject imcmsUser ) {
         UserDomainObject result;
         UserDomainObject externalUser = getUserFromOtherUserMapper( loginName );
         boolean externalUserExists = null != externalUser;
 
         if ( externalUserExists ) {
-            result = synchExternalUserInImcms( loginName, externalUser, imcmsUserExists );
+            result = synchExternalUserInImcms( loginName, externalUser, imcmsUser );
         } else {
-            if ( imcmsUserExists ) {
+            if ( null != imcmsUser ) {
                 deactivateExternalUserInImcms( loginName, imcmsUser );
             }
             result = null;
@@ -95,16 +95,16 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     }
 
     private UserDomainObject synchExternalUserInImcms( String loginName, UserDomainObject externalUser,
-                                                       boolean imcmsUserExists ) {
+                                                       UserDomainObject imcmsUser ) {
         externalUser.setImcmsExternal( true );
+        addExternalRolesToUser( externalUser );
 
-        if ( imcmsUserExists ) {
+        if ( null != imcmsUser ) {
+            externalUser.setRoles( imcmsUser.getRoles() );
             imcmsAuthenticatorAndUserMapperAndRole.saveUser( loginName, externalUser, null );
         } else {
             imcmsAuthenticatorAndUserMapperAndRole.addUser( externalUser, null );
         }
-        addExternalRolesToUser( externalUser );
-        imcmsAuthenticatorAndUserMapperAndRole.sqlUpdateUserRoles( externalUser );
 
         return imcmsAuthenticatorAndUserMapperAndRole.getUser( loginName );
     }
