@@ -1,119 +1,111 @@
 <html>
 <head>
-<title>Administrera formatmallar / formatgrupper</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<script language="JavaScript">
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</script>
+<title>Administrera formatmallar / formatgrupper</title>
+
+<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
+<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
-<body bgcolor="#FFFFFF">
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
 
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
 <input type="HIDDEN" name="language" value="se">
-<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Administrera formatmallar / formatgrupper</b></font></td>
-	<td width="5%">&nbsp;</td>
+<tr>
+	<td colspan="2" class="imcmsAdmText"><b class="white">Formatmallar:</b></td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatmallar:</font></td>
-	<td width="5%">&nbsp;</td>
-</tr>
-<tr>
-	<td width="5%">&nbsp;</td>
 	<td colspan="2">
-	<input type="submit" name="add_template" value="L&auml;gg till">
-	<input type="submit" name="delete_template" value="Ta bort">
-	<input type="submit" name="rename_template" value="Byt namn">
-	<input type="submit" name="get_template" value="H&auml;mta uppladdad">
-	<input type="submit" name="edit_template" value="Redigera"><br>
-	<input type="submit" name="add_demotemplate" value="Ladda upp exempelmallar" disabled>
-	<input type="submit" name="show_templates" value="Visa formatmallar"></td>
-	<td width="5%">&nbsp;</td>
+	<input type="submit" class="imcmsFormBtn" name="add_template" value="Lägg till">
+	<input type="submit" class="imcmsFormBtn" name="delete_template" value="Ta bort">
+	<input type="submit" class="imcmsFormBtn" name="rename_template" value="Byt namn">
+	<input type="submit" class="imcmsFormBtn" name="get_template" value="Hämta uppladdad">
+	<input type="submit" class="imcmsFormBtn" name="edit_template" value="Redigera"><br>
+	<input type="submit" class="imcmsFormBtn" name="add_demotemplate" value="Ladda upp exempelmallar" disabled>
+	<input type="submit" class="imcmsFormBtn" name="show_templates" value="Visa formatmallar"></td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatgrupp:</font></td>
-	<td width="5%">&nbsp;</td>
+	<td colspan="2" class="imcmsAdmText"><b class="white">Formatgrupp:</b></td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
 	<td colspan="2">
-	<input type="submit" name="add_group" value="Skapa">
-	<input type="submit" name="delete_group" value="Ta bort">
-	<input type="submit" name="rename_group" value="Byt namn">
-	<input type="submit" name="assign_group" value="Tilldela formatmallar"></td>
-	<td width="5%">&nbsp;</td>
+	<input type="submit" class="imcmsFormBtn" name="add_group" value="Skapa">
+	<input type="submit" class="imcmsFormBtn" name="delete_group" value="Ta bort">
+	<input type="submit" class="imcmsFormBtn" name="rename_group" value="Byt namn">
+	<input type="submit" class="imcmsFormBtn" name="assign_group" value="Tilldela formatmallar"></td>
 </tr>
-<tr>
-	<td colspan="4">&nbsp;</td>
-</tr>
-</table>
 </form>
-
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="TemplateAdd" enctype="multipart/form-data">
 <input type="hidden" name="language" value="#language#">
 <input type="hidden" name="demo" value="true">
-<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
-	<b>Ladda upp ny exemplemall</b></font></td>
-	<td width="5%">&nbsp;</td>
+<tr>
+	<td colspan="2"><script>imcHeading("Ladda upp ny exemplemall",656);</script></td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2"><hr>
+	<td colspan="2">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
-		<td width="20%" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Ange exempelmall:&nbsp;&nbsp;</font></td>
-		<td><input type="file" name="file" size="25" style="width:100%"></td>
+		<td width="20%" class="imcmsAdmText" nowrap>Ange exempelmall &nbsp;</td>
+		<td><script>
+writeFormField("FILE","file",85,null,null,null);
+</script></td>
 	</tr>
 	<tr>
-		<td height="24" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Välj mall:&nbsp;&nbsp;</font></td>
+		<td height="24" class="imcmsAdmText" nowrap>Välj mall &nbsp;</td>
 		<td>
-		<select name="template">
-		#templates#
-		</select><font size="1" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;<b>*</b>&nbsp;=&nbsp;Exempelmall finns</font></td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td>
+			<select name="template">
+			#templates#
+			</select></td>
+			<td class="imcmsAdmText" nowrap>&nbsp; <b>*</b> = Exempelmall finns</td>
+		</tr>
+		</table></td>
 	</tr>
 	<tr>
-		<td colspan="2" height="22"><font size="1" face="Verdana, Arial, Helvetica, sans-serif">
-		Existerande exempelmall kommer att skrivas &ouml;ver.</font></td>
+		<td>&nbsp;</td>
+		<td class="imcmsAdmText" height="22">Existerande exempelmall kommer att skrivas över.</td>
 	</tr>
 	<tr>
-		<td colspan="2">
+		<td>&nbsp;</td>
+		<td>
 		<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
-			<td><input type="submit" name="ok" value="Ladda upp" style="width:150"></td>
+			<td><input type="submit" class="imcmsFormBtnSmall" name="ok" value="Ladda upp" style="width:120"></td>
 			<td>&nbsp;</td>
-			<td><input type="submit" name="view_demo" value="Visa exempelmall" style="width:150"></td>
+			<td><input type="submit" class="imcmsFormBtnSmall" name="view_demo" value="Visa exempelmall" style="width:120"></td>
 			<td>&nbsp;</td>
-			<td><input type="submit" name="delete_demo" value="Ta bort exempelmall" style="width:150"></td>
+			<td><input type="submit" class="imcmsFormBtnSmall" name="delete_demo" value="Ta bort exempelmall" style="width:120"></td>
 		</tr>
 		</table></td>
 	</tr>
 	</table></td>
-	<td width="5%">&nbsp;</td>
 </tr>
 <tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2"><hr>
-	<input type="submit" name="cancel" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=23" target="_blank" onClick="openHelp('23'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
-	<td width="5%">&nbsp;</td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
-	<td colspan="4">&nbsp;</td>
+	<td colspan="2" align="right">
+	<input type="submit" class="imcmsFormBtn" name="cancel" value="Tillbaka"></td>
 </tr>
-</table>
 </form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
 
 </body>
 </html>

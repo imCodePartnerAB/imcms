@@ -1,62 +1,78 @@
-<HTML><HEAD><TITLE>Admin</TITLE>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+<title>Byt ut fil/dokument</title>
 
-</HEAD><BODY  bgcolor="#FFFFFF"><H3>
-<FORM METHOD="POST" ENCTYPE="multipart/form-data" ACTION="SaveNewFileUpload">
-<CENTER>    
-      <TABLE BORDER="1" cellpadding="2" cellspacing="0" align="center" width="250">
-        <TR bgcolor="#333366"> 
-          <TD><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">&nbsp;V&auml;lj 
-            fil</font></b></font></TD>
-        </TR>
-        <TR> 
-          <TD bgcolor="#BABABA"> 
-            <div align="center"> 
-              <table width="50%" border="0">
-                <tr> 
-                  <td width="29%">Filnamn:</td>
-                  <td width="71%"> 
-                    <input type="file" name="file">
-                  </td>
-                </tr>
-                <tr> 
-                  <td width="29%">Filtyp:</td>
-                  <td width="71%"> 
-                    <select name="mime">
+<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
+<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
+
+</head>
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
+
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<form method="POST" enctype="multipart/form-data" action="SaveFileUpload">
+<input type="hidden" name="meta_id" value="#getMetaId#">
+<input type="hidden" name="new_meta_id" value="#new_meta_id#">
+<tr>
+	<td><input type="submit" class="imcmsFormBtn" name="cancel" value="Tillbaka" name="cancel"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="400">
+<form method="POST" enctype="multipart/form-data" action="SaveNewFileUpload">
+<input type="hidden" name="meta_id" value="#getMetaId#">
+<input type="hidden" name="new_meta_id" value="#new_meta_id#">
+<tr> 
+	<td><script>imcHeading("Välj fil/dokument",396);</script></td>
+</tr>
+<tr> 
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0" width="396">
+	<tr> 
+		<td width="20%" height="22">Filnamn</td>
+		<td width="80%"><script>
+writeFormField("FILE","file",45,null,null,null);
+</script></td>
+	</tr>
+	<tr> 
+		<td height="22">Mime-typ</td>
+		<td>
+		<select name="mime">
 			<option value="">Känn av automatiskt / Fyll i nedan...</option>
 			#mime#
-		    </select>
-                  </td>
-                </tr>
-                <tr> 
-                  <td width="29%">Annan:</td>
-                  <td width="71%"> 
-                    <input type="text" name="other">
-                  </td>
-                </tr>
-              </table>
-            </div>
-            </TD>
-        </TR>
-        <TR> 
-          <TD bgcolor="#BABABA"> 
-            <CENTER>
-              <INPUT TYPE="SUBMIT" VALUE="OK" NAME="ok">
-              <INPUT TYPE="RESET" VALUE="Rensa">
-              <INPUT TYPE="SUBMIT" VALUE="Avbryt" NAME="cancel">&nbsp; <a href="GetDoc?meta_id=74" target="_blank" onClick="openHelp('74'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-            </center>
-          </TD>
-        </TR>
-        <INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
-        <INPUT TYPE="HIDDEN" NAME="new_meta_id" VALUE="#new_meta_id#">
-      </TABLE>
-</center>
-</FORM>
-</h3></BODY></HTML>
+		</select></td>
+	</tr>
+	<tr> 
+		<td height="22">Annan</td>
+		<td><script>
+writeFormField("TEXT","other",30,50,null,"");
+</script></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td><script>hr("100%",396,"blue");</script></td>
+</tr>
+<tr> 
+	<td align="right">
+	<input type="submit" class="imcmsFormBtn" value="Spara" name="ok">
+	<input type="reset" class="imcmsFormBtn" name="reset" value="Rensa">
+	<input type="submit" class="imcmsFormBtn" name="cancel" value="Avbryt"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
+</body>
+</html>

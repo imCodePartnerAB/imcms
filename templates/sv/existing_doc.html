@@ -1,238 +1,176 @@
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<HEAD>
-<TITLE>Admin</TITLE>
+<title>Länka in befintligt dokument</title>
 
+<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
+<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+</head>
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'existing_meta_id')">
 
-</HEAD>
-<BODY  bgcolor="#FFFFFF">
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="post" action="GetExistingDoc">
-  <table cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
-    <tr bgcolor="#333366"> 
-      <td width="623" height="16"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>&nbsp;V&auml;lj 
-        befintligt dokument 
-        <input type="HIDDEN" name="meta_id_value" value="#meta_id#">
-        <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-        </b></font></td>
-    </tr>
-    <tr bgcolor="#333366"> 
-      <td width="623" height="16"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;</font></td>
-    </tr>
-    <tr valign="middle"> 
-      <td bgcolor="#BABABA" width="623" height="52"> 
-        <p>&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Dokument 
-          med metaId</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-          <input type="TEXT" name="existing_meta_id" value="" size="5">
-          &nbsp;&nbsp;&nbsp; 
-          <input TYPE="SUBMIT" value="Lägg till" name="addExistingDocs">
-          <input TYPE="RESET" value="Rensa" name="RESET">
-          <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="GetDoc?meta_id=19" target="_blank" onClick="openHelp('19'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-        </p>
-      </td>
-    </tr>
-  </table>
+<input type="HIDDEN" name="meta_id_value" value="#meta_id#">
+<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+<tr> 
+	<td><input type="submit" class="imcmsFormBtn" value="Avbryt" name="cancel"></td>
+</tr>
 </form>
-<FORM METHOD="post" ACTION="GetExistingDoc">
-  <CENTER>
-    <TABLE cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
-      <TR bgcolor="#333366" valign="middle"> 
-        <TD bgcolor="#333366" width="623" height="26" colspan="2"> 
-          <table width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tr> 
-              <td><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>&nbsp;Sök 
-                befintliga dokument 
-                <input type="HIDDEN" name="meta_id_value" value="#meta_id#">
-                <input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
-                </b></font> </td>
-            </tr>
-          </table>
-          <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-          &nbsp;S&ouml;kord: 
-          <input type="text" name="searchstring" size="65" value="#searchstring#">
-          &nbsp;&nbsp;AND</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-          <input type="radio" value="and" name="search_prep" #search_prep_check_and#>
-          </font><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">OR</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-          <input type="radio" value="or" name="search_prep" #search_prep_check_or#>
-          </font></TD>
-      </TR>
-      <TR> 
-        <TD bgcolor="#BABABA" width="623" height="52" colspan="2"> 
-          <table width="100%" border="1" cellspacing="1" cellpadding="1">
-            <tr> 
-              <td width="50%"> 
-                <table border="0" cellspacing="1" cellpadding="1" width="100%" height="100%">
-                  <tr> 
-                    <td colspan="2"> 
-                      <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><u>Inkludera 
-                        dokument av typen</u></b></font></div>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Textsida: 
-                        </font></div>
-                    </td>
-                    <td> 
-                      <input type="checkbox" name="doc_type" value="2" #checked_2#>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">L&auml;nk: 
-                        </font></div>
-                    </td>
-                    <td> 
-                      <input type="checkbox" name="doc_type" value="5" #checked_5#>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Browserkontroll: 
-                        </font></div>
-                    </td>
-                    <td> 
-                      <input type="checkbox" name="doc_type" value="6" #checked_6#>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">HTML-dokument: 
-                        </font></div>
-                    </td>
-                    <td> 
-                      <input type="checkbox" name="doc_type" value="7" #checked_7#>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Fil: 
-                        </font></div>
-                    </td>
-                    <td> 
-                      <input type="checkbox" name="doc_type" value="8" #checked_8#>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Diagram 
-                        dokument: </font></div>
-                    </td>
-                    <td> 
-                      <input type="checkbox" name="doc_type" value="101" #checked_101#>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Konferens 
-                        dokument: </font></div>
-                    </td>
-                    <td> 
-                      <input type="checkbox" name="doc_type" value="102" #checked_102#>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-              <td width="50%"> 
-                <table border="0" cellspacing="1" cellpadding="1" width="100%" height="100%">
-                  <tr> 
-                    <td colspan="2"> 
-                      <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><u>Inkludera 
-                        dokument mellan dessa datum</u></b></font></div>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Start 
-                        datum: </font></div>
-                    </td>
-                    <td> 
-                      <input type="text" name="start_date" size="16" maxlength="16" value="#start_date#">
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Slut 
-                        datum: </font></div>
-                    </td>
-                    <td> 
-                      <input type="text" name="end_date" size="16" maxlength="16" value="#end_date#">
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Skapat: 
-                        </font></div>
-                    </td>
-                    <td> 
-                      <input type="checkbox" name="include_doc" value="created" #include_check_created#>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td> 
-                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">&Auml;ndrat: 
-                        </font></div>
-                    </td>
-                    <td> 
-                      <input type="checkbox" name="include_doc" value="changed" #include_check_changed#>
-                    </td>
-                  </tr>
-                  <tr> 
-                    <td colspan="2">&nbsp; </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </TD>
-      </TR>
-      <TR> 
-        <TD bgcolor="#BABABA" height="" colspan="2"> 
-          <table width="100%" border="0" cellspacing="1" cellpadding="1">
-            <tr> 
-              <td width="25%"> 
-                <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sortera 
-                  efter: </font></div>
-              </td>
-              <td width="25%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                <select name="sortBy">
-                 	#sortBy#
-                </select>
-                </font></td>
-              <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">&nbsp; 
-                </font></td>
-            </tr>
-            <tr> 
-              <td colspan="3"> 
-                <div align="right"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a href="/help/existing_doc_HELP.html" target="_blank"></a></b> 
-                  &nbsp; </font> 
-                  <input type="submit" name="search" value="S&ouml;k">
-                  <font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font></div>
-              </td>
-            </tr>
-            <tr> 
-              <td colspan="3"> 
-                <div align="left"> </div>
-                <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                  </font></div>
-              </td>
-            </tr>
-          </table>
-        </TD>
-      </TR>
-    </TABLE>
-    <font face="Verdana, Arial, Helvetica, sans-serif" size="1">&nbsp;#searchResults# 
-    &nbsp; </font>
-</center>
-</FORM>
-<br>
-<br>
-</BODY>
-</HTML>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<form method="post" action="GetExistingDoc">
+<input type="HIDDEN" name="meta_id_value" value="#meta_id#">
+<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+<tr> 
+	<td><script>imcHeading("Välj befintligt dokument",656);</script></td>
+</tr>
+<tr> 
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+		<td>
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td class="imcmsAdmText">Dokument med metaId &nbsp; </td>
+			<td><input type="TEXT" name="existing_meta_id" value="" size="5"></td>
+		</tr>
+		</table></td>
+		<td align="right">
+		<input type="submit" class="imcmsFormBtn" value="Lägg till" name="addExistingDocs">
+		<input type="reset" class="imcmsFormBtn" value="Rensa" name="RESET">
+		<input type="submit" class="imcmsFormBtn" value="Avbryt" name="cancel"></td>
+	</tr>
+	</table></td>
+</tr>
+</form>
+</table><br><table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<form method="post" action="GetExistingDoc">
+<input type="HIDDEN" name="meta_id_value" value="#meta_id#">
+<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+<tr> 
+	<td colspan="2"><script>imcHeading("Sök befintliga dokument",656);</script></td>
+</tr>
+<tr> 
+	<td colspan="2">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td class="imcmsAdmText">Sökord:&nbsp;&nbsp;</td>
+		<td><script>
+writeFormField("TEXT","searchstring",62,255,360,"#searchstring#");
+</script></td>
+		<td>&nbsp;&nbsp;&nbsp;</td>
+		<td><input type="radio" value="and" name="search_prep" #search_prep_check_and#></td>
+		<td class="imcmsAdmText" nowrap>&nbsp;Alla måste finnas &nbsp;</td>
+		<td><input type="radio" value="or" name="search_prep" #search_prep_check_or#></td>
+		<td class="imcmsAdmText" nowrap>&nbsp;Något måste finnas</td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
+</tr>
+<tr> 
+	<td colspan="2"> 
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr valign="top">
+		<!-- left -->
+		<td width="50%"> 
+		<table border="0" cellspacing="0" cellpadding="1" width="100%">
+		<tr> 
+			<td colspan="2" class="imcmsAdmText" height="22">Inkludera dokument av typen</td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Textsida:</td>
+			<td><input type="checkbox" name="doc_type" value="2" #checked_2#></td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Länk:</td>
+			<td><input type="checkbox" name="doc_type" value="5" #checked_5#></td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Browserkontroll:</td>
+			<td><input type="checkbox" name="doc_type" value="6" #checked_6#></td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">HTML-dokument:</td>
+			<td><input type="checkbox" name="doc_type" value="7" #checked_7#></td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Fil:</td>
+			<td><input type="checkbox" name="doc_type" value="8" #checked_8#></td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Diagram dokument:</td>
+			<td><input type="checkbox" name="doc_type" value="101" #checked_101#></td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Konferens dokument:</td>
+			<td><input type="checkbox" name="doc_type" value="102" #checked_102#></td>
+		</tr>
+		</table></td>
+		<!-- right -->
+		<td width="50%"> 
+		<table border="0" cellspacing="0" cellpadding="1" width="100%">
+		<tr> 
+			<td colspan="2" class="imcmsAdmText" height="22">Inkludera dokument mellan dessa datum</td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Start datum:</td>
+			<td><script>
+writeFormField("TEXT","start_date",18,16,95,"#start_date#");
+</script></td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Slut datum:</td>
+			<td><script>
+writeFormField("TEXT","end_date",18,16,95,"#end_date#");
+</script></td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Gäller skapat datum:</td>
+			<td><input type="checkbox" name="include_doc" value="created" #include_check_created#></td>
+		</tr>
+		<tr> 
+			<td class="imcmsAdmText">Gäller ändrat datum:</td>
+			<td><input type="checkbox" name="include_doc" value="changed" #include_check_changed#></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
+</tr>
+<tr>
+	<td colspan="2">
+	<table border="0" cellspacing="0" cellpadding="0" align="right">
+	<tr> 
+		<td class="imcmsAdmText" nowrap>Sortera efter &nbsp;</td>
+		<td>
+		<select name="sortBy">
+			#sortBy#
+		</select></td>
+		<td>&nbsp;&nbsp;</td>
+		<td><input type="submit" class="imcmsFormBtn" name="search" value="Sök"></td>
+	</tr>
+	</table><br clear="all">
+	#searchResults#</td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
+</body>
+</html>

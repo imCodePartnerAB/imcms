@@ -1,54 +1,60 @@
 <html>
 <head>
-<title>Untitled Document</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+<title>Ändra HTML-dokument</title>
+
+<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
+<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'frame_set')">
 
-<body bgcolor="#FFFFFF">
-<form METHOD="POST" action="SaveFrameset">
-  <BR><BR><div align="center">
-    <table 0 cellspacing="0" width="450" cellpadding="2" border="1" align="center">
-      <tr bgcolor="#333366" > 
-        <td valign="TOP"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&Auml;ndra 
-          HTML-kod </font></B></td>
-      </tr>
-      <tr bgcolor="#BABABA">
-        <td valign="middle" align="center">
-          <div align="left">M&aring;ste inledas och avslutas med &lt;HTML&gt; 
-            resp &lt;/HTML&gt;</div>
-        </td>
-      </tr>
-      <tr bgcolor="#BABABA"> 
-        <td valign="middle" align="center"> 
-          <textarea name="frame_set" cols="70" rows="16">#frame_set#</textarea>
-        </td>
-      </tr>
-      <div align="center"> 
-        <TR bgcolor="#BABABA"> 
-          <TD valign="middle" align="center"> 
-            <CENTER>
-              <INPUT TYPE="SUBMIT" VALUE="Spara" NAME="ok">&nbsp; <a href="GetDoc?meta_id=76" target="_blank" onClick="openHelp('76'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-            </center>
-          </TD>
-        </TR>
-        <INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
-        <INPUT TYPE="HIDDEN" name="parent_meta_id" VALUE="#getParentMetaId#">
-      </div>
-    </table>
-      
-      #adminMode#
-    </div>
-  
-  
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<form action="BackDoc">
+<tr>
+	<td><input type="submit" class="imcmsFormBtn" value="Tillbaka"></td>
+</tr>
 </form>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<form method="POST" action="SaveFrameset">
+<input type="HIDDEN" name="meta_id" value="#getMetaId#">
+<input type="HIDDEN" name="parent_meta_id" value="#getParentMetaId#">
+<tr> 
+	<td><script>imcHeading("Ändra HTML-kod",656);</script></td>
+</tr>
+<tr>
+	<td>Måste inledas och avslutas med &lt;HTML&gt; resp. &lt;/HTML&gt;</td>
+</tr>
+<tr> 
+	<td><textarea name="frame_set" cols="57" rows="16" wrap="virtual" style="width:100%; overflow:auto">
+#frame_set#</textarea></td>
+</tr>
+<tr>
+	<td><script>hr("100%",656,"blue");</script></td>
+</tr>
+<tr> 
+	<td align="right">
+	<input type="submit" class="imcmsFormBtn" name="ok" value="Spara">
+	<input type="reset" class="imcmsFormBtn" name="reset" value="Återställ">
+	<input type="button" class="imcmsFormBtn" name="abort" value="Avbryt" onClick="top.location = 'BackDoc'; return false"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
+<div align="center">#adminMode#</div>
+
 </body>
 </html>

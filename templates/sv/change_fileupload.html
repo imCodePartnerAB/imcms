@@ -1,72 +1,80 @@
-<HTML><HEAD><TITLE>Admin</TITLE>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+<title>Ladda upp ny fil</title>
 
-</HEAD><BODY  bgcolor="#FFFFFF">
-<H3> 
-  <FORM METHOD="POST" ENCTYPE="multipart/form-data" ACTION="SaveFileUpload">
-	<CENTER>
-	  <TABLE BORDER="1" cellpadding="2" cellspacing="0" align="center" width="250">
-		<TR bgcolor="#333366"> 
-		  <TD><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">&nbsp;V&auml;lj 
-			fil</font></b></font></TD>
-		</TR>
-		<TR> 
-		  <TD bgcolor="#BABABA"> 
-			<div align="center"> 
-			  <table width="50%" border="0">
-				<tr> 
-				  <td width="29%">Ny fil:</td>
-				  <td width="71%"> 
-					<input type="file" name="file">
-				  </td>
-				</tr>
-				<tr> 
-				  <td width="29%">Mime-typ:</td>
-				  <td width="71%"> 
-					<select name="mime">
-					    <option value="">Känn av automatiskt / Fyll i nedan...</option>
-					    #mime#
-					</select>
-				  </td>
-				</tr>
-				<tr> 
-				  <td width="29%">Annan:</td>
-				  <td width="71%"> 
-					<input type="text" name="other" value="#other#">
-				  </td>
-				</tr>
-				<tr> 
-				  <td width="29%">Befintlig fil:</td>
-				  <td width="71%"> 
-					<center>
-					  &quot;#file#&quot;
-					  <input type="HIDDEN" name="oldname" value="#file#">
-					</center>
-				  </td>
-				</tr>
-			  </table>
-			</div>
-		  </TD>
-		</TR>
-		<TR> 
-		  <TD bgcolor="#BABABA"> 
-			<CENTER>
-			  <INPUT TYPE="SUBMIT" VALUE="Spara" NAME="ok">&nbsp; <a href="GetDoc?meta_id=74" target="_blank" onClick="openHelp('74'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-			</center>
-		  </TD>
-		</TR>
-		<INPUT TYPE="HIDDEN" NAME="meta_id" value="#meta_id#">
-		<INPUT TYPE="HIDDEN" NAME="parent_meta_id" VALUE="#parent_meta_id#">
-	  </TABLE>
-	#adminMode#
-	</center>
-  </FORM>
-</h3>
-</BODY></HTML>
+<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
+<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
+
+</head>
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
+
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<form action="BackDoc">
+<tr>
+	<td><input type="submit" class="imcmsFormBtn" value="Tillbaka"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="400">
+<form method="POST" enctype="multipart/form-data" action="SaveFileUpload">
+<input type="HIDDEN" name="meta_id" value="#meta_id#">
+<input type="HIDDEN" name="parent_meta_id" value="#parent_meta_id#">
+<input type="HIDDEN" name="oldname" value="#file#">
+<tr> 
+	<td><script>imcHeading("Välj fil/dokument",396);</script></td>
+</tr>
+<tr> 
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0" width="396">
+	<tr> 
+		<td width="20%" height="22">Ny fil</td>
+		<td width="80%"><script>
+writeFormField("FILE","file",45,null,null,null);
+</script></td>
+	</tr>
+	<tr> 
+		<td height="22">Mime-typ</td>
+		<td>
+		<select name="mime">
+			<option value="">Känn av automatiskt / Fyll i nedan...</option>
+			#mime#
+		</select></td>
+	</tr>
+	<tr> 
+		<td height="22">Annan</td>
+		<td><script>
+writeFormField("TEXT","other",30,50,null,"#other#");
+</script></td>
+	</tr>
+	<tr> 
+		<td height="22">Befintlig fil</td>
+		<td>&quot;#file#&quot;</td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td><script>hr("100%",396,"blue");</script></td>
+</tr>
+<tr> 
+	<td align="right"><input type="submit" class="imcmsFormBtn" value="Spara" name="ok"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
+<div align="center">#adminMode#</div>
+
+</body>
+</html>

@@ -1,67 +1,80 @@
 <html>
 <head>
-<title>Untitled Document</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+<title>Ändra URL</title>
+
+<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
+<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'url_ref')">
 
-<body bgcolor="#FFFFFF">
-<form METHOD="POST" action="SaveUrlDoc">
-  <BR><BR><div align="center">
-    <table 0 cellspacing="0" width="450" cellpadding="2" align="center" border="1">
-	  <tr bgcolor="#333366" > 
-		<td width="84%" valign="middle" height="14"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&Auml;ndra 
-		  URL</font></B></td>
-	  </tr>
-	  <tr bgcolor="#333366" > 
-		<td width="84%" valign="middle" height="14"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;MetaId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#getMetaId#</font></td>
-	  </tr>
-	  <tr  bgcolor="#A1A1A1"> 
-		<td width="84%" valign="middle" height=28 bgcolor="#BABABA" align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Url 
-		  </font>&nbsp;&nbsp;&nbsp; 
-		  <input type="TEXT" name="url_ref" value="#url_doc_ref#" SIZE="60" MAXLENGTH="255">
-		</td>
-	  </tr>
-	  <TR bgcolor="#A1A1DE">
-		<TD width="84%" bgcolor="#BABABA" valign="middle" align="center">&nbsp;<font size="2"> 
-		  <input type="radio" name="target" value="_self" #_self#>
-		  </font><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Samma 
-		  frame</font><font size="2"> 
-		  <input type="radio" name="target" value="_blank" #_blank#>
-		  <font face="Verdana, Arial, Helvetica, sans-serif">Nytt f&ouml;nster</font> 
-		  <font size="2"> 
-		  <input type="radio" name="target" value="_top" #_top#>
-		  </font><font face="Verdana, Arial, Helvetica, sans-serif">Ers&auml;tt 
-		  allt</font><font face="Verdana, Arial, Helvetica, sans-serif"><br>
-		  &nbsp;</font><font size="2"> 
-		  <input type="radio" name="target" value="_other" #_other#>
-		  </font><font face="Verdana, Arial, Helvetica, sans-serif">Annan frame:</font> 
-		  <input TYPE="TEXT" name="frame_name" SIZE="20" value="#frame_name#">
-		  </font></TD>
-	  </TR>
-	  <div align="center"> 
-		<TR bgcolor="#A1A1DE"> 
-		  <TD width="84%" bgcolor="#BABABA" valign="middle" align="center"> 
-			<INPUT TYPE="SUBMIT" VALUE="Spara" NAME="ok">&nbsp; <a href="GetDoc?meta_id=82" target="_blank" onClick="openHelp('82'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-		  </TD>
-		</TR>
-		<INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
-		<INPUT TYPE="HIDDEN" name="parent_meta_id" VALUE="#getParentMetaId#">
-	  </div>
-	</table>
-      
-      #adminMode#
-    </div>
-  
-  
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<form action="BackDoc">
+<tr>
+	<td><input type="submit" class="imcmsFormBtn" value="Tillbaka"></td>
+</tr>
 </form>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="400">
+<form method="POST" action="SaveUrlDoc">
+<input type="HIDDEN" name="meta_id" value="#getMetaId#">
+<input type="HIDDEN" name="parent_meta_id" value="#getParentMetaId#">
+<tr> 
+	<td colspan="2"><script>imcHeading("Ändra länk för URL-dokument #getMetaId#",396);</script></td>
+</tr>
+<tr> 
+	<td class="imcmsAdmText">Länk/URL&nbsp;</td>
+	<td><script>
+writeFormField("TEXT","url_ref",62,255,null,"#url_doc_ref#");
+</script></td>
+</tr>
+<tr>
+	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>
+</tr>
+<tr>
+	<td class="imcmsAdmText">Öppna&nbsp;i<br><img src="@rooturl@/imcms/images/1x1.gif" width="1" height="22"></td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><input type="radio" name="target" value="_self" #_self#></td>
+		<td class="imcmsAdmText" nowrap>&nbsp;Samma frame &nbsp;</td>
+		<td><input type="radio" name="target" value="_blank" #_blank#></td>
+		<td class="imcmsAdmText" nowrap>&nbsp;Nytt fönster &nbsp;</td>
+		<td><input type="radio" name="target" value="_top" #_top#></td>
+		<td class="imcmsAdmText" nowrap>&nbsp;Ersätt allt &nbsp;</td>
+	</tr>
+	<tr>
+		<td><input type="radio" name="target" value="_other" #_other#></td>
+		<td class="imcmsAdmText" nowrap>&nbsp;Annan frame: &nbsp;</td>
+		<td colspan="4"><script>
+writeFormField("TEXT","frame_name",17,50,null,"#frame_name#");
+</script></td>
+	</tr>
+	</table></td>
+</tr>
+<tr> 
+	<td colspan="2"><script>hr("100%",396,"blue");</script></td>
+</tr>
+<tr> 
+	<td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" value="Spara" name="ok"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
+<div align="center">#adminMode#</div>
+
 </body>
 </html>

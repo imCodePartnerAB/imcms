@@ -1,174 +1,315 @@
 <html>
-
 <head>
 <title>Ändra bild</title>
+
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT LANGUAGE="JavaScript">
+<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
+<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
+
+<script language="JavaScript">
 <!--
+var re     = /[a-z0-9\(\)\[\]_-]/i ; // ImageName check
+var reInfo = "a-z A-Z 0-9 ( ) [ ] _ -" ; // For alertBox
+
 function doClear(){
-  var f = document.forms.imgProp;
-	f.imageref.value = "";
-  f.image_name.value = "";
-  f.image_width.value = "";
-  f.image_height.value = "";
-  f.image_border.value = "";
-  f.keepAspectRatio.checked = 1;
-  f.image_align.selectedIndex = 0;
-  f.alt_text.value = "";
-  f.low_scr.value = "";
-  f.v_space.value = "";
-  f.h_space.value = "";
-  f.imageref_link.value = "";
-  f.target.selectedIndex = 0;
-  f.target_name.value = "";
+	var f = document.forms.imgProp;
+	f.imageref.value            = "";
+	f.image_name.value          = "";
+	f.image_width.value         = "";
+	f.image_height.value        = "";
+	f.image_border.value        = "";
+	f.keepAspectRatio.checked   = 1;
+	f.image_align.selectedIndex = 0;
+	f.alt_text.value            = "";
+	f.low_scr.value             = "";
+	f.v_space.value             = "";
+	f.h_space.value             = "";
+	f.imageref_link.value       = "";
+	f.target.selectedIndex      = 0;
+	f.target_name.value         = "";
+	if (isMoz) document.getElementById("imgTable").style.display = "none";
 }
 
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+function setDef() {
+	var f = document.forms.imgProp;
+	if (!isNS && f.imageref.value == "") f.image_align.selectedIndex = 0;
+}
+
+function checkFileName() {
+	var f = document.forms.ImageUploadForm ;
+	var thePath = f.file.value ;
+	var theFile ;
+	var isValid = true ;
+	if (isMac) {
+		theFile = thePath.substring(thePath.lastIndexOf("/") + 1, thePath.length) ;
+	} else {
+		theFile = thePath.substring(thePath.lastIndexOf("\\") + 1, thePath.length) ;
+	}
+	theFile = theFile.substring(0, theFile.lastIndexOf(".")) ;
+	theFile = unescape(theFile) ;
+	for (var i = 0; i < theFile.length; i++) {
+		if (!re.test(theFile.charAt(i).toString())) {
+			isValid = false ;
+		}
+	}
+	if (theFile == "") {
+		alert("Du har inte valt någon bild!") ;
+		return false;
+	} else if (!isValid) {
+		var str = "Du får inte ha mellanslag, svenska bokstäver\neller konstiga tecken i filnamnet!\nBilden kommer då inte synas i alla webläsare.\n\nDu får bara använda dessa tecken i filnamnet:\n" + reInfo + "\n\nByt namn på bilden innan du lägger upp den." ;
+		alert(str);
+		return false;
+	} else {
+		return true;
+	}
 }
 //-->
-</SCRIPT>
+</script>
+
+<!-- script src="/javascript/imcms.js" type="text/javascript"></script -->
 
 </head>
+<body bgcolor="#FFFFFF" onLoad="focusField('ImageUploadForm','file'); setDef();"
+>
+<!-- 
+<body bgcolor="#FFFFFF" onLoad="focusField('ImageUpload','file'); setDef(); openImageHelp();" onUnLoad="closeImageHelp();">
+ -->
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<form name="backForm" action="AdminDoc">
+	<input type="hidden" name="meta_id" value="#getMetaId#">
+	<input type="hidden" name="flags" value="131072">
+	<tr>
+		<td><input type="submit" class="imcmsFormBtn" value="Tillbaka"></td>
+	</tr>
+	</form>
+	</table></td>
+	<td>&nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<form name="imgbr" method="get" action="ImageBrowse">
+	<input type="hidden" name="meta_id" value="#getMetaId#">
+	<input type="hidden" name="img_no" value="#img_no#">
+	<!-- input type="hidden" name="label" value="#label#" -->
+	<tr>
+		<td><input type="submit" class="imcmsFormBtn" value="Välj från bildarkiv"></td>
+	</tr>
+	</form>
+	</table></td>
+</tr>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<form name="ImageUploadForm" action="ImageUpload" enctype="multipart/form-data" method="POST" onSubmit="return (checkFileName()); return false">
+<input type="HIDDEN" name="meta_id" value="#getMetaId#">
+<input type="HIDDEN" name="img_no" value="#img_no#">
+<tr>
+	<td colspan="2"><script>imcHeading("Lägg till ny bild","656");</script></td>
+</tr>
+<tr>
+	<td>Vald bild</td>
+	<td><script>
+writeFormField("FILE","file\" id=\"theFile",54,null,null,null);
+</script></td>
+</tr>
+<tr>
+	<td>Katalog</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+		<td>
+		<select name="folder" size="1">
+			#folders#
+		</select></td>
+		<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="ok" value="Ladda upp" style="width:110"></td>
+	</tr>
+	</table></td>
+</tr>
+</form>
+<form name="imgProp" method="POST" action="SaveImage">
+<input type="HIDDEN" name="meta_id" value="#getMetaId#">
+<input type="HIDDEN" name="img_no"  value="#img_no#">
+<input type="HIDDEN" name="origW"   value="#origW#">
+<input type="HIDDEN" name="origH"   value="#origH#">
+<tr>
+	<td colspan="2">&nbsp;<br>
+	<script>imcHeading("Redigera bild #img_no# på sida #getMetaId#","656");</script><div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
+</tr>
+<tr>
+	<td colspan="2">
+<script language="JavaScript">
+<!--
+var sUrl = "#imgUrl##imgRef#";
+var str  = "";
+if (sUrl.indexOf(".") < 0) {
+	str += "<img src=\"@rooturl@/imcms/images/1x1.gif\" width=\"1\" height=\"1\" border=\"0\" style=\"display:none\">";
+} else {
+	str += "<table id=\"imgTable\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"100%\">\n";
+	str += "<tr>\n";
+	str += "	<td align=\"center\" bgcolor=\"#ffffff\">\n";
+	str += "	<img src=\"#imgUrl##imgRef#\" width=\"#imgWidth#\" height=\"#imgHeight#\" border=\"#imgBorder#\"></td>\n";
+	str += "</tr>\n";
+	str += "</table>";
+}
+document.write(str);
+//-->
+</script></td>
+</tr>
+<tr>
+	<td nowrap>Bildsökväg (src)</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+		<td><script>
+writeFormField("TEXT","imageref",50,255,350,"#imgRef#");
+</script></td>
+		<td align="right"><input type="SUBMIT" class="imcmsFormBtnSmall" name="show_img" value="Förhandsgranska" style="width:110"></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td nowrap>Bildnamn (name)</td>
+	<td><script>
+writeFormField("TEXT","image_name",50,255,350,"#imgName#");
+</script></td>
+</tr>
+<tr>
+	<td nowrap>Format/storlek</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><b>Bredd</b></td>
+		<td>&nbsp;</td>
+		<td><b>Höjd</b></td>
+		<td>&nbsp;</td>
+		<td><b>Kant</b></td>
+		<td colspan="3">&nbsp;</td>
+	<tr>
+		<td height="20">&nbsp;#origW#</td>
+		<td>&nbsp;X&nbsp;</td>
+		<td>&nbsp;#origH#</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;#imgBorder#</td>
+		<td>&nbsp;</td>
+		<td colspan="2">(Originalstorlek)</td>
+	</tr>
+	<tr>
+		<td><script>
+writeFormField("TEXT","image_width",4,4,null,"#imgWidth#");
+</script></td>
+		<td>&nbsp;X&nbsp;</td>
+		<td><script>
+writeFormField("TEXT","image_height",4,4,null,"#imgHeight#");
+</script></td>
+		<td>&nbsp;</td>
+		<td><script>
+writeFormField("TEXT","image_border",4,4,null,"#imgBorder#");
+</script></td>
+		<td>&nbsp;</td>
+		<td><input type="checkbox" name="keepAspectRatio" value="yes" #keep_aspect#></td>
+		<td> Behåll bildens proportioner</td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td nowrap>&quot;Luft&quot; kring bilden (h/vspace)</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><script>
+writeFormField("TEXT","v_space",4,4,null,"#imgVerticalSpace#");
+</script></td>
+		<td>&nbsp;</td>
+		<td>px ovan/under</td>
+		<td>&nbsp; &nbsp;</td>
+		<td><script>
+writeFormField("TEXT","h_space",4,4,null,"#imgHorizontalSpace#");
+</script></td>
+		<td>&nbsp;</td>
+		<td>px på sidorna</td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td nowrap>Nästa textfälts placering (align)</td>
+	<td>
+	<select name="image_align" size="1">
+		<option value="none" #none_selected#>Ingen
+		<option value="baseline" #baseline_selected#>Baslinje
+		<option value="top" #top_selected#>Toppen
+		<option value="middle" #middle_selected#>Mitten
+		<option value="bottom" #bottom_selected#>Botten
+		<option value="texttop" #texttop_selected#>Texttoppen
+		<option value="absmiddle" #absmiddle_selected#>Exakt mitten
+		<option value="absbottom" #absbottom_selected#>Längst ner
+		<option value="left" #left_selected#>Bild vänster
+		<option value="right" #right_selected#>Bild höger
+	</select></td>
+</tr>
+<tr>
+	<td nowrap>Text i textversion (alt)</td>
+	<td><script>
+writeFormField("TEXT","alt_text",92,255,"100%","#imgAltText#");
+</script></td>
+</tr>
+<tr>
+	<td colspan="2">&nbsp;<br><script>imcHeading("Länkad bild","656");</script></td>
+</tr>
+<tr>
+	<td nowrap>Sökväg/URL (href)</td>
+	<td><script>
+writeFormField("TEXT","imageref_link",92,255,"100%","#imgRefLink#");
+</script></td>
+</tr>
+<tr>
+	<td nowrap>Länk öppnas i (target)</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
+		<select name="target" size="1" onChange="document.forms.imgProp.target_name.value = document.forms.imgProp.target.options[document.forms.imgProp.target.selectedIndex].value">
+			<option value="_top" #top_checked#>Aktuellt fönster
+			<option value="_blank" #blank_checked#>Nytt fönster
+			<option value="_parent" #parent_checked#>Moderram
+			<option value="_self" #self_checked#>Samma ram
+			<option value="_other" #other_checked#>Annan ram 
+		</select></td>
+		<td>&nbsp;&nbsp;</td>
+		<td><script>
+writeFormField("TEXT","target_name",10,20,null,"#target_name#");
+</script></td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td colspan="2"><script>hr("100%", 656, "blue");</script></td>
+</tr>
+<tr>
+	<td colspan="2" align="right">
+	<input type="SUBMIT" class="imcmsFormBtn" name="ok" value="  Spara  ">
+	<input type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" Avbryt ">
+	<input type="button" class="imcmsFormBtn" name="Rensa" value="  Rensa  " onClick="doClear();"></td>
+</tr>
+<tr>
+	<td><img src="@rooturl@/imcms/images/1x1.gif" width="156" height="1"></td>
+	<td><img src="@rooturl@/imcms/images/1x1.gif" width="1" height="1"></td>
+</tr>
+<input type="hidden" name="low_scr" value="#imgLowScr#">
+</form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
 
-	<body bgcolor="#FFFFFF">
-		<center>
-			<table width="450" border="0" cellpadding="0" cellspacing="0">
-				<tr>
-					<td>
-						<form action="ImageUpload" enctype="multipart/form-data" method="POST">
-						<center>
-							<table border="1" width="450" align="center" cellpadding="3" cellspacing="0">
-								<tr bgcolor="#333366" valign="middle">
-									<td colspan="2">&nbsp;<font color="#000000"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">L&auml;gg till bild</font></b></font></td>
-								</tr>
-								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bild:</font></td>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;&nbsp; <input type="file" name="file" size="50"></td>
-								</tr>
-								<tr>
-									<td align="center" valign="top" bgcolor="#BABABA" colspan="2">
-										<input type="submit" name="ok" value="L&auml;gg till">
-										<input type="HIDDEN" name="meta_id" value="#getMetaId#"> <input type="HIDDEN" name="img_no" value="#img_no#">
-										&nbsp;<select name="folder" size="1">
-												#folders#
-											</select>&nbsp; <a href="GetDoc?meta_id=72" target="_blank" onClick="openHelp('72'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-										</td>
-								</tr>
-							</table>
-						</center>
-						<br>
-						</form>
-				<form name="imgbr" action="ImageBrowse">
-				<input type="submit" name="browse_images" value="Bildarkiv">
-          
-         		<INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
-        		<INPUT TYPE="HIDDEN" NAME="img_no" VALUE="#img_no#">
-          
-        		</form>
-						<form name="imgProp" method="POST" action="SaveImage">
-						<center>
-							<table border="1" align="center" width="450" cellpadding="3" cellspacing="0">
-								<tr bgcolor="#333366">
-									<td colspan="2">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>Bild #img_no#, dokument #getMetaId#</b></font></td>
-								</tr>
-								<tr>
-									<td colspan="2" align="center"><img src="#imgUrl##imgRef#" width="#imgWidth#" height="#imgHeight#" border="#imgBorder#"></td>
-								</tr>
-								<tr>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">#label#</font></td>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;&nbsp; 
-                  <input type="TEXT" name="imageref" value="#imgRef#" size="40" maxlength="255">
-		  <br>
-		  &nbsp;&nbsp;&nbsp;<input type="SUBMIT" value="Förhandsgranska bilden" name="show_img">
-                  <font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
-                  </font></td>
-								</tr>
-								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bildnamn</font></td>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;&nbsp;
-                  <input type="TEXT" name="image_name" size="40" maxlength="255" value="#imgName#">
-                </td>
-								</tr>
-								<tr>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Format</font></td>
-									
-                <td bgcolor="#BABABA" valign="middle" align="center"> 
-                  <p><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Originalstorlek: 
-                    (#origW# x #origH#)<br>Om Du anv&auml;nder sk&auml;rmuppl&ouml;sning 800 x 600 kommer <br>400 x 300 pixlar att ta upp 25% av Din sk&auml;rm.</font></p>
-                  <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bredd:&nbsp;</font> 
-                    <input type="TEXT" name="image_width" size="4" maxlength="4" value="#imgWidth#">
-                    &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">H&ouml;jd:</font>&nbsp; 
-                    <input type="TEXT" name="image_height" size="4" maxlength="4" value="#imgHeight#">
-                    &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Kant:</font>&nbsp; 
-                    <input type="TEXT" name="image_border" size="4" maxlength="4" value="#imgBorder#">
-                  </p>
-                  <p> 
-                    <input type="checkbox" name="keepAspectRatio" value="yes" #keep_aspect#>
-                    <font face="Verdana, Arial, Helvetica, sans-serif" size="1">Beh&aring;ll 
-                    bildens proportioner</font></p>
-                </td>
-								</tr>
-								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">N&auml;sta <br>textf&auml;lts <br>placering</font></td>
-									<td valign="middle" bgcolor="#BABABA">&nbsp; <select name="image_align" size="1">
-											<option value="none" #none_selected#>Ingen
-											<option value="baseline" #baseline_selected#>Baslinje
-											<option value="top" #top_selected#>Toppen
-											<option value="middle" #middle_selected#>Mitten
-											<option value="bottom" #bottom_selected#>Botten
-											<option value="texttop" #texttop_selected#>Texttoppen
-											<option value="absmiddle" #absmiddle_selected#>Exakt mitten
-											<option value="absbottom" #absbottom_selected#>L&auml;ngst ner
-											<option value="left" #left_selected#>Bild v&auml;nster
-											<option value="right" #right_selected#>Bild h&ouml;ger
-										</select></td>
-								</tr>
-								<tr>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bildtext under uppladdning</font></td>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;&nbsp;<input type="TEXT" name="alt_text" size="50" maxlength="255" value="#imgAltText#"></td>
-								</tr>
-								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Alt bild under uppladdning</font></td>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;&nbsp;<input type="TEXT" name="low_scr" size="50" maxlength="255" value="#imgLowScr#"></td>
-								</tr>
-								<tr>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">"Luft" kring bilden</font></td>
-									<td bgcolor="#BABABA" align="center" valign="middle"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Utrymme ovan/under:</font>&nbsp; <input type="TEXT" name="v_space" size="4" maxlength="4" value="#imgVerticalSpace#"> &nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">
-									<br>Utrymme på sidorna:</font>&nbsp; <input type="TEXT" name="h_space" size="4" maxlength="4" value="#imgHorizontalSpace#"> &nbsp;</td>
-								</tr>
-								<tr>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&auml;nk till URL<b></b></font></td>
-									<td valign="middle" bgcolor="#BABABA">&nbsp;&nbsp;<input type="TEXT" name="imageref_link" value="#imgRefLink#" size="50" maxlength="255"></td>
-								</tr>
-								<tr>
-									<td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&auml;nk &ouml;ppnas i</font></td>
-									<td bgcolor="#BABABA" valign="middle">&nbsp; <select name="target" size="1">
-											<option value="_top" #top_checked#>Aktuellt f&ouml;nster
-											<option value="_blank" #blank_checked#>Nytt f&ouml;nster
-											<option value="_parent" #parent_checked#>Moderram
-											<option value="_self" #self_checked#>Samma ram
-											<option value="_other" #other_checked#>Annan ram 
-										</select> &nbsp;&nbsp;&nbsp;<input type="TEXT" name="target_name" value="#target_name#"></td>
-								</tr>
-								<tr>
-									<td bgcolor="#BABABA" colspan="2">
-										<center>
-											<input type="SUBMIT" value="OK" name="ok"> <input type="button" value="Rensa" onClick="doClear();"> <input type="SUBMIT" value="Avbryt" name="cancel">
-&nbsp;<a href="GetDoc?meta_id=72" target="_blank" onClick="openHelp('72'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></center>
-									</td>
-								</tr>
-								<input type="HIDDEN" name="meta_id" value="#getMetaId#"> <input type="HIDDEN" name="img_no" value="#img_no#">
-							</table>
-						</center>
-<input type="HIDDEN" name="origW" value="#origW#">
-<input type="HIDDEN" name="origH" value="#origH#">
-						</form>
-					</td>
-				</tr>
-			</table>
-		</center>
-	</body>
-
+</body>
 </html>

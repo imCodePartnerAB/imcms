@@ -1,58 +1,56 @@
 <tr>
-	<td>&nbsp;</td>
-	<td colspan="3"><hr></td>
-	<td>&nbsp;</td>
+	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Aktiverad:</font></td>
-	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><input type="checkbox" name="active" value="#ACTIVE#" #ACTIVE_FLAG#></font></td>
-	<td>&nbsp;</td>
+	<td class="imcmsAdmText">Aktiverad</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><input type="checkbox" name="active" value="#ACTIVE#" #ACTIVE_FLAG#></td>
+		<td class="imcmsAdmText" nowrap>&nbsp;<script language="JavaScript">
+<!--
+var sDate = "#USER_CREATE_DATE#" ;
+if (/\d+/.test(sDate)) document.writeln(" &nbsp; Inläggningsdatum &nbsp; " + sDate);
+//-->
+</script></td>
+	</tr>
+	</table></td>
 </tr>
 <tr>
-	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Inläggningsdatum:</font></td>
-	<td><font size="2">&nbsp;</font></td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#USER_CREATE_DATE#</font></td>
-	<td>&nbsp;</td>
+	<td colspan="2">&nbsp;<br><script>imcHeading("Rolltillhörighet",656);</script></td>
 </tr>
 <tr>
-	<td height="22">&nbsp;</td>
-	<td valign="top"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användartyp: </font></td>
-	<td valign="bottom"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" >*</font></td>
-	<td valign="bottom"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+	<td class="imcmsAdmText">Användartyp <b class="red">*</b></td>
+	<td>
 	<select name="user_type">
 	#USER_TYPES#
-	</select></font></td>
-	<td>&nbsp;</td>
+	</select></td>
 </tr>
 <tr>
-	<td colspan="5">&nbsp;</td>
+	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 </tr>
 <tr valign="top">
-	<td>&nbsp;</td>
-	<td nowrap colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Användarens Roller: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*</font><br><br>
-	<font size="1" face="Verdana, Arial, Helvetica, sans-serif">Välj vilka roller som<br>användaren skall tillhöra. </font></td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-	<select name="roles" size="5" multiple onchange="activateUseradmin_roles(); return true;">
-	#ROLES_MENU#
-	</select></font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="5">&nbsp;</td>
-</tr>
-<tr valign="top">
-	<td>&nbsp;</td>
-	<td colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Useradmin - Roller </font><br><br>
-	<font size="1" face="Verdana, Arial, Helvetica, sans-serif">Välj vilka roller som kan administreras om användaren har rollen useradmin: </font></td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-	<select name="useradmin_roles" size="5" multiple>
-	#ROLES_MENU_USERADMIN#
-	</select></font></td>
-	<td>&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="5">&nbsp;</td>
+	<td class="imcmsAdmText" nowrap>
+	Användarens Roller <b class="red">*</b> &nbsp;</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr valign="top">
+		<td>
+		<select name="roles" size="5" multiple onchange="activateUseradmin_roles(); return true;">
+		#ROLES_MENU#
+		</select></td>
+		<td>&nbsp;</td>
+		<td class="imcmsAdmText" nowrap>Useradmin - Roller</td>
+		<td>&nbsp;</td>
+		<td>
+		<select name="useradmin_roles" size="5" multiple>
+		#ROLES_MENU_USERADMIN#
+		</select></td>
+	</tr>
+	<tr valign="top">
+		<td class="imcmsAdmDim">Välj vilka roller användaren<br>skall tillhöra.</td>
+		<td colspan="3">&nbsp;</td>
+		<td class="imcmsAdmDim">Välj vilka roller som kan administreras<br>om användaren har rollen Useradmin.</td>
+	</tr>
+	</table></td>
 </tr>

@@ -1,57 +1,75 @@
-<HTML><HEAD><TITLE>Admin - l&auml;gg till dokument</TITLE>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
+<title>Välj webläsare för browserkontroll</title>
+
+<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
+<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
+
+</head>
+<body bgcolor="#FFFFFF" onLoad="focusField(1,'new_browsers')">
+
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
+<form action="BackDoc">
+<tr>
+	<td><input type="submit" class="imcmsFormBtn" value="Tillbaka"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660">
+<form method="POST" action="SaveNewBrowserDoc">
+<input type="HIDDEN" name="meta_id" value="#getMetaId#">
+<input type="HIDDEN" name="new_meta_id" value="#new_meta_id#">
+<tr> 
+	<td colspan="3"><script>imcHeading("Välj browser / datormiljö",656);</script></td>
+</tr>
+<tr> 
+	<td align="right">
+	<select name="new_browsers" size="7" multiple>
+		#new_browsers#
+	</select></td>
+	<td align="center"><input type="submit" class="imcmsFormBtnSmall" name="add_browsers" value="Lägg till &gt;&gt;"></td>
+	<td>#browsers#</td>
+</tr>
+<tr> 
+	<td colspan="3">Fyll i dokumentnummer för dokument som ska visas i resp miljö.<br>
+	Ange alltid övriga - visas i alla webbläsare som inte specificerats separat. </td>
+</tr>
+#getDocType# #DocMenuNo# 
+<tr> 
+	<td colspan="3"><script>hr("100%",656,"blue");</script></td>
+</tr>
+<tr> 
+	<td colspan="3" align="right"> 
+	<input type="SUBMIT" class="imcmsFormBtn" value="OK" name="ok">
+	<input type="RESET" class="imcmsFormBtn" value="Rensa" name="reset">
+	<input type="SUBMIT" class="imcmsFormBtn" value="Avbryt" name="cancel"></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
+<script language="JavaScript">
 <!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+var el = eval("document.forms[1].elements");
+if (el) {
+	for (var i = 0; i < el.length; i++) {
+		if (el[i].type.toUpperCase() == "TEXT" && el[i].name.indexOf("bid") != -1) el[i].size = 5;
+	}
 }
 //-->
-</SCRIPT>
+</script>
 
-</HEAD>
-<BODY  bgcolor="#FFFFFF">
-<FORM METHOD="POST" ACTION="SaveNewBrowserDoc">
-  <CENTER>
-    <table border = 1 cellspacing="0" cellpadding="2" width="430" align="center" >
-	  <tr bgcolor="#333366" valign="middle"> 
-		<td colspan="3"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">V&auml;lj 
-		  browser / datormilj&ouml;</font></b></td>
-	  </tr>
-	  <tr> 
-		<td valign="middle" bgcolor="#BABABA">
-		  <div align="center"> 
-			<center>
-			  <select name="new_browsers" size="7" multiple>
-				#new_browsers#
-                 
-			  </select>
-			</center>
-		  </div>
-		</td>
-		<td valign="middle" bgcolor="#BABABA">
-		  <input type="submit" name="add_browsers" value="L&auml;gg till -->">
-		</td>
-		<td valign="middle" bgcolor="#BABABA">#browsers# </td>
-	  </tr>
-	  <tr> 
-		<td colspan="3" valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif"> 
-		  <font size="1">Fyll i dokumentnummer f&ouml;r dokument som ska visas 
-		  i resp milj&ouml;.</font></font> <br>
-		  &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="1"> Ange 
-		  alltid &ouml;vriga - visas i alla webbl&auml;sare som inte specificerats 
-		  separat.</font></td>
-	  </tr>
-	  #getDocType# #DocMenuNo# 
-	  <tr bgcolor="#BABABA"> 
-		<td colspan="3" valign="middle" align="center"> 
-		  <input TYPE="SUBMIT" value="OK" name="ok">
-		  <input TYPE="RESET" value="Rensa" name="reset">
-		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="GetDoc?meta_id=46" target="_blank" onClick="openHelp('46'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-		</td>
-	  </tr>
-	  <input TYPE="HIDDEN" NAME="meta_id" value="#getMetaId#">
-	  <INPUT TYPE="HIDDEN" NAME="new_meta_id" VALUE="#new_meta_id#">
-	</table>
-  </CENTER>
-</FORM>
-</BODY></HTML>
+</body>
+</html>
