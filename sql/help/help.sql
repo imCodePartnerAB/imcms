@@ -985,10 +985,10 @@ values(
                   upp genom att anv&auml;nda "Browse/S&ouml;k" (namnet beror
                   p&aring; vilket spr&aring;k din webbl&auml;sare anv&auml;nder).</p>
                   <p align="left">Skriv in det namn du vill att formatmallen
-                  skall ha. En <img border="0" src="'+@webroot+'/images/helpimages/Admin-4.GIF" width="13" height="14">
+                  skall ha. En <img border="0" src="'+@webroot+'/images/se/helpimages/Admin-4.GIF" width="13" height="14">
                   vid <i>"Skriv &ouml;ver existerande" </i>g&ouml;r att om en
                   formatmall med det namnet redan finns, skrivs den &ouml;ver. S&auml;tt
-                  inte <img border="0" src="'+@webroot+'/images/helpimages/Admin-4.GIF" width="13" height="14">
+                  inte <img border="0" src="'+@webroot+'/images/se/helpimages/Admin-4.GIF" width="13" height="14">
                   om du inte &auml;r riktigt s&auml;ker p&aring; att du verkligen skall
                   skriva &ouml;ver den befintliga mallen.</p>
                   <p align="left">Markera i rutan till h&ouml;ger den/de
@@ -1742,7 +1742,7 @@ values(
       <td>
 <p align="center">H&auml;r v&auml;ljs vilken typ av diagram som skall skapas.</p>
 <blockquote>
-                <p align="left">V&auml;lj diagramtyp: Klicka p&aring; <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">
+                <p align="left">V&auml;lj diagramtyp: Klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
                 f&ouml;r att kunna markera den diagramtyp du vill ha. De olika
                 alternativen visas p&aring; bildens nedersta del. Klicka sedan p&aring;
                 "Skapa nytt diagram".</p>
@@ -1822,12 +1822,12 @@ values(
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort rad: </b>Tar bort en rad. Vilken rad
-      som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">,
+      som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardingsmenyn sl&auml;pps tas raden bort. </td>
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort kolumn: </b> Tar bort en
-      kolumn. Vilken kolumn som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">,
+      kolumn. Vilken kolumn som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardingsmenyn sl&auml;pps tas kolumnen bort. </td>
   </tr>
   <tr>
@@ -1873,12 +1873,12 @@ values(
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort rad: </b>Tar bort en rad. Vilken rad
-      som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">,
+      som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardinsmenyn sl&auml;pps tas raden bort. </td>
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort kolumn: </b> Tar bort en kolumn.
-      Vilken kolumn som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">,
+      Vilken kolumn som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardinsmenyn sl&auml;pps tas kolumnen bort. </td>
   </tr>
   <tr>
@@ -2153,8 +2153,8 @@ values(
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><i>Expertanv&auml;ndare:</i> Genom att s&auml;tta en <img border="0" src="'+@webroot+'/images/helpimages/Konf-a1.GIF" width="13" height="14">
-        i rutan efter Expertanv&auml;ndare kommer det att visas en&nbsp; <img border="0" src="'+@webroot+'/images/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
+      <td><i>Expertanv&auml;ndare:</i> Genom att s&auml;tta en <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a1.GIF" width="13" height="14">
+        i rutan efter Expertanv&auml;ndare kommer det att visas en&nbsp; <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
         framf&ouml;r rubriken i de inl&auml;gg
         som anv&auml;ndaren g&ouml;r. Detta visar att anv&auml;ndaren &auml;r specialist i
         &auml;mnet. </td>
@@ -2183,7 +2183,7 @@ values(
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td>F&ouml;r att ta bort en diskussion: <img border="0" src="'+@webroot+'/images/helpimages/Konf-a3.GIF" width="13" height="14">
+      <td>F&ouml;r att ta bort en diskussion: <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
         f&ouml;r den diskussion som du vill ta bort och klicka sedan p&aring; "TA
         BORT".
         <p>F&ouml;r att l&auml;mna administrationsl&auml;get: klicka p&aring; "Avsluta admin".</td>
@@ -2217,7 +2217,7 @@ values(
         du vill &auml;ndra antalet diskussioner i genom att klicka p&aring; det i listan
         till h&ouml;ger. Det befintliga antalet diskussioner som visas i forumet
         visas inom parentes i listan. V&auml;lj sedan det&nbsp; nya antalet
-        diskussioner som skall visas genom att klicka p&aring; <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">
+        diskussioner som skall visas genom att klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
         och markera det antalet. Klicka sedan p&aring; "Uppdatera".</td>
     </tr>
   </table>
@@ -2234,7 +2234,7 @@ values(
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><b>Ta bort en kommentar:</b> <img border="0" src="'+@webroot+'/images/helpimages/Konf-a3.GIF" width="13" height="14">
+      <td><b>Ta bort en kommentar:</b> <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
         f&ouml;r den/de kommentarer du vill ta bort och klicka sedan p&aring; "TA
         BORT". En varningsbild visas d&auml;r du f&aring;r bekr&auml;fta att du
         verkligen vill ta bort inl&auml;gget. Inl&auml;gget kommer d&aring; att tas bort
@@ -2243,7 +2243,7 @@ values(
         redigera inl&auml;gget alternativt ta bort hela diskussionen. Var d&aring;
         medveten om att samtliga inl&auml;gg i diskussionen f&ouml;rsvinner.
         <p><b>Spara om en kommentar: </b>F&ouml;r att &auml;ndra ett befintligt inl&auml;gg,
-        &auml;ndra den text som skall uppdateras och markera inl&auml;gget genom att <img border="0" src="'+@webroot+'/images/helpimages/Konf-a3.GIF" width="13" height="14">
+        &auml;ndra den text som skall uppdateras och markera inl&auml;gget genom att <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
         f&ouml;r det. Klicka sedan p&aring; "SPARA OM".</p>
         <p>F&ouml;r att &aring;terg&aring; till anv&auml;ndarl&auml;ge, klicka p&aring; "Avsluta admin".</td>
     </tr>
@@ -2358,18 +2358,18 @@ values(
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>Varje konferens har minst ett forum d&auml;r olika diskussionen p&aring;g&aring;r.
-        V&auml;lj vilket forum du vill genom att klicka p&aring; <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">
+        V&auml;lj vilket forum du vill genom att klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
         under rubriken <i>V&auml;lj forum, </i>markera forumet och klicka p&aring;
         "V&auml;lj". De diskussioner som visas i f&ouml;nstrets v&auml;nstra del &auml;r
         rubrikerna till de f&ouml;rsta inl&auml;ggen som skrivits i respektive
         diskussion. F&ouml;r att leta bland de diskussioner som inte visas anv&auml;nds
-        knapparna "Tidigare inl&auml;gg" och "Senare inl&auml;gg. Om <img border="0" src="'+@webroot+'/images/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
+        knapparna "Tidigare inl&auml;gg" och "Senare inl&auml;gg. Om <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
         (Ny-symbolen) visas framf&ouml;r en diskussion s&aring; inneb&auml;r det att antingen
         &auml;r detta en ny diskussion eller s&aring; har det tillkommit nya inl&auml;gg
         sedan du sist var inloggad i konferensen. F&ouml;r att visa de inl&auml;gg som
         tillkommit sedan du sist var inloggad, klicka p&aring; "Uppdatera".
         <p>Genom att klicka p&aring; diskussionsrubriken visas alla inl&auml;gg i
-        diskussionen i f&ouml;nstrets h&ouml;gra del. Om <img border="0" src="'+@webroot+'/images/helpimages/Konf-k3.GIF" width="14" height="16">
+        diskussionen i f&ouml;nstrets h&ouml;gra del. Om <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-k3.GIF" width="14" height="16">
         (specialist-symbolen) visas framf&ouml;r rubriken inneb&auml;r det att inl&auml;gget
         skrivits av en anv&auml;ndare som i den h&auml;r konferensen &auml;r n&aring;gon form av
         specialist. Efter den eventuella "specialistsymbolen" f&ouml;ljer
@@ -2616,7 +2616,7 @@ values(
           <tr>
             <td width="100%"><b>N&auml;sta textf&auml;lts placering: </b>H&auml;r v&auml;ljs var
               texten kring bilden kommer att hamna. OBS att det beror p&aring;
-              utseendemallen om dessa val fungerar eller ej. Klicka p&aring;<b> <img border="0" src="'+@webroot+'/images/helpimages/Lagg-t3.GIF">
+              utseendemallen om dessa val fungerar eller ej. Klicka p&aring;<b> <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t3.GIF">
               </b>f&ouml;r att v&auml;lja alternativ.
               <ul>
                 <li><i>Ingen: </i>Textens placering styrs av webbl&auml;sarens
@@ -2665,7 +2665,7 @@ values(
           </tr>
           <tr>
             <td width="100%"><b>L&auml;nk &ouml;ppnas i: </b>H&auml;r v&auml;ljs i vilket
-              f&ouml;nster/frame l&auml;nken skall &ouml;ppnas. Klicka p&aring;<b> <img border="0" src="'+@webroot+'/images/helpimages/Lagg-t3.GIF">
+              f&ouml;nster/frame l&auml;nken skall &ouml;ppnas. Klicka p&aring;<b> <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t3.GIF">
               </b>f&ouml;r att v&auml;lja alternativ.
               <ul>
                 <li><i>Aktuellt f&ouml;nster: </i>&Ouml;ppnar sidan som bilden l&auml;nkar
@@ -2852,7 +2852,7 @@ values(
   <table border="1" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -2870,7 +2870,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/helpimages/Lagg-t4.GIF" width="13" height="14">
+        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -2933,7 +2933,7 @@ values(
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>
-<p align="center">Klicka p&aring; <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">
+<p align="center">Klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
 f&ouml;r att f&aring; se hela listan p&aring; vilka olika typer av l&auml;nkar det g&aring;r att l&auml;gga
 till.</p>
 <div align="center">
@@ -2983,7 +2983,7 @@ insert into texts(meta_id,name,text,type)
 values(
 79,4,'<p align="center">&nbsp;</p>
         <blockquote>
-            <p align="left">Genom att <img border="0" src="'+@webroot+'/images/helpimages/Lank.h6.GIF" width="13" height="14">
+            <p align="left">Genom att <img border="0" src="'+@webroot+'/images/se/helpimages/Lank.h6.GIF" width="13" height="14">
             f&ouml;r en l&auml;nk kan den tas bort, arkiveras eller kopieras genom att klicka p&aring;
             respektive knapp. N&auml;r en l&auml;nk &auml;r arkiverad visas det genom att
             l&auml;nken &auml;r &ouml;verstruken (se bilden - Dokument 1). Arkiveringen kan
@@ -3034,7 +3034,7 @@ values(
   <table border="1" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/helpimages/Lank-U1.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3052,7 +3052,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/helpimages/Lank-U1.GIF" width="13" height="14">
+        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -3100,7 +3100,7 @@ values(
   <table border="1" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/helpimages/Lank-U1.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3118,7 +3118,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/helpimages/Lank-U1.GIF" width="13" height="14">
+        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -3309,12 +3309,12 @@ values(
     <tr>
       <td>
             <p align="left">Aktuell formatgrupp och mall visas. F&ouml;r att &auml;ndra
-            utseendet - klicka p&aring; <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">
+            utseendet - klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
             vid format-mallen. Om mallen som du vill ha ligger i en annan
-            formatgrupp m&aring;ste du f&ouml;rst klicka p&aring; <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">
+            formatgrupp m&aring;ste du f&ouml;rst klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
             vid formatgrupp, v&auml;lja ny formatgrupp och klicka p&aring; "&Auml;ndra
             grupp". De mallar som tillh&ouml;r den nu valda formatgruppen visas
-            vid klick p&aring; <img border="0" src="'+@webroot+'/images/helpimages/Pil.GIF" width="16" height="21">
+            vid klick p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
             vid formatmall. Markera formatmallen och klicka sedan p&aring;
             "Spara". F&ouml;r att se hur mallen ser ut, klicka p&aring;
             "Visa mall". OBS fungerar bara om det finns en exempelmall
@@ -3386,7 +3386,7 @@ values(
   <table border="1" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3404,7 +3404,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/helpimages/Lagg-t4.GIF" width="13" height="14">
+        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
