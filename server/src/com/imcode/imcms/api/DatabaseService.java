@@ -1,6 +1,8 @@
 package com.imcode.imcms.api;
 
 import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
+import imcode.server.db.ConnectionPool;
 
 import java.sql.SQLException;
 import java.sql.Connection;
@@ -8,10 +10,11 @@ import java.sql.Connection;
 public class DatabaseService {
 
     private IMCServiceInterface service;
+    private ConnectionPool myOwnConnectionPool;
 
     public DatabaseService( IMCServiceInterface service ) {
-
         this.service = service;
+        this.myOwnConnectionPool = ApplicationServer.createNewConnecionPoolToImcmsDatabase();
     }
 
     /**
@@ -26,7 +29,6 @@ public class DatabaseService {
      */
 
     public Connection getConnection() throws SQLException {
-        return service.getConnectionPool().getConnection() ;
+        return myOwnConnectionPool.getConnection() ;
     }
-
 }

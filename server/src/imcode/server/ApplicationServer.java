@@ -21,6 +21,19 @@ public class ApplicationServer {
     }
 
     private static IMCServiceInterface createIMCServiceInterface() {
+        Properties serverprops = getServerProperties();
+        ConnectionPool connectionPool = createConnectionPool( serverprops );
+        IMCService imcref = new IMCService( connectionPool, serverprops );
+        return imcref ;
+    }
+
+    public static ConnectionPool createNewConnecionPoolToImcmsDatabase() {
+        Properties serverprops = getServerProperties();
+        ConnectionPool connectionPool = createConnectionPool( serverprops );
+        return connectionPool;
+    }
+
+    private static Properties getServerProperties() {
         Properties serverprops = null;
         try {
             serverprops = Prefs.getProperties( "server.properties" );
@@ -28,9 +41,7 @@ public class ApplicationServer {
             log.fatal( "Failed to initialize imCMS", e);
             throw new RuntimeException(e) ;
         }
-        ConnectionPool connectionPool = createConnectionPool( serverprops );
-        IMCService imcref = new IMCService( connectionPool, serverprops );
-        return imcref ;
+        return serverprops;
     }
 
     private static ConnectionPool createConnectionPool( Properties props ) {
