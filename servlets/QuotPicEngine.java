@@ -21,7 +21,11 @@ public class QuotPicEngine extends HttpServlet
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
-	{
+	{	
+		
+	res.setContentType("text/html");
+	PrintWriter out = res.getWriter();
+		
 		
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
@@ -31,14 +35,14 @@ public class QuotPicEngine extends HttpServlet
 		inFile = req.getParameter("file");
 		
 		BufferedReader readFile = new BufferedReader( new StringReader( IMCServiceRMI.getFortune(imcServer,inFile + ".txt") ) );
-		
 		SimpleDateFormat dateF = new SimpleDateFormat("yyMMdd");
 
 		//collect the correct questions/citat/pictures
 		HashMap row_texts = new HashMap(50);
 		
 		//rownr
-		int row = 0;	
+		int row = 0;
+			
 		String line = readFile.readLine();
 
 		//get questions
@@ -50,22 +54,21 @@ public class QuotPicEngine extends HttpServlet
 				//the dates
 				Date date1 = dateF.parse(tokens.nextToken());
 				Date date2 = dateF.parse(tokens.nextToken());
-		
 				Date date = new Date();
-								
+
 				String tempQ = tokens.nextToken();
-						 
-				if ( ( date1.before(date)||date1.equals(date) ) && ( date2.after(date)||date2.equals(date) ) )
+
+				if ( ( ( date1.before(date) ) || ( (dateF.format(date1)).equals(dateF.format(date)) ) ) && ( ( date2.after(date) ) || ( (dateF.format(date2)).equals(dateF.format(date)) ) ) )
 				{
 					row_texts.put( new Integer(row),tempQ );
 				}
-			
+		  
 			}
 			catch(ParseException e)
 			{
 			 	log("ParseException in QuotPicEngine");
 			}
-		
+	
 			row++;
 			line = readFile.readLine();
 		}
@@ -103,8 +106,8 @@ public class QuotPicEngine extends HttpServlet
 			theText = (String)row_texts.get(new Integer(the_row));
 		}
 		
-		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
+//		res.setContentType("text/html");
+//		PrintWriter out = res.getWriter();
 
 		if( type.equals("pic"))
 		{
