@@ -1,8 +1,6 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
-import com.imcode.imcms.api.NoPermissionException;
-import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import imcode.server.ApplicationServer;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -15,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+
+import org.apache.log4j.Logger;
 
 /**
  * Stores info about a document. *
@@ -36,6 +36,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
     public static final int STATUS_PUBLICATION_APPROVED = 2;
 
+
+    private static Logger log = Logger.getLogger( DocumentDomainObject.class );
     private Attributes attributes;
 
     protected DocumentDomainObject() {
@@ -79,8 +81,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 document = new BillboardDocumentDomainObject();
                 break;
             default:
-                throw new RuntimeException( "Unknown document-type-id: " + documentTypeId );
-        }
+	                 String errorMessage = "Unknown document-type-id: " + documentTypeId;
+  	                 log.error(errorMessage);
+  	                 throw new RuntimeException( errorMessage );        }
 
         return document;
     }

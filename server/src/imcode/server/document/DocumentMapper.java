@@ -1,7 +1,10 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
-import imcode.server.*;
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
+import imcode.server.LanguageMapper;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.index.AutorebuildingDocumentIndex;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.*;
@@ -17,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.lucene.search.Hits;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -1496,36 +1498,18 @@ public class DocumentMapper {
         MenuItemDomainObject[] menuItems = menu.getMenuItems();
         for ( int i = 0; i < menuItems.length; i++ ) {
             MenuItemDomainObject menuItem = menuItems[i];
-            insertTextDocumentMenuItem( menu, menuItem );
+            sqlInsertMenuItem( menu, menuItem );
         }
     }
 
-    private void insertTextDocumentMenuItem( MenuDomainObject menu, MenuItemDomainObject menuItem ) {
-        Integer sortKey = menuItem.getSortKey();
-        if ( null == sortKey ) {
-            Integer maxSortKey = getMaxSortKeyForMenu( menu );
-            sortKey = null == maxSortKey
-                      ? new Integer( MenuDomainObject.DEFAULT_SORT_KEY ) : new Integer( maxSortKey.intValue() + 10 );
-            menuItem.setSortKey( sortKey );
-        }
-        sqlInsertMenuItem( menu, menuItem, sortKey.intValue() );
-    }
-
-    private void sqlInsertMenuItem( MenuDomainObject menu, MenuItemDomainObject menuItem, int sortKey ) {
+    private void sqlInsertMenuItem( MenuDomainObject menu, MenuItemDomainObject menuItem ) {
         String sqlInsertMenuItem = "INSERT INTO childs (menu_id, to_meta_id, manual_sort_order, tree_sort_index) VALUES(?,?,?,?)";
         service.sqlUpdateQuery( sqlInsertMenuItem, new String[]{
-            "" + menu.getId(), "" + menuItem.getDocument().getId(), "" + sortKey, "" + menuItem.getTreeSortKey()
+            "" + menu.getId(),
+            "" + menuItem.getDocument().getId(),
+            "" + menuItem.getSortKey().intValue(),
+            "" + menuItem.getTreeSortKey()
         } );
-    }
-
-    private Integer getMaxSortKeyForMenu( MenuDomainObject menu ) {
-        String sqlSelectMaxSortKey = "SELECT MAX(manual_sort_order) FROM childs WHERE menu_id = ?";
-        String maxSortKeyString = service.sqlQueryStr( sqlSelectMaxSortKey, new String[]{"" + menu.getId()} );
-        if ( null == maxSortKeyString ) {
-            return null;
-        }
-        Integer maxSortKey = Integer.valueOf( maxSortKeyString );
-        return maxSortKey;
     }
 
     private void sqlInsertMenu( TextDocumentDomainObject textDocument, int menuIndex,
@@ -1642,6 +1626,22 @@ public class DocumentMapper {
     void saveHtmlDocument( HtmlDocumentDomainObject htmlDocument ) {
         String sqlStr = "UPDATE frameset_docs SET frame_set = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{htmlDocument.getHtmlDocumentHtml(), "" + htmlDocument.getId()} );
+    }
+
+    public void deleteDocument( DocumentDomainObject document, UserDomainObject user ) {
+
+        documentIndex.removeDocument( document );
+
+        //If meta_id is a file document we have to delete the file from file system
+        if ( !new File( service.getFilePath(), "" + document.getId() ).delete() ) {
+            new File( service.getFilePath(), document.getId() + "_se" ).delete();
+        }
+
+        // Create a db connection and execte sp DocumentDelete on meta_id
+        service.sqlUpdateProcedure( "DocumentDelete", new String[]{"" + document.getId()} );
+        service.updateLogs( "Document  " + "[" + document.getId() + "] ALL deleted by user: [" +
+                         user.getFullName() + "]" );
+
     }
 
     private static class FileInputStreamSource implements InputStreamSource, Serializable {
@@ -1794,20 +1794,6 @@ public class DocumentMapper {
             }
             return getDocument( documentIds[index++] );
         }
-    }
-
-    public List getDocumentListForHits( Hits hits, UserDomainObject searchingUser ) throws IOException {
-        List documentList = new ArrayList( hits.length() );
-        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface()
-                .getDocumentMapper();
-        for ( int i = 0; i < hits.length(); ++i ) {
-            int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
-            DocumentDomainObject document = documentMapper.getDocument( metaId );
-            if ( documentMapper.userHasPermissionToSearchDocument( searchingUser, document ) ) {
-                documentList.add( document );
-            }
-        }
-        return documentList;
     }
 
 }

@@ -31,6 +31,8 @@ public abstract class DocumentIndex {
 
     public abstract void indexDocument( DocumentDomainObject document );
 
+    public abstract void removeDocument( DocumentDomainObject document );
+
     public abstract DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IOException;
 
     public Query parseLucene( String queryString ) throws ParseException {

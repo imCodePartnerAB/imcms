@@ -7,6 +7,8 @@ import java.util.*;
 
 import imcode.external.diverse.*;
 import imcode.server.*;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -25,7 +27,7 @@ public class AdminDeleteDoc extends Administrator {
         // Lets verify that this user is an admin
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (user.isSuperAdmin() == false) {
+        if (!user.isSuperAdmin()) {
             String header = "Error in AdminCounter.";
             Properties langproperties = imcref.getLanguageProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator")+ "<br>";
@@ -86,7 +88,9 @@ public class AdminDeleteDoc extends Administrator {
 
             // Ok, Lets delete the meta id
             log("Nu försöker vi ta bort ett meta id");
-            imcref.deleteDocAll(metaId, user);
+            DocumentMapper documentMapper = imcref.getDocumentMapper();
+            DocumentDomainObject document = documentMapper.getDocument( metaId ) ;
+            documentMapper.deleteDocument( document, user);
             this.doGet(req, res);
             //this.goAdminUsers(req, res) ;
             return;
