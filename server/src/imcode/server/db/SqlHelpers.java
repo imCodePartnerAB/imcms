@@ -20,7 +20,7 @@ public class SqlHelpers {
 
         DBConnect dbc = new DBConnect( conPool );
         List data = dbc.executeProcedure(procedure,params);
-        String[] meta = dbc.getMetaData();
+        String[] meta = dbc.getColumnLabels();
 
         return createHashtableOfStringArrayFromSqlResults( data, meta );
     }
@@ -77,7 +77,7 @@ public class SqlHelpers {
         dbc.setSQLString(sqlQuery, params);
 
         List data = dbc.executeQuery();
-        String[] meta = dbc.getMetaData();
+        String[] meta = dbc.getColumnLabels();
         return createHashtableOfStringArrayFromSqlResults(data, meta) ;
     }
 

@@ -1,6 +1,7 @@
 package imcode.server.db;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.NullArgumentException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,55 +9,47 @@ import java.util.List;
 
 class DBConnect {
 
-    private Connection con = null;                 // The JDBC Connection
-    private ResultSet rs = null;		    // The JDBC ResultSet
-    private ResultSetMetaData rsmd = null;	    // The JDBC ResultSetMetaData
-    private PreparedStatement ps;
-    private CallableStatement cs = null;	    // The JDBC CallableStatement
-    private String strSQLString = "";		    // SQL query-string
-    private String strProcedure = "";		    // Procedure
-    private String[] meta_data;       // Meta info
-    private int columnCount;                       // Column count
+    private Connection connection = null;
+    private ResultSet resultSet = null;
+    private ResultSetMetaData resultSetMetaData = null;
+    private PreparedStatement preparedStatement;
+    private CallableStatement callableStatement = null;
+    private String sqlQueryString = "";
+    private String sqlProcedure = "";
+    private String[] columnLabels;
+    private int columnCount;
 
     private final static Logger log = Logger.getLogger( DBConnect.class );
 
-    // constructor
     DBConnect( ConnectionPool conPool ) {
         try {
-            con = conPool.getConnection();
+            connection = conPool.getConnection();
         } catch ( SQLException e ) {
             throw new RuntimeException( e );
         }
     }
 
-    /**
-     * <p>Execute a database query.
-     */
     List executeQuery() {
 
         List results = new ArrayList();
 
         // Execute SQL-string
         try {
-            ps.executeQuery();
-            rs = ps.getResultSet();
-            rsmd = rs.getMetaData();
-            columnCount = rsmd.getColumnCount();
-            meta_data = new String[columnCount];
+            preparedStatement.executeQuery();
+            resultSet = preparedStatement.getResultSet();
+            resultSetMetaData = resultSet.getMetaData();
+            columnCount = resultSetMetaData.getColumnCount();
+            columnLabels = new String[columnCount];
             for ( int i = 0; i < columnCount; ) {
-                meta_data[i] = rsmd.getColumnLabel( ++i );
+                columnLabels[i] = resultSetMetaData.getColumnLabel( ++i );
             }
 
-            while ( rs.next() ) {
+            while ( resultSet.next() ) {
                 for ( int i = 1; i <= columnCount; i++ ) {
-                    String s = rs.getString( i );
+                    String s = resultSet.getString( i );
                     results.add( s );
                 }
             }
-
-            rs.close();
-            ps.close();
-
         } catch ( SQLException ex ) {
             log.error( "Error in executeQuery()", ex );
             throw new RuntimeException( ex );
@@ -67,15 +60,9 @@ class DBConnect {
         return results;
     }
 
-    /**
-     * <p>Update databasequery.
-     */
     int executeUpdateQuery() {
-        // Execute SQL-string
         try {
-            int result = ps.executeUpdate();
-            ps.close();
-            return result;
+            return preparedStatement.executeUpdate();
         } catch ( SQLException ex ) {
             log.error( "Error in executeUpdateQuery()", ex );
             throw new RuntimeException( ex );
@@ -84,30 +71,24 @@ class DBConnect {
         }
     }
 
-    /**
-     * <p>Execute a database procedure.
-     */
     private List executeProcedure() {
 
         List results = new ArrayList();
         try {
-            rs = cs.executeQuery();
-            rsmd = rs.getMetaData();
-            columnCount = rsmd.getColumnCount();
+            resultSet = callableStatement.executeQuery();
+            resultSetMetaData = resultSet.getMetaData();
+            columnCount = resultSetMetaData.getColumnCount();
 
-            meta_data = new String[columnCount];
+            columnLabels = new String[columnCount];
             for ( int i = 0; i < columnCount; ) {
-                meta_data[i] = rsmd.getColumnLabel( ++i );
+                columnLabels[i] = resultSetMetaData.getColumnLabel( ++i );
             }
-            while ( rs.next() ) {
+            while ( resultSet.next() ) {
                 for ( int i = 1; i <= columnCount; i++ ) {
-                    String s = rs.getString( i );
+                    String s = resultSet.getString( i );
                     results.add( s );
                 }
             }
-
-            rs.close();
-            cs.close();
         } catch ( SQLException ex ) {
             log.error( "Error in executeProcedure()", ex );
             throw new RuntimeException( ex );
@@ -117,16 +98,10 @@ class DBConnect {
         return results;
     }
 
-    /**
-     * <p>Update database procedure.
-     * 
-     * @return updatecount or -1 if error
-     */
     private int executeUpdateProcedure() {
         int res = 0;
         try {
-            res = cs.executeUpdate();
-            cs.close();
+            res = callableStatement.executeUpdate();
         } catch ( SQLException ex ) {
             log.error( "Error in executeUpdateProcedure()", ex );
             throw new RuntimeException( ex );
@@ -136,71 +111,65 @@ class DBConnect {
         return res;
     }
 
-    /**
-     * <p>Get metadata.
-     */
-    String[] getMetaData() {
-        return meta_data;
+    String[] getColumnLabels() {
+        return columnLabels;
     }
 
-    /**
-     * <p>Get columncount.
-     */
     int getColumnCount() {
         return columnCount;
     }
 
-    /**
-     * <p>Close a database connection.
-     */
     private void closeConnection() {
         try {
-            con.close();
+            if ( null != resultSet ) {
+                resultSet.close();
+            }
+            if ( null != preparedStatement ) {
+                preparedStatement.close();
+            }
+            if ( null != callableStatement ) {
+                callableStatement.close();
+            }
+            connection.close();
         } catch ( SQLException ex ) {
             log.error( "Failed to close connection.", ex );
         }
-        con = null;
+        connection = null;
     }
 
-    /**
-     * <p>Set procedure.
-     */
-    private void setProcedure( String procedure, String[] params ) {
-        if ( procedure == null ) {
-            throw new NullPointerException( "DBConnect.setProcedure() procedure == null" );
+    private void prepareProcedureStatementAndSetParameters( String procedure, String[] params ) {
+        if ( null == procedure ) {
+            throw new NullArgumentException( procedure );
         }
-        if ( params == null ) {
-            throw new NullPointerException( "DBConnect.setProcedure() param == null" );
-        }
-        strProcedure = "{call " + procedure + "}";
-        prepareProcedureStatementAndSetParameters( params );
-    }
-
-    private void prepareProcedureStatementAndSetParameters( String[] params ) {
+        sqlProcedure = "{call " + procedure + "}";
         try {
-            cs = con.prepareCall( strProcedure );
-            for ( int i = 0; i < params.length; ++i ) {
-                cs.setString( i + 1, params[i] );
-            }
+            callableStatement = connection.prepareCall( sqlProcedure );
+            setParameters( callableStatement, params );
         } catch ( SQLException ex ) {
             log.error( "Error in prepareProcedureStatementAndSetParameters()", ex );
+            throw new RuntimeException( ex ) ;
+        }
+    }
+
+    private void setParameters( PreparedStatement statement, String[] params ) throws SQLException {
+        for ( int i = 0; i < params.length; ++i ) {
+            statement.setString( i + 1, params[i] );
         }
     }
 
     int executeUpdateProcedure( String procedure, String[] params ) {
         procedure = addQuestionMarksToProcedureCall( procedure, params );
-        setProcedure( procedure, params );
+        prepareProcedureStatementAndSetParameters( procedure, params );
         return executeUpdateProcedure();
     }
 
     List executeProcedure( String procedure, String[] params ) {
         procedure = addQuestionMarksToProcedureCall( procedure, params );
-        setProcedure( procedure, params );
+        prepareProcedureStatementAndSetParameters( procedure, params );
         return executeProcedure();
     }
 
     private static String addQuestionMarksToProcedureCall( String procedure, String[] params ) {
-
         StringBuffer procedureBuffer = new StringBuffer( procedure );
         procedureBuffer.append( "(" );
         if ( params.length > 0 ) {
@@ -214,18 +183,17 @@ class DBConnect {
     }
 
     void setSQLString( String sqlStr, String[] params ) {
-        strSQLString = sqlStr;
+        sqlQueryString = sqlStr;
         prepareQueryStatementAndSetParameters( params );
     }
 
     private void prepareQueryStatementAndSetParameters( String[] params ) {
         try {
-            ps = con.prepareStatement( strSQLString );
-            for ( int i = 0; i < params.length; ++i ) {
-                ps.setString( i + 1, params[i] );
-            }
+            preparedStatement = connection.prepareStatement( sqlQueryString );
+            setParameters( preparedStatement, params );
         } catch ( SQLException ex ) {
             log.error( "Error in prepareQueryStatementAndSetParameters()", ex );
+            throw new RuntimeException( ex ) ;
         }
     }
 
