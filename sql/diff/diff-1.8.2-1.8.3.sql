@@ -28,3 +28,6 @@ GO
 
 ALTER TABLE text_docs DROP COLUMN sort_order
 GO
+
+DROP PROCEDURE AddExistingDocToMenu
+GO

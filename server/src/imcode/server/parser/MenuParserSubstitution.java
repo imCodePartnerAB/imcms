@@ -42,10 +42,11 @@ class MenuParserSubstitution implements Substitution {
                       +
                       documentRequest.getServerObject().getAdminTemplate( "textdoc/sort_order.html", documentRequest.getUser(), null );
 
+        Menu menu = getMenuByIndex( menuIndex );
         String[] parseTags = new String[]{
             "#doc_menu_no#", "" + menuIndex,
             "#label#", labelAttribute,
-            "#sortOrder" + getMenuByIndex( menuIndex ).getSortOrder() + "#", "checked",
+            "#sortOrder" + (null != menu ? menu.getSortOrder() : IMCConstants.MENU_SORT_DEFAULT) + "#", "checked",
             "#doc_types#", createDocumentTypesOptionList(),
             "#getMetaId#", ""+documentRequest.getDocument().getId()
         };

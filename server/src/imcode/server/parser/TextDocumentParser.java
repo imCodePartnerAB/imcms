@@ -3,6 +3,7 @@ package imcode.server.parser;
 import imcode.server.DocumentRequest;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
+import imcode.server.LanguageMapper;
 import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
@@ -507,11 +508,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         private Collator collator;
 
         private MenuItemHeadlineComparator( String lang ) {
-            Locale locale;
-            if ( "se".equalsIgnoreCase( lang ) ) {
-                locale = new Locale( "sv" );
-            } else {
-                locale = Locale.ENGLISH;
+            Locale locale = null ;
+            try {
+                locale = new Locale( LanguageMapper.convert639_2to639_1( lang ) );
+            } catch ( LanguageMapper.LanguageNotSupportedException e ) {
+                locale = Locale.ENGLISH ;
             }
             collator = Collator.getInstance( locale );
         }

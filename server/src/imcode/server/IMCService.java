@@ -443,7 +443,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no )
             throws DocumentMapper.DocumentAlreadyInMenuException {
-        DocumentMapper.addDocumentToMenu( this, user, meta_id, doc_menu_no, existing_meta_id );
+        documentMapper.addDocumentToMenu( user, meta_id, doc_menu_no, existing_meta_id );
     }
 
     public void saveManualSort( int meta_id, UserDomainObject user, List childs,

@@ -28,7 +28,7 @@ public class SaveSort extends HttpServlet {
     /**
      * service()
      */
-    public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
@@ -72,8 +72,11 @@ public class SaveSort extends HttpServlet {
             int sort_order = Integer.parseInt( req.getParameter( "sort_order" ) );
             String[] queryResult = imcref.sqlQuery( "select sort_order from menus where meta_id = ? AND menu_index = ?",
                                                     new String[]{"" + documentId, ""+menuIndex} );
-            String currentSortOrderStr = queryResult[0];
-            int currentSortOrder = Integer.parseInt( currentSortOrderStr );
+            int currentSortOrder = IMCConstants.MENU_SORT_DEFAULT ;
+            if (0 < queryResult.length) {
+                String currentSortOrderStr = queryResult[0];
+                currentSortOrder = Integer.parseInt( currentSortOrderStr );
+            }
             if ( currentSortOrder != sort_order ) {
                 imcref.sqlUpdateQuery( "update menus set sort_order = ? where meta_id = ? AND menu_index = ?",
                                        new String[]{"" + sort_order, "" + documentId, ""+menuIndex} );

@@ -60,15 +60,26 @@ public class DocumentMapper {
 
     public void addDocumentToMenu( UserDomainObject user, int menuDocumentId, int menuIndex, int toBeAddedId )
             throws DocumentAlreadyInMenuException {
-        addDocumentToMenu( service, user, menuDocumentId, menuIndex, toBeAddedId );
-    }
 
-    public static void addDocumentToMenu( IMCServiceInterface service, UserDomainObject user, int menuDocumentId,
-                                          int menuIndex, int toBeAddedId ) throws DocumentAlreadyInMenuException {
-        int updatedRows = service.sqlUpdateProcedure( "AddExistingDocToMenu",
-                                                      new String[]{
-                                                          "" + menuDocumentId, "" + toBeAddedId, "" + menuIndex
-                                                      } );
+        String menuIdStr = sqlSelectMenuId( menuDocumentId, menuIndex );
+        if (null == menuIdStr) {
+            sqlInsertMenu( menuDocumentId, menuIndex );
+            // FIXME: Get generated menu_id primary key from insert without selecting it.
+            menuIdStr = sqlSelectMenuId( menuDocumentId, menuIndex ) ;
+        }
+        int menuId = Integer.parseInt(menuIdStr) ;
+
+        String sqlSelectMaxManualSortIndex = "SELECT ISNULL(MAX(manual_sort_order),500) FROM childs WHERE menu_id = ?" ;
+        String maxManualSortIndexStr = service.sqlQueryStr( sqlSelectMaxManualSortIndex, new String[] {""+menuId}) ;
+        if (null == maxManualSortIndexStr) {
+            maxManualSortIndexStr = ""+500 ;
+        }
+        int maxManualSortIndex = Integer.parseInt(maxManualSortIndexStr) ;
+        int newManualSortIndex = maxManualSortIndex + 10 ;
+
+        String sqlInsertChild = "INSERT INTO childs (menu_id, to_meta_id, manual_sort_order, tree_sort_index)\n"
+                                + "VALUES(?,?,?,'')" ;
+        int updatedRows = service.sqlUpdateQuery( sqlInsertChild, new String[] { ""+menuId, ""+toBeAddedId, ""+newManualSortIndex}) ;
 
         if ( 1 == updatedRows ) {	// if existing doc is added to the menu
             service.updateLogs( "Link from [" + menuDocumentId + "] in menu [" + menuIndex + "] to [" + toBeAddedId
@@ -81,6 +92,17 @@ public class DocumentMapper {
                                                       + " on document "
                                                       + menuDocumentId );
         }
+    }
+
+    private void sqlInsertMenu( int menuDocumentId, int menuIndex ) {
+        String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?)" ;
+        service.sqlUpdateQuery( sqlInsertMenu, new String[] {""+menuDocumentId, ""+menuIndex, ""+IMCConstants.MENU_SORT_DEFAULT}) ;
+    }
+
+    private String sqlSelectMenuId( int menuDocumentId, int menuIndex ) {
+        String sqlSelectMenuId = "SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?" ;
+        String menuIdStr = service.sqlQueryStr( sqlSelectMenuId, new String[] {""+menuDocumentId, ""+menuIndex} ) ;
+        return menuIdStr;
     }
 
     public static void copyTemplateData( IMCServiceInterface imcref, UserDomainObject user, String parent_meta_id,
@@ -206,7 +228,7 @@ public class DocumentMapper {
         sqlUpdateDocType( service, newMetaId, documentType );
 
         try {
-            addDocumentToMenu( service, user, parentId, parentMenuNumber, newMetaId );
+            addDocumentToMenu( user, parentId, parentMenuNumber, newMetaId );
             // update parents modfied date because it has gotten an new link
             sqlUpdateModifiedDate( service, parentId, nowDateTime );
         } catch ( DocumentAlreadyInMenuException e ) {
