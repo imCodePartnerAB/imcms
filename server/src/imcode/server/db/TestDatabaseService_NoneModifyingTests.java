@@ -41,13 +41,7 @@ public class TestDatabaseService_NoneModifyingTests extends TestCase {
         }
     }
 
-    public void testSameResultFromSprocGetAllUsers() {
-        DatabaseService.UsersTabelData[] oneArr = sqlServer.sproc_getallusers();
-        DatabaseService.UsersTabelData[] anotherArr = mimer.sproc_getallusers();
-        assertEquals( oneArr, anotherArr );
-    }
-
-    private void assertEquals( Object[] oneArr, Object[] anotherArr ) {
+    private static void static_assertEquals( Object[] oneArr, Object[] anotherArr ) {
         if( oneArr == null ) {
             assertNotNull( anotherArr );
         } else if( anotherArr == null ) {
@@ -64,5 +58,19 @@ public class TestDatabaseService_NoneModifyingTests extends TestCase {
                 System.out.println( "another: " + another.toString() );
             }
         }
+    }
+
+    public void testSameResultFromSprocGetAllRoles() {
+        static_assertEquals( sqlServer.sproc_getallroles(), mimer.sproc_getallroles() );
+    }
+
+    public void testSameResultFromSprocGetAllUsers() {
+        static_assertEquals( sqlServer.sproc_getallusers(), mimer.sproc_getallusers() );
+    }
+
+    public void testSameResultFromSprocGetTamplatesInGroup() {
+        assertEquals( sqlServer.sproc_getTamplatesInGroup(0), mimer.sproc_getTamplatesInGroup(0) );
+        assertEquals( sqlServer.sproc_getTamplatesInGroup(1), mimer.sproc_getTamplatesInGroup(1) );
+        assertEquals( sqlServer.sproc_getTamplatesInGroup(2), mimer.sproc_getTamplatesInGroup(2) );
     }
 }

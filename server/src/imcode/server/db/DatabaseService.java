@@ -75,252 +75,6 @@ public class DatabaseService {
         }
     }
 
-    class RoleTableData {
-        private int id;
-        private String name;
-
-        public RoleTableData( int id, String name ) {
-            this.id = id;
-            this.name = name;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
-    /**
-     *  Document me!
-     */
-    // todo: rename to getallroles _but_ user
-    // todo: user RoleDomainObject or create one if it dosn't exist
-    public RoleTableData[] sproc_getallroles() {
-        String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
-        Object[] paramValues = null;
-
-        ResultProcessor resultProcessor = new ResultProcessor() {
-            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int id = rs.getInt( "role_id" );
-                String name = rs.getString( "role_name" );
-
-                RoleTableData result = null;
-                if( !name.equalsIgnoreCase( "users" ) ) { // all roles but user should be mapped.
-                    result = new RoleTableData( id, name );
-                }
-                return result;
-            }
-        };
-
-        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
-        return (RoleTableData[])result.toArray( new RoleTableData[result.size()] );
-    }
-
-    class UsersTabelData {
-        public UsersTabelData( int userId, String loginName, String password, String firstName, String lastName, String title, String company, String address, String city, String zip, String country, String county_council, String emailAddress, int external, int lastPage, int archiveMode, int langId, int userType, int active, Timestamp createDate ) {
-            this.userId = userId;
-            this.loginName = loginName;
-            this.password = password;
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.title = title;
-            this.company = company;
-            this.address = address;
-            this.city = city;
-            this.zip = zip;
-            this.country = country;
-            this.county_council = county_council;
-            this.emailAddress = emailAddress;
-            this.external = external;
-            this.lastPage = lastPage;
-            this.archiveMode = archiveMode;
-            this.langId = langId;
-            this.userType = userType;
-            this.active = active;
-            this.createDate = createDate;
-        }
-
-        private int userId;
-        private String loginName;
-        private String password;
-        private String firstName;
-        private String lastName;
-        private String title;
-        private String company;
-        private String address;
-        private String city;
-        private String zip;
-        private String country;
-        private String county_council;
-        private String emailAddress;
-        private int external;
-        private int lastPage;
-        private int archiveMode;
-        private int langId;
-        private int userType;
-        private int active;
-        private Timestamp createDate;
-
-        public boolean equals( Object o ) {
-            if( this == o )
-                return true;
-            if( !(o instanceof UsersTabelData) )
-                return false;
-
-            final UsersTabelData usersTabelData = (UsersTabelData)o;
-
-            if( active != usersTabelData.active )
-                return false;
-            if( archiveMode != usersTabelData.archiveMode )
-                return false;
-            if( external != usersTabelData.external )
-                return false;
-            if( langId != usersTabelData.langId )
-                return false;
-            if( lastPage != usersTabelData.lastPage )
-                return false;
-            if( userId != usersTabelData.userId )
-                return false;
-            if( userType != usersTabelData.userType )
-                return false;
-            if( address != null ? !address.equals( usersTabelData.address ) : usersTabelData.address != null )
-                return false;
-            if( city != null ? !city.equals( usersTabelData.city ) : usersTabelData.city != null )
-                return false;
-            if( company != null ? !company.equals( usersTabelData.company ) : usersTabelData.company != null )
-                return false;
-            if( country != null ? !country.equals( usersTabelData.country ) : usersTabelData.country != null )
-                return false;
-            if( county_council != null ? !county_council.equals( usersTabelData.county_council ) : usersTabelData.county_council != null )
-                return false;
-            if( createDate != null ? !createDate.equals( usersTabelData.createDate ) : usersTabelData.createDate != null )
-                return false;
-            if( emailAddress != null ? !emailAddress.equals( usersTabelData.emailAddress ) : usersTabelData.emailAddress != null )
-                return false;
-            if( firstName != null ? !firstName.equals( usersTabelData.firstName ) : usersTabelData.firstName != null )
-                return false;
-            if( lastName != null ? !lastName.equals( usersTabelData.lastName ) : usersTabelData.lastName != null )
-                return false;
-            if( loginName != null ? !loginName.equals( usersTabelData.loginName ) : usersTabelData.loginName != null )
-                return false;
-            if( password != null ? !password.equals( usersTabelData.password ) : usersTabelData.password != null )
-                return false;
-            if( title != null ? !title.equals( usersTabelData.title ) : usersTabelData.title != null )
-                return false;
-            if( zip != null ? !zip.equals( usersTabelData.zip ) : usersTabelData.zip != null )
-                return false;
-
-            return true;
-        }
-
-        public int hashCode() {
-            int result;
-            result = userId;
-            result = 29 * result + (loginName != null ? loginName.hashCode() : 0);
-            result = 29 * result + (password != null ? password.hashCode() : 0);
-            result = 29 * result + (firstName != null ? firstName.hashCode() : 0);
-            result = 29 * result + (lastName != null ? lastName.hashCode() : 0);
-            result = 29 * result + (title != null ? title.hashCode() : 0);
-            result = 29 * result + (company != null ? company.hashCode() : 0);
-            result = 29 * result + (address != null ? address.hashCode() : 0);
-            result = 29 * result + (city != null ? city.hashCode() : 0);
-            result = 29 * result + (zip != null ? zip.hashCode() : 0);
-            result = 29 * result + (country != null ? country.hashCode() : 0);
-            result = 29 * result + (county_council != null ? county_council.hashCode() : 0);
-            result = 29 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
-            result = 29 * result + external;
-            result = 29 * result + lastPage;
-            result = 29 * result + archiveMode;
-            result = 29 * result + langId;
-            result = 29 * result + userType;
-            result = 29 * result + active;
-            result = 29 * result + (createDate != null ? createDate.hashCode() : 0);
-            return result;
-        }
-
-        public String toString() {
-            return createDate.toString();
-        }
-    }
-
-    /**
-     *  Document me!
-     * @return
-     */
-
-    UsersTabelData[] sproc_getallusers() {
-        String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
-        Object[] paramValues = null;
-
-        ResultProcessor resultProcessor = new ResultProcessor() {
-            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                UsersTabelData result = null;
-                int userId = rs.getInt( "user_id" );
-                String loginName = rs.getString("login_name");
-                String password = rs.getString("login_password");
-                String firstName = rs.getString("first_name");
-                String lastName = rs.getString("last_name");
-                String title = rs.getString("title");
-                String company = rs.getString("company");
-                String address = rs.getString("address");
-                String city = rs.getString("city");
-                String zip = rs.getString("zip");
-                String country = rs.getString("country");
-                String county_council = rs.getString("county_council");
-                String emailAddress = rs.getString("email");
-                int external = rs.getInt("external");
-                int lastPage = rs.getInt("last_page");
-                int archiveMode = rs.getInt("archive_mode");
-                int langId = rs.getInt("lang_id");
-                int userType = rs.getInt("user_type");
-                int active = rs.getInt("active");
-                Timestamp createDate = rs.getTimestamp("create_date");
-                result = new UsersTabelData( userId, loginName, password, firstName, lastName, title, company, address, city, zip, country, county_council, emailAddress, external, lastPage, archiveMode, langId, userType, active, createDate );
-                return result;
-            }
-        };
-
-        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
-        return (UsersTabelData[])result.toArray(new UsersTabelData[result.size()]);
-    }
-
-    private abstract class ResultProcessor {
-        abstract Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException;
-    }
-
-    private ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProc ) {
-        Connection conn = null;
-        ArrayList result = new ArrayList();
-        try {
-            conn = connectionPool.getConnection();
-            ResultSet rs = sqlProcessor.executeQuery( conn, sql, paramValues );
-            while( rs.next() ) {
-                Object temp = resultProc.mapOneRowFromResultsetToObject( rs );
-                if( null != temp ) {
-                    result.add( temp );
-                }
-            }
-        } catch( SQLException ex ) {
-            log.fatal( "Exception in executeQuery()", ex );
-        } finally {
-            closeConnection( conn );
-        }
-        return result;
-    }
-
-    private void closeConnection( Connection conn ) {
-        try {
-            if( conn != null ) {
-                conn.close();
-            }
-        } catch( SQLException ex ) {
-            // Swallow
-        }
-    }
-
     void initializeDatabase() throws Exception {
         executeCommandsFromFile( DROP_TABLES );
         executeCommandsFromFile( CREATE_TABLES );
@@ -388,4 +142,287 @@ public class DatabaseService {
         return result;
     }
 
+
+    private abstract class ResultProcessor {
+        abstract Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException;
+    }
+
+    private ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProc ) {
+        Connection conn = null;
+        ArrayList result = new ArrayList();
+        try {
+            conn = connectionPool.getConnection();
+            ResultSet rs = sqlProcessor.executeQuery( conn, sql, paramValues );
+            while( rs.next() ) {
+                Object temp = resultProc.mapOneRowFromResultsetToObject( rs );
+                if( null != temp ) {
+                    result.add( temp );
+                }
+            }
+        } catch( SQLException ex ) {
+            log.fatal( "Exception in executeQuery()", ex );
+        } finally {
+            closeConnection( conn );
+        }
+        return result;
+    }
+
+    private void closeConnection( Connection conn ) {
+        try {
+            if( conn != null ) {
+                conn.close();
+            }
+        } catch( SQLException ex ) {
+            // Swallow
+        }
+    }
+
+    class TableRole {
+        private int id;
+        private String name;
+
+        public TableRole( int id, String name ) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean equals( Object o ) {
+            if( this == o )
+                return true;
+            if( !(o instanceof TableRole) )
+                return false;
+
+            final TableRole roleTableData = (TableRole)o;
+
+            if( id != roleTableData.id )
+                return false;
+            if( name != null ? !name.equals( roleTableData.name ) : roleTableData.name != null )
+                return false;
+
+            return true;
+        }
+    }
+
+    /**
+     *  Document me!
+     */
+    // todo: rename to getallroles _but_ user
+    // todo: user RoleDomainObject or create one if it dosn't exist
+    public TableRole[] sproc_getallroles() {
+        String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
+        Object[] paramValues = null;
+
+        ResultProcessor resultProcessor = new ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int id = rs.getInt( "role_id" );
+                String name = rs.getString( "role_name" );
+
+                TableRole result = null;
+                if( !name.equalsIgnoreCase( "users" ) ) { // all roles but user should be mapped.
+                    result = new TableRole( id, name );
+                }
+                return result;
+            }
+        };
+
+        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
+        return (TableRole[])result.toArray( new TableRole[result.size()] );
+    }
+
+    class TableUsers {
+        public TableUsers( int userId, String loginName, String password, String firstName, String lastName, String title, String company, String address, String city, String zip, String country, String county_council, String emailAddress, int external, int lastPage, int archiveMode, int langId, int userType, int active, Timestamp createDate ) {
+            this.userId = userId;
+            this.loginName = loginName;
+            this.password = password;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.title = title;
+            this.company = company;
+            this.address = address;
+            this.city = city;
+            this.zip = zip;
+            this.country = country;
+            this.county_council = county_council;
+            this.emailAddress = emailAddress;
+            this.external = external;
+            this.lastPage = lastPage;
+            this.archiveMode = archiveMode;
+            this.langId = langId;
+            this.userType = userType;
+            this.active = active;
+            this.createDate = createDate;
+        }
+
+        private int userId;
+        private String loginName;
+        private String password;
+        private String firstName;
+        private String lastName;
+        private String title;
+        private String company;
+        private String address;
+        private String city;
+        private String zip;
+        private String country;
+        private String county_council;
+        private String emailAddress;
+        private int external;
+        private int lastPage;
+        private int archiveMode;
+        private int langId;
+        private int userType;
+        private int active;
+        private Timestamp createDate;
+
+        public boolean equals( Object o ) {
+            if( this == o )
+                return true;
+            if( !(o instanceof TableUsers) )
+                return false;
+
+            final TableUsers usersTabelData = (TableUsers)o;
+
+            if( active != usersTabelData.active )
+                return false;
+            if( archiveMode != usersTabelData.archiveMode )
+                return false;
+            if( external != usersTabelData.external )
+                return false;
+            if( langId != usersTabelData.langId )
+                return false;
+            if( lastPage != usersTabelData.lastPage )
+                return false;
+            if( userId != usersTabelData.userId )
+                return false;
+            if( userType != usersTabelData.userType )
+                return false;
+            if( address != null ? !address.equals( usersTabelData.address ) : usersTabelData.address != null )
+                return false;
+            if( city != null ? !city.equals( usersTabelData.city ) : usersTabelData.city != null )
+                return false;
+            if( company != null ? !company.equals( usersTabelData.company ) : usersTabelData.company != null )
+                return false;
+            if( country != null ? !country.equals( usersTabelData.country ) : usersTabelData.country != null )
+                return false;
+            if( county_council != null ? !county_council.equals( usersTabelData.county_council ) : usersTabelData.county_council != null )
+                return false;
+//            if( createDate != null ? !createDate.equals( usersTabelData.createDate ) : usersTabelData.createDate != null )
+//                return false;
+            if( emailAddress != null ? !emailAddress.equals( usersTabelData.emailAddress ) : usersTabelData.emailAddress != null )
+                return false;
+            if( firstName != null ? !firstName.equals( usersTabelData.firstName ) : usersTabelData.firstName != null )
+                return false;
+            if( lastName != null ? !lastName.equals( usersTabelData.lastName ) : usersTabelData.lastName != null )
+                return false;
+            if( loginName != null ? !loginName.equals( usersTabelData.loginName ) : usersTabelData.loginName != null )
+                return false;
+            if( password != null ? !password.equals( usersTabelData.password ) : usersTabelData.password != null )
+                return false;
+            if( title != null ? !title.equals( usersTabelData.title ) : usersTabelData.title != null )
+                return false;
+            if( zip != null ? !zip.equals( usersTabelData.zip ) : usersTabelData.zip != null )
+                return false;
+
+            return true;
+        }
+
+        public String toString() {
+            return createDate.toString();
+        }
+    }
+
+    /**
+     *  Document me!
+     * @return
+     */
+
+    TableUsers[] sproc_getallusers() {
+        String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
+        Object[] paramValues = null;
+
+        ResultProcessor resultProcessor = new ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                TableUsers result = null;
+                int userId = rs.getInt( "user_id" );
+                String loginName = rs.getString("login_name");
+                String password = rs.getString("login_password");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String title = rs.getString("title");
+                String company = rs.getString("company");
+                String address = rs.getString("address");
+                String city = rs.getString("city");
+                String zip = rs.getString("zip");
+                String country = rs.getString("country");
+                String county_council = rs.getString("county_council");
+                String emailAddress = rs.getString("email");
+                int external = rs.getInt("external");
+                int lastPage = rs.getInt("last_page");
+                int archiveMode = rs.getInt("archive_mode");
+                int langId = rs.getInt("lang_id");
+                int userType = rs.getInt("user_type");
+                int active = rs.getInt("active");
+                Timestamp createDate = rs.getTimestamp("create_date");
+                result = new TableUsers( userId, loginName, password, firstName, lastName, title, company, address, city, zip, country, county_council, emailAddress, external, lastPage, archiveMode, langId, userType, active, createDate );
+                return result;
+            }
+        };
+
+        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
+        return (TableUsers[])result.toArray(new TableUsers[result.size()]);
+    }
+
+    class ViewTemplateGroup {
+        private int id;
+        private String simpleName;
+
+        public ViewTemplateGroup( int id, String simpleName ) {
+            this.id = id;
+            this.simpleName = simpleName;
+        }
+
+        public boolean equals( Object o ) {
+            if( this == o )
+                return true;
+            if( !(o instanceof ViewTemplateGroup) )
+                return false;
+
+            final ViewTemplateGroup viewTemplateGroup = (ViewTemplateGroup)o;
+
+            if( id != viewTemplateGroup.id )
+                return false;
+            if( simpleName != null ? !simpleName.equals( viewTemplateGroup.simpleName ) : viewTemplateGroup.simpleName != null )
+                return false;
+
+            return true;
+        }
+    }
+
+    ViewTemplateGroup sproc_getTamplatesInGroup( int groupId ) {
+        String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " +
+            "WHERE c.group_id = ? " +
+            "ORDER BY simple_name";
+        Object[] paramValues = new Object[]{ new Integer(groupId) };
+
+        ResultProcessor resultProcessor = new ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                ViewTemplateGroup result = null;
+                int templateId = rs.getInt("template_id");
+                String simpleName = rs.getString("simple_name");
+                result = new ViewTemplateGroup( templateId, simpleName );
+                return result;
+            }
+        };
+
+        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
+        return (ViewTemplateGroup)result.get(0);
+    }
 }
