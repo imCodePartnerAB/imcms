@@ -1,27 +1,27 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.DateConstants;
+import imcode.util.Utility;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
-import org.apache.log4j.Logger;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.index.Term;
-import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
+import java.util.*;
 
 
 public class AdminManager extends Administrator {
@@ -101,12 +101,10 @@ public class AdminManager extends Administrator {
             }
 
             String url = getAdminTaskUrl(whichButton);
-            if ("".equals(url) )  {
-                this.doGet(req, res);
+            if (StringUtils.isNotBlank( url )) {
+                res.sendRedirect( url );
                 return;
             }
-            res.sendRedirect(url);
-            return;
         }
 
 
