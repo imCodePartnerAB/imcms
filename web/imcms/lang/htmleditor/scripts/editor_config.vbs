@@ -11,7 +11,7 @@ Dim getDocPath, pixelSrc
 ' * /imcms/servlet/ el. http://www.domain.com/servlet/
 
 
-getDocPath = "@servleturl@/"
+getDocPath = ""
 
 ' * Path/source for transparent pixel (NO leading slash):
 
