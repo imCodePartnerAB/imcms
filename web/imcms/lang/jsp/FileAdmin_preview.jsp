@@ -1,8 +1,17 @@
 <%@ page language="java"
-	import="org.apache.oro.util.*, org.apache.oro.text.*, org.apache.oro.text.regex.*, org.apache.oro.text.perl.*, java.io.*, java.util.*, java.text.*, java.net.*, javax.servlet.*, javax.servlet.http.*, imcode.external.diverse.*, imcode.util.*, imcode.server.*,
-            java.awt.image.BufferedImage,
-            javax.imageio.ImageIO"
-%><%
+	
+	import="imcode.util.Utility,
+	        java.io.File,
+	        org.apache.oro.text.perl.Perl5Util,
+	        java.io.FileInputStream,
+	        java.io.InputStreamReader,
+	        java.io.BufferedReader,
+	        java.text.DecimalFormat,
+	        java.awt.image.BufferedImage,
+	        javax.imageio.ImageIO"
+	
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><vel:velocity><%
+
 /* *******************************************************************
  *           SETTINGS                                                *
  ******************************************************************* */
@@ -113,7 +122,7 @@ try {
 	if (iSize >= 1024) {
 		iSize = iSize / 1024 ;
 		DecimalFormat df = new DecimalFormat("#.#") ;
-		size  = (String) df.format(iSize) ;
+		size  = df.format(iSize) ;
 		size  = ", " + size.replaceAll(",", ".") + "kB" ;
 	} else {
 		size  = ", " + fn.length() + " bytes" ;
@@ -133,19 +142,22 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 <head>
 <title></title>
 
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+
 </head>
-<body marginwidth="10" marginheight="10" leftmargin="10" topmargin="10" bgcolor="#ffffff">
+<body class="imcmsAdmBgCont" style="margin:10px">
 
 <div align="center"><%
 
 if (isImage) {
     BufferedImage image = ImageIO.read( fn );
-	%><div style="padding: 5 0 <%
+	%><div class="imcmsAdmText" style="padding: 5 0 <%
 	if (hasBorder) {
 		%>5<%
 	} else {
 		%>6<%
-	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;">&quot;<%= file %>&quot;<%
+	} %> 0; color:#666666;">&quot;<%= file.replaceAll("\\\\","/") %>&quot;<%
 	if (image.getWidth() > 0 && image.getHeight() > 0 && !size.equals("")) {
 		%> (<%
 		if (image.getWidth() > 0 && image.getHeight() > 0) {
@@ -171,7 +183,10 @@ if (isImage) {
 <head>
 <title></title>
 
-<STYLE TYPE="text/css">
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+
+<% /*<STYLE TYPE="text/css">
 <!--
 .imHeading { font: bold 17px Verdana, Geneva, sans-serif; color:#000066; }
 .imFilename { font: bold italic 10px Verdana, Geneva, sans-serif; color:#009900; }
@@ -179,7 +194,7 @@ if (isImage) {
 SELECT, INPUT { font: 10px Verdana, Geneva, sans-serif; color:#333333; }
 A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 -->
-</STYLE>
+</STYLE>*/ %>
 
 <script language="JavaScript">
 <!--
@@ -233,11 +248,11 @@ function findIt(str) {
 </script>
 
 </head>
-<body bgcolor="#d6d3ce" style="border:0">
+<body class="imcmsAdmBgHead" style="margin:0px; border:0px">
 
-<table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%" style="border-bottom: 1px solid #828482">
+<table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%" style="border-bottom: 1px solid #000000">
 <tr>
-	<td nowrap><span class="imHeading">
+	<td height="35" nowrap><span class="imcmsAdmHeadingTop">
 	&nbsp;<%
 	if (isStat) {
 		%><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1002/1 ?><%
@@ -252,15 +267,15 @@ function findIt(str) {
 	<form onSubmit="findIt(document.forms[0].searchString.value); return false">
 	<tr><%
 		if (hasDocumentAll || hasDocumentLayers) { %>
-		<td class="norm"><input type="text" name="searchString" size="15" value="" class="norm" style="width:100"></td>
+		<td class="imcmsAdmText"><input type="text" name="searchString" size="15" value="" class="imcmsAdmText" style="width:100"></td>
 		<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_preview.jsp/2001 ?>"></a></td><%
 		} %>
-		<td class="norm">&nbsp;&nbsp;</td><%
+		<td class="imcmsAdmText">&nbsp;&nbsp;</td><%
 		if (!isMac) { %>
 		<td><a href="javascript://print()" onClick="top.frames.main.focus(); top.frames.main.print();"><img src="<%= IMG_PATH %>btn_print.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_preview.jsp/2002 ?>"></a></td><%
 		} %>
 		<td><a href="javascript://close()" onClick="closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_preview.jsp/2003 ?>"></a></td>
-		<td class="norm">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		<td class="imcmsAdmText">&nbsp;&nbsp;&nbsp;&nbsp;</td>
 	</tr>
 	</form>
 	</table><%
@@ -270,9 +285,9 @@ function findIt(str) {
 	<input type="hidden" name="frame" value="main">
 	<input type="hidden" name="file" value="<%= file %>">
 	<tr>
-		<td class="norm">| &nbsp; <%
-		if (hasDocumentAll) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
-		<td class="norm">
+		<td class="imcmsAdmText"><span class="imcmsAdmText" style="color:#ffffff;">| &nbsp; <%
+		if (hasDocumentAll) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</span></td>
+		<td class="imcmsAdmText">
 		<select name="zoom" onChange="this.form.submit();">
 			<option value="0.25"<% if (defZoom.equals("0.25")) { %> selected<% } %>>25%
 			<option value="0.5"<%  if (defZoom.equals("0.5")) { %> selected<% } %>>50%
@@ -284,11 +299,11 @@ function findIt(str) {
 			<option value="8.0"<%  if (defZoom.equals("8.0")) { %> selected<% } %>>800%
 			<option value="16.0"<% if (defZoom.equals("16.0")) { %> selected<% } %>>1600%
 		</select></td>
-		<td class="norm"> &nbsp; | &nbsp; <%
+		<td><span class="imcmsAdmText" style="color:#ffffff;"> &nbsp; | &nbsp; <%
 		} %><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/1 ?>
-		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=1" target="main"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/2 ?></a> /
-		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=0" target="main"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/3 ?></a> &nbsp; | &nbsp;
-		<a href="javascript: closeIt();"><b><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/4 ?></b></a> &nbsp; | &nbsp;</td>
+		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=1" target="main" style="color:#ffffff;"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/2 ?></a> /
+		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=0" target="main" style="color:#ffffff;"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/3 ?></a> &nbsp; | &nbsp;
+		<a href="javascript: closeIt();" style="color:#ffffff;"><b><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/4 ?></b></a> &nbsp; | &nbsp;</span></td>
 	</tr>
 	</form>
 	</table><%
@@ -318,7 +333,7 @@ function findIt(str) {
 </head>
 	<%
 	if (isStat) { /* Statistics Report (HTML page) */ %>
-<frameset rows="30,*" border="0" framespacing="0" frameborder="NO" style="border:0">
+<frameset rows="35,*" border="0" framespacing="0" frameborder="NO" style="border:0">
 	<frame name="topframe" src="<%= thisPage %>?frame=top&isStat=1&file=<%= file %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="NO" noresize>
 	<frame name="main" src="<%= thisPage %>?frame=main&isStat=1&file=<%= file %>" marginwidth="10" marginheight="10" frameborder="NO" scrolling="AUTO" noresize>
 	<noframes>
@@ -330,7 +345,7 @@ function findIt(str) {
 	} else { /* Image File */
 
 		%>
-<frameset rows="30,*" border="0" framespacing="0" frameborder="NO" style="border:0">
+<frameset rows="35,*" border="0" framespacing="0" frameborder="NO" style="border:0">
 	<frame name="topframe" src="<%= thisPage %>?frame=top&file=<%= file %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="NO" noresize>
 	<frame name="main" src="<%= thisPage %>?frame=main&file=<%= file %>" marginwidth="0" marginheight="0" frameborder="NO" scrolling="AUTO" noresize>
 	<noframes>
@@ -343,3 +358,4 @@ function findIt(str) {
 </html>
 <%
 } %>
+</vel:velocity>

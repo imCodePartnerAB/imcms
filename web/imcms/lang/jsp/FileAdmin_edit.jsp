@@ -1,6 +1,11 @@
 <%@ page language="java"
-	import="org.apache.oro.util.*, org.apache.oro.text.*, org.apache.oro.text.regex.*, org.apache.oro.text.perl.*, java.io.*, java.util.*, java.text.*, java.net.*, javax.servlet.*, javax.servlet.http.*, imcode.external.diverse.*, imcode.util.*, imcode.server.*"
-%><%
+	
+	import="imcode.util.Utility,
+	        org.apache.oro.text.perl.Perl5Util,
+	        java.io.*"
+	
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><vel:velocity><%
+
 /* *******************************************************************
  *           SETTINGS                                                *
  ******************************************************************* */
@@ -194,7 +199,7 @@ if (isHelpWin) { %>
 
 
 
-<STYLE TYPE="text/css">
+<% /*<STYLE TYPE="text/css">
 <!--
 .imHeading { font: bold 17px Verdana, Geneva, sans-serif; color:#000066; }
 .imFilename { font: 10px Verdana, Geneva, sans-serif; color:#006600; }
@@ -204,7 +209,7 @@ SELECT, INPUT, .small { font: 10px Verdana, Geneva, sans-serif; color:#333333; }
 A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 B { font-weight:bold; }
 -->
-</STYLE>
+</STYLE>*/ %>
 
 </head>
 <body>
@@ -222,7 +227,7 @@ B { font-weight:bold; }
 	} %>" height="6" vspace="5"></td>
 </tr>
 <tr>
-	<td class="norm"><%
+	<td class="imcmsAdmText"><%
 	if (!hasDocumentLayers && !isMac) { %>
 	<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/6 ?> <i><%
 		if (isReadonly) {
@@ -258,9 +263,10 @@ B { font-weight:bold; }
 <head>
 <title>:: imCMS ::</title>
 
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
-
-<STYLE TYPE="text/css">
+<% /*<STYLE TYPE="text/css">
 <!--
 .imHeading { font: bold 17px Verdana, Geneva, sans-serif; color:#000066; }
 .imFilename { font: 10px Verdana, Geneva, sans-serif; color:#006600; }
@@ -270,7 +276,7 @@ SELECT, INPUT, .small { font: 10px Verdana, Geneva, sans-serif; color:#333333; }
 A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 B { font-weight:bold; }
 -->
-</STYLE>
+</STYLE>*/ %>
 
 <script language="JavaScript">
 <!--
@@ -418,17 +424,17 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 </script>
 
 </head>
-<body bgcolor="#d6d3ce" style="border:0; margin:0" onLoad="checkSaved(0);" onResize="resizeEditField()">
+<body class="imcmsAdmBgCont" style="border:0px; margin:0px" onLoad="checkSaved(0);" onResize="resizeEditField()">
 
 <table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%">
 <tr>
-	<td align="center" valign="top">
-	<table border="0" cellspacing="0" cellpadding="0" width="800">
-	<tr>
+	<td valign="top">
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr class="imcmsAdmBgHead">
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td height="30" nowrap><span class="imHeading" onDblClick="toggleFontSize(this)">
+			<td height="35" nowrap><span class="imcmsAdmHeadingTop" onDblClick="toggleFontSize(this)">
 			&nbsp;<%
 			if (isReadonly) {
 				%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1002/1 ?> <%
@@ -441,7 +447,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 				%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1002/4 ?><%
 			} %> &nbsp; </span></td>
 
-			<td nowrap><span class="imFilename">
+			<td nowrap><span class="imcmsAdmText" style="color:#ffffff;">
 &quot;<%
 			if (isTempl) {
 				out.print(templName) ;
@@ -481,7 +487,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			</form>
 			</table></td><%
 			} %>
-			<td class="norm">&nbsp;&nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;&nbsp;</td>
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0">
 			<form name="resetForm">
@@ -493,18 +499,17 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			<input type="hidden" name="templName" value="<%= templName %>"><%
 			} %>
 			<tr>
-				<td class="norm"><a href="javascript://help" onClick="alert('Välj att återställa filen som den såg ut när:\n\n - Du senast sparade den.\n - När du öppnade den i detta fönster.')"><span style="color:black; text-decoration:none; cursor:help;"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/4 ?></span></a>&nbsp;</td>
-				<td class="small">
+				<td class="imcmsAdmText"><a href="javascript://help" onClick="alert('Choose to reset the file to what it looked like when:\n\n - You saved it last.\n - You opened it.')"><span style="color:#ffffff; text-decoration:none; cursor:help;"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/4 ?></span></a>&nbsp;</td>
+				<td class="imcmsAdmText">
 				<select name="resetFile" onChange="doReset(); return false">
 					<option value=""><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/5 ?>
 					<option value="saved"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/6 ?>
 					<option value="org"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/7 ?>
 				</select></td>
-				<td></td>
 			</tr>
 			</form>
 			</table></td>
-			<td class="norm">&nbsp;&nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;&nbsp;</td>
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0">
 			<form name="editForm" action="<%= thisPage %>" method="post" onSubmit="if (doSave()) return true; return false">
@@ -517,20 +522,14 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			} %>
 			<tr>
 				<td><input name="btnSave" id="btnSave" type="image" src="<%= IMG_PATH %>btn_save.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2002 ?>"></td>
-				<td class="norm">&nbsp;&nbsp;</td>
+				<td class="imcmsAdmText">&nbsp;&nbsp;</td>
 				<td><%
 				if (hasDocumentLayers) {
 					%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2003 ?>"></a><%
 				} else {
 					%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2004 ?>" onClick="closeIt(); return false"><%
 				} %></td>
-				<td class="norm"><a href="javascript: popWinOpen(400,200,'<%= thisPage %>?show=help<%
-			if (isTempl) {
-				%>&template=1<%
-			}
-			if (isReadonly) {
-				%>&readonly=1<%
-			} %>&file=<%= file %>&templName=<%= templName %>','FileAdminEditHelp',0,0)"><img src="../htmleditor/images/btn_help_subject.gif" width="16" height="16" alt="Tips!" border="0" hspace="10"></a></td>
+				<td>&nbsp;&nbsp;</td>
 			</tr>
 			</table></td>
 		</tr>
@@ -545,27 +544,13 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			} else {
 				%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2006 ?>" onClick="closeIt(); return false"><%
 			} %></td>
-			<td class="norm"><a href="javascript: popWinOpen(400,200,'<%= thisPage %>?show=help<%
-			if (isTempl) {
-				%>&template=1<%
-			}
-			if (isReadonly) {
-				%>&readonly=1<%
-			} %>&file=<%= file %>&templName=<%= templName %>','FileAdminEditHelp',0,0)"><img src="../htmleditor/images/btn_help_subject.gif" width="16" height="16" alt="Tips!" border="0" hspace="10"></a></td>
+			<td>&nbsp;&nbsp;</td>
 		</tr>
 		</table><%
 		} %></td>
 	</tr>
-	<tr>
-		<td colspan="2" align="center"><img src="<%= IMG_PATH %>line_hr2.gif" width="<%
-			if (hasGetElementById || hasDocumentAll) {
-				%>100%<%
-			} else {
-				%>795<%
-			} %>" height="6"></td>
-	</tr>
-	<tr>
-		<td colspan="2" height="18" class="small"><span style="font: <% if (hasDocumentLayers) { %>10<% } else { %>9<% } %>px Verdana"><%
+	<tr class="imcmsAdmBgCont">
+		<td colspan="2" height="18" class="small"><span class="imcmsAdmTextSmall"><%
 			if (isTempl && !(isMac && (hasDocumentLayers || hasDocumentAll))) { %>
 		&nbsp;&nbsp;<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/1 ?>&nbsp;
 		<a href="javascript: imScriptCount('text');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/2 ?></a> |
@@ -579,25 +564,25 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 				out.print("&nbsp;") ;
 			}
 			if (!sError.equals("")) {
-				%><div style="color:#cc0000"><%= sError %></div><%
+				%><div class="imcmsAdmTextSmall" style="color:#cc0000"><%= sError %></div><%
 			} %></span></td>
 	</tr><%
 			String taRows = (isTempl && !(isMac && (hasDocumentLayers || hasDocumentAll))) ? "39" : "40" ;
 			if (hasDocumentAll || (isMac && hasGetElementById)) { %>
-	<tr>
+	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center">
 		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit" style="width:790; height:<% if (isTempl || (isMac && hasDocumentAll)) { %>505<% } else { %>515<% } %>; overflow:auto" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (hasGetElementById) { %>
-	<tr>
+	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" valign="top">
 		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" wrap="soft" class="edit" style="width:98%; height:<% if (isTempl) { %>500<% } else { %>510<% } %>" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (isMac && hasDocumentLayers) { %>
-	<tr>
-		<td colspan="2" align="center" class="norm">
+	<tr class="imcmsAdmBgCont">
+		<td colspan="2" align="center" class="imcmsAdmText">
 		<textarea name="txtField" id="txtField" cols="125" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else { %>
-	<tr>
-		<td colspan="2" align="center" class="norm">
+	<tr class="imcmsAdmBgCont">
+		<td colspan="2" align="center" class="imcmsAdmText">
 		<textarea name="txtField" id="txtField" cols="82" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} %>
 <%= fileSrc %></textarea></td>
@@ -855,3 +840,4 @@ function replaceLongParams(theString) {
 
 </body>
 </html>
+</vel:velocity>
