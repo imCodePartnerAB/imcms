@@ -65,9 +65,9 @@ webmaster-email = ${servermaster-email}
 webappname = imcms
 
 
-# The default language to use when build the webapp ( sv | en )
+# The default language to use when build the webapp ( swe | eng )
 
-defaultlanguage = en
+defaultlanguage = eng
 
 
 # The root-URI of the webapp, relative to the server root-URI (/).
