@@ -31,12 +31,6 @@ public interface ImcmsServices extends Database, Clock {
 
     String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
-    /**
-     * @deprecated Use {@link imcode.server.document.UrlDocumentDomainObject#getUrl()} instead. *
-     */
-    String isUrlDoc( int meta_id )
-	;
-
     /** @deprecated Use {@link imcode.server.document.HtmlDocumentDomainObject#getHtml()} instead. **/
     String isFramesetDoc( int meta_id )
 	;

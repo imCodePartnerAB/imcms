@@ -296,19 +296,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return documentMapper.getText( meta_id, no );
     }
 
-    /**
-     * Check if url doc.
-     */
-    public String isUrlDoc( int meta_id ) {
-        String url_ref = null;
-        if ( DocumentDomainObject.DOCTYPE_ID_URL == getDocType( meta_id ) ) {
-            String sqlStr = "select url_ref from url_docs where meta_id = ?";
-            url_ref = sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
-        }
-
-        return url_ref;
-    }
-
     public void updateMainLog( String event ) {
         mainLog.info( event );
     }

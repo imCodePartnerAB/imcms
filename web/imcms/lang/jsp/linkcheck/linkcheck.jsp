@@ -10,7 +10,8 @@
                  imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.server.document.DocumentDomainObject,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
-                 imcode.util.Html"%>
+                 imcode.util.Html,
+                 org.apache.commons.lang.StringEscapeUtils"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -78,7 +79,7 @@ if (doCheckLinks) {
 		for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
 			out.flush();
 			LinkCheck.Link link = (LinkCheck.Link)linksIterator.next();
-			if ( link.isOk() && linkCheckPage.isBrokenOnly() ) {
+			if ( (!link.isCheckable() || link.isOk()) && linkCheckPage.isBrokenOnly() ) {
 				--i ;
 				continue;
 			}
@@ -93,7 +94,7 @@ if (doCheckLinks) {
 				document.getId() %>&<%=
 				AdminDoc.PARAMETER__DISPATCH_FLAGS%>=<%=
 				ImcmsConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT %>"><%=
-				document.getId() %> - <%= document.getHeadline() %></a></td>
+				document.getId() %> - <%= StringEscapeUtils.escapeHtml( document.getHeadline() ) %></a></td>
 	<td nowrap><%
 				if (documentMenuPairsContainingUrlDocument.length > 0) {
 					%><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%=
@@ -120,21 +121,25 @@ if (doCheckLinks) {
 					document.getId() %>&txt=<%=
 					textDocumentElementLink.getIndex()%>"><%
 				} else {
-					%><a href="<%= 
+					%><a href="<%=
 					request.getContextPath() %>/servlet/ChangeImage?meta_id=<%=
 					document.getId() %>&img=<%=
 					textDocumentElementLink.getIndex()%>"><%
 				}
-				%><%= document.getId() %> - <%= textDocumentElementLink.getIndex() %> - <%= document.getHeadline() %></a></td>
+				%><%= document.getId() %> - <%= textDocumentElementLink.getIndex() %> - <%= StringEscapeUtils.escapeHtml( document.getHeadline() ) %></a></td>
 	<td>&nbsp;</td><%
 			} %>
-	<td><a href="<%= link.getUrl() %>"><%= link.getUrl() %></a></td>
+	<td><a href="<%= StringEscapeUtils.escapeHtml( link.fixSchemeLessUrl() ) %>"><%= StringEscapeUtils.escapeHtml( link.getUrl() ) %></a></td>
+    <% if (link.isCheckable()) { %>
 	<td align="center"><img src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/<%
 			%>btn_checked_<%= (link.isHostFound()) ? "1" : "0" %>.gif"></td>
 	<td align="center"><img src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/<%
 			%>btn_checked_<%= (link.isHostReachable()) ? "1" : "0" %>.gif"></td>
 	<td align="center"><img src="<%= request.getContextPath() %>/imcms/<%= language %>/images/admin/<%
 			%>btn_checked_<%= (link.isOk() ) ? "1" : "0" %>.gif"></td>
+    <% } else { %>
+    <td align="center" colspan="3"><? web/imcms/lang/jsp/linkcheck/linkcheck.jsp/uncheckable ?></td>
+    <% } %>
 </tr><%
 			out.flush();
 		} %>

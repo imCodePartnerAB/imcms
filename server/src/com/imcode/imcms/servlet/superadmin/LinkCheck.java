@@ -2,7 +2,9 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -11,12 +13,13 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.HeadMethod;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.TermQuery;
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.oro.text.regex.PatternMatcherInput;
 
@@ -29,6 +32,7 @@ import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class LinkCheck extends HttpServlet {
 
@@ -49,7 +53,7 @@ public class LinkCheck extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( !user.isSuperAdmin() ) {
-            Utility.redirectToStartDocument( request, response );
+            Utility.forwardToLogin( request, response );
             return;
         }
 
@@ -250,6 +254,8 @@ public class LinkCheck extends HttpServlet {
 
     public abstract static class Link {
 
+        private boolean checkable = true ;
+
         private boolean ok;
         private boolean hostFound;
         private boolean hostReachable;
@@ -262,6 +268,11 @@ public class LinkCheck extends HttpServlet {
         }
 
         public abstract String getUrl();
+
+        public boolean isCheckable() {
+            check() ;
+            return checkable;
+        }
 
         public boolean isHostFound() {
             check();
@@ -283,20 +294,18 @@ public class LinkCheck extends HttpServlet {
                 return;
             }
             checked = true;
-            checkUrl( getUrlToCheck() );
+            checkUrl( fixSchemeLessUrl() );
         }
 
-        private String getUrlToCheck() {
+        public String fixSchemeLessUrl() {
             String url = getUrl();
-            if ( !url.toLowerCase().startsWith( "http://" ) ) {
-                String requestUrl = request.getRequestURL().toString();
-                int requestUrlStartOfHost = requestUrl.indexOf( "://" ) + 3;
-                int requestUrlStartOfPath = requestUrl.indexOf( '/', requestUrlStartOfHost );
-                String requestUrlWithoutPath = StringUtils.left( requestUrl, requestUrlStartOfPath );
+            boolean hasScheme = Pattern.compile( "^(\\w+):" ).matcher( url ).find();
+            if (!hasScheme) {
+                String requestUrlWithoutPath = Utility.getRequestURLWithoutPath(request);
                 if ( url.startsWith( "/" ) ) {
                     url = requestUrlWithoutPath + url;
                 } else {
-                    url = requestUrlWithoutPath + request.getContextPath() + "/servlet/" + url;
+                    url = requestUrlWithoutPath + request.getContextPath() + "/" + url;
                 }
             }
             return url;
@@ -310,7 +319,8 @@ public class LinkCheck extends HttpServlet {
             HttpMethod httpMethod;
             try {
                 httpMethod = new HeadMethod( url );
-            } catch ( IllegalArgumentException e ) {
+            } catch ( Exception e ) {
+                checkable = false ;
                 return;
             }
             httpMethod.setRequestHeader( HTTP_REQUEST_HEADER__USER_AGENT, USER_AGENT );
@@ -323,6 +333,7 @@ public class LinkCheck extends HttpServlet {
                     ok = true;
                 }
             } catch ( IllegalArgumentException e ) {
+                log.debug( "Error testing url " + url, e );
             } catch ( UnknownHostException e ) {
             } catch ( HttpConnection.ConnectionTimeoutException e ) {
                 hostFound = true;

@@ -146,11 +146,7 @@ public class GetDoc extends HttpServlet {
             return null;
 
         } else if ( document instanceof UrlDocumentDomainObject ) {
-            String url_ref = imcref.isUrlDoc( meta_id );
-            Perl5Util regexp = new Perl5Util();
-            if ( !regexp.match( "m!^\\w+:|^[/.]!", url_ref ) ) {
-                url_ref = "http://" + url_ref;
-            }
+            String url_ref = ( (UrlDocumentDomainObject)document ).getUrl();
             res.sendRedirect( url_ref );
             // Log to accesslog
             trackLog.info( documentRequest );

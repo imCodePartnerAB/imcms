@@ -14,6 +14,8 @@ import java.io.UnsupportedEncodingException;
 public class MockHttpServletRequest implements HttpServletRequest {
 
     Map parameterMap = new HashMap() ;
+    private String contextPath;
+    private String requestURL;
 
     public String getAuthType() {
         return null;  // TODO
@@ -56,7 +58,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContextPath() {
-        return null;  // TODO
+        return contextPath ;
     }
 
     public String getQueryString() {
@@ -84,7 +86,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     public StringBuffer getRequestURL() {
-        return null;  // TODO
+        return new StringBuffer(requestURL) ;
     }
 
     public String getServletPath() {
@@ -242,5 +244,13 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     public void setupAddParameter( String parameterName, String parameterValue ) {
         setupAddParameter( parameterName, new String[] { parameterValue } );
+    }
+
+    public void setupContextPath( String contextPath ) {
+        this.contextPath = contextPath ;
+    }
+
+    public void setupRequestURL( String requestURL ) {
+        this.requestURL = requestURL ;
     }
 }

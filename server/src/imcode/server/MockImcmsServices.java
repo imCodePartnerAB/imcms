@@ -38,10 +38,6 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
-    public String isUrlDoc( int meta_id ) {
-        return null;
-    }
-
     public String isFramesetDoc( int meta_id ) {
         return null;
     }

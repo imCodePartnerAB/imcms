@@ -180,7 +180,7 @@ public class Utility {
         StringBuffer loginTarget = request.getRequestURL() ;
         String queryString = request.getQueryString();
         if (null != queryString) {
-            loginTarget.append( "?" ).append( queryString ).toString();
+            loginTarget.append( "?" ).append( queryString );
         }
         String noPermissionPage = "/imcms/" + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL+"?"+VerifyUser.REQUEST_PARAMETER__TARGET+"="+URLEncoder.encode( loginTarget.toString() );
         response.setStatus( HttpServletResponse.SC_FORBIDDEN );
@@ -202,5 +202,13 @@ public class Utility {
         calendar.set( Calendar.SECOND, 0 );
         Date truncatedDate = calendar.getTime();
         return truncatedDate;
+    }
+
+    public static String getRequestURLWithoutPath( HttpServletRequest request ) {
+        String requestUrl = request.getRequestURL().toString();
+        int requestUrlStartOfHost = requestUrl.indexOf( "://" ) + 3;
+        int requestUrlStartOfPath = requestUrl.indexOf( '/', requestUrlStartOfHost );
+        String requestUrlWithoutPath = StringUtils.left( requestUrl, requestUrlStartOfPath );
+        return requestUrlWithoutPath;
     }
 }
