@@ -277,11 +277,11 @@ public class TextDocument extends Document {
         /**
          * Menu sorted by 'manual' order. *
          */
-        public final static int SORT_BY_MANUAL_ORDER_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER;
+        public final static int SORT_BY_MANUAL_ORDER_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED;
         /**
          * Menu sorted by datetime. *
          */
-        public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME;
+        public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED;
         /**
          * Menu sorted by tree sort order
          */

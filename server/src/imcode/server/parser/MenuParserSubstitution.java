@@ -1,6 +1,5 @@
 package imcode.server.parser;
 
-import com.imcode.imcms.servlet.admin.AdminDoc;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -10,10 +9,9 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IdNamePair;
 import imcode.util.Utility;
-import org.apache.oro.text.regex.*;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.collections.iterators.FilterIterator;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.iterators.FilterIterator;
+import org.apache.oro.text.regex.*;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -373,11 +371,11 @@ class MenuParserSubstitution implements Substitution {
         DocumentMapper documentMapper = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper() ;
         if ( editingThisMenu ) {
             final int sortOrder = menu.getSortOrder();
-            if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER == sortOrder
+            if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sortOrder
                  || MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == sortOrder ) {
                 String sortKey = "";
                 String sortKeyTemplate = null;
-                if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER == sortOrder ) {
+                if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sortOrder ) {
                     sortKey = "" + menuItem.getSortKey();
                     sortKeyTemplate = "textdoc/admin_menuitem_manual_sortkey.frag";
 

@@ -86,7 +86,7 @@ public class SaveSort extends HttpServlet {
                                        new String[]{"" + sort_order, "" + documentId, "" + menuIndex} );
             } else {
                 if ( childs.size() > 0 ) {
-                    if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER == sort_order ) {
+                    if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sort_order ) {
                         imcref.saveManualSort( documentId, user, childs, sort_no, menuIndex );
                     } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == sort_order ) {
                         imcref.saveTreeSortIndex( documentId, user, childs, sort_no, menuIndex );

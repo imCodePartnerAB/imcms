@@ -17,8 +17,8 @@ public class MenuDomainObject {
     private SortedSet menuItems;
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
-    public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER = 2;
-    public final static int MENU_SORT_ORDER__BY_MODIFIED_DATETIME = 3;
+    public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
+    public final static int MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED = 3;
     public final static int MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER = 4;
     public final static int MENU_SORT_ORDER__DEFAULT = MENU_SORT_ORDER__BY_HEADLINE;
 
@@ -65,11 +65,11 @@ public class MenuDomainObject {
             case MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER:
                 comparator = MenuItemComparator.TREE_SORT_KEY.chain(comparator);
                 break ;
-            case MENU_SORT_ORDER__BY_MANUAL_ORDER:
-                comparator = MenuItemComparator.SORT_KEY.chain(comparator);
+            case MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED:
+                comparator = MenuItemComparator.SORT_KEY.chain(comparator).reversed();
                 break;
-            case MENU_SORT_ORDER__BY_MODIFIED_DATETIME:
-                comparator = MenuItemComparator.MODIFIED_DATETIME.chain(comparator);
+            case MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED:
+                comparator = MenuItemComparator.MODIFIED_DATETIME.chain(comparator).reversed();
                 break;
         }
         return comparator ;
