@@ -35,8 +35,8 @@ import java.util.List;
 
 public class Conference extends HttpServlet {
 
-    private final static String ADMIN_BUTTON_TEMPLATE = "Conf_Admin_Button.htm";
-    private final static String UNADMIN_BUTTON_TEMPLATE = "Conf_Unadmin_Button.htm";
+    private final static String ADMIN_BUTTON_TEMPLATE = "conf_admin_button.htm";
+    private final static String UNADMIN_BUTTON_TEMPLATE = "conf_unadmin_button.htm";
 
     /**
      * Returns the metaId from a request object, if not found, we will

@@ -37,15 +37,15 @@ import java.util.Vector;
 
 public class ConfLogin extends Conference {
 
-    private final static String USER_UNADMIN_LINK_TEMPLATE = "Conf_User_Unadmin_Link.htm";
+    private final static String USER_UNADMIN_LINK_TEMPLATE = "conf_user_unadmin_link.htm";
 
-    private String LOGIN_HTML = "Conf_Login.htm";	   // The login page
-    private String CREATE_HTML = "Conf_Add_user.htm";   // The create new user page
-    private String LOGIN_ERROR_HTML = "Conf_Login_Error.htm";  // The error
+    private String LOGIN_HTML = "conf_login.htm";	   // The login page
+    private String CREATE_HTML = "conf_add_user.htm";   // The create new user page
+    private String LOGIN_ERROR_HTML = "conf_login_error.htm";  // The error
     // page used for specialized messages to user
-    private String ADMIN1_HTML = "Conf_Admin_user.htm";
-    private String ADMIN2_HTML = "Conf_admin_user_resp.htm";
-    private String ADD_USER_OK_HTML = "Conf_Login_add_ok.htm";
+    private String ADMIN1_HTML = "conf_admin_user.htm";
+    private String ADMIN2_HTML = "conf_admin_user_resp.htm";
+    private String ADD_USER_OK_HTML = "conf_login_add_ok.htm";
 
     /**
      * <pre>

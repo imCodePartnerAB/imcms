@@ -14,11 +14,11 @@ import com.imcode.imcms.servlet.superadmin.Administrator;
 
 public class ConfAdmin extends Conference {
 
-    private final static String FORUM_UNADMIN_LINK_TEMPLATE = "Conf_Forum_Unadmin_Link.htm";
-    private final static String FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE = "Conf_Forum_Template1_Unadmin_Link.htm";
-    private final static String FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE = "Conf_Forum_Template2_Unadmin_Link.htm";
-    private final static String DISC_UNADMIN_LINK_TEMPLATE = "Conf_Disc_Unadmin_Link.htm";
-    private final static String REPLY_UNADMIN_LINK_TEMPLATE = "Conf_Reply_Unadmin_Link.htm";
+    private final static String FORUM_UNADMIN_LINK_TEMPLATE = "conf_forum_unadmin_link.htm";
+    private final static String FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE = "conf_forum_template1_unadmin_link.htm";
+    private final static String FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE = "conf_forum_template2_unadmin_link.htm";
+    private final static String DISC_UNADMIN_LINK_TEMPLATE = "conf_disc_unadmin_link.htm";
+    private final static String REPLY_UNADMIN_LINK_TEMPLATE = "conf_reply_unadmin_link.htm";
 
     /**
      * DoPost
@@ -378,7 +378,7 @@ public class ConfAdmin extends Conference {
             vm.addProperty("ALL_SELFREG_ROLES_LIST", allSelfRegList);
             vm.addProperty("UNADMIN_LINK_HTML", FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE);
 
-            htmlFile = "Conf_Admin_Template3.htm";
+            htmlFile = "conf_admin_template3.htm";
             //return ;
         }
 
@@ -406,7 +406,7 @@ public class ConfAdmin extends Conference {
                 vm.addProperty("META_ID", metaId);
                 vm.addProperty("UNADMIN_LINK_HTML", FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE);
 
-                htmlFile = "Conf_Admin_Template2.htm";
+                htmlFile = "conf_admin_template2.htm";
 
                 // Ok, were gonna show our standard meta page
             } else {
@@ -428,7 +428,7 @@ public class ConfAdmin extends Conference {
                 vm.addProperty("CURRENT_TEMPLATE_SET", currTemplateSet);
                 vm.addProperty("UNADMIN_LINK_HTML", FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE);
 
-                htmlFile = "Conf_Admin_Template1.htm";
+                htmlFile = "conf_admin_template1.htm";
                 //return ;
             }
         }
@@ -456,12 +456,12 @@ public class ConfAdmin extends Conference {
             vm.addProperty("FORUM_LIST", forumList);
             vm.addProperty("NBR_OF_DISCS_TO_SHOW_LIST", discToShowList);
             vm.addProperty("UNADMIN_LINK_HTML", FORUM_UNADMIN_LINK_TEMPLATE);
-            htmlFile = "Conf_Admin_Forum.htm";
+            htmlFile = "conf_admin_forum.htm";
         }
 
         // *********** ADMIN DISCUSSION *************
         if (adminWhat.equalsIgnoreCase("DISCUSSION")) {
-            String adminDiscList = "Conf_Admin_Disc_List.htm";
+            String adminDiscList = "conf_admin_disc_list.htm";
             log("OK, Administrera Discussions");
 
             // Lets get parameters
@@ -499,12 +499,12 @@ public class ConfAdmin extends Conference {
             vm.addProperty("OLD_A_HREF_LIST", allOldRecs);
             vm.addProperty("UNADMIN_LINK_HTML", DISC_UNADMIN_LINK_TEMPLATE);
 
-            htmlFile = "Conf_Admin_Disc.htm";
+            htmlFile = "conf_admin_disc.htm";
         } // End admin discussion
 
         // *********** ADMIN REPLIES *************
         if (adminWhat.equalsIgnoreCase("REPLY")) {
-            String adminReplyList = "Conf_Admin_Reply_List.htm";
+            String adminReplyList = "conf_admin_reply_list.htm";
 
             // Lets get the users userId
             String userId = "" + user.getId();
@@ -554,7 +554,7 @@ public class ConfAdmin extends Conference {
             vm.addProperty("REPLIES_RECORDS", allRecs);
             vm.addProperty("UNADMIN_LINK_HTML", REPLY_UNADMIN_LINK_TEMPLATE);
             //return ;
-            htmlFile = "Conf_Admin_Reply.htm";
+            htmlFile = "conf_admin_reply.htm";
         } // End admin Reply
 
         this.sendHtml(req, res, vm, htmlFile);

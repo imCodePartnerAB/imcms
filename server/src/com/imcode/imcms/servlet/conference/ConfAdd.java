@@ -13,8 +13,8 @@ import imcode.util.Utility;
 
 public class ConfAdd extends Conference {
 
-    private String HTML_TEMPLATE;
-    private String SERVLET_NAME;
+    private final static String HTML_TEMPLATE = "conf_add.htm";
+    private final static String SERVLET_NAME = "ConfAdd";
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
@@ -65,13 +65,6 @@ public class ConfAdd extends Conference {
                 // to verify that the sql questions wont go mad.
                 String addHeader = super.verifySqlText(params.getProperty("ADD_HEADER"));
                 String addText = super.verifySqlText(params.getProperty("ADD_TEXT"));
-
-                // Lets check the data size
-                if (addText.length() > 32000) {
-                    String header = SERVLET_NAME + " servlet. ";
-                    new ConfError(req, res, header, 74, user );
-                    return;
-                }
 
                 // Ok, Lets add the discussion to DB
                 imcref.sqlUpdateProcedure("A_AddNewDisc", new String[]{aForumId, userId, addHeader, addText, level});
@@ -252,26 +245,6 @@ public class ConfAdd extends Conference {
         params.setProperty("ADD_TYPE", addType);
 
         return params;
-    }
-
-    /**
-     * Init
-     */
-
-    public void init(ServletConfig config)
-            throws ServletException {
-        super.init(config);
-        HTML_TEMPLATE = "Conf_Add.htm";
-        SERVLET_NAME = "ConfAdd";
-    }
-
-    /**
-     * Log function, will work for both servletexec and Apache
-     */
-
-    public void log(String str) {
-        super.log(str);
-        System.out.println(SERVLET_NAME + " " + str);
     }
 
 } // End of class

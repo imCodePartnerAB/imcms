@@ -56,14 +56,14 @@ import java.text.SimpleDateFormat;
 
 public class ConfDisc extends Conference {
 
-    private final static String NEW_DISC_FLAG_TEMPLATE = "Conf_Disc_List_New.htm";
-    private final static String PREVIOUS_DISC_LIST_TEMPLATE = "Conf_Disc_List_Previous.htm";
-    private final static String NEXT_DISC_LIST_TEMPLATE = "Conf_Disc_List_Next.htm";
-    private final static String NEW_DISC_TEMPLATE = "Conf_Disc_New_Button.htm";
-    private final static String ADMIN_LINK_TEMPLATE = "Conf_Disc_Admin_Link.htm";
+    private final static String NEW_DISC_FLAG_TEMPLATE = "conf_disc_list_new.htm";
+    private final static String PREVIOUS_DISC_LIST_TEMPLATE = "conf_disc_list_previous.htm";
+    private final static String NEXT_DISC_LIST_TEMPLATE = "conf_disc_list_next.htm";
+    private final static String NEW_DISC_TEMPLATE = "conf_disc_new_button.htm";
+    private final static String ADMIN_LINK_TEMPLATE = "conf_disc_admin_link.htm";
 
-    private final static String HTML_TEMPLATE = "Conf_Disc.htm";
-    private final static String A_HREF_HTML = "Conf_Disc_List.htm";   // The code snippet where the aHref list with all discussions
+    private final static String HTML_TEMPLATE = "conf_disc.htm";
+    private final static String A_HREF_HTML = "conf_disc_list.htm";   // The code snippet where the aHref list with all discussions
     // will be placed.
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {

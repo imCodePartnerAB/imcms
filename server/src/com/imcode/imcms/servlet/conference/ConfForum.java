@@ -13,10 +13,10 @@ import imcode.util.Utility;
 
 public class ConfForum extends Conference {
 
-    private final static String ADMIN_LINK_TEMPLATE = "Conf_Forum_Admin_Link.htm";
+    private final static String ADMIN_LINK_TEMPLATE = "conf_forum_admin_link.htm";
 
-    private final static String HTML_TEMPLATE = "Conf_Forum.htm";
-    private final static String HTML_TEMPLATE_EXT = "Conf_Forum_ext.htm";
+    private final static String HTML_TEMPLATE = "conf_forum.htm";
+    private final static String HTML_TEMPLATE_EXT = "conf_forum_ext.htm";
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 

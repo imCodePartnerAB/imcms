@@ -15,9 +15,9 @@ import com.imcode.imcms.servlet.conference.ConfError;
 
 public class ConfHelp extends Conference {
 
-    private final static String USER_TEMPLATE = "Conf_help_user.htm";
-    private final static String ADMIN_TEMPLATE = "Conf_help_admin.htm";
-    private final static String ADMIN_TEMPLATE2 = "Conf_help_admin2.htm";
+    private final static String USER_TEMPLATE = "conf_help_user.htm";
+    private final static String ADMIN_TEMPLATE = "conf_help_admin.htm";
+    private final static String ADMIN_TEMPLATE2 = "conf_help_admin2.htm";
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {

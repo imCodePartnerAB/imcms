@@ -13,7 +13,7 @@ import imcode.util.Utility;
 
 public class ConfCreator extends Conference {
 
-    private final static String HTML_TEMPLATE = "Conf_Creator.htm";
+    private final static String HTML_TEMPLATE = "conf_creator.htm";
 
     /**
      * The POST method creates the html page when this side has been

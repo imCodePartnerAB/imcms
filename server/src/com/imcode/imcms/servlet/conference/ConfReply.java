@@ -50,11 +50,11 @@ import java.util.List;
 
 public class ConfReply extends Conference {
 
-    private final static String NEW_COMMENT_TEMPLATE = "Conf_Reply_New_Comment.htm";
-    private final static String ADMIN_LINK_TEMPLATE = "Conf_Reply_Admin_Link.htm";
+    private final static String NEW_COMMENT_TEMPLATE = "conf_reply_new_comment.htm";
+    private final static String ADMIN_LINK_TEMPLATE = "conf_reply_admin_link.htm";
 
-    private final static String HTML_TEMPLATE = "Conf_Reply.htm";
-    private final static String RECS_HTML = "Conf_reply_list.htm";
+    private final static String HTML_TEMPLATE = "conf_reply.htm";
+    private final static String RECS_HTML = "conf_reply_list.htm";
 
     /**
      * DoPost

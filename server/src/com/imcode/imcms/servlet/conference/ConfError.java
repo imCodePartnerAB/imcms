@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 
 public class ConfError extends Conference {
 
-    private static final String ERROR_FILE = "Conf_Error.htm";
+    private static final String ERROR_FILE = "conf_error.htm";
     private String myErrorHeader;
     private String myErrorMessage;
 

@@ -34,7 +34,7 @@ import imcode.util.Utility;
 
 public class ConfDiscView extends Conference {
 
-    private final static String HTML_TEMPLATE = "Conf_Disc_View.htm";         // the relative path from web root to where the servlets are
+    private final static String HTML_TEMPLATE = "conf_disc_view.htm";         // the relative path from web root to where the servlets are
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 

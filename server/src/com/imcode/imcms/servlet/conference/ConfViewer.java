@@ -15,7 +15,7 @@ import com.imcode.imcms.servlet.conference.Conference;
 
 public class ConfViewer extends Conference {
 
-    private final static String HTML_TEMPLATE = "Conf_Set.htm";         // the relative path from web root to where the servlets are
+    private final static String HTML_TEMPLATE = "conf_set.htm";         // the relative path from web root to where the servlets are
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         // Lets get the standard parameters and validate them
