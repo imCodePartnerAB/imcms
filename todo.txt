@@ -11,7 +11,8 @@ Hasse
 - "Stored procedures, A stored procedure is written using Transact-SQL (T-SQL). T-SQL is a subset of ANSI SQL-92 that has extensions to the Standard. T-SQL includes variables, conditional logic, loops and flow control."
 PostgreSQL är open source och stödjer stored procedures
 
-Hillar, prioritera
+- Varför används inte transaktioner i systemet?
+- Varför används inte (ens) PreparedStatement vid get text doc?
 
 API:et (prio)
 

@@ -12,6 +12,7 @@ import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.db.DBConnect;
@@ -131,7 +132,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 includemode = (flags & PERM_DT_TEXT_EDIT_INCLUDES) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_EDIT_INCLUDES) != 0);
             }
 
-            Vector included_docs = DocumentMapper.sprocGetIncludes( dbc, meta_id );
+            Vector included_docs = DatabaseAccessor.sprocGetIncludes( dbc, meta_id );
 
             String template_id = "" + myDoc.getTemplate().getId();
             String simple_name = myDoc.getTemplate().getSimple_name();
@@ -161,7 +162,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String sqlStr = null;
             if( menumode ) {
                 // I'll retrieve a list of all doc-types the user may create.
-                doc_types_vec = DocumentMapper.sprocGetDocTypeForUser( dbc, user, meta_id, lang_prefix );
+                doc_types_vec = DatabaseAccessor.sprocGetDocTypeForUser( dbc, user, meta_id, lang_prefix );
             }
 
             Vector templategroups = null;
@@ -170,15 +171,15 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             int selected_group = user.getTemplateGroup();
             if( templatemode ) {
-                templategroups = TemplateMapper.sprocGetTemplateGroupsForUser( dbc, user, meta_id );
+                templategroups = DatabaseAccessor.sprocGetTemplateGroupsForUser( dbc, user, meta_id );
                 // do templatemode queries
 
                 if( selected_group == -1 ) {
                     selected_group = Integer.parseInt( group_id );
                 }
 
-                templates = TemplateMapper.sprocGetTemplatesInGroup( dbc, selected_group );
-                groupnamevec = TemplateMapper.sqlSelectGrouuName( dbc, group_id );
+                templates = DatabaseAccessor.sprocGetTemplatesInGroup( dbc, selected_group );
+                groupnamevec = DatabaseAccessor.sqlSelectGrouuName( dbc, group_id );
             }
 
             String[] emp = (String[])user.get( "emphasize" );

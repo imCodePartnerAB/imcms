@@ -9,6 +9,7 @@ import javax.servlet.http.*;
 import imcode.util.*;
 import imcode.server.*;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
 
 import org.apache.log4j.Category;
@@ -369,7 +370,7 @@ public class SaveMeta extends HttpServlet {
 
         // Save the classifications to the db
         if( classification != null ) {
-            DocumentMapper.sprocClassification_Fix( imcref, Integer.parseInt(meta_id), classification );
+            DatabaseAccessor.sprocClassification_Fix( imcref, Integer.parseInt(meta_id), classification );
         }
 
         //ok lets save the default templates
@@ -378,7 +379,7 @@ public class SaveMeta extends HttpServlet {
         //if the administrator wants to change the date we does it here
         if( created_datetime != null ) {
             //we did got a ok date so lets save it to db
-            DocumentMapper.sqlUpdateMetaDateCreated( imcref, meta_id, created_datetime );
+            DatabaseAccessor.sqlUpdateMetaDateCreated( imcref, meta_id, created_datetime );
         }
         if( null != modifiedDateTime ) {
             //we did got a ok date so lets save it to db
@@ -386,7 +387,7 @@ public class SaveMeta extends HttpServlet {
         }
 
         // Update the date_modified for all parents.
-        DocumentMapper.sprocUpdateParentsDateModified( imcref, Integer.parseInt(meta_id) );
+        DatabaseAccessor.sprocUpdateParentsDateModified( imcref, Integer.parseInt(meta_id) );
 
         ///**************** section index word stuff *****************
         //ok lets handle the the section stuff save to db and so on
@@ -395,7 +396,7 @@ public class SaveMeta extends HttpServlet {
         String current_section_id = req.getParameter( "current_section_id" );
         if( section_id != current_section_id ) {
             //ok lets update the db
-            DocumentMapper.sprocSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
+            DatabaseAccessor.sprocSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
         }
 
 

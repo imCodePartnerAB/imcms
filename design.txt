@@ -1,0 +1,9 @@
+The Servlets/Jsp and other ui or "exernal" part should never access the databse directly.
+But only through "DomainObjects" or even att a higher lever, the "API".
+
+In every "domain package" ther should be Mappers that has the responsbility to map the domain objekts to and from the
+database.
+
+Those mappers hould not make any direct calle either but throu the class "DatabaseAccessor".
+
+It's in the Mappers that the low lever database transactions is handled.

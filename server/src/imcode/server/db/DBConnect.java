@@ -6,25 +6,19 @@ import java.util.*;
 import org.apache.log4j.Category;
 
 public class DBConnect {
-    private final static String CVS_REV = "$Revision$";
-    private final static String CVS_DATE = "$Date$";
-
-    ConnectionPool conPool; // Inet poolmanager
-
-    protected Connection con = null;                 // The JDBC Connection
-    protected Statement stmt = null;		    // The JDBC Statement
-    protected ResultSet rs = null;		    // The JDBC ResultSet
-    protected ResultSetMetaData rsmd = null;	    // The JDBC ResultSetMetaData
-    protected CallableStatement cs = null;	    // The JDBC CallableStatement
-    protected String strSQLString = "";		    // SQL query-string
-    protected String strProcedure = "";		    // Procedure
-    protected String[] meta_data;       // Meta info
-    protected String catalog = "";		    // Current database
-    protected String default_catalog = "";	    // Default database
-    protected boolean trimStr = true;
-    protected int columnCount;                       // Column count
-
     private static Category log = Category.getInstance( "DBConnect" );
+    private ConnectionPool conPool;
+
+    private Connection con = null;
+    private Statement stmt = null;
+    private ResultSet rs = null;
+    private ResultSetMetaData rsMetaData = null;
+    private CallableStatement callableStmt = null;
+    private String sqlQueryStr = "";
+    private String strProcedure = "";
+    private String[] meta_data;       // Meta info
+    private boolean trimStr = true;
+    private int columnCount;
 
     // constructor
     public DBConnect( ConnectionPool conPool ) {
@@ -34,7 +28,7 @@ public class DBConnect {
     // constructor
     public DBConnect( ConnectionPool conPool, String sqlString ) {
         this.conPool = conPool;
-        strSQLString = sqlString;
+        sqlQueryStr = sqlString;
     }
 
     // get a connection
@@ -64,13 +58,13 @@ public class DBConnect {
 
         // Execute SQL-string
         try {
-            stmt.execute( strSQLString );
+            stmt.execute( sqlQueryStr );
             rs = stmt.getResultSet();
-            rsmd = rs.getMetaData();
-            columnCount = rsmd.getColumnCount();
+            rsMetaData = rs.getMetaData();
+            columnCount = rsMetaData.getColumnCount();
             meta_data = new String[columnCount];
             for( int i = 0; i < columnCount; ) {
-                meta_data[i] = rsmd.getColumnLabel( ++i );
+                meta_data[i] = rsMetaData.getColumnLabel( ++i );
             }
 
             while( rs.next() ) {
@@ -115,7 +109,7 @@ public class DBConnect {
     public void executeUpdateQuery() {
         // Execute SQL-string
         try {
-            stmt.executeUpdate( strSQLString );
+            stmt.executeUpdate( sqlQueryStr );
             stmt.close();
         } catch( SQLException e ) {
             log.error( "executeUpdateQuery()", e );
@@ -129,19 +123,19 @@ public class DBConnect {
 
         Vector results = new Vector();
         try {
-            if( cs == null ) {
-                throw new NullPointerException( "DBConnect.executeProcedure() cs == null" );
+            if( callableStmt == null ) {
+                throw new NullPointerException( "DBConnect.executeProcedure() callableStmt == null" );
             }
-            rs = cs.executeQuery();
+            rs = callableStmt.executeQuery();
             if( rs == null ) {
                 throw new NullPointerException( "DBConnect.executeProcedure() rs == null" );
             }
-            rsmd = rs.getMetaData();
-            columnCount = rsmd.getColumnCount();
+            rsMetaData = rs.getMetaData();
+            columnCount = rsMetaData.getColumnCount();
 
             meta_data = new String[columnCount];
             for( int i = 0; i < columnCount; ) {
-                meta_data[i] = rsmd.getColumnLabel( ++i );
+                meta_data[i] = rsMetaData.getColumnLabel( ++i );
             }
             while( rs.next() ) {
                 for( int i = 1; i <= columnCount; i++ ) {
@@ -155,7 +149,7 @@ public class DBConnect {
             }
 
             rs.close();
-            cs.close();
+            callableStmt.close();
         } catch( SQLException e ) {
             log.error( "executeProcedure() failed: " + strProcedure, e );
         }
@@ -170,8 +164,8 @@ public class DBConnect {
     public int executeUpdateProcedure() {
         int res = 0;
         try {
-            res = cs.executeUpdate();
-            cs.close();
+            res = callableStmt.executeUpdate();
+            callableStmt.close();
         } catch( SQLException e ) {
             log.error( "executeUpdateProcedure() - "+strProcedure, e );
         }
@@ -211,7 +205,7 @@ public class DBConnect {
      * <p>Get sqlquery.
      */
     public String getSQLString() {
-        return strSQLString;
+        return sqlQueryStr;
     }
 
 
@@ -219,7 +213,7 @@ public class DBConnect {
      * <p>Set sqlquery.
      */
     public void setSQLString( String sqlString ) {
-        strSQLString = sqlString;
+        sqlQueryStr = sqlString;
     }
 
 
@@ -236,8 +230,8 @@ public class DBConnect {
             strProcedure = "{call " + procedure + " (?)}";
         }
         try {
-            cs = con.prepareCall( strProcedure );
-            cs.setString( 1, param );
+            callableStmt = con.prepareCall( strProcedure );
+            callableStmt.setString( 1, param );
         } catch( SQLException e ) {
             log.error( "", e );
         }
@@ -268,9 +262,9 @@ public class DBConnect {
         strProcedure = procStr.toString();
 
         try {
-            cs = con.prepareCall( strProcedure );
+            callableStmt = con.prepareCall( strProcedure );
             for( int i = 0; i < params.length; ++i ) {
-                cs.setString( i + 1, params[i] );
+                callableStmt.setString( i + 1, params[i] );
             }
         } catch( SQLException ex ) {
             log.error( procStr.toString(), ex );
@@ -353,26 +347,25 @@ public class DBConnect {
         strProcedure = "{call " + result.toString() + "}";
         // Prepare the call.
         try {
-            cs = con.prepareCall( strProcedure );
+            callableStmt = con.prepareCall( strProcedure );
 
             Iterator it = params.iterator();
             int i = 0;
             // Hand over the parameters.
             while( it.hasNext() ) {
                 String parm = (String)it.next();
-                cs.setString( ++i, parm );
+                callableStmt.setString( ++i, parm );
             }
         } catch( SQLException ex ) {
             String paramstr = "";
             Iterator it = params.iterator();
-            int i = 0;
             while( it.hasNext() ) {
                 paramstr += (String)it.next();
                 if( it.hasNext() ) {
                     paramstr += ", ";
                 }
             }
-            log.error( "setProcedure(String)", ex );
+            log.error( "setProcedure(String)" + paramstr, ex );
         }
     }
 
@@ -401,7 +394,7 @@ public class DBConnect {
         this.getConnection();
         this.setSQLString( sqlStr );
         this.createStatement();
-        Vector result = (Vector)this.executeQuery();
+        Vector result = this.executeQuery();
         this.clearResultSet();
         this.closeConnection();
         return result.elementAt( 0 ).toString();
@@ -415,9 +408,9 @@ public class DBConnect {
         this.getConnection();
         this.setSQLString( sqlStr );
         this.createStatement();
-        Vector result = (Vector)this.executeQuery();
+        Vector result = this.executeQuery();
         this.clearResultSet();
         this.closeConnection();
         return result;
     }
-} // END CLASS DBConnect
+}

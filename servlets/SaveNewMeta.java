@@ -9,6 +9,7 @@ import imcode.util.*;
 import imcode.server.*;
 import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DatabaseAccessor;
 
 import org.apache.log4j.Category;
 
@@ -168,17 +169,17 @@ public class SaveNewMeta extends HttpServlet {
             // Lets add a new meta to the db
         } else if( req.getParameter( "ok" ) != null ) {
 
-            String meta_id = DocumentMapper.sqlInsertIntoMeta( imcref, doc_type, activated_datetime, archived_datetime, metaprops );
+            String meta_id = DatabaseAccessor.sqlInsertIntoMeta( imcref, doc_type, activated_datetime, archived_datetime, metaprops );
 
             // Save the classifications to the db
             if( classification != null ) {
-                DocumentMapper.sprocSaveClassification( imcref, Integer.parseInt(meta_id), classification );
+                DatabaseAccessor.sprocSaveClassification( imcref, Integer.parseInt(meta_id), classification );
             }
 
-            DocumentMapper.sprocUpdateInheritPermissions( imcref, Integer.parseInt(meta_id), Integer.parseInt(parent_meta_id), Integer.parseInt(doc_type) );
+            DatabaseAccessor.sprocUpdateInheritPermissions( imcref, Integer.parseInt(meta_id), Integer.parseInt(parent_meta_id), Integer.parseInt(doc_type) );
 
             // Lets add the sortorder to the parents childlist
-            DocumentMapper.sqlSelectAddSortorderToParentsChildList( imcref, parent_meta_id, meta_id, doc_menu_no );
+            DatabaseAccessor.sqlSelectAddSortorderToParentsChildList( imcref, parent_meta_id, meta_id, doc_menu_no );
             log( meta_id );
 
             // Lets update the parents created_date
@@ -186,7 +187,7 @@ public class SaveNewMeta extends HttpServlet {
             String dateModifiedStr = metaprops.getProperty( "date_modified" );
 
             Date dateModified = DateHelper.createDateObjectFromString( dateModifiedStr );
-            DocumentMapper.sqlUpdateModifiedDate( imcref, Integer.parseInt(parent_meta_id), dateModified );
+            DatabaseAccessor.sqlUpdateModifiedDate( imcref, Integer.parseInt(parent_meta_id), dateModified );
 
             //lets log to mainLog the stuff done
             mainLog.info( DateHelper.LOG_DATE_TIME_FORMAT.format( new java.util.Date() ) + "Document [" + meta_id + "] of type [" + doc_type + "] created on [" + parent_meta_id + "] by user: [" + user.getFullName() + "]" );
@@ -200,7 +201,7 @@ public class SaveNewMeta extends HttpServlet {
             }
             //ok if we have one lets update the db
             if( section_id != null ) {
-                DocumentMapper.sprocSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
+                DatabaseAccessor.sprocSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
             }
 
             // Here is the stuff we have to do for each individual doctype. All general tasks
@@ -326,11 +327,11 @@ public class SaveNewMeta extends HttpServlet {
                     String mHeadline = Parser.parseDoc( metaprops.getProperty( "meta_headline" ), vp );
                     String mText = Parser.parseDoc( metaprops.getProperty( "meta_text" ), vp );
 
-                    DocumentMapper.sqlInsertIntoTexts( imcref, meta_id, mHeadline, mText );
+                    DatabaseAccessor.sqlInsertIntoTexts( imcref, meta_id, mHeadline, mText );
                 }
 
                 // Lets activate the textfield
-                DocumentMapper.sqlUpdateActivateTheTextField( imcref, Integer.parseInt(meta_id) );
+                DatabaseAccessor.sqlUpdateActivateTheTextField( imcref, Integer.parseInt(meta_id) );
 
                 // Lets build the page
                 String output = AdminDoc.adminDoc( Integer.parseInt( meta_id ), Integer.parseInt( meta_id ), user, req, res );

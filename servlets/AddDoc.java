@@ -9,6 +9,7 @@ import imcode.util.*;
 import imcode.external.diverse.*;
 import imcode.server.*;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
 
 /**
@@ -254,7 +255,7 @@ public class AddDoc extends HttpServlet {
 
         //**************** section index word stuff *****************
         //lets get the section stuff from db
-        String[] parent_section = DocumentMapper.sprocSectionGetInheritId( imcref, Integer.parseInt(meta_id) );
+        String[] parent_section = DatabaseAccessor.sprocSectionGetInheritId( imcref, Integer.parseInt(meta_id) );
         //lets add the stuff that ceep track of the inherit section id and name
         if( parent_section == null ) {
             vec.add( "#current_section_id#" );

@@ -5,7 +5,7 @@ import imcode.server.db.ConnectionPool;
 import imcode.server.db.DBConnect;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.TemplateMapper;
+import imcode.server.document.DatabaseAccessor;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
@@ -2605,7 +2605,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
-        documentMapper.sqlUpdateModifiedDatesOnDocumentAndItsParent( metaId, dateTime );
+        DatabaseAccessor.sqlUpdateModifiedDatesOnDocumentAndItsParent( this, metaId, dateTime );
+        // Update the date_modified for all parents.
+        DatabaseAccessor.sprocUpdateParentsDateModified( this, metaId );
     }
 
 }

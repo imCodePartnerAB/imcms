@@ -3,6 +3,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.Table;
 import imcode.server.IMCService;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Check;
 import imcode.util.IMCServiceRMI;
@@ -92,10 +93,10 @@ public class SaveInPage extends HttpServlet {
                 return;
             }
             // save textdoc
-            DocumentMapper.saveTextDoc( imcref, meta_id, doc );
+            DatabaseAccessor.sqlSaveTextDoc( imcref, meta_id, doc );
             ((IMCService)imcref).updateLogs( "Text docs  [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
 
-            DocumentMapper.sqlUpdateModifiedDate( imcref, meta_id, new Date() );
+            DatabaseAccessor.sqlUpdateModifiedDate( imcref, meta_id, new Date() );
 
             // return page
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );

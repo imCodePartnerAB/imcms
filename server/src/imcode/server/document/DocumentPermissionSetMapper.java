@@ -10,102 +10,6 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 public class DocumentPermissionSetMapper {
-    /**
-     * Stored procedure names used in this class
-     */
-    private static final String SPROC_GET_PERMISSION_SET = "GetPermissionSet";
-    private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
-    private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
-    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "getTemplateGroupsWithPermissions";
-
-    static class RolePermissionTuple {
-        String roleName;
-        int permissionId;
-    }
-
-    private static RolePermissionTuple[] sprocGetUserRolesDocPermissions( IMCService service, int metaId ) {
-        String[] params = {String.valueOf( metaId ), null};
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS, params );
-        int noOfColumns = 4;
-        RolePermissionTuple[] result = new RolePermissionTuple[sprocResult.length / noOfColumns];
-        for( int i = 0, k = 0; i < sprocResult.length; i = i + noOfColumns, k++ ) {
-            //String roleId = sprocResult[i];
-            String roleName = sprocResult[i + 1];
-            String rolePermissionSetId = sprocResult[i + 2];
-            result[k] = new RolePermissionTuple();
-            result[k].roleName = roleName;
-            result[k].permissionId = Integer.parseInt( rolePermissionSetId );
-        }
-        return result;
-    }
-
-    private static class PermissionTuple {
-        int permissionId;
-        boolean hasPermission;
-    }
-
-    /**
-     * @param metaId
-     * @param permissionSetId
-     * @param langPrefix
-     * @return PermissionTuple[]
-     */
-    private static PermissionTuple[] sprocGetPermissionSet( IMCService service, int metaId, int permissionSetId, String langPrefix ) {
-        String[] sqlParams = {String.valueOf( metaId ), String.valueOf( permissionSetId ), langPrefix};
-        String[] sqlResult = service.sqlProcedure( DocumentPermissionSetMapper.SPROC_GET_PERMISSION_SET, sqlParams );
-        DocumentPermissionSetMapper.PermissionTuple[] result = new DocumentPermissionSetMapper.PermissionTuple[sqlResult.length / 3];
-        for( int i = 0, r = 0; i < sqlResult.length; i = i + 3, r++ ) {
-            int permissionId = Integer.parseInt( sqlResult[i] );
-            //String permissionDescriptionStr = sqlResult[i + 1];
-            boolean hasPermission = Integer.parseInt( sqlResult[i + 2] ) == 1;
-            result[r] = new DocumentPermissionSetMapper.PermissionTuple();
-            result[r].permissionId = permissionId;
-            result[r].hasPermission = hasPermission;
-        }
-        return result;
-    }
-
-    private static class DocumentIdEditablePermissionsTuple {
-        boolean hasRights;
-        String documentTypeName;
-    }
-
-    private static DocumentIdEditablePermissionsTuple[] sprocGetDocTypesWithPermissions( IMCService service, int metaId, int permissionType, String langPrefix ) {
-        String[] params = new String[]{String.valueOf( metaId ), String.valueOf( permissionType ), langPrefix};
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_DOC_TYPES_WITH_PERMISSIONS, params );
-        int numberOfColumns = 3;
-        DocumentIdEditablePermissionsTuple[] result = new DocumentIdEditablePermissionsTuple[ sprocResult.length/numberOfColumns ];
-        for( int i = 0, k = 0; i < sprocResult.length; i = i+numberOfColumns, k++ ){
-            //int documentType = Integer.parseInt(sprocResult[i]);
-            String documentTypeName = sprocResult[i+1];
-            boolean permission = -1 != Integer.parseInt(sprocResult[i+2]);
-            result[k] = new DocumentIdEditablePermissionsTuple();
-            result[k].hasRights = permission;
-            result[k].documentTypeName = documentTypeName;
-        }
-        return result;
-    }
-
-    private static class GroupPermissionTuple {
-        String groupName;
-        boolean hasPermission;
-    }
-
-    private static GroupPermissionTuple[] sprocGetTemplateGroupsWithPermissions( IMCService service, int metaId, int permissionType ) {
-        String[] params = new String[]{ String.valueOf(metaId), String.valueOf( permissionType ) };
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS, params );
-        int numberOfColumns = 3;
-        GroupPermissionTuple[] result = new GroupPermissionTuple[sprocResult.length/numberOfColumns];
-        for( int i = 0, k=0; i < sprocResult.length; i=i+numberOfColumns, k++) {
-            //String groupId = sprocResult[i];
-            String groupName = sprocResult[i+1];
-            boolean hasPermission = -1 != Integer.parseInt(sprocResult[i+2]);
-            result[k] = new GroupPermissionTuple();
-            result[k].groupName = groupName;
-            result[k].hasPermission = hasPermission;
-        }
-        return result;
-    }
 
     private IMCService service;
     private static Logger log = Logger.getLogger( DocumentPermissionSetMapper.class );
@@ -125,7 +29,7 @@ public class DocumentPermissionSetMapper {
 
     public Map getAllRolesMappedToPermissions( DocumentDomainObject document ) {
         Map result = new HashMap();
-        RolePermissionTuple[] sprocResult = sprocGetUserRolesDocPermissions( service, document.getMetaId() );
+        DatabaseAccessor.RolePermissionTuple[] sprocResult = DatabaseAccessor.sprocGetUserRolesDocPermissions( service, document.getMetaId() );
         for( int i = 0; i < sprocResult.length; i++ ) {
             String roleName = sprocResult[i].roleName;
             int permissionType = sprocResult[i].permissionId;
@@ -165,7 +69,7 @@ public class DocumentPermissionSetMapper {
 
     private DocumentPermissionSetDomainObject createRestricedPermissionSet( DocumentDomainObject document, int permissionType, String langPrefix ) {
         DocumentPermissionSetDomainObject result = new DocumentPermissionSetDomainObject( document, permissionType );
-        DocumentPermissionSetMapper.PermissionTuple[] permissionMapping = sprocGetPermissionSet( service, document.getMetaId(),  permissionType, langPrefix );
+        DatabaseAccessor.PermissionTuple[] permissionMapping = DatabaseAccessor.sprocGetPermissionSet( service, document.getMetaId(),  permissionType, langPrefix );
         for( int i = 0; i < permissionMapping.length; i++ ) {
             switch( permissionMapping[i].permissionId ) {
                 case EDIT_HEADLINE_PERMISSON_ID:
@@ -185,7 +89,7 @@ public class DocumentPermissionSetMapper {
                     break;
                 case EDIT_MENUES_PERMISSON_ID:
                     if( permissionMapping[i].hasPermission ) {
-                        DocumentIdEditablePermissionsTuple[] names = sprocGetDocTypesWithPermissions( service, document.getMetaId(), permissionType, langPrefix );
+                        DatabaseAccessor.DocumentIdEditablePermissionsTuple[] names = DatabaseAccessor.sprocGetDocTypesWithPermissions( service, document.getMetaId(), permissionType, langPrefix );
                         ArrayList namesStr = new ArrayList();
                         for( int k = 0; k < names.length; k++ ) {
                             if( names[k].hasRights ) {
@@ -202,7 +106,7 @@ public class DocumentPermissionSetMapper {
                     break;
                 case EDIT_TEMPLATE_PERMISSON_ID:
                     if( permissionMapping[i].hasPermission ) {
-                        GroupPermissionTuple[] names = sprocGetTemplateGroupsWithPermissions( service, document.getMetaId(), permissionType );
+                        DatabaseAccessor.GroupPermissionTuple[] names = DatabaseAccessor.sprocGetTemplateGroupsWithPermissions( service, document.getMetaId(), permissionType );
                         ArrayList namesStr = new ArrayList();
                         for( int k = 0; k < names.length; k++ ) {
                             if( names[k].hasPermission ) {
