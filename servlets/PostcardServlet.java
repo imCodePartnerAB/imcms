@@ -13,11 +13,11 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
-import imcode.external.diverse.*;
 
 import java.net.* ;
 import java.text.*;
 
+import org.apache.log4j.Category;
 
 /**
   * PARAMS in use, in doPost()
@@ -38,6 +38,10 @@ public class PostcardServlet extends HttpServlet {
 	private final static String QUOTE_FILE = "citat.txt";//used to parse the postcard page
 	private final static String POSTCARD_FOLDER = "postcards";
 	
+	private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;			
+	private static Category log = Category.getInstance( PostcardServlet.class.getName() ) ;
+
+	
 	public void init(ServletConfig config) throws ServletException
 	{
 
@@ -57,19 +61,17 @@ public class PostcardServlet extends HttpServlet {
 			return;
 		}
 		
-
-		//här ska vi ladda första sidan av sidan skicka citat köret
-		//System.out.println("doGet");
+		//ok its the first time lets load the page for that
 		HttpSession session = req.getSession(true);
 		
 		//lets get the params we need later on
-		String qText	= req.getParameter("qt");
 		String qRow		= req.getParameter("qr");
 		String metaId 	= req.getParameter("meta_id");
-		String[] pCStuff = {qText,qRow,metaId};
+		String[] pCStuff = {qRow,metaId};
 		
 		session.setAttribute("postCardStuff",pCStuff);
 		
+		//the stuf GetDoc needs to get the quoteline
 		req.setAttribute("externalClass","QuoteLineCollector");
 		req.setAttribute("qFile",QUOTE_FILE);
 		req.setAttribute("qLine",qRow);
@@ -84,10 +86,7 @@ public class PostcardServlet extends HttpServlet {
 	*   process submit
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException
-	{	//här ska vi ta emot all in data och skapa en statisk html sida som vi skriver ner i en
-	 	//mapp och skickar länken till mottagaren
-		//System.out.println("doPost");
-		//hämtar jag vet inte vad men typ allt
+	{	
 		String host					= req.getHeader("Host") ;	
 		String imcserver			= Utility.getDomainPref("userserver",host) ;	
 		String start_url			= Utility.getDomainPref( "start_url",host ) ;	
@@ -105,14 +104,13 @@ public class PostcardServlet extends HttpServlet {
 						
 		String qLine = "1";
 		String metaId ="";
-		String qText = "";
+	
 		//lets get the line nr from session
 		String[] pCStuff = (String[])session.getAttribute("postCardStuff")	;		
 		if (pCStuff != null)
 		{
-			qText = HTMLConv.toHTML(pCStuff[0]);
-			qLine = pCStuff[1];
-			metaId = pCStuff[2];
+			qLine = pCStuff[0];
+			metaId = pCStuff[1];
 		}
 				
 		int qInt = 1;	
@@ -122,26 +120,27 @@ public class PostcardServlet extends HttpServlet {
 		}catch(NumberFormatException nfe)
 		{
 			//some thing gon wrong, but I dont care I give them the first line'
-			//instead of the one the wanted
+			//instead of the one they wanted
 			//System.out.println("qLine wasn't a number");
 			qInt = 1;
+			log.debug(dateFormat.format(new Date())+"qLine wasn't a number",nfe);
 		}
 				
 		String resFile = HTMLConv.toHTML(IMCServiceRMI.getFortune(imcserver,QUOTE_FILE));
-		//System.out.println(resFile);
-		StringTokenizer token = new StringTokenizer(resFile, "#", false);
-		int counter = 0; 
-		String qTextToSend="";
 		
-		while (token.hasMoreTokens())
-		{
+		String qTextToSend="";
+		StringTokenizer token = new StringTokenizer(resFile, "#", false);
+		int counter = 1; 
+				
+		while (token.hasMoreTokens()){
 			String tmp = token.nextToken();		
-			if (qText.equals(tmp))
-			{
-				qTextToSend = tmp;
+			if (counter == ((qInt+1)*3)){
+				qTextToSend =  tmp;
 				break;
 			}
+			counter++;		
 		}
+		
 		
 		qTextToSend = HTMLConv.toHTML(qTextToSend);		
 		//ok now we have the quot in the string qLine		
@@ -152,11 +151,10 @@ public class PostcardServlet extends HttpServlet {
 		String senderMessage 	= req.getParameter("mailText2");
 		String imageNr			= req.getParameter("vykort");							
 		//lets get the image url from db (we need serverObj, metaId and imageId to do it)
-		RmiLayer rmi = new RmiLayer(user) ;	
-	
+			
 		String sqlStr = "Select imgurl from images where meta_id='"+metaId+"' and name='"+imageNr+"'";		
 		
-		String imageUrl = rmi.execSqlQueryStr(imcserver, sqlStr ) ;
+		String imageUrl = IMCServiceRMI.sqlQueryStr(imcserver, sqlStr ) ;
 		if (imageUrl == null)
 		{
 			imageUrl = " "; 
@@ -175,11 +173,9 @@ public class PostcardServlet extends HttpServlet {
 		vect.add("#cont4#");		vect.add(HTMLConv.toHTML(HTMLConv.toHTMLSpecial(senderMessage)));
 		
 		//ok nu ska vi parsa skiten med ett mall skrälle
-		File pcTemplate = new File(templateLib, HTML_TEMPLATE);
-		String html = IMCServiceRMI.parseDoc( imcserver,getTemplate(pcTemplate) , vect);	;
+		String html = IMCServiceRMI.parseExternalDoc(imcserver,vect,HTML_TEMPLATE,"se","105");
 		//lets get the name to use on the file
 		String pcFileName = (String) session.getAttribute("pcFileName");
-		//System.out.println("pcFileName: "+pcFileName);
 		if (pcFileName == null)
 		{
 			//lets get the first part of the name
@@ -189,7 +185,6 @@ public class PostcardServlet extends HttpServlet {
       		String dateString = formatter.format(currentTime);	
 			//ok now lets get the second part (the counter)
 			File counterFile = new File(templateLib, "postcardCounter.count");
-			//System.out.println(counterFile.getPath())	;
 			PostcardCounter count;
 			try{
 				ObjectInputStream in = new ObjectInputStream(new FileInputStream(counterFile));
@@ -213,19 +208,18 @@ public class PostcardServlet extends HttpServlet {
 			catch(IOException ioe)
 			{
 			 	log("Obs! Save couter failed.");
-				log(ioe.getMessage());				
+				log(ioe.getMessage());	
+				log.debug(dateFormat.format(new Date())+"Obs! Save couter failed.",ioe);			
 			}
 			//lets setup the new name
 			pcFileName = dateString +"_"+ postcardNr +".html";	
 			session.setAttribute("pcFileName", pcFileName);	
-			//System.out.println("pcFileName: "+pcFileName)			;
 		}
 		
 		//ok lets save the bottom frame page, incase it has been removed
 		//by some stupid sysAdmin
-	
-		File bottom = new File( templateLib, POSTCARD_BOTTOM); 		
-		String bottomString = IMCServiceRMI.parseDoc( imcserver,getTemplate(bottom) , new Vector());	
+		
+		String bottomString = IMCServiceRMI.parseExternalDoc( imcserver, new Vector(),POSTCARD_BOTTOM,"se","105");	
 		File imagePathFile = new File(imcode.util.Utility.getDomainPref("image_path",host));
 		File postcardFolder = new File(imagePathFile.getParent(),POSTCARD_FOLDER);	
 		File bottomFile = new File(postcardFolder,"bottom.html");	
@@ -245,17 +239,15 @@ public class PostcardServlet extends HttpServlet {
 				
 		//ok nu är det sparat så nu skickar vi skiten till servern för granskning	
 		File frameSet = new File( templateLib, POSTCARD_SET); 
-		VariableManager vm = new VariableManager();
-		vm.addProperty("postcard",req.getContextPath()+"/postcards/"+pcFileName);
-		vm.addProperty("bottom",req.getContextPath()+"/postcards/bottom.html");
-		HtmlGenerator htmlObj = new HtmlGenerator(templateLib, POSTCARD_SET) ;
+		Vector vm = new Vector();
+		vm.add("#postcard#");vm.add(req.getContextPath()+"/postcards/"+pcFileName+"?"+Math.random());
+		vm.add("#bottom#");vm.add(req.getContextPath()+"/postcards/bottom.html");
 		
-		String frameSetHtml = htmlObj.createHtmlString(vm,req) ;
-		//log("Before sendToBrowser: ") ;
-
-		//lets send the prevPage to the user		
-		htmlObj.sendToBrowser(req, res, frameSetHtml);
-		 
+		String frameSetHtml = IMCServiceRMI.parseExternalDoc(imcserver,vm,POSTCARD_SET,"se","105");
+		
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		out.println(frameSetHtml);
 		
 		//now we can set up every thing we need to create the mail
 		//sendMailWait( sender, mailTo, mailSubject , mailBody );
@@ -264,9 +256,8 @@ public class PostcardServlet extends HttpServlet {
 		mailArr[1]	= friendEmail;
 		
 		//ok lets parse the mailSubject line
-		File mailSubject = new File( templateLib, POSTCARD_MAIL_SUBJECT); 	
 		vect.add("#mailSubject#"); vect.add(senderName);
-		mailArr[2] = IMCServiceRMI.parseDoc( imcserver,getTemplate(mailSubject) , vect);
+		mailArr[2] = IMCServiceRMI.parseExternalDoc( imcserver,vect,POSTCARD_MAIL_SUBJECT,"se","105" );
 	
 		//lets parse the mailBody
 		File mailBody = new File( templateLib, POSTCARD_MAIL_BODY); 	
@@ -274,17 +265,13 @@ public class PostcardServlet extends HttpServlet {
 		vect.add("#mailText1#"); 	vect.add(senderName);
 		vect.add("#mailText2#"); 	vect.add("http://"+host);
 		vect.add("#mailText3#"); 	vect.add(pcFileName);		
-	   	mailArr[3]	= IMCServiceRMI.parseDoc( imcserver,getTemplate(mailBody) , vect);
-		
-		
+	   	mailArr[3]	= IMCServiceRMI.parseExternalDoc( imcserver,vect,POSTCARD_MAIL_BODY,"se","105" );
+	
 		session.setAttribute("postcardMail",mailArr) ;		  
 		return;			
 	}
 	
 	
-	//byte[] jaja = GetDoc.getDoc (int meta_id, int parent_meta_id, String host, HttpServletRequest req, HttpServletResponse res) throws IOException
-		
-	//hämta template mappen och filnamnet
 	private File getExternalTemplateFolder(HttpServletRequest req) throws ServletException, IOException
 	{
 		String host					= req.getHeader("Host") ;	
@@ -294,9 +281,8 @@ public class PostcardServlet extends HttpServlet {
 		Object done = session.getValue("logon.isDone"); 		
 		imcode.server.User user = (imcode.server.User) done ;
 		
-		RmiLayer rmi = new RmiLayer(user) ;
 		// Since our templates are located into the 105 folder, we'll have to hang on 105
-	    StringBuffer templateLib = new StringBuffer(rmi.getInternalTemplateFolder(imcserver)+"\\");		
+	    StringBuffer templateLib = new StringBuffer(IMCServiceRMI.getTemplateHome(imcserver)+"\\");		
 		try
 		{
 			
@@ -310,36 +296,7 @@ public class PostcardServlet extends HttpServlet {
 		return new File(templateLib.toString()) ;
 	}
 	
-	/**
-       get template
-    */
-    public String getTemplate(File file) throws IOException {
 	
-		StringBuffer value = new StringBuffer();
-
-		BufferedReader fr ;
-
-		try {
-	 	  fr = new BufferedReader( new FileReader(file)) ;
-		} catch(FileNotFoundException e) {
-	 	   log("Failed to find the template "+file.getPath()) ;
-	 	   return null ;
-		}
-
-		try {
-	 	   int temp ;
-	 	   while ((temp = fr.read())!=-1) {
-			value.append((char)temp);
-	 	   }
-		} catch(IOException e) {
-		    log("Failed to read template "+file.getPath()) ;
-	 	   return null ;
-		}
-
-		return value.toString() ;
-    }
-		
-
 	/**
 	Log function. Logs the message to the log file and console
 	*/
@@ -363,8 +320,9 @@ public class PostcardServlet extends HttpServlet {
 		String stringMailPort		= Utility.getDomainPref( "smtp_port", host );
 		String stringMailtimeout	= Utility.getDomainPref( "smtp_timeout", host );		
 		File templateLib  			= getExternalTemplateFolder(req);
-		VariableManager vm 			= new VariableManager();
-		vm.addProperty(" "," "); 
+		
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
 		
 		HttpSession session = req.getSession(false);
 		if(session == null)
@@ -400,25 +358,19 @@ public class PostcardServlet extends HttpServlet {
 
 		} catch (ProtocolException ex )
 		{
-			File mailError = new File( templateLib, POSTCARD_MAIL_ERROR); 	
-			HtmlGenerator htmlObj = new HtmlGenerator(mailError) ;
-			htmlObj.sendToBrowser(req, res, htmlObj.createHtmlString(vm,req));
+			out.println(IMCServiceRMI.parseExternalDoc(imcserver,new Vector(),POSTCARD_MAIL_ERROR,"se","105"));
 			log ("Protocol error while sending mail. " + ex.getMessage()) ;
+			//log.debug(dateFormat.format(new Date())+"Protocol error while sending mail.",ex);
 			return ;
 		} catch (IOException ex )
 		{
-			File mailError = new File( templateLib, POSTCARD_MAIL_ERROR); 	
-			HtmlGenerator htmlObj = new HtmlGenerator(mailError) ;
-			htmlObj.sendToBrowser(req, res, htmlObj.createHtmlString(vm,req));
+			out.println(IMCServiceRMI.parseExternalDoc(imcserver,new Vector(),POSTCARD_MAIL_ERROR,"se","105"));
 			log ("The mailservlet probably timed out. " + ex.getMessage()) ;
+			//log.debug(dateFormat.format(new Date())+"The mailservlet probably timed out.",ex);	
 			return ;
 		}
 		
-		
-		File mailSent = new File( templateLib, POSTCARD_MAIL_SENT); 	
-		HtmlGenerator htmlObj = new HtmlGenerator(mailSent) ;
-		htmlObj.sendToBrowser(req, res, htmlObj.createHtmlString(vm,req));
-		
+		out.println(IMCServiceRMI.parseExternalDoc(imcserver,new Vector(),POSTCARD_MAIL_SENT,"se","105"));		
 		return;
 	}
 	
