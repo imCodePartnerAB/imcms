@@ -925,7 +925,7 @@ public abstract class DatabaseService {
      */
     // In the databse sproc it returned the user_id, role_id, but the code that used it
     // assumed it was just roles. And only one role.
-    // So a changed this to return only role_id's.
+    // So I changed this to return only role_id's.
     // But I think that it should return a boolean true or fals if it is a
     public boolean sproc_CheckAdminRights( int user_id ) {
         String sql = "SELECT roles.role_id FROM users " +

@@ -1412,20 +1412,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      0 = superadministrator
      */
 
-    public boolean checkAdminRights( imcode.server.user.UserDomainObject user ) {
-
-        // Lets verify that the user who tries to add a new user is an SUPER_ADMIN
+    public boolean checkAdminRights( UserDomainObject user ) {
         int currUser_id = user.getUserId();
-        String checkAdminSql = "CheckAdminRights " + currUser_id;
-        String[] roles = sqlProcedure( checkAdminSql );
-
-        for( int i = 0; i < roles.length; i++ ) {
-            String aRole = roles[i];
-            if( aRole.equalsIgnoreCase( "0" ) )
-                return true;
-        }
-        return false;
-    } // checkAdminRights
+        boolean hasAdminRights = this.m_databaseService.sproc_CheckAdminRights(currUser_id);
+        return hasAdminRights;
+    }
 
     /**
      checkDocAdminRights
@@ -2095,25 +2086,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
 
         sqlUpdateProcedure( "SetReadrunnerUserDataForUser", new String[]{"" + userId, "" + rrUserData.getUses(), "" + rrUserData.getMaxUses(), "" + rrUserData.getMaxUsesWarningThreshold(), expiryDateString, "" + rrUserData.getExpiryDateWarningThreshold(), rrUserData.getExpiryDateWarningSent() ? "1" : "0"} );
-    }
-
-    /** Used by the other getUserFlags*-methods to put the database-data in a Set **/
-    private Map getUserFlags( String dbData[] ) {
-        Map theFlags = new HashMap();
-
-        for( int i = 0; i < dbData.length; i += 4 ) {
-            String flagName = dbData[i + 1];
-            int flagType = Integer.parseInt( dbData[i + 2] );
-            String flagDescription = dbData[i + 3];
-
-            UserFlag flag = new UserFlag();
-            flag.setName( flagName );
-            flag.setType( flagType );
-            flag.setDescription( flagDescription );
-
-            theFlags.put( flagName, flag );
-        }
-        return theFlags;
     }
 
     public PollHandlingSystem getPollHandlingSystem() {

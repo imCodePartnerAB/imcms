@@ -71,7 +71,6 @@ public class ApplicationServer {
                 DatabaseService databaseService = createDBConnectionMananger( servername, serverprops );
                 Object[] paramArr = {databaseService, serverprops};
 
-                // Invoke Constructor(InetPoolManager, Properties) on class
                 Object o = objConstructor.newInstance( paramArr );
 
                 serverObjects.put( servername, o );
