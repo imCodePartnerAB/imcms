@@ -28,6 +28,7 @@ public class DocumentMapper {
     private static final String SPROC_GET_FILE_NAME = "GetFileName ";
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo ";
     private static final String SPROC_GET_USER_PERMISSION_SET = "GetUserPermissionSet";
+    private static final String SPROC_GET_TEXT = "GetText ";
 
     public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
@@ -131,7 +132,7 @@ public class DocumentMapper {
         String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS, params );
         int columnsResult = 4;
         for( int i = 0; i < sprocResult.length; i += columnsResult ) {
-            String roleId = sprocResult[i];
+            // String roleId = sprocResult[i];
             String roleName = sprocResult[i + 1];
             String setId = sprocResult[i + 2];
             result.put( roleName, Integer.valueOf( setId ) );
@@ -176,4 +177,27 @@ public class DocumentMapper {
         return service.getText( document.getMetaId(), textFieldIndexInDocument );
     }
 
+    public IMCText getText( int meta_id, int no ) {
+        try {
+            String[] params = new String[]{"" + meta_id, "" + no};
+            String[] results = service.sqlProcedure( SPROC_GET_TEXT, params, false );
+            log.debug( "Asked db for text " + meta_id + ", " + no );
+
+            if( results == null || results.length == 0 ) {
+                /* There was no text. Return null. */
+                return null;
+            }
+
+            /* Return the text */
+            String text = results[0];
+            int type = Integer.parseInt( results[1] );
+
+            return new IMCText( text, type );
+
+        } catch( NumberFormatException ex ) {
+            /* There was no text, but we shouldn't come here unless the db returned something wrong. */
+            log.error( "SProc '" + SPROC_GET_TEXT + "' returned an invalid text-type.", ex );
+            return null;
+        }
+    }
 }

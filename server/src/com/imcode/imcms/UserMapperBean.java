@@ -71,4 +71,10 @@ public class UserMapperBean {
 
         return result;
     }
+
+    public void deleteRole( String role ) throws NoPermissionException {
+        securityChecker.isSuperAdmin();
+
+        internalMapper.deleteRole( role );
+    }
 }

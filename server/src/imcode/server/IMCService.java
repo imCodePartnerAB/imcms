@@ -17,7 +17,6 @@ import imcode.util.shop.ShoppingOrderSystemImpl;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -56,6 +55,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
     private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
+    private ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAuthAndMapper = null;
     private DocumentMapper documentMapper;
 
     static {
@@ -68,13 +68,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public IMCService( ConnectionPool conPool, Properties props ) {
         super();
         m_conPool = conPool;
-
         initMemberFields( props );
-
         initAuthenticatorsAndUserAndRoleMappers( props );
-
         initDocumentMapper();
-
     }
 
     private void initMemberFields( Properties props ) {
@@ -191,8 +187,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Verify a Internet/Intranet user. User data retrived from SQL Database.
      */
-
-    ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAuthAndMapper = null;
 
     public User verifyUser( String login, String password ) {
         User result = null;
@@ -420,29 +414,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @return The text from the db, or null if there was none.
      **/
     public IMCText getText( int meta_id, int no ) {
-
-        try {
-
-            /* Ask the db for the text */
-            String[] results = sqlProcedure( "GetText ", new String[]{"" + meta_id, "" + no}, false );
-            log.debug( "Asked db for text " + meta_id + ", " + no );
-
-            if( results == null || results.length == 0 ) {
-                /* There was no text. Return null. */
-                return null;
-            }
-
-            /* Return the text */
-            String text = results[0];
-            int type = Integer.parseInt( results[1] );
-
-            return new IMCText( text, type );
-
-        } catch( NumberFormatException ex ) {
-            /* There was no text, but we shouldn't come here unless the db returned something wrong. */
-            log.error( "SProc 'GetText' returned an invalid text-type.", ex );
-            return null;
-        }
+        return documentMapper.getText( meta_id, no );
     }
 
     /**

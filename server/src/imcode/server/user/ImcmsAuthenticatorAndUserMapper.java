@@ -23,6 +23,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    private static final String SPROC_GET_ROLE_ID_BY_ROLE_NAME = "GetRoleIdByRoleName";
    private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
    private static final String SPROC_ROLE_ADD_NEW = "RoleAddNew";
+   private static final String SPROC_ROLE_DELETE = "RoleDelete";
    private static final String SPROC_ROLE_FIND_NAME = "RoleFindName";
    private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
    private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
@@ -36,7 +37,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    private IMCServiceInterface service;
    private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
 
-   public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
+    public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
       this.service = service;
    }
 
@@ -145,7 +146,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       tempUser.setUserId( imcmsUser.getUserId() );
       tempUser.setLoginName( loginName );
 
-      callModifyUserProcedure( updateUserPRCStr, tempUser );
+      callSprocModifyUserProcedure( updateUserPRCStr, tempUser );
       removePhoneNumbers( tempUser );
       addPhonenNmbers( tempUser );
    }
@@ -156,7 +157,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       int newIntUserId = Integer.parseInt( newUserId );
       newUser.setUserId( newIntUserId );
 
-      callModifyUserProcedure( updateUserPRCStr, newUser );
+      callSprocModifyUserProcedure( updateUserPRCStr, newUser );
       addPhonenNmbers( newUser );
    }
 
@@ -171,29 +172,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE );
       staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE );
       staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE );
-   }
-
-   private void callModifyUserProcedure( String modifyUserProcedureName, User tempUser ) {
-      String[] params = { String.valueOf( tempUser.getUserId() ),
-                          tempUser.getLoginName(),
-                          null == tempUser.getPassword() ? "" : tempUser.getPassword(),
-                          tempUser.getFirstName(),
-                          tempUser.getLastName(),
-                          tempUser.getTitle(),
-                          tempUser.getCompany(),
-                          tempUser.getAddress(),
-                          tempUser.getCity(),
-                          tempUser.getZip(),
-                          tempUser.getCountry(),
-                          tempUser.getCountyCouncil(),
-                          tempUser.getEmailAddress(),
-                          tempUser.isImcmsExternal() ? "1" : "0",
-                          "1001",
-                          "0",
-                          String.valueOf( tempUser.getLangId() ),
-                          String.valueOf( tempUser.getUserType() ),
-                          tempUser.isActive() ? "1" : "0" };
-      service.sqlUpdateProcedure( modifyUserProcedureName, params );
    }
 
    public String[] getRoleNames( User user ) {
@@ -214,14 +192,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
       String[] roleNames = (String[])roleNamesSet.toArray(new String[roleNamesSet.size()]);
       return roleNames;
-   }
-
-   public synchronized void addRole( String roleName ) {
-      String[] userId = service.sqlProcedure( SPROC_ROLE_FIND_NAME, new String[]{roleName} );
-      boolean roleExists = -1 != Integer.parseInt( userId[0] );
-      if( !roleExists ) {
-         service.sqlUpdateProcedure( SPROC_ROLE_ADD_NEW, new String[]{roleName} );
-      }
    }
 
    public void addRoleNames( String[] externalRoleNames ) {
@@ -302,4 +272,53 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         return userHasSuperAdminRole;
     }
 
+    public synchronized void addRole( String roleName ) {
+        String[] roleId = callSprocRoleFindName( roleName );
+        boolean roleExists = -1 != Integer.parseInt( roleId[0] );
+        if( !roleExists ) {
+          service.sqlUpdateProcedure( SPROC_ROLE_ADD_NEW, new String[]{roleName} );
+       }
+    }
+
+    public void deleteRole( String roleName ) {
+        String[] roleId = callSprocRoleFindName( roleName );
+        boolean roleExists = -1 != Integer.parseInt( roleId[0] );
+        if( roleExists ) {
+            service.sqlUpdateProcedure( SPROC_ROLE_DELETE, roleId );
+        }
+    }
+
+    /**
+     *
+     * @param roleName
+     * @return roleId
+     */
+    private String[] callSprocRoleFindName( String roleName ) {
+        String[] params = new String[]{roleName};
+        String[] userId = service.sqlProcedure( SPROC_ROLE_FIND_NAME, params );
+        return userId;
+    }
+
+    private void callSprocModifyUserProcedure( String modifyUserProcedureName, User tempUser ) {
+       String[] params = { String.valueOf( tempUser.getUserId() ),
+                           tempUser.getLoginName(),
+                           null == tempUser.getPassword() ? "" : tempUser.getPassword(),
+                           tempUser.getFirstName(),
+                           tempUser.getLastName(),
+                           tempUser.getTitle(),
+                           tempUser.getCompany(),
+                           tempUser.getAddress(),
+                           tempUser.getCity(),
+                           tempUser.getZip(),
+                           tempUser.getCountry(),
+                           tempUser.getCountyCouncil(),
+                           tempUser.getEmailAddress(),
+                           tempUser.isImcmsExternal() ? "1" : "0",
+                           "1001",
+                           "0",
+                           String.valueOf( tempUser.getLangId() ),
+                           String.valueOf( tempUser.getUserType() ),
+                           tempUser.isActive() ? "1" : "0" };
+       service.sqlUpdateProcedure( modifyUserProcedureName, params );
+    }
 }
