@@ -157,7 +157,7 @@ public class AdminFortunes extends Administrator {
 			values.add(options);
 
 
-			String parsed = imcref.parseExternalDoc( values, "ShowQuestions.htm" , imcref.getDefaultLanguage(), "admin");
+			String parsed = imcref.parseExternalDoc( values, "ShowQuestions.htm" , imcref.getDefaultLanguageAsIso639_1(), "admin");
 			out.print(parsed);
 
 			session.setAttribute("results",results);
@@ -220,7 +220,7 @@ public class AdminFortunes extends Administrator {
 		values.add(options);
 
 
-		String parsed = imcref.parseExternalDoc(values, "AdminFortuneFile.htm" , imcref.getDefaultLanguage(), "admin");
+		String parsed = imcref.parseExternalDoc(values, "AdminFortuneFile.htm" , imcref.getDefaultLanguageAsIso639_1(), "admin");
 		out.print(parsed);
 
 		session.setAttribute("lines",lines);

@@ -478,7 +478,7 @@ public class MetaDataParser {
             log.error("Unsupported language '"
                     + documentLanguage
                     + "' found in database. Using default.", e);
-            documentLanguage = imcref.getDefaultLanguage();
+            documentLanguage = imcref.getDefaultLanguageAsIso639_2();
         }
         vec.add("#lang_prefix#");
         vec.add(LanguageMapper.getLanguageOptionList(imcref, user, documentLanguage));

@@ -226,7 +226,7 @@ public interface IMCServiceInterface {
 	;
 
     // get language
-    public String getDefaultLanguage()
+    public String getDefaultLanguageAsIso639_1()
 	;
 
     // get doctype
@@ -396,5 +396,7 @@ public interface IMCServiceInterface {
     DocumentMapper getDocumentMapper();
 
     ImcmsAuthenticatorAndUserMapper getUserAndRoleMapper();
+
+    String getDefaultLanguageAsIso639_2();
 
 }

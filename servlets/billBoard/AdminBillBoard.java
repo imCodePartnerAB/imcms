@@ -71,7 +71,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
         // lets get ready for errors
-        String deafultLanguagePrefix = imcref.getDefaultLanguage();
+        String defaultLanguagePrefix = imcref.getDefaultLanguageAsIso639_1();
 
         // Lets validate the session
         if ( super.checkSession( request, response ) == false ) {
@@ -81,13 +81,13 @@ public class AdminBillBoard extends Administrator { //AdminConference
         // Lets get an user object
         imcode.server.user.UserDomainObject user = super.getUserObj( request, response ) ;
         if(user == null) {
-            sendErrorMessage( imcref, eMailServerMaster, deafultLanguagePrefix , this.ERROR_HEADER, 1, response );
+            sendErrorMessage( imcref, eMailServerMaster, defaultLanguagePrefix , this.ERROR_HEADER, 1, response );
             return ;
         }
 
         // Lets verify that the user who tries to add a new user is an admin
         if (imcref.checkAdminRights(user) == false) {
-            sendErrorMessage( imcref, eMailServerMaster, deafultLanguagePrefix , this.ERROR_HEADER, 2, response );
+            sendErrorMessage( imcref, eMailServerMaster, defaultLanguagePrefix , this.ERROR_HEADER, 2, response );
             return ;
         }
 

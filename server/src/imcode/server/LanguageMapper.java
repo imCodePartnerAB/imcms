@@ -78,7 +78,7 @@ public class LanguageMapper {
                 log.error( "Unsupported language '"
                            + langStr
                            + "' found in database. Using default.", e );
-                langStr = service.getDefaultLanguage() ;
+                langStr = service.getDefaultLanguageAsIso639_2() ;
             }
             String userLangPrefix = languages[i][1];
             String languageNameInUserLanguage = languages[i][2];

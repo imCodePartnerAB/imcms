@@ -287,7 +287,7 @@ public class DocumentMapper {
                     + "' found in database for document "
                     + metaId
                     + ". Using default.", e);
-            langStr = service.getDefaultLanguage();
+            langStr = service.getDefaultLanguageAsIso639_2();
         }
         document.setLanguageIso639_2(langStr);
         document.setArchived("0".equals(documentData.get("archive")) ? false : true);

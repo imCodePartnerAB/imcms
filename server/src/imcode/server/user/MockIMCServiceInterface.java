@@ -101,6 +101,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;
     }
 
+    public String getDefaultLanguageAsIso639_2() {
+        return null;
+    }
+
     // archive childs
    public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
    }
@@ -310,7 +314,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // get language
-   public String getDefaultLanguage() {
+   public String getDefaultLanguageAsIso639_1() {
       return null;
    }
 

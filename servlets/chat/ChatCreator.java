@@ -388,7 +388,7 @@ public class ChatCreator extends ChatBase
     public String getTemplateButtonHtml(HttpServletRequest req,String metaId) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;
-	return imcref.parseExternalDoc(null, HTML_TEMPLATES_BUTTON , imcref.getDefaultLanguage(), "103", getTemplateLibName(chatref,metaId));
+	return imcref.parseExternalDoc(null, HTML_TEMPLATES_BUTTON , imcref.getDefaultLanguageAsIso639_1(), "103", getTemplateLibName(chatref,metaId));
     }
 
 

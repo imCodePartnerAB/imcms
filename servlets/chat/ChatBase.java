@@ -382,7 +382,7 @@ public class ChatBase extends HttpServlet {
 
 	res.setContentType("text/html");
 	ServletOutputStream out = res.getOutputStream();
-	out.print(imcref.parseExternalDoc(vect, template , imcref.getDefaultLanguage(), "103", templateSet));
+	out.print(imcref.parseExternalDoc(vect, template , imcref.getDefaultLanguageAsIso639_1(), "103", templateSet));
 	out.flush();
 	out.close();
     }

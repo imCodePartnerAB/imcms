@@ -64,16 +64,16 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    public UserDomainObject getUser( String loginName ) {
       loginName = loginName.trim();
 
-      UserDomainObject result = null;
+      UserDomainObject user = null;
       String[] user_data = service.sqlProcedure( SPROC_GET_USER_BY_LOGIN, new String[]{loginName} );
 
       // if resultSet > 0 a result is found
       if( user_data.length > 0 ) {
 
-         result = staticExtractUserFromStringArray( user_data );
+         user = staticExtractUserFromStringArray( user_data );
 
-         if( null == result.getLangPrefix() ) {
-            result.setLangPrefix( service.getDefaultLanguage() );
+         if( null == user.getLangPrefix() ) {
+            user.setLangPrefix( service.getDefaultLanguageAsIso639_1() );
          }
 
          String[][] phoneNbr = service.sqlProcedureMulti( SPROC_GET_USER_PHONE_NUMBERS + user_data[0] );
@@ -92,16 +92,16 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
                }
             }
          }
-         result.setWorkPhone( workPhone );
-         result.setMobilePhone( mobilePhone );
-         result.setHomePhone( homePhone );
+         user.setWorkPhone( workPhone );
+         user.setMobilePhone( mobilePhone );
+         user.setHomePhone( homePhone );
 
 
       } else {
-         result = null;
+         user = null;
       }
 
-      return result;
+      return user;
    }
 
    private static UserDomainObject staticExtractUserFromStringArray( String[] user_data ) {

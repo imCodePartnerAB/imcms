@@ -34,16 +34,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return m_conPool;
     }
 
-    private final ConnectionPool m_conPool; // inet pool of connections
+    private final ConnectionPool m_conPool;
     private TextDocumentParser textDocParser;
 
-    private File m_TemplateHome;           // template home
+    private File m_TemplateHome;
     private File m_IncludePath;
     private File m_FortunePath;
     private File m_FilePath;
-    private String m_StartUrl;			   // start url
-    private String m_ImageUrl;            // image folder
-    private String m_Language = "";      // language
+    private String m_StartUrl;
+    private String m_ImageUrl;
+    private String defaultLanguageAsIso639_2 ;
     private static final int DEFAULT_STARTDOCUMENT = 1001;
 
     private SystemData sysData;
@@ -104,14 +104,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         m_ImageUrl = props.getProperty( "ImageUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
         log.info( "ImageUrl: " + m_ImageUrl );
 
-        m_Language = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
+        defaultLanguageAsIso639_2 = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
         try {
-            m_Language = LanguageMapper.convert639_1to639_2( m_Language );
+            defaultLanguageAsIso639_2 = LanguageMapper.convert639_1to639_2( defaultLanguageAsIso639_2 );
         } catch ( LanguageMapper.LanguageNotSupportedException e1 ) {
-            log.fatal( "Configured default language " + m_Language + " is not supported either." );
-            m_Language = null;
+            log.fatal( "Configured default language " + defaultLanguageAsIso639_2 + " is not supported either." );
+            defaultLanguageAsIso639_2 = null;
         }
-        log.info( "DefaultLanguage: " + m_Language );
+        log.info( "DefaultLanguage: " + defaultLanguageAsIso639_2 );
 
         String externalDocTypes = props.getProperty( "ExternalDoctypes" ).trim(); //FIXME: Get rid of, if possible.
         log.info( "ExternalDoctypes: " + externalDocTypes );
@@ -179,7 +179,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             externalUserAndRoleMapperName = null;
         }
         imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( this );
-        externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator, externalUserAndRoleMapper, getDefaultLanguage() );
+        externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator, externalUserAndRoleMapper, getDefaultLanguageAsIso639_1() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
@@ -1246,6 +1246,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      Parse doc replace variables with data , use template
      */
     public String parseDoc( java.util.List variables, String admin_template_name, String lang_prefix ) {
+        // FIXME Fugly workaround
+        if ("sv".equals(lang_prefix)) {
+            lang_prefix = "se" ;
+        }
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/admin/" + admin_template_name ) );
             if ( variables == null ) {
@@ -1263,6 +1267,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      Parse doc replace variables with data , use template
      */
     public String parseExternalDoc( java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type ) {
+        // FIXME Fugly workaround
+        if ("sv".equals(lang_prefix)) {
+            lang_prefix = "se";
+        }
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + external_template_name ) );
             if ( variables == null ) {
@@ -1283,6 +1291,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      Parse doc replace variables with data , use template
      */
     public String parseExternalDoc( java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet ) {
+        // FIXME Fugly workaround
+        if ("sv".equals(lang_prefix)) {
+            lang_prefix = "se";
+        }
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/" + doc_type + "/" + templateSet + "/" + external_template_name ) );
             if ( variables == null ) {
@@ -1350,8 +1362,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Return  language.
      */
-    public String getDefaultLanguage() {
-        return m_Language;
+    public String getDefaultLanguageAsIso639_1() {
+        try {
+            return LanguageMapper.convert639_2to639_1(defaultLanguageAsIso639_2);
+        } catch (LanguageMapper.LanguageNotSupportedException e) {
+            log.fatal("No ISO 639-1 representation for the default language. ("+defaultLanguageAsIso639_2+")") ;
+            return null;
+        }
+    }
+
+    public String getDefaultLanguageAsIso639_2() {
+        return defaultLanguageAsIso639_2 ;
     }
 
     /**

@@ -38,7 +38,7 @@ public class RmiConf implements IMCConstants {
      * @return The url-path to the images for an external internalDocument. Ex: ../images/se/
      */
     public static String getExternalImageFolder(IMCServiceInterface imcref, String metaId ) throws IOException {
-	return imcref.getImageUrl() + '/' + imcref.getDefaultLanguage() + '/'
+	return imcref.getImageUrl() + '/' + imcref.getDefaultLanguageAsIso639_1() + '/'
 	    + imcref.getDocType(Integer.parseInt(metaId)) + '/' ;
     } // end getExternalImageHomeFolder
 

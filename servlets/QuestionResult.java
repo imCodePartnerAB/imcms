@@ -78,7 +78,7 @@ public class QuestionResult extends HttpServlet
 		values.add("#total#");
 		values.add(""+(int)totalAnswerCount);
 
-		String parsed = imcref.parseExternalDoc( values, RESULTTEMPLATE, imcref.getDefaultLanguage(), "106");
+		String parsed = imcref.parseExternalDoc( values, RESULTTEMPLATE, imcref.getDefaultLanguageAsIso639_1(), "106");
 
 		res.setContentType("text/html");
 		Writer out = res.getWriter();

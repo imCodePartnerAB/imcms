@@ -242,7 +242,7 @@ public class AdminRoles extends Administrator {
 
 	    /* create output page */
 	    VariableManager vm = new VariableManager();
-	    vm.addProperty( "CURRENT_ROLE_NAME", imcref.sqlProcedureStr( "RoleGetName " + roleId ) );
+	    vm.addProperty( "CURRENT_ROLE_NAME", imcref.sqlProcedureStr( "RoleGetName", new String[] { roleId } ) );
 	    vm.addProperty( "CURRENT_ROLE_ID", roleId );
 	    vm.addProperty( "ROLE_PERMISSIONS", permissionComponent );
 	    this.sendHtml(req,res,vm, HTML_EDIT_ROLE);

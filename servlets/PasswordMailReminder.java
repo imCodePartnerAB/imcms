@@ -25,45 +25,45 @@ import imcode.util.IMCServiceRMI;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 
-import imcode.server.* ;
+import imcode.server.*;
 
 /**
  * Proces if user can and has right to recive password by mail.
  * Server master recives a mail that describes what has happend.
  * Returns suitable message.
- *
+ * <p/>
  * Documents in use:
- *
+ * <p/>
  * doGet()
  * password_submit.html, response internalDocument for empty input field
- *
+ * <p/>
  * doPost():
  * password_no_user.html, response internalDocument for user doesn´t exist
  * password_no_email.html, response internalDocument for user hasen´t a valid e-mail
  * password_no_right.html, response internalDocument for user hasnt rights to recive password by mail
  * password_sent.html, response internalDocument for password sent
  * password_submit.html, response internalDocument for empty input field
- *
+ * <p/>
  * password_no_user.txt, servermaster e-mail body if user doesn´t exist
  * password_no_email.txt, servermaster e-mail body if user hasn´t a valid e-mail
  * password_no_right.txt, servermaster e-mail body if user hasn´ rights to recive password by mail
  * password_sent.txt, servermaster e-mail body if password sent
  * password_user_mail.txt, user e-mail body
  * password_error_input.txt, error string in password_submit
- *
+ * <p/>
  * Data in webserver config:
  * smtp_server=smtp.intron.net
  * smtp_port=25
  * smtp_timeout=10000
  * servermaster_email=abc@test.com
  * system_email=system@test.com
-
-
+ * <p/>
+ * <p/>
  * stored procedures in use:
- - PermissionsGetPermission
- *
- * @version 1.1 24 Oct 2000
+ * - PermissionsGetPermission
+ * 
  * @author Jerker Drottenmyr
+ * @version 1.1 24 Oct 2000
  */
 
 public class PasswordMailReminder extends HttpServlet {
@@ -90,208 +90,208 @@ public class PasswordMailReminder extends HttpServlet {
 
     public void init(ServletConfig config) throws ServletException {
 
-	super.init(config);
+        super.init(config);
     }
 
     /**
      * showing input internalDocument whit out error
      */
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-	/* server info */
+        /* server info */
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	String deafultLanguagePrefix = imcref.getDefaultLanguage();
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        String defaultLanguagePrefix = imcref.getDefaultLanguageAsIso639_1();
 
-	res.setContentType("text/html");
-	ServletOutputStream out = res.getOutputStream();
+        res.setContentType("text/html");
+        ServletOutputStream out = res.getOutputStream();
 
-	Vector parsVector = new Vector();
+        Vector parsVector = new Vector();
 
-	parsVector.add( "#errorininput#" );
-	parsVector.add( "" );
+        parsVector.add("#errorininput#");
+        parsVector.add("");
 
-	String returnString = imcref.parseDoc( parsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT, deafultLanguagePrefix );
-	out.print( returnString );
+        String returnString = imcref.parseDoc(parsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT, defaultLanguagePrefix);
+        out.print(returnString);
     }
 
     /**
      * proces submit
      */
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-	String emptyString = "";
+        String emptyString = "";
 
-	/* server info */
+        /* server info */
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	String hostName = emptyString;
-	try {
-	    hostName = InetAddress.getLocalHost().getHostName();
-	} catch ( SecurityException e ) {
-	    log( "checkConnect doesn't allow the operation" );
-	}
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        String hostName = emptyString;
+        try {
+            hostName = InetAddress.getLocalHost().getHostName();
+        } catch (SecurityException e) {
+            log("checkConnect doesn't allow the operation");
+        }
 
-	/* mailserver info */
-	imcode.server.SystemData sysData = imcref.getSystemData() ;
-	String eMailServerMaster = sysData.getServerMasterAddress() ;
-	String emailFromServer = sysData.getServerMasterAddress() ;
+        /* mailserver info */
+        imcode.server.SystemData sysData = imcref.getSystemData();
+        String eMailServerMaster = sysData.getServerMasterAddress();
+        String emailFromServer = sysData.getServerMasterAddress();
 
-	String mailFrom = eMailServerMaster;
-	String deafultLanguagePrefix = imcref.getDefaultLanguage();
+        String mailFrom = eMailServerMaster;
+        String deafultLanguagePrefix = imcref.getDefaultLanguageAsIso639_1();
 
-	String mailserver = Utility.getDomainPref( "smtp_server" );
-	String stringMailPort = Utility.getDomainPref( "smtp_port" );
-	String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
+        String mailserver = Utility.getDomainPref("smtp_server");
+        String stringMailPort = Utility.getDomainPref("smtp_port");
+        String stringMailtimeout = Utility.getDomainPref("smtp_timeout");
 
-	// Handling of default-values is another area where java can't hold a candle to perl.
-	int mailport = 25 ;
-	try {
-	    mailport = Integer.parseInt( stringMailPort );
-	} catch (NumberFormatException ignored) {
-	    // Do nothing, let mailport stay at default.
-	}
+        // Handling of default-values is another area where java can't hold a candle to perl.
+        int mailport = 25;
+        try {
+            mailport = Integer.parseInt(stringMailPort);
+        } catch (NumberFormatException ignored) {
+            // Do nothing, let mailport stay at default.
+        }
 
-	int mailtimeout = 10000 ;
-	try {
-	    mailtimeout = Integer.parseInt( stringMailtimeout );
-	} catch (NumberFormatException ignored) {
-	    // Do nothing, let mailtimeout stay at default.
-	}
+        int mailtimeout = 10000;
+        try {
+            mailtimeout = Integer.parseInt(stringMailtimeout);
+        } catch (NumberFormatException ignored) {
+            // Do nothing, let mailtimeout stay at default.
+        }
 
-	/* user info */
-	String postedLoginName;
-	String firstName = emptyString;
-	String lastName = emptyString;
-	String password = emptyString;
-	String userEmail = emptyString;
+        /* user info */
+        String postedLoginName;
+        String firstName = emptyString;
+        String lastName = emptyString;
+        String password = emptyString;
+        String userEmail = emptyString;
 
-	String returnFileBody = emptyString;
-	String serverMasterMailBody = emptyString;
-	String returnString = emptyString;
-	Vector errorParsVector = new Vector();
+        String returnFileBody = emptyString;
+        String serverMasterMailBody = emptyString;
+        String returnString = emptyString;
+        Vector errorParsVector = new Vector();
 
-	/* condition variabels */
-	boolean validLoginName = false;
-	boolean sendMailToUser = false;
+        /* condition variabels */
+        boolean validLoginName = false;
+        boolean sendMailToUser = false;
 
-	postedLoginName = req.getParameter( "login_name" );
-	validLoginName = ( !(postedLoginName == null || postedLoginName.length() == 0) );
+        postedLoginName = req.getParameter("login_name");
+        validLoginName = (!(postedLoginName == null || postedLoginName.length() == 0));
 
-	if ( validLoginName ) {
+        if (validLoginName) {
 
-	    String sqlQ = "PermissionsGetPermission " + postedLoginName + ", " + PasswordMailReminder.PASSWORD_PERMISSION_ID;
-	    String[] queryResult = imcref.sqlProcedure( sqlQ ) ;
+            String sqlQ = "PermissionsGetPermission '" + postedLoginName + "', " + PasswordMailReminder.PASSWORD_PERMISSION_ID;
+            String[] queryResult = imcref.sqlProcedure(sqlQ);
 
-	    if ( (queryResult != null) && (queryResult.length > 0) ) {
+            if ((queryResult != null) && (queryResult.length > 0)) {
 
-		firstName = queryResult[1];
-		lastName = queryResult[2];
-		userEmail = queryResult[3];
+                firstName = queryResult[1];
+                lastName = queryResult[2];
+                userEmail = queryResult[3];
 
-		boolean hasUserRight = !( "0".equals(queryResult[4]) );
+                boolean userHasOnlyRolesWithPermissionToGetPasswordSentByMail = !("0".equals(queryResult[4]));
 
-		if ( hasUserRight ) {
+                if (userHasOnlyRolesWithPermissionToGetPasswordSentByMail) {
 
-		    if ( (userEmail != null) && (validateEmail(userEmail)) ) {
-			sendMailToUser = true;
-			password = queryResult[0];
+                    if ((userEmail != null) && (validateEmail(userEmail))) {
+                        sendMailToUser = true;
+                        password = queryResult[0];
 
-			returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_SENT;
-			serverMasterMailBody = PasswordMailReminder.SENT_USER_PASSWORD;
+                        returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_SENT;
+                        serverMasterMailBody = PasswordMailReminder.SENT_USER_PASSWORD;
 
-		    } else {
-			returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NO_EMAIL;
-			serverMasterMailBody = PasswordMailReminder.USER_HAS_NO_EMAIL;
-		    }
+                    } else {
+                        returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NO_EMAIL;
+                        serverMasterMailBody = PasswordMailReminder.USER_HAS_NO_EMAIL;
+                    }
 
-		} else {
-		    returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NO_RIGHT;
-		    serverMasterMailBody = PasswordMailReminder.USER_HAS_NOT_RIGHT;
-		}
+                } else {
+                    returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NO_RIGHT;
+                    serverMasterMailBody = PasswordMailReminder.USER_HAS_NOT_RIGHT;
+                }
 
-	    } else {
-		returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NO_USER_NAME;
-		serverMasterMailBody = PasswordMailReminder.USER_DONT_EXIST;
-	    }
+            } else {
+                returnFileBody = PasswordMailReminder.RETURNING_DOCUMENT_NO_USER_NAME;
+                serverMasterMailBody = PasswordMailReminder.USER_DONT_EXIST;
+            }
 
-	    /* send mail */
-	    //			try {
-	    SMTP smtp = new SMTP( mailserver, mailport, mailtimeout );
+            /* send mail */
+            //			try {
+            SMTP smtp = new SMTP(mailserver, mailport, mailtimeout);
 
-	    if ( sendMailToUser ) {
-		Vector parsVector = new Vector();
+            if (sendMailToUser) {
+                Vector parsVector = new Vector();
 
-		parsVector.add( "#firstname#" );
-		parsVector.add( firstName );
-		parsVector.add( "#lastname#" );
-		parsVector.add( lastName );
-		parsVector.add( "#password#" );
-		parsVector.add( password );
+                parsVector.add("#firstname#");
+                parsVector.add(firstName);
+                parsVector.add("#lastname#");
+                parsVector.add(lastName);
+                parsVector.add("#password#");
+                parsVector.add(password);
 
-		String userLanguagePrefix = queryResult[5];
-		String userMessage = imcref.parseDoc( parsVector,
-						      PasswordMailReminder.USER_MAIL_BODY, userLanguagePrefix);
+                String userLanguagePrefix = queryResult[5];
+                String userMessage = imcref.parseDoc(parsVector,
+                        PasswordMailReminder.USER_MAIL_BODY, userLanguagePrefix);
 
-		smtp.sendMailWait( mailFrom, userEmail ,null , userMessage );
+                smtp.sendMailWait(mailFrom, userEmail, null, userMessage);
 
-	    }
+            }
 
-	    Vector parsVector = new Vector();
-        String host = req.getServerName() ;
+            Vector parsVector = new Vector();
+            String host = req.getServerName();
 
-	    parsVector.add( "#username#" );
-	    parsVector.add( postedLoginName );
-	    parsVector.add( "#email#" );
-	    parsVector.add( userEmail );
-	    parsVector.add( "#host#" );
-	    parsVector.add( host );
+            parsVector.add("#username#");
+            parsVector.add(postedLoginName);
+            parsVector.add("#email#");
+            parsVector.add(userEmail);
+            parsVector.add("#host#");
+            parsVector.add(host);
 
 
-	    String serverMasterMessage = imcref.parseDoc( parsVector, serverMasterMailBody,
-							  deafultLanguagePrefix);
+            String serverMasterMessage = imcref.parseDoc(parsVector, serverMasterMailBody,
+                    deafultLanguagePrefix);
 
-	    smtp.sendMailWait( emailFromServer, eMailServerMaster, null , serverMasterMessage );
+            smtp.sendMailWait(emailFromServer, eMailServerMaster, null, serverMasterMessage);
 
-	    returnString = imcref.parseDoc( null, returnFileBody, deafultLanguagePrefix );
+            returnString = imcref.parseDoc(null, returnFileBody, deafultLanguagePrefix);
 
-	} else {
-	    String errorString = imcref.parseDoc( null, PasswordMailReminder.ERROR_STRING,
-						  deafultLanguagePrefix );
+        } else {
+            String errorString = imcref.parseDoc(null, PasswordMailReminder.ERROR_STRING,
+                    deafultLanguagePrefix);
 
-	    errorParsVector.add( "#errorininput#" );
-	    errorParsVector.add( errorString );
-	    returnString = imcref.parseDoc( errorParsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT,
-					    deafultLanguagePrefix );
-	}
+            errorParsVector.add("#errorininput#");
+            errorParsVector.add(errorString);
+            returnString = imcref.parseDoc(errorParsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT,
+                    deafultLanguagePrefix);
+        }
 
-	res.setContentType("text/html");
-	ServletOutputStream out = res.getOutputStream();
+        res.setContentType("text/html");
+        ServletOutputStream out = res.getOutputStream();
 
-	out.print( returnString );
+        out.print(returnString);
 
     }
 
 
     /**
-       Log function. Logs the message to the log file and console
-    */
+     * Log function. Logs the message to the log file and console
+     */
     public void log(String msg) {
-	super.log(msg) ;
-	System.out.println("PasswordMailReminder: " + msg) ;
+        super.log(msg);
+        System.out.println("PasswordMailReminder: " + msg);
 
     }
 
     /* checks if email address is valid (abc@x)*/
-    private boolean validateEmail( String eMail ) {
-	int stringLength = eMail.length();
-	int indexAt = eMail.indexOf( "@" );
+    private boolean validateEmail(String eMail) {
+        int stringLength = eMail.length();
+        int indexAt = eMail.indexOf("@");
 
-	if ( indexAt > 0 && indexAt < (stringLength - 1) ) {
-	    return true;
-	} else {
-	    return false;
-	}
+        if (indexAt > 0 && indexAt < (stringLength - 1)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
