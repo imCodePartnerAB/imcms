@@ -384,7 +384,7 @@ ALTER TABLE meta ADD
 GO
 
 UPDATE meta SET status = 2
-UPDATE meta SET publication_start_datetime = IFNULL(activated_datetime, date_created)
+UPDATE meta SET publication_start_datetime = ISNULL(activated_datetime, date_created)
 GO
 
 ALTER TABLE meta DROP
