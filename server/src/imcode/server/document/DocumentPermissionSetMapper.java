@@ -14,30 +14,8 @@ public class DocumentPermissionSetMapper {
      * Stored procedure names used in this class
      */
     private static final String SPROC_GET_PERMISSION_SET = "GetPermissionSet";
-    private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
     private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
     private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "getTemplateGroupsWithPermissions";
-
-    static class RolePermissionTuple {
-        String roleName;
-        int permissionId;
-    }
-
-    private static RolePermissionTuple[] sprocGetUserRolesDocPermissions( IMCService service, int metaId ) {
-        String[] params = {String.valueOf( metaId ), null};
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS, params );
-        int noOfColumns = 4;
-        RolePermissionTuple[] result = new RolePermissionTuple[sprocResult.length / noOfColumns];
-        for( int i = 0, k = 0; i < sprocResult.length; i = i + noOfColumns, k++ ) {
-            //String roleId = sprocResult[i];
-            String roleName = sprocResult[i + 1];
-            String rolePermissionSetId = sprocResult[i + 2];
-            result[k] = new RolePermissionTuple();
-            result[k].roleName = roleName;
-            result[k].permissionId = Integer.parseInt( rolePermissionSetId );
-        }
-        return result;
-    }
 
     private static class PermissionTuple {
         int permissionId;
@@ -123,39 +101,13 @@ public class DocumentPermissionSetMapper {
         this.service = service;
     }
 
-    public Map getAllRolesMappedToPermissions( DocumentDomainObject document ) {
-        Map result = new HashMap();
-        RolePermissionTuple[] sprocResult = sprocGetUserRolesDocPermissions( service, document.getMetaId() );
-        for( int i = 0; i < sprocResult.length; i++ ) {
-            String roleName = sprocResult[i].roleName;
-            int permissionType = sprocResult[i].permissionId;
-            String langPrefix = "en";
-            switch( permissionType ) {
-                case IMCConstants.DOC_PERM_SET_FULL:
-                    result.put( roleName, createFullPermissionSet( document ) );
-                    break;
-                case IMCConstants.DOC_PERM_SET_RESTRICTED_1:
-                case IMCConstants.DOC_PERM_SET_RESTRICTED_2:
-                    result.put( roleName, createRestricedPermissionSet( document, permissionType, langPrefix )  );
-                    break;
-                case IMCConstants.DOC_PERM_SET_READ:
-                    result.put( roleName, createReadPermissionSet( document )  );
-                    break;
-                default:
-                    log.warn( "A missing mapping in DocumentPermissionSetMapper" );
-                    break;
-            }
-        }
-        return result;
-    }
-
-    private DocumentPermissionSetDomainObject createFullPermissionSet(  DocumentDomainObject document ) {
-        DocumentPermissionSetDomainObject result =  null;
-        result = new DocumentPermissionSetDomainObject( document, DocumentPermissionSetDomainObject.FULL_ID );
+    public DocumentPermissionSetDomainObject createFullPermissionSet() {
+        DocumentPermissionSetDomainObject result;
+        result = new DocumentPermissionSetDomainObject( IMCConstants.DOC_PERM_SET_FULL );
         result.setEditDocumentInformation( true );
         result.setEditHeadline( true );
         result.setEditIncludes( true );
-        result.setEditMenues( true );
+        result.setEditMenus( true );
         result.setEditPermissions( true );
         result.setEditPictures( true );
         result.setEditTemplates( true );
@@ -163,8 +115,8 @@ public class DocumentPermissionSetMapper {
         return result;
     }
 
-    private DocumentPermissionSetDomainObject createRestricedPermissionSet( DocumentDomainObject document, int permissionType, String langPrefix ) {
-        DocumentPermissionSetDomainObject result = new DocumentPermissionSetDomainObject( document, permissionType );
+    public DocumentPermissionSetDomainObject createRestrictedPermissionSet( DocumentDomainObject document, int permissionType, String langPrefix ) {
+        DocumentPermissionSetDomainObject result = new DocumentPermissionSetDomainObject( permissionType );
         DocumentPermissionSetMapper.PermissionTuple[] permissionMapping = sprocGetPermissionSet( service, document.getMetaId(),  permissionType, langPrefix );
         for( int i = 0; i < permissionMapping.length; i++ ) {
             switch( permissionMapping[i].permissionId ) {
@@ -192,11 +144,11 @@ public class DocumentPermissionSetMapper {
                                 namesStr.add( names[k].documentTypeName );
                             }
                         }
-                        result.setEditMenues( true );
+                        result.setEditMenus( true );
                         String[] namesStrArr = (String[])namesStr.toArray( new String[ namesStr.size()] );
                         result.setEditableMenuNames( namesStrArr );
                     } else {
-                        result.setEditMenues( false );
+                        result.setEditMenus( false );
                         result.setEditableMenuNames( null );
                     }
                     break;
@@ -213,7 +165,7 @@ public class DocumentPermissionSetMapper {
                         String[] namesStrArr = (String[])namesStr.toArray( new String[ namesStr.size()] );
                         result.setEditableTemplateGroupNames( namesStrArr );
                     } else {
-                        result.setEditMenues( false );
+                        result.setEditMenus( false );
                         result.setEditableMenuNames( null );
                     }
                     break;
@@ -228,17 +180,17 @@ public class DocumentPermissionSetMapper {
         return result;
     }
 
-    private DocumentPermissionSetDomainObject createReadPermissionSet( DocumentDomainObject document) {
-        DocumentPermissionSetDomainObject result =  null;
-        result = new DocumentPermissionSetDomainObject( document, DocumentPermissionSetDomainObject.READ_ID );
+    public DocumentPermissionSetDomainObject createReadPermissionSet() {
+        DocumentPermissionSetDomainObject result;
+        result = new DocumentPermissionSetDomainObject( IMCConstants.DOC_PERM_SET_READ );
         return result;
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetRestrictedOne( DocumentDomainObject document ) {
-        return createRestricedPermissionSet( document, DocumentPermissionSetDomainObject.RESTRICTED_1_ID, "en" );
+        return createRestrictedPermissionSet( document, IMCConstants.DOC_PERM_SET_RESTRICTED_1, "en" );
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwo( DocumentDomainObject document ) {
-        return createRestricedPermissionSet( document, DocumentPermissionSetDomainObject.RESTRICTED_2_ID, "en" );
+        return createRestrictedPermissionSet( document, IMCConstants.DOC_PERM_SET_RESTRICTED_2, "en" );
     }
 }

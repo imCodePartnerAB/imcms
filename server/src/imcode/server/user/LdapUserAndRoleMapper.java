@@ -372,6 +372,11 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
         return new String[]{DEFAULT_LDAP_ROLE};
     }
 
+    public RoleDomainObject getRole( String roleName ) {
+        // FIXME Return RoleDomainObject for DEFAULT_LDAP_ROLE? Needs ID that doesn't exist until it's in the database.
+        throw new UnsupportedOperationException("getRole(String roleName) not supported for "+getClass()) ;
+    }
+
     private static String[] splitStringOnCommasAndSpaces( String stringToSplit ) {
         StringTokenizer attributesTokenizer = new StringTokenizer( stringToSplit, ", " );
         String[] tokens = new String[attributesTokenizer.countTokens()];

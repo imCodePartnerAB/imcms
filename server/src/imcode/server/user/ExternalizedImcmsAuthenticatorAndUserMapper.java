@@ -152,6 +152,10 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
         return result;
     }
 
+    public RoleDomainObject getRole( String roleName ) {
+        return imcmsAuthenticatorAndUserMapper.getRole(roleName) ;
+    }
+
     public class UserConflictException extends RuntimeException {
         UserConflictException( String message, Throwable cause ) {
             super( message, cause );

@@ -369,8 +369,6 @@ public class DBConnect {
             try {
                 if ( null != param ) {
                     stmt.setString( ++i, param );
-                } else {
-                    throw new NullPointerException("Driver does not support null parameters.");
                 }
             } catch(SQLException se) {
                 log.error("Failed to set parameter "+i+" of statement "+stmt.toString()+" to "+param,se) ;

@@ -4,6 +4,7 @@ import imcode.server.*;
 import imcode.server.db.DBConnect;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.RoleDomainObject;
 import imcode.server.util.DateHelper;
 import imcode.util.Parser;
 import imcode.util.poll.PollHandlingSystem;
@@ -21,6 +22,7 @@ public class DocumentMapper {
     private Logger log = Logger.getLogger( DocumentMapper.class );
     protected IMCServiceInterface service;
     protected ImcmsAuthenticatorAndUserMapper imcmsAAUM;
+    private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
 
     public DocumentMapper( IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
@@ -280,7 +282,7 @@ public class DocumentMapper {
                        + "' found in database for document "
                        + metaId
                        + ". Using default.", e );
-            langStr = service.getDefaultLanguage() ;
+            langStr = service.getDefaultLanguage();
         }
         document.setLanguageIso639_2( langStr );
         document.setArchived( "0".equals( documentData.get( "archive" ) ) ? false : true );
@@ -324,6 +326,17 @@ public class DocumentMapper {
         if ( DocumentDomainObject.DOCTYPE_TEXT == document.getDocumentType() ) {
             initTextDoc( service, document );
         }
+
+        String[] sprocResult1 = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS, new String[]{String.valueOf( document.getMetaId() ), "-1"} );
+        int noOfColumns = 4;
+        for( int i = 0, k = 0; i < sprocResult1.length; i = i + noOfColumns, k++ ) {
+            int roleId = Integer.parseInt(sprocResult1[i]) ;
+            String roleName = sprocResult1[i+1] ;
+            RoleDomainObject role = new RoleDomainObject(roleId,roleName) ;
+            int rolePermissionSetId = Integer.parseInt(sprocResult1[i + 2]);
+            document.setPermissionSetForRole(role,rolePermissionSetId);
+        }
+
         return document;
     }
 
@@ -513,7 +526,7 @@ public class DocumentMapper {
         inheritSection( parentId, newMetaId );
 
         // update parents, why? what is this? /Hasse
-        addDocumentToMenu(service,user,parentId,parentMenuNumber,newMetaId);
+        addDocumentToMenu( service, user, parentId, parentMenuNumber, newMetaId );
 
         // update parents modfied date because it has gotten an new link
         sqlUpdateModifiedDate( service, parentId, nowDateTime );
@@ -529,17 +542,17 @@ public class DocumentMapper {
         Date now = new Date();
         document.setModifiedDatetime( now );
 
-        // Bokstavsorning på attributen, så man lättare kan hitta om något läggs till eller tagits bort
-        // använder attributen direkt, för att inte förvirras av de get-metoder som saknar motsvarande
-        // underliggande data.
-        // Denna långa uppraddning gör jag för att IntelliJ kan visa vilka variabler jag missar att använda.
-        // Denna kommentar blev på svenska för jag kom inte på vad bokstavsordning är på engelska.../Hasse
+        // Attributes in alphabetical order, so one can easier find if something is added or removed.
+        // Am using the attributes directly, as to not be confused by the get-accessors which lack
+        // the corresponding underlying data
         Date activatedDatetime = document.activatedDatetime;
+        boolean archived = document.archived;
         Date archivedDatetime = document.archivedDatetime;
         Date createdDatetime = document.createdDatetime;
-        // String filename = document.filename; // only in file docks, not implemented yet.
+        // String filename = document.filename; // only in file documents, not implemented yet.
         String headline = document.headline;
         String image = document.image;
+        String language = document.languageIso639_2;
         int menuSortOrder = document.menuSortOrder;
         Date modifiedDatetime = document.modifiedDatetime;
         String section = document.section;
@@ -547,16 +560,19 @@ public class DocumentMapper {
         TemplateDomainObject template = document.template;
         int templateGroupId = document.templateGroupId;
         String text = document.text;
-        boolean archived = document.archived;
-        String language = document.languageIso639_2 ;
 
         sqlUpdateMeta( service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline,
-                       image, modifiedDatetime, target, text, archived, language ) ;
+                       image, modifiedDatetime, target, text, archived, language );
         updateSection( service, document, section );
 
-        // Restricted One and Two
+        for (Iterator it = document.getRolesMappedToPermissionSetIds().entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry rolePermissionTuple = (Map.Entry) it.next() ;
+            RoleDomainObject role = (RoleDomainObject) rolePermissionTuple.getKey() ;
+            int permissionSetId = ((Integer)rolePermissionTuple.getValue()).intValue() ;
+            sprocSetRoleDocPermissionSetId(service,document.getMetaId(),role.getId(),permissionSetId);
+        }
 
-
+        // TODO Restricted One and Two (Bug 1443)
 
         // TEXT_DOC
         updateTextDoc( service, document.getMetaId(), template, menuSortOrder, templateGroupId );
@@ -613,7 +629,7 @@ public class DocumentMapper {
         sqlStr.append( makeDateSQL( "date_modified", modifiedDateTime ) );
         sqlStr.append( makeStringSQL( "target", target ) );
         sqlStr.append( makeStringSQL( "meta_text", text ) );
-        sqlStr.append( makeStringSQL( "lang_prefix", language ) ) ;
+        sqlStr.append( makeStringSQL( "lang_prefix", language ) );
         sqlStr.append( makeBooleanSQL( "archive", isArchived ) );
         // todo: Remove from the meta table all collumns that are not used.
         // Candidates: All not used above.
@@ -658,8 +674,8 @@ public class DocumentMapper {
         final String columnsToBeCopied = "description,doc_type,meta_headline,meta_text,meta_image,owner_id,permissions,shared,expand,show_meta,help_text_id,archive,status_id,lang_prefix,classification,date_created,date_modified,sort_position,menu_position,disable_search,target,frame_name,activate,activated_datetime,archived_datetime";
 
         String metaId = service.sqlQueryStr( "insert into meta (" + columnsToBeCopied + ")\n"
-                                             + "select "+columnsToBeCopied+" from meta where meta_id = ?\n"
-                                             + "select @@IDENTITY", new String[]{""+parentId});
+                                             + "select " + columnsToBeCopied + " from meta where meta_id = ?\n"
+                                             + "select @@IDENTITY", new String[]{"" + parentId} );
         return Integer.parseInt( metaId );
     }
 
@@ -818,7 +834,14 @@ public class DocumentMapper {
         if ( 1 == updatedRows ) {	// if existing doc is added to the menu
             service.updateLogs( "Link from [" + menuDocumentId + "] in menu [" + menuIndex + "] to [" + toBeAddedId
                                 + "] added by user: [" + user.getFullName() + "]" );
+        } else {
+            throw new RuntimeException( "Failed to add document " + toBeAddedId + " to menu " + menuIndex + " on document " + menuDocumentId );
         }
+    }
+
+    public static void sprocSetRoleDocPermissionSetId( IMCServiceInterface imcref, int metaId, int roleId,
+            int newSetId ) {
+        imcref.sqlUpdateProcedure( "SetRoleDocPermissionSetId", new String[] { ""+roleId, ""+metaId, ""+newSetId });
     }
 
 

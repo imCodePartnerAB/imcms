@@ -4,25 +4,34 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetMapper;
+import imcode.server.IMCConstants;
+import imcode.server.user.UserAndRoleMapper;
+import imcode.server.user.RoleDomainObject;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 public class Document {
     SecurityChecker securityChecker;
     DocumentService documentService;
     DocumentDomainObject internalDocument;
     DocumentMapper documentMapper;
-    DocumentPermissionSetMapper documentPermissionMapper;
+    DocumentPermissionSetMapper documentPermissionSetMapper;
+    UserAndRoleMapper userAndRoleMapper;
 
-    public Document( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
+    private final static Logger log = Logger.getLogger( "com.imcode.imcms.api.Document" );
+
+    public Document( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper, UserAndRoleMapper userAndRoleMapper ) {
         this.securityChecker = securityChecker;
         this.documentService = documentService;
         this.internalDocument = document;
         this.documentMapper = documentMapper;
-        this.documentPermissionMapper = permissionSetMapper;
+        this.documentPermissionSetMapper = permissionSetMapper;
+        this.userAndRoleMapper = userAndRoleMapper;
     }
 
     /**
@@ -30,9 +39,35 @@ public class Document {
      */
     public Map getAllRolesMappedToPermissions() throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        Map rolesMappedToPermissionsIds = documentPermissionMapper.getAllRolesMappedToPermissions( internalDocument );
-        Map result = wrapDomainObjectsInMap( rolesMappedToPermissionsIds );
-        return result;
+
+        Map rolesMappedToPermissionSetIds = internalDocument.getRolesMappedToPermissionSetIds() ;
+
+        Map result = new HashMap();
+        for( Iterator it = rolesMappedToPermissionSetIds.entrySet().iterator(); it.hasNext() ; ) {
+            Map.Entry rolePermissionTuple = (Map.Entry) it.next() ;
+            RoleDomainObject role = (RoleDomainObject) rolePermissionTuple.getKey() ;
+            int permissionType = ((Integer)rolePermissionTuple.getValue()).intValue() ;
+            switch( permissionType ) {
+                case IMCConstants.DOC_PERM_SET_FULL:
+                    result.put( role.getName(), documentPermissionSetMapper.createFullPermissionSet() );
+                    break;
+                case IMCConstants.DOC_PERM_SET_RESTRICTED_1:
+                case IMCConstants.DOC_PERM_SET_RESTRICTED_2:
+                    result.put( role.getName(), documentPermissionSetMapper.createRestrictedPermissionSet( internalDocument, permissionType, securityChecker.getCurrentLoggedInUser().getLangPrefix() )  );
+                    break;
+                case IMCConstants.DOC_PERM_SET_READ:
+                    result.put( role.getName(), documentPermissionSetMapper.createReadPermissionSet()  );
+                    break;
+                case IMCConstants.DOC_PERM_SET_NONE:
+                    break;
+                default:
+                    log.warn( "A missing mapping in DocumentPermissionSetMapper" );
+                    break;
+            }
+        }
+
+        return wrapDomainObjectsInMap( result );
+
     }
 
     private static Map wrapDomainObjectsInMap( Map rolesMappedToPermissionsIds ) {
@@ -48,16 +83,37 @@ public class Document {
         return result;
     }
 
+    public boolean equals( Object o ) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof Document ) ) {
+            return false;
+        }
+
+        final Document document = (Document) o;
+
+        if ( !internalDocument.equals( document.internalDocument ) ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public int hashCode() {
+        return internalDocument.hashCode();
+    }
+
     public DocumentPermissionSet getPermissionSetRestrictedOne() throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        DocumentPermissionSetDomainObject restrictedOne = documentPermissionMapper.getPermissionSetRestrictedOne( internalDocument );
+        DocumentPermissionSetDomainObject restrictedOne = documentPermissionSetMapper.getPermissionSetRestrictedOne( internalDocument );
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedOne );
         return result;
     }
 
     public DocumentPermissionSet getPermissionSetRestrictedTwo() throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        DocumentPermissionSetDomainObject restrictedTwo = documentPermissionMapper.getPermissionSetRestrictedTwo( internalDocument );
+        DocumentPermissionSetDomainObject restrictedTwo = documentPermissionSetMapper.getPermissionSetRestrictedTwo( internalDocument );
         DocumentPermissionSet result = new DocumentPermissionSet( restrictedTwo );
         return result;
     }
@@ -107,5 +163,13 @@ public class Document {
 
     public Language getLanguage() {
         return Language.getLanguageByISO639_2(internalDocument.getLanguageIso639_2()) ;
+    }
+
+    public void setPermissionSetForRole( String roleName, int permissionSet ) throws NoSuchRoleException {
+        RoleDomainObject role = userAndRoleMapper.getRole(roleName);
+        if (null == role) {
+            throw new NoSuchRoleException("No role by the name '"+roleName+"'.") ;
+        }
+        internalDocument.setPermissionSetForRole(role, permissionSet) ;
     }
 }

@@ -3,8 +3,11 @@ package imcode.server.document;
 import imcode.server.IMCConstants;
 import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.RoleDomainObject;
 
 import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
 
 /** Stores all info about a text-internalDocument. **/
 
@@ -25,6 +28,7 @@ public class DocumentDomainObject implements IMCConstants {
     String section;
     UserDomainObject creator ;
     String languageIso639_2;
+    Map rolesMappedToPermissionSetIds = new HashMap();
 
     // todo: classification/Search words is missing
 
@@ -338,6 +342,35 @@ public class DocumentDomainObject implements IMCConstants {
 
     public String getLanguageIso639_2() {
         return languageIso639_2;
+    }
+
+    public boolean equals( Object o ) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof DocumentDomainObject ) ) {
+            return false;
+        }
+
+        final DocumentDomainObject documentDomainObject = (DocumentDomainObject) o;
+
+        if ( metaId != documentDomainObject.metaId ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public int hashCode() {
+        return metaId;
+    }
+
+    public void setPermissionSetForRole( RoleDomainObject role, int permissionSetId ) {
+        rolesMappedToPermissionSetIds.put(role,new Integer(permissionSetId)) ;
+    }
+
+    public Map getRolesMappedToPermissionSetIds() {
+        return rolesMappedToPermissionSetIds;
     }
 
 }

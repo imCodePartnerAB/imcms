@@ -3,11 +3,12 @@ package com.imcode.imcms.api;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 
 public class DocumentPermissionSet {
-    public final static String FULL = DocumentPermissionSetDomainObject.FULL;
-    public final static String RESTRICTED_1 = DocumentPermissionSetDomainObject.RESTRICTED_1;
-    public final static String RESTRICTED_2 = DocumentPermissionSetDomainObject.RESTRICTED_2;
-    public final static String READ = DocumentPermissionSetDomainObject.READ;
-    public final static String NONE = DocumentPermissionSetDomainObject.NONE;
+
+    public final static int FULL = DocumentPermissionSetDomainObject.FULL ;
+    public final static int RESTRICTED_1 = DocumentPermissionSetDomainObject.RESTRICTED_1 ;
+    public final static int RESTRICTED_2 = DocumentPermissionSetDomainObject.RESTRICTED_2 ;
+    public final static int READ = DocumentPermissionSetDomainObject.READ ;
+    public final static int NONE = DocumentPermissionSetDomainObject.NONE ;
 
     private DocumentPermissionSetDomainObject internalDocPermSet;
 
@@ -48,7 +49,7 @@ public class DocumentPermissionSet {
     }
 
     public String[] getEditableTemplateGroupNames() {
-        return internalDocPermSet.getEditableTamplateNames();
+        return internalDocPermSet.getEditableTemplateNames();
     }
 
     public String[] getEditableMenuDocumentTypeNames() {
@@ -63,7 +64,7 @@ public class DocumentPermissionSet {
         internalDocPermSet.setEditableMenuNames( b );
     }
     public void setEditMenuesPermission( boolean b ) {
-        internalDocPermSet.setEditMenues( b );
+        internalDocPermSet.setEditMenus( b );
     }
 
     public void setEditableTemplateGroupNames( boolean b ) {

@@ -10,7 +10,7 @@
     int menuIndexInDocument = 1;
     TextDocument.Menu menu = document.getMenu(menuIndexInDocument) ;
 
-    int documentToBeAddedId = 1002 ;
+    int documentToBeAddedId = 1003 ;
     TextDocument documentToBeAdded = documentService.getTextDocument(documentToBeAddedId) ;
 
     menu.addDocument(documentToBeAdded) ;

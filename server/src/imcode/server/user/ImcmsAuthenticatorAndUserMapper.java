@@ -195,7 +195,15 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       return roleNames;
    }
 
-   public void addRoleNames( String[] externalRoleNames ) {
+    public RoleDomainObject getRole( String roleName ) {
+        String sqlResult = service.sqlProcedureStr(SPROC_GET_ROLE_ID_BY_ROLE_NAME, new String [] { roleName });
+        if ( null != sqlResult ) {
+            return new RoleDomainObject( Integer.parseInt(sqlResult), roleName );
+        }
+        return null ;
+    }
+
+    public void addRoleNames( String[] externalRoleNames ) {
       for( int i = 0; i < externalRoleNames.length; i++ ) {
          String externalRoleName = externalRoleNames[i];
          this.addRole( externalRoleName );

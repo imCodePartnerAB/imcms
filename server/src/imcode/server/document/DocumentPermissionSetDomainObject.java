@@ -3,35 +3,34 @@ package imcode.server.document;
 import imcode.server.IMCConstants;
 
 public class DocumentPermissionSetDomainObject {
-    public static final String RESTRICTED_1 = "Restricted One";
-    public static final String RESTRICTED_2 = "Restricted Two";
-    public static final String FULL = "Full";
-    public static final String READ = "Read";
-    public static final String NONE = "None";
 
-    final static int FULL_ID = 0;
-    final static int RESTRICTED_1_ID = 1;
-    final static int RESTRICTED_2_ID = 2;
-    public final static int READ_ID = 3;
-    final static int NONE_ID = 4;
+    public final static int FULL = IMCConstants.DOC_PERM_SET_FULL ;
+    public final static int RESTRICTED_1 = IMCConstants.DOC_PERM_SET_RESTRICTED_1 ;
+    public final static int RESTRICTED_2 = IMCConstants.DOC_PERM_SET_RESTRICTED_2 ;
+    public final static int READ = IMCConstants.DOC_PERM_SET_READ ;
+    public final static int NONE = IMCConstants.DOC_PERM_SET_NONE ;
 
-    int permissionType = IMCConstants.DOC_PERM_SET_NONE;
+    private static final String PERMISSION_SET_NAME_RESTRICTED_1 = "Restricted One";
+    private static final String PERMISSION_SET_NAME_RESTRICTED_2 = "Restricted Two";
+    private static final String PERMISSION_SET_NAME_FULL = "Full";
+    private static final String PERMISSION_SET_NAME_READ = "Read";
+    private static final String PERMISSION_SET_NAME_NONE = "None";
+
+    int permissionType = NONE;
     private boolean editHeadline;
     private boolean editDocumentInformation;
     private boolean editPermissions;
     private boolean editTexts;
-    private boolean editMenues;
+    private boolean editMenus;
     private boolean editTemplates;
     private boolean editIncludes;
     private boolean editPictures;
-    private DocumentDomainObject document;
 
     private String[] editMenuesNames;
     private String[] editTemplatesNames;
 
-    public DocumentPermissionSetDomainObject( DocumentDomainObject document, int permissionType ) {
+    public DocumentPermissionSetDomainObject( int permissionType ) {
         this.permissionType = permissionType;
-        this.document = document;
     }
 
     public int getPermissionType() {
@@ -44,21 +43,21 @@ public class DocumentPermissionSetDomainObject {
 
     private static String getName( int userPermissionSetId ) {
         String result = null;
-        switch( userPermissionSetId ) {
-            case IMCConstants.DOC_PERM_SET_FULL:
-                result = FULL;
+        switch ( userPermissionSetId ) {
+            case FULL:
+                result = PERMISSION_SET_NAME_FULL;
                 break;
-            case IMCConstants.DOC_PERM_SET_RESTRICTED_1:
-                result = RESTRICTED_1;
+            case RESTRICTED_1:
+                result = PERMISSION_SET_NAME_RESTRICTED_1;
                 break;
-            case IMCConstants.DOC_PERM_SET_RESTRICTED_2:
-                result = RESTRICTED_2;
+            case RESTRICTED_2:
+                result = PERMISSION_SET_NAME_RESTRICTED_2;
                 break;
-            case IMCConstants.DOC_PERM_SET_READ:
-                result = READ;
+            case READ:
+                result = PERMISSION_SET_NAME_READ;
                 break;
             default:
-                result = NONE;
+                result = PERMISSION_SET_NAME_NONE;
                 break;
         }
         return result;
@@ -66,21 +65,24 @@ public class DocumentPermissionSetDomainObject {
 
     public String toString() {
         StringBuffer buff = new StringBuffer();
-        buff.append( getType() + " ("  );
-        buff.append( "editDocumentInformation=" + editDocumentInformation + ", " );
-        buff.append( "editHeadline=" + editHeadline  + ", " );
-        buff.append( "editIncludes=" + editIncludes  + ", " );
-        buff.append( "editMenues=" + editMenues  + ", " );
-        buff.append( "editPermissions=" + editPermissions + ", "  );
-        buff.append( "editPictures=" + editPictures  + ", " );
-        buff.append( "editTemplates=" + editTemplates  + ", " );
-        buff.append( "editTexts=" + editTexts );
-        buff.append( ")" );
-        return buff.toString();
-    }
 
-    DocumentDomainObject getDocument() {
-        return document;
+        buff.append( getType() ) ;
+        switch ( permissionType ) {
+            case RESTRICTED_1:
+            case RESTRICTED_2:
+                buff.append( " (" )
+                        .append( "editDocumentInformation=" + editDocumentInformation + ", " )
+                        .append( "editHeadline=" + editHeadline + ", " )
+                        .append( "editIncludes=" + editIncludes + ", " )
+                        .append( "editMenus=" + editMenus + ", " )
+                        .append( "editPermissions=" + editPermissions + ", " )
+                        .append( "editPictures=" + editPictures + ", " )
+                        .append( "editTemplates=" + editTemplates + ", " )
+                        .append( "editTexts=" + editTexts )
+                        .append( ")" );
+                break;
+        }
+        return buff.toString();
     }
 
     public boolean getEditHeadline() {
@@ -99,8 +101,8 @@ public class DocumentPermissionSetDomainObject {
         return editTexts;
     }
 
-    public boolean getEditMenues() {
-        return editMenues;
+    public boolean getEditMenus() {
+        return editMenus;
     }
 
     public boolean getEditTemplates() {
@@ -115,7 +117,7 @@ public class DocumentPermissionSetDomainObject {
         return editPictures;
     }
 
-    public String[] getEditableTamplateNames() {
+    public String[] getEditableTemplateNames() {
         return editTemplatesNames;
     }
 
@@ -143,8 +145,8 @@ public class DocumentPermissionSetDomainObject {
         this.editTexts = editTexts;
     }
 
-    public void setEditMenues( boolean editMenues ) {
-        this.editMenues = editMenues;
+    public void setEditMenus( boolean editMenus ) {
+        this.editMenus = editMenus;
     }
 
     public void setEditTemplates( boolean editTemplates ) {

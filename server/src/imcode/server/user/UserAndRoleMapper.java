@@ -7,4 +7,6 @@ public interface UserAndRoleMapper {
    String[] getRoleNames( UserDomainObject user );
 
    String[] getAllRoleNames();
+
+   RoleDomainObject getRole( String roleName );
 }

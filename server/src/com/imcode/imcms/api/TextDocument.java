@@ -1,13 +1,15 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.*;
+import imcode.server.user.UserAndRoleMapper;
 
 import java.util.Map;
+import java.util.Arrays;
 
 public class TextDocument extends Document {
 
-    TextDocument( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
-        super( document, securityChecker, documentService, documentMapper, permissionSetMapper );
+    TextDocument( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper, UserAndRoleMapper userAndRoleMapper ) {
+        super( document, securityChecker, documentService, documentMapper, permissionSetMapper, userAndRoleMapper );
     }
 
     public TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
@@ -55,7 +57,7 @@ public class TextDocument extends Document {
         if (null != includedDocumentMetaId) {
             DocumentDomainObject includedDocument = documentMapper.getDocument( includedDocumentMetaId.intValue() );
             if( null != includedDocument && DocumentDomainObject.DOCTYPE_TEXT == includedDocument.getDocumentType() ) {
-                return new TextDocument( includedDocument, securityChecker, documentService, documentMapper, documentPermissionMapper );
+                return new TextDocument( includedDocument, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper );
             }
         }
         return null;
@@ -187,9 +189,9 @@ public class TextDocument extends Document {
                 String documentId = documentIds[i];
                 DocumentDomainObject documentDO = document.documentMapper.getDocument(Integer.parseInt(documentId)) ;
                 if (documentDO.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT) {
-                    documents[i] = new TextDocument( documentDO, document.securityChecker, document.documentService, document.documentMapper, document.documentPermissionMapper) ;
+                    documents[i] = new TextDocument( documentDO, document.securityChecker, document.documentService, document.documentMapper, document.documentPermissionSetMapper, document.userAndRoleMapper ) ;
                 } else {
-                    documents[i] = new Document( documentDO, document.securityChecker, document.documentService, document.documentMapper, document.documentPermissionMapper) ;
+                    documents[i] = new Document( documentDO, document.securityChecker, document.documentService, document.documentMapper, document.documentPermissionSetMapper, document.userAndRoleMapper ) ;
                 }
             }
             return documents ;
@@ -200,11 +202,14 @@ public class TextDocument extends Document {
          *
          * @param documentToAdd the document to add
          * @throws NoPermissionException If you lack permission to edit the menudocument or permission to add the document.
+         * @throws DocumentAlreadyInMenuException If the document already is in the menu.
          */
-        public void addDocument(Document documentToAdd) throws NoPermissionException {
+        public void addDocument(Document documentToAdd) throws NoPermissionException, DocumentAlreadyInMenuException {
             document.securityChecker.hasEditPermission(documentToAdd.getId());
             document.securityChecker.hasSharePermission(documentToAdd) ;
-
+            if (Arrays.asList(getDocuments()).contains(documentToAdd)) {
+                throw new DocumentAlreadyInMenuException("Menu "+menuIndex+" of document "+document.getId()+" already contains document "+documentToAdd.getId()) ;
+            }
             document.documentMapper.addDocumentToMenu( document.securityChecker.getCurrentLoggedInUser(), document.getId(),menuIndex,documentToAdd.getId()) ;
         }
 

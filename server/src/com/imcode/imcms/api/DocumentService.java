@@ -1,19 +1,22 @@
 package com.imcode.imcms.api;
 
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.UserAndRoleMapper;
 
 public class DocumentService {
     private SecurityChecker securityChecker;
     private DocumentMapper documentMapper;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
+    private UserAndRoleMapper userAndRoleMapper;
 
-    public DocumentService( SecurityChecker securityChecker, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper ) {
+    public DocumentService( SecurityChecker securityChecker, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper ) {
         this.securityChecker = securityChecker;
         this.documentMapper = documentMapper;
         this.documentPermissionSetMapper = documentPermissionSetMapper;
+        this.userAndRoleMapper = userAndRoleMapper;
     }
 
     /**
@@ -24,7 +27,7 @@ public class DocumentService {
      */
     public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
         imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument( documentId );
-        TextDocument result = new TextDocument( doc, securityChecker, this, documentMapper, documentPermissionSetMapper );
+        TextDocument result = new TextDocument( doc, securityChecker, this, documentMapper, documentPermissionSetMapper, userAndRoleMapper );
         securityChecker.hasDocumentPermission( result );
         return result;
     }
@@ -33,7 +36,7 @@ public class DocumentService {
         securityChecker.hasEditPermission(parentId);
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, parentMenuNumber );
-        TextDocument result = new TextDocument( newDoc, securityChecker, this, documentMapper, documentPermissionSetMapper );
+        TextDocument result = new TextDocument( newDoc, securityChecker, this, documentMapper, documentPermissionSetMapper, userAndRoleMapper );
         return result;
     }
 

@@ -76,6 +76,8 @@ To create a new text dokument that is linked from the document above, <%= makeLi
 <h3>Documents and permissions </h3>
 You can manipulate documents in various ways. To do so the current user has to have specific roles, that in turn has to
 have specific rights. <%= makeLink("document_permissions.jsp") %><br>
+Set the permissions for a role on a document, <%= makeLink("document_set_permissions.jsp") %><br>
+<br>
 There are two different levels of configurable "restricted" permissions that can be modified.
 To see what specified "Restricted One" permissions a page has, see <%= makeLink("document_permission_show_restricted_1.jsp") %><br>
 
