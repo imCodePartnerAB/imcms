@@ -329,12 +329,19 @@ public class DocumentMapper {
         return userIsSuperAdminOrHasPermissionSetId( documentId, user, wantedPermissionSetIds );
     }
 
-    public boolean hasDocumentPermission( int documentId, UserDomainObject user ) {
-
+    public boolean hasAtLeastDocumentReadPermission( int documentId, UserDomainObject user ) {
         int[] wantedPermissionSetIds = {IMCConstants.DOC_PERM_SET_FULL, IMCConstants.DOC_PERM_SET_RESTRICTED_1, IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.DOC_PERM_SET_READ};
-
         return userIsSuperAdminOrHasPermissionSetId( documentId, user, wantedPermissionSetIds );
+    }
 
+    /**
+     * @deprecated Use hasAtLeastDocumentReadPermission(...) instead.
+     * @param documentId
+     * @param user
+     * @return
+     */
+    public boolean hasDocumentPermission( int documentId, UserDomainObject user ) {
+        return hasAtLeastDocumentReadPermission( documentId, user );
     }
 
     private boolean userIsSuperAdminOrHasPermissionSetId( int documentId, UserDomainObject user, int[] wantedPermissionSetIds ) {
@@ -452,10 +459,10 @@ public class DocumentMapper {
     /**
      * Inspired by the SaveNewMeta servlet... I went throu the code and tried to extract the nessesary parts. Hasse
      * todo: make the SaveNewMeta to use this method instead.
-     * 
-     * @param parentId         
-     * @param parentMenuNumber 
-     * @return 
+     *
+     * @param parentId
+     * @param parentMenuNumber
+     * @return
      */
     public synchronized DocumentDomainObject createNewTextDocument( UserDomainObject user, int parentId, int parentMenuNumber ) {
         // general for all types of documents
@@ -857,10 +864,13 @@ public class DocumentMapper {
         String sqlStr = "SELECT category_types.name, category_types.max_choices\n" + "FROM category_types\n" + "WHERE category_types.name = ?";
         String[] sqlResult = service.sqlQuery( sqlStr, new String[]{categoryTypeName} );
 
-        String categoryTypeNameFromDb = sqlResult[0];
-        int categoryTypeMaxChoices = Integer.parseInt( sqlResult[1] );
-
-        return new CategoryTypeDomainObject( categoryTypeNameFromDb, categoryTypeMaxChoices );
+        if( null == sqlResult || 0 == sqlResult.length ) {
+            return null;
+        } else {
+            String categoryTypeNameFromDb = sqlResult[0];
+            int categoryTypeMaxChoices = Integer.parseInt( sqlResult[1] );
+            return new CategoryTypeDomainObject( categoryTypeNameFromDb, categoryTypeMaxChoices );
+        }
     }
 
     private static void setSectionsForDocument( IMCServiceInterface service, int metaId, SectionDomainObject[] sections ) {

@@ -13,7 +13,7 @@ public class TextDocument extends Document {
     }
 
     public TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         TextDocumentTextDomainObject imcmsText = documentMapper.getTextField( internalDocument, textFieldIndexInDocument ) ;
         TextField textField = new TextField(imcmsText, this ) ;
         return textField;
@@ -51,7 +51,7 @@ public class TextDocument extends Document {
     }
 
     public Document getInclude( int includeIndexInDocument ) throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         Map includedDocumentIds = documentMapper.getIncludedDocuments( internalDocument ) ;
         Integer includedDocumentMetaId = (Integer)includedDocumentIds.get( new Integer( includeIndexInDocument ) );
         if (null != includedDocumentMetaId) {
@@ -94,7 +94,7 @@ public class TextDocument extends Document {
      *                  or {@link TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING}.
      */
     public int getMenuSortOrder() throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getMenuSortOrder() ;
     }
 
@@ -105,7 +105,7 @@ public class TextDocument extends Document {
      * @throws NoPermissionException if you lack permission to read this document.
      */
     public Menu getMenu( int menuIndexInDocument ) throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return new Menu(menuIndexInDocument, this ) ;
     }
 
@@ -144,7 +144,7 @@ public class TextDocument extends Document {
          * @return the text of this textfield.
          */
         public String getText() throws NoPermissionException {
-            document.securityChecker.hasDocumentPermission(document);
+            document.securityChecker.hasAtLeastDocumentReadPermission(document);
             return imcmsText.getText() ;
         }
 
@@ -155,7 +155,7 @@ public class TextDocument extends Document {
          * @return the text of this textfield as a html-formatted string, suitable for displaying in a html-page.
          */
         public String getHtmlFormattedText() throws NoPermissionException {
-            document.securityChecker.hasDocumentPermission(document);
+            document.securityChecker.hasAtLeastDocumentReadPermission(document);
             return imcmsText.toHtmlString() ;
         }
     }
@@ -181,7 +181,7 @@ public class TextDocument extends Document {
          *
          * @return an array of the documents in this menu.
          */
-        public Document[] getDocuments() {
+        public Document[] getDocuments() throws NoPermissionException {
             String[] documentIds = document.documentMapper.getMenuLinks(document.getId(),menuIndex) ;
             Document[] documents = new Document[documentIds.length] ;
 

@@ -1,6 +1,5 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 
@@ -63,8 +62,8 @@ class SecurityChecker {
         return accessingUser;
     }
 
-    void hasDocumentPermission( Document document ) throws NoPermissionException {
-        if (!docMapper.hasDocumentPermission(document.getId(), accessingUser)) {
+    void hasAtLeastDocumentReadPermission( Document document ) throws NoPermissionException {
+        if (!docMapper.hasAtLeastDocumentReadPermission(document.getId(), accessingUser)) {
             throw new NoPermissionException("The logged in user does not have permission to access document "+document.getId()) ;
         }
     }

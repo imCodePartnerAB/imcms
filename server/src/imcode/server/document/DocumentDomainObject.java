@@ -150,7 +150,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of metaId.
-     * 
+     *
      * @return value of metaId.
      */
     public int getMetaId() {
@@ -159,7 +159,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of metaId.
-     * 
+     *
      * @param v Value to assign to metaId.
      */
     public void setMetaId( int v ) {
@@ -168,7 +168,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of documentType.
-     * 
+     *
      * @return value of documentType.
      */
     public int getDocumentType() {
@@ -177,7 +177,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of documentType.
-     * 
+     *
      * @param v Value to assign to documentType.
      */
     public void setDocumentType( int v ) {
@@ -187,12 +187,12 @@ public class DocumentDomainObject implements IMCConstants {
     /**
      * Check whether this document is active.
      * A document is active if it isn't archivedFlag, and if activatedDatetime is in the past.
-     * 
+     *
      * @return value of archivedFlag.
      */
     public boolean isActive() {
         Date now = new Date();
-        return (activatedDatetime == null || activatedDatetime.before( now )) && !isArchivedAtTime( now );
+        return (activatedDatetime == null || activatedDatetime.before( now )) && !isArchived();
     }
 
     public boolean isArchived() {
@@ -209,7 +209,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of archivedFlag.
-     * 
+     *
      * @param v Value to assign to archivedFlag.
      */
     public void setArchivedFlag( boolean v ) {
@@ -218,7 +218,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of createdDatetime.
-     * 
+     *
      * @return value of createdDatetime.
      */
     public Date getCreatedDatetime() {
@@ -227,7 +227,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of createdDatetime.
-     * 
+     *
      * @param v Value to assign to createdDatetime.
      */
     public void setCreatedDatetime( Date v ) {
@@ -236,7 +236,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of modifiedDatetime.
-     * 
+     *
      * @return value of modifiedDatetime.
      */
     public Date getModifiedDatetime() {
@@ -245,7 +245,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of modifiedDatetime.
-     * 
+     *
      * @param v Value to assign to modifiedDatetime.
      */
     public void setModifiedDatetime( Date v ) {
@@ -254,7 +254,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of archivedDatetime.
-     * 
+     *
      * @return value of archivedDatetime.
      */
     public Date getArchivedDatetime() {
@@ -263,7 +263,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of archivedDatetime.
-     * 
+     *
      * @param v Value to assign to archivedDatetime.
      */
     public void setArchivedDatetime( Date v ) {
@@ -272,7 +272,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of activatedDatetime.
-     * 
+     *
      * @return value of activatedDatetime.
      */
     public Date getActivatedDatetime() {
@@ -281,7 +281,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of archivedDatetime.
-     * 
+     *
      * @param v Value to assign to archivedDatetime.
      */
     public void setActivatedDatetime( Date v ) {
@@ -290,7 +290,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of headline.
-     * 
+     *
      * @return value of headline.
      */
     public String getHeadline() {
@@ -299,7 +299,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of headline.
-     * 
+     *
      * @param v Value to assign to headline.
      */
     public void setHeadline( String v ) {
@@ -308,7 +308,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of text.
-     * 
+     *
      * @return value of text.
      */
     public String getText() {
@@ -317,7 +317,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of text.
-     * 
+     *
      * @param v Value to assign to text.
      */
     public void setText( String v ) {
@@ -326,7 +326,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of image.
-     * 
+     *
      * @return value of image.
      */
     public String getImage() {
@@ -335,7 +335,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of image.
-     * 
+     *
      * @param v Value to assign to image.
      */
     public void setImage( String v ) {
@@ -344,7 +344,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of target.
-     * 
+     *
      * @return value of target.
      */
     public String getTarget() {
@@ -353,7 +353,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of target.
-     * 
+     *
      * @param v Value to assign to target.
      */
     public void setTarget( String v ) {
@@ -362,7 +362,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of filename.
-     * 
+     *
      * @return value of filename.
      */
     public String getFilename() {
@@ -380,7 +380,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of template.
-     * 
+     *
      * @return value of template.
      */
     public TemplateDomainObject getTemplate() {
@@ -389,7 +389,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of template.
-     * 
+     *
      * @param v Value to assign to template.
      */
     public void setTemplate( TemplateDomainObject v ) {
@@ -398,7 +398,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of menuSortOrder.
-     * 
+     *
      * @return value of menuSortOrder.
      */
     public int getMenuSortOrder() {
@@ -407,7 +407,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of menuSortOrder.
-     * 
+     *
      * @param v Value to assign to menuSortOrder.
      */
     public void setMenuSortOrder( int v ) {
@@ -416,7 +416,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Get the value of templateGroupId.
-     * 
+     *
      * @return value of templateGroupId.
      */
     public int getTemplateGroupId() {
@@ -425,7 +425,7 @@ public class DocumentDomainObject implements IMCConstants {
 
     /**
      * Set the value of templateGroupId.
-     * 
+     *
      * @param v Value to assign to templateGroupId.
      */
     public void setTemplateGroupId( int v ) {

@@ -1,4 +1,5 @@
-<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
+<%@ page import="com.imcode.imcms.api.*,
+                 java.util.*" errorPage="error.jsp" %>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     DocumentService documentService = imcmsSystem.getDocumentService() ;
@@ -9,18 +10,23 @@
     document.setMenuText( "Test menu text");
     document.setMenuImageURL("Test menu image url");
 
+    document.setActivatedDatetime( new Date() );
+    document.setArchivedDatetime( new Date() );
+
     //Language english = Language.getLanguageByISO639_1( "en" );
     Language english = Language.getLanguageByISO639_2( "eng" );
     document.setLanguage( english );
 
-    final CategoryType categoryType = documentService.getCategoryType("Type");
-    final String categoryName = "Image";
-    Category legalSubjectCategory = documentService.getCategory(categoryType, categoryName) ;
-
-    if (null != legalSubjectCategory) {
-        document.addCategory(legalSubjectCategory) ;
-    } else {
+    String categoryTypeName = "Type";
+    CategoryType categoryType = documentService.getCategoryType(categoryTypeName);
+    if( null != categoryType ) {
+        String categoryName = "Image";
+        Category legalSubjectCategory = documentService.getCategory(categoryType, categoryName) ;
+        if (null != legalSubjectCategory) {
+            document.addCategory(legalSubjectCategory) ;
+        } else {
         %> (The category did not exist.)<br> <%
+        }
     }
 
     // publisher
@@ -31,5 +37,5 @@
     // don't forget to save your changes!
     documentService.saveChanges( document );
 %>
-Done changing the headline, menutext, menuimageurl, language, publisher and adding a category to
+Done changing the headline, menutext, menuimageurl, activatedDatetime, archivedDatetime, language, publisher and adding a category to
 document <a href="../servlet/GetDoc?meta_id=<%= documentId %>"><%= documentId %></a>.

@@ -4,10 +4,7 @@ import imcode.server.document.*;
 import imcode.server.IMCConstants;
 import imcode.server.user.*;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -114,22 +111,26 @@ public class Document {
         return result;
     }
 
-    public int getId() {
+    public int getId() throws NoPermissionException {
+        //securityChecker.hasAtLeastDocumentReadPermission(this);
+        // Dont check permissions on this, its used when we check permissions
+        // and we get at stack overflow situation.
+        // and the document id is no secret anyway?
         return internalDocument.getMetaId();
     }
 
     public String getHeadline() throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getHeadline();
     }
 
     public String getMenuText() throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getText();
     }
 
     public String getMenuImageURL() throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return internalDocument.getImage();
     }
 
@@ -149,31 +150,34 @@ public class Document {
     }
 
     public User getCreator() throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return new User( internalDocument.getCreator() );
     }
 
-    DocumentDomainObject getInternal() {
+    DocumentDomainObject getInternal() throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
         return internalDocument;
     }
 
     public Language getLanguage() throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         return Language.getLanguageByISO639_2( internalDocument.getLanguageIso639_2() );
     }
 
-    public void addCategory( Category category ) {
+    public void addCategory( Category category ) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
         internalDocument.addCategory( category.getInternal() );
     }
 
-    public void removeCategory( Category category ) {
+    public void removeCategory( Category category ) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
         internalDocument.removeCategory( category.getInternal() );
     }
 
-    public Category[] getCategories() {
+    public Category[] getCategories() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission(this);
         CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategories();
         return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
-
     }
 
     private Category[] getCategoryArrayFromCategoryDomainObjectArray( CategoryDomainObject[] categoryDomainObjects ) {
@@ -195,13 +199,14 @@ public class Document {
         internalDocument.setPermissionSetForRole( role, permissionSet );
     }
 
-    public Category[] getCategoriesOfType( CategoryType categoryType ) {
+    public Category[] getCategoriesOfType( CategoryType categoryType ) throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission(this);
         CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategoriesOfType( categoryType.getInternal() );
         return getCategoryArrayFromCategoryDomainObjectArray( categoryDomainObjects );
     }
 
     public User getPublisher() throws NoPermissionException {
-        securityChecker.hasDocumentPermission( this );
+        securityChecker.hasAtLeastDocumentReadPermission( this );
         UserDomainObject publisher = internalDocument.getPublisher();
         if( null != publisher ) {
             return new User( publisher );
@@ -210,7 +215,28 @@ public class Document {
         }
     }
 
-    public void setPublisher( User user ) {
+    public Date getActivatedDatetime() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission(this);
+        return internalDocument.getActivatedDatetime();
+    }
+
+    public void setActivatedDatetime( Date datetime ) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        internalDocument.setActivatedDatetime( datetime );
+    }
+
+    public Date getArchivedDatetime() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission(this);
+        return internalDocument.getArchivedDatetime();
+    }
+
+    public void setArchivedDatetime( Date datetime ) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        internalDocument.setArchivedDatetime( datetime );
+    }
+
+    public void setPublisher( User user ) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
         internalDocument.setPublisher( user.getInternalUser() ) ;
     }
 }

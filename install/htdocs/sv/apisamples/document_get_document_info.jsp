@@ -24,11 +24,13 @@
 <pre>
 Headline: "<%=document.getHeadline()%>"
 Menu text: "<%=document.getMenuText()%>"
-Menu picture: "<%=document.getMenuImageURL()%>"
+Menu image url: "<%=document.getMenuImageURL()%>"
+Activated: <%=document.getActivatedDatetime()%>
+Archived: <%=document.getArchivedDatetime()%>
 Language: "<%=document.getLanguage()%>"
 Creator: <a href="mailto:<%=document.getCreator().getEmailAddress()%>"><%=document.getCreator().getLoginName()%></a>
-Publisher:  <%= document.getPublisher() %>
 Categories: <%= categoriesBuffer %>
+Publisher:  <%= document.getPublisher() %>
 </pre>
 </body>
 </html>

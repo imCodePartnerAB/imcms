@@ -26,7 +26,7 @@ public class DocumentService {
     public TextDocument getTextDocument(int documentId) throws NoPermissionException {
         imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument(documentId);
         TextDocument result = new TextDocument(doc, securityChecker, this, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
-        securityChecker.hasDocumentPermission(result);
+        securityChecker.hasAtLeastDocumentReadPermission(result);
         return result;
     }
 
