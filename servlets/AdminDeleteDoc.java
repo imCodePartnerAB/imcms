@@ -6,7 +6,7 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 
 public class AdminDeleteDoc extends Administrator {
-    private final static HTML_TEMPLATE = "AdminDeleteDoc.htm" ;
+    private final static String HTML_TEMPLATE = "AdminDeleteDoc.htm" ;
  
     /**
        The GET method creates the html page when this side has been
