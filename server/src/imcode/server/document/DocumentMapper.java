@@ -285,7 +285,9 @@ public class DocumentMapper {
         DocumentDomainObject document ;
         try {
             document = (DocumentDomainObject)documentCache.get( new Integer( metaId ) );
-            document = (DocumentDomainObject)document.clone();
+            if (null != document) {
+                document = (DocumentDomainObject)document.clone();
+            }
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException( e );
         }

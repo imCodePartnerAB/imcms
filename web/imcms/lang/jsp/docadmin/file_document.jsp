@@ -1,6 +1,5 @@
 <%@ page contentType="text/html"
-
-	import="com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
+    import="com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
           imcode.server.document.DocumentMapper,
           org.apache.commons.lang.StringEscapeUtils,
           imcode.server.Imcms,
@@ -14,10 +13,9 @@
           org.apache.commons.collections.Transformer,
           java.util.*,
           com.imcode.imcms.servlet.GetDoc,
-	        java.text.DecimalFormat,
-            java.text.DecimalFormatSymbols,
-            com.imcode.util.HumanReadable"
-
+          java.text.DecimalFormat,
+          java.text.DecimalFormatSymbols,
+          com.imcode.util.HumanReadable"
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
@@ -179,6 +177,22 @@ if (!files.isEmpty()) { %>
 	</tr><%
 } %>
 	</table></td>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
+<tr>
+    <td>
+        <table border="0" cellspacing="0" cellpadding="0" width="100%">
+            <tr>
+                <td><? install/htdocs/sv/jsp/docadmin/file_document.jsp/target_label ?></td>
+                <td>
+                    <% request.setAttribute( "target", document.getTarget() );%>
+                    <jsp:include page="target.jsp"/>
+                </td>
+            </tr>
+        </table>
+    </td>
 </tr>
 <tr>
 	<td>#gui_hr( "blue" )</td>

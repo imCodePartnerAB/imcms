@@ -55,25 +55,9 @@
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1002 ?><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="22"></td>
 	<td>
-	<table border="0" cellspacing="0" cellpadding="0">
-	<tr>
-        <% String target = document.getTarget() ; %>
-		<td><input type="radio" name="target" value="_self"<% if ("_self".equalsIgnoreCase( target ) || "".equals( target )) {%> checked<% target = null; }%>></td>
-		<td class="imcmsAdmText" nowrap>&nbsp;<? install/htdocs/sv/jsp/docadmin/url_document.jsp/1003 ?> &nbsp;</td>
-		<td><input type="radio" name="target" value="_blank"<% if ("_blank".equalsIgnoreCase( target )) {%> checked<% target = null; }%>></td>
-		<td class="imcmsAdmText" nowrap>&nbsp;<? install/htdocs/sv/jsp/docadmin/url_document.jsp/1004 ?> &nbsp;</td>
-		<td><input type="radio" name="target" value="_top"<% if ("_top".equalsIgnoreCase( target )) {%> checked<% target = null; }%>></td>
-		<td class="imcmsAdmText" nowrap>&nbsp;<? install/htdocs/sv/jsp/docadmin/url_document.jsp/1005 ?> &nbsp;</td>
-	</tr>
-	<tr>
-		<td><input type="radio" name="target"<% if (null != target) {%> checked<%}%>></td>
-		<td class="imcmsAdmText" nowrap>&nbsp;<? install/htdocs/sv/jsp/docadmin/url_document.jsp/1006 ?> &nbsp;</td>
-		<td colspan="4">
-            <input type="text" name="target" size="17" maxlength="50"
-                value="<% if (null != target) {%><%= StringEscapeUtils.escapeHtml( target ) %><%}%>">
-        </td>
-	</tr>
-	</table></td>
+        <% request.setAttribute( "target", document.getTarget() );%>
+        <jsp:include page="target.jsp"/>
+    </td>
 </tr>
 <tr>
 	<td colspan="2">

@@ -1,11 +1,13 @@
 package com.imcode.imcms.flow;
 
+import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.InputStreamSource;
-import imcode.util.*;
+import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
 import org.apache.commons.collections.Factory;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
@@ -22,8 +24,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
-
-import com.imcode.util.MultipartHttpServletRequest;
 
 public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
@@ -59,12 +59,14 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     protected void dispatchOkFromEditPage( HttpServletRequest r, HttpServletResponse response ) throws IOException, ServletException {
         MultipartHttpServletRequest request = (MultipartHttpServletRequest)r;
 
-        setSelectedFileFromRequestAndDispatchIfError( request, response );
+        updateFromRequestAndDispatchIfError( request, response );
 
     }
 
-    private void setSelectedFileFromRequestAndDispatchIfError( MultipartHttpServletRequest request,
+    private void updateFromRequestAndDispatchIfError( MultipartHttpServletRequest request,
                                                                         HttpServletResponse response ) throws IOException, ServletException {
+        document.setTarget( EditDocumentInformationPageFlow.getTargetFromRequest( request ));
+
         final FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
         String defaultFileId = request.getParameter( REQUEST_PARAMETER__DEFAULT_FILE );
         if ( null != defaultFileId ) {
@@ -181,7 +183,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
         MultipartHttpServletRequest request = (MultipartHttpServletRequest)r;
         FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
 
-        setSelectedFileFromRequestAndDispatchIfError( request, response );
+        updateFromRequestAndDispatchIfError( request, response );
         String selectedFileId = null ;
 
         if ( !response.isCommitted() ) {
