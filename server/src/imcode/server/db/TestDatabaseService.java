@@ -149,6 +149,19 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertEquals( 5, mimer.sproc_GetPhonetypes_ORDER_BY_phonetype_id( 1 ).length );
     }
 
+    public void test_sproc_GetUserPhoneNumbers() {
+        test_sproc_GetUserPhoneNumbers( sqlServer );
+        test_sproc_GetUserPhoneNumbers( mySql );
+        test_sproc_GetUserPhoneNumbers( mimer );
+    }
+
+    private void test_sproc_GetUserPhoneNumbers( DatabaseService dbService ) {
+        int user_id = 2;
+        assertEquals( 0, dbService.sproc_GetUserPhoneNumbers( user_id ).length );
+        dbService.sproc_phoneNbrAdd( user_id, "345345-34534", 0 );
+        assertEquals( 1, dbService.sproc_GetUserPhoneNumbers( user_id ).length );
+    }
+
     public void test_sproc_GetUserPhones() {
         test_sproc_GetUserPhones( sqlServer );
         test_sproc_GetUserPhones( mySql );

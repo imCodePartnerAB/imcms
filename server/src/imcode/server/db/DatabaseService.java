@@ -486,10 +486,9 @@ public class DatabaseService {
     int sproc_AddUseradminPermissibleRoles( int user_id, int role_id ) {
         String sql = "INSERT INTO useradmin_role_crossref (user_id, role_id ) " +
             "VALUES ( ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer(user_id), new Integer(role_id) };
-       return sqlProcessor.executeUpdate( sql, paramValues );
+        Object[] paramValues = new Object[]{new Integer( user_id ), new Integer( role_id )};
+        return sqlProcessor.executeUpdate( sql, paramValues );
     }
-
 
     static class Table_user_roles_crossref {
         int user_id;
@@ -522,31 +521,31 @@ public class DatabaseService {
      */
     int sproc_AddUserRole( Table_user_roles_crossref userRoleTupple ) {
         // Lets check if the role already exists
-       ArrayList querryResult = sql_selectUserAndRoleFrom_user_roles_crossref( userRoleTupple );
+        ArrayList querryResult = sql_selectUserAndRoleFrom_user_roles_crossref( userRoleTupple );
 
-       if( querryResult.size() == 0 ) {
-           Object[] paramValues = new Object[]{ new Integer( userRoleTupple.user_id ), new Integer( userRoleTupple.role_id ) };
-           String sqlInsert = "INSERT INTO user_roles_crossref(user_id, role_id) VALUES( ? , ? )";
-           return sqlProcessor.executeUpdate( sqlInsert, paramValues );
-       } else {
-           return 0;
-       }
+        if( querryResult.size() == 0 ) {
+            Object[] paramValues = new Object[]{new Integer( userRoleTupple.user_id ), new Integer( userRoleTupple.role_id )};
+            String sqlInsert = "INSERT INTO user_roles_crossref(user_id, role_id) VALUES( ? , ? )";
+            return sqlProcessor.executeUpdate( sqlInsert, paramValues );
+        } else {
+            return 0;
+        }
     }
 
     int sproc_ChangeUserActiveStatus( int user_id, boolean active ) {
         String sql = "UPDATE users SET active = ? WHERE user_id = ? ";
-        Integer activeInteger = new Integer( active?1:0 );
+        Integer activeInteger = new Integer( active ? 1 : 0 );
         Integer userIdInteger = new Integer( user_id );
-        Object[] paramValues = new Object[]{ activeInteger, userIdInteger };
+        Object[] paramValues = new Object[]{activeInteger, userIdInteger};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
     private ArrayList sql_selectUserAndRoleFrom_user_roles_crossref( Table_user_roles_crossref userRoleTupple ) {
         String sqlSelect = "SELECT user_id, role_id FROM user_roles_crossref WHERE user_id = ? AND role_id = ? ";
-        Object[] paramValues = new Object[]{ new Integer( userRoleTupple.user_id ), new Integer( userRoleTupple.role_id ) };
+        Object[] paramValues = new Object[]{new Integer( userRoleTupple.user_id ), new Integer( userRoleTupple.role_id )};
         return sqlProcessor.executeQuery( sqlSelect, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                return new Table_user_roles_crossref( rs.getInt("user_id"), rs.getInt("role_id"));
+                return new Table_user_roles_crossref( rs.getInt( "user_id" ), rs.getInt( "role_id" ) );
             }
         } );
     }
@@ -560,7 +559,7 @@ public class DatabaseService {
      */
     String sproc_FindUserName( String userName ) {
         String sql = "SELECT login_name FROM users WHERE LOWER(login_name) = ? ";
-        Object[] paramValues = new Object[]{ userName.toLowerCase() };
+        Object[] paramValues = new Object[]{userName.toLowerCase()};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 return rs.getString( "login_name" );
@@ -569,7 +568,7 @@ public class DatabaseService {
         if( 0 == queryResult.size() ) {
             return null;
         } else {
-            return (String)queryResult.get(0);
+            return (String)queryResult.get( 0 );
         }
     }
 
@@ -577,34 +576,34 @@ public class DatabaseService {
     // todo klumpa ihop med delete userses?
     int sproc_DelPhoneNr( int user_id ) {
         String sql = "DELETE FROM phones WHERE user_id = ? ";
-        Object[] paramValues = new Object[]{ new Integer( user_id ) };
+        Object[] paramValues = new Object[]{new Integer( user_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
     int sproc_PhoneNbrDelete( int phone_id ) {
         String sql = "DELETE FROM PHONES WHERE phone_id = ? ";
-        Object[] paramValues = new Object[]{ new Integer( phone_id ) };
+        Object[] paramValues = new Object[]{new Integer( phone_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
     int sproc_PhoneNbrUpdate( int user_id, int phone_id, String number, int phonetype_id ) {
         String sql = "UPDATE phones SET number = ?, phonetype_id = ? " +
             "WHERE user_id = ? AND phone_id = ? ";
-        Object[] paramValues = new Object[]{ number, new Integer( phonetype_id ),
-                                             new Integer(user_id), new Integer( phone_id )};
+        Object[] paramValues = new Object[]{number, new Integer( phonetype_id ),
+                                            new Integer( user_id ), new Integer( phone_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
     String sproc_GetPhonetypeName( int phonetype_id, int lang_id ) {
         String sql = "select typename from phonetypes " +
             "where phonetype_id = ? and lang_id = ? ";
-        Object[] paramValues = new Object[]{ new Integer(phonetype_id), new Integer(lang_id) };
+        Object[] paramValues = new Object[]{new Integer( phonetype_id ), new Integer( lang_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                return rs.getString(1);
+                return rs.getString( 1 );
             }
         } );
-        return (String)queryResult.get(0);
+        return (String)queryResult.get( 0 );
     }
 
     static class View_phonetypes {
@@ -619,20 +618,19 @@ public class DatabaseService {
 
     View_phonetypes[] sproc_GetPhonetypes_ORDER_BY_phonetype_id( int lang_id ) {
         String sql = " SELECT  phonetype_id, typename FROM phonetypes WHERE lang_id = ? ORDER BY phonetype_id";
-        Object[] paramValues = new Object[]{ new Integer(lang_id)};
+        Object[] paramValues = new Object[]{new Integer( lang_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int phonetype_id = rs.getInt("phonetype_id");
-                String typename = rs.getString("typename");
+                int phonetype_id = rs.getInt( "phonetype_id" );
+                String typename = rs.getString( "typename" );
                 return new View_phonetypes( phonetype_id, typename );
             }
         } );
         return (View_phonetypes[])queryResult.toArray( new View_phonetypes[queryResult.size()] );
     }
 
-
-    static class View_userPhone {
-        public View_userPhone( int phone_id, String phoneNumber ) {
+    static class View_phone {
+        public View_phone( int phone_id, String phoneNumber ) {
             this.phone_id = phone_id;
             this.phoneNumber = phoneNumber;
         }
@@ -647,17 +645,55 @@ public class DatabaseService {
      * @return
      */
     // todo: Warning, this method used to RTIM the phone numer result, not any longer...
-    View_userPhone[] sproc_GetUserPhones( int user_id ) {
+    View_phone[] sproc_GetUserPhones( int user_id ) {
         String sql = "SELECT p.phone_id, p.number FROM users u , phones p " +
             "WHERE u.user_id = p.user_id AND u.user_id = ? ";
-        Object[] paramValues = new Object[]{ new Integer(user_id) };
+        Object[] paramValues = new Object[]{new Integer( user_id )};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int phone_id = rs.getInt( "phone_id" );
+                String phoneNumber = rs.getString( "number" );
+                return new View_phone( phone_id, phoneNumber );
+            }
+        } );
+        return (View_phone[])queryResult.toArray( new View_phone[queryResult.size()] );
+    }
+
+    static class View_userAndPhone {
+        public View_userAndPhone( int phone_id, String number, int user_id, int phonetype_id, String typename ) {
+            this.phone_id = phone_id;
+            this.number = number;
+            this.user_id = user_id;
+            this.phonetype_id = phonetype_id;
+            this.typename = typename;
+        }
+
+        int phone_id;
+        String number;
+        int user_id;
+        int phonetype_id;
+        String typename;
+    }
+
+    // todo: Do we realy need to return user_id?
+    // todo: This should be able to be used instead of sproc_GetUserPhones, why not?
+    View_userAndPhone[] sproc_GetUserPhoneNumbers( int user_id ) {
+        String sql = "SELECT phones.phone_id, phones.number, phones.user_id, phones.phonetype_id, phonetypes.typename " +
+            "FROM phones " +
+            "INNER JOIN users ON phones.user_id = users.user_id " +
+            "INNER JOIN phonetypes ON phones.phonetype_id = phonetypes.phonetype_id AND users.lang_id = phonetypes.lang_id " +
+            "WHERE phones.user_id = ? ";
+        Object[] paramValues = new Object[]{new Integer( user_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 int phone_id = rs.getInt("phone_id");
-                String phoneNumber = rs.getString("number");
-                return new View_userPhone( phone_id, phoneNumber );
+                String number = rs.getString("number");
+                int user_id = rs.getInt("user_id");
+                int phonetype_id = rs.getInt("phonetype_id");
+                String typename = rs.getString("typename");
+                return new View_userAndPhone( phone_id, number, user_id, phonetype_id, typename );
             }
         } );
-        return (View_userPhone[])queryResult.toArray( new View_userPhone[ queryResult.size()] );
+        return (View_userAndPhone[])queryResult.toArray( new View_userAndPhone[queryResult.size()] );
     }
 }
