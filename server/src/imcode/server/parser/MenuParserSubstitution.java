@@ -163,7 +163,7 @@ public class MenuParserSubstitution implements Substitution {
 	    switch(menuItemChild.getNodeType()) { // Check the type of the child-node.
 	    case Node.ELEMENT_NODE : // An element-node
 		Element menuItemChildElement = (Element)menuItemChild ;
-		if (!"menuitemhide".equals(menuItemChildElement.getName()) ) { // if the child-element isn't a imcms:menuitemhide-element...
+		if ( (!"menuitemhide".equals(menuItemChildElement.getName())) || menuItem != null ) { // if the child-element isn't a imcms:menuitemhide-element or there is a child...
 		    parseMenuItem(result,menuItemChildElement.getTextContent(),menuItemSubstitution,patMat) ; // parse it
 		}
 		break ;
