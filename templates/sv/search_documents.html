@@ -1,0 +1,134 @@
+<HTML><HEAD><TITLE>S&ouml;k</TITLE>
+<SCRIPT language=VBScript>
+<!-- Lite Kod
+Sub Document_onKeyPress()
+if (window.event.keyCode = 13) Then
+call IEkeyDown(13)
+End If
+End Sub
+// Som slutar här -->
+</SCRIPT>
+
+<SCRIPT language=JavaScript1.2>
+<!-- Original:  Ronnie T. Moore -->
+<!-- Web Site:  The JavaScript Source -->
+
+<!-- This script and many more are available free online at -->
+<!-- The JavaScript Source!! http://javascript.internet.com -->
+
+<!-- Begin
+var nextfield = "question_field"; // name of first box on page
+netscape = "";
+ver = navigator.appVersion; len = ver.length;
+for(iln = 0; iln < len; iln++) if (ver.charAt(iln) == "(") break;
+netscape = (ver.charAt(iln+1).toUpperCase() != "C");
+
+function keyDown(DnEvents) { // handles keypress
+// determines whether Netscape or Internet Explorer
+	k = (netscape) ? DnEvents.which : window.event.keyCode;
+	//window.status = k;
+	if (k == 13){ // enter key pressed
+		if(!alreadySubmitted) {
+		 	//document.forms[0].submit();
+ 			document.form1.submit() ;
+			alreadySubmitted = true;
+///alert("Subit");
+		 	return true; // submit, we finished all fields
+			}
+		}	
+}
+
+function IEkeyDown(k) { // handles keypress
+		if(!alreadySubmitted) {
+		 	document.forms[0].submit();
+			alreadySubmitted = true;
+alert("Submit");
+		 	return true;
+		}
+}
+
+
+if (window.document.captureEvents!=null) 
+ window.document.captureEvents(Event.KEYPRESS);
+ window.document.onkeypress = keyDown;
+
+//  End -->
+</SCRIPT>
+</HEAD>
+<body bgcolor="#FFFFFF" link="#333399" vlink="#333399" alink="#999999" leftmargin="15" topmargin="0" marginwidth="15" marginheight="0">
+<FORM METHOD=POST ACTION="#SERVLET_URL#SearchDocuments" name="form1">
+  <table border="0" width="500" cellpadding="2" cellspacing="0">
+    <tr> 
+      <td><img src="#SERVLET_URL#../IMAGES/sok.gif" width="500" height="27" align="top"></td>
+  </tr>
+  <tr> 
+    <td>&nbsp;</td>
+  </tr>
+</table>
+  <table border="1" width="554" cellpadding="2" cellspacing="0">
+    <tr bgcolor="#333366"> 
+      <td colspan="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Skriv 
+        in din fr&aring;ga nedan:</font></b> </td>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td height="35" colspan="2"> 
+        <input type="text" name="question_field" size="65">
+        <input type="submit" name="search" value="S&ouml;k">
+        <a href="#SERVLET_URL#../search/search_help.htm" target="_blank">Hj&auml;lp</a><BR>
+      </td>
+    </tr>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td width="255"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+        <input type="radio" name="search_prep" value="and" checked>
+        Alla ord m&aring;s</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2">te 
+        finnas (AND)</font> </td>
+      <td width="285"> 
+        <input type="radio" name="search_prep" value="or">
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ett av orden 
+        m&aring;ste finnas (OR) 
+        <input type="hidden" name="start" value="#START#">
+        <input type="hidden" name="search2" value="Hurra">
+        </font></td>
+    </tr>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td height="66" colspan="2"> 
+        <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+          <input type="checkbox" name="search_type" value="atc_icd10">
+          S&ouml;k p&aring; dokumentkoder - (ATC eller ICD10 koder)</font> 
+        <table width="62%" border="0">
+          <tr> 
+            <td width="13%">&nbsp;</td>
+            <td width="63%"> 
+              <input type="checkbox" name="string_match" value="match">
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Exakt 
+              str&auml;ngmatchning</font> </td>
+            <td width="24%">&nbsp;</td>
+          </tr>
+        </table>
+        
+      </td>
+    </tr>
+    <tr bgcolor="#BABABA" valign="middle"> 
+      <td colspan="2" height="51">
+        <p> 
+          <select name="search_area" size="1">
+            <option value="all" selected>Alla dokument</option>
+            <option value="not_archived">Aktuella dokument</option>
+            <option value="archived">Arkiverade dokument</option>
+          </select>
+          <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ange s&ouml;komr&aring;de 
+          </font></p>
+        </td>
+    </tr>
+  </table>
+  <br>
+</FORM>
+  
+<SCRIPT language=JavaScript1.2>
+<!--
+var alreadySubmitted = false;
+document.form1.elements[1].focus();
+document.form1.question_field.focus();
+//document.form1.question_field.focus();
+//-->
+</script>
+</BODY></HTML>
