@@ -2,11 +2,13 @@ package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
 import imcode.server.IMCServiceInterface;
+import imcode.server.IMCConstants;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.regex.*;
@@ -17,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class TextDocumentParser implements imcode.server.IMCConstants {
+public class TextDocumentParser {
 
     private final static Logger log = Logger.getLogger( TextDocumentParser.class );
 
@@ -67,27 +69,14 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             UserDomainObject user = documentRequest.getUser();
             DocumentMapper documentMapper = service.getDocumentMapper();
 
-            boolean textmode = false;
-            boolean imagemode = false;
-            boolean menumode = false;
-            boolean templatemode = false;
-            boolean includemode = false;
+            TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document );
 
-            if ( flags > 0 ) {
-                int user_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
-                int user_perm_set = documentMapper.getUsersPermissionBitsOnDocumentIfRestricted( user_set_id, document );
-
-                textmode = ( flags & PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0
-                           && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 );
-                imagemode = ( flags & PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
-                            && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0 );
-                menumode = ( flags & PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0
-                           && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 );
-                templatemode = ( flags & PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
-                               && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0 );
-                includemode = ( flags & PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
-                              && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0 );
-            }
+            boolean textmode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
+            boolean imagemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0 && permissionSet.getEditImages();
+            boolean menumode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
+            boolean templatemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
+                                   && permissionSet.getEditTemplates();
+            boolean includemode = ( flags & IMCConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0 && permissionSet.getEditIncludes();
 
             String template = getTemplate( document, parserParameters );
 
@@ -111,7 +100,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             return returnresult;
         } catch ( RuntimeException ex ) {
             log.error( "Error occurred during parsing.", ex );
-            throw ex;
+            throw new UnhandledException( ex );
         }
     }
 
@@ -132,14 +121,14 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         return templateContents;
     }
 
-    private String applyEmphasis( DocumentRequest documentRequest, UserDomainObject user, String returnresult,
+    private String applyEmphasis( DocumentRequest documentRequest, UserDomainObject user, String string,
                                   Perl5Matcher patMat, StringBuffer result ) {
         String[] emp = documentRequest.getEmphasize();
         if ( emp != null ) { // If we have something to emphasize...
             String emphasize_string = service.getAdminTemplate( "textdoc/emphasize.html", user, null );
             Perl5Substitution emphasize_substitution = new Perl5Substitution( emphasize_string );
-            StringBuffer emphasized_result = new StringBuffer( returnresult.length() ); // A StringBuffer to hold the result
-            PatternMatcherInput emp_input = new PatternMatcherInput( returnresult );    // A PatternMatcherInput to match on
+            StringBuffer emphasized_result = new StringBuffer( string.length() ); // A StringBuffer to hold the result
+            PatternMatcherInput emp_input = new PatternMatcherInput( string );    // A PatternMatcherInput to match on
             int last_html_offset = 0;
             int current_html_offset;
             String non_html_tag_string;
@@ -157,9 +146,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             non_html_tag_string = result.substring( last_html_offset );
             non_html_tag_string = emphasizeString( non_html_tag_string, emp, emphasize_substitution, patMat );
             emphasized_result.append( non_html_tag_string );
-            returnresult = emphasized_result.toString();
+            return emphasized_result.toString();
         }
-        return returnresult;
+        return string;
     }
 
     private String replaceTags( String template, Perl5Matcher patMat, MenuParserSubstitution menuparsersubstitution,
@@ -222,13 +211,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 selectedTemplateGroup = templateMapper.getTemplateGroupById( document.getTemplateGroupId() );
             }
 
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)service.getDocumentMapper().getUsersMostPrivilegedPermissionSetOnDocument( user, document ) ;
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)service.getDocumentMapper().getUsersMostPrivilegedPermissionSetOnDocument( user, document );
 
             TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
             String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups( allowedTemplateGroups, selectedTemplateGroup );
 
-            TemplateDomainObject[] templates = new TemplateDomainObject[0] ;
-            if (ArrayUtils.contains( allowedTemplateGroups, selectedTemplateGroup )){
+            TemplateDomainObject[] templates = new TemplateDomainObject[0];
+            if ( ArrayUtils.contains( allowedTemplateGroups, selectedTemplateGroup ) ) {
                 templates = templateMapper.getTemplatesInGroup( selectedTemplateGroup );
             }
             String templatesHtmlOptionList = templateMapper.createHtmlOptionListOfTemplates( templates, document.getTemplate() );

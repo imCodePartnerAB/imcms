@@ -24,18 +24,6 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
         return DOCTYPE_BROWSER;
     }
 
-    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveBrowserDocument( this );
-    }
-
-    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveNewBrowserDocument( this );
-    }
-
-    public void initDocument( DocumentMapper documentMapper ) {
-        documentMapper.initBrowserDocument( this );
-    }
-
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitBrowserDocument(this) ;
     }

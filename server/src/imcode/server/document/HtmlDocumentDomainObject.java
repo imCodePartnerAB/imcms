@@ -1,23 +1,15 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-feb-28
- * Time: 20:47:40
- */
 package imcode.server.document;
-
-import imcode.server.user.UserDomainObject;
 
 public class HtmlDocumentDomainObject extends DocumentDomainObject {
 
-    private String htmlDocumentHtml = "";
+    private String html = "";
 
-    public void setHtmlDocumentHtml( String htmlDocumentHtml ) {
-        this.htmlDocumentHtml = htmlDocumentHtml;
+    public void setHtml( String html ) {
+        this.html = html;
     }
 
-    public String getHtmlDocumentHtml() {
-        return htmlDocumentHtml;
+    public String getHtml() {
+        return html;
     }
 
     protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
@@ -28,20 +20,8 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
         return DOCTYPE_HTML;
     }
 
-    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveHtmlDocument( this );
-    }
-
-    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveNewHtmlDocument( this );
-    }
-
-    public void initDocument( DocumentMapper documentMapper ) {
-        documentMapper.initHtmlDocument( this );
-    }
-
     public void accept( DocumentVisitor documentVisitor ) {
-        documentVisitor.visitHtmlDocument(this) ;
+        documentVisitor.visitHtmlDocument( this );
     }
 
 }

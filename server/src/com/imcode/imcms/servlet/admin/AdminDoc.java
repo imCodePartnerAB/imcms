@@ -6,7 +6,6 @@ import imcode.server.*;
 import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -15,7 +14,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 public class AdminDoc extends HttpServlet {
 
@@ -140,170 +141,29 @@ public class AdminDoc extends HttpServlet {
         if ( ( flags & 4 ) != 0 ) { // User rights
             htmlStr = imcode.util.MetaDataParser.parseMetaPermission( String.valueOf( meta_id ), String.valueOf( meta_id ), user, "docinfo/change_meta_rights.html" );
             return htmlStr;
+        } else {
+
+            switch ( doc_type ) {
+
+                default:
+                    DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req );
+                    ParserParameters parserParameters = new ParserParameters();
+                    parserParameters.setDocumentRequest( documentRequest );
+                    parserParameters.setFlags( flags );
+                    String editingMenuIndexStr = req.getParameter( "editmenu" );
+                    if ( null != editingMenuIndexStr ) {
+                        parserParameters.setEditingMenuIndex( Integer.valueOf( editingMenuIndexStr ) );
+                    }
+                    return imcref.parsePage( parserParameters );
+
+                case DocumentDomainObject.DOCTYPE_CONFERENCE:
+                case DocumentDomainObject.DOCTYPE_BILLBOARD:
+                case DocumentDomainObject.DOCTYPE_CHAT:
+                    GetDoc.redirectToExternalDocumentTypeWithAction( document, res, "change" );
+                    return null;
+
+            }
         }
-
-        switch ( doc_type ) {
-
-            default:
-                DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req );
-                ParserParameters parserParameters = new ParserParameters();
-                parserParameters.setDocumentRequest( documentRequest );
-                parserParameters.setFlags( flags );
-                String editingMenuIndexStr = req.getParameter( "editmenu" );
-                if ( null != editingMenuIndexStr ) {
-                    parserParameters.setEditingMenuIndex( Integer.valueOf( editingMenuIndexStr ) );
-                }
-                String result = imcref.parsePage( parserParameters );
-                return result;
-
-            case DocumentDomainObject.DOCTYPE_CONFERENCE:
-            case DocumentDomainObject.DOCTYPE_BILLBOARD:
-            case DocumentDomainObject.DOCTYPE_CHAT:
-                GetDoc.redirectToExternalDocumentTypeWithAction( document, res, "change" );
-                return null;
-
-            case DocumentDomainObject.DOCTYPE_URL:
-                Vector urlvec = new Vector();
-                String[] strary = imcref.sqlQuery( "select u.url_ref,m.target, m.frame_name from url_docs u, meta m where m.meta_id = u.meta_id and m.meta_id = ?", new String[]{
-                    "" + meta_id
-                } );
-                String url_ref = strary[0];
-                String target = strary[1];
-                String frame_name = "";
-                if ( "_self".equals( target ) ) {
-                    urlvec.add( "#_self#" );
-                    urlvec.add( "checked" );
-                } else if ( "_top".equals( target ) ) {
-                    urlvec.add( "#_top#" );
-                    urlvec.add( "checked" );
-                } else if ( "_blank".equals( target ) ) {
-                    urlvec.add( "#_blank#" );
-                    urlvec.add( "checked" );
-                } else if ( "_other".equals( target ) ) {
-                    frame_name = strary[2];
-                    urlvec.add( "#_other#" );
-                    urlvec.add( "checked" );
-                } else {
-                    urlvec.add( "#_other#" );
-                    urlvec.add( "checked" );
-                    frame_name = target;
-                }
-                urlvec.add( "#frame_name#" );
-                urlvec.add( frame_name );
-                urlvec.add( "#url_doc_ref#" );
-                urlvec.add( url_ref );
-                urlvec.add( "#getMetaId#" );
-                urlvec.add( String.valueOf( meta_id ) );
-                urlvec.add( "#getParentMetaId#" );
-                urlvec.add( String.valueOf( parent_meta_id ) );
-
-                htmlStr = imcref.getAdminTemplate( "change_url_doc.html", user, urlvec );
-                break;
-
-            case DocumentDomainObject.DOCTYPE_HTML:
-                Vector fsetvec = new Vector();
-                String fset = imcref.sqlQueryStr( "select frame_set from frameset_docs where meta_id = ?", new String[]{
-                    "" + meta_id
-                } );
-                fsetvec.add( "#frame_set#" );
-                fsetvec.add( fset );
-                fsetvec.add( "#getMetaId#" );
-                fsetvec.add( String.valueOf( meta_id ) );
-                fsetvec.add( "#getParentMetaId#" );
-                fsetvec.add( String.valueOf( parent_meta_id ) );
-                htmlStr = imcref.getAdminTemplate( "change_frameset_doc.html", user, fsetvec );
-
-                break;
-
-            case DocumentDomainObject.DOCTYPE_BROWSER:
-                Vector vec = new Vector();
-                String sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = ? order by value desc,name asc";
-                Map hash = imcref.sqlQueryHash( sqlStr, new String[]{"" + meta_id} );
-                String[] b_id = (String[])hash.get( "browser_id" );
-                String[] nm = (String[])hash.get( "name" );
-                String[] to = (String[])hash.get( "to_meta_id" );
-                String bs = "";
-                if ( b_id != null ) {
-                    bs += "<table width=\"50%\" border=\"0\">";
-                    for ( int i = 0; i < b_id.length; i++ ) {
-                        String[] temparr = {" ", "&nbsp;"};
-                        bs += "<tr><td>" + Parser.parseDoc( nm[i], temparr )
-                              + ":</td><td><input type=\"text\" size=\"10\" name=\"bid"
-                              + b_id[i]
-                              + "\" value=\""
-                              + ( to[i].equals( "0" )
-                                  ? "\">"
-                                  : to[i] + "\"><a href=\"GetDoc?meta_id=" + to[i] + "&parent_meta_id=" + meta_id
-                                    + "\">"
-                                    + to[i]
-                                    + "</a>" )
-                              + "</td></tr>";
-                    }
-                    bs += "</table>";
-                }
-                vec.add( "#browsers#" );
-                vec.add( bs );
-                sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = ? ) order by value desc,name asc";
-                hash = imcref.sqlQueryHash( sqlStr, new String[]{"" + meta_id} );
-                b_id = (String[])hash.get( "browser_id" );
-                nm = (String[])hash.get( "name" );
-                String nb = "";
-                if ( b_id != null ) {
-                    for ( int i = 0; i < b_id.length; i++ ) {
-                        nb += "<option value=\"" + b_id[i] + "\">" + nm[i] + "</option>";
-                    }
-                }
-                vec.add( "#new_browsers#" );
-                vec.add( nb );
-                vec.add( "#getMetaId#" );
-                vec.add( String.valueOf( meta_id ) );
-                vec.add( "#getDocType#" );
-                vec.add( "<INPUT TYPE=\"hidden\" NAME=\"doc_type\" VALUE=\"" + doc_type + "\">" );
-                vec.add( "#DocMenuNo#" );
-                vec.add( "" );
-                vec.add( "#getParentMetaId#" );
-                vec.add( String.valueOf( parent_meta_id ) );
-                htmlStr = imcref.getAdminTemplate( "change_browser_doc.html", user, vec );
-                break;
-
-            case DocumentDomainObject.DOCTYPE_FILE:
-                String[] sqlResult = DocumentMapper.sqlGetFromFileDocs( imcref, meta_id );
-                String fileName = sqlResult[0];
-                String mimeType = sqlResult[1];
-                sqlStr = "select mime,mime_name from mime_types where lang_prefix = ? and mime != 'other'";
-                hash = imcref.sqlQueryHash( sqlStr, new String[]{lang_prefix} );
-                String[] mime = (String[])hash.get( "mime" );
-                String[] mime_name = (String[])hash.get( "mime_name" );
-                String optStr = "";
-                String other = mimeType;
-                String tmp;
-                for ( int i = 0; i < mime.length; i++ ) {
-                    if ( mime[i].equals( mimeType ) ) {
-                        tmp = "\"" + mime[i] + "\" selected";
-                        other = "";
-                    } else {
-                        tmp = "\"" + mime[i] + "\"";
-                    }
-                    optStr += "<option value=" + tmp + ">" + mime_name[i] + "</option>";
-                }
-                List d = new ArrayList( 10 );
-                d.add( "#file#" );
-                d.add( fileName );
-                d.add( "#mime#" );
-                d.add( optStr );
-                d.add( "#other#" );
-                d.add( other );
-                d.add( "#meta_id#" );
-                d.add( String.valueOf( meta_id ) );
-                d.add( "#parent_meta_id#" );
-                d.add( String.valueOf( parent_meta_id ) );
-                htmlStr = imcref.getAdminTemplate( "change_fileupload.html", user, d );
-                break;
-        }
-        String[] parsetmp = {"#adminMode#", imcref.getAdminButtons( user, document )};
-        htmlStr = imcode.util.Parser.parseDoc( htmlStr, parsetmp );
-
-        return htmlStr;
     }
 
     private static class RedirectToDocumentCommand implements DispatchCommand {

@@ -322,13 +322,6 @@ final public class IMCService implements IMCServiceInterface {
         return documentMapper.getText( meta_id, no );
     }
 
-    /**
-     * Save an imageref.
-     */
-    public void saveImage( int meta_id, UserDomainObject user, int img_no, ImageDomainObject image ) {
-        documentMapper.saveDocumentImage( meta_id, img_no, image, user );
-    }
-
     public void saveManualSort( int meta_id, UserDomainObject user, List childs,
                                 List sort_no, int menuNumber ) {
         String columnName = "manual_sort_order";

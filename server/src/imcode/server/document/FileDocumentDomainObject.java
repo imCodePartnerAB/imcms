@@ -8,6 +8,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     private String filename;
     private String mimeType;
     private InputStreamSource inputStreamSource;
+    private boolean createdAsImage ;
 
     public String getFilename() {
         return filename;
@@ -41,20 +42,15 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         return DOCTYPE_FILE;
     }
 
-    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveFileDocument( this );
-    }
-
-    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveNewFileDocument( this );
-    }
-
-    public void initDocument( DocumentMapper documentMapper ) {
-        documentMapper.initFileDocument( this );
-    }
-
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitFileDocument(this) ;
     }
 
+    public void setCreatedAsImage( boolean createdAsImage ) {
+        this.createdAsImage = createdAsImage;
+    }
+
+    public boolean isCreatedAsImage() {
+        return createdAsImage;
+    }
 }

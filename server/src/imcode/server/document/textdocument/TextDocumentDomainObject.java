@@ -5,7 +5,6 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.TemplateDomainObject;
-import imcode.server.user.UserDomainObject;
 
 import java.io.Serializable;
 import java.util.*;
@@ -79,14 +78,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void removeAllTexts() {
         getLazilyLoadedTextDocumentAttributes().texts.clear();
-    }
-
-    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveTextDocument( this, user );
-    }
-
-    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveNewTextDocument( this, user );
     }
 
     public void setInclude( int includeIndex, int includedDocumentId ) {

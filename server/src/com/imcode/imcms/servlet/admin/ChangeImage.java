@@ -118,6 +118,7 @@ public class ChangeImage extends HttpServlet {
                 if ( ArrayUtils.contains( IMAGE_MIME_TYPES, fileDocument.getMimeType() ) ) {
                     fileDocument.setHeadline( fileDocument.getFilename() );
                     fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
+                    fileDocument.setCreatedAsImage( true );
                     documentMapper.saveNewDocument( document, user );
                     image.setUrlAndClearSize( "../servlet/GetDoc?meta_id=" + document.getId() );
                 }

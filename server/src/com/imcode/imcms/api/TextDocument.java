@@ -165,7 +165,7 @@ public class TextDocument extends Document {
         internalImage.setAlternateText(alt_text);
         internalImage.setLowResolutionUrl(low_src);
         internalImage.setLinkUrl(link_href);  // link href
-        documentMapper.saveDocumentImage(this.getId(), imageIndexInDocument, internalImage, super.securityChecker.getCurrentLoggedInUser());
+        DocumentStoringVisitor.saveDocumentImage(this.getId(), imageIndexInDocument, internalImage, super.securityChecker.getCurrentLoggedInUser());
     }
 
     public Image getImage(int imageIndexInDocument) throws NoPermissionException {

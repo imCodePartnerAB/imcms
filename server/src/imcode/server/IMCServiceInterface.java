@@ -33,10 +33,6 @@ public interface IMCServiceInterface {
 
     String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
-    // Save an image
-    void saveImage(int meta_id,UserDomainObject user,int img_no,ImageDomainObject image)
-	;
-
     void saveManualSort(int meta_id,imcode.server.user.UserDomainObject user,List childs, List sort_no, int menuNumber)
 	;
 

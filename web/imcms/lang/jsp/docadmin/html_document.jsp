@@ -49,7 +49,7 @@
 </tr>
 <tr>
 	<td><textarea name="<%= EditHtmlDocumentPageFlow.REQUEST_PARAMETER__HTML_DOC__HTML %>" cols="57" rows="16" wrap="virtual" style="width:100%; overflow:auto">
-<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getHtmlDocumentHtml(), "") ) %></textarea></td>
+<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getHtml(), "") ) %></textarea></td>
 </tr>
 <tr>
 	<td>

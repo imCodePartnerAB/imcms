@@ -24,7 +24,7 @@ public class EditUrlDocumentPageFlow extends EditDocumentPageFlow {
 
     protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException {
             UrlDocumentDomainObject urlDocument = (UrlDocumentDomainObject)document;
-            urlDocument.setUrlDocumentUrl( request.getParameter( REQUEST_PARAMETER__URL_DOC__URL ) );
+            urlDocument.setUrl( request.getParameter( REQUEST_PARAMETER__URL_DOC__URL ) );
             urlDocument.setTarget( EditDocumentInformationPageFlow.getTargetFromRequest( request ) );
     }
 

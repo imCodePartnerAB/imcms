@@ -4,9 +4,11 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.poll.PollHandlingSystem;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -56,14 +58,32 @@ public final class SaveText extends HttpServlet {
 
         if ( req.getParameter( "ok" ) != null ) {
             DocumentMapper documentMapper = imcref.getDocumentMapper();
-            documentMapper.saveText( text, documentMapper.getDocument(meta_id), txt_no, user, text_type );
-            imcref.updateMainLog( "Text " + txt_no + " in  " + "[" + meta_id +
-                    "] modified by user: [" + user.getFullName() + "]");            
+            DocumentDomainObject document = documentMapper.getDocument(meta_id);
+
+            saveText( documentMapper, text, document, txt_no, text_type, imcref, meta_id, user );
         }
 
         String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
         if ( output != null ) {
             out.write( output );
         }
+    }
+
+    private void saveText( DocumentMapper documentMapper, TextDomainObject text, DocumentDomainObject document,
+                           int txt_no, String text_type, IMCServiceInterface imcref, int meta_id,
+                           UserDomainObject user ) {
+        documentMapper.sqlSaveText( text, document, txt_no );
+
+        // update the date
+        documentMapper.touchDocument( document );
+
+        if ( !"".equals( text_type ) ) {
+
+            if ( text_type.startsWith( "poll" ) ) {
+                PollHandlingSystem poll = imcref.getPollHandlingSystem();
+                poll.savePollparameter( text_type, document.getId(), txt_no, text.getText() );
+            }
+        }
+        imcref.updateMainLog( "Text " + txt_no + " in [" + meta_id + "] modified by user: [" + user.getFullName() + "]");
     }
 }

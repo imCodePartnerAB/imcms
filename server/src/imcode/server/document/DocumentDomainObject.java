@@ -354,10 +354,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         getLazilyLoadedDocumentCategories().categories.remove( category );
     }
 
-    public abstract void saveDocument( DocumentMapper documentMapper, UserDomainObject user );
-
-    public abstract void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user );
-
     public void setPermissionSetIdForRole( RoleDomainObject role, int permissionSetId ) {
         getLazilyLoadedRolesMappedToDocumentPermissionSetIds().rolesMappedToDocumentPermissionSetIds.put( role, new Integer( permissionSetId ) );
     }
@@ -438,8 +434,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         }
         return attributes.lazilyLoadedRolesMappedToDocumentPermissionSetIds;
     }
-
-    public abstract void initDocument( DocumentMapper documentMapper );
 
     public abstract void accept( DocumentVisitor documentVisitor ) ;
 

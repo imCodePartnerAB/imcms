@@ -14,7 +14,7 @@ public class UrlDocument extends Document {
     public void setUrl(String url ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
         UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
-        urlDocumentDomainObject.setUrlDocumentUrl( url );
+        urlDocumentDomainObject.setUrl( url );
     }
 
     private UrlDocumentDomainObject getInternalUrlDocument() {
