@@ -57,6 +57,7 @@ public class SearchDocumentsPage extends OkCancelPage {
     private int dateTypeRestriction;
     private Date startDate;
     private Date endDate;
+    private String sortOrder;
 
     private DocumentDomainObject[] documentsFound;
     private int firstDocumentIndex;
@@ -132,7 +133,7 @@ public class SearchDocumentsPage extends OkCancelPage {
             } catch ( java.text.ParseException ignored ) {}
         }
 
-        String sortOrder = request.getParameter( REQUEST_PARAMETER__SORT_ORDER ) ;
+        sortOrder = request.getParameter( REQUEST_PARAMETER__SORT_ORDER ) ;
         if (null != sortOrder) {
             Comparator documentComparator = AdminManager.getComparator(sortOrder) ;
             documentFinder.setDocumentComparator(documentComparator) ;
@@ -370,6 +371,10 @@ public class SearchDocumentsPage extends OkCancelPage {
 
     public int getDateTypeRestriction() {
         return dateTypeRestriction;
+    }
+
+    public String getSortOrder() {
+        return sortOrder;
     }
 
     private static class ToStringArrayTransformer implements Transformer {

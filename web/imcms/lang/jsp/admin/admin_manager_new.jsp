@@ -12,15 +12,11 @@
                  java.util.HashMap"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 
-<%! private String IMG_PATH;
-    private String TAB_TO_SHOW;
-    private String LIST_TYPE;
-    private String SORTORDER_OPTION_SELECTED;
-
-
-%>
-<%
-
+<%! String IMG_PATH;
+   String TAB_TO_SHOW;
+   String LIST_TYPE;
+   String SORTORDER_OPTION_SELECTED;
+%><%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE);
     List documents_new = adminManagerPage.getDocuments_new();
     DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
@@ -31,15 +27,13 @@
     TAB_TO_SHOW = "new";
 %><%!
 
-
-
-String formatDatetime(Date datetime) {
-    if (null == datetime) {
-        return "" ;
+    String formatDatetime(Date datetime) {
+        if (null == datetime) {
+            return "" ;
+        }
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"+DateConstants.TIME_NO_SECONDS_FORMAT_STRING ) ;
+        return dateFormat.format(datetime) ;
     }
-    DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING + "'&nbsp;'"+DateConstants.TIME_NO_SECONDS_FORMAT_STRING ) ;
-    return dateFormat.format(datetime) ;
-}
 
 %>
 

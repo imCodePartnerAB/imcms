@@ -59,9 +59,9 @@
             <tr>
                 <td nowrap><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/7 ?>:&nbsp;</td>
                 <td>
-                <% SORTORDER_OPTION_SELECTED = current_sortorderMap.get( LIST_TYPE ).toString(); %>
                 <select name="new_sortorder" onChange="this.form.submit();">
-                    <%@ include file="admin_manager_inc_sortorder_select_option.jsp" %>
+                    <% request.setAttribute( "SORT", current_sortorderMap.get( LIST_TYPE ).toString() ); %>
+                    <jsp:include page="admin_manager_inc_sortorder_select_option.jsp" />
                 </select></td>
             </tr>
             </table></td>
