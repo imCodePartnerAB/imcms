@@ -46,6 +46,10 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         return inputStreamSource;
     }
 
+    protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
+        // nothing lazily loaded
+    }
+
     public int getDocumentTypeId() {
         return DOCTYPE_FILE;
     }

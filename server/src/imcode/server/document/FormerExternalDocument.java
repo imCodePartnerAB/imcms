@@ -19,6 +19,10 @@ import java.io.IOException;
  */
 public abstract class FormerExternalDocument extends DocumentDomainObject {
 
+    protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
+        // nothing lazily loaded
+    }
+
     public void processNewDocumentInformation( DocumentComposer documentInformation,
                                                DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,

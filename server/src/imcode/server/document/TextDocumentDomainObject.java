@@ -59,6 +59,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return clone;
     }
 
+    protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
+        getLazilyLoadedTextDocumentAttributes() ;
+    }
+
     public TemplateDomainObject getTemplate() {
         return getLazilyLoadedTextDocumentAttributes().template;
     }

@@ -862,9 +862,10 @@ public class DocumentMapper {
 
     void saveNewTextDocument( TextDocumentDomainObject textDocument, UserDomainObject user ) {
         String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template_1, default_template_2) VALUES (?,?,?,?,?)";
+        TemplateDomainObject textDocumentTemplate = textDocument.getTemplate();
         service.sqlUpdateQuery( sqlTextDocsInsertStr,
                                 new String[]{
-                                    "" + textDocument.getId(), "" + textDocument.getTemplate().getId(),
+                                    "" + textDocument.getId(), "" + textDocumentTemplate.getId(),
                                     "" + textDocument.getTemplateGroupId(),
                                     "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
                                     "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo()

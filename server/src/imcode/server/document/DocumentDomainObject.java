@@ -128,9 +128,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public void setId( int v ) {
         if ( 0 != attributes.id ) {
             getLazilyLoadedDocumentAttributes();
+            loadAllLazilyLoadedDocumentTypeSpecificAttributes();
         }
         attributes.id = v;
     }
+
+    protected abstract void loadAllLazilyLoadedDocumentTypeSpecificAttributes() ;
 
     public String getMenuImage() {
         return attributes.image;
