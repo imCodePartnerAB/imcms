@@ -21,26 +21,21 @@ public class ChatGroup
 
 	private int _groupId;
 	private String _name;
-	private List _msgBuffer;	
 	private List _groupMembers;
 	private Counter _msgNrCounter;
 	private Counter _membersCounter;
-	private final int _maxSize = 100;
-	
-
 
 	/**
 	*Default constructor
 	*@param groupNumber The groupNumber that this ChatGroup will have
 	*/
-	public ChatGroup(int groupNumber,String groupName)
+	protected ChatGroup(int groupNumber,String groupName)//peter says ok
 	{
 		_groupId = groupNumber;
 		_name = groupName;
 		_groupMembers = Collections.synchronizedList(new LinkedList());
 		_msgNrCounter = new Counter();
 		_membersCounter = new Counter();
-		_msgBuffer = Collections.synchronizedList(new LinkedList());	
 	}
 	
 	/**
@@ -48,7 +43,7 @@ public class ChatGroup
 	*@return The idnumber for this group
 	*/
 	
-	public int getGroupId()
+	public int getGroupId()//peter says ok
 	{
 		return _groupId;
 	}
@@ -57,7 +52,7 @@ public class ChatGroup
 	*Sets the name of the ChatGroup
 	*@param chatGroupName The name of the ChatGroup
 	*/
-	public void setChatGroupName(String chatGroupName)
+	public synchronized void setChatGroupName(String chatGroupName)//peter says ok
 	{
 		_name = chatGroupName;
 	}
@@ -67,7 +62,7 @@ public class ChatGroup
 	*return The name of this ChatGroup or an empty string if the name hasn't
 	*been set
 	*/
-	public String getGroupName()
+	public String getGroupName()//peter says ok
 	{
 	
 		return (_name == null) ? "" : _name;
@@ -77,7 +72,7 @@ public class ChatGroup
 	*Gets the currently number of ChatMembers in this ChatGroup. 
 	*@return The currently number of ChatMembers in this ChatGroup.
 	*/
-	public int getNrOfGroupMembers()
+	public int getNrOfGroupMembers()//peter says ok
 	{
 		return _groupMembers.size();
 
@@ -87,7 +82,7 @@ public class ChatGroup
 	*Gets an Iterator of all GroupMembers currently in this ChatGroup
 	*@return An Iterator of all GroupMembers currently in this ChatGroup
 	*/
-	public Iterator getAllGroupMembers()
+	public Iterator getAllGroupMembers()//peter says ok
 	{
 		return _groupMembers.iterator();
 
@@ -97,7 +92,7 @@ public class ChatGroup
 	*Adds a ChatMember to this ChatGroup
 	*@param member The ChatMember to add into the ChatGroup
 	*/
-	public void addNewGroupMember(ChatMember member)
+	public synchronized void addNewGroupMember(ChatMember member)//peter says ok
 	{
 		_groupMembers.add(member);
 		member.setCurrentGroup(this);
@@ -109,60 +104,35 @@ public class ChatGroup
 	*@param member The ChatMember you want to remove
 	*If not the  ChatMember exists in this group no action is taken.
 	*/
-	public void removeGroupMember(ChatMember member)
+	public synchronized void removeGroupMember(ChatMember member)//peter says ok
 	{
 		_groupMembers.remove(member);
 
 	}
 	
 	/**
-	*Adds a ChatMsg into this ChatGroup
+	*Adds a ChatMsg into all members of this ChatGroup
 	*@param msg The ChatMsg you want to add
 	*/
-	protected boolean addNewMsg(ChatMsg msg)
+	public synchronized void addNewMsg(ChatMsg msg)//peter says ok
 	{
 		_msgNrCounter.increment();
 		msg.setIdNumber(_msgNrCounter.getValue());
-		if (_msgBuffer.size() > _maxSize)
+		Iterator iter = _groupMembers.iterator();
+		//spred the msg to the members
+		while (iter.hasNext())
 		{
-			_msgBuffer.remove(0);
+			ChatMember tempMember = (ChatMember) iter.next();
+			tempMember.addNewMsg(msg);
 		}
-		return _msgBuffer.add(msg);
 	}
 	
 	
-	/**
-	*Gets an Iterator fore my unreade messages and a number of oldones
-	*@param lastMsg The referens fore last msg-object that the user has read
-	*@param nrOfOldOnes The number of read messages the user want to reread
-	*@return An ListIterator of the ChatMsg:s
-	*/
-	protected ListIterator getMessages(ChatMsg lastMsg, int nrOfOldOnes, ChatMember member)
-	{
-		//get the number for the last read msg
-		int start = _msgBuffer.indexOf(lastMsg);
-		
-		start = start - nrOfOldOnes;		
-		if (start < 0) start = 0;
-		member.setLastMsg((ChatMsg)_msgBuffer.get(_msgBuffer.size()-1));
-		return _msgBuffer.listIterator(start);
-	}
+
 	
-	public String toString()
+	public String toString()//peter says ok but think its ugly
 	{
 		return "Group: " + _name + " GroupId: " + _groupId;
 	}
 	
-	public ListIterator getAllMessages()
-	{
-		return _msgBuffer.listIterator();
-		
-	}
-	
-	public int getNoOffMessages()
-	{
-		return _msgBuffer.size();
-		
-	}
-
 }

@@ -21,8 +21,7 @@ public class MsgType
 	private int _msgIdNr;
 	private String _name;
 	
-
-
+	
 	/**
 	*Default constructor
 	*@param msgIdNr The id Number that this msgType will have

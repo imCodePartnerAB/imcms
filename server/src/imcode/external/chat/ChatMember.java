@@ -18,30 +18,47 @@ import java.util.*;
 
 public class ChatMember 
 {
-
+	private Properties myChatSettings;
 	private int _userId;
 	private String _ipNr;
 	private ChatMsg _lastChatMsg;
+	private int _lastMsgInt;
+	private List _msgBuffer;
 	private String _name;
 	private ChatGroup _currentGroup; 
-	private int _noOfOldMsg = 35;
+	private int _maxSize = 200;
+	private Chat _parent;
 
 	/**
-	*Default construktor
+	*construktor
 	*@param memberNumber The memberNumber you want the user to have
+	*@param settings The chat settings for this user, those are the ones the user can change
+	* if allowed.
 	*/
-	protected ChatMember(int memberNumber)
+	// obs måste fixa alla inställningar med chatparametrarna de ligger idag i sessionen
+	// ska flyttas in till användaren så att chat medleandena formateras direk innan de levereras
+	// om det går vill säga
+	protected ChatMember(int memberNumber, Properties settings, Chat parent)
 	{
+		_msgBuffer = Collections.synchronizedList(new LinkedList());
 		_userId = memberNumber;
+		myChatSettings = settings;
+		_parent = parent;
 
 	}
-	
+	 //*********** methods ************
+	public Chat getMyParent()
+	{
+		return _parent;
+	}
+	  
 	/**
 	*Sets the referens to the group the user joins by the group
 	*when you add a user in to one
 	*/
 	protected void setCurrentGroup(ChatGroup group)
 	{
+		_msgBuffer = Collections.synchronizedList(new LinkedList());
 		_lastChatMsg = null;
 		_currentGroup = group;
 	}
@@ -55,6 +72,44 @@ public class ChatMember
 		return _currentGroup;
 	}
 	
+	public int getLastMsgNr()
+	{
+		return _lastMsgInt;
+	}
+	
+		
+	public ListIterator getMessages()//peter says ok
+	{
+		_lastChatMsg = (ChatMsg)_msgBuffer.get(_msgBuffer.size()-1);
+		_lastMsgInt = _lastChatMsg.getIdNumber();
+		return _msgBuffer.listIterator();
+	}
+	
+	//
+	protected boolean addNewMsg(ChatMsg msg)//peter says ok ?
+	{
+		
+			if (_msgBuffer.size() > _maxSize)
+			{
+				_msgBuffer.remove(0);
+			}
+			return _msgBuffer.add(msg);
+		
+	}
+	
+	public boolean addNewChatMsg(ChatMsg msg)//peter says ok ?
+	{
+	   if (_currentGroup != null)
+		{
+			_currentGroup.addNewMsg(msg);
+			return true;
+		}else
+		{
+			return false;
+		}
+	}
+	
+	
 	/**
 	*Sets the name of the member
 	*/
@@ -62,7 +117,18 @@ public class ChatMember
 	{
 		_name = name;
 
+	}										  
+	
+	public Properties getProperties()
+	{
+		return (Properties)myChatSettings.clone();
 	}
+	
+	public void setProperties(Properties settings)
+	{
+		myChatSettings = settings;
+	}
+	
 	
 	/**
 	*Gets the name of the member
@@ -105,37 +171,7 @@ public class ChatMember
 
 	}
 	
-	protected void setLastMsg(ChatMsg message)
-	{
-		_lastChatMsg = message;
-	}
-	
-	public ListIterator getMessages()
-	{
-		return _currentGroup.getMessages(_lastChatMsg, _noOfOldMsg, this);
 
-	}
-	
-	public boolean addNewMsg(ChatMsg msg)
-	{
-		if (_currentGroup != null)
-		{
-			_currentGroup.addNewMsg(msg);
-			_lastChatMsg = msg;	
-			return true;
-		}else
-		{
-			return false;
-		}
-
-	}
-	
-
-	public void setNoOfOldMsg(int noOfOldMsg)
-	{
-		_noOfOldMsg = noOfOldMsg;
-	}
-	
 	public String toString()
 	{
 		return "Id= "+_userId +" Namn = "+_name;
