@@ -182,6 +182,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 		// ********* PREPARE ADMIN TEMPLATES ********
 		if (req.getParameter("UPLOAD_CONF") != null) {
+		
 			String libName = (req.getParameter("TEMPLATE_NAME")==null) ? "" : (req.getParameter("TEMPLATE_NAME")) ;
 			String uploadType = (req.getParameter("UPLOAD_TYPE")==null) ? "" : (req.getParameter("UPLOAD_TYPE")) ;
 			//log("Lets prepare upload an: " + uploadType) ;
@@ -681,10 +682,11 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 			String setName = req.getParameter("setname") ;
 			if(	setName != null ) {
-				log("OK, Lets show our upload templates/images page") ;
+				//log("OK, Lets show our upload templates/images page") ;
 				HTML_TEMPLATE ="BillBoard_admin_template2.htm" ;
 
-					String uploadType = req.getParameter("UPLOAD_TYPE") ;
+				String uploadType = req.getParameter("UPLOAD_TYPE") ;
+				//log("UPLOAD_TYPE = "+uploadType);
 				if( uploadType == null ) {
 					String header = "BillBoardAdmin servlet. " ;
 					String msg = params.toString() ;
@@ -694,16 +696,21 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 				// Ok, Lets get root path to the external type
 				String metaId= params.getProperty("META_ID") ;
-				String externalPath = "" ;
-				if( uploadType.equalsIgnoreCase("TEMPLATE"))
-					externalPath = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + setName + "/";
-				else
-					externalPath = rmi.getExternalImageHomeFolder(host, imcServer, metaId) + setName + "/" ;
-
+				//log("metaId ="+metaId);
+			//	String externalPath = "" ;
+			//	if( uploadType.equalsIgnoreCase("TEMPLATE"))
+			//		externalPath = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + setName + "/";
+			//	else
+			//		externalPath = rmi.getExternalImageHomeFolder(host, imcServer, metaId) + setName + "/" ;
+				
+			//	log("externalPath = "+externalPath);
 				//	log("ExternalPath: " + externalPath) ;
 				// Lets build the Responsepage
 				//VariableManager vm = new VariableManager() ;
-				vm.addProperty("EXTERNAL_PATH", externalPath ) ;
+				vm.addProperty("UPLOAD_TYPE", uploadType );
+				vm.addProperty("FOLDER_NAME", setName );
+				vm.addProperty("META_ID", metaId);
+			//	vm.addProperty("EXTERNAL_PATH", externalPath ) ;
 				vm.addProperty("UNADMIN_LINK_HTML", this.FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE );
 
 				//this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
@@ -800,7 +807,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		if (adminWhat.equalsIgnoreCase("DISCUSSION") ) {
 			HTML_TEMPLATE ="BillBoard_admin_disc.htm" ;//Conf_admin_disc.htm
 			String adminDiscList = "BillBoard_admin_disc_list.htm" ;//Conf_admin_disc_list.htm
-			log("OK, Administrera Discussions") ;
+			//log("OK, Administrera Discussions") ;
 
 			// Lets get the url to the servlets directory
 			String servletHome = MetaInfo.getServletPath(req) ;
