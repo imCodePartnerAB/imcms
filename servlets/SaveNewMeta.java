@@ -46,7 +46,7 @@ public class SaveNewMeta extends HttpServlet {
 	int txt_no = 0 ;
 
 	res.setContentType( "text/html" );
-	ServletOutputStream out = res.getOutputStream( );
+	Writer out = res.getWriter( );
 
 	// redirect data
 	String scheme = req.getScheme( );
@@ -98,19 +98,17 @@ public class SaveNewMeta extends HttpServlet {
 	// permissions are checked.
 	for ( int i=0 ; i<metatable.length ; i+=2 ) {
 	    inputMap.put(metatable[i],req.getParameter(metatable[i])) ;
-
 	}
-	
+
 	// If target is set to '_other', it means the real target is in 'frame_name'.
 	// In this case, set target to the value of frame_name.
 	String target = (String)inputMap.get("target") ;
 	String frame_name = (String)inputMap.get("frame_name") ;
 	if ( "_other".equals(target) && frame_name != null && !"".equals(frame_name) ) {
-    	inputMap.put("target",frame_name) ;
+	    inputMap.put("target",frame_name) ;
    	}
 	inputMap.remove("frame_name") ;  // we only need to store frame_name in db column "target"
-		
-	
+
 	SimpleDateFormat datetimeformat = new SimpleDateFormat("yyyy-MM-dd HH:mm") ;
 	Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
 
@@ -173,9 +171,9 @@ public class SaveNewMeta extends HttpServlet {
 
 	// So... if the user may not create this particular doc-type... he's outta here!
 	if ( !user_doc_types.contains(doc_type) ) {
-	    byte[] tempbytes = AdminDoc.adminDoc(parent_int,parent_int,host,user,req,res) ;
-	    if ( tempbytes != null ) {
-		out.write(tempbytes) ;
+	    String output = AdminDoc.adminDoc(parent_int,parent_int,host,user,req,res) ;
+	    if ( output != null ) {
+		out.write(output) ;
 	    }
 	    return ;
 	}
@@ -189,9 +187,9 @@ public class SaveNewMeta extends HttpServlet {
 	
 	
 	if( req.getParameter( "cancel" ) != null ) {
-	    byte[] tempbytes = AdminDoc.adminDoc(Integer.parseInt(parent_meta_id),Integer.parseInt(parent_meta_id),host,user,req,res) ;
-	    if ( tempbytes != null ) {
-		out.write(tempbytes) ;
+	    String output = AdminDoc.adminDoc(Integer.parseInt(parent_meta_id),Integer.parseInt(parent_meta_id),host,user,req,res) ;
+	    if ( output != null ) {
+		out.write(output) ;
 	    }
 	    return ;
 
@@ -325,7 +323,7 @@ public class SaveNewMeta extends HttpServlet {
 		vec.add(servlet_url) ;
 		htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_fileupload.html", lang_prefix) ;
 		//				htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver, meta_id,user,"new_fileupload.html",8,new_meta_id,0,doc_menu_no );
-		out.println( htmlStr ) ;
+		out.write( htmlStr ) ;
 		return ;
 
 		// URL DOCUMENT
@@ -338,7 +336,7 @@ public class SaveNewMeta extends HttpServlet {
 		vec.add("#servlet_url#") ;
 		vec.add(servlet_url) ;
 		htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_url_doc.html", lang_prefix) ;
-		out.print( htmlStr ) ;
+		out.write( htmlStr ) ;
 		return ;
 
 		// FRAMESET DOCUMENT
@@ -351,7 +349,7 @@ public class SaveNewMeta extends HttpServlet {
 		vec.add("#servlet_url#") ;
 		vec.add(servlet_url) ;
 		htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_frameset.html", lang_prefix) ;
-		out.println( htmlStr ) ;
+		out.write( htmlStr ) ;
 		return ;
 
 		// EXTERNAL DOCUMENTS
@@ -428,15 +426,15 @@ public class SaveNewMeta extends HttpServlet {
 		IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 
 		// Lets build the page
-		byte[] tempbytes = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),host,user,req,res) ;
-		if ( tempbytes != null ) {
-		    out.write(tempbytes) ;
+		String output = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),host,user,req,res) ;
+		if ( output != null ) {
+		    out.write(output) ;
 		}
 		return ;
 	    } // end text document
 
 	}
-	out.print(htmlStr) ;
+	out.write(htmlStr) ;
     }
 
     public boolean contains (String[] array, String str) {	// Check whether a string array contains the specified string

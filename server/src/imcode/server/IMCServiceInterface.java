@@ -51,7 +51,7 @@ public interface IMCServiceInterface {
     IMCText getText(int meta_id,int txt_no)
 	;
 
-    byte[] parsePage(int meta_id, imcode.server.User user, int flags, ParserParameters paramsToParse) throws IOException ;
+    String parsePage(int meta_id, imcode.server.User user, int flags, ParserParameters paramsToParse) throws IOException ;
 
     // Save an image
     void saveImage(int meta_id,User user,int img_no,imcode.server.Image image)

@@ -36,13 +36,12 @@ public class SavePermissions extends HttpServlet {
 		int set_id  = Integer.parseInt(req.getParameter("set_id")) ;
 
 		res.setContentType( "text/html" );
-		ServletOutputStream out = res.getOutputStream();
+		Writer out = res.getWriter();
 
 		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,4 ) ) {	// Checking to see if user may edit this
-			byte[] tempbytes ;
-			tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			if ( output != null ) {
+				out.write(output) ;
 			}
 			return ;
 		}
@@ -100,10 +99,8 @@ public class SavePermissions extends HttpServlet {
 						)
 					) {
 					permissions |= perm ;
-					System.out.println("permissions: "+permissions);
 				}
 			}
-			System.out.println("Set"+newstr+"DocPermissionSet "+meta_id+","+set_id+","+permissions) ;
 			IMCServiceRMI.sqlUpdateProcedure(imcserver, "Set"+newstr+"DocPermissionSet "+meta_id+","+set_id+","+permissions) ;
 
 			// Read the select-lists for the new extended permissions, and store the values in the db.
@@ -136,6 +133,9 @@ public class SavePermissions extends HttpServlet {
 		}
 
 		user.put("flags",new Integer(4)) ;
-		out.write(AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res)) ;
+		String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+		if (output != null) {
+		    out.write(output) ;
+		}
 	}
 }

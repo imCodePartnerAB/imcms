@@ -9,13 +9,13 @@ import imcode.util.* ;
 public class SaveNewUrlDoc extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
+
 	/**
 	init()
 	*/
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config) ;
 	}
-
 
 	/**
 	doPost()
@@ -26,16 +26,15 @@ public class SaveNewUrlDoc extends HttpServlet {
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 
 		imcode.server.User user ; 
-		String htmlStr = "" ;  
 
 		res.setContentType("text/html");
-		ServletOutputStream out = res.getOutputStream();
+		Writer out = res.getWriter();
 
 		// get meta_id
 		String meta_id = req.getParameter("meta_id") ;
 		// get new_meta_id
 		String new_meta_id = req.getParameter("new_meta_id") ; 
-		// get url_ref                         	
+		// get url_ref
 		String url_ref = req.getParameter("url_ref") ;   
 
 		// Get the session
@@ -62,28 +61,23 @@ public class SaveNewUrlDoc extends HttpServlet {
 		}
 
 		if (req.getParameter("cancel")!=null) {
-//			htmlStr = IMCServiceRMI.interpretTemplate(imcserver,Integer.parseInt(meta_id),user) ;
-			byte[] tempbytes = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(Integer.parseInt(meta_id),Integer.parseInt(meta_id),host,user,req,res) ;
+			if ( output != null ) {
+				out.write(output) ;
 			}
 			return ;
-//			out.print(htmlStr) ;
-//			return ;
 		}
-		//IMCServiceRMI.saveNewUrlDoc(imcserver,new_meta_id,user,doc) ;
+
+		// FIXME: Move to a SProc.
 		String sqlStr = "insert into url_docs (meta_id, frame_name,target,url_ref,url_txt,lang_prefix)\n"+
 			"values ("+new_meta_id+",'','','"+url_ref+"','','se')\n"+
 			"update meta set activate = 1, target = '"+target+"' where meta_id = "+new_meta_id ;
 		log (sqlStr) ;
 		IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 
-//		htmlStr = IMCServiceRMI.interpretTemplate(imcserver,Integer.parseInt(meta_id),user) ;
-		byte[] tempbytes = AdminDoc.adminDoc(Integer.parseInt(new_meta_id),Integer.parseInt(new_meta_id),host,user,req,res) ;
-		if ( tempbytes != null ) {
-			out.write(tempbytes) ;
+		String output = AdminDoc.adminDoc(Integer.parseInt(new_meta_id),Integer.parseInt(new_meta_id),host,user,req,res) ;
+		if ( output != null ) {
+			out.write(output) ;
 		}
-//		return ;
-//		out.print(htmlStr) ;
 	}
 }

@@ -59,11 +59,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	this.serverObject = serverobject ;
     }
 
-    public byte[] parsePage (int meta_id, User user, int flags, ParserParameters paramsToParse) throws IOException{
+    public String parsePage (int meta_id, User user, int flags, ParserParameters paramsToParse) throws IOException{
 		return parsePage(meta_id,user,flags,1,paramsToParse) ;
     }
 
-    public byte[] parsePage (int meta_id, User user, int flags, int includelevel,ParserParameters paramsToParse) throws IOException{
+    public String parsePage (int meta_id, User user, int flags, int includelevel,ParserParameters paramsToParse) throws IOException{
 	try {
 	    long totaltime = System.currentTimeMillis() ;
 	    String meta_id_str = String.valueOf(meta_id) ;
@@ -93,7 +93,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    if ( user_permission_set == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
 		log.error("parsePage: GetUserPermissionset returned null") ;
-		return ("GetUserPermissionset returned null").getBytes("8859_1") ;
+		return ("GetUserPermissionset returned null") ;
 	    }
 
 	    int user_set_id = Integer.parseInt((String)user_permission_set.elementAt(0)) ;
@@ -131,13 +131,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    if ( text_docs == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
 		log.error("parsePage: GetTextDocData returned null") ;
-		return "parsePage: GetTextDocData returned null".getBytes("8859_1") ;
+		return "parsePage: GetTextDocData returned null" ;
 	    }
 
 	    if ( text_docs.size() == 0 ) {
 		dbc.closeConnection() ;			// Close connection to db.
 		log.error("parsePage: GetTextDocData returned nothing") ;
-		return "parsePage: GetTextDocData returned nothing".getBytes("8859_1") ;
+		return "parsePage: GetTextDocData returned nothing" ;
 	    }
 			
 		String template_id = (String)text_docs.remove(0) ;			
@@ -222,7 +222,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    if ( meta == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
 		log.error("parsePage: Query for date_modified returned null") ;
-		return ("Query for date_modified returned null").getBytes("8859_1") ;
+		return ("Query for date_modified returned null") ;
 	    }
 
 	    // Here we have the most timeconsuming part of parsing the page.
@@ -235,7 +235,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    if ( childs == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
 		log.error("parsePage: GetChilds returned null") ;
-		return ("GetChilds returned null").getBytes("8859_1") ;
+		return ("GetChilds returned null") ;
 	    }
 
 	    int child_cols = dbc.getColumnCount() ;
@@ -247,7 +247,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    if ( images == null ) {
 		dbc.closeConnection() ;			// Close connection to db.
 		log.error("parsePage: GetImgs returned null") ;
-		return ("GetImgs returned null").getBytes("8859_1") ;
+		return ("GetImgs returned null") ;
 	    }
 
 	    dbc.closeConnection() ;			// Close connection to db.
@@ -554,7 +554,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		}
 	    } catch(IOException e) {
 		log.error("An error occurred reading file during parsing.", e) ;
-		return ("Error occurred reading file during parsing.\n"+e).getBytes("8859_1") ;
+		return ("Error occurred reading file during parsing.\n"+e) ;
 	    }
 
 	    if ( menumode ) {	//Menumode! :)
@@ -658,10 +658,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		emphasized_result.append(non_html_tag_string) ;
 		returnresult = emphasized_result.toString() ;
 	    }
-	    return returnresult.getBytes("8859_1") ;
+	    return returnresult ;
 	} catch (RuntimeException ex) {
 	    log.error("Error occurred during parsing.",ex ) ;
-	    return ex.toString().getBytes("8859_1") ;
+	    return ex.toString() ;
 	}
     }
     

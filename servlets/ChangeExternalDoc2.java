@@ -39,7 +39,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		String values[] ; 
 
 		res.setContentType( "text/html" );
-		ServletOutputStream out = res.getOutputStream( );
+		Writer out = res.getWriter( );
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
 		parent_meta_id = Integer.parseInt( req.getParameter( "parent_meta_id" ) ) ;
 
@@ -49,38 +49,22 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		} 
 
 		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,65536 ) ) {	// Checking to see if user may edit this
-			byte[] tempbytes ;
-			tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			if ( output != null ) {
+				out.write(output) ;
 			}
 			return ;
 		}
 
-/*		// Check if user has write rights
-		if ( !Check.userWriteRights(meta_id, user, start_url) ) {
-			log("User "+user.getInt("user_id")+" was denied access to meta_id "+meta_id+" and was sent to "+start_url) ;			
-			String scheme = req.getScheme() ;
-			String serverName = req.getServerName() ;
-			int p = req.getServerPort() ;
-			String port = ( p == 80 ) ? "" : ":" + p ;
-			res.sendRedirect( scheme + "://" + serverName + port + start_url ) ;
-			return ;
-		}
-*/
 		imcode.server.ExternalDocType ex_doc = IMCServiceRMI.isExternalDoc( imcserver,meta_id,user ) ;
 
 		if( req.getParameter("metadata")!=null ) {
-//			htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver, meta_id,user,"change_meta.html",ex_doc.getDocType( ),parent_meta_id,0,0 ) ;
 			htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(parent_meta_id),user,host) ;
-			out.println( htmlStr ) ;
+			out.write( htmlStr ) ;
 			return ;
 		}
-		//if( req.getParameter("cancel")!=null ) {
-//			htmlStr = IMCServiceRMI.interpretTemplate( imcserver, parent_meta_id,user ) ;
-			byte [] tempbytes = GetDoc.getDoc(parent_meta_id,parent_meta_id,host,req,res) ;
-			out.write ( tempbytes ) ;
-		//}
+		String output = GetDoc.getDoc(parent_meta_id,parent_meta_id,host,req,res) ;
+		out.write ( output ) ;
 
 	}
 }

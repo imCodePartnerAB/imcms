@@ -27,7 +27,7 @@ public class FileCache {
 	StringBuffer tempbuffer = new StringBuffer() ;
 	try {
 	    char[] charbuffer = new char[16384] ;
-	    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file),"8859_1"));
+	    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 	    // Load the file
 	    int chars_read = 0 ;
 	    while (-1 < (chars_read = br.read(charbuffer))) {

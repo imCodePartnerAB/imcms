@@ -45,7 +45,7 @@ public class GetExistingDoc extends HttpServlet {
         int existing_meta_id = 0 ;
 
         res.setContentType("text/html");
-        ServletOutputStream out = res.getOutputStream();
+        Writer out = res.getWriter();
 
         // Lets get the meta_id for the page were adding stuff to
         String tmpMetaIdS =  req.getParameter("meta_id_value");
@@ -91,8 +91,10 @@ public class GetExistingDoc extends HttpServlet {
 
         if ( (req.getParameter("cancel") != null) || (req.getParameter("cancel.x") != null) ) {
            log("Cancel add existing doc") ;
-           byte [] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-           out.write ( tempbytes ) ;
+           String tempstring = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	   if (tempstring != null) {
+	       out.write ( tempstring ) ;
+	   }
            return ;
         } // Cancel
 
@@ -112,8 +114,6 @@ public class GetExistingDoc extends HttpServlet {
             String includeDocStr = "";
 
             searchString = imcode.server.HTMLConv.toHTML(req.getParameter("searchstring"));
-			System.out.println(searchString);
-			
             searchPrep = req.getParameter("search_prep");
 
             // Lets build a comma separetad string with the doctypes
@@ -206,7 +206,7 @@ public class GetExistingDoc extends HttpServlet {
 
             // FIXME: Maximum number of hits is 1000.
             sqlString = "SearchDocs " + userId + ",'" + searchString + "', '" + searchPrep + "', '" + doctype + "', " + fromDoc + ", " + "1000" + ", '" + sortBy + "', " + includeDocStr + ", '1','0'";
-            System.out.println("SQL: " + sqlString) ;
+
             String[][] sqlResults = IMCServiceRMI.sqlProcedureMulti(imcserver, sqlString);
             Vector outVector = new Vector();
 
@@ -341,7 +341,7 @@ public class GetExistingDoc extends HttpServlet {
         // Send page to browser
         // htmlOut = IMCServiceRMI.parseDoc(imcserver, htmlOut, outVector);
             String htmlOut = IMCServiceRMI.parseDoc(imcserver, outVector, "existing_doc.html", langPrefix);
-            out.print(htmlOut);
+            out.write(htmlOut);
             return ;
         } // End of searchstuff
 
@@ -389,15 +389,19 @@ public class GetExistingDoc extends HttpServlet {
 
                 } // End of for loop
             } catch ( NumberFormatException ex ) {
-                byte [] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-                out.write ( tempbytes ) ;
+                String tempstring = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+		if (tempstring != null) {
+		    out.write ( tempstring ) ;
+		}
                 return ;
             }
 
-            byte [] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-            out.write ( tempbytes ) ;
-        } // End of adding document
-    } // End doPost
+            String tempstring = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    if (tempstring != null) {
+		out.write ( tempstring ) ;
+	    }
+        }
+    }
 
 
     /**

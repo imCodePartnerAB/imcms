@@ -37,7 +37,7 @@ public class SaveInPage extends HttpServlet {
 		int txt_no = 0 ;
 
 		res.setContentType("text/html");
-		ServletOutputStream out = res.getOutputStream();
+		Writer out = res.getWriter();
 
 		// get meta_id
 		int meta_id = Integer.parseInt(req.getParameter("meta_id")) ;
@@ -68,10 +68,9 @@ public class SaveInPage extends HttpServlet {
 		}
 		// Check if user has write rights
 		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,imcode.server.IMCConstants.PERM_DT_TEXT_CHANGE_TEMPLATE ) ) {	// Checking to see if user may edit this
-			byte[] tempbytes ;
-			tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			if ( output != null ) {
+				out.write(output) ;
 			}
 			return ;
 		}
@@ -90,50 +89,38 @@ public class SaveInPage extends HttpServlet {
 				vec.add("#meta_id#") ;
 				vec.add(String.valueOf(meta_id)) ;
 				htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"inPage_admin_no_template.html",lang_prefix) ;
-				out.print(htmlStr) ;
+				out.write(htmlStr) ;
 				return ;
 			}
-/*
-			// old number of texts
-			int old_tmpl_txt_count = IMCServiceRMI.getNoOfTxt(imcserver,meta_id,user) ;
-*/
 			// save textdoc
 			IMCServiceRMI.saveTextDoc(imcserver,meta_id,user,doc) ;
 
 			SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
 			Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
 
+			// FIXME: Move to SProc
 			String sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
 			IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr);
 
-/*
-			// add more text if needed
-			int new_tmpl_txt_count = IMCServiceRMI.getNoOfTxt(imcserver,meta_id,user) ;
-
-			if ( new_tmpl_txt_count > old_tmpl_txt_count)
-				IMCServiceRMI.insertNewTexts(imcserver,meta_id,user,new_tmpl_txt_count - old_tmpl_txt_count) ;
-*/
 			// return page
-//			htmlStr = IMCServiceRMI.interpretTemplate(imcserver,meta_id,user) ;
-			byte[] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			if ( output != null ) {
+			    out.write(output) ;
 			}
 			return ;
 
 		} else if (req.getParameter("preview")!=null) {
-			// Call Magnus GetTemplateExample-procedure here
 			if ( template == null ) {
 				Vector vec = new Vector() ;
 				vec.add("#meta_id#") ;
 				vec.add(String.valueOf(meta_id)) ;
 				htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"inPage_admin_no_template.html",lang_prefix) ;
-				out.print(htmlStr) ;
+				out.write(htmlStr) ;
 				return ;
 			}
 			Object[] temp = null ;
 			try {
-				temp = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
+			    temp = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
 			} catch ( NumberFormatException ex ) {
 			}
 			if ( temp == null ) {
@@ -150,13 +137,13 @@ public class SaveInPage extends HttpServlet {
 				user.setTemplateGroup(Integer.parseInt(req.getParameter("group"))) ;
 			}
 //			htmlStr = IMCServiceRMI.interpretTemplate(imcserver,meta_id,user) ;
-			byte[] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			if ( output != null ) {
+				out.write(output) ;
 			}
 			return ;
 
 		}
-		out.print(htmlStr) ;
+		out.write(htmlStr) ;
 	}
 }

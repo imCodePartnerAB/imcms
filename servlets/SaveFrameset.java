@@ -37,7 +37,7 @@ public class SaveFrameset extends HttpServlet {
 		int parent_meta_id ;
 
 		res.setContentType( "text/html" );
-		ServletOutputStream out = res.getOutputStream( );
+		Writer out = res.getWriter( );
 
 		// get meta_id
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
@@ -65,67 +65,26 @@ public class SaveFrameset extends HttpServlet {
 
 		// Check if user has write rights
 		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,65536 ) ) {	// Checking to see if user may edit this
-			byte[] tempbytes ;
-			tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			if ( output != null ) {
+				out.write(output) ;
 			}
 			return ;
 		}
 
-/*		if( req.getParameter("cancel")!=null ) {	//User pressed cancel on form in change_frameset_doc.html
-			// check if browser_doc
-			int old_meta_id = parent_meta_id ;
-			String br_id = (String)req.getSession(false).getValue("browser_id") ;
-			String sqlStr = "select top 1 to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = "+parent_meta_id+" and '"+br_id+"' like user_agent" ;
-			String tmp = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
-			if ( tmp != null && (!"".equals(tmp)) ) {
-				parent_meta_id = Integer.parseInt(tmp) ;
-			}
-//			parent_meta_id = IMCServiceRMI.isBrowserDoc( imcserver,parent_meta_id,user ) ;
-			if( old_meta_id != parent_meta_id ) {
-				sqlStr = "select frame_set from frameset_docs where meta_id = " + meta_id ;
-				htmlStr = IMCServiceRMI.sqlQueryStr(imcserver, sqlStr ) ;
-			} else {
-//				htmlStr = IMCServiceRMI.interpretTemplate( imcserver,parent_meta_id,user ) ;
-				byte[] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-				if ( tempbytes != null ) {
-					out.write(tempbytes) ;
-				}
-				return ;
-			}
-		}*/ /*else if( req.getParameter("metadata")!=null ) {		//User pressed metadata on form in change_frameset_doc.html
-			//htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver,meta_id,user,"change_meta.html",7,parent_meta_id,0,0 ) ;
-			htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(parent_meta_id),user,host) ;
-		} else*/ if( req.getParameter("ok")!=null ) {	//User pressed ok on form in change_frameset_doc.html
+		if( req.getParameter("ok")!=null ) {	//User pressed ok on form in change_frameset_doc.html
 			IMCServiceRMI.saveFrameset( imcserver,meta_id,user,doc ) ;
 			SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
 			Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
 			String sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
 			IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 
-			// check if browser_doc
-//			int old_meta_id = parent_meta_id ;
-//			String br_id = (String)req.getSession(false).getValue("browser_id") ;
-//			String sqlStr = "select top 1 to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = "+parent_meta_id+" and '"+br_id+"' like user_agent" ;
-//			String tmp = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
-//			if ( tmp != null && (!"".equals(tmp)) ) {
-//				parent_meta_id = Integer.parseInt(tmp) ;
-//			}
-//			parent_meta_id = IMCServiceRMI.isBrowserDoc( imcserver,parent_meta_id,user ) ;
-//			if( old_meta_id != parent_meta_id ) {
-//				sqlStr = "select frame_set from frameset_docs where meta_id = " + meta_id ;
-//				htmlStr = IMCServiceRMI.sqlQueryStr(imcserver, sqlStr ) ;
-//			} else {
-//				htmlStr = IMCServiceRMI.interpretTemplate( imcserver,parent_meta_id,user ) ;
-				byte[] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-				if ( tempbytes != null ) {
-					out.write(tempbytes) ;
-				}
-				return ;
-//			}
+			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			if ( output != null ) {
+			    out.write(output) ;
+			}
+			return ;
 		}
-//		out.println( htmlStr ) ;
 	}
 }
 

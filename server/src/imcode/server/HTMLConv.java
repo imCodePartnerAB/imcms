@@ -21,8 +21,8 @@ public class HTMLConv {
 				     "&ntilde;","&ograve;","&oacute;","&ocirc;","&otilde;","&ouml;",
 				     "&divide;","&oslash;","&ugrave;","&uacute;","&ucirc;","&uuml;","","",
 				     "&yuml;" } ;
-    
-    
+
+
     /* Används ej:
        &brvbar;	&#166;	broken (vertical) bar	NA
        &shy;	&#173;	soft hyphen	-
@@ -33,19 +33,19 @@ public class HTMLConv {
        &frac12;	&#189;	fraction one-half	NA
        &frac34;	&#190;	fraction three-quarters	NA
        &ETH;	&#208;	capital Eth, Icelandic	NA
-       &times;	&#215;	multiply sign	x	
+       &times;	&#215;	multiply sign	x
        &Yacute;	&#221;	capital Y, acute accent	´Y
-       &THORN;	&#222;	capital THORN, Icelandic 	NA
+       &THORN;	&#222;	capital THORN, Icelandic	NA
        &eth;	&#240;	small eth, Icelandic	NA
        &yacute;	&#253;	small y, acute accent	´y
        &thorn;	&#254;	small thorn, Icelandic	NA
     */
-    
-        
+
+
     private HTMLConv() {
-	
+
     }
-    
+
     public static String toHTML(char ch) {
 	if ((int)ch > 159) {
 	    return h_code[(int)ch - 160] ;
@@ -55,15 +55,15 @@ public class HTMLConv {
 	    return ""+ch ;
 	}
     }
-    
-    
+
+
     public static String toHTML(String str) {
 	StringBuffer htmlStr = new StringBuffer() ;
 	for (int i = 0; i < str.length(); ++i) {
 	    htmlStr.append(toHTML(str.charAt(i))) ;
 	}
 	return htmlStr.toString() ;
-    }	
+    }
 
 
     public static String toHTMLSpecial(char ch) {
@@ -72,7 +72,7 @@ public class HTMLConv {
 	case '\n'  :
 	    return "\n<BR>" ;
 	case '&'   :
-	    return "&amp;" ; 
+	    return "&amp;" ;
 	case '>'   :
 	    return "&gt;" ;
 	case '<'   :
@@ -81,18 +81,17 @@ public class HTMLConv {
 	    return "&quot;" ;
 	case '\''  :
 	    return "&apos;" ;
-	default    : 
+	default    :
 	    return ""+ch ;
 	}
-	    
-    }	
 
+    }
 
     public static String toHTMLSpecial(String string) {
-	    
+
 	StringTokenizer stok = new StringTokenizer(string, "\n&<>\"'",true) ;
 	StringBuffer result = new StringBuffer() ;
-	    
+
 	while (stok.hasMoreTokens()) {
 	    String token = stok.nextToken() ;
 	    if (token.length() == 1) {
@@ -102,7 +101,7 @@ public class HTMLConv {
 	}
 
 	return result.toString() ;
-    }	
+    }
 
 
 
@@ -114,18 +113,16 @@ public class HTMLConv {
 	} else {
 	    return ""+ch ;
 	}
-    }	
+    }
 
 
     public static String to2quote(String str) {
 	StringBuffer htmlStr = new StringBuffer() ;
-	
+
 	for(int i = 0 ; i < str.length() ; i++) {
 	    htmlStr.append(HTMLConv.to2quote(str.charAt(i))) ;
 	}
-	
+
 	return htmlStr.toString() ;
-    }	
+    }
 }
-	
-	

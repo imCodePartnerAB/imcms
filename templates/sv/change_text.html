@@ -9,7 +9,7 @@
 </style>
 </HEAD>
 <BODY  bgcolor="#FFFFFF"><H3>
-  <FORM METHOD="POST" ACTION="SaveText" name="">
+  <FORM METHOD="POST" ACTION="SaveText">
     <TABLE width="430" align="center" cellpadding="2" cellspacing="0" border="1">
       <CENTER>
         <TR bgcolor="#333366" > 
@@ -21,7 +21,7 @@
         </TR>
         <TR > 
           <TD bgcolor="#BABABA"> 
-            <textarea name=text cols="70" rows=15 wrap="VIRTUAL">
+            <textarea name="text" cols="70" rows="15" wrap="VIRTUAL">
 #txt#</textarea>
           </TD>
         </TR>
@@ -45,7 +45,7 @@
 		    </td>
 		    <td>
 	                <div id="three" style="visibility:HIDDEN"> 
-	        	    <input type="button" name="rensa" value="Rensa" onClick="document.forms[0].text.value="""><a href="javascript:openHelp('36');">&nbsp;<img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+	        	    <input type="button" name="rensa" value="Rensa" onClick="document.forms[0].text.value=''"><a href="javascript:openHelp('36');">&nbsp;<img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	                </div>
 		    </td>
 		</tr>
@@ -58,7 +58,7 @@
     <INPUT TYPE="HIDDEN" NAME="txt_no" VALUE="#txt_no#">
 </FORM>
 </H3>
-<SCRIPT language=JavaScript>
+<SCRIPT language='JavaScript'>
 <!--
 function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");

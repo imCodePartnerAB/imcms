@@ -33,10 +33,8 @@ public class SaveNewFrameset extends HttpServlet {
 		int meta_id ;
 		int new_meta_id ;
 
-
-
 		res.setContentType("text/html");
-		ServletOutputStream out = res.getOutputStream();
+		Writer out = res.getWriter();
 
 		// get meta_id
 		meta_id = Integer.parseInt(req.getParameter("meta_id")) ;
@@ -82,18 +80,16 @@ public class SaveNewFrameset extends HttpServlet {
 		}
 
 		if (req.getParameter("cancel")!=null) {
-			byte[] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			if ( output != null ) {
+			    out.write(output) ;
 			}
 		} else {
 			IMCServiceRMI.saveNewFrameset(imcserver,new_meta_id,user,doc) ;
-			byte[] tempbytes = AdminDoc.adminDoc(new_meta_id,new_meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(new_meta_id,new_meta_id,host,user,req,res) ;
+			if ( output != null ) {
+			    out.write(output) ;
 			}
 		}
-
-//		htmlStr = IMCServiceRMI.interpretTemplate(imcserver,meta_id,user) ;
 	}
 }

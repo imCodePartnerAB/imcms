@@ -39,7 +39,7 @@ public class SaveSort extends HttpServlet {
 		Vector sort_no = new Vector( ) ;
 
 		res.setContentType( "text/html" );
-		ServletOutputStream out = res.getOutputStream( ) ;
+		Writer out = res.getWriter( ) ;
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
 		int doc_menu_no = Integer.parseInt( req.getParameter( "doc_menu_no" ) ) ;
 		child_str =  req.getParameter( "childs" ) ;
@@ -51,43 +51,15 @@ public class SaveSort extends HttpServlet {
 		}
 
 		if ( !IMCServiceRMI.checkDocAdminRights(imcserver,meta_id,user,262144 ) ) {	// Checking to see if user may edit this
-			byte[] tempbytes ;
-			tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-			if ( tempbytes != null ) {
-				out.write(tempbytes) ;
+			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+			if ( output != null ) {
+				out.write(output) ;
 			}
 			return ;
 		}
 
-		int start_pos = 0 ;
-		int end_pos = 0 ;
 		String temp_str = "" ;
-		boolean end = false ;
 		String childsThisMenu[] ;
-		String values[] ;
-/*
-		while( end_pos != -1 ) {
-			end_pos =	child_str.indexOf( ",",start_pos ) ;
-
-			if( end_pos != -1 ) {
-				temp_str = child_str.substring( start_pos,end_pos ) ;
-				childs.addElement( temp_str ) ;
-				start_pos = end_pos + 1 ;
-			}
-		}
-
-		for( int i = 0 ; i < childs.size( )  ; i++ ) {
-			temp_str = req.getParameter( childs.elementAt( i ).toString( ) ) ;
-			if( temp_str != null )
-				sort_no.addElement( temp_str ) ;
-		}
-
-		for( int i = childs.size( ) -1 ; i >= 0 ; i-- ) {
-			temp_str = req.getParameter( childs.elementAt( i ).toString( ) ) ;
-			if( temp_str == null )
-				childs.removeElementAt( i ) ;
-		}
-*/
 		SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
 		Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
 		String sqlStr = "update meta set date_modified = '"+dateformat.format(dt)+"' where meta_id = "+meta_id ;
@@ -131,12 +103,9 @@ public class SaveSort extends HttpServlet {
 		    }
 		}
 
-//		htmlStr = IMCServiceRMI.interpretTemplate( imcserver,meta_id,user ) ;
-		byte[] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
-		if ( tempbytes != null ) {
-			out.write(tempbytes) ;
+		String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+		if ( output != null ) {
+			out.write(output) ;
 		}
-//		return ;
-//		out.println( htmlStr ) ;
 	}
 }

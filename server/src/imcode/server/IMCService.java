@@ -225,7 +225,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	return user ;
     }
 
-    public byte[] parsePage (int meta_id, User user, int flags,ParserParameters paramsToParse) throws IOException {
+    public String parsePage (int meta_id, User user, int flags,ParserParameters paramsToParse) throws IOException {
 	return textDocParser.parsePage(meta_id,user,flags,1,paramsToParse) ;
     }
 
@@ -371,11 +371,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		return null ;
 	    }
 
-
 	    /* Return the text */
 	    String text = results[0] ;
 	    int type = Integer.parseInt(results[1]) ;
-	    log.debug("Got text "+text+" with type "+type) ;
+
 	    return new IMCText(text,type) ;
 
 	} catch (NumberFormatException ex) {

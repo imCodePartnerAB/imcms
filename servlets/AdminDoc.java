@@ -7,7 +7,7 @@ import imcode.util.* ;
 import imcode.server.* ;
 import imcode.server.parser.ParserParameters ;
 /**
-  Administrate a document. 
+  Administrate a document.
   */
 public class AdminDoc extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
@@ -29,8 +29,8 @@ public class AdminDoc extends HttpServlet {
 		String imcserver			= Utility.getDomainPref("adminserver",host) ;
 		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 		int start_doc				= IMCServiceRMI.getDefaultHomePage(imcserver) ;
-		imcode.server.User user ; 
-		String htmlStr = "" ;     
+		imcode.server.User user ;
+		String htmlStr = "" ;
 		int meta_id ;
 		String sqlStr ;
 
@@ -38,35 +38,30 @@ public class AdminDoc extends HttpServlet {
 		if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
 			return ;
 		}
-		
-		res.setContentType( "text/html" );
+
+		res.setContentType( "text/html; charset=UTF-8" );
 		ServletOutputStream out = res.getOutputStream( );
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
 		int parent_meta_id ;
 		String parent_meta_str = req.getParameter( "parent_meta_id" ) ;
 		if( parent_meta_str != null ) {
-			parent_meta_id = Integer.parseInt( parent_meta_str ) ;			
+			parent_meta_id = Integer.parseInt( parent_meta_str ) ;
 		} else {
 			parent_meta_id = start_doc ;
 		}
 
 		int doc_type = IMCServiceRMI.getDocType( imcserver,meta_id ) ;
 
-		byte[] tempbytes ;
-		//		if ( ((IMCServiceInterface)ImcRmi.get(imcserver,"IMCService")).userIsAdmin( meta_id,user ) )
-		tempbytes = AdminDoc.adminDoc(meta_id,parent_meta_id,host,user,req,res) ;
+		String tempstring = AdminDoc.adminDoc(meta_id,parent_meta_id,host,user,req,res) ;
 
-		//		htmlStr = ((IMCServiceInterface)ImcRmi.get(imcserver,"IMCService")).interpretTemplate( meta_id,user ) ;
-
-		//htmlStr = adminDoc (meta_id, parent_meta_id, host, user, req, res) ;
-
-		if ( tempbytes != null ) {
-			out.write(tempbytes) ;
+		if (tempstring != null) {
+		    byte[] tempbytes = tempstring.getBytes("UTF-8") ;
+		    res.setContentLength(tempbytes.length) ;
+		    out.write(tempbytes) ;
 		}
-		//		out.print( htmlStr ) ;
 	}
 
-	public static byte[] adminDoc (int meta_id, int parent_meta_id, String host, User user, HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public static String adminDoc (int meta_id, int parent_meta_id, String host, User user, HttpServletRequest req, HttpServletResponse res) throws IOException {
 
 		String imcserver			= Utility.getDomainPref("adminserver",host) ;
 		String start_url	= Utility.getDomainPref( "start_url",host ) ;
@@ -75,7 +70,7 @@ public class AdminDoc extends HttpServlet {
 
 		String htmlStr = "" ;
 		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-		
+
 		Stack history = (Stack)user.get("history") ;
 		if ( history == null ) {
 			history = new Stack() ;
@@ -87,10 +82,10 @@ public class AdminDoc extends HttpServlet {
 		}
 
 		int doc_type = IMCServiceRMI.getDocType(imcserver,meta_id) ;
-		
+
 		Integer userflags = (Integer)user.remove("flags") ;		// Get the flags from the user-object
 		int flags = (userflags == null) ? 0 : userflags.intValue() ;	// Are there flags? Set to 0 if not.
-		
+
 		try {
 			flags = Integer.parseInt(req.getParameter("flags")) ;	// Check if we have a "flags" in the request too. In that case it takes precedence.
 		} catch ( NumberFormatException ex ) {
@@ -101,7 +96,7 @@ public class AdminDoc extends HttpServlet {
 					vec.add(IMCServiceRMI.getMenuButtons(imcserver, meta_id,user)) ;
 					vec.add("#doc_type_description#") ;
 					vec.add(IMCServiceRMI.parseDoc(imcserver,null,"adminbuttons/adminbuttons"+doc_type+"_description.html",lang_prefix)) ;
-					return IMCServiceRMI.parseDoc(imcserver,vec,"docinfo.html",lang_prefix).getBytes("8859_1") ;
+					return IMCServiceRMI.parseDoc(imcserver,vec,"docinfo.html",lang_prefix) ;
 				}
 			}
 		}
@@ -111,25 +106,20 @@ public class AdminDoc extends HttpServlet {
 			return GetDoc.getDoc(meta_id,parent_meta_id,host,req,res) ;
 		}
 
-		// Lets detect which view the admin wants				
-		//if(flags == 1) {
+		// Lets detect which view the admin wants
 		if( ( flags & 1) != 0 ) { // Header, (the plain meta view)
 			htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(meta_id),user,host) ;
-			return htmlStr.getBytes("8859_1") ;                  
-/*		} else if( (flags & 2) != 0 ) { // document info (advanced view)
-			htmlStr = imcode.util.MetaDataParser.getMetaDataFromDb(String.valueOf(meta_id), String.valueOf(meta_id),user,host,"adv_change_meta.html",false ) ;
-			return htmlStr.getBytes("8859_1") ;                   
-*/		} else if ((flags & 4) != 0) { // User rights
+			return htmlStr ;
+		} else if ((flags & 4) != 0) { // User rights
 			htmlStr = imcode.util.MetaDataParser.parseMetaPermission(String.valueOf(meta_id), String.valueOf(meta_id),user,host,"change_meta_rights.html" ) ;
-			//String status = imcode.util.MetaDataParser.getRolesFromDb(String.valueOf(meta_id),user,host ) ;
-			return htmlStr.getBytes("8859_1") ;	
-		}        
+			return htmlStr ;
+		}
 
 
 		switch ( doc_type ) {
 
 		default:
-			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,flags,new ParserParameters() ) ;
+			String result = IMCServiceRMI.parsePage( imcserver,meta_id,user,flags,new ParserParameters() ) ;
 			return result ;
 
 		case 101:
@@ -147,7 +137,7 @@ public class AdminDoc extends HttpServlet {
 				return null ;
 			}
 			break;
-			
+
 		case 5:
 			Vector urlvec = new Vector() ;
 			String[] strary = IMCServiceRMI.sqlQuery(imcserver, "select u.url_ref,m.target, m.frame_name from url_docs u, meta m where m.meta_id = u.meta_id and m.meta_id = "+meta_id) ;
@@ -183,7 +173,7 @@ public class AdminDoc extends HttpServlet {
 			urlvec.add(String.valueOf(parent_meta_id)) ;
 			urlvec.add("#servlet_url#") ;
 			urlvec.add(servlet_url) ;
-			
+
 			htmlStr = IMCServiceRMI.parseDoc(imcserver, urlvec, "change_url_doc.html", lang_prefix) ;
 			//htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver,meta_id,user,"change_url_doc.html",5,parent_meta_id,0,0 ) ;
 			break;
@@ -265,7 +255,7 @@ public class AdminDoc extends HttpServlet {
 					other = "" ;
 				} else {
 					tmp = "\""+mime[i]+"\"" ;
-				} 
+				}
 				optStr += "<option value="+tmp+">"+mime_name[i]+"</option>" ;
 			}
 			sqlStr =	"select mime_name from mime_types where lang_prefix = '"+lang_prefix+"' and mime = 'other'" ;
@@ -281,7 +271,7 @@ public class AdminDoc extends HttpServlet {
 			d.add(filename) ;
 			d.add("#mime#") ;
 			d.add(optStr) ;
-			d.add("#other#") ;					
+			d.add("#other#") ;
 			d.add(other) ;
 			d.add("#meta_id#") ;
 			d.add(String.valueOf(meta_id)) ;
@@ -293,10 +283,10 @@ public class AdminDoc extends HttpServlet {
 			break;
 		}
 		String[] parsetmp = {
-			"#adminMode#",IMCServiceRMI.getMenuButtons(imcserver, meta_id,user) 
+			"#adminMode#",IMCServiceRMI.getMenuButtons(imcserver, meta_id,user)
 		} ;
 		htmlStr = imcode.util.Parser.parseDoc(htmlStr,parsetmp) ;
 
-		return htmlStr.getBytes("8859_1") ;
+		return htmlStr ;
 	}
 }

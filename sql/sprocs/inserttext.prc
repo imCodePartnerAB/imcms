@@ -1,18 +1,17 @@
-SET QUOTED_IDENTIFIER ON 
-GO
-SET ANSI_NULLS OFF 
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[InsertText]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[InsertText]
 GO
 
-CREATE PROCEDURE InsertText
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
 
+CREATE PROCEDURE InsertText
  @meta_id int,
  @name char(15),
  @type int,
- @text text
+ @text ntext
 
 AS
 

@@ -526,7 +526,7 @@ public class IMCServiceRMI {
 	return imc.getDemoTemplateList() ;
     }
 
-    public static byte[] parsePage (String server,int meta_id,User user,int flags,ParserParameters paramsToParse) throws IOException {
+    public static String parsePage (String server,int meta_id,User user,int flags,ParserParameters paramsToParse) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 	return imc.parsePage(meta_id,user,flags,paramsToParse) ;
     }
