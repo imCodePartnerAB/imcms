@@ -1,4 +1,4 @@
--- diff-1.11-1.12.sql
+-- diff-1.11-2.0.sql
 
 BEGIN TRANSACTION
 SET QUOTED_IDENTIFIER ON
@@ -125,11 +125,16 @@ GO
 -- 2004-11-25 Kreiger
 
 ALTER TABLE users ADD language VARCHAR(3) NOT NULL DEFAULT ''
+GO
 UPDATE users SET language = 'swe' WHERE lang_id = 1
 UPDATE users SET language = 'eng' WHERE lang_id = 2
+GO
 ALTER TABLE users DROP COLUMN lang_id
+GO
 ALTER TABLE users DROP COLUMN last_page
+GO
 ALTER TABLE users DROP COLUMN archive_mode
+GO
 DROP PROCEDURE AddNewUser
 DROP PROCEDURE UpdateUser
 DROP PROCEDURE GetPhoneTypes
