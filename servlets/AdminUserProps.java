@@ -9,25 +9,16 @@ import imcode.external.diverse.*;
 import imcode.util.*;
 import imcode.server.*;
 import imcode.server.user.User;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper ;
 import imcode.readrunner.*;
 
 import org.apache.log4j.*;
 
 public class AdminUserProps extends Administrator {
-   private final static String CVS_REV = "$Revision$";
-   private final static String CVS_DATE = "$Date$";
-
    private final static String HTML_RESPONSE = "AdminUserResp.htm";
    private final static String HTML_RESPONSE_ADMIN_PART = "AdminUserResp_admin_part.htm";
    private final static String HTML_RESPONSE_SUPERADMIN_PART = "AdminUserResp_superadmin_part.htm";
 
-
    private static Logger log = Logger.getLogger( AdminUserProps.class.getName() );
-
-   /**
-    * GET
-    **/
 
    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -47,7 +38,7 @@ public class AdminUserProps extends Administrator {
          String header = "Error in AdminCounter.";
          String msg = "Couldnt create an user object." + "<BR>";
          this.log( header + msg );
-         AdminError err = new AdminError( req, res, header, msg );
+         new AdminError( req, res, header, msg );
          return;
       }
 
@@ -56,10 +47,6 @@ public class AdminUserProps extends Administrator {
 
       // check if user is a Superadmin, adminRole = 1
       boolean isSuperadmin = imcref.checkUserAdminrole( user.getUserId(), 1 );
-
-
-      //Lets get the prefered lang prefix
-      String lang_prefix = user.getLangPrefix();
 
       //Lets get temporary values from session if there is some.
       //String[] tmp_userRoles = (String[])session.getAttribute("tempUserRoles");
@@ -92,11 +79,6 @@ public class AdminUserProps extends Administrator {
       String country = "";
       String country_council = "";
       String email = "";
-      String language = "1";
-      //	String userType= "1" ;
-      //	String active = "1" ;
-      //	String userCreateDate = " " ;
-
 
       // ******* GENERATE AN ADD_USER PAGE **********
 
@@ -108,7 +90,7 @@ public class AdminUserProps extends Administrator {
             String header = "Error in AdminCounter.";
             String msg = "The user is not an administrator." + "<BR>";
             this.log( header + msg );
-            AdminError err = new AdminError( req, res, header, msg );
+            new AdminError( req, res, header, msg );
             return;
          }
 
@@ -130,10 +112,6 @@ public class AdminUserProps extends Administrator {
             country = tmp_userInfo.getProperty( "country" );
             country_council = tmp_userInfo.getProperty( "country_council" );
             email = tmp_userInfo.getProperty( "email" );
-            language = tmp_userInfo.getProperty( "lang_id" );
-            //			userType= tmp_userType;
-            //			active = tmp_userInfo.getProperty("active");
-            //			userCreateDate = tmp_userInfo.getProperty("createDate") ;
          }
 
          Vector vec = new Vector();		// hold tags and values to parse html page
@@ -237,7 +215,7 @@ public class AdminUserProps extends Administrator {
             String header = "Error in AdminCounter.";
             String msg = "The user has no rights to change user values." + "<BR>";
             this.log( header + msg );
-            AdminError err = new AdminError( req, res, header, msg );
+            new AdminError( req, res, header, msg );
             return;
          }
 
@@ -267,10 +245,6 @@ public class AdminUserProps extends Administrator {
             country = tmp_userInfo.getProperty( "country" );
             country_council = tmp_userInfo.getProperty( "country_council" );
             email = tmp_userInfo.getProperty( "email" );
-            language = tmp_userInfo.getProperty( "lang_id" );
-            //			userType= tmp_userType;
-            //			active = tmp_userInfo.getProperty("active");
-            //			userCreateDate = tmp_userInfo.getProperty("createDate") ;
 
          } else {
             login_name = userToChange.getLoginName();
@@ -362,7 +336,7 @@ public class AdminUserProps extends Administrator {
 
          vec.add( "#NEXT_URL#" );
          if( null != (String)session.getAttribute( "next_url" ) ) {
-            vec.add( (String)session.getAttribute( "next_url" ) );
+            vec.add( session.getAttribute( "next_url" ) );
          } else {
             vec.add( "" );
          }
@@ -461,7 +435,7 @@ public class AdminUserProps extends Administrator {
       if( user == null ) {
          String header = "Error in AdminCounter.";
          String msg = "Couldnt create an user object." + "<BR>";
-         AdminError err = new AdminError( req, res, header, msg );
+         new AdminError( req, res, header, msg );
          return;
       }
 
@@ -605,7 +579,7 @@ public class AdminUserProps extends Administrator {
             String header = "Error in AdminCounter.";
             String msg = "The user has no rights to change user values." + "<BR>";
             this.log( header + msg );
-            AdminError err = new AdminError( req, res, header, msg );
+            new AdminError( req, res, header, msg );
             return;
          }
 
@@ -869,7 +843,7 @@ public class AdminUserProps extends Administrator {
          if( !checkExistingUserName( imcref, params ) ) {
             String header = "Error in AdminUserProps.";
             this.log( header + msg );
-            AdminError err = new AdminError( req, res, header, msg );
+            new AdminError( req, res, header, msg );
             return;
          }
 
@@ -993,7 +967,7 @@ public class AdminUserProps extends Administrator {
          if( !isAdmin && user.getUserId() != Integer.parseInt( userToChangeId ) ) {
             String header = "Error in AdminCounter.";
             String msg = "The user has no rights to administrate." + "<BR>";
-            AdminError err = new AdminError( req, res, header, msg );
+            new AdminError( req, res, header, msg );
             return;
          }
 
@@ -1031,7 +1005,7 @@ public class AdminUserProps extends Administrator {
                if( userNameExists.length > 0 ) {
                   String header = "Error in AdminUserProps.";
                   this.log( header + msg );
-                  AdminError err = new AdminError( req, res, header, msg );
+                  new AdminError( req, res, header, msg );
                   return;
                }
             }
@@ -1047,7 +1021,7 @@ public class AdminUserProps extends Administrator {
             String header = "Fel! Ett lösenord kund inte hittas";
             msg = "Lösenord kunde inte hittas" + "<BR>";
             this.log( header + msg );
-            AdminError err = new AdminError( req, res, header, msg );
+            new AdminError( req, res, header, msg );
             log( "innan return i currPwd.equals" );
             return;
          }
@@ -1082,7 +1056,7 @@ public class AdminUserProps extends Administrator {
                String header = "Fel! Verifiering av lösenord";
                msg = "Kunde ej verifiera gammalt lösenord" + "<BR>";
                this.log( header + msg );
-               AdminError err = new AdminError( req, res, header, msg );
+               new AdminError( req, res, header, msg );
                log( "innan return i currPwd.equals" );
                return;
             }
@@ -1355,7 +1329,7 @@ public class AdminUserProps extends Administrator {
     */
    private void sendErrorMsg( HttpServletRequest req, HttpServletResponse res, String header, String msg ) throws ServletException, IOException {
 
-      AdminError err = new AdminError( req, res, header, msg );
+      new AdminError( req, res, header, msg );
    }
 
 
@@ -1374,7 +1348,7 @@ public class AdminUserProps extends Administrator {
          String header = "Roles error";
          String msg = "Ingen roll var vald." + "<BR>";
          this.log( "Error in checking roles" );
-         AdminError err = new AdminError( req, res, header, msg );
+         new AdminError( req, res, header, msg );
          return null;
       }
       //this.log("Roles:"+ rolesV.toString()) ;
@@ -1459,9 +1433,6 @@ public class AdminUserProps extends Administrator {
       // check if user is a Superadmin, adminRole = 1
       boolean isSuperadmin = imcref.checkUserAdminrole( user.getUserId(), 1 );
 
-      // check if user is a Useradmin, adminRole = 2
-      boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
-
       // if we are going to change a user
       if( userToChange != null ) {
 
@@ -1530,7 +1501,7 @@ public class AdminUserProps extends Administrator {
          String header = "Checkparameters error";
          String msg = "Samtliga fält var inte korrekt ifyllda." + "<BR>";
          this.log( "Error in checkingparameters" );
-         AdminError err = new AdminError( req, res, header, msg );
+         new AdminError( req, res, header, msg );
          return null;
       }
       return aPropObj;
@@ -1858,7 +1829,7 @@ public class AdminUserProps extends Administrator {
          String header = "ChangeUser error. ";
          String msg = "No user_id was available." + "<BR>";
          this.log( header + msg );
-         AdminError err = new AdminError( req, res, header, msg );
+         new AdminError( req, res, header, msg );
          return null;
       } else {
          this.log( "AnvändarId=" + userId );
@@ -1903,19 +1874,16 @@ public class AdminUserProps extends Administrator {
       String pwd1 = prop.getProperty( "password1" );
       String pwd2 = prop.getProperty( "password2" );
       String header = "Verify password error";
-      String msg = "";
 
       if( !pwd1.equals( pwd2 ) ) {
          header = req.getServletPath();
-         AdminError2 err = new AdminError2( req, res, header, 52 );
-         //log(header + err.getErrorMsg()) ;
+         new AdminError2( req, res, header, 52 );
          return false;
       }
 
       if( pwd1.length() < 4 ) {
          header = req.getServletPath();
-         AdminError2 err = new AdminError2( req, res, header, 53 );
-         //log(header + err.getErrorMsg()) ;
+         new AdminError2( req, res, header, 53 );
          return false;
       }
 
@@ -1931,8 +1899,7 @@ public class AdminUserProps extends Administrator {
       Logger log = Logger.getLogger( AdminUserProps.class );
       log.debug( "extractUpdateUserSprocParametersFromProperties + props: " + props.toString() );
 
-      String[] params = {props.getProperty( "user_id" ), (props.getProperty( "login_name" )).trim(), (props.getProperty( "password1" )).trim(), (props.getProperty( "first_name" )).trim(), (props.getProperty( "last_name" )).trim(), (props.getProperty( "title" )).trim(), (props.getProperty( "company" )).trim(), (props.getProperty( "address" )).trim(), (props.getProperty( "city" )).trim(), (props.getProperty( "zip" )).trim(), (props.getProperty( "country" )).trim(), (props.getProperty( "country_council" )).trim(), (props.getProperty( "email" )).trim(), "0",
-                         "1001", "0", props.getProperty( "lang_id" ), props.getProperty( "user_type" ), props.getProperty( "active" )};
+      String[] params = {props.getProperty( "user_id" ), (props.getProperty( "login_name" )).trim(), (props.getProperty( "password1" )).trim(), (props.getProperty( "first_name" )).trim(), (props.getProperty( "last_name" )).trim(), (props.getProperty( "title" )).trim(), (props.getProperty( "company" )).trim(), (props.getProperty( "address" )).trim(), (props.getProperty( "city" )).trim(), (props.getProperty( "zip" )).trim(), (props.getProperty( "country" )).trim(), (props.getProperty( "country_council" )).trim(), (props.getProperty( "email" )).trim(), "0", "1001", "0", props.getProperty( "lang_id" ), props.getProperty( "user_type" ), props.getProperty( "active" )};
 
       return params;
    }

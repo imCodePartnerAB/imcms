@@ -84,6 +84,12 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
       }
       if( null != result && null == result.getLangPrefix() ) {
          result.setLangPrefix( defaultLanguage );
+         if( "se".equalsIgnoreCase( defaultLanguage )) {
+            result.setLangId(1);
+         } else {
+            log.error( "Language is not properly implemented!");
+            throw new RuntimeException("Language is not properly implemented!");
+         }
       }
       return result;
    }

@@ -15,7 +15,6 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    }
 
    public void setUp() throws LdapUserAndRoleMapper.LdapInitException {
-      Logger logger = Logger.getLogger( this.getClass() );
       mockImcmsService = new MockIMCServiceInterface();
       String ldapServerURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
       String ldapUserName = "imcode\\hasbra";
