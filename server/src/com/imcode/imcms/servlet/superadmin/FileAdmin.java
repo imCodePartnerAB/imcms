@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
+import java.text.DecimalFormat;
 
 public class FileAdmin extends HttpServlet {
 
@@ -740,12 +741,16 @@ public class FileAdmin extends HttpServlet {
             optionlist.append( getDirectoryOption( parent, ".." ) );
         }
         File[] dirlist = directory.listFiles( (FileFilter)DirectoryFileFilter.INSTANCE );
+        Arrays.sort(dirlist, getFileComparator());
         for ( int i = 0; null != dirlist && i < dirlist.length; i++ ) {
             optionlist.append( getDirectoryOption( dirlist[i],dirlist[i].getName() ));
         }
         File[] filelist = directory.listFiles( (FileFilter)new NotFileFilter( DirectoryFileFilter.INSTANCE ) );
+        Arrays.sort(filelist, getFileComparator());
+
         for ( int i = 0; null != filelist && i < filelist.length; i++ ) {
-            String fileNameAndSize = filelist[i].getName() + " [" + filelist[i].length() + "]";
+            String formatedFileSize = getFormatedFileSize(filelist[i]);
+            String fileNameAndSize = filelist[i].getName() + " [" + formatedFileSize + "]";
             optionlist.append( "<option value=\"" ).append( filelist[i].getName() ).append( "\">" ).append( fileNameAndSize ).append( "</option>" );
         }
         return optionlist.toString();
@@ -758,7 +763,47 @@ public class FileAdmin extends HttpServlet {
     }
 
     private String getDirectoryOption( File dir, String displayDir ) {
-        return "<option value=\"" + dir + File.separator + "\">" +  displayDir + File.separator + "</option>";
+        return "<option style=\"background-color:#f0f0f0\" value=\"" + dir + File.separator + "\">" +  displayDir + File.separator + "</option>";
     }
+
+    private Comparator getFileComparator() {
+        return new Comparator() {
+            public int compare(Object a, Object b) {
+                File filea = (File)a;
+                File fileb = (File)b;
+                //--- Sort directories before files,
+                //    otherwise alphabetical ignoring case.
+                if (filea.isDirectory() && !fileb.isDirectory()) {
+                    return -1;
+                } else if (!filea.isDirectory() && fileb.isDirectory()) {
+                    return 1;
+                } else {
+                    return filea.getName().compareToIgnoreCase(fileb.getName());
+                }
+
+            }
+        };
+    }
+
+    private String getFormatedFileSize(File file ) {
+
+        String sSize = file.length() + " b" ;
+        try {
+            double dFileSize = (double) file.length() ;
+            DecimalFormat df = new DecimalFormat("#.0") ;
+            if (dFileSize >= (1024 * 1024)) {
+                dFileSize = dFileSize / (1024 * 1024) ;
+                sSize  = df.format(dFileSize).replaceAll(",", ".") + " MB" ;
+            } else if (dFileSize >= 1024) {
+                dFileSize = dFileSize / 1024 ;
+                sSize  = df.format(dFileSize).replaceAll(",", ".") + " kB" ;
+            }
+        } catch ( NumberFormatException ex ) {
+            // ignore
+        }
+        return sSize;
+    }
+
+
 
 }
