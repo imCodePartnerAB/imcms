@@ -49,12 +49,6 @@ public class SaveNewMeta extends HttpServlet {
         }
 
         // We need to invalidate session data used by AddDoc, so it dosen't interfere with subsecwent new calls to AddDoc.
-        HttpSession session = req.getSession(true);
-        AddDoc.SessionData addDocSessionData = (AddDoc.SessionData) session.getAttribute( AddDoc.SESSION__DATA__IDENTIFIER );
-        if( null != addDocSessionData ) {
-            session.removeAttribute( AddDoc.SESSION__DATA__IDENTIFIER );
-        }
-
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         res.setContentType( "text/html" );
@@ -153,7 +147,7 @@ public class SaveNewMeta extends HttpServlet {
         }
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        String usersLangPrefix = user.getLangPrefix();
+        String usersLangPrefix = user.getLanguageIso639_2();
         boolean userHasRights = DocumentMapper.checkUsersRights( imcref, user, ""+parentMetaId, usersLangPrefix, doc_type );
 
         // So... if the user may not create this particular doc-type... he's outta here!
@@ -323,32 +317,32 @@ public class SaveNewMeta extends HttpServlet {
         Vector vec = new Vector();
         sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = ? order by value desc,name asc";
         Hashtable hash = imcref.sqlQueryHash( sqlStr, new String[] { "" + metaId } );
-        String[] b_id = (String[])hash.get( "browser_id" );
-        String[] nm = (String[])hash.get( "name" );
+        String[] browserIds = (String[])hash.get( "browser_id" );
+        String[] browserNames = (String[])hash.get( "name" );
         String[] to = (String[])hash.get( "to_meta_id" );
-        String bs = "";
-        if( b_id != null ) {
-            bs += "<table width=\"50%\" border=\"0\">";
-            for( int i = 0; i < b_id.length; i++ ) {
+        String browsersTable = "";
+        if( browserIds != null ) {
+            browsersTable += "<table width=\"50%\" border=\"0\">";
+            for( int i = 0; i < browserIds.length; i++ ) {
                 String[] temparr = {" ", "&nbsp;"};
-                bs += "<tr><td>" + Parser.parseDoc( nm[i], temparr ) + ":</td><td><input type=\"text\" name=\"bid" + b_id[i] + "\" value=\"" + (to[i].equals( "0" ) ? "" : to[i]) + "\"></td></tr>";
+                browsersTable += "<tr><td>" + Parser.parseDoc( browserNames[i], temparr ) + ":</td><td><input type=\"text\" name=\"bid" + browserIds[i] + "\" value=\"" + (to[i].equals( "0" ) ? "" : to[i]) + "\"></td></tr>";
             }
-            bs += "</table>";
+            browsersTable += "</table>";
         }
         vec.add( "#browsers#" );
-        vec.add( bs );
+        vec.add( browsersTable );
         sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = ? ) order by value desc,name asc";
         hash = imcref.sqlQueryHash( sqlStr, new String[] {""+metaId} );
-        b_id = (String[])hash.get( "browser_id" );
-        nm = (String[])hash.get( "name" );
-        String nb = "";
-        if( b_id != null ) {
-            for( int i = 0; i < b_id.length; i++ ) {
-                nb += "<option value=\"" + b_id[i] + "\">" + nm[i] + "</option>";
+        browserIds = (String[])hash.get( "browser_id" );
+        browserNames = (String[])hash.get( "name" );
+        String newBrowsersOptionList = "";
+        if( browserIds != null ) {
+            for( int i = 0; i < browserIds.length; i++ ) {
+                newBrowsersOptionList += "<option value=\"" + browserIds[i] + "\">" + browserNames[i] + "</option>";
             }
         }
         vec.add( "#new_browsers#" );
-        vec.add( nb );
+        vec.add( newBrowsersOptionList );
         vec.add( "#new_meta_id#" );
         vec.add( String.valueOf( metaId ) );
         vec.add( "#getDocType#" );
@@ -366,7 +360,7 @@ public class SaveNewMeta extends HttpServlet {
                                                   int metaId, int parentMetaId, Writer out) throws IOException {
         String htmlStr;
         String sqlStr = "select mime,mime_name from mime_types where lang_prefix = ? and mime != 'other'";
-        String temp[] = imcref.sqlQuery( sqlStr, new String[] { user.getLangPrefix() } );
+        String temp[] = imcref.sqlQuery( sqlStr, new String[] { user.getLanguageIso639_2() } );
         Vector vec = new Vector();
         String temps = null;
         for( int i = 0; i < temp.length; i += 2 ) {

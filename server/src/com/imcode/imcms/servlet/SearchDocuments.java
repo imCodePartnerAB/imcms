@@ -176,7 +176,7 @@ public class SearchDocuments extends HttpServlet {
         String oneRecHtmlSrc, resultHtmlSrc, noHitHtmlStr, returnStr;
         String show = req.getParameter( "show" );
 
-        String langPrefix = user.getLangPrefix();
+        String langPrefix = user.getLanguageIso639_2();
         String templatePath = langPrefix + "/admin/search/";
 
         if ( show == null ) {
@@ -325,7 +325,7 @@ public class SearchDocuments extends HttpServlet {
         //ok lets see what folder to get the search-templates from.
         // @show = parameter with the folder name. If we get no parameter lets use folder original.
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        String langPrefix = user.getLangPrefix();
+        String langPrefix = user.getLanguageIso639_2();
         String templatePath = langPrefix + "/admin/search/";
         String show = req.getParameter( "show" );
         if ( show == null ) {
@@ -408,8 +408,8 @@ public class SearchDocuments extends HttpServlet {
      */
     private static String[] getSearchHitTags( int searchHitIndex, DocumentDomainObject document ) {
         return new String[]{
-            "#meta_id#", "" + document.getMetaId(),
-            "#doc_type#", "" + document.getDocumentType(),
+            "#meta_id#", "" + document.getId(),
+            "#doc_type#", "" + document.getDocumentTypeId(),
             "#meta_headline#", document.getHeadline(),
             "#meta_text#", document.getMenuText(),
             "#date_created#", "" + ObjectUtils.defaultIfNull( document.getCreatedDatetime(), "&nbsp;" ),

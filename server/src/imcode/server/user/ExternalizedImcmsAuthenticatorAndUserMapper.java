@@ -89,8 +89,8 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
         if( null != externalUserMapper ) {
             result = externalUserMapper.getUser( loginName );
         }
-        if( null != result && null == result.getLangPrefix() ) {
-            result.setLangPrefix( defaultLanguage );
+        if( null != result && null == result.getLanguageIso639_2() ) {
+            result.setLanguageIso639_2( defaultLanguage );
             if( "swe".equalsIgnoreCase( defaultLanguage ) ) {
                 result.setLangId( 1 );
             } else if ("eng".equalsIgnoreCase( defaultLanguage )) {

@@ -91,7 +91,7 @@ private StringBuffer getQuestionResult(IMCServiceInterface imcref, PollHandlingS
 			 "<td >&nbsp;&nbsp;<img src='" + image_url + "' height='" +  image_height + "' width='" + width + "' >&nbsp;" + vote_percent + " (" + option_count + ")</td></tr><tr><td colspan='2' width='100%'>&nbsp;</td></tr>\n");
 		}
 		oStr.append("</table></td></tr>\n" );
-	    oStr.append("<tr><td><br><? sv/poll/pollResult_part.jsp/11/1 ?> " + total_votes + "</td></tr>\n" );
+	    oStr.append("<tr><td><br><? install/htdocs/sv/poll/pollResult_part.jsp/11/1 ?> " + total_votes + "</td></tr>\n" );
 	    oStr.append("<tr><td><hr></td></tr>\n\n");
 	}
 	return oStr;

@@ -1,6 +1,6 @@
 <html>
 <head>
-<title><? sv/change_img.html/1 ?></title>
+<title><? templates/sv/change_img.html/1 ?></title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -52,10 +52,10 @@ function checkFileName() {
 		}
 	}
 	if (theFile == "") {
-		alert("<? sv/change_img.html/3000 ?>") ;
+		alert("<? templates/sv/change_img.html/3000 ?>") ;
 		return false;
 	} else if (!isValid) {
-		var str = "<? sv/change_img.html/3001 ?>" ;
+		var str = "<? templates/sv/change_img.html/3001 ?>" ;
 		alert(str);
 		return false;
 	} else {
@@ -134,9 +134,9 @@ imcmsGui("head", null);
 	<input type="hidden" name="meta_id" value="#getMetaId#">
 	<input type="hidden" name="flags" value="131072">
 	<tr>
-		<td><input type="submit" class="imcmsFormBtn" value="<? sv/change_img.html/2001 ?>"></td>
+		<td><input type="submit" class="imcmsFormBtn" value="<? templates/sv/change_img.html/2001 ?>"></td>
 	    <td>&nbsp;</td>
-        <td><input type="button" value="<? sv/change_img.html/2002 ?>" title="<? sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(72)"></td>
+        <td><input type="button" value="<? templates/sv/change_img.html/2002 ?>" title="<? templates/sv/change_img.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(72)"></td>
 
 	</tr>
 	</form>
@@ -150,7 +150,7 @@ imcmsGui("head", null);
 	<input type="hidden" name="img_no" value="#img_no#">
 	<input type="hidden" name="label" value="#label#">
 	<tr>
-		<td><input type="submit" class="imcmsFormBtn" value="<? sv/change_img.html/2004 ?>"></td>
+		<td><input type="submit" class="imcmsFormBtn" value="<? templates/sv/change_img.html/2004 ?>"></td>
 	</tr>
 	</form>
 	</table></td>
@@ -165,16 +165,16 @@ imcmsGui("mid", null);
 <input type="HIDDEN" name="img_no" value="#img_no#">
 <input type="hidden" name="label" value="#label#">
 <tr>
-	<td colspan="2"><script>imcHeading("<? sv/change_img.html/4/1 ?>","656");</script></td>
+	<td colspan="2"><script>imcHeading("<? templates/sv/change_img.html/4/1 ?>","656");</script></td>
 </tr>
 <tr>
-	<td><? sv/change_img.html/5 ?></td>
+	<td><? templates/sv/change_img.html/5 ?></td>
 	<td><script>
 writeFormField("FILE","file\" id=\"theFile",54,null,null,null);
 </script></td>
 </tr>
 <tr>
-	<td><? sv/change_img.html/7 ?></td>
+	<td><? templates/sv/change_img.html/7 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
@@ -182,7 +182,7 @@ writeFormField("FILE","file\" id=\"theFile",54,null,null,null);
 		<select name="folder" size="1">
 			#folders#
 		</select></td>
-		<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="ok" value="<? sv/change_img.html/2005 ?>" style="width:110"></td>
+		<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="ok" value="<? templates/sv/change_img.html/2005 ?>" style="width:110"></td>
 	</tr>
 	</table></td>
 </tr>
@@ -197,7 +197,7 @@ writeFormField("FILE","file\" id=\"theFile",54,null,null,null);
 <input type="hidden" name="label" value="#label#">
 <tr>
 	<td colspan="2">&nbsp;<br>
-	<script>imcHeading("<? sv/change_img.html/9/1 ?>","656");</script><div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
+	<script>imcHeading("<? templates/sv/change_img.html/9/1 ?>","656");</script><div id="theLabel" class="imcmsAdmText"><i>#label#</i></div></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -220,48 +220,48 @@ document.write(str);
 </script></td>
 </tr>
 <tr>
-	<td nowrap><? sv/change_img.html/12 ?></td>
+	<td nowrap><? templates/sv/change_img.html/12 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
 		<td><script>
 writeFormField("TEXT","imageref",50,255,350,"#imgRef#");
 </script></td>
-		<td align="right"><input type="SUBMIT" class="imcmsFormBtnSmall" name="show_img" value="<? sv/change_img.html/2006 ?>" style="width:110"></td>
+		<td align="right"><input type="SUBMIT" class="imcmsFormBtnSmall" name="show_img" value="<? templates/sv/change_img.html/2006 ?>" style="width:110"></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td nowrap><? sv/change_img.html/14 ?></td>
+	<td nowrap><? templates/sv/change_img.html/14 ?></td>
 	<td><script>
 writeFormField("TEXT","image_name",50,255,350,"#imgName#");
 </script></td>
 </tr>
 <tr>
-	<td nowrap><? sv/change_img.html/16 ?></td>
+	<td nowrap><? templates/sv/change_img.html/16 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><? sv/change_img.html/17 ?></td>
+		<td><? templates/sv/change_img.html/17 ?></td>
 		<td>&nbsp;</td>
-		<td><? sv/change_img.html/18 ?></td>
+		<td><? templates/sv/change_img.html/18 ?></td>
 		<td>&nbsp;</td>
-		<td><? sv/change_img.html/19 ?></td>
+		<td><? templates/sv/change_img.html/19 ?></td>
 		<td colspan="3">&nbsp;</td>
 	<tr>
-		<td height="20">&nbsp;<? sv/change_img.html/1001 ?></td>
-		<td>&nbsp;<? sv/change_img.html/1002 ?>&nbsp;</td>
-		<td>&nbsp;<? sv/change_img.html/1003 ?></td>
+		<td height="20">&nbsp;<? templates/sv/change_img.html/1001 ?></td>
+		<td>&nbsp;<? templates/sv/change_img.html/1002 ?>&nbsp;</td>
+		<td>&nbsp;<? templates/sv/change_img.html/1003 ?></td>
 		<td>&nbsp;</td>
-		<td>&nbsp;<? sv/change_img.html/1004 ?></td>
+		<td>&nbsp;<? templates/sv/change_img.html/1004 ?></td>
 		<td>&nbsp;</td>
-		<td colspan="2"><? sv/change_img.html/20 ?></td>
+		<td colspan="2"><? templates/sv/change_img.html/20 ?></td>
 	</tr>
 	<tr>
 		<td><script>
 writeFormField("TEXT","image_width",4,4,null,"#imgWidth#");
 </script></td>
-		<td>&nbsp;<? sv/change_img.html/1005 ?>&nbsp;</td>
+		<td>&nbsp;<? templates/sv/change_img.html/1005 ?>&nbsp;</td>
 		<td><script>
 writeFormField("TEXT","image_height",4,4,null,"#imgHeight#");
 </script></td>
@@ -271,12 +271,12 @@ writeFormField("TEXT","image_border",4,4,null,"#imgBorder#");
 </script></td>
 		<td>&nbsp;</td>
 		<td><input type="checkbox" name="keepAspectRatio" value="yes" #keep_aspect#></td>
-		<td> <? sv/change_img.html/24 ?></td>
+		<td> <? templates/sv/change_img.html/24 ?></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td nowrap><? sv/change_img.html/25 ?></td>
+	<td nowrap><? templates/sv/change_img.html/25 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -284,52 +284,52 @@ writeFormField("TEXT","image_border",4,4,null,"#imgBorder#");
 writeFormField("TEXT","v_space",4,4,null,"#imgVerticalSpace#");
 </script></td>
 		<td>&nbsp;</td>
-		<td><? sv/change_img.html/27 ?></td>
+		<td><? templates/sv/change_img.html/27 ?></td>
 		<td>&nbsp; &nbsp;</td>
 		<td><script>
 writeFormField("TEXT","h_space",4,4,null,"#imgHorizontalSpace#");
 </script></td>
 		<td>&nbsp;</td>
-		<td><? sv/change_img.html/29 ?></td>
+		<td><? templates/sv/change_img.html/29 ?></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td nowrap><? sv/change_img.html/30 ?></td>
+	<td nowrap><? templates/sv/change_img.html/30 ?></td>
 	<td>
 	<select name="image_align" size="1">
-		<option value="none" #none_selected#><? sv/change_img.html/31 ?>
-		<option value="baseline" #baseline_selected#><? sv/change_img.html/32 ?>
-		<option value="top" #top_selected#><? sv/change_img.html/33 ?>
-		<option value="middle" #middle_selected#><? sv/change_img.html/34 ?>
-		<option value="bottom" #bottom_selected#><? sv/change_img.html/35 ?>
-		<option value="texttop" #texttop_selected#><? sv/change_img.html/36 ?>
-		<option value="absmiddle" #absmiddle_selected#><? sv/change_img.html/37 ?>
-		<option value="absbottom" #absbottom_selected#><? sv/change_img.html/38 ?>
-		<option value="left" #left_selected#><? sv/change_img.html/39 ?>
-		<option value="right" #right_selected#><? sv/change_img.html/40 ?>
+		<option value="none" #none_selected#><? templates/sv/change_img.html/31 ?>
+		<option value="baseline" #baseline_selected#><? templates/sv/change_img.html/32 ?>
+		<option value="top" #top_selected#><? templates/sv/change_img.html/33 ?>
+		<option value="middle" #middle_selected#><? templates/sv/change_img.html/34 ?>
+		<option value="bottom" #bottom_selected#><? templates/sv/change_img.html/35 ?>
+		<option value="texttop" #texttop_selected#><? templates/sv/change_img.html/36 ?>
+		<option value="absmiddle" #absmiddle_selected#><? templates/sv/change_img.html/37 ?>
+		<option value="absbottom" #absbottom_selected#><? templates/sv/change_img.html/38 ?>
+		<option value="left" #left_selected#><? templates/sv/change_img.html/39 ?>
+		<option value="right" #right_selected#><? templates/sv/change_img.html/40 ?>
 	</select></td>
 </tr>
 <tr>
-	<td nowrap><? sv/change_img.html/41 ?></td>
+	<td nowrap><? templates/sv/change_img.html/41 ?></td>
 	<td><script>
 writeFormField("TEXT","alt_text",92,255,"100%","#imgAltText#");
 </script></td>
 </tr>
 <tr>
-	<td colspan="2">&nbsp;<br><script>imcHeading("<? sv/change_img.html/43/1 ?>","656");</script></td>
+	<td colspan="2">&nbsp;<br><script>imcHeading("<? templates/sv/change_img.html/43/1 ?>","656");</script></td>
 </tr>
 <tr>
 	<td nowrap>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
-		<td rowspan="2" nowrap><? sv/change_img.html/44 ?></td>
+		<td rowspan="2" nowrap><? templates/sv/change_img.html/44 ?></td>
 		<td><input type="radio" name="linkType" id="linkType0" value="0" onClick="changeLinkType(0);"></td>
-		<td><label for="linkType0"><? sv/change_img.html/4000 ?></label></td>
+		<td><label for="linkType0"><? templates/sv/change_img.html/4000 ?></label></td>
 	</tr>
 	<tr>
 		<td><input type="radio" name="linkType" id="linkType1" value="1" onClick="changeLinkType(1);"></td>
-		<td><label for="linkType1"><? sv/change_img.html/4001 ?></label></td>
+		<td><label for="linkType1"><? templates/sv/change_img.html/4001 ?></label></td>
 	</tr>
 	</table></td>
 	<td><script>
@@ -337,17 +337,17 @@ writeFormField("TEXT","imageref_link",92,255,"100%","#imgRefLink#\" onFocus=\"ch
 </script></td>
 </tr>
 <tr>
-	<td nowrap><? sv/change_img.html/46 ?></td>
+	<td nowrap><? templates/sv/change_img.html/46 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>
 		<select name="target" size="1" onChange="document.forms.imgProp.target_name.value = document.forms.imgProp.target.options[document.forms.imgProp.target.selectedIndex].value">
-			<option value="_top" #top_checked#><? sv/change_img.html/47 ?>
-			<option value="_blank" #blank_checked#><? sv/change_img.html/48 ?>
-			<option value="_parent" #parent_checked#><? sv/change_img.html/49 ?>
-			<option value="_self" #self_checked#><? sv/change_img.html/50 ?>
-			<option value="_other" #other_checked#><? sv/change_img.html/51 ?>
+			<option value="_top" #top_checked#><? templates/sv/change_img.html/47 ?>
+			<option value="_blank" #blank_checked#><? templates/sv/change_img.html/48 ?>
+			<option value="_parent" #parent_checked#><? templates/sv/change_img.html/49 ?>
+			<option value="_self" #self_checked#><? templates/sv/change_img.html/50 ?>
+			<option value="_other" #other_checked#><? templates/sv/change_img.html/51 ?>
 		</select></td>
 		<td>&nbsp;&nbsp;</td>
 		<td><script>
@@ -361,9 +361,9 @@ writeFormField("TEXT","target_name",10,20,null,"#target_name#");
 </tr>
 <tr>
 	<td colspan="2" align="right">
-	<input type="SUBMIT" class="imcmsFormBtn" name="ok" value="  <? sv/change_img.html/2007 ?>  ">
-	<input type="button" class="imcmsFormBtn" name="Rensa" value="  <? sv/change_img.html/2009 ?>  " onClick="doClear();">
-	<input type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" <? sv/change_img.html/2008 ?> "></td>
+	<input type="SUBMIT" class="imcmsFormBtn" name="ok" value="  <? templates/sv/change_img.html/2007 ?>  ">
+	<input type="button" class="imcmsFormBtn" name="Rensa" value="  <? templates/sv/change_img.html/2009 ?>  " onClick="doClear();">
+	<input type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" <? templates/sv/change_img.html/2008 ?> "></td>
 </tr>
 <tr>
 	<td><img src="@imcmsimageurl@/admin/1x1.gif" width="156" height="1"></td>

@@ -52,7 +52,7 @@ public class MetaDataParser {
         int currentuser_set_id = Integer.parseInt( current_permissions[0] );
         int currentuser_perms = Integer.parseInt( current_permissions[1] );
 
-        if ( currentuser_set_id == 0 || ( currentuser_perms & 2 ) != 0 ) {
+        if ( currentuser_set_id == IMCConstants.DOC_PERM_SET_FULL || ( currentuser_perms & IMCConstants.PERM_EDIT_DOCINFO ) != 0 ) {
             return getMetaDataFromDb( meta_id, parent_meta_id, user, ADVANCED_CHANGE_DOCINFO_TEMPLATE, false,
                                       meta_image );
         } else {
@@ -291,7 +291,7 @@ public class MetaDataParser {
         vec.add( "#classification#" );
         vec.add( classification );
 
-        // Lets add the standard parameters to the vector
+        // Lets add the standard fileItemMap to the vector
         vec.add( "#meta_id#" );
         vec.add( meta_id );
 
@@ -299,7 +299,7 @@ public class MetaDataParser {
         vec.add( parent_meta_id );
 
         // "#checks#" contains the extra hidden fields that are put in as a substitute for
-        // the missing parameters.
+        // the missing fileItemMap.
         vec.add( "#checks#" );
         vec.add( checks );
 
@@ -736,7 +736,7 @@ public class MetaDataParser {
         final IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         // Lets get the langprefix
-        final String lang_prefix = user.getLangPrefix();
+        final String lang_prefix = user.getLanguageIso639_2();
 
         String newstr = "";
         int doc_type = imcref.getDocType( meta_id );

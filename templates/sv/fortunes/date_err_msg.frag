@@ -1,1 +1,1 @@
-<? sv/fortunes/date_err_msg.frag/1 ?>
+<? templates/sv/fortunes/date_err_msg.frag/1 ?>

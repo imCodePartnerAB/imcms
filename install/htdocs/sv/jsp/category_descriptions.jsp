@@ -10,7 +10,7 @@
 %>
 <html>
   <head>
-    <title><? sv/jsp/category_descriptions.jsp/1/1 ?> <%= categoryTypeName %></title>
+    <title><? install/htdocs/sv/jsp/category_descriptions.jsp/1/1 ?> <%= categoryTypeName %></title>
   </head>
   <body>
     <ul>

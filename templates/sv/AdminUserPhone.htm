@@ -1,6 +1,6 @@
 <html>
 <head>
-<title><? sv/AdminUserPhone.htm/1 ?></title>
+<title><? templates/sv/AdminUserPhone.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <SCRIPT language=JavaScript>
@@ -11,7 +11,7 @@ function closeThisWindow() {
 } //END FUNCTION CloseThisWindow
 
 function confirmDeletetion(){
-	if(confirm("<? sv/AdminUserPhone.htm/3000 ?>"))
+	if(confirm("<? templates/sv/AdminUserPhone.htm/3000 ?>"))
 		return true
 	else 
 		return false
@@ -21,7 +21,7 @@ function evalEditUser() {
 	var userId
 	userId = document.argumentForm.user_Id.selectedIndex
 	if(userId == "-1" ) {
-		alert("<? sv/AdminUserPhone.htm/3001 ?>")
+		alert("<? templates/sv/AdminUserPhone.htm/3001 ?>")
 		return false
 	} else
 		return true
@@ -36,7 +36,7 @@ function evalEditUser() {
 	<tr bgcolor="#333366"> 
       <td width="5%">&nbsp;</td>
       <td width="90%"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? sv/AdminUserPhone.htm/2 ?> </font></b></div>
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminUserPhone.htm/2 ?> </font></b></div>
       </td>
       <td width="5%">&nbsp;</td>
     </tr>
@@ -49,12 +49,12 @@ function evalEditUser() {
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="5%">&nbsp;</td>
-      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/AdminUserPhone.htm/3 ?></font></td>
+      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminUserPhone.htm/3 ?></font></td>
       <td width="5%">&nbsp;</td>
     </tr>
     <tr bgcolor="#bababa"> 
       <td width="5%">&nbsp;</td>
-      <td width="90%"><font face="Arial, Helvetica, sans-serif" size="1"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/AdminUserPhone.htm/4 ?>: #USER_NAME#</font></font> </td>
+      <td width="90%"><font face="Arial, Helvetica, sans-serif" size="1"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminUserPhone.htm/4 ?>: #USER_NAME#</font></font> </td>
       <td width="5%">&nbsp;</td>
     </tr>
     <tr bgcolor="#bababa"> 
@@ -71,10 +71,10 @@ function evalEditUser() {
     <tr bgcolor="#bababa"> 
       <td width="5%">&nbsp;</td>
       <td width="90%" height="26"> 
-        <input type="submit" name="ADD_NEW_PHONE_PAGE" value="<? sv/AdminUserPhone.htm/2001 ?>">
-        <input type="submit" name="RESAVE_PHONES" value="<? sv/AdminUserPhone.htm/2002 ?>">
-        <input type="submit" name="DELETE_PHONES" value="<? sv/AdminUserPhone.htm/2003 ?>">
-        <input type="submit" name="CANCEL_PHONE" value="<? sv/AdminUserPhone.htm/2004 ?>">
+        <input type="submit" name="ADD_NEW_PHONE_PAGE" value="<? templates/sv/AdminUserPhone.htm/2001 ?>">
+        <input type="submit" name="RESAVE_PHONES" value="<? templates/sv/AdminUserPhone.htm/2002 ?>">
+        <input type="submit" name="DELETE_PHONES" value="<? templates/sv/AdminUserPhone.htm/2003 ?>">
+        <input type="submit" name="CANCEL_PHONE" value="<? templates/sv/AdminUserPhone.htm/2004 ?>">
       </td>
       <td width="5%">&nbsp;</td>
     </tr>

@@ -263,7 +263,7 @@ public class TemplateAdmin extends HttpServlet {
             DocumentDomainObject document = documents[i];
             List vec = new ArrayList();
             vec.add( "#meta_id#" );
-            vec.add( "" + document.getMetaId() );
+            vec.add( "" + document.getId() );
             vec.add( "#meta_headline#" );
 
             String[] pd = {"&", "&amp;", "<", "&lt;", ">", "&gt;", "\"", "&quot;"};

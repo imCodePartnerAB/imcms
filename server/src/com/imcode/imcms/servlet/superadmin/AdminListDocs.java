@@ -78,7 +78,7 @@ public class AdminListDocs extends Administrator {
             return;
         }
 
-        String languagePrefix = user.getLangPrefix();
+        String languagePrefix = user.getLanguageIso639_2();
 
         // Lets get all doctypes from DB
         String[][] queryResult = imcref.sqlProcedureMulti( "ListDocsGetInternalDocTypes", new String[]{languagePrefix} );
@@ -218,7 +218,7 @@ public class AdminListDocs extends Administrator {
                 };
 
                 StringBuffer listOfDocs = new StringBuffer();
-                String languagePrefix = user.getLangPrefix();
+                String languagePrefix = user.getLanguageIso639_2();
                 for ( int i = 0; i < docTypesToShow.length; i++ ) {
                     String[][] queryResult = imcref.sqlProcedureMulti( "ListDocsByDate",
                                                                        new String[]{listMod, docTypesToShow[i], startDate, endDate, languagePrefix} );

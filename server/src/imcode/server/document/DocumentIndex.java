@@ -168,11 +168,11 @@ public class DocumentIndex {
 
     private Document createIndexDocument( DocumentDomainObject document ) {
         Document indexDocument = new Document();
-        indexDocument.add( Field.Keyword( "meta_id", "" + document.getMetaId() ) );
+        indexDocument.add( Field.Keyword( "meta_id", "" + document.getId() ) );
         indexDocument.add( unStoredKeyword( "meta_headline_keyword", document.getHeadline().toLowerCase() ) );
         indexDocument.add( Field.UnStored( "meta_headline", document.getHeadline() ) );
         indexDocument.add( Field.UnStored( "meta_text", document.getMenuText() ) );
-        indexDocument.add( unStoredKeyword( "doc_type_id", "" + document.getDocumentType() ) );
+        indexDocument.add( unStoredKeyword( "doc_type_id", "" + document.getDocumentTypeId() ) );
         SectionDomainObject[] sections = document.getSections();
         for ( int i = 0; i < sections.length; i++ ) {
             SectionDomainObject section = sections[i];
@@ -192,7 +192,7 @@ public class DocumentIndex {
         }
 
         Iterator textsIterator = ApplicationServer.getIMCServiceInterface().getDocumentMapper()
-                .getTexts( document.getMetaId() ).entrySet().iterator();
+                .getTexts( document.getId() ).entrySet().iterator();
         while ( textsIterator.hasNext() ) {
             Map.Entry textEntry = (Map.Entry)textsIterator.next();
             String textIndexString = (String)textEntry.getKey();
@@ -227,7 +227,7 @@ public class DocumentIndex {
 
     private void deleteDocumentFromIndex( DocumentDomainObject document ) throws IOException {
         IndexReader indexReader = IndexReader.open( dir );
-        indexReader.delete( new Term( "meta_id", "" + document.getMetaId() ) );
+        indexReader.delete( new Term( "meta_id", "" + document.getId() ) );
         indexReader.close();
     }
 

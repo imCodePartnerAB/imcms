@@ -69,7 +69,7 @@ function closeThisWindow(){
 }
 //-->
 </script>
-<title><? sv/conf/original/Conf_Admin_Forum.htm/1 ?></title>
+<title><? templates/sv/conf/original/Conf_Admin_Forum.htm/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
@@ -80,7 +80,7 @@ function closeThisWindow(){
     <td valign=Top align=Left width="0" height="0" colspan="2"> 
       <table width="500" border="0" cellspacing="0" cellpadding="0">
         <tr> 
-            <td><font face="Verdana, Arial, Helvetica, sans-serif" size="6" color="#000000"><b><i><font size="5"><? sv/conf/original/Conf_Admin_Forum.htm/2 ?></font></i></b></font><br>
+            <td><font face="Verdana, Arial, Helvetica, sans-serif" size="6" color="#000000"><b><i><font size="5"><? templates/sv/conf/original/Conf_Admin_Forum.htm/2 ?></font></i></b></font><br>
               <img src="#IMAGE_URL#blueline.gif" width="500" height="8"></td>
         </tr>
       </table>
@@ -88,11 +88,11 @@ function closeThisWindow(){
   </tr>
   <tr> 
     <td valign=Top align=Left width="0" height="0" bgcolor="#FFFFFF" colspan="2"><br>
-      <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? sv/conf/original/Conf_Admin_Forum.htm/3 ?></font></td>
+      <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/conf/original/Conf_Admin_Forum.htm/3 ?></font></td>
   </tr>
   <tr> 
     <td valign=Top align=Left width="0" height="0" bgcolor="#FFFFFF" colspan="2"><br>
-        <a href="#SERVLET_URL#ConfAdmin?ADMIN_TYPE=META"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/4 ?></font></a><br>
+        <a href="#SERVLET_URL#ConfAdmin?ADMIN_TYPE=META"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Forum.htm/4 ?></font></a><br>
       <br>
     </td>
   </tr>
@@ -101,17 +101,17 @@ function closeThisWindow(){
       <form method="post" name="NEW_FORUM_FORM" action="#SERVLET_URL#ConfAdmin">
         <table cellspacing=0 cellpadding=0 width="100%" border="0">
           <tr> 
-            <td valign=Top align=Left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? sv/conf/original/Conf_Admin_Forum.htm/5 ?></font> 
+            <td valign=Top align=Left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/conf/original/Conf_Admin_Forum.htm/5 ?></font> 
               <input type="hidden" name="ADMIN_TYPE" value="FORUM">
               <br>
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/6 ?></font> 
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Forum.htm/6 ?></font> 
               <br>
               <input type="text" name="NEW_FORUM_NAME" maxlength="255" size="30" >
               <br><br>
-                <input type="submit" name="ADD_FORUM" value="<? sv/conf/original/Conf_Admin_Forum.htm/2001 ?>" style="font-size:10" onClick="if(evalConfAdminForumText()== false) return false; return true">
+                <input type="submit" name="ADD_FORUM" value="<? templates/sv/conf/original/Conf_Admin_Forum.htm/2001 ?>" style="font-size:10" onClick="if(evalConfAdminForumText()== false) return false; return true">
             </td>
             <td width="49%" valign="top">
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/7 ?></font><br><br>
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Forum.htm/7 ?></font><br><br>
               <select name="BEF_FORUM" size="3">		 		 #FORUM_LIST#                                                      </select>
             </td>
           </tr>
@@ -125,13 +125,13 @@ function closeThisWindow(){
         <tr> 
             <td valign=Top align=Left width="0" height="0"> <img src="#IMAGE_URL#blueline.gif" width="500" height="4"> 
               <form method="post" action="#SERVLET_URL#ConfAdmin" name="DEL_FORUM">
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? sv/conf/original/Conf_Admin_Forum.htm/9 ?></font> 
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/conf/original/Conf_Admin_Forum.htm/9 ?></font> 
               <input type="hidden" name="ADMIN_TYPE" value="FORUM">
               <br>
               <br>
               <select name="FORUM_ID" size="1">          #FORUM_LIST#                                                                         </select>
               &nbsp;&nbsp;&nbsp; 
-              <input type="submit" name="DELETE_FORUM" value="<? sv/conf/original/Conf_Admin_Forum.htm/2002 ?>" style="font-size:10" onClick="if(evalDelForum()== false) return false; return true; ">
+              <input type="submit" name="DELETE_FORUM" value="<? templates/sv/conf/original/Conf_Admin_Forum.htm/2002 ?>" style="font-size:10" onClick="if(evalDelForum()== false) return false; return true; ">
             </form>
           </td>
         </tr>
@@ -143,16 +143,16 @@ function closeThisWindow(){
         <form method="post" action="#SERVLET_URL#ConfAdmin" name="changeNameForm" >
           <table cellspacing=0 cellpadding=0 width="100%" border="0">
           <tr> 
-              <td valign=Top align=Left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? sv/conf/original/Conf_Admin_Forum.htm/11 ?></font> 
+              <td valign=Top align=Left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/conf/original/Conf_Admin_Forum.htm/11 ?></font> 
                 <input type="hidden" name="ADMIN_TYPE" value="FORUM">
               <br>
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> <? sv/conf/original/Conf_Admin_Forum.htm/12 ?></font> <br>
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> <? templates/sv/conf/original/Conf_Admin_Forum.htm/12 ?></font> <br>
               <input type="text" name="NEW_FORUM_NAME" maxlength="255" size="30" >
               <br><br>
-              <input type="submit" name="CHANGE_FORUM_NAME" value="<? sv/conf/original/Conf_Admin_Forum.htm/2003 ?>" style="font-size:10" onClick="if(evalChangeForum()== false) return false; return true;">
+              <input type="submit" name="CHANGE_FORUM_NAME" value="<? templates/sv/conf/original/Conf_Admin_Forum.htm/2003 ?>" style="font-size:10" onClick="if(evalChangeForum()== false) return false; return true;">
             </td>
             <td width="49%" valign="top"> 
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/13 ?></font><br><br>
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Forum.htm/13 ?></font><br><br>
               <select name="FORUM_ID" size="3">		 		 #FORUM_LIST#                                                      </select>
               &nbsp; </td>
           </tr>
@@ -167,8 +167,8 @@ function closeThisWindow(){
           <tr> 
               <td valign=Top align=Left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3">
                 <input type="hidden" name="ADMIN_TYPE2" value="FORUM">
-                <? sv/conf/original/Conf_Admin_Forum.htm/15 ?></font>: <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-                <? sv/conf/original/Conf_Admin_Forum.htm/17 ?></font><? sv/conf/original/Conf_Admin_Forum.htm/18 ?>
+                <? templates/sv/conf/original/Conf_Admin_Forum.htm/15 ?></font>: <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+                <? templates/sv/conf/original/Conf_Admin_Forum.htm/17 ?></font><? templates/sv/conf/original/Conf_Admin_Forum.htm/18 ?>
               <select name="NBR_OF_DISCS_TO_SHOW" size="1">
                 <option value="5" selected>5</option>
                 <option value="10">10</option>
@@ -189,11 +189,11 @@ function closeThisWindow(){
                 <option value="600">600</option>
               </select>
               &nbsp;&nbsp;&nbsp; 
-              <input type="submit" name="SHOW_DISCUSSION_NBR" value="<? sv/conf/original/Conf_Admin_Forum.htm/2004 ?>" style="font-size:10" onClick="if(evalNbrOfDiscsToShow()==false) return false; return true;">
+              <input type="submit" name="SHOW_DISCUSSION_NBR" value="<? templates/sv/conf/original/Conf_Admin_Forum.htm/2004 ?>" style="font-size:10" onClick="if(evalNbrOfDiscsToShow()==false) return false; return true;">
               <br>
               <br>
             </td>
-              <td width="49%" valign="top"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/36 ?> </font><br>
+              <td width="49%" valign="top"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Forum.htm/36 ?> </font><br>
                 <br>
               <select name="FORUM_ID" size="3">
 				 #NBR_OF_DISCS_TO_SHOW_LIST#                
@@ -211,7 +211,7 @@ function closeThisWindow(){
     <td valign="top" nowrap bgcolor="#FFFFFF" colspan="2"> 
       <table width="100%" border="0" cellpadding="o" cellspacing="0">
         <tr> 
-            <td width="45%"><a href="#SERVLET_URL#ConfHelp?helpmode=admin&amp;helparea=Forum#Forum" target="_ConfHelp"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/conf/original/Conf_Admin_Forum.htm/38 ?></font></a></td>
+            <td width="45%"><a href="#SERVLET_URL#ConfHelp?helpmode=admin&amp;helparea=Forum#Forum" target="_ConfHelp"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/conf/original/Conf_Admin_Forum.htm/38 ?></font></a></td>
             <td width="55%" nowrap>#CONF_UNADMIN_LINK#</td>
         </tr>
       </table>

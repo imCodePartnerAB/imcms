@@ -1,6 +1,6 @@
 <html>
 <head>
-<title><? sv/FileAdmin.html/1 ?></title>
+<title><? templates/sv/FileAdmin.html/1 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <noscript><link rel="STYLESHEET" type="text/css" href="@cssurl@/imcms_win_ie.css"></noscript>
@@ -341,7 +341,7 @@ if (ie || moz) {
 }
 
 function openHelpW(id){
-	var helpMetaId = parseInt(<? helpDocumentationMetaIdStartIndex ?>) + id;
+	var helpMetaId = parseInt(<? templates/helpDocumentationMetaIdStartIndex ?>) + id;
 	window.open("@documentationurl@/GetDoc?meta_id=" + helpMetaId,"help");
 }
 //-->
@@ -359,13 +359,13 @@ function openHelpW(id){
 <input type="hidden" name="dir2w" value="#dir2#">
 <table border="0" cellspacing="0" cellpadding="0" width="760" align="center" bgcolor="#BABABA">
 <tr>
-	<td colspan="8" height="24" bgcolor="#333366" class="heading">&nbsp;<? sv/FileAdmin.html/1001 ?></td>
+	<td colspan="8" height="24" bgcolor="#333366" class="heading">&nbsp;<? templates/sv/FileAdmin.html/1001 ?></td>
 </tr>
 <tr>
   <td><img src="  /admin/1x1.gif" width="1" height="1"></td>
-  <td colspan="2" class="small"><? sv/FileAdmin.html/3 ?></td>
+  <td colspan="2" class="small"><? templates/sv/FileAdmin.html/3 ?></td>
   <td colspan="2">&nbsp;</td>
-  <td colspan="2" align="right" class="small"><? sv/FileAdmin.html/4 ?></td>
+  <td colspan="2" align="right" class="small"><? templates/sv/FileAdmin.html/4 ?></td>
   <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
 </tr>
 <tr>
@@ -377,7 +377,7 @@ function openHelpW(id){
   <td colspan="2">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
-		<td align="right"><input class="formBtn" height="22" type="submit" name="change1" value="<? sv/FileAdmin.html/2001 ?>"></td>
+		<td align="right"><input class="formBtn" height="22" type="submit" name="change1" value="<? templates/sv/FileAdmin.html/2001 ?>"></td>
 	</tr>
 	<tr>
 		<td align="right"><span class="formSmall">
@@ -392,58 +392,58 @@ function openHelpW(id){
   <td colspan="2" align="center">
 	<table border="0" cellpadding="2" cellspacing="0">
 	<tr>
-		<td colspan="2" align="center" class="small"><? sv/FileAdmin.html/6 ?></td>
+		<td colspan="2" align="center" class="small"><? templates/sv/FileAdmin.html/6 ?></td>
 	</tr>
 	<tr>
-		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="delete1" value="&nbsp;<? sv/FileAdmin.html/2002 ?>&nbsp;"></td>
-		<td><input class="formBtnBlue" height="22" type="submit" name="delete2" value="&nbsp;<? sv/FileAdmin.html/2003 ?>&nbsp;"></td>
-	</tr>
-	<tr>
-		<td colspan="2" align="center" class="small">
-		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? sv/FileAdmin.html/7 ?></td>
-	</tr>
-	<tr>
-		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="move2" value="<? sv/FileAdmin.html/2004 ?>"></td>
-		<td><input class="formBtnBlue" height="22" type="submit" name="move1" value="<? sv/FileAdmin.html/2005 ?>"></td></td>
+		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="delete1" value="&nbsp;<? templates/sv/FileAdmin.html/2002 ?>&nbsp;"></td>
+		<td><input class="formBtnBlue" height="22" type="submit" name="delete2" value="&nbsp;<? templates/sv/FileAdmin.html/2003 ?>&nbsp;"></td>
 	</tr>
 	<tr>
 		<td colspan="2" align="center" class="small">
-		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? sv/FileAdmin.html/8 ?></td>
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/7 ?></td>
 	</tr>
 	<tr>
-		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="copy2" value="&nbsp;<? sv/FileAdmin.html/2006 ?>&nbsp;"></td>
-		<td><input class="formBtnBlue" height="22" type="submit" name="copy1" value="&nbsp;<? sv/FileAdmin.html/2007 ?>&nbsp;"></td>
-	</tr>
-	<tr>
-		<td colspan="2" align="center" class="small">
-		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? sv/FileAdmin.html/1002 ?></td>
-	</tr>
-	<tr>
-		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="download1" value="&nbsp;<? sv/FileAdmin.html/2008 ?>&nbsp;"></td>
-		<td><input class="formBtnBlue" height="22" type="submit" name="download2" value="&nbsp;<? sv/FileAdmin.html/2009 ?>&nbsp;"></td>
+		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="move2" value="<? templates/sv/FileAdmin.html/2004 ?>"></td>
+		<td><input class="formBtnBlue" height="22" type="submit" name="move1" value="<? templates/sv/FileAdmin.html/2005 ?>"></td></td>
 	</tr>
 	<tr>
 		<td colspan="2" align="center" class="small">
-		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? sv/FileAdmin.html/9 ?></td>
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/8 ?></td>
 	</tr>
 	<tr>
-		<td align="right"><input class="formBtnBlue" height="22" type="button" name="preview1" value="&nbsp;<? sv/FileAdmin.html/2010 ?>&nbsp;" onClick="previewFile(1)"></td>
-		<td><input class="formBtnBlue" height="22" type="button" name="preview2" value="&nbsp;<? sv/FileAdmin.html/2011 ?>&nbsp;" onClick="previewFile(2)"></td>
+		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="copy2" value="&nbsp;<? templates/sv/FileAdmin.html/2006 ?>&nbsp;"></td>
+		<td><input class="formBtnBlue" height="22" type="submit" name="copy1" value="&nbsp;<? templates/sv/FileAdmin.html/2007 ?>&nbsp;"></td>
 	</tr>
 	<tr>
 		<td colspan="2" align="center" class="small">
-		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? sv/FileAdmin.html/10 ?></td>
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/1002 ?></td>
 	</tr>
 	<tr>
-		<td align="right"><input class="formBtnBlue" height="22" type="button" name="edit1" value="&nbsp;<? sv/FileAdmin.html/2012 ?>&nbsp;" onClick="editFile(1,0);"></td>
-		<td><input class="formBtnBlue" height="22" type="button" name="edit2" value="&nbsp;<? sv/FileAdmin.html/2013 ?>&nbsp;" onClick="editFile(2,0);"></td>
+		<td align="right"><input class="formBtnBlue" height="22" type="submit" name="download1" value="&nbsp;<? templates/sv/FileAdmin.html/2008 ?>&nbsp;"></td>
+		<td><input class="formBtnBlue" height="22" type="submit" name="download2" value="&nbsp;<? templates/sv/FileAdmin.html/2009 ?>&nbsp;"></td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center" class="small">
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/9 ?></td>
+	</tr>
+	<tr>
+		<td align="right"><input class="formBtnBlue" height="22" type="button" name="preview1" value="&nbsp;<? templates/sv/FileAdmin.html/2010 ?>&nbsp;" onClick="previewFile(1)"></td>
+		<td><input class="formBtnBlue" height="22" type="button" name="preview2" value="&nbsp;<? templates/sv/FileAdmin.html/2011 ?>&nbsp;" onClick="previewFile(2)"></td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center" class="small">
+		<img src="@imcmsimageurl@/admin/line_hr2.gif" width="50" height="6"><? templates/sv/FileAdmin.html/10 ?></td>
+	</tr>
+	<tr>
+		<td align="right"><input class="formBtnBlue" height="22" type="button" name="edit1" value="&nbsp;<? templates/sv/FileAdmin.html/2012 ?>&nbsp;" onClick="editFile(1,0);"></td>
+		<td><input class="formBtnBlue" height="22" type="button" name="edit2" value="&nbsp;<? templates/sv/FileAdmin.html/2013 ?>&nbsp;" onClick="editFile(2,0);"></td>
 	</tr>
 	</table></td>
 
   <td colspan="2" align="right">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
-		<td><input class="formBtn" height="22" type="submit" name="change2" value="<? sv/FileAdmin.html/2014 ?>"></td>
+		<td><input class="formBtn" height="22" type="submit" name="change2" value="<? templates/sv/FileAdmin.html/2014 ?>"></td>
 	</tr>
 	<tr>
 		<td>
@@ -462,8 +462,8 @@ function openHelpW(id){
 </tr>
 <tr>
   <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
-  <td><input class="formBtn" height="22" type="submit" name="upload1" value="<? sv/FileAdmin.html/2015 ?>"></td>
-  <td colspan="4" align="center"><span class="formMid"><? sv/FileAdmin.html/1003 ?>&nbsp;
+  <td><input class="formBtn" height="22" type="submit" name="upload1" value="<? templates/sv/FileAdmin.html/2015 ?>"></td>
+  <td colspan="4" align="center"><span class="formMid"><? templates/sv/FileAdmin.html/1003 ?>&nbsp;
 <script language="JavaScript">
 <!--
 if (gecko && !isMac) {
@@ -478,7 +478,7 @@ if (gecko && !isMac) {
 //-->
 </script>
 <noscript><input type="file" name="file" class="formMid" size="20"></noscript></span></td>
-  <td align="right"><input class="formBtn" height="22" type="submit" name="upload2" value="<? sv/FileAdmin.html/2016 ?>"></td>
+  <td align="right"><input class="formBtn" height="22" type="submit" name="upload2" value="<? templates/sv/FileAdmin.html/2016 ?>"></td>
   <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
 </tr>
 <tr>
@@ -487,13 +487,13 @@ if (gecko && !isMac) {
 <tr>
   <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
   <td align="left">
-	<input class="formBtn" height="22" type="submit" name="rename1" value="<? sv/FileAdmin.html/2017 ?>"><br>
-	<input class="formBtn" height="22" type="submit" name="mkdir1" value="<? sv/FileAdmin.html/2018 ?>"></td>
-  <td colspan="4" align="center"><? sv/FileAdmin.html/13 ?>
+	<input class="formBtn" height="22" type="submit" name="rename1" value="<? templates/sv/FileAdmin.html/2017 ?>"><br>
+	<input class="formBtn" height="22" type="submit" name="mkdir1" value="<? templates/sv/FileAdmin.html/2018 ?>"></td>
+  <td colspan="4" align="center"><? templates/sv/FileAdmin.html/13 ?>
 	<span class="formMid"><input type="text" name="name" class="formMid"></span></td>
   <td align="right">
-	<input class="formBtn" height="22" type="submit" name="rename2" value="<? sv/FileAdmin.html/2019 ?>"><br>
-	<input class="formBtn" height="22" type="submit" name="mkdir2" value="<? sv/FileAdmin.html/2020 ?>"></td>
+	<input class="formBtn" height="22" type="submit" name="rename2" value="<? templates/sv/FileAdmin.html/2019 ?>"><br>
+	<input class="formBtn" height="22" type="submit" name="mkdir2" value="<? templates/sv/FileAdmin.html/2020 ?>"></td>
   <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
 </tr>
 <tr>
@@ -504,8 +504,8 @@ if (gecko && !isMac) {
   <td colspan="6" align="center">
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td><a href="@documentationurl@/GetDoc?meta_id=2" target="_blank" onClick="openHelpW('2'); return false;"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? sv/FileAdmin.html/2021 ?>" hspace="5"></a></td>
-		<td><input class="formBtn" height="22" type="submit" name="cancel" value="<? sv/FileAdmin.html/2022 ?>"></td>
+		<td><a href="@documentationurl@/GetDoc?meta_id=2" target="_blank" onClick="openHelpW('2'); return false;"><img src="@imcmsimageurl@/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/FileAdmin.html/2021 ?>" hspace="5"></a></td>
+		<td><input class="formBtn" height="22" type="submit" name="cancel" value="<? templates/sv/FileAdmin.html/2022 ?>"></td>
 		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="19" height="1" hspace="5"></td>
 	</tr>
 	</table></td>

@@ -52,7 +52,7 @@ public class AdminUser extends Administrator {
             category = "-1";
         }
 
-        String lang_prefix = user.getLangPrefix();
+        String lang_prefix = user.getLanguageIso639_2();
 
         // Lets get all USERTYPES from DB
         String[] userTypes = imcref.sqlProcedure( "GetUserTypes", new String[]{lang_prefix} );

@@ -77,8 +77,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     public String parsePage( DocumentRequest documentRequest, int flags, int includelevel, ParserParameters paramsToParse ) throws IOException {
         try {
-            DocumentDomainObject document = documentRequest.getDocument();
-            int meta_id = document.getMetaId();
+            TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
+            int meta_id = document.getId();
             String meta_id_str = String.valueOf( meta_id );
 
             UserDomainObject user = documentRequest.getUser();
@@ -112,11 +112,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             String[] included_docs = DocumentMapper.sprocGetIncludes( service, meta_id );
 
-            TemplateDomainObject documentTemplate = document.getTemplate();
+            TemplateDomainObject documentTemplate = document.getTextDocumentTemplate();
             int documentTemplateId = documentTemplate.getId();
             String simple_name = documentTemplate.getName();
-            int sort_order = document.getMenuSortOrder();
-            String group_id = "" + document.getTemplateGroupId();
+            int sort_order = document.getTextDocumentMenuSortOrder();
+            String group_id = "" + document.getTextDocumentTemplateGroupId();
 
             if ( template_name != null ) {
                 //lets validate that the template exists before we changes the original one
@@ -126,7 +126,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                         int temp_template = Integer.parseInt( vectT[0] );
                         if ( temp_template > 0 ) {
                             documentTemplateId = temp_template;
-                            documentRequest.getDocument().setTemplate( service.getTemplateMapper().getTemplateById( documentTemplateId ) );
+                            document.setTextDocumentTemplate( service.getTemplateMapper().getTemplateById( documentTemplateId ) );
                         }
                     } catch ( NumberFormatException nfe ) {
                         //do nothing, we keep the original template
@@ -134,29 +134,16 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
             }
 
-            String lang_prefix = user.getLangPrefix();	// Find language
+            String lang_prefix = user.getLanguageIso639_2();	// Find language
 
             String[] emp = documentRequest.getEmphasize() ;
 
             String[] metaIdUserIdPair = {meta_id_str, user_id_str};
 
-            // Here we have the most timeconsuming part of parsing the page.
-            // Selecting all the documents with permissions from the DB
-            String[] childs = service.sqlProcedure( "getChilds", metaIdUserIdPair );
-
-            if ( childs == null ) {
-                log.error( "parsePage: GetChilds returned null" );
-                return ( "GetChilds returned null" );
-            }
-
             // Get the images from the db
             // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
             //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
             String[] images = service.sqlProcedure( "GetImgs", new String[]{"" + meta_id} );
-            if ( images == null ) {
-                log.error( "parsePage: GetImgs returned null" );
-                return ( "GetImgs returned null" );
-            }
 
             File admintemplate_path = new File( templatePath, "/" + lang_prefix + "/admin/" );
 
@@ -247,70 +234,54 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             int old_menu = -1;
             SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
 
-            Iterator childIt = Arrays.asList( childs ).iterator();
+            // Here we have the most timeconsuming part of parsing the page.
+            // Selecting all the documents with permissions from the DB
+            String[][] childs = service.sqlProcedureMulti( "getChilds", metaIdUserIdPair );
 
-            while ( childIt.hasNext() ) {
-                // The menuitemproperties are retrieved in the following order:
-                // to_meta_id,
-                // c.menu_sort,
-                // manual_sort_order,
-                // tree_sort_index,
-                // doc_type,
-                // archive,
-                // target,
-                // date_created,
-                // date_modified,
-                // meta_headline,
-                // meta_text,
-                // meta_image,
-                // frame_name,
-                // activated_date+activated_time,
-                // archived_date+archived_time
-                // 0 if admin
-                // filename
-                int childMetaId = Integer.parseInt( (String)childIt.next() );
-                int menuno = Integer.parseInt( (String)childIt.next() );              // What menu in the page the child is in.
+            for ( int i = 0; i < childs.length; ++i ) {
+                String[] childRow = childs[i] ;
+
+                int childMetaId = Integer.parseInt( childRow[0] );
+                int menuno = Integer.parseInt( childRow[1] );              // What menu in the page the child is in.
                 if ( menuno != old_menu ) {	                                     // If we come upon a new menu...
                     old_menu = menuno;
                     currentMenu = new Menu( menuno, sort_order, menumode, imageUrl );	     // We make a new Menu,
                     menus.put( new Integer( menuno ), currentMenu );		     // and add it to the page.
                 }
                 MenuItem menuItem = new MenuItem( currentMenu );
-                menuItem.setMetaId( childMetaId );                                    // The meta-id of the child
-                menuItem.setSortKey( Integer.parseInt( (String)childIt.next() ) );      // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
-                menuItem.setTreeSortKey( (String)childIt.next() );
-                menuItem.setDocumentType( Integer.parseInt( (String)childIt.next() ) ); // The doctype of the child.
-                menuItem.setArchivedFlag( !"0".equals( childIt.next() ) );          // Child is considered archived?
-                menuItem.setTarget( (String)childIt.next() );                         // The target for this document.
+                DocumentDomainObject menuItemDocument = DocumentDomainObject.fromDocumentTypeId( Integer.parseInt( childRow[4] ) ) ;
+                menuItemDocument.setMetaId( childMetaId );
+                menuItem.setSortKey( Integer.parseInt( childRow[2] ) );      // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
+                menuItem.setTreeSortKey( childRow[3] );
+                menuItemDocument.setArchivedFlag( !"0".equals( childRow[5] ) );
+                menuItemDocument.setTarget( childRow[6] );
                 try {
-                    menuItem.setCreatedDatetime( datetimeFormatWithSeconds.parse( (String)childIt.next() ) ); // The datetime the child was created.
+                    menuItemDocument.setCreatedDatetime( datetimeFormatWithSeconds.parse( childRow[7] ) );
                 } catch ( java.text.ParseException ignored ) {
                 }
                 try {
-                    menuItem.setModifiedDatetime( datetimeFormatWithSeconds.parse( (String)childIt.next() ) ); // The datetime the child was modified.
+                    menuItemDocument.setModifiedDatetime( datetimeFormatWithSeconds.parse( childRow[8] ) );
                 } catch ( java.text.ParseException ignored ) {
                 }
-                menuItem.setHeadline( (String)childIt.next() );                       // The headline of the child.
-                menuItem.setMenuText( (String)childIt.next() );                           // The subtext for the child.
-                menuItem.setImage( (String)childIt.next() );                          // An optional imageurl for this document.
-                childIt.next();                                                     // Ignored. The target frame for this document. Replaced by 'target'.
+                menuItemDocument.setHeadline( childRow[9] );
+                menuItemDocument.setMenuText( childRow[10] );
+                menuItemDocument.setImage( childRow[11] );
                 try {
-                    menuItem.setActivatedDatetime( datetimeFormatWithSeconds.parse( (String)childIt.next() ) ); // The datetime the child will be/was activated
+                    menuItemDocument.setActivatedDatetime( datetimeFormatWithSeconds.parse( childRow[13] ) );
                 } catch ( NullPointerException ignored ) {
                 } catch ( ParseException ignored ) {
                 }
                 try {
-                    menuItem.setArchivedDatetime( datetimeFormatWithSeconds.parse( (String)childIt.next() ) ); // The datetime the child will be/was archived
+                    menuItemDocument.setArchivedDatetime( datetimeFormatWithSeconds.parse( childRow[14] ) );
                 } catch ( NullPointerException ignored ) {
                 } catch ( ParseException ignored ) {
                 }
-                menuItem.setEditable( "0".equals( childIt.next() ) );           // if the user may admin it.
-                menuItem.setFilename( (String)childIt.next() );                       // The filename, if it is a file-doc.
+                menuItem.setEditable( "0".equals( childRow[15] ) );           // if the user may admin it.
 
-                if ( ( !menuItem.isActivated() || menuItem.isArchived() ) && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
+                if ( ( !menuItemDocument.isActivated() || menuItemDocument.isArchived() ) && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
                     continue;
                 }
-
+                menuItem.setDocument(menuItemDocument) ;
                 currentMenu.add( menuItem );	// Add the Properties for this menuitem to the current menus list.
             }
 
@@ -404,8 +375,16 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 docTypesList.add( 0, "0" );
                 docTypesList.add( 1, existing_doc_name );
 
-                final int[] docTypesSortOrder = {DocumentDomainObject.DOCTYPE_TEXT, 0, // "Befintligt dokument"
-                                                 DocumentDomainObject.DOCTYPE_URL, DocumentDomainObject.DOCTYPE_FILE, DocumentDomainObject.DOCTYPE_BROWSER, DocumentDomainObject.DOCTYPE_HTML, DocumentDomainObject.DOCTYPE_CHAT, DocumentDomainObject.DOCTYPE_BILLBOARD, DocumentDomainObject.DOCTYPE_CONFERENCE, DocumentDomainObject.DOCTYPE_DIAGRAM, DocumentDomainObject.DOCTYPE_CALENDER, };
+                final int[] docTypesSortOrder = {DocumentDomainObject.DOCTYPE_TEXT,
+                                                 0, // "Existing document"
+                                                 DocumentDomainObject.DOCTYPE_URL,
+                                                 DocumentDomainObject.DOCTYPE_FILE,
+                                                 DocumentDomainObject.DOCTYPE_BROWSER,
+                                                 DocumentDomainObject.DOCTYPE_HTML,
+                                                 DocumentDomainObject.DOCTYPE_CHAT,
+                                                 DocumentDomainObject.DOCTYPE_BILLBOARD,
+                                                 DocumentDomainObject.DOCTYPE_CONFERENCE,
+                                                 DocumentDomainObject.DOCTYPE_DIAGRAM,  };
                 Map sortOrderMap = new HashMap();
                 for ( int i = 0; i < docTypesSortOrder.length; i++ ) {
                     int docTypeId = docTypesSortOrder[i];
@@ -656,8 +635,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         }
 
         public int compare( Object o1, Object o2 ) {
-            String headline1 = ( (MenuItem)o1 ).getHeadline();
-            String headline2 = ( (MenuItem)o2 ).getHeadline();
+            String headline1 = ( (MenuItem)o1 ).getDocument().getHeadline();
+            String headline2 = ( (MenuItem)o2 ).getDocument().getHeadline();
             return collator.compare( headline1, headline2 );
         }
     }
@@ -665,8 +644,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     static class MenuItemModifiedDateComparator implements Comparator {
 
         public int compare( Object o1, Object o2 ) {
-            Date modifiedDate1 = ( (MenuItem)o1 ).getModifiedDatetime();
-            Date modifiedDate2 = ( (MenuItem)o2 ).getModifiedDatetime();
+            Date modifiedDate1 = ( (MenuItem)o1 ).getDocument().getModifiedDatetime();
+            Date modifiedDate2 = ( (MenuItem)o2 ).getDocument().getModifiedDatetime();
             return modifiedDate1.compareTo( modifiedDate2 );
         }
     }

@@ -5,7 +5,7 @@ Template: AdminUserResp.htm
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title><? sv/AdminUserResp.htm/1 ?></title>
+<title><? templates/sv/AdminUserResp.htm/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -22,13 +22,13 @@ function evalPrepareAdd() {
 	if( document.forms[0].last_name.value == "" ) valFieldsOk = false	
 	
 	if(!valFieldsOk) {
-		var msg = "<? sv/AdminUserResp.htm/2/1 ?>"
+		var msg = "<? templates/sv/AdminUserResp.htm/2/1 ?>"
 		alert(msg)
 		return false
 	}
 	
 	if(document.forms[0].password1.value != document.forms[0].password2.value){
-		var msg = "<? sv/AdminUserResp.htm/2/2 ?>"
+		var msg = "<? templates/sv/AdminUserResp.htm/2/2 ?>"
 		document.forms[0].password1.value = "" 
 		document.forms[0].password2.value = ""
 		document.forms[0].password1.focus()
@@ -39,7 +39,7 @@ function evalPrepareAdd() {
 	userType = document.forms[0].user_type.selectedIndex
 	// Lets check if the user has make a choice
 	if(userType == "-1") {
-		var msg = "<? sv/AdminUserResp.htm/2/3 ?>"
+		var msg = "<? templates/sv/AdminUserResp.htm/2/3 ?>"
 		alert(msg)
 		return false
 	}
@@ -47,7 +47,7 @@ function evalPrepareAdd() {
 	var userRole
 	userRole = document.forms[0].roles.selectedIndex
 	if(userRole == "-1") {
-		var msg = "<? sv/AdminUserResp.htm/2/4 ?>"
+		var msg = "<? templates/sv/AdminUserResp.htm/2/4 ?>"
 		msg += " "
 		alert(msg)
 		return false
@@ -60,8 +60,8 @@ function evalPrepareAdd() {
 			var list = document.forms[0].roles;
 			for ( i = 0 ; i < list.length ; i++ ){
 				if ( list.options[i].text == "Useradmin"  &&  !list.options[i].selected ){
-					var msg = "<? sv/AdminUserResp.htm/2/5 ?>\n"; 
-					msg += "<? sv/AdminUserResp.htm/2/6 ?>" ;
+					var msg = "<? templates/sv/AdminUserResp.htm/2/5 ?>\n"; 
+					msg += "<? templates/sv/AdminUserResp.htm/2/6 ?>" ;
 					alert(msg); 
 				}
 			}
@@ -103,9 +103,9 @@ imcmsGui("head", null);
 <input type="HIDDEN" name="new_pwd1" value="#NEW_PWD1#">
 <input type="HIDDEN" name="new_pwd2" value="#NEW_PWD2#">
 <tr>
-	<td><input type="submit" class="imcmsFormBtn" name="CANCEL" value="<? sv/AdminUserResp.htm/2001 ?>"></td>
+	<td><input type="submit" class="imcmsFormBtn" name="CANCEL" value="<? templates/sv/AdminUserResp.htm/2001 ?>"></td>
 	<td>&nbsp;</td>
-    <td><input type="button" value="<? sv/AdminUserResp.htm/2002 ?>" title="<? sv/AdminUserResp.htm/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(71)"></td>
+    <td><input type="button" value="<? templates/sv/AdminUserResp.htm/2002 ?>" title="<? templates/sv/AdminUserResp.htm/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(71)"></td>
 </tr>
 </table>
 <script>
@@ -113,30 +113,30 @@ imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0" width="660" align="center">
 <tr> 
-	<td colspan="2"><script>imcHeading("<? sv/AdminUserResp.htm/5/1 ?>",656);</script></td>
+	<td colspan="2"><script>imcHeading("<? templates/sv/AdminUserResp.htm/5/1 ?>",656);</script></td>
 </tr>
 <tr> 
 	<td colspan="2" class="imcmsAdmText">
-	<? sv/AdminUserResp.htm/6 ?></td>
+	<? templates/sv/AdminUserResp.htm/6 ?></td>
 </tr>
 <tr> 
 	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/8 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/8 ?></td>
 	<td><script>
 writeFormField("TEXT","login_name",25,50,null,"#LOGIN_NAME#");
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText" nowrap><? sv/AdminUserResp.htm/10 ?> <span class="imcmsAdmDim"><? sv/AdminUserResp.htm/11 ?></span> &nbsp;</td>
+	<td class="imcmsAdmText" nowrap><? templates/sv/AdminUserResp.htm/10 ?> <span class="imcmsAdmDim"><? templates/sv/AdminUserResp.htm/11 ?></span> &nbsp;</td>
 	<td> 
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><script>
 writeFormField("PASSWORD","password1",16,15,null,"#PWD1#");
 </script></td>
-		<td class="imcmsAdmText" nowrap>&nbsp; <? sv/AdminUserResp.htm/1001 ?> &nbsp;</td>
+		<td class="imcmsAdmText" nowrap>&nbsp; <? templates/sv/AdminUserResp.htm/1001 ?> &nbsp;</td>
 		<td><script>
 writeFormField("PASSWORD","password2",16,15,null,"#PWD2#");
 </script></td>
@@ -144,37 +144,37 @@ writeFormField("PASSWORD","password2",16,15,null,"#PWD2#");
 	</table></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/14 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/14 ?></td>
 	<td><script>
 writeFormField("TEXT","first_name",25,25,null,"#FIRST_NAME#");
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/16 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/16 ?></td>
 	<td><script>
 writeFormField("TEXT","last_name",25,30,null,"#LAST_NAME#");
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/18 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/18 ?></td>
 	<td><script>
 writeFormField("TEXT","title",25,30,null,"#TITLE#");
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/20 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/20 ?></td>
 	<td><script>
 writeFormField("TEXT","company",25,30,null,"#COMPANY#");
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/22 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/22 ?></td>
 	<td><script>
 writeFormField("TEXT","address",25,30,null,"#ADDRESS#");
 </script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/24 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/24 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -189,26 +189,26 @@ writeFormField("TEXT","city",25,30,null,"#CITY#");
 	</table></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/27 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/27 ?></td>
 	<td><script>
 writeFormField("TEXT","country_council",25,30,null,"#COUNTRY_COUNCIL#");
 </script></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/29 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/29 ?></td>
 	<td><script>
 writeFormField("TEXT","country",25,30,null,"#COUNTRY#");
 </script></td>
 </tr>
 <tr>
-    <td class="imcmsAdmText"><? sv/AdminUserResp.htm/30 ?></td>
+    <td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/30 ?></td>
     <td><select name="lang_id">#LANG_TYPES#</select></td>
 </tr>
 <tr>
 	<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 </tr>
 <tr> 
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/32 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/32 ?></td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -221,7 +221,7 @@ writeFormField("TEXT","country",25,30,null,"#COUNTRY#");
 writeFormField("TEXT","local_code",16,25,null,"#NUMBER#");
 </script></td>
 		<td>&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtnSmall" value="<? sv/AdminUserResp.htm/2004 ?>" name="ok_phones"></td>
+		<td><input type="submit" class="imcmsFormBtnSmall" value="<? templates/sv/AdminUserResp.htm/2004 ?>" name="ok_phones"></td>
 	</tr>
 	</table></td>
 </tr>
@@ -235,14 +235,14 @@ writeFormField("TEXT","local_code",16,25,null,"#NUMBER#");
 		#PHONES_MENU#
 		</select></td>
 		<td>&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtnSmall" name="edit_phones" value="<? sv/AdminUserResp.htm/2005 ?>"></td>
+		<td><input type="submit" class="imcmsFormBtnSmall" name="edit_phones" value="<? templates/sv/AdminUserResp.htm/2005 ?>"></td>
 		<td>&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtnSmall" name="delete_phones" value="<? sv/AdminUserResp.htm/2006 ?>"></td>
+		<td><input type="submit" class="imcmsFormBtnSmall" name="delete_phones" value="<? templates/sv/AdminUserResp.htm/2006 ?>"></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText"><? sv/AdminUserResp.htm/36 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/36 ?></td>
 	<td><script>
 writeFormField("TEXT","email",50,50,null,"#EMAIL#");
 </script></td>
@@ -255,15 +255,15 @@ writeFormField("TEXT","email",50,50,null,"#EMAIL#");
 	<td colspan="2">
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<tr>
-		<td class="imcmsAdmComment"><? sv/AdminUserResp.htm/40 ?></td>
+		<td class="imcmsAdmComment"><? templates/sv/AdminUserResp.htm/40 ?></td>
 		<td align="right">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="submit" class="imcmsFormBtn" name="SAVE_USER" value="<? sv/AdminUserResp.htm/2007 ?>" onClick="if( !evalPrepareAdd() ) return false;"></td>
+			<td><input type="submit" class="imcmsFormBtn" name="SAVE_USER" value="<? templates/sv/AdminUserResp.htm/2007 ?>" onClick="if( !evalPrepareAdd() ) return false;"></td>
 			<td>&nbsp;</td>
-			<td><input type="submit" class="imcmsFormBtn" name="RESET_FORM" value="<? sv/AdminUserResp.htm/2008 ?>"></td>
+			<td><input type="submit" class="imcmsFormBtn" name="RESET_FORM" value="<? templates/sv/AdminUserResp.htm/2008 ?>"></td>
 			<td>&nbsp;</td>
-			<td><input type="submit" class="imcmsFormBtn" name="CANCEL" value="<? sv/AdminUserResp.htm/2009 ?>"></td>
+			<td><input type="submit" class="imcmsFormBtn" name="CANCEL" value="<? templates/sv/AdminUserResp.htm/2009 ?>"></td>
 		</tr>
 		</table></td>
 	</tr>

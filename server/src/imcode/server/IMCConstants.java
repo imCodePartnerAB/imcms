@@ -100,4 +100,6 @@ public interface IMCConstants {
     public final static String HOST_PROPERTIES           = "host.properties" ;
 
     int PASSWORD_MINIMUM_LENGTH = 4;
+
+    int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;
 }

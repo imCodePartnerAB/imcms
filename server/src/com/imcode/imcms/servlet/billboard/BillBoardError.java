@@ -26,7 +26,7 @@ public class BillBoardError extends BillBoard {
         VariableManager vm = new VariableManager();
 
         // Lets get the errormessage from the error file
-        String myErrorMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLangPrefix());
+        String myErrorMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLanguageIso639_2());
 
 
         vm.addProperty( "ERROR_HEADER", header );
@@ -45,7 +45,7 @@ public class BillBoardError extends BillBoard {
         VariableManager vm = new VariableManager();
 
         // Lets get the errormessage from the error file
-        String myErrorMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLangPrefix());
+        String myErrorMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLanguageIso639_2());
 
         vm.addProperty( "ERROR_MESSAGE", myErrorMessage );
         //String fileName = "Conf_Error.htm" ;
@@ -62,7 +62,7 @@ public class BillBoardError extends BillBoard {
         VariableManager vm = new VariableManager();
 
         // Lets get the errormessage from the error file
-        String aMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLangPrefix());
+        String aMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLanguageIso639_2());
         aMessage += " " + msg;
 
         vm.addProperty( "ERROR_HEADER", header );
@@ -139,7 +139,7 @@ public class BillBoardError extends BillBoard {
         VariableManager vm = new VariableManager();
 
         // Lets get the errormessage from the error file
-        myErrorMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLangPrefix());
+        myErrorMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLanguageIso639_2());
         vm.addProperty( "ERROR_CODE", "" + errorCode );
         vm.addProperty( "ERROR_HEADER", header );
         vm.addProperty( "ERROR_MESSAGE", myErrorMessage );

@@ -126,7 +126,7 @@ public class ChatCreator extends ChatBase {
                         new ChatError(req, res, header, 84);//obs kolla om rätt nr
                         return;
                     }
-                    log("lang_prefix for External Template Folder = " + user.getLangPrefix());
+                    log("lang_prefix for External Template Folder = " + user.getLanguageIso639_2());
                     chatref.sqlUpdateProcedure("C_AddTemplateLib", new String[]{newLibName});
                     // Lets copy the original folders to the new foldernames
                     FileManager fileObj = new FileManager();

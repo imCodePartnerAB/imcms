@@ -180,7 +180,7 @@ var timer;
 function doSend() {
 	var doSave = (confirmSave) ? 0 : 1;
 	if (confirmSave) {
-		doSave = confirm('<? sv/htmleditor/scripts/editor_functions.js/1 ?>');
+		doSave = confirm('<? install/htdocs/sv/htmleditor/scripts/editor_functions.js/1 ?>');
 	}
 	if (doSave) {
 		var editedCode            = editorDiv.innerHTML;
@@ -373,7 +373,7 @@ function strRev(str) {
 /* ******************************** */
 
 function doClose() {
-	var closeMess = "<? sv/htmleditor/scripts/editor_functions.js/2 ?>";
+	var closeMess = "<? install/htdocs/sv/htmleditor/scripts/editor_functions.js/2 ?>";
 	if (confirmClose && directEditEnabled) {
 		if (document.frames['changeTextFrame'].document.forms[0].text.value != editorDiv.innerHTML) {
 			if (confirm(closeMess)) window.close();
@@ -588,7 +588,7 @@ function insertSpan(){
 
 
 function doFind(){ // Not in use - runs by VBScript
-	var textToFind = window.prompt("<? sv/htmleditor/scripts/editor_functions.js/3 ?>", "");
+	var textToFind = window.prompt("<? install/htdocs/sv/htmleditor/scripts/editor_functions.js/3 ?>", "");
 	var r = document.body.createTextRange();
 	r.findText(textToFind);
 	r.select();
@@ -718,19 +718,19 @@ function changeLinkType(what){
 		theField = document.getElementById("createLinkField");
 		switch(what){
 			case 'GetDoc':
-				theDescr.innerHTML = '<b><? sv/htmleditor/scripts/editor_functions.js/10 ?>:</b>';
+				theDescr.innerHTML = '<b><? install/htdocs/sv/htmleditor/scripts/editor_functions.js/10 ?>:</b>';
 				theField.innerHTML = '<input type="text" name="createLinkValue" value="" size="5" maxlength="6" style="width:42\; text-align:right">';
 			break;
 			case 'http':
-				theDescr.innerHTML = '<b><? sv/htmleditor/scripts/editor_functions.js/11 ?>:</b>';
+				theDescr.innerHTML = '<b><? install/htdocs/sv/htmleditor/scripts/editor_functions.js/11 ?>:</b>';
 				theField.innerHTML = '<input type="text" name="createLinkValue" value="http://" size="12" maxlength="100" style="width:140">';
 			break;
 			case 'mailto':
-				theDescr.innerHTML = '<b><? sv/htmleditor/scripts/editor_functions.js/12 ?>:</b>';
+				theDescr.innerHTML = '<b><? install/htdocs/sv/htmleditor/scripts/editor_functions.js/12 ?>:</b>';
 				theField.innerHTML = '<input type="text" name="createLinkValue" value="" size="12" maxlength="100" style="width:140">';
 			break;
 			case 'ftp':
-				theDescr.innerHTML = '<b><? sv/htmleditor/scripts/editor_functions.js/13 ?>:</b>';
+				theDescr.innerHTML = '<b><? install/htdocs/sv/htmleditor/scripts/editor_functions.js/13 ?>:</b>';
 				theField.innerHTML = '<input type="text" name="createLinkValue" value="ftp://" size="12" maxlength="100" style="width:140">';
 			break;
 		}

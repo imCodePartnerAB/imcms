@@ -94,7 +94,7 @@ function closeThisWindow(){
     <td valign=top align=left width="0" height="0" colspan="2"> 
       <table width="500" border="0" cellspacing="0" cellpadding="0">
         <tr> 
-            <td><font face="Verdana, Arial, Helvetica, sans-serif" size="6" color="#000000"><b><i><font size="5"><? sv/billboard/original/BillBoard_admin_section.htm/2 ?></font></i></b></font><br>
+            <td><font face="Verdana, Arial, Helvetica, sans-serif" size="6" color="#000000"><b><i><font size="5"><? templates/sv/billboard/original/BillBoard_admin_section.htm/2 ?></font></i></b></font><br>
               <IMG height=8 src="#IMAGE_URL#blueline.gif" width=500></td>
         </tr>
       </table>
@@ -102,11 +102,11 @@ function closeThisWindow(){
   </tr>
   <tr> 
     <td valign=top align=left width="0" height="0" bgcolor="#ffffff" colspan="2"><br>
-      <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? sv/billboard/original/BillBoard_admin_section.htm/3 ?></font></td>
+      <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/billboard/original/BillBoard_admin_section.htm/3 ?></font></td>
   </tr>
   <tr> 
     <td valign=top align=left width="0" height="0" bgcolor="#ffffff" colspan="2"><br>
-        <A href="#SERVLET_URL#BillBoardAdmin?ADMIN_TYPE=META"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_admin_section.htm/4 ?></font></A><br>
+        <A href="#SERVLET_URL#BillBoardAdmin?ADMIN_TYPE=META"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/billboard/original/BillBoard_admin_section.htm/4 ?></font></A><br>
       <br>
     </td>
   </tr>
@@ -115,18 +115,18 @@ function closeThisWindow(){
       <form method="post" name="NEW_SECTION_FORM" action="#SERVLET_URL#BillBoardAdmin" onsubmit="if(evalConfAdminForumText()== false) return false; return true">
         <table cellspacing=0 cellpadding=0 width="100%" border="0">
           <tr> 
-            <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? sv/billboard/original/BillBoard_admin_section.htm/5 ?></font> 
+            <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/billboard/original/BillBoard_admin_section.htm/5 ?></font> 
               <input type="hidden" name="ADMIN_TYPE" value="SECTION">
               <br>
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_admin_section.htm/6 ?></font> 
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/billboard/original/BillBoard_admin_section.htm/6 ?></font> 
               <br>
               <input name="NEW_SECTION_NAME" maxlength="255" size="30" >
               <br><br>
 			  <input type="hidden" value="LÄGG TILL" name="ADD_SECTION">
-                <input type="submit" name="ADD_SECTION" value="<? sv/billboard/original/BillBoard_admin_section.htm/2001 ?>" style="FONT-SIZE: 10px">
+                <input type="submit" name="ADD_SECTION" value="<? templates/sv/billboard/original/BillBoard_admin_section.htm/2001 ?>" style="FONT-SIZE: 10px">
             </td>
             <td width="49%" valign="top">
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_admin_section.htm/7 ?></font><br><br>
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/billboard/original/BillBoard_admin_section.htm/7 ?></font><br><br>
               <select name="BEF_SECTION" size="3">		 		 #SECTION_LIST#                                                      </select>
             </td>
           </tr>
@@ -140,13 +140,13 @@ function closeThisWindow(){
         <tr> 
             <td valign=top align=left width="0" height="0"> <IMG height=4 src="#IMAGE_URL#blueline.gif" width=500> 
               <form method="post" action="#SERVLET_URL#BillBoardAdmin" name="DEL_SECTION" onSubmit="if(evalDelForum()== false) return false; return true; ">
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? sv/billboard/original/BillBoard_admin_section.htm/9 ?></font> 
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/billboard/original/BillBoard_admin_section.htm/9 ?></font> 
               <input type="hidden" name="ADMIN_TYPE" value="SECTION">
               <br>
               <br>
               <select name="SECTION_ID" size="1">          #SECTION_LIST#                                                                         </select>
               &nbsp;&nbsp;&nbsp; 
-              <input type="submit" name="DELETE_SECTION" value="<? sv/billboard/original/BillBoard_admin_section.htm/2002 ?>" style="FONT-SIZE: 10px">
+              <input type="submit" name="DELETE_SECTION" value="<? templates/sv/billboard/original/BillBoard_admin_section.htm/2002 ?>" style="FONT-SIZE: 10px">
             </form>
           </td>
         </tr>
@@ -158,17 +158,17 @@ function closeThisWindow(){
         <form method="post" action="#SERVLET_URL#BillBoardAdmin" name="changeNameForm" onSubmit="if(evalChangeForum()== false) return false; return true;">
           <table cellspacing=0 cellpadding=0 width="100%" border="0">
           <tr> 
-              <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? sv/billboard/original/BillBoard_admin_section.htm/11 ?></font> 
+              <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3"><? templates/sv/billboard/original/BillBoard_admin_section.htm/11 ?></font> 
                 <input type="hidden" name="ADMIN_TYPE" value="SECTION">
 				<input type="hidden" value="ÄNDRA" name="CHANGE_SECTION_NAME">
               <br>
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> <? sv/billboard/original/BillBoard_admin_section.htm/12 ?></font> <br>
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> <? templates/sv/billboard/original/BillBoard_admin_section.htm/12 ?></font> <br>
               <input name="NEW_SECTION_NAME" maxlength="255" size="30" >
               <br><br>
-              <input type="submit" name="CHANGE_SECTION_NAME" value="<? sv/billboard/original/BillBoard_admin_section.htm/2003 ?>" style="FONT-SIZE: 10px">
+              <input type="submit" name="CHANGE_SECTION_NAME" value="<? templates/sv/billboard/original/BillBoard_admin_section.htm/2003 ?>" style="FONT-SIZE: 10px">
             </td>
             <td width="49%" valign="top"> 
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_admin_section.htm/13 ?></font><br><br>
+              <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/billboard/original/BillBoard_admin_section.htm/13 ?></font><br><br>
               <select name="SECTION_ID" size="3">		 		 #SECTION_LIST#                                                      </select>
               &nbsp; </td>
           </tr>
@@ -183,8 +183,8 @@ function closeThisWindow(){
           <tr> 
               <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3">
                 <input type="hidden" name="ADMIN_TYPE2" value="SECTION">
-                <? sv/billboard/original/BillBoard_admin_section.htm/15 ?></font>: <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-                <? sv/billboard/original/BillBoard_admin_section.htm/17 ?></font>:<br>
+                <? templates/sv/billboard/original/BillBoard_admin_section.htm/15 ?></font>: <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+                <? templates/sv/billboard/original/BillBoard_admin_section.htm/17 ?></font>:<br>
               <br>
               <select name="NBR_OF_DISCS_TO_SHOW" size="1">
                 <option value="5">5</option>
@@ -206,12 +206,12 @@ function closeThisWindow(){
                 <option value="600">600</option>
               </select>
               &nbsp;&nbsp;&nbsp; 
-              <input type="submit" name="SHOW_DISCUSSION_NBR" value="<? sv/billboard/original/BillBoard_admin_section.htm/2004 ?>" style="FONT-SIZE: 10px" onClick="if(evalNbrOfDiscsToShow()==false) return false; return true;">
+              <input type="submit" name="SHOW_DISCUSSION_NBR" value="<? templates/sv/billboard/original/BillBoard_admin_section.htm/2004 ?>" style="FONT-SIZE: 10px" onClick="if(evalNbrOfDiscsToShow()==false) return false; return true;">
               <br>
               <br>
             </td>
               <td width="49%" valign="top"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-                <? sv/billboard/original/BillBoard_admin_section.htm/1001 ?> </font><br>
+                <? templates/sv/billboard/original/BillBoard_admin_section.htm/1001 ?> </font><br>
                 <br>
               <select name="SECTION_ID" size="3">
 				 #NBR_OF_DISCS_TO_SHOW_LIST#                
@@ -230,8 +230,8 @@ function closeThisWindow(){
           <tr> 
               <td valign=top align=left width="51%" height="0"> <font face="Verdana, Arial, Helvetica, sans-serif" size="3">
                 <input type="hidden" name="ADMIN_TYPE3" value="SECTION">
-                <? sv/billboard/original/BillBoard_admin_section.htm/37 ?></font>: <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-                <? sv/billboard/original/BillBoard_admin_section.htm/39 ?></font>:<br>
+                <? templates/sv/billboard/original/BillBoard_admin_section.htm/37 ?></font>: <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+                <? templates/sv/billboard/original/BillBoard_admin_section.htm/39 ?></font>:<br>
               <br>
               <select name="NBR_OF_DAYS_TO_SHOW" size="1">
                 <option value="5">5</option>
@@ -253,12 +253,12 @@ function closeThisWindow(){
                 <option value="600">600</option>
               </select>
               &nbsp;&nbsp;&nbsp; 
-              <input type="submit" name="SHOW_DISCUSSION_DAYS" value="<? sv/billboard/original/BillBoard_admin_section.htm/2005 ?>" style="FONT-SIZE: 10px" onClick="if(evalNbrOfDaysToShow()==false) return false; return true;">
+              <input type="submit" name="SHOW_DISCUSSION_DAYS" value="<? templates/sv/billboard/original/BillBoard_admin_section.htm/2005 ?>" style="FONT-SIZE: 10px" onClick="if(evalNbrOfDaysToShow()==false) return false; return true;">
               <br>
               <br>
             </td>
               <td width="49%" valign="top"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-                <? sv/billboard/original/BillBoard_admin_section.htm/1002 ?> </font><br>
+                <? templates/sv/billboard/original/BillBoard_admin_section.htm/1002 ?> </font><br>
                 <br>
               <select name="SECTION_ID" size="3">
 				 #NBR_OF_DAYS_TO_SHOW_LIST#                
@@ -277,7 +277,7 @@ function closeThisWindow(){
     <td valign="top" nowrap bgcolor="#ffffff" colspan="2"> 
       <table width="100%" border="0" cellpadding="o" cellspacing="0">
         <tr> 
-            <td width="45%"><A href="#SERVLET_URL#BillBoardHelp?helpmode=admin&amp;helparea=Section#Section" target=_BillBoardHelp><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? sv/billboard/original/BillBoard_admin_section.htm/59 ?></font></A></td>
+            <td width="45%"><A href="#SERVLET_URL#BillBoardHelp?helpmode=admin&amp;helparea=Section#Section" target=_BillBoardHelp><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/billboard/original/BillBoard_admin_section.htm/59 ?></font></A></td>
             <td width="55%" nowrap>#SECTION_UNADMIN_LINK#</td>
         </tr>
       </table>

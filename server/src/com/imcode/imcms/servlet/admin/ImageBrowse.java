@@ -110,7 +110,7 @@ public class ImageBrowse extends HttpServlet {
 
         //*hamdles the number of images to show and the buttons to admin it.
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        String adminImgPath = user.getLangPrefix() + "/admin/";
+        String adminImgPath = user.getLanguageIso639_2() + "/admin/";
         String previousButton = "&nbsp;";
         String nextButton = "&nbsp;";
         String startStr = request.getParameter( "img_curr_max" );
@@ -316,7 +316,7 @@ public class ImageBrowse extends HttpServlet {
         // Since our templates are located into the admin folder, we'll have to hang on admin
         File templateLib = imcref.getTemplatePath();
         // Lets get the users language id. Use the langid to get the lang prefix from db.
-        String langPrefix = user.getLangPrefix();
+        String langPrefix = user.getLanguageIso639_2();
         templateLib = new File( templateLib, langPrefix + "/admin" );
         return templateLib;
     }

@@ -369,7 +369,7 @@ public class ConfAdmin extends Conference {
             String selfRegList = Html.createOptionList("", selfRegV);
 
             // Lets ALL avaible self_register roles from DB
-            String langPrefix = user.getLangPrefix();
+            String langPrefix = user.getLanguageIso639_2();
 
             String sqlAnswer2[] = imcref.sqlProcedure("RoleGetConferenceAllowed", new String[]{langPrefix});
             Vector allSelfRegV = super.convert2Vector(sqlAnswer2);

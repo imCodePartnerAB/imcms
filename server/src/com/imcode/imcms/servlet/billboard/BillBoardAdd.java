@@ -127,14 +127,14 @@ public class BillBoardAdd extends BillBoard {
                 if ( !validateEmail( addEpost ) ) {
                     log( "invalid epostadress" );
                     String header = SERVLET_NAME + " servlet. ";
-                    new BillBoardError( req, res, header, 76, user.getLangPrefix());
+                    new BillBoardError( req, res, header, 76, user.getLanguageIso639_2());
                     return;
                 }
 
                 // Lets check the data size
                 if ( addText.length() > 32000 ) {
                     String header = SERVLET_NAME + " servlet. ";
-                    new BillBoardError( req, res, header, 75, user.getLangPrefix());
+                    new BillBoardError( req, res, header, 75, user.getLanguageIso639_2());
                     return;
                 }
 
@@ -213,14 +213,14 @@ public class BillBoardAdd extends BillBoard {
                     if ( !validateEmail( addEpost ) ) {
                         log( "invalid epostadress" );
                         String header = SERVLET_NAME + " servlet. ";
-                        new BillBoardError( req, res, header, 76, user.getLangPrefix());
+                        new BillBoardError( req, res, header, 76, user.getLanguageIso639_2());
                         return;
                     }
 
                     // Lets check the data size
                     if ( addText.length() > 32000 ) {
                         String header = SERVLET_NAME + " servlet. ";
-                        new BillBoardError( req, res, header, 75, user.getLangPrefix());
+                        new BillBoardError( req, res, header, 75, user.getLanguageIso639_2());
                         return;
                     }
                 }
@@ -286,7 +286,7 @@ public class BillBoardAdd extends BillBoard {
                     // Lets check the data size
                     if ( addText.length() > 32000 ) {
                         String header = SERVLET_NAME + " servlet. ";
-                        new BillBoardError( req, res, header, 74, user.getLangPrefix());
+                        new BillBoardError( req, res, header, 74, user.getLanguageIso639_2());
                         return;
                     }
                 }
@@ -304,7 +304,7 @@ public class BillBoardAdd extends BillBoard {
                 try {
                     this.sendReplieEmail( toEmail, addEpost, subjectStr, addText, addHeader );
                 } catch ( ProtocolException pe ) {
-                    new BillBoardError( req, res, "BillBoardAdd servlet. ", 76, user.getLangPrefix());
+                    new BillBoardError( req, res, "BillBoardAdd servlet. ", 76, user.getLanguageIso639_2());
                     log( pe.getMessage() );
                     return;
                 }
@@ -317,7 +317,7 @@ public class BillBoardAdd extends BillBoard {
             }
         } else {
             String header = SERVLET_NAME + " servlet. ";
-            new BillBoardError( req, res, header, 100, user.getLangPrefix());
+            new BillBoardError( req, res, header, 100, user.getLanguageIso639_2());
             return;
         }
 
@@ -394,7 +394,7 @@ public class BillBoardAdd extends BillBoard {
             return;
         } else {
             String header = SERVLET_NAME + " servlet. ";
-            new BillBoardError( req, res, header, 100, user.getLangPrefix());
+            new BillBoardError( req, res, header, 100, user.getLanguageIso639_2());
             return;
         }
 

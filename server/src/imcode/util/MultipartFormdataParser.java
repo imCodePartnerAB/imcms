@@ -1,5 +1,6 @@
 package imcode.util;
 
+import javax.servlet.http.HttpServletRequestWrapper;
 import java.util.LinkedList;
 
 /**

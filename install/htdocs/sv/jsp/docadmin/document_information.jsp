@@ -15,13 +15,16 @@
                  imcode.server.IMCServiceInterface,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
-                 imcode.server.document.*"%>
+                 imcode.server.document.*,
+                 com.imcode.imcms.servlet.admin.DocumentInformation"%>
 <%
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
     final DocumentMapper documentMapper = service.getDocumentMapper();
-    final int metaId = Integer.parseInt(request.getParameter("meta_id"));
-    DocumentDomainObject document = documentMapper.getDocument(metaId) ;
+
+    DocumentDomainObject document = (DocumentDomainObject)DocumentInformation.getObjectFromSessionWithKeyInRequest(request, DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
+    final boolean editingExistingDocument = DocumentInformation.ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( request.getParameter( DocumentInformation.PARAMETER__ACTION  )) ;
+    boolean creatingNewDocument = !editingExistingDocument;
 %>
 <%!
     String formatDate(Date date) {
@@ -43,7 +46,7 @@
 
 <html>
 <head>
-<title><? sv/jsp/docinfo.jsp/1 ?></title>
+<title><? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_information_title ?></title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -60,9 +63,9 @@ imcmsGui("head", null);
 <table border="0" cellspacing="0" cellpadding="0">
 <form>
 <tr>
-	<td><input type="BUTTON" class="imcmsFormBtn" value="<? sv/jsp/docinfo.jsp/2001 ?>" onClick="document.forms.abortForm.submit(); return false"></td>
+	<td><input type="BUTTON" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>" onClick="document.forms.abortForm.submit(); return false"></td>
 	<td>&nbsp;</td>
-    <td><input type="button" value="<? sv/jsp/docinfo.jsp/2002 ?>" title="<? sv/jsp/docinfo.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(77)"></td>
+    <td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2002 ?>" title="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(77)"></td>
 </tr>
 </form>
 </table>
@@ -70,44 +73,52 @@ imcmsGui("head", null);
 imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-<form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/SaveDocument">
-<!-- input type="hidden" name="doc_type" value="#doc_type#">
-<input type="hidden" name="doc_menu_no" value="#doc_menu_no#">
-<input type="hidden" name="parent_meta_id" value="#parent_meta_id#">
-<input type="hidden" name="description" value="" oldvalue="#description#">
-<input type="hidden" name="current_section_id" value="#current_section_id#">
-<input type="hidden" name="archive" value="0" -->
-<input type="hidden" name="meta_id" value="<%= document.getMetaId() %>">
+<form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentInformation">
+<%
+    if (creatingNewDocument) { %>
+    <input type="hidden" name="action" value="<%=DocumentInformation.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION%>" />
+    <input type="hidden"
+        name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
+        value="<%= request.getAttribute( DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) %>">
 <tr>
-	<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/1001 ?>
+	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/new_document_procedure_description ?>
 	&nbsp;</td>
 </tr>
 <tr>
-	<td><script>imcHeading("<? sv/jsp/docinfo.jsp/5/1 ?>","656");</script></td>
+	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>","656");</script></td>
 </tr>
+<% } else { %>
+    <input type="hidden" name="action" value="<%=DocumentInformation.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
+    <input type="hidden"
+        name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
+        value="<%= request.getAttribute( DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>">
+<tr>
+	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>","656");</script></td>
+</tr>
+<% } %>
 <tr>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<tr>
-		<td class="imcmsAdmText" nowrap><? sv/jsp/docinfo.jsp/6 ?><sup class="imNote">1</sup></td>
+		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
 		<td>
             <input type="text" name="meta_headline" size="105" maxlength="255" style="width: 100%"
             value="<%= StringEscapeUtils.escapeHtml(document.getHeadline()) %>">
         </td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText" nowrap><? sv/jsp/docinfo.jsp/1002 ?>&nbsp;</td>
+		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
 		<textarea name="meta_text" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%">
 <%= StringEscapeUtils.escapeHtml(document.getMenuText()) %></textarea>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><input type="CHECKBOX" name="copyMetaHeader" value="1" checked></td>
-			<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/9 ?></td>
+			<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/9 ?></td>
 		</tr>
 		</table></td>
 	<tr>
-		<td class="imcmsAdmText" nowrap><? sv/jsp/docinfo.jsp/10 ?></td>
+		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/10 ?></td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0" width="560">
 		<tr>
@@ -117,7 +128,7 @@ imcmsGui("mid", null);
             </td>
 			<td align="right">
                 <!-- input type="hidden" name="caller" value="AddDoc" -->
-                <input type="submit" class="imcmsFormBtnSmall" name="ImageBrowse" value=" <? global/pageinfo/browse ?> ">
+                <input type="submit" class="imcmsFormBtnSmall" name="ImageBrowse" value=" <? install/htdocs/global/pageinfo/browse ?> ">
 			</td>
 		</tr>
 		</table></td>
@@ -128,7 +139,7 @@ imcmsGui("mid", null);
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/15 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/15 ?></td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
@@ -136,17 +147,17 @@ imcmsGui("mid", null);
                 <input type="text" name="activated_date" size="11" maxlength="10" style="width: 7em;"
                     value="<%= StringEscapeUtils.escapeHtml( formatDate(document.getActivatedDatetime()) ) %>">
             </td>
-			<td class="imcmsAdmText">&nbsp;<? sv/jsp/docinfo.jsp/1007 ?></td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
 			<td>
                 <input type="text" name="activated_time" size="5" maxlength="5" style="width: 4em;"
                     value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getActivatedDatetime()) ) %>">
             </td>
-			<td class="imcmsAdmDim">&nbsp;<? sv/jsp/docinfo.jsp/date_format ?></td>
+			<td class="imcmsAdmDim">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/date_format ?></td>
 		</tr>
 		</table></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/18 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/18 ?></td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
@@ -154,12 +165,12 @@ imcmsGui("mid", null);
                 <input type="text" name="archived_date" size="11" maxlength="10" style="width: 7em;"
                     value="<%= StringEscapeUtils.escapeHtml( formatDate(document.getArchivedDatetime()) ) %>">
             </td>
-			<td class="imcmsAdmText">&nbsp;<? sv/jsp/docinfo.jsp/1009 ?></td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
 			<td>
                 <input type="text" name="archived_time" size="5" maxlength="5" style="width: 4em;"
                     value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getArchivedDatetime()) ) %>">
             </td>
-			<td class="imcmsAdmDim">&nbsp;<? sv/jsp/docinfo.jsp/date_format ?></td>
+			<td class="imcmsAdmDim">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/date_format ?></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -170,13 +181,13 @@ imcmsGui("mid", null);
 	</table></td>
 </tr>
 <tr>
-	<td>&nbsp;<br><script>imcHeading("<? sv/jsp/docinfo.jsp/21/1 ?>","656");</script></td>
+	<td>&nbsp;<br><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?>","656");</script></td>
 </tr>
 <tr>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/22 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?></td>
 		<td class="imcmsAdmText">
 		<select name="change_section" size="5" multiple>
             <% SectionDomainObject[] sections = documentMapper.getAllSections() ;
@@ -190,10 +201,10 @@ imcmsGui("mid", null);
                 } ;
             %><%= Html.createOptionList( Arrays.asList( sections ), Arrays.asList(documentSections), sectionToStrings ) %>
 		</select>
-		&nbsp; <? sv/jsp/docinfo.jsp/current_section ?>
+		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_section ?>
         <%=
             0 == documentSections.length
-                ? "<? sv/jsp/docinfo.jsp/no_section ?>"
+                ? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_section ?>"
                 : StringUtils.join(documentSections, ", ")
         %>
         </td>
@@ -202,18 +213,18 @@ imcmsGui("mid", null);
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/26 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/26 ?></td>
 		<td class="imcmsAdmText">
 		<select name="lang_prefix" size="1">
 		    <%= LanguageMapper.getLanguageOptionList( service, user, document.getLanguageIso639_2() ) %>
         </select>
-		&nbsp; <? sv/jsp/docinfo.jsp/current_language ?> <%= LanguageMapper.getCurrentLanguageNameInUsersLanguage( service, user, document.getLanguageIso639_2() )%></td>
+		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= LanguageMapper.getCurrentLanguageNameInUsersLanguage( service, user, document.getLanguageIso639_2() )%></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/29 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/29 ?></td>
 		<td class="imcmsAdmText">
             <% CategoryTypeDomainObject[] categoryTypes = documentMapper.getAllCategoryTypes() ;
                 Arrays.sort(categoryTypes) ;
@@ -236,46 +247,46 @@ imcmsGui("mid", null);
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/32 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/32 ?></td>
 		<td class="imcmsAdmText">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td><input type="CHECKBOX" name="show_meta" value="1"<% if (document.isVisibleInMenuForUnauthorizedUsers()) {%> checked<%} %>></td>
-			<td class="imcmsAdmText">&nbsp;<? global/pageinfo/show_link_to_unauthorized_user ?></td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/show_link_to_unauthorized_user ?></td>
    		</tr>
         <tr>
 			<td><input type="CHECKBOX" name="shared" value="1" <% if (document.isLinkableByOtherUsers()) {%> checked<%}%>></td>
-			<td class="imcmsAdmText">&nbsp;<? global/pageinfo/share ?></td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/share ?></td>
 		</tr>
 		</table>	</tr>
 	<tr>
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/35 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
 		<td class="imcmsAdmText">
         <input type="text" name="classification" size="105" maxlength="200" style="width: 100%"
                 value="<%= StringEscapeUtils.escapeHtml( StringUtils.join( document.getKeywords(), ", " ) ) %>"><br>
-		<span class="imcmsAdmDim"><? sv/jsp/docinfo.jsp/1014 ?></span><br>
-		<input type="CHECKBOX" name="disable_search" value="1" <% if (document.isSearchDisabled()) { %> checked<% } %>> <? sv/jsp/docinfo.jsp/37 ?></td>
+		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1014 ?></span><br>
+		<input type="CHECKBOX" name="disable_search" value="1" <% if (document.isSearchDisabled()) { %> checked<% } %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/39 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/39 ?></td>
 		<td class="imcmsAdmText" nowrap>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
             <% String target = document.getTarget() ; %>
 			<td><input type="radio" name="target" value="_self"<% if ("_self".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
-			<td class="imcmsAdmText">&nbsp;<? sv/jsp/docinfo.jsp/1015 ?> &nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1015 ?> &nbsp;</td>
 			<td><input type="radio" name="target" value="_blank"<% if ("_blank".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
-			<td class="imcmsAdmText">&nbsp;<? sv/jsp/docinfo.jsp/1016 ?> &nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1016 ?> &nbsp;</td>
 			<td><input type="radio" name="target" value="_top"<% if ("_top".equalsIgnoreCase( target ) ) { %> checked<% target = null; } %>></td>
-			<td class="imcmsAdmText">&nbsp;<? sv/jsp/docinfo.jsp/1017 ?> &nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1017 ?> &nbsp;</td>
 			<td><input type="radio" name="target" <% if (null != target) { %> checked<% } %>></td>
-			<td class="imcmsAdmText">&nbsp;<? sv/jsp/docinfo.jsp/1018 ?>&nbsp;</td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1018 ?>&nbsp;</td>
 			<td>
             <input type="text" name="target" size="20" maxlength="20"
                 value="<% if (null != target) { %><%= StringEscapeUtils.escapeHtml( target ) %><% } %>">
@@ -283,11 +294,12 @@ imcmsGui("mid", null);
 		</tr>
 		</table></td>
 	</tr>
+    <% if( editingExistingDocument ) { %>
 	<tr>
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/created ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/created ?></td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
@@ -295,17 +307,17 @@ imcmsGui("mid", null);
                 <input type="text" name="date_created" size="11" maxlength="10" style="width: 7em;"
                         value="<%= formatDate( document.getCreatedDatetime() ) %>">
             </td>
-			<td class="imcmsAdmText">&nbsp;<? sv/jsp/docinfo.jsp/time ?></td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/time ?></td>
 			<td>
                 <input type="text" name="created_time" size="5" maxlength="5" style="width: 4em;"
                         value="<%= formatTime( document.getCreatedDatetime() ) %>">
             </td>
-			<td class="imcmsAdmText">&nbsp;<? sv/jsp/docinfo.jsp/created_by ?> <%= document.getCreator().getFullName() %> (<%= document.getCreator().getLoginName() %>)</td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?> <%= document.getCreator().getFullName() %> (<%= document.getCreator().getLoginName() %>)</td>
 		</tr>
 		</table></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/changed ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/changed ?></td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
@@ -313,28 +325,29 @@ imcmsGui("mid", null);
                 <input type="text" name="date_modified" size="11" maxlength="10" style="width: 7em;"
                         value="<%= formatDate( document.getModifiedDatetime() ) %>">
             </td>
-			<td class="imcmsAdmText">&nbsp;<? sv/jsp/docinfo.jsp/time ?></td>
+			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/time ?></td>
 			<td>
                 <input type="text" name="modified_time" size="5" maxlength="5" style="width: 4em;"
                         value="<%= formatTime( document.getModifiedDatetime() ) %>">
             </td>
-			<td class="imcmsAdmDim">&nbsp;<? sv/jsp/docinfo.jsp/date_format ?></td>
+			<td class="imcmsAdmDim">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/date_format ?></td>
 		</tr>
 		</table></td>
 	</tr>
+    <% } %>
 	<tr>
 		<td colspan="2"><script>hr("100%",656,"cccccc");</script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/docinfo.jsp/42 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/42 ?></td>
 		<td class="imcmsAdmText">
 		<select name="publisher_id" size="1">
 			<%= Html.createPublisherOptionList( service.getImcmsAuthenticatorAndUserAndRoleMapper(), document.getPublisher()) %>
 		</select>
-		&nbsp; <? sv/jsp/docinfo.jsp/current_publisher ?> <% UserDomainObject publisher = document.getPublisher() ; %>
+		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_publisher ?> <% UserDomainObject publisher = document.getPublisher() ; %>
         <%=
             null == publisher
-                ? "<? sv/jsp/docinfo.jsp/no_publisher ?>"
+                ? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_publisher ?>"
                 : publisher.getLastName()+", "+publisher.getFirstName()
             %>
         </td>
@@ -347,13 +360,13 @@ imcmsGui("mid", null);
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
 			<td class="imNoteComment"><sup class="imNote">1</sup>
-			<? sv/jsp/docinfo.jsp/46 ?></td>
+			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/46 ?></td>
 			<td align="right">
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
-				<td><input type="SUBMIT" class="imcmsFormBtn" value=" <? sv/jsp/docinfo.jsp/2004 ?> " name="ok"></td>
+				<td><input type="SUBMIT" class="imcmsFormBtn" value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> " name="ok"></td>
 				<td>&nbsp;</td>
-				<td><input type="RESET" class="imcmsFormBtn" value="<? sv/jsp/docinfo.jsp/2005 ?>" name="reset"></td>
+				<td><input type="RESET" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2005 ?>" name="reset"></td>
 				<td>&nbsp;</td>
 				<td>
 				<table border="0" cellspacing="0" cellpadding="0">
@@ -362,7 +375,7 @@ imcmsGui("mid", null);
 				<!-- input type="hidden" name="meta_id" value="#parent_meta_id#" -->
 				<!-- input type="hidden" name="flags" value="262144" -->
 				<tr>
-					<td><input type="BUTTON" class="imcmsFormBtn" value="<? sv/jsp/docinfo.jsp/2006 ?>" onClick="document.forms.abortForm.submit(); return false"></td>
+					<td><input type="BUTTON" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2006 ?>" onClick="document.forms.abortForm.submit(); return false"></td>
 				</tr>
 				</form>
 				</table></td>

@@ -291,7 +291,7 @@ public class AdminUserProps extends Administrator {
     private String getLanguagesHtmlOptionList( UserDomainObject user, IMCServiceInterface imcref,
                                                UserDomainObject userToChange ) {
         // Lets get the the users language id
-        String userLanguage = user.getLangPrefix();
+        String userLanguage = user.getLanguageIso639_2();
         String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{userLanguage} );
         Vector selectedLangV = new Vector();
         selectedLangV.add( "" + userToChange.getLangId() );
@@ -1434,7 +1434,7 @@ public class AdminUserProps extends Administrator {
 
 
         // Lets get all USERTYPES from DB
-        String[] usersArr = imcref.sqlProcedure( "GetUserTypes", new String[]{user.getLangPrefix()} );
+        String[] usersArr = imcref.sqlProcedure( "GetUserTypes", new String[]{user.getLanguageIso639_2()} );
         Vector userTypesV = new Vector( java.util.Arrays.asList( usersArr ) );
 
         if ( userToChange == null ) {   // ADD_USER mode

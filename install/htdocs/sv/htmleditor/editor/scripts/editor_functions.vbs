@@ -251,7 +251,7 @@ Sub CreateLink_onclick
 		strNewText = sStartCode & theText & sEndCode
 		'MsgBox(len(objMyRange.text) & " / " & strTagName & " / " & isObject(objSelRange) & " - " & isObject(objMyRange) & " / " & IsEmpty(objSelRange) & " - " & IsEmpty(objMyRange))
 		If strTagName = "INPUT" Then
-			MsgBox("<? sv/htmleditor/scripts/editor_functions.vbs/1 ?>" & vbNewLine & "<? sv/htmleditor/scripts/editor_functions.vbs/2 ?>!")
+			MsgBox("<? install/htdocs/sv/htmleditor/scripts/editor_functions.vbs/1 ?>" & vbNewLine & "<? install/htdocs/sv/htmleditor/scripts/editor_functions.vbs/2 ?>!")
 		Else
 			objMyRange.pasteHTML strNewText
 		End If
@@ -381,7 +381,7 @@ Sub CreatePixel_onclick
 	Set objMyRange = objSelRange.duplicate
 	strNewText = sPixelCode
 	If strTagName = "INPUT" Then
-		MsgBox("<? sv/htmleditor/scripts/editor_functions.vbs/3 ?>!")
+		MsgBox("<? install/htdocs/sv/htmleditor/scripts/editor_functions.vbs/3 ?>!")
 	Else
 		objMyRange.pasteHTML strNewText
 	End If
@@ -391,12 +391,12 @@ End Sub
 
 
 Sub findBtnClick
-	textToFind = InputBox("<? sv/htmleditor/scripts/editor_functions.vbs/4 ?>")
+	textToFind = InputBox("<? install/htdocs/sv/htmleditor/scripts/editor_functions.vbs/4 ?>")
 	set r = document.body.createTextRange()
 	blnFound = r.findText(textToFind)
 	if blnFound then
 		r.select()
 	else
-		MsgBox "<? sv/htmleditor/scripts/editor_functions.vbs/5 ?>!"
+		MsgBox "<? install/htdocs/sv/htmleditor/scripts/editor_functions.vbs/5 ?>!"
 	end if
 End Sub

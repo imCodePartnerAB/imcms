@@ -97,7 +97,7 @@ String sError   = "" ;
 if (doSave) {
 	try {
 		if (!fn.exists()) {
-			sError = "<? sv/jsp/FileAdmin_edit.jsp/1001/1 ?>" ;
+			sError = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1001/1 ?>" ;
 		}
 		session.setAttribute("fileSaved", fileSrc) ;
 		/*for (int i = 0; i < fuckedUpUmlingBack.length; i = i + 2) {
@@ -107,9 +107,9 @@ if (doSave) {
 		fileOut.write(fileSrc) ;
 		isSaved = true ;
 	} catch (FileNotFoundException fnEx) {
-		sError = "<? sv/jsp/FileAdmin_edit.jsp/1001/2 ?>" ;
+		sError = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1001/2 ?>" ;
 	} catch (IOException ioEx) {
-		sError = "<? sv/jsp/FileAdmin_edit.jsp/1001/3 ?>" ;
+		sError = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1001/3 ?>" ;
 	} finally {
 		if (fileOut != null) {
 			fileOut.close() ;
@@ -241,7 +241,7 @@ function findIt(str) {
 }
 
 function doSave() {
-	if (confirm("<? sv/jsp/FileAdmin_edit.jsp/2/1 ?>")) {
+	if (confirm("<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/1 ?>")) {
 		return true;
 	}
 	return false;
@@ -251,8 +251,8 @@ function doReset() {
 	var f = document.forms.resetForm;
 	var theSel = f.resetFile.options[f.resetFile.selectedIndex].value;
 	if (theSel != "") {
-		var theText = (theSel == "org") ? "<? sv/jsp/FileAdmin_edit.jsp/2/2 ?>" : "<? sv/jsp/FileAdmin_edit.jsp/2/3 ?>";
-		if (confirm("<? sv/jsp/FileAdmin_edit.jsp/2/4 ?>" + theText + "\n\n<? sv/jsp/FileAdmin_edit.jsp/2/5 ?>")) {
+		var theText = (theSel == "org") ? "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/2 ?>" : "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/3 ?>";
+		if (confirm("<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/4 ?>" + theText + "\n\n<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/5 ?>")) {
 			f.submit();
 		} else {
 			f.resetFile.selectedIndex = 0;
@@ -278,14 +278,14 @@ function checkSaved(ch) {
 			el.disabled = 0;
 		}<%
 		} %>
-		resize<? sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field();
+		resize<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field();
 		loopMess(0);
 	}
 }
 
-function resize<? sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field() {
+function resize<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field() {
 	if (isMoz) {
-		var el<? sv/jsp/FileAdmin_edit.jsp/2/8 ?> = document.getElementById("txtField");
+		var el<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?> = document.getElementById("txtField");
 		var availW = 0;
 		var availH = 0;
 		if (isIE) {
@@ -295,8 +295,8 @@ function resize<? sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field() {
 			availW = parseInt(innerWidth);
 			availH = parseInt(innerHeight);
 		}
-		if (availW > 0) el<? sv/jsp/FileAdmin_edit.jsp/2/8 ?>.style.width = availW - 13;
-		if (availH > 0) el<? sv/jsp/FileAdmin_edit.jsp/2/8 ?>.style.height = availH - 72;
+		if (availW > 0) el<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?>.style.width = availW - 13;
+		if (availH > 0) el<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?>.style.height = availH - 72;
 	}
 }
 
@@ -319,19 +319,19 @@ function loopMess(stopit) {
 		var oTimer;
 		if (errMess == 2) {
 			el.style.color = colorGreen;
-			el.innerHTML = "<? sv/jsp/FileAdmin_edit.jsp/2/6 ?><i><% if (isReadonly) { %><? sv/jsp/FileAdmin_edit.jsp/2/7 ?><% } else { %><? sv/jsp/FileAdmin_edit.jsp/2/8 ?><% } %> <% if (isTempl) { %><? sv/jsp/FileAdmin_edit.jsp/2/9 ?><% } else { %><? sv/jsp/FileAdmin_edit.jsp/2/10 ?><% } %></i> <? sv/jsp/FileAdmin_edit.jsp/2/11 ?><% if (isIE) { %> <? sv/jsp/FileAdmin_edit.jsp/2/12 ?><% } %>";
+			el.innerHTML = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/6 ?><i><% if (isReadonly) { %><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/7 ?><% } else { %><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?><% } %> <% if (isTempl) { %><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/9 ?><% } else { %><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/10 ?><% } %></i> <? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/11 ?><% if (isIE) { %> <? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/12 ?><% } %>";
 			errMess = 3;<%
 			if (!isReadonly) { %>
 			oTimer = window.setTimeout("loopMess()", 5000);<%
 			} %>
 		} else if (errMess == 3) {
 			el.style.color = colorGreen;
-			el.innerHTML = "<? sv/jsp/FileAdmin_edit.jsp/2/13 ?>";
+			el.innerHTML = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/13 ?>";
 			errMess = 4;
 			oTimer = window.setTimeout("loopMess()", 5000);
 		} else if (errMess == 4) {
 			el.style.color = colorGreen;
-			el.innerHTML = "<? sv/jsp/FileAdmin_edit.jsp/2/14 ?>";
+			el.innerHTML = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/14 ?>";
 			errMess = <% if (!sError.equals("")) { %>1<% } else { %>2<% } %>;
 			oTimer = window.setTimeout("loopMess()", 5000);
 		} else if (errMess == 1) {
@@ -383,14 +383,14 @@ function toggleFontSize() {
 			<td height="30" nowrap><span class="imHeading" onDblClick="toggleFontSize(this)">
 			&nbsp;<%
 			if (isReadonly) {
-				%><? sv/jsp/FileAdmin_edit.jsp/1002/1 ?> <%
+				%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1002/1 ?> <%
 			} else {
-				%><? sv/jsp/FileAdmin_edit.jsp/1002/2 ?> <%
+				%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1002/2 ?> <%
 			}
 			if (isTempl) {
-				%><? sv/jsp/FileAdmin_edit.jsp/1002/3 ?><%
+				%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1002/3 ?><%
 			} else {
-				%><? sv/jsp/FileAdmin_edit.jsp/1002/4 ?><%
+				%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1002/4 ?><%
 			} %> &nbsp; </span></td>
 
 			<td nowrap><span class="imFilename">
@@ -428,7 +428,7 @@ function toggleFontSize() {
 			<form name="searchForm" onSubmit="findIt(document.forms[0].searchString.value); return false">
 			<tr>
 				<td><input type="text" name="searchString" size="8" value="<%= theSearchString %>" style="width:50"></td>
-				<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? sv/jsp/FileAdmin_edit.jsp/2001 ?>"></a></td>
+				<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2001 ?>"></a></td>
 			</tr>
 			</form>
 			</table></td><%
@@ -445,12 +445,12 @@ function toggleFontSize() {
 			<input type="hidden" name="templName" value="<%= templName %>"><%
 			} %>
 			<tr>
-				<td class="norm"><a href="javascript://help" onClick="alert('Vไlj att ๅterstไlla filen som den sๅg ut nไr:\n\n - Du senast sparade den.\n - Nไr du ๖ppnade den i detta f๖nster.')"><span style="color:black; text-decoration:none; cursor:help;"><? sv/jsp/FileAdmin_edit.jsp/4 ?></span></a>&nbsp;</td>
+				<td class="norm"><a href="javascript://help" onClick="alert('Vไlj att ๅterstไlla filen som den sๅg ut nไr:\n\n - Du senast sparade den.\n - Nไr du ๖ppnade den i detta f๖nster.')"><span style="color:black; text-decoration:none; cursor:help;"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/4 ?></span></a>&nbsp;</td>
 				<td class="small">
 				<select name="resetFile" onChange="doReset(); return false">
-					<option value=""><? sv/jsp/FileAdmin_edit.jsp/5 ?>
-					<option value="saved"><? sv/jsp/FileAdmin_edit.jsp/6 ?>
-					<option value="org"><? sv/jsp/FileAdmin_edit.jsp/7 ?>
+					<option value=""><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/5 ?>
+					<option value="saved"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/6 ?>
+					<option value="org"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/7 ?>
 				</select></td>
 				<td></td>
 			</tr>
@@ -468,13 +468,13 @@ function toggleFontSize() {
 			<input type="hidden" name="templName" value="<%= templName %>"><%
 			} %>
 			<tr>
-				<td><input name="btnSave" id="btnSave" type="image" src="<%= IMG_PATH %>btn_save.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2002 ?>"></td>
+				<td><input name="btnSave" id="btnSave" type="image" src="<%= IMG_PATH %>btn_save.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2002 ?>"></td>
 				<td class="norm">&nbsp;&nbsp;</td>
 				<td><%
 				if (isNS) {
-					%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2003 ?>"></a><%
+					%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2003 ?>"></a><%
 				} else {
-					%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2004 ?>" onClick="closeIt(); return false"><%
+					%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2004 ?>" onClick="closeIt(); return false"><%
 				} %></td>
 				<td class="norm">&nbsp;&nbsp;</td>
 			</tr>
@@ -487,9 +487,9 @@ function toggleFontSize() {
 		<tr>
 			<td><%
 			if (isNS) {
-				%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2005 ?>"></a><%
+				%><a href="javascript: closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2005 ?>"></a><%
 			} else {
-				%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? sv/jsp/FileAdmin_edit.jsp/2006 ?>" onClick="closeIt(); return false"><%
+				%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2006 ?>" onClick="closeIt(); return false"><%
 			} %></td>
 		</tr>
 		</table><%
@@ -529,14 +529,14 @@ function toggleFontSize() {
 			} %>
 <%= fileSrc %></textarea><%
 			if (isTempl && !(isMac && (isNS || isIE))) { %>
-		<div align="center"><span style="font: <% if (isNS) { %>10<% } else { %>9<% } %>px Verdana"><? sv/jsp/FileAdmin_edit.jsp/1004/1 ?>&nbsp;
-			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/2 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/2 ?></a> |
-			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/3 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/3 ?></a> |
-			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/4 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/4 ?></a> |
-			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/5 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/5 ?></a> |
-			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/6 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/6 ?></a> |
-			<a href="javascript: imScriptCount('bradgard');"><? sv/jsp/FileAdmin_edit.jsp/1004/7 ?></a> |
-			<a href="javascript: imScriptCount('<? sv/jsp/FileAdmin_edit.jsp/1004/8 ?>');"><? sv/jsp/FileAdmin_edit.jsp/1004/8 ?></a></div><%
+		<div align="center"><span style="font: <% if (isNS) { %>10<% } else { %>9<% } %>px Verdana"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/1 ?>&nbsp;
+			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/2 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/2 ?></a> |
+			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/3 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/3 ?></a> |
+			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/4 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/4 ?></a> |
+			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/5 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/5 ?></a> |
+			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/6 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/6 ?></a> |
+			<a href="javascript: imScriptCount('bradgard');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/7 ?></a> |
+			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/8 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/8 ?></a></div><%
 			} %></td>
 	</tr>
 	</form>
@@ -549,8 +549,8 @@ if (isTempl && !(isMac && (isNS || isIE))) { %>
 <!--
 function imScriptCount(imType) {
 	var hits,arr1,arr2;
-	var retStr = "<? sv/jsp/FileAdmin_edit.jsp/10/8 ?>\nจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจ\n";
-	if (isNS) retStr += "<? sv/jsp/FileAdmin_edit.jsp/10/9 ?>\nจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจ\n";
+	var retStr = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/8 ?>\nจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจ\n";
+	if (isNS) retStr += "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/9 ?>\nจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจจ\n";
 	var head_1_a = ":: ";
 	var head_1_b = " ::";
 	var head_2_a = "        - ";
@@ -570,17 +570,17 @@ function imScriptCount(imType) {
 			if (re1.test(cont)) {
 				hits = cont.match(re1);
 				//hits = hits.sort();
-				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/10 ?>" + head_1_b + "\n\n";
+				retStr += head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/10 ?>" + head_1_b + "\n\n";
 				if (hits.length > 1) {
-					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+					retStr += head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
 					hits    = fixImCmsTags(hits, "codeOrder");
 					retStr += hits.join("\n");
-					retStr += "\n\n" + head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/12 ?>" + head_2_b + "\n\n";
+					retStr += "\n\n" + head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/12 ?>" + head_2_b + "\n\n";
 				}
 				hits    = fixImCmsTags(hits, "numOrder");
 				retStr += hits.join("\n");
 			} else {
-				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/1 ?>" + head_1_b;
+				retStr = head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/1 ?>" + head_1_b;
 			}
 			alert(retStr);
 		break;
@@ -588,17 +588,17 @@ function imScriptCount(imType) {
 			if (re2.test(cont)) {
 				hits = cont.match(re2);
 				//hits = hits.sort();
-				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/13 ?>" + head_1_b + "\n\n";
+				retStr += head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/13 ?>" + head_1_b + "\n\n";
 				if (hits.length > 1) {
-					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+					retStr += head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
 					hits    = fixImCmsTags(hits, "codeOrder");
 					retStr += hits.join("\n");
-					retStr += "\n\n" + head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/12 ?>" + head_2_b + "\n\n";
+					retStr += "\n\n" + head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/12 ?>" + head_2_b + "\n\n";
 				}
 				hits    = fixImCmsTags(hits, "numOrder");
 				retStr += hits.join("\n");
 			} else {
-				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/2 ?>" + head_1_b;
+				retStr = head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/2 ?>" + head_1_b;
 			}
 			alert(retStr);
 		break;
@@ -606,17 +606,17 @@ function imScriptCount(imType) {
 			if (re3.test(cont)) {
 				hits = cont.match(re3);
 				//hits = hits.sort();
-				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/14 ?>" + head_1_b + "\n\n";
+				retStr += head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/14 ?>" + head_1_b + "\n\n";
 				if (hits.length > 1) {
-					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>:\n\n";
+					retStr += head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/11 ?>:\n\n";
 					hits    = fixImCmsTags(hits, "codeOrder");
 					retStr += hits.join("\n");
-					retStr += "\n\n" + head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/12 ?>" + head_2_b + "\n\n";
+					retStr += "\n\n" + head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/12 ?>" + head_2_b + "\n\n";
 				}
 				hits    = fixImCmsTags(hits, "numOrder");
 				retStr += hits.join("\n");
 			} else {
-				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/3 ?>" + head_1_b;
+				retStr = head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/3 ?>" + head_1_b;
 			}
 			alert(retStr);
 		break;
@@ -624,51 +624,51 @@ function imScriptCount(imType) {
 			if (re4.test(cont)) {
 				hits = cont.match(re4);
 				//hits = hits.sort();
-				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/15 ?>" + head_1_b + "\n\n";
+				retStr += head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/15 ?>" + head_1_b + "\n\n";
 				if (hits.length > 1) {
-					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+					retStr += head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
 				}
 				hits    = fixImCmsTags(hits, "codeOrder");
 				retStr += hits.join("\n");
 			} else {
-				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/4 ?>" + head_1_b;
+				retStr = head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/4 ?>" + head_1_b;
 			}
 			alert(retStr);
 		break;
 		case 'bradgard':
 			if (re5.test(cont)) {
 				hits = cont.match(re5);
-				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/16 ?>" + head_1_b + "\n\n";
+				retStr += head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/16 ?>" + head_1_b + "\n\n";
 				if (hits.length > 1) {
-					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+					retStr += head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
 				}
 				hits    = fixImCmsTags(hits, "codeOrder");
 				retStr += hits.join("\n");
 			} else {
-				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/5 ?>" + head_1_b;
+				retStr = head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/5 ?>" + head_1_b;
 			}
 			alert(retStr);
 		break;
 		case 'date':
 			if (re6.test(cont)) {
 				hits = cont.match(re6);
-				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/17 ?>" + head_1_b + "\n\n";
+				retStr += head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/17 ?>" + head_1_b + "\n\n";
 				if (hits.length > 1) {
-					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+					retStr += head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
 				}
 				hits    = fixImCmsTags(hits, "codeOrder");
 				retStr += hits.join("\n");
 			} else {
-				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/6 ?>" + head_1_b;
+				retStr = head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/6 ?>" + head_1_b;
 			}
 			alert(retStr);
 		break;
 		case 'other':
 			if (re7.test(cont)) {
 				hits = cont.match(re7);
-				retStr += head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/18 ?>" + head_1_b + "\n\n";
+				retStr += head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/18 ?>" + head_1_b + "\n\n";
 				if (hits.length > 1) {
-					retStr += head_2_a + "<? sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
+					retStr += head_2_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/11 ?>" + head_2_b + "\n\n";
 				}
 				var arrTemp = new Array();
 				var iCount = 0;
@@ -683,7 +683,7 @@ function imScriptCount(imType) {
 				arrTemp = fixImCmsTags(arrTemp, "codeOrder");
 				retStr += arrTemp.join("\n");
 			} else {
-				retStr = head_1_a + "<? sv/jsp/FileAdmin_edit.jsp/10/7 ?>" + head_1_b;
+				retStr = head_1_a + "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/10/7 ?>" + head_1_b;
 			}
 			alert(retStr);
 		break;

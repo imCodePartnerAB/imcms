@@ -8,7 +8,7 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-class SecurityChecker {
+public class SecurityChecker {
 
     private final static String SUPERADMIN_ROLE = "Superadmin";
     private final static String USER_ADMIN = "Useradmin";
@@ -50,7 +50,7 @@ class SecurityChecker {
     }
 
     void hasEditPermission( Document document ) throws NoPermissionException  {
-        hasEditPermission(document.internalDocument.getMetaId());
+        hasEditPermission(document.internalDocument.getId());
     }
 
     UserDomainObject getCurrentLoggedInUser() {

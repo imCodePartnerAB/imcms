@@ -3,7 +3,7 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
 %>
 <html>
   <head>
-    <title><? sv/shop/cart.jsp/1 ?></title>
+    <title><? install/htdocs/sv/shop/cart.jsp/1 ?></title>
   </head>
 
   <body>
@@ -33,14 +33,14 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
 
     <table border="1">
       <tr>
-        <th><? sv/shop/cart.jsp/2 ?></th>
-        <th><? sv/shop/cart.jsp/3 ?></th>
-        <th><? sv/shop/cart.jsp/4 ?></th>
-        <th><? sv/shop/cart.jsp/5 ?></th>
-        <th><? sv/shop/cart.jsp/6 ?></th>
-        <th><? sv/shop/cart.jsp/7 ?></th>
-        <th><? sv/shop/cart.jsp/8 ?></th>
-        <th><? sv/shop/cart.jsp/9 ?></th>
+        <th><? install/htdocs/sv/shop/cart.jsp/2 ?></th>
+        <th><? install/htdocs/sv/shop/cart.jsp/3 ?></th>
+        <th><? install/htdocs/sv/shop/cart.jsp/4 ?></th>
+        <th><? install/htdocs/sv/shop/cart.jsp/5 ?></th>
+        <th><? install/htdocs/sv/shop/cart.jsp/6 ?></th>
+        <th><? install/htdocs/sv/shop/cart.jsp/7 ?></th>
+        <th><? install/htdocs/sv/shop/cart.jsp/8 ?></th>
+        <th><? install/htdocs/sv/shop/cart.jsp/9 ?></th>
       </tr>
       <%
          for (int i = 0; i < items.length; ++i) {
@@ -69,13 +69,13 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
       <% } %>
     </table>
     <p>
-      <? sv/shop/cart.jsp/10/1 ?> <%= cart.countItems() %>
+      <? install/htdocs/sv/shop/cart.jsp/10/1 ?> <%= cart.countItems() %>
     </p>
     <p>
-      <? sv/shop/cart.jsp/11/1 ?> <%= priceFormat.format(totalPrice) %>
+      <? install/htdocs/sv/shop/cart.jsp/11/1 ?> <%= priceFormat.format(totalPrice) %>
     </p>
-    <input type="submit" name="submit" value="<? sv/shop/cart.jsp/2001 ?>">
-    <input type="submit" name="send" value="<? sv/shop/cart.jsp/2002 ?>">
+    <input type="submit" name="submit" value="<? install/htdocs/sv/shop/cart.jsp/2001 ?>">
+    <input type="submit" name="send" value="<? install/htdocs/sv/shop/cart.jsp/2002 ?>">
     </form>
   </body>
 </html>

@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title><? sv/template_assign.html/1 ?></title>
+<title><? templates/sv/template_assign.html/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -16,31 +16,31 @@ imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
-<input type="HIDDEN" name="language" value="<? default_lang ?>">
+<input type="HIDDEN" name="language" value="<? templates/default_lang ?>">
 <tr>
-	<td colspan="2" class="imcmsAdmText"><? sv/template_assign.html/3 ?></td>
+	<td colspan="2" class="imcmsAdmText"><? templates/sv/template_assign.html/3 ?></td>
 </tr>
 <tr>
 	<td colspan="2">
-	<input type="submit" class="imcmsFormBtn" name="add_template" value="<? sv/template_assign.html/2001 ?>">
-	<input type="submit" class="imcmsFormBtn" name="delete_template" value="<? sv/template_assign.html/2002 ?>">
-	<input type="submit" class="imcmsFormBtn" name="rename_template" value="<? sv/template_assign.html/2003 ?>">
-	<input type="submit" class="imcmsFormBtn" name="get_template" value="<? sv/template_assign.html/2004 ?>">
-	<input type="submit" class="imcmsFormBtn" name="edit_template" value="<? sv/template_assign.html/2005 ?>"><br>
-	<input type="submit" class="imcmsFormBtn" name="add_demotemplate" value="<? sv/template_assign.html/2006 ?>">
-	<input type="submit" class="imcmsFormBtn" name="show_templates" value="<? sv/template_assign.html/2007 ?>"></td>
+	<input type="submit" class="imcmsFormBtn" name="add_template" value="<? templates/sv/template_assign.html/2001 ?>">
+	<input type="submit" class="imcmsFormBtn" name="delete_template" value="<? templates/sv/template_assign.html/2002 ?>">
+	<input type="submit" class="imcmsFormBtn" name="rename_template" value="<? templates/sv/template_assign.html/2003 ?>">
+	<input type="submit" class="imcmsFormBtn" name="get_template" value="<? templates/sv/template_assign.html/2004 ?>">
+	<input type="submit" class="imcmsFormBtn" name="edit_template" value="<? templates/sv/template_assign.html/2005 ?>"><br>
+	<input type="submit" class="imcmsFormBtn" name="add_demotemplate" value="<? templates/sv/template_assign.html/2006 ?>">
+	<input type="submit" class="imcmsFormBtn" name="show_templates" value="<? templates/sv/template_assign.html/2007 ?>"></td>
 </tr>
 <tr>
-	<td colspan="2" class="imcmsAdmText"><? sv/template_assign.html/4 ?></td>
+	<td colspan="2" class="imcmsAdmText"><? templates/sv/template_assign.html/4 ?></td>
 </tr>
 <tr>
 	<td colspan="1">
-	<input type="submit" class="imcmsFormBtn" name="add_group" value="<? sv/template_assign.html/2008 ?>">
-	<input type="submit" class="imcmsFormBtn" name="delete_group" value="<? sv/template_assign.html/2009 ?>">
-	<input type="submit" class="imcmsFormBtn" name="rename_group" value="<? sv/template_assign.html/2010 ?>">
-	<input type="submit" class="imcmsFormBtnDisabled" name="assign_group" value="<? sv/template_assign.html/2011 ?>" disabled="disabled"></td>
+	<input type="submit" class="imcmsFormBtn" name="add_group" value="<? templates/sv/template_assign.html/2008 ?>">
+	<input type="submit" class="imcmsFormBtn" name="delete_group" value="<? templates/sv/template_assign.html/2009 ?>">
+	<input type="submit" class="imcmsFormBtn" name="rename_group" value="<? templates/sv/template_assign.html/2010 ?>">
+	<input type="submit" class="imcmsFormBtnDisabled" name="assign_group" value="<? templates/sv/template_assign.html/2011 ?>" disabled="disabled"></td>
 	<td>
-	<input type="button" value="<? sv/template_assign.html/2012 ?>" title="<? sv/template_assign.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(10)"></td>
+	<input type="button" value="<? templates/sv/template_assign.html/2012 ?>" title="<? templates/sv/template_assign.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(10)"></td>
 </tr>
 </form>
 </table>
@@ -52,21 +52,21 @@ imcmsGui("mid", null);
 <input type="hidden" name="group_id" value="#group_id#">
 <input type="hidden" name="language" value="#language#">
 <tr>
-	<td colspan="2"><script>imcHeading("<? sv/template_assign.html/6/1 ?>",656);</script></td>
+	<td colspan="2"><script>imcHeading("<? templates/sv/template_assign.html/6/1 ?>",656);</script></td>
 </tr>
 <tr>
 	<td colspan="2">
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td height="24" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/template_assign.html/1001 ?>&nbsp;&nbsp;</font></td>
+		<td height="24" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/template_assign.html/1001 ?>&nbsp;&nbsp;</font></td>
 		<td>
 		<select name="templategroup">
 		#templategroups#
 		</select></td>
-		<td>&nbsp;&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="show_assigned" value="<? sv/template_assign.html/2014 ?>"></td>
+		<td>&nbsp;&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="show_assigned" value="<? templates/sv/template_assign.html/2014 ?>"></td>
 	</tr>
 	<tr>
-		<td height="24" class="imcmsAdmText"><? sv/template_assign.html/8 ?></td>
+		<td height="24" class="imcmsAdmText"><? templates/sv/template_assign.html/8 ?></td>
 		<td colspan="2" class="imcmsAdmText"><b><i>#group#</i></b></td>
 	</tr>
 	</table></td>
@@ -75,9 +75,9 @@ imcmsGui("mid", null);
 	<td colspan="2">
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
-		<td width="45%" class="imcmsAdmText" align="right"><? sv/template_assign.html/10 ?></td>
+		<td width="45%" class="imcmsAdmText" align="right"><? templates/sv/template_assign.html/10 ?></td>
 		<td>&nbsp;</td>
-		<td width="45%" class="imcmsAdmText"><? sv/template_assign.html/11 ?></td>
+		<td width="45%" class="imcmsAdmText"><? templates/sv/template_assign.html/11 ?></td>
 	</tr>
 	<tr>
 		<td align="right">
@@ -85,8 +85,8 @@ imcmsGui("mid", null);
 		#unassigned#
 		</select></td>
 		<td align="center">
-		&nbsp;<input type="submit" name="assign" value="<? sv/template_assign.html/2015 ?>">&nbsp;
-		&nbsp;<input type="submit" name="deassign" value="<? sv/template_assign.html/2016 ?> ">&nbsp;</td>
+		&nbsp;<input type="submit" name="assign" value="<? templates/sv/template_assign.html/2015 ?>">&nbsp;
+		&nbsp;<input type="submit" name="deassign" value="<? templates/sv/template_assign.html/2016 ?> ">&nbsp;</td>
 		<td>
 		<select name="assigned" size="7" style="width:100%" multiple>
 		#assigned#
@@ -98,9 +98,9 @@ imcmsGui("mid", null);
 	<td colspan="2"><script>hr("100%",656,"blue");</script></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText"><? sv/template_assign.html/1002 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/template_assign.html/1002 ?></td>
 	<td align="right">
-	<input type="submit" class="imcmsFormBtn" name="cancel" value="<? sv/template_assign.html/2017 ?>"></td>
+	<input type="submit" class="imcmsFormBtn" name="cancel" value="<? templates/sv/template_assign.html/2017 ?>"></td>
 </tr>
 </form>
 </table>

@@ -251,7 +251,7 @@ public class PostcardServlet extends HttpServlet {
 
 
         // Since our templates are located into the 105 folder, we'll have to hang on 105
-        String langPrefix = user != null ? user.getLangPrefix() : imcref.getDefaultLanguageAsIso639_2() ;
+        String langPrefix = user != null ? user.getLanguageIso639_2() : imcref.getDefaultLanguageAsIso639_2() ;
         File templateLib = new File( imcref.getTemplatePath(), langPrefix );
         templateLib = new File( templateLib, "105" );
 

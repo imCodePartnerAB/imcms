@@ -26,20 +26,20 @@ public class MenuDomainObject {
     }
 
     public MenuItemDomainObject[] getMenuItems() throws NoPermissionException {
-        MenuItemDomainObject[] menuItemsDomainObjects = documentMapper.getMenuItemsForDocument( ownerDocument.getMetaId(), menuIndex );
+        MenuItemDomainObject[] menuItemsDomainObjects = documentMapper.getMenuItemsForDocument( ownerDocument.getId(), menuIndex );
         return menuItemsDomainObjects;
     }
 
      public void addDocument( DocumentDomainObject documentToAdd, UserDomainObject user ) throws NoPermissionException, DocumentAlreadyInMenuException {
          try {
-             documentMapper.addDocumentToMenu( user, ownerDocument.getMetaId(), menuIndex, documentToAdd.getMetaId() );
+             documentMapper.addDocumentToMenu( user, ownerDocument.getId(), menuIndex, documentToAdd.getId() );
          } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
-             throw new DocumentAlreadyInMenuException( "Menu " + menuIndex + " of ownerDocument " + ownerDocument.getMetaId() + " already contains ownerDocument " + documentToAdd.getMetaId() );
+             throw new DocumentAlreadyInMenuException( "Menu " + menuIndex + " of ownerDocument " + ownerDocument.getId() + " already contains ownerDocument " + documentToAdd.getId() );
          }
      }
 
      public void removeDocument( DocumentDomainObject documentToRemove, UserDomainObject user ) throws NoPermissionException {
-         documentMapper.removeDocumentFromMenu( user, ownerDocument.getMetaId(), menuIndex, documentToRemove.getMetaId() );
+         documentMapper.removeDocumentFromMenu( user, ownerDocument.getId(), menuIndex, documentToRemove.getId() );
      }
 
     public DocumentDomainObject getOwnerDocument() {

@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title><? sv/jsp/ImageBrowse.html/1 ?></title>
+<title><? install/htdocs/sv/jsp/ImageBrowse.html/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -28,9 +28,9 @@ imcmsGui("head", null);
 <input type="HIDDEN" name="meta_id" value="<%=imageBrowseFormBean.getMetaId()%>">
 <input type="HIDDEN" name="img_no" value="<%=imageBrowseFormBean.getImageNumber()%>">
 <tr>
-	<td><input type="Submit" class="imcmsFormBtn" name="avbryt" value="<? sv/jsp/ImageBrowse.html/2001 ?>"></td>
+	<td><input type="Submit" class="imcmsFormBtn" name="avbryt" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2001 ?>"></td>
 	<td>&nbsp;</td>
-    <td><input type="button" value="<? sv/jsp/ImageBrowse.html/2002 ?>" title="<? sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
+    <td><input type="button" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2002 ?>" title="<? install/htdocs/sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
 </tr>
 </form>
 </table>
@@ -46,13 +46,13 @@ imcmsGui("mid", null);
 <input type="HIDDEN" name="imglist" value="<%=imageBrowseFormBean.getImageList()%>">
 <input type="HIDDEN" name="dirlist_preset" value="<%=imageBrowseFormBean.getDirListPreset()%>">
 <tr>
-	<td colspan="3"><script>imcHeading("<? sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormBean.getImageNumber()%> <? sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormBean.getMetaId()%>",656);</script></td>
+	<td colspan="3"><script>imcHeading("<? install/htdocs/sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormBean.getImageNumber()%> <? install/htdocs/sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormBean.getMetaId()%>",656);</script></td>
 </tr>
 <tr valign="top">
 	<td width="45%" align="right">
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td class="imcmsAdmText"><? sv/jsp/ImageBrowse.html/5 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/ImageBrowse.html/5 ?></td>
 	</tr>
 	<tr>
 		<td>
@@ -62,7 +62,7 @@ imcmsGui("mid", null);
 	</tr>
 	</table></td>
 	<td width="10%" align="center">
-	&nbsp;<br><input type="submit" class="imcmsFormBtnSmall" name="change" value="<? sv/jsp/ImageBrowse.html/2004 ?>"></td>
+	&nbsp;<br><input type="submit" class="imcmsFormBtnSmall" name="change" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2004 ?>"></td>
 	<td width="45%">
 	<table border="0" cellspacing="0" cellpadding="0">
 	</form>
@@ -73,7 +73,7 @@ imcmsGui("mid", null);
     <input type="HIDDEN" name="dirlist_preset" value="<%=imageBrowseFormBean.getDirListPreset()%>">
     <input type="HIDDEN" name="label" value="<%=imageBrowseFormBean.getLabel()%>">
 	<tr>
-		<td class="imcmsAdmText" align="right"><? sv/jsp/ImageBrowse.html/7 ?></td>
+		<td class="imcmsAdmText" align="right"><? install/htdocs/sv/jsp/ImageBrowse.html/7 ?></td>
 	</tr>
 	<tr>
 		<td>
@@ -88,7 +88,7 @@ imcmsGui("mid", null);
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td colspan="3" class="imcmsAdmText">
-        <? sv/jsp/ImageBrowse.html/9 ?> <%=imageBrowseFormBean.getMaxNumber()%>&nbsp;&nbsp;&nbsp;&nbsp;  
+        <? install/htdocs/sv/jsp/ImageBrowse.html/9 ?> <%=imageBrowseFormBean.getMaxNumber()%>&nbsp;&nbsp;&nbsp;&nbsp;
         </td>
 	</tr>
 	<tr>
@@ -105,9 +105,9 @@ imcmsGui("mid", null);
 	<td colspan="3" align="right">
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="submit" class="imcmsFormBtn" name="OK" value="<? sv/jsp/ImageBrowse.html/2005 ?>"></td>
+		<td><input type="submit" class="imcmsFormBtn" name="OK" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2005 ?>"></td>
 		<td>&nbsp;</td>
-		<td><input type="submit" class="imcmsFormBtn" name="preview" value="<? sv/jsp/ImageBrowse.html/2006 ?>"></td>
+		<td><input type="submit" class="imcmsFormBtn" name="preview" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2006 ?>"></td>
 		<td>&nbsp;</td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
@@ -118,7 +118,7 @@ imcmsGui("mid", null);
 		<input type="HIDDEN" name="img_no" value="<%=imageBrowseFormBean.getImageNumber()%>">
 		<input type="HIDDEN" name="label" value="<%=imageBrowseFormBean.getLabel()%>">
 		<tr>
-			<td><input type="Submit" class="imcmsFormBtn" name="avbryt" value="<? sv/jsp/ImageBrowse.html/2007 ?>"></td>
+			<td><input type="Submit" class="imcmsFormBtn" name="avbryt" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2007 ?>"></td>
 		</tr>
 		</form>
 		</table></td>

@@ -80,7 +80,7 @@ if (isFrameset) {
 		out.print(fileSrc) ;
 
 	} else {
-		errMess    = "<? sv/jsp/chat.jsp/1/1 ?>" ;
+		errMess    = "<? install/htdocs/sv/jsp/chat.jsp/1/1 ?>" ;
 		isFrameset = false ;
 	}
 }

@@ -2,10 +2,7 @@ package imcode.server;
 
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.SqlHelpers;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.TemplateMapper;
-import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.*;
 import imcode.server.parser.AdminButtonParser;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
@@ -322,7 +319,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String getMenuButtons( String meta_id, UserDomainObject user ) {
         // Get the users language prefix
-        String lang_prefix = user.getLangPrefix();
+        String lang_prefix = user.getLanguageIso639_2();
 
         // Find out what permissions the user has
         String[] permissions = sqlProcedure( "GetUserPermissionSet",
@@ -856,7 +853,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String getUserLangPrefixOrDefaultLanguage( UserDomainObject user ) {
         String lang_prefix = this.getDefaultLanguageAsIso639_2();
         if ( user != null ) {
-            return user.getLangPrefix();
+            return user.getLanguageIso639_2();
         } else {
             return lang_prefix;
         }

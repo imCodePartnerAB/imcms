@@ -62,7 +62,7 @@ public class TextDocument extends Document {
 
     public Image getImage( int imageIndexInDocument ) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        ImageDomainObject imageDomainObject = documentMapper.getDocumentImage( internalDocument.getMetaId(), imageIndexInDocument );
+        ImageDomainObject imageDomainObject = documentMapper.getDocumentImage( internalDocument.getId(), imageIndexInDocument );
         if( null != imageDomainObject ) {
             return new Image(imageDomainObject, service);
         } else {
@@ -71,7 +71,7 @@ public class TextDocument extends Document {
     }
 
     public Template getTemplate() {
-        TemplateDomainObject template = internalDocument.getTemplate();
+        TemplateDomainObject template = ((TextDocumentDomainObject)internalDocument).getTextDocumentTemplate();
         Template result = new Template(template);
         return result;
     }
@@ -79,7 +79,7 @@ public class TextDocument extends Document {
     public void setTemplate(TemplateGroup templateGroup, Template template) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
         setTemplateInternal( template );
-        internalDocument.setTemplateGroupId( templateGroup.getId() );
+        ((TextDocumentDomainObject)internalDocument).setTextDocumentTemplateGroupId( templateGroup.getId() );
     }
 
     /**
@@ -95,7 +95,7 @@ public class TextDocument extends Document {
 
     private void setTemplateInternal(Template newTemplate) {
         TemplateDomainObject internalTemplate = newTemplate.getInternal();
-        internalDocument.setTemplate(internalTemplate);
+        ((TextDocumentDomainObject)internalDocument).setTextDocumentTemplate(internalTemplate);
     }
 
     public Document getInclude(int includeIndexInDocument) throws NoPermissionException {
@@ -130,7 +130,7 @@ public class TextDocument extends Document {
      */
     public void setMenuSortOrder(int sortOrder) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        internalDocument.setMenuSortOrder(sortOrder);
+        ((TextDocumentDomainObject)internalDocument).setTextDocumentMenuSortOrder(sortOrder);
     }
 
     /**
@@ -143,7 +143,7 @@ public class TextDocument extends Document {
      */
     public int getMenuSortOrder() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        return internalDocument.getMenuSortOrder();
+        return ((TextDocumentDomainObject)internalDocument).getTextDocumentMenuSortOrder();
     }
 
     /**
@@ -312,10 +312,10 @@ public class TextDocument extends Document {
             securityChecker.hasEditPermission(documentToAdd.getId());
             securityChecker.hasSharePermission(documentToAdd);
             try {
-                documentMapper.addDocumentToMenu(securityChecker.getCurrentLoggedInUser(), internalMenu.getOwnerDocument().getMetaId(), internalMenu.getMenuIndex(), documentToAdd.getId());
+                documentMapper.addDocumentToMenu(securityChecker.getCurrentLoggedInUser(), internalMenu.getOwnerDocument().getId(), internalMenu.getMenuIndex(), documentToAdd.getId());
             } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
                 throw new DocumentAlreadyInMenuException("Menu " + internalMenu.getMenuIndex() + " of owner " +
-                        internalMenu.getOwnerDocument().getMetaId() + " already contains owner " + documentToAdd.getId());
+                        internalMenu.getOwnerDocument().getId() + " already contains owner " + documentToAdd.getId());
             }
         }
 
@@ -328,14 +328,14 @@ public class TextDocument extends Document {
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
             securityChecker.hasEditPermission(documentToRemove.getId());
             documentMapper.removeDocumentFromMenu(securityChecker.getCurrentLoggedInUser(),
-                    internalMenu.getOwnerDocument().getMetaId(),
+                    internalMenu.getOwnerDocument().getId(),
                     internalMenu.getMenuIndex(),
                     documentToRemove.getId());
 
         }
 
         public Document[] getDocuments() {
-            MenuItemDomainObject[] menuItemDomainObjects = documentMapper.getMenuItemsForDocument(internalDocument.getMetaId(), internalMenu.getMenuIndex());
+            MenuItemDomainObject[] menuItemDomainObjects = documentMapper.getMenuItemsForDocument(internalDocument.getId(), internalMenu.getMenuIndex());
             Document[] documents = new Document[menuItemDomainObjects.length];
             for (int i = 0; i < menuItemDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemDomainObjects[i];

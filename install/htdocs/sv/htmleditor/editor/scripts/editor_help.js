@@ -111,140 +111,140 @@ function showHelpLayer(what){
 		// * Help texts for the click-button-help
 		case 'Cut':
 			helpImageIcon = 'images/btn_cut.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/1 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/2 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/1 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/2 ?>';
 			break;
 		case 'Copy':
 			helpImageIcon = 'images/btn_copy.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/3 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/4 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/3 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/4 ?>';
 			break;
 		case 'Paste':
 			helpImageIcon = 'images/btn_paste.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/5 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/6 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/5 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/6 ?>';
 			break;
 		case 'Preview':
 			helpImageIcon = 'images/btn_preview.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/7 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/8/1 ?><br><br><? sv/htmleditor/scripts/editor_help.js/8/2 ?><br><br><? sv/htmleditor/scripts/editor_help.js/8/3 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/7 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/8/1 ?><br><br><? install/htdocs/sv/htmleditor/scripts/editor_help.js/8/2 ?><br><br><? install/htdocs/sv/htmleditor/scripts/editor_help.js/8/3 ?>';
 			break;
 		case 'Undo':
 			helpImageIcon = 'images/btn_undo.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/9 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/10 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/9 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/10 ?>';
 			break;
 		case 'Redo':
 			helpImageIcon = 'images/btn_redo.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/11 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/12 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/11 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/12 ?>';
 			break;
 		case 'Refresh':
 			helpImageIcon = 'images/btn_refresh.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/13 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/14 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/13 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/14 ?>';
 			break;
 		case 'Erase':
 			helpImageIcon = 'images/btn_eraser.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/15 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/16 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/15 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/16 ?>';
 			break;
 		case 'FontClass':
 			helpImageIcon = '';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/17 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/18 ?><br><br>';
-			helpContent += '<? sv/htmleditor/scripts/editor_help.js/19 ?><br><br>';
-			helpContent += '<? sv/htmleditor/scripts/editor_help.js/20 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/17 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/18 ?><br><br>';
+			helpContent += '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/19 ?><br><br>';
+			helpContent += '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/20 ?>';
 			break;
 		case 'FontColor':
 			helpImageIcon = 'images/btn_color_text.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/21 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/22 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/21 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/22 ?>';
 			break;
 		case 'FontBgColor':
 			helpImageIcon = 'images/btn_color_background.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/23 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/24 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/23 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/24 ?>';
 			break;
 		case 'EditCode':
 			helpImageIconNew = '<button disabled style="width:55; height:21; cursor:default"><img src="images/btn_preview_editor.gif"></button>&nbsp;<button disabled style="width:55; height:21; cursor:default"><img src="images/btn_preview_html.gif"></button>';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/25 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/26 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/25 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/26 ?>';
 			break;
 		case 'Bold':
 			helpImageIcon = 'images/btn_format_f.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/27 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/28 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/27 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/28 ?>';
 			break;
 		case 'Italic':
 			helpImageIcon = 'images/btn_format_k.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/29 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/30 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/29 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/30 ?>';
 			break;
 		case 'Underline':
 			helpImageIcon = 'images/btn_format_u.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/31 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/32 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/31 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/32 ?>';
 			break;
 		case 'StrikeThrough':
 			helpImageIconNew = '<button class="button" onClick="return false" style="cursor:default"><strike style="position:relative; top:-1; font: bold 14px Times New Roman">S</strike></button>';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/33 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/34 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/33 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/34 ?>';
 			break;
 		case 'JustifyLeft':
 			helpImageIcon = 'images/btn_justify_left.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/35 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/36 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/35 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/36 ?>';
 			break;
 		case 'JustifyCenter':
 			helpImageIcon = 'images/btn_justify_center.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/37 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/38 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/37 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/38 ?>';
 			break;
 		case 'JustifyRight':
 			helpImageIcon = 'images/btn_justify_right.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/39 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/40 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/39 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/40 ?>';
 			break;
 		case 'SuperScript':
 			helpImageIcon = 'images/btn_superscript.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/41 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/42 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/41 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/42 ?>';
 			break;
 		case 'SubScript':
 			helpImageIcon = 'images/btn_subscript.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/43 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/44 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/43 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/44 ?>';
 			break;
 		case 'InsertOrderedList':
 			helpImageIcon = 'images/btn_list_ordered.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/45 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/46 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/45 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/46 ?>';
 			break;
 		case 'InsertUnorderedList':
 			helpImageIcon = 'images/btn_list_unordered.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/47 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/48 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/47 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/48 ?>';
 			break;
 		case 'Outdent':
 			helpImageIcon = 'images/btn_outdent.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/49 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/50 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/49 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/50 ?>';
 			break;
 		case 'Indent':
 			helpImageIcon = 'images/btn_indent.gif';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/51 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/52 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/51 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/52 ?>';
 			break;
 			
 		case 'DefaultText':
 			helpImageIcon = '';
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/53 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/54 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/53 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/54 ?>';
 			break;
 		default:
-			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/55 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/56 ?>';
+			helpHeading = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/55 ?>';
+			helpContent = '<? install/htdocs/sv/htmleditor/scripts/editor_help.js/56 ?>';
 	}
 	
 	

@@ -320,7 +320,7 @@ public class ConfLogin extends Conference {
             String sqlAnswer[] = confref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + params.getMetaId()} );
 
             // First, get the langprefix
-            String langPrefix = user.getLangPrefix();
+            String langPrefix = user.getLanguageIso639_2();
 
             if ( sqlAnswer != null ) {
                 for ( int i = 0; i < sqlAnswer.length; i += 2 ) {

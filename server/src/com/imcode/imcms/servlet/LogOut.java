@@ -25,7 +25,7 @@ public class LogOut extends HttpServlet {
         String start_url = imcref.getStartUrl() ;
         vec.add(start_url) ;
         vec.add("#login#") ;
-        String login_url = imcref.getImcmsUrl() + user.getLangPrefix() + "/login/";
+        String login_url = imcref.getImcmsUrl() + user.getLanguageIso639_2() + "/login/";
         vec.add(login_url) ;
         String htmlStr = imcref.parseDoc(vec,"logged_out.html", user) ;
 		out.print(htmlStr) ;

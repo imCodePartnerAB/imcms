@@ -5,6 +5,7 @@ import imcode.server.Revisits;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.SectionDomainObject;
+import imcode.server.document.TextDocumentDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.or.ObjectRenderer;
 
@@ -45,10 +46,9 @@ public class FakeRequestRenderer implements ObjectRenderer {
     private String renderDocument( DocumentDomainObject document ) {
 
         SectionDomainObject[] sections = document.getSections();
-        int metaId = document.getMetaId();
-        int docType = document.getDocumentType();
+        int metaId = document.getId();
+        int docType = document.getDocumentTypeId();
         String headline = document.getHeadline();
-        TemplateDomainObject template = document.getTemplate();
 
         StringBuffer result = new StringBuffer();
         result.append( '/' );
@@ -64,7 +64,8 @@ public class FakeRequestRenderer implements ObjectRenderer {
         result.append( '/' );
         result.append( lossyUrlEncode( headline ) );
         result.append( '/' );
-        if ( null != template ) {
+        if ( document instanceof TextDocumentDomainObject ) {
+            TemplateDomainObject template = ((TextDocumentDomainObject)document).getTextDocumentTemplate();
             result.append( lossyUrlEncode( template.getName() ) );
         }
         result.append( '/' );

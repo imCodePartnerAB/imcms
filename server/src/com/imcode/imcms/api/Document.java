@@ -59,7 +59,7 @@ public class Document {
                                 documentPermissionSetMapper.createRestrictedPermissionSet( internalDocument,
                                                                                            permissionType,
                                                                                            securityChecker.getCurrentLoggedInUser()
-                                                                                           .getLangPrefix() ) );
+                                                                                           .getLanguageIso639_2() ) );
                     break;
                 case IMCConstants.DOC_PERM_SET_READ:
                     result.put( role.getName(), documentPermissionSetMapper.createReadPermissionSet() );
@@ -132,7 +132,7 @@ public class Document {
         // Dont check permissions on this, its used when we check permissions
         // and we get at stack overflow situation.
         // and the document id is no secret anyway?
-        return internalDocument.getMetaId();
+        return internalDocument.getId();
     }
 
     public String getHeadline() throws NoPermissionException {

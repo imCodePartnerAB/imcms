@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
+import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.user.UserAndRoleMapper;
 import imcode.server.IMCServiceInterface;
 
@@ -20,11 +21,11 @@ public class UrlDocument extends Document {
 
     public void setUrl(String url ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        internalDocument.setUrlRef( url );
+        ((UrlDocumentDomainObject)internalDocument).setUrlDocumentUrl( url );
     }
 
     public String getUrl() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        return internalDocument.getUrlRef();
+        return ((UrlDocumentDomainObject)internalDocument).getUrlDocumentUrl();
     }
 }

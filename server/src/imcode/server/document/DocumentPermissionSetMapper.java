@@ -52,7 +52,7 @@ public class DocumentPermissionSetMapper {
         int numberOfColumns = 3;
         DocumentIdEditablePermissionsTuple[] result = new DocumentIdEditablePermissionsTuple[ sprocResult.length/numberOfColumns ];
         for( int i = 0, k = 0; i < sprocResult.length; i = i+numberOfColumns, k++ ){
-            //int documentType = Integer.parseInt(sprocResult[i]);
+            //int documentTypeId = Integer.parseInt(sprocResult[i]);
             String documentTypeName = sprocResult[i+1];
             boolean permission = -1 != Integer.parseInt(sprocResult[i+2]);
             result[k] = new DocumentIdEditablePermissionsTuple();
@@ -115,7 +115,7 @@ public class DocumentPermissionSetMapper {
 
     public DocumentPermissionSetDomainObject createRestrictedPermissionSet( DocumentDomainObject document, int permissionType, String langPrefix ) {
         DocumentPermissionSetDomainObject result = new DocumentPermissionSetDomainObject( permissionType );
-        DocumentPermissionSetMapper.PermissionTuple[] permissionMapping = sprocGetPermissionSet( service, document.getMetaId(),  permissionType, langPrefix );
+        DocumentPermissionSetMapper.PermissionTuple[] permissionMapping = sprocGetPermissionSet( service, document.getId(),  permissionType, langPrefix );
         for( int i = 0; i < permissionMapping.length; i++ ) {
             switch( permissionMapping[i].permissionId ) {
                 case EDIT_HEADLINE_PERMISSON_ID:
@@ -135,7 +135,7 @@ public class DocumentPermissionSetMapper {
                     break;
                 case EDIT_MENUES_PERMISSON_ID:
                     if( permissionMapping[i].hasPermission ) {
-                        DocumentIdEditablePermissionsTuple[] names = sprocGetDocTypesWithPermissions( service, document.getMetaId(), permissionType, langPrefix );
+                        DocumentIdEditablePermissionsTuple[] names = sprocGetDocTypesWithPermissions( service, document.getId(), permissionType, langPrefix );
                         ArrayList namesStr = new ArrayList();
                         for( int k = 0; k < names.length; k++ ) {
                             if( names[k].hasRights ) {
@@ -152,7 +152,7 @@ public class DocumentPermissionSetMapper {
                     break;
                 case EDIT_TEMPLATE_PERMISSON_ID:
                     if( permissionMapping[i].hasPermission ) {
-                        GroupPermissionTuple[] names = sprocGetTemplateGroupsWithPermissions( service, document.getMetaId(), permissionType );
+                        GroupPermissionTuple[] names = sprocGetTemplateGroupsWithPermissions( service, document.getId(), permissionType );
                         ArrayList namesStr = new ArrayList();
                         for( int k = 0; k < names.length; k++ ) {
                             if( names[k].hasPermission ) {

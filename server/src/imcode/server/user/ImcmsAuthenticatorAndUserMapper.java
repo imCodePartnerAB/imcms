@@ -89,7 +89,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
             user.setCountyCouncil( sqlResult[11] );
             user.setEmailAddress( sqlResult[12] );
             user.setLangId( Integer.parseInt( sqlResult[13] ) );
-            user.setLangPrefix(
+            user.setLanguageIso639_2(
                     (String)ObjectUtils.defaultIfNull( sqlResult[14], service.getDefaultLanguageAsIso639_2() ) );
             user.setUserType( Integer.parseInt( sqlResult[15] ) );
             user.setActive( 0 != Integer.parseInt( sqlResult[16] ) );

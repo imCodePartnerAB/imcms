@@ -2,20 +2,22 @@ package imcode.server.parser;
 
 import imcode.server.document.DocumentDomainObject;
 
-/** Stores all info about a menuitem
+/**
+ * Stores all info about a menuitem
+ *
  * @deprecated Use MenuItemDomainObject instead
- * **/
+ *             *
+ */
 
-public class MenuItem extends DocumentDomainObject {
+public class MenuItem {
 
-// todo: Replace inheritance with delegation
-
+    private DocumentDomainObject document ;
     private boolean editable;
     private int sortKey;
     private String treeSortKey;
     private Menu parentMenu;
 
-    MenuItem(Menu parent) {
+    MenuItem( Menu parent ) {
         this.parentMenu = parent;
     }
 
@@ -42,10 +44,9 @@ public class MenuItem extends DocumentDomainObject {
      *
      * @param v Value to assign to sortKey.
      */
-    public void setSortKey(int v) {
+    public void setSortKey( int v ) {
         this.sortKey = v;
     }
-
 
     /**
      * Get the value of editable.
@@ -61,7 +62,7 @@ public class MenuItem extends DocumentDomainObject {
      *
      * @param v Value to assign to editable.
      */
-    public void setEditable(boolean v) {
+    public void setEditable( boolean v ) {
         this.editable = v;
     }
 
@@ -69,8 +70,16 @@ public class MenuItem extends DocumentDomainObject {
         return treeSortKey;
     }
 
-    public void setTreeSortKey(String treeSortKey) {
+    public void setTreeSortKey( String treeSortKey ) {
         this.treeSortKey = treeSortKey;
+    }
+
+    public DocumentDomainObject getDocument() {
+        return document;
+    }
+
+    public void setDocument( DocumentDomainObject document ) {
+        this.document = document;
     }
 
 }

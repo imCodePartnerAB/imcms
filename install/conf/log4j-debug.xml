@@ -49,14 +49,14 @@
   </appender>
 
 
-<!-- Uncomment if you have a log4j server listening to logevents
+<!-- Uncomment if you have a log4j server listening to logevents -->
   <appender name="SOCKETERROR" class="org.apache.log4j.net.SocketAppender">
       <param name="Port" value="4445"/>
       <param name="RemoteHost" value="localhost"/>
       <param name="LocationInfo" value="true"/>
       <param name="ReconnectionDelay" value="5000"/>
   </appender>
--->
+
 
 <!-- Write HttpUnit code for requests to logfile
     <appender name="HTTPUNIT" class="org.apache.log4j.FileAppender">

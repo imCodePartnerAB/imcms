@@ -439,8 +439,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveDocument</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveDocument</servlet-class>
+        <servlet-name>com.imcode.imcms.servlet.admin.DocumentInformation</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.DocumentInformation</servlet-class>
     </servlet>
 
     <servlet>
@@ -905,6 +905,7 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.GetDoc</servlet-name>
         <url-pattern>/servlet/GetDoc</url-pattern>
+        <url-pattern>/servlet/GetDoc/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -988,8 +989,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveDocument</servlet-name>
-        <url-pattern>/servlet/SaveDocument</url-pattern>
+        <servlet-name>com.imcode.imcms.servlet.admin.DocumentInformation</servlet-name>
+        <url-pattern>/servlet/DocumentInformation</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

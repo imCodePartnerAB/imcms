@@ -122,7 +122,7 @@ public class GetExistingDoc extends HttpServlet {
             String sortBy = req.getParameter( "sortBy" );
 
             // Lets get the language prefix
-            String langPrefix = user.getLangPrefix();
+            String langPrefix = user.getLanguageIso639_2();
 
             // Lets check that the sortby option is valid by run the method
             // "SortOrder_GetExistingDocs 'lang_prefix' wich will return
@@ -174,7 +174,7 @@ public class GetExistingDoc extends HttpServlet {
             if ( "meta_headline".equalsIgnoreCase( sortBy ) ) {
                 return d1.getHeadline().compareToIgnoreCase( d2.getHeadline() );
             } else if ( "doc_type".equalsIgnoreCase( sortBy ) ) {
-                return d1.getDocumentType() - d2.getDocumentType();
+                return d1.getDocumentTypeId() - d2.getDocumentTypeId();
             } else if ( "date_modified".equalsIgnoreCase( sortBy ) ) {
                 return Utility.compareDatesWithNullFirst( d1.getModifiedDatetime(), d2.getModifiedDatetime() );
             } else if ( "date_created".equalsIgnoreCase( sortBy ) ) {
@@ -184,7 +184,7 @@ public class GetExistingDoc extends HttpServlet {
             } else if ( "date_activated".equalsIgnoreCase( sortBy ) ) {
                 return Utility.compareDatesWithNullFirst( d1.getActivatedDatetime(), d2.getActivatedDatetime() );
             } else {
-                return d1.getMetaId() - d2.getMetaId();
+                return d1.getId() - d2.getId();
             }
         }
 
@@ -213,7 +213,7 @@ public class GetExistingDoc extends HttpServlet {
                 String[] user_dt = imcref.sqlProcedure( "GetDocTypesForUser",
                                                         new String[]{
                                                             "" + meta_id, "" + user.getUserId(),
-                                                            user.getLangPrefix()
+                                                            user.getLanguageIso639_2()
                                                         } );
                 Set user_doc_types = new HashSet();
 
@@ -455,8 +455,8 @@ public class GetExistingDoc extends HttpServlet {
 
             DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
             String[] data = {
-                "#meta_id#", String.valueOf( document.getMetaId() ),
-                "#doc_type#", (String)docTypesHash.get( "" + document.getDocumentType() ),
+                "#meta_id#", String.valueOf( document.getId() ),
+                "#doc_type#", (String)docTypesHash.get( "" + document.getDocumentTypeId() ),
                 "#meta_headline#", document.getHeadline(),
                 "#meta_text#", document.getMenuText(),
                 "#date_created#", formatDate( dateFormat, document.getCreatedDatetime() ),

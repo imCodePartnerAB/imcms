@@ -54,13 +54,13 @@ function checkWordCode(str) {
 		}
 		
 		/* Ask once, if Word-fixing are to be executed directly */
-		var sMess = '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/1 ?>\n\n';
-		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/2 ?>.\n\n';
-		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/3 ?>\n\n';
-		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/4 ?>.\n';
-		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/5 ?>.\n\n';
-		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/6 ?>\n\n';
-		sMess += '<? sv/htmleditor/scripts/editor_functions_wordsupport.js/7 ?>.';
+		var sMess = '<? install/htdocs/sv/htmleditor/scripts/editor_functions_wordsupport.js/1 ?>\n\n';
+		sMess += '<? install/htdocs/sv/htmleditor/scripts/editor_functions_wordsupport.js/2 ?>.\n\n';
+		sMess += '<? install/htdocs/sv/htmleditor/scripts/editor_functions_wordsupport.js/3 ?>\n\n';
+		sMess += '<? install/htdocs/sv/htmleditor/scripts/editor_functions_wordsupport.js/4 ?>.\n';
+		sMess += '<? install/htdocs/sv/htmleditor/scripts/editor_functions_wordsupport.js/5 ?>.\n\n';
+		sMess += '<? install/htdocs/sv/htmleditor/scripts/editor_functions_wordsupport.js/6 ?>\n\n';
+		sMess += '<? install/htdocs/sv/htmleditor/scripts/editor_functions_wordsupport.js/7 ?>.';
 		
 		askedAboutWord = 1;
 		if (confirm(sMess)){

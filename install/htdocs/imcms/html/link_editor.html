@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title><? imcms/html/link_editor.html/1 ?></title>
+<title><? install/htdocs/imcms/html/link_editor.html/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -17,7 +17,7 @@ imcmsGui("head_noshade", null);
 <table border="0" cellspacing="0" cellpadding="0">
 <form>
 <tr>
-	<td><input type="button" class="imcmsFormBtn" value="<? imcms/html/link_editor.html/2001 ?>" onClick="window.close(); return false"></td>
+	<td><input type="button" class="imcmsFormBtn" value="<? install/htdocs/imcms/html/link_editor.html/2001 ?>" onClick="window.close(); return false"></td>
 </tr>
 </form>
 </table>
@@ -30,39 +30,39 @@ imcmsGui("mid_noshade", null);
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
-		<td colspan="2"><script>imcHeading("<? imcms/html/link_editor.html/4/1 ?>",396);</script></td>
+		<td colspan="2"><script>imcHeading("<? install/htdocs/imcms/html/link_editor.html/4/1 ?>",396);</script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? imcms/html/link_editor.html/5 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/imcms/html/link_editor.html/5 ?></td>
 		<td><script>
-writeFormField("TEXT","createLinkDesc",54,255,"100%","<? imcms/html/link_editor.html/6/1 ?>");
+writeFormField("TEXT","createLinkDesc",54,255,"100%","<? install/htdocs/imcms/html/link_editor.html/6/1 ?>");
 </script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText"><? imcms/html/link_editor.html/7 ?></td>
+		<td class="imcmsAdmText"><? install/htdocs/imcms/html/link_editor.html/7 ?></td>
 		<td class="form">
 		<select class="form" name="createLinkType" onChange="changeLinkType(document.forms.createLinkForm.createLinkType.options[document.forms.createLinkForm.createLinkType.selectedIndex].value)">
-			<option value="GetDoc"><? imcms/html/link_editor.html/8 ?></option>
-			<option value="http"><? imcms/html/link_editor.html/9 ?></option>
-			<option value="mailto"><? imcms/html/link_editor.html/10 ?></option>
-			<option value="ftp"><? imcms/html/link_editor.html/11 ?></option>
-			<option value="#"><? imcms/html/link_editor.html/12 ?></option>
-			<option value="NAME"><? imcms/html/link_editor.html/13 ?></option>
+			<option value="GetDoc"><? install/htdocs/imcms/html/link_editor.html/8 ?></option>
+			<option value="http"><? install/htdocs/imcms/html/link_editor.html/9 ?></option>
+			<option value="mailto"><? install/htdocs/imcms/html/link_editor.html/10 ?></option>
+			<option value="ftp"><? install/htdocs/imcms/html/link_editor.html/11 ?></option>
+			<option value="#"><? install/htdocs/imcms/html/link_editor.html/12 ?></option>
+			<option value="NAME"><? install/htdocs/imcms/html/link_editor.html/13 ?></option>
 		</select></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText" nowrap><? imcms/html/link_editor.html/1001 ?>&nbsp;</td>
+		<td class="imcmsAdmText" nowrap><? install/htdocs/imcms/html/link_editor.html/1001 ?>&nbsp;</td>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td nowrap>
 			<select name="createLinkTargetTemp" onChange="document.forms.createLinkForm.createLinkTarget.value = document.forms.createLinkForm.createLinkTargetTemp.options[document.forms.createLinkForm.createLinkTargetTemp.selectedIndex].value; document.forms.createLinkForm.createLinkTarget.focus(); document.forms.createLinkForm.createLinkTarget.select()">
-				<option value="" selected><? imcms/html/link_editor.html/14 ?></option>
-				<option value="_blank"><? imcms/html/link_editor.html/15 ?></option>
-				<option value="_top"><? imcms/html/link_editor.html/16 ?></option>
-				<option value="_self"><? imcms/html/link_editor.html/17 ?></option>
-				<option value="_parent"><? imcms/html/link_editor.html/18 ?></option>
-				<option value="Skriv namn!"><? imcms/html/link_editor.html/19 ?></option>
+				<option value="" selected><? install/htdocs/imcms/html/link_editor.html/14 ?></option>
+				<option value="_blank"><? install/htdocs/imcms/html/link_editor.html/15 ?></option>
+				<option value="_top"><? install/htdocs/imcms/html/link_editor.html/16 ?></option>
+				<option value="_self"><? install/htdocs/imcms/html/link_editor.html/17 ?></option>
+				<option value="_parent"><? install/htdocs/imcms/html/link_editor.html/18 ?></option>
+				<option value="Skriv namn!"><? install/htdocs/imcms/html/link_editor.html/19 ?></option>
 			</select></td>
 			<td>&nbsp;</td>
 			<td class="form" align="right"><script>
@@ -73,13 +73,13 @@ writeFormField("TEXT","createLinkTarget",12,50,100,"");
 	</tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap>
-		<? imcms/html/link_editor.html/1002 ?> &nbsp;</td>
+		<? install/htdocs/imcms/html/link_editor.html/1002 ?> &nbsp;</td>
 		<td><script>
-writeFormField("TEXT","createLinkValue",54,100,"100%","<? imcms/html/link_editor.html/21/1 ?>");
+writeFormField("TEXT","createLinkValue",54,100,"100%","<? install/htdocs/imcms/html/link_editor.html/21/1 ?>");
 </script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText" nowrap><? imcms/html/link_editor.html/22 ?></td>
+		<td class="imcmsAdmText" nowrap><? install/htdocs/imcms/html/link_editor.html/22 ?></td>
 		<td><script>
 writeFormField("TEXT","createLinkCss",20,50,150,"");
 </script></td>
@@ -91,14 +91,14 @@ writeFormField("TEXT","createLinkCss",20,50,150,"");
 		<td colspan="2" align="right">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="submit" value="<? imcms/html/link_editor.html/2002 ?>" class="imcmsFormBtnSmall" width="120" style="width:120" onClick="createLink();"></td>
+			<td><input type="submit" value="<? install/htdocs/imcms/html/link_editor.html/2002 ?>" class="imcmsFormBtnSmall" width="120" style="width:120" onClick="createLink();"></td>
 			<td>&nbsp;</td>
-			<td><input type="reset" value="<? imcms/html/link_editor.html/2003 ?>" class="imcmsFormBtnSmall" onClick="hideLinkExample(0);"></td>
+			<td><input type="reset" value="<? install/htdocs/imcms/html/link_editor.html/2003 ?>" class="imcmsFormBtnSmall" onClick="hideLinkExample(0);"></td>
 		</tr>
 		</table></td>
 	</tr>
 	<tr>
-		<td colspan="2" nowrap>&nbsp;<br><script>imcHeading("<? imcms/html/link_editor.html/25/1 ?>",396);</script></td>
+		<td colspan="2" nowrap>&nbsp;<br><script>imcHeading("<? install/htdocs/imcms/html/link_editor.html/25/1 ?>",396);</script></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script>
@@ -125,8 +125,8 @@ var ns4 = (document.layers) ? 1 : 0;
 var ns6 = (document.getElementById) ? 1 : 0;
 var moz = (document.getElementById) ? 1 : 0;
 
-var arrTheFieldValues = new Array("<? imcms/html/link_editor.html/3001 ?>", "http:/\/", "<? imcms/html/link_editor.html/3002 ?>", "<? imcms/html/link_editor.html/3003 ?>", "<? imcms/html/link_editor.html/3003 ?>", "ftp:/\/");
-var defValDesc = "<? imcms/html/link_editor.html/3004 ?>";
+var arrTheFieldValues = new Array("<? install/htdocs/imcms/html/link_editor.html/3001 ?>", "http:/\/", "<? install/htdocs/imcms/html/link_editor.html/3002 ?>", "<? install/htdocs/imcms/html/link_editor.html/3003 ?>", "<? install/htdocs/imcms/html/link_editor.html/3003 ?>", "ftp:/\/");
+var defValDesc = "<? install/htdocs/imcms/html/link_editor.html/3004 ?>";
 
 function changeLinkType(what) {
 	var theField     = document.forms.createLinkForm.createLinkValue;
@@ -229,7 +229,7 @@ function createLink() {
 	if (po) {
 		var poEl = (po.format_type) ? po.format_type[1] : po.type[1] ;
 		if (!(poEl.checked == 1)) {
-			if(confirm("<? imcms/html/link_editor.html/3005 ?>")){
+			if(confirm("<? install/htdocs/imcms/html/link_editor.html/3005 ?>")){
 				poEl.checked = 1;
 			}
 		}
@@ -249,7 +249,7 @@ function createLink() {
 	if (moz) {
 		if (document.getElementById("theLinkCodeFieldDiv")) {
 			hideLinkExample(1) ;
-			document.getElementById("theLinkCodeFieldDiv").innerHTML = "&nbsp;<br><span class=\"imcmsAdmText\"><b><? imcms/html/link_editor.html/3006 ?>: &nbsp;</b>" + previewHref + "</span>" ;
+			document.getElementById("theLinkCodeFieldDiv").innerHTML = "&nbsp;<br><span class=\"imcmsAdmText\"><b><? install/htdocs/imcms/html/link_editor.html/3006 ?>: &nbsp;</b>" + previewHref + "</span>" ;
 		}
 	}
 }

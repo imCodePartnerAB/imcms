@@ -34,7 +34,7 @@ public class UserDomainObject extends Hashtable {
    private boolean active;		//int
    private String create_date;		//smalldatetime
 
-   private String langPrefix;
+   private String languageIso639_2;
 
    private TemplateGroupDomainObject templateGroup ;
    private String loginType;
@@ -350,17 +350,17 @@ public class UserDomainObject extends Hashtable {
 
 
    /**
-    Return the users lang_prefix
+    Return the users language
     **/
-   public String getLangPrefix() {
-      return this.langPrefix;
+   public String getLanguageIso639_2() {
+      return this.languageIso639_2;
    }
 
    /**
-    Set the users lang_prefix
+    Set the users language
     **/
-   public void setLangPrefix( String langPrefix ) {
-      this.langPrefix = langPrefix;
+   public void setLanguageIso639_2( String languageIso639_2 ) {
+      this.languageIso639_2 = languageIso639_2;
    }
 
    /**

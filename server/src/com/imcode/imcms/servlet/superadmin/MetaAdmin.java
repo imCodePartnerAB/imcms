@@ -105,7 +105,7 @@ public class MetaAdmin extends HttpServlet {
             tmp += "<option value=\"" + i + "\" " + ( i == start ? "selected" : "" ) + ">" + i + "</option>";
         }
         vec.add( tmp );
-        String lang_prefix = user.getLangPrefix();
+        String lang_prefix = user.getLanguageIso639_2();
         out.println( imcref.parseDoc( vec, "MetaAdminControl.html", user) );
         if ( !list ) {
             return;
@@ -130,7 +130,7 @@ public class MetaAdmin extends HttpServlet {
                 hl[i] = hl[i].substring( 0, 77 ) + "...";
             }
 
-            HashMap docTypesIdAndNames = DocumentMapper.getDocumentTypsAndNames( imcref, Integer.parseInt(meta_id[i]), user.getUserId(), lang_prefix );
+            HashMap docTypesIdAndNames = DocumentMapper.getDocumentTypeIdsAndNames( imcref, Integer.parseInt(meta_id[i]), user.getUserId(), lang_prefix );
             String type = (String) docTypesIdAndNames.get( types[i] );
 
             out.println( "<A name=\"" + meta_id[i] + "\" href=\"AdminDoc?meta_id=" + meta_id[i] + "\"><FONT COLOR=\"#FF0000\">" + meta_id[i] + "</FONT></A>&nbsp;<A name=\"" + meta_id[i] + "\" href=\"GetDoc?meta_id=" + meta_id[i] + "\">" + type + ",&nbsp;" + pc[i] + "&nbsp;parents&nbsp;:&nbsp;" + Parser.parseDoc( hl[i], pd ) + "</A>" );

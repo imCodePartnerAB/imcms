@@ -15,21 +15,18 @@ public class DocumentService {
     private UserAndRoleMapper userAndRoleMapper;
     private IMCServiceInterface service;
 
-    Document createDocumentOfSubtype(DocumentDomainObject doc) {
-        Document result;
-        switch( doc.getDocumentType() ) {
-            case DocumentDomainObject.DOCTYPE_TEXT:
-                result = new TextDocument( doc, service, securityChecker, this, documentMapper,
+    Document createDocumentOfSubtype(DocumentDomainObject document) {
+        Document result ;
+
+        if (document instanceof TextDocumentDomainObject) {
+                result = new TextDocument( document, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
-                break;
-            case DocumentDomainObject.DOCTYPE_URL:
-                result = new UrlDocument( doc, service, securityChecker, this, documentMapper,
+        } else if (document instanceof UrlDocumentDomainObject) {
+                result = new UrlDocument( document, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
-                break;
-            default:
-                result = new Document( doc, service, securityChecker, this, documentMapper,
+        } else {
+                result = new Document( document, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
-                break;
         }
         return result;
     }

@@ -316,7 +316,7 @@ public class Conference extends HttpServlet {
         String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
 
         if( user != null){
-            lang_prefix = user.getLangPrefix();
+            lang_prefix = user.getLanguageIso639_2();
         }
 
         String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, lang_prefix);

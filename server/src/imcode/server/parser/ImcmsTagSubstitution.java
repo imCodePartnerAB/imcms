@@ -110,7 +110,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         this.imageMap = imagemap;
         this.imageMode = imagemode;
 
-        String langPrefix = documentRequest.getUser().getLangPrefix();
+        String langPrefix = documentRequest.getUser().getLanguageIso639_2();
         File label_template_file = new File(templatePath, langPrefix + "/admin/textdoc/label.frag");
         try {
             this.labelTemplate = fileCache.getCachedFileString(label_template_file);
@@ -123,7 +123,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
      * Handle a <?imcms:metaid?> tag.
      */
     private String tagMetaId() {
-        return "" + document.getMetaId();
+        return "" + document.getId();
     }
 
     /**
@@ -240,7 +240,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                     }
                 }
                 if (null != attributes.getProperty("sendmetaid")) {
-                    urlConnection.setRequestProperty("X-Meta-Id", "" + document.getMetaId());
+                    urlConnection.setRequestProperty("X-Meta-Id", "" + document.getId());
                 }
 
                 InputStream connectionInputStream = urlConnection.getInputStream();
@@ -271,10 +271,10 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         try {
             if (includeMode) {
                 String included_meta_id_str = (String) included_docs.get(String.valueOf(no));
-                String langPrefix = documentRequest.getUser().getLangPrefix();
+                String langPrefix = documentRequest.getUser().getLanguageIso639_2();
                 return imcode.util.Parser.parseDoc(fileCache.getCachedFileString(new File(templatePath, langPrefix + "/admin/change_include.html")),
                         new String[]{
-                            "#meta_id#", String.valueOf(document.getMetaId()),
+                            "#meta_id#", String.valueOf(document.getId()),
                             "#include_id#", String.valueOf(no),
                             "#include_meta_id#", included_meta_id_str == null ? "" : included_meta_id_str
                         }
@@ -400,7 +400,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         String finalresult = result;
         if ( textMode ) {
             String[] replace_tags = getLabelTags(attributes, noStr, finalresult);
-            String langPrefix = documentRequest.getUser().getLangPrefix();
+            String langPrefix = documentRequest.getUser().getLanguageIso639_2();
             File admin_template_file = new File( templatePath, langPrefix + "/admin/textdoc/admin_text.frag" );
             try {
                 finalresult = imcode.util.Parser.parseDoc( fileCache.getCachedFileString( admin_template_file ), replace_tags );
@@ -421,7 +421,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             label = loadLabelTemplateAndReplaceLabelTag(label);
         }
         String[] replace_tags = new String[]{
-            "#meta_id#", String.valueOf(document.getMetaId()),
+            "#meta_id#", String.valueOf(document.getId()),
             "#content_id#", noStr,
             "#content#", finalresult,
             "#label_url#", label_urlparam,
@@ -472,7 +472,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         String finalresult = result;
         if ( imageMode ) {
             String[] replace_tags = getLabelTags( attributes, noStr, finalresult );
-            String langPrefix = documentRequest.getUser().getLangPrefix();
+            String langPrefix = documentRequest.getUser().getLanguageIso639_2();
             File admin_template_file ;
             if ( "".equals( result ) ) { // no data in the db-field.
                 admin_template_file = new File( templatePath, langPrefix + "/admin/textdoc/admin_no_image.frag" );

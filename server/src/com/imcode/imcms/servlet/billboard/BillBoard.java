@@ -267,7 +267,7 @@ public class BillBoard extends HttpServlet {
         IMCPoolInterface billref = ApplicationServer.getIMCPoolInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, user.getLangPrefix());
+        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, user.getLanguageIso639_2());
         extFolder += this.getTemplateLibName( billref, metaId );
 
         return extFolder;

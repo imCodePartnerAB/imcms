@@ -68,14 +68,14 @@ public class LanguageMapper {
 
     private static List getListOfLanguageKeysAndNamesInUsersLanguage( IMCServiceInterface service,
             UserDomainObject user ) {
-        String[][] languages = service.sqlQueryMulti( "select lang_prefix, user_prefix, language from languages where user_prefix = ?", new String[]{user.getLangPrefix()} );
+        String[][] languages = service.sqlQueryMulti( "select lang_prefix, user_prefix, language from languages where user_prefix = ?", new String[]{user.getLanguageIso639_2()} );
         List languagesInOptionList = new ArrayList();
         for ( int i = 0 ; i < languages.length ; i++ ) {
             String langStr = languages[i][0];
             langStr = getAsIso639_2OrDefaultLanguage( langStr, service );
             String userLangPrefix = languages[i][1];
             String languageNameInUserLanguage = languages[i][2];
-            if ( userLangPrefix.equalsIgnoreCase( user.getLangPrefix() ) ) {
+            if ( userLangPrefix.equalsIgnoreCase( user.getLanguageIso639_2() ) ) {
                 languagesInOptionList.add( langStr );
                 languagesInOptionList.add( languageNameInUserLanguage );
             }

@@ -75,7 +75,7 @@ public class Administrator extends HttpServlet {
         File templateLib = imcref.getTemplatePath();
 
         // Lets get the users language id. Use the langid to get the lang prefix from db.
-        String langPrefix = user.getLangPrefix();
+        String langPrefix = user.getLanguageIso639_2();
         templateLib = new File( templateLib, langPrefix + "/admin" );
         return templateLib;
     }

@@ -2,12 +2,12 @@
 
 <!-- The Ant 'build.xml'-file for imCMS -->
 
-<project name="imCMS" default="dist" basedir=".">
+<project name="imCMS" default="dist">
 
     <!-- The current version of imCMS. -->
     <property name="cvsname"    value="$$Name$"/>
 
-    <!-- versionnumber : imCMS version without sufix, only the number ( 1.7.4) -->
+    <!-- versionnumber : imCMS version without suffix, only the number (e.g. "1.2.3") -->
     <property name="version"            value=""/>
     <property name="versionnumber"      value=""/>
     <property name="versionfilesuffix"  value=""/>
@@ -95,7 +95,6 @@
 
         <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
     </target>
-
 
     <!-- A target to use for reformat a properties   -->
     <target name="reformatproperties">
@@ -426,7 +425,7 @@
 
 
     <!-- Build extra tools needed for building. -->
-    <target name="tools" depends="server" description="Builds extra tools needed for building.">
+    <target name="tools" description="Builds extra tools needed for building.">
     	<ant dir="tools"/>
     	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
     	<taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
@@ -487,7 +486,7 @@
             <fileset dir="sql/tables" includes="create_db.sql"/>
         </cat>
 
-        <imtranslate bundle="sql/imcms" bundlelanguage="${defaultlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${defaultlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${dist}" filtering="true">
             <fileset dir="${sql.temp.dir}" includes="imcms${versionfilesuffix}.sql"/>
@@ -600,7 +599,7 @@
         <filter token="pollurl"             value="${imcmsurl}/${buildlanguage}/poll"/>
 
         <!-- imcms login  -->
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${imcmslogin}" filtering="true">
             <fileset dir="templates/login"/>
@@ -617,7 +616,7 @@
         </copy>
 
         <!-- html -->
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${imcmshtml}" filtering="true">
             <fileset dir="install/htdocs/imcms/html"/>
@@ -659,14 +658,14 @@
         </copy>
 
          <!-- imcms/language/scripts -->
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${imcmsscripts}" filtering="true">
             <fileset dir="install/htdocs/imcms/scripts" includes="*"/>
         </imtranslate>
 
          <!-- templates in webroot  -->
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${webroot}" filtering="true">
             <fileset dir="templates">
@@ -679,7 +678,7 @@
         </imtranslate>
 
         <!-- directories in webroot - no language dependece -->
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${webroot}" filtering="true">
             <fileset dir="install/htdocs/sv">
@@ -691,14 +690,14 @@
         </imtranslate>
 
         <!--  imcms shop  -->
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${shop}" filtering="true">
             <fileset dir="install/htdocs/sv/shop" includes="*"/>
         </imtranslate>
 
          <!-- imcms poll  -->
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${poll}" filtering="true">
             <fileset dir="install/htdocs/sv/poll">
@@ -719,7 +718,7 @@
 
 
          <!-- fortune templates -->
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${templates}/${buildlanguage}/106" filtering="true">
             <fileset dir="templates/sv/fortunes"/>
@@ -732,18 +731,14 @@
 
 
         <!-- imcms jsp files -->
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${imcmsjsp}" filtering="true">
-            <fileset dir="install/htdocs/sv/jsp">
-                <patternset>
-                    <include name="*.jsp"/>
-                </patternset>
-            </fileset>
+            <fileset dir="install/htdocs/sv/jsp"/>
         </imtranslate>
 
         <!-- imcms html-editor files. -->
-        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${htmleditor}" filtering="true">
             <fileset dir="install/htdocs/sv/htmleditor/editor" excludes="images/*.jpg,images/*.gif"/>
@@ -758,7 +753,7 @@
         <!-- Copies and filters the admintemplates. -->
         <property name="installdir" value="${templates}/${buildlanguage}/admin"/>
         <mkdir dir="${installdir}"/>
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${installdir}" filtering="true">
             <fileset dir="templates/sv">
@@ -780,7 +775,7 @@
         <!-- copy and translate the search templates -->
         <property name="searchtemplates" value="${templates}/${buildlanguage}/admin/search/original"/>
         <mkdir dir="${searchtemplates}"/>
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${searchtemplates}" filtering="true">
             <fileset dir="templates/sv/search"/>
@@ -796,7 +791,7 @@
 
         <!-- Copy and translate the conference files. -->
         <property name="conference-templates" value="${templates}/${buildlanguage}/102"/>
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${conference-templates}" filtering="true">
             <fileset dir="templates/sv/conf" excludes="original/images/"/>
@@ -809,7 +804,7 @@
 
     <!-- Copy and translate the chat files . -->
         <property name="chat-templates" value="${templates}/${buildlanguage}/103"/>
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${chat-templates}" filtering="true">
             <fileset dir="templates/sv/chat"/>
@@ -818,7 +813,7 @@
 
     <!-- Copy and translate the billboard files. -->
         <property name="billboard-templates" value="${templates}/${buildlanguage}/104"/>
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${billboard-templates}" filtering="true">
             <fileset dir="templates/sv/billboard" excludes="original/images/"/>
@@ -831,7 +826,7 @@
 
         <!-- Copy and translates the files for the postcard. -->
         <property name="postcard-templates" value="${templates}/${buildlanguage}/105"/>
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                     starttoken="&lt;? " endtoken=" ?&gt;"
                     todir="${postcard-templates}" filtering="true">
            <fileset dir="templates/sv/postcard"/>
@@ -844,7 +839,7 @@
 
        <!-- Copy and translates the files for the fortune. -->
        <property name="fortune-templates" value="${templates}/${buildlanguage}/106"/>
-       <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+       <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                     starttoken="&lt;? " endtoken=" ?&gt;"
                     todir="${fortune-templates}" filtering="true">
            <fileset dir="templates/sv/fortunes"/>
@@ -867,7 +862,7 @@
         <property name="installdir" value="${templates}/text"/>
         <mkdir dir="${installdir}/demo"/>
 
-        <imtranslate bundle="templates/imcms" bundlelanguage="${buildlanguage}"
+        <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${installdir}" filtering="true">
             <fileset dir="templates/text"/>

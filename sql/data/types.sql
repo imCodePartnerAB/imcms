@@ -112,7 +112,7 @@ INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(28,'Macintosh 
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(29,'Macintosh Netscape 3','Mozilla/3%(%mac%;%[UIN][ );]%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(30,'Macintosh Netscape 4','Mozilla/4%(%mac%;%[UIN][ );]%',5)
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(31,'Macintosh Netscape 6','Mozilla/5%(%mac%;%[UIN][ );]%',5)
-INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(0,'<? other_browsers ?>','%',0)
+INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(0,'<? sql/other_browsers ?>','%',0)
 
 SET IDENTITY_INSERT sys_types ON
 INSERT INTO sys_types (type_id,name) VALUES(0,'StartDocument')

@@ -143,7 +143,7 @@ public class AdminRoles extends Administrator {
         // *************** GENERATE THE ADD NEW ROLE PAGE  **********
         if ( req.getParameter( "VIEW_ADD_NEW_ROLE" ) != null ) {
 
-            String languagePrefix = user.getLangPrefix();
+            String languagePrefix = user.getLanguageIso639_2();
 
             String[][] rolePermissions = imcref.sqlProcedureMulti( "RoleGetPermissionsByLanguage", new String[]{languagePrefix} );
 
@@ -208,7 +208,7 @@ public class AdminRoles extends Administrator {
                 return;
             }
 
-            String languagePrefix = user.getLangPrefix();
+            String languagePrefix = user.getLanguageIso639_2();
 
             String sqlQ = "RoleGetPermissionsFromRole";
             String[][] permissionList = imcref.sqlProcedureMulti( sqlQ, new String[]{roleId, languagePrefix} );

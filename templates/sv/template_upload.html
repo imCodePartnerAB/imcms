@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title><? sv/template_upload.html/1 ?></title>
+<title><? templates/sv/template_upload.html/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -64,32 +64,32 @@ imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
-<input type="HIDDEN" name="language" value="<? default_lang ?>">
+<input type="HIDDEN" name="language" value="<? templates/default_lang ?>">
 <tr>
-	<td colspan="2" class="imcmsAdmText"><? sv/template_upload.html/3 ?></td>
+	<td colspan="2" class="imcmsAdmText"><? templates/sv/template_upload.html/3 ?></td>
 </tr>
 <tr>
 	<td colspan="2">
-	<input type="submit" class="imcmsFormBtnDisabled" name="add_template" value="<? sv/template_upload.html/2001 ?>" disabled="disabled">
-	<input type="submit" class="imcmsFormBtn" name="delete_template" value="<? sv/template_upload.html/2002 ?>">
-	<input type="submit" class="imcmsFormBtn" name="rename_template" value="<? sv/template_upload.html/2003 ?>">
-	<input type="submit" class="imcmsFormBtn" name="get_template" value="<? sv/template_upload.html/2004 ?>">
-	<input type="submit" class="imcmsFormBtn" name="edit_template" value="<? sv/template_upload.html/2005 ?>"><br>
+	<input type="submit" class="imcmsFormBtnDisabled" name="add_template" value="<? templates/sv/template_upload.html/2001 ?>" disabled="disabled">
+	<input type="submit" class="imcmsFormBtn" name="delete_template" value="<? templates/sv/template_upload.html/2002 ?>">
+	<input type="submit" class="imcmsFormBtn" name="rename_template" value="<? templates/sv/template_upload.html/2003 ?>">
+	<input type="submit" class="imcmsFormBtn" name="get_template" value="<? templates/sv/template_upload.html/2004 ?>">
+	<input type="submit" class="imcmsFormBtn" name="edit_template" value="<? templates/sv/template_upload.html/2005 ?>"><br>
 
-	<input type="submit" class="imcmsFormBtn" name="add_demotemplate" value="<? sv/template_upload.html/2006 ?>">
-	<input type="submit" class="imcmsFormBtn" name="show_templates" value="<? sv/template_upload.html/2007 ?>"></td>
+	<input type="submit" class="imcmsFormBtn" name="add_demotemplate" value="<? templates/sv/template_upload.html/2006 ?>">
+	<input type="submit" class="imcmsFormBtn" name="show_templates" value="<? templates/sv/template_upload.html/2007 ?>"></td>
 </tr>
 <tr>
-	<td colspan="2" class="imcmsAdmText"><? sv/template_upload.html/4 ?></td>
+	<td colspan="2" class="imcmsAdmText"><? templates/sv/template_upload.html/4 ?></td>
 </tr>
 <tr>
 	<td colspan="1">
-	<input type="submit" class="imcmsFormBtn" name="add_group" value="<? sv/template_upload.html/2008 ?>">
-	<input type="submit" class="imcmsFormBtn" name="delete_group" value="<? sv/template_upload.html/2009 ?>">
-	<input type="submit" class="imcmsFormBtn" name="rename_group" value="<? sv/template_upload.html/2010 ?>">
-	<input type="submit" class="imcmsFormBtn" name="assign_group" value="<? sv/template_upload.html/2011 ?>"></td>
+	<input type="submit" class="imcmsFormBtn" name="add_group" value="<? templates/sv/template_upload.html/2008 ?>">
+	<input type="submit" class="imcmsFormBtn" name="delete_group" value="<? templates/sv/template_upload.html/2009 ?>">
+	<input type="submit" class="imcmsFormBtn" name="rename_group" value="<? templates/sv/template_upload.html/2010 ?>">
+	<input type="submit" class="imcmsFormBtn" name="assign_group" value="<? templates/sv/template_upload.html/2011 ?>"></td>
 	<td>
-    <input type="button" value="<? sv/template_upload.html/2012 ?>" title="<? sv/template_upload.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(22)"></td>
+    <input type="button" value="<? templates/sv/template_upload.html/2012 ?>" title="<? templates/sv/template_upload.html/2013 ?>" class="imcmsFormBtn" onClick="openHelpW(22)"></td>
 </tr>
 </form>
 </table>
@@ -100,16 +100,16 @@ imcmsGui("mid", null);
 <form name="TemplateAdd" method="post" action="TemplateAdd" enctype="multipart/form-data">
 <input type="HIDDEN" name="language" value="#language#">
 <tr>
-	<td colspan="2"><script>imcHeading("<? sv/template_upload.html/6/1 ?>",656);</script></td>
+	<td colspan="2"><script>imcHeading("<? templates/sv/template_upload.html/6/1 ?>",656);</script></td>
 </tr>
 <tr>
-	<td width="20%" class="imcmsAdmText" nowrap><? sv/template_upload.html/1001 ?> &nbsp;</td>
+	<td width="20%" class="imcmsAdmText" nowrap><? templates/sv/template_upload.html/1001 ?> &nbsp;</td>
 	<td><script>
 writeFormField("FILE","file\" id=\"sfile",85,null,null,null);
 </script></td>
 </tr>
 <tr>
-	<td class="imcmsAdmText" nowrap><? sv/template_upload.html/1002 ?> &nbsp;</td>
+	<td class="imcmsAdmText" nowrap><? templates/sv/template_upload.html/1002 ?> &nbsp;</td>
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
@@ -121,7 +121,7 @@ writeFormField("TEXT","name\" id=\"sname",45,255,null,null);
 		<script language="JavaScript">
 		<!--
 		if (isMoz || isNS) {
-			document.write("<input type=\"button\" class=\"imcmsFormBtnSmall\" onClick=\"checkForName()\" value=\"&laquo;&nbsp;<? sv/template_upload.html/2020 ?>\">");
+			document.write("<input type=\"button\" class=\"imcmsFormBtnSmall\" onClick=\"checkForName()\" value=\"&laquo;&nbsp;<? templates/sv/template_upload.html/2020 ?>\">");
 		}
 		//-->
 		</script></td>
@@ -134,12 +134,12 @@ writeFormField("TEXT","name\" id=\"sname",45,255,null,null);
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><input type="checkbox" name="overwrite"></td>
-		<td class="imcmsAdmText"><? sv/template_upload.html/10 ?></td>
+		<td class="imcmsAdmText"><? templates/sv/template_upload.html/10 ?></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-  <td class="imcmsAdmText"><? sv/template_upload.html/11 ?></td>
+  <td class="imcmsAdmText"><? templates/sv/template_upload.html/11 ?></td>
   <td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
@@ -148,7 +148,7 @@ writeFormField("TEXT","name\" id=\"sname",45,255,null,null);
 		#templategroups#
 		</select></td>
 		<td>&nbsp;&nbsp;</td>
-		<td class="imcmsAdmDim"><? sv/template_upload.html/13 ?></td>
+		<td class="imcmsAdmDim"><? templates/sv/template_upload.html/13 ?></td>
 	</tr>
 	</table></td>
 </tr>
@@ -157,8 +157,8 @@ writeFormField("TEXT","name\" id=\"sname",45,255,null,null);
 </tr>
 <tr>
   <td colspan="2" align="right">
-	<input type="submit" class="imcmsFormBtn" name="ok" value="<? sv/template_upload.html/2014 ?>">
-	<input type="submit" class="imcmsFormBtn" name="cancel" value="<? sv/template_upload.html/2015 ?>"></td>
+	<input type="submit" class="imcmsFormBtn" name="ok" value="<? templates/sv/template_upload.html/2014 ?>">
+	<input type="submit" class="imcmsFormBtn" name="cancel" value="<? templates/sv/template_upload.html/2015 ?>"></td>
 </tr>
 </form>
 </table>

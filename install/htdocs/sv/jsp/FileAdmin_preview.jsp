@@ -253,9 +253,9 @@ function findIt(str) {
 	<td nowrap><span class="imHeading">
 	&nbsp;<%
 	if (isStat) {
-		%><? sv/jsp/FileAdmin_preview.jsp/1002/1 ?><%
+		%><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1002/1 ?><%
 	} else {
-		%><? sv/jsp/FileAdmin_preview.jsp/1002/2 ?><% 
+		%><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1002/2 ?><% 
 	} %> &nbsp;</span></td>
 	
 	<td align="right"><%
@@ -266,13 +266,13 @@ function findIt(str) {
 	<tr><%
 		if (isIE || isNS) { %>
 		<td class="norm"><input type="text" name="searchString" size="15" value="" class="norm" style="width:100"></td>
-		<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? sv/jsp/FileAdmin_preview.jsp/2001 ?>"></a></td><%
+		<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_preview.jsp/2001 ?>"></a></td><%
 		} %>
 		<td class="norm">&nbsp;&nbsp;</td><%
 		if (!isMac) { %>
-		<td><a href="javascript://print()" onClick="top.frames.main.focus(); top.frames.main.print();"><img src="<%= IMG_PATH %>btn_print.gif" border="0" hspace="5" alt="<? sv/jsp/FileAdmin_preview.jsp/2002 ?>"></a></td><%
+		<td><a href="javascript://print()" onClick="top.frames.main.focus(); top.frames.main.print();"><img src="<%= IMG_PATH %>btn_print.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_preview.jsp/2002 ?>"></a></td><%
 		} %>
-		<td><a href="javascript://close()" onClick="closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" hspace="5" alt="<? sv/jsp/FileAdmin_preview.jsp/2003 ?>"></a></td>
+		<td><a href="javascript://close()" onClick="closeIt();"><img src="<%= IMG_PATH %>btn_close.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_preview.jsp/2003 ?>"></a></td>
 		<td class="norm">&nbsp;&nbsp;&nbsp;&nbsp;</td>
 	</tr>
 	</form>
@@ -284,7 +284,7 @@ function findIt(str) {
 	<input type="hidden" name="file" value="<%= file %>">
 	<tr>
 		<td class="norm">| &nbsp; <%
-		if (isIE) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
+		if (isIE) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
 		<td class="norm">
 		<select name="zoom" onChange="this.form.submit();">
 			<option value="0.25"<% if (defZoom.equals("0.25")) { %> selected<% } %>>25%
@@ -298,10 +298,10 @@ function findIt(str) {
 			<option value="16.0"<% if (defZoom.equals("16.0")) { %> selected<% } %>>1600%
 		</select></td>
 		<td class="norm"> &nbsp; | &nbsp; <%
-		} %><? sv/jsp/FileAdmin_preview.jsp/1004/1 ?>
-		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=1" target="main"><? sv/jsp/FileAdmin_preview.jsp/1004/2 ?></a> /
-		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=0" target="main"><? sv/jsp/FileAdmin_preview.jsp/1004/3 ?></a> &nbsp; | &nbsp;
-		<a href="javascript: closeIt();"><b><? sv/jsp/FileAdmin_preview.jsp/1004/4 ?></b></a> &nbsp; | &nbsp;</td>
+		} %><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/1 ?>
+		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=1" target="main"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/2 ?></a> /
+		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=0" target="main"><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/3 ?></a> &nbsp; | &nbsp;
+		<a href="javascript: closeIt();"><b><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/1004/4 ?></b></a> &nbsp; | &nbsp;</td>
 	</tr>
 	</form>
 	</table><% 
@@ -326,7 +326,7 @@ function findIt(str) {
 	%>
 <html>
 <head>
-<title><? sv/jsp/FileAdmin_preview.jsp/26 ?></title>
+<title><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/26 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 	<%

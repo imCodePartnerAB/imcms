@@ -308,7 +308,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
         if(user != null){
-            lang_prefix = user.getLangPrefix();
+            lang_prefix = user.getLanguageIso639_2();
         }
 
         int metaId;
@@ -366,7 +366,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
         if(user != null){
-            lang_prefix = user.getLangPrefix();
+            lang_prefix = user.getLanguageIso639_2();
         }
 
         int metaId = getMetaId( req );

@@ -55,5 +55,4 @@ public class CategoryTypeDomainObject implements Comparable {
     public int compareTo( Object o ) {
         return name.compareToIgnoreCase( ((CategoryTypeDomainObject)o).name) ;
     }
-
 }

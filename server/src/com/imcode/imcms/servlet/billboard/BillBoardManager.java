@@ -60,7 +60,7 @@ public class BillBoardManager extends BillBoard	  //ConfManager
         if ( action == null ) {
             action = "";
             String header = "BillBoardManager servlet. ";
-            BillBoardError err = new BillBoardError( req, res, header, 3, user.getLangPrefix());
+            BillBoardError err = new BillBoardError( req, res, header, 3, user.getLanguageIso639_2());
             log( header + err.getErrorMsg() );
             return;
         }
