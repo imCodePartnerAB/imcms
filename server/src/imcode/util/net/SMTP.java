@@ -94,7 +94,11 @@ public class SMTP {
         }
 
         public void setBccAddresses( String[] bccAddresses ) {
-            mail.setBcc( CollectionUtils.collect( Arrays.asList( bccAddresses ), new StringToInternetAddressTransformer() ) );
+            try {
+                mail.setBcc( CollectionUtils.collect( Arrays.asList( bccAddresses ), new StringToInternetAddressTransformer() ) );
+            } catch ( MessagingException e ) {
+                throw new UnhandledException( e );
+            }
         }
 
         public void setBody( String body ) {
@@ -106,7 +110,11 @@ public class SMTP {
         }
 
         public void setCcAddresses( String[] ccAddresses ) {
-            mail.setCc( CollectionUtils.collect( Arrays.asList( ccAddresses ), new StringToInternetAddressTransformer() ) );
+            try {
+                mail.setCc( CollectionUtils.collect( Arrays.asList( ccAddresses ), new StringToInternetAddressTransformer() ) );
+            } catch ( MessagingException e ) {
+                throw new UnhandledException( e );
+            }
         }
 
         public void setSubject( String subject ) {
@@ -114,7 +122,11 @@ public class SMTP {
         }
 
         public void setToAddresses( String[] toAddresses ) {
-            mail.setTo( CollectionUtils.collect(Arrays.asList(toAddresses), new StringToInternetAddressTransformer() ) );
+            try {
+                mail.setTo( CollectionUtils.collect(Arrays.asList(toAddresses), new StringToInternetAddressTransformer() ) );
+            } catch ( MessagingException e ) {
+                throw new UnhandledException( e );
+            }
         }
 
         public void setAttachments( DataSource[] attachments ) {
