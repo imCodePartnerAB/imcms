@@ -346,6 +346,7 @@ public class FileAdmin extends HttpServlet {
         if ( fileContents == null || fileContents.length() < 1 ) {
             outputBlankFileError( dir1, dir2, res, user, imcref );
             handledOutput = true;
+            return handledOutput;
         }
         String filename = ( new File( mp.getFilename( "file" ) ) ).getName();
         File file = new File( destDir, filename );
