@@ -12,6 +12,7 @@ import imcode.util.Utility;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -196,11 +197,13 @@ public class LinkCheck extends HttpServlet {
             }
             getMethod.setRequestHeader( HTTP_REQUEST_HEADER__USER_AGENT, USER_AGENT );
             try {
-                httpClient.executeMethod( getMethod );
+                int status = httpClient.executeMethod( getMethod );
                 hostFound = true;
                 hostReachable = true;
                 getMethod.releaseConnection();
-                ok = true;
+                if (HttpStatus.SC_OK == status) {
+                    ok = true;
+                }
             } catch ( IllegalArgumentException e ) {
             } catch ( UnknownHostException e ) {
             } catch ( HttpConnection.ConnectionTimeoutException e ) {
