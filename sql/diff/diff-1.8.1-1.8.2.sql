@@ -1,3 +1,16 @@
+CREATE PROCEDURE MSSQL_DropConstraintLike @table VARCHAR(255), @like VARCHAR(255) AS
+
+DECLARE @constraint VARCHAR(255)
+
+SELECT @constraint = constraints.name
+FROM sysconstraints c, sysobjects constraints, sysobjects tables
+WHERE c.constid = constraints.id AND c.id = tables.id
+	AND tables.name = @table
+	AND constraints.name LIKE @like
+
+EXEC ('ALTER TABLE '+@table+' DROP CONSTRAINT '+@constraint)
+GO
+
 update  languages set lang_prefix = 'swe' where lang_prefix = 'se'
 update  languages set user_prefix = 'swe' where user_prefix = 'se'
 update  languages set lang_prefix = 'eng' where lang_prefix = 'en'
@@ -137,8 +150,7 @@ GO
 ALTER TABLE dbo.doc_permission_sets
 	DROP CONSTRAINT FK_permission_sets_meta
 GO
-ALTER TABLE dbo.document_categories
-	DROP CONSTRAINT FK__document___meta___00200768
+EXECUTE MSSQL_DropConstraintLike 'document_categories', 'FK__document___meta___%'
 GO
 ALTER TABLE dbo.frameset_docs
 	DROP CONSTRAINT FK_frameset_docs_meta
@@ -224,7 +236,7 @@ GO
 COMMIT
 BEGIN TRANSACTION
 ALTER TABLE dbo.document_categories WITH NOCHECK ADD CONSTRAINT
-	FK__document___meta___00200768 FOREIGN KEY
+	FK__document_categories_meta FOREIGN KEY
 	(
 	meta_id
 	) REFERENCES dbo.meta
@@ -372,7 +384,7 @@ ALTER TABLE meta ADD
 GO
 
 UPDATE meta SET status = 2
-UPDATE meta SET publication_start_datetime = activated_datetime
+UPDATE meta SET publication_start_datetime = IFNULL(activated_datetime, date_created)
 GO
 
 ALTER TABLE meta DROP

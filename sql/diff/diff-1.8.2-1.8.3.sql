@@ -58,7 +58,7 @@ GO
 
 -- 2004-03-24 Kreiger
 
-ALTER TABLE menus DROP UQ__menus__114A936A
+MSSQL_DropConstraintLike 'menus', 'UQ__menus__%'
 ALTER TABLE menus ALTER COLUMN meta_id INT NOT NULL
 ALTER TABLE menus ADD CONSTRAINT UQ__menus__meta_id_menu_index UNIQUE (meta_id, menu_index)
 
