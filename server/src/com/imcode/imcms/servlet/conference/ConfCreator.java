@@ -76,9 +76,8 @@ public class ConfCreator extends Conference {
             // Lets get the administrators user_id
             String user_id = "" + user.getId();
 
-            // Lets add this user into the conference if hes not exists there before were
-            // adding the discussion
-            imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{user_id, metaId, user.getFirstName(), user.getLastName()} );
+            // Lets add this user into the conference if hes not exists there before 
+            addUserToOneConference(user, metaId+"", imcref);
 
             // Ok, Were done adding the conference, Lets go back to the Manager
             String loginPage = "ConfLogin?login_type=login";

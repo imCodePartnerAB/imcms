@@ -221,7 +221,7 @@ public class Conference extends HttpServlet {
         // to the system and the conference for the first time so lets add the user to conference db.
         if ( lastLoginDate == null ) {
             // Ok, det är första gången användaren är här.
-            imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{""+user.getId(), metaId, ""+user.getFirstName(), ""+user.getLastName()} );
+            addUserToOneConference(user, metaId, imcref);
         }
 
         // Lets update his logindate and usernames
@@ -517,7 +517,7 @@ public class Conference extends HttpServlet {
                 String aRoleId = selfRegRolesIds[i].toString();
                 // Lets check that the role id is still valid to use against
                 // the host system
-                String found = imcref.sqlProcedureStr( "RoleCheckConferenceAllowed", new String[]{
+                String[] found = imcref.sqlProcedure( "RoleCheckConferenceAllowed", new String[]{
                     user.getLanguageIso639_2(), aRoleId } );
 
                 if ( found != null ) {

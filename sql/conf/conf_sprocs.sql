@@ -867,6 +867,11 @@ select @lastLoginDate =
  	from A_discussion , A_conf_forum
 	where conf_id = @conf_id)
 
+IF @lastLoginDate IS NULL
+begin
+	select @lastLoginDate = getdate()
+end
+
 -- Lets check if the user is a member of any other conference or if this is the first one
 
 IF (NOT EXISTS 	( SELECT user_id
@@ -884,7 +889,6 @@ BEGIN
 	VALUES (@user_id, @aFirstName, @aLastName )
 
 END
-
 
 
 -- Lets link tthe user to the conference in CONF_USERS_CROSSREF
