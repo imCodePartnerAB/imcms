@@ -67,7 +67,7 @@
     <jar jarfile="${wardist}"
          basedir="build"/>
 
-    <echo> Done packaging distribution 'imcms.war'. </echo>
+    <echo> Done packaging distribution '${wardist}'. </echo>
 
   </target>
 
@@ -78,6 +78,7 @@
       <package name="imcode.util"/>
       <package name="imcode.util.log"/>
       <package name="imcode.server"/>
+      <package name="imcode.server.parser"/>
       <package name="imcode.external.diverse"/>
       <package name="imcode.external.chat"/>
       <package name=""/>
