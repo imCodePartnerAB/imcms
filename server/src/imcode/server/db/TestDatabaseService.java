@@ -179,6 +179,20 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
+    public void test_sproc_PhoneNbrUpdate() {
+        static_test_sproc_PhoneNbrUpdate( sqlServer );
+        static_test_sproc_PhoneNbrUpdate( mySql );
+        if( testMimer ) static_test_sproc_PhoneNbrUpdate( mimer );
+    }
+
+    private void static_test_sproc_PhoneNbrUpdate( DatabaseService dbService ) {
+        int rowCount = dbService.sproc_PhoneNbrUpdate( 2, 1, "666666", 1 );
+        assertEquals( 0 , rowCount );
+        dbService.sproc_phoneNbrAdd( 2, "034985", 0 );
+        rowCount = dbService.sproc_PhoneNbrUpdate( 2, 1, "666666", 1 );
+        assertEquals( 1 , rowCount );
+    }
+
     public void test_sproc_DelPhoneNr() {
         static_test_sproc_DelPhoneNr( sqlServer );
         static_test_sproc_DelPhoneNr( mySql );

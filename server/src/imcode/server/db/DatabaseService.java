@@ -586,4 +586,12 @@ public class DatabaseService {
         Object[] paramValues = new Object[]{ new Integer( phone_id ) };
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
+
+    int sproc_PhoneNbrUpdate( int user_id, int phone_id, String number, int phonetype_id ) {
+        String sql = "UPDATE phones SET number = ?, phonetype_id = ? " +
+            "WHERE user_id = ? AND phone_id = ? ";
+        Object[] paramValues = new Object[]{ number, new Integer( phonetype_id ),
+                                             new Integer(user_id), new Integer( phone_id )};
+        return sqlProcessor.executeUpdate( sql, paramValues );
+    }
 }
