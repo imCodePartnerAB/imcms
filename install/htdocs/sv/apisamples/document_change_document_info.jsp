@@ -12,6 +12,15 @@
 
     document.setActivatedDatetime( new Date() );
     document.setArchivedDatetime( new Date() );
+    document.setArchivedFlag( true );
+
+    int sectionId = 1;
+    Section section = documentService.getSection( sectionId );
+    if (null != section) {
+        document.addSection(section) ;
+    } else {
+    %> (The section did not exist.)<br> <%
+    }
 
     //Language english = Language.getLanguageByISO639_1( "en" );
     Language english = Language.getLanguageByISO639_2( "eng" );

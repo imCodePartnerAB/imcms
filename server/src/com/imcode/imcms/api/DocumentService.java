@@ -67,6 +67,7 @@ public class DocumentService {
         }
 
     public CategoryType getCategoryType(String categoryTypeName) {
+        // Allow everyone to get a CategoryType. No security check.
         final CategoryTypeDomainObject categoryType = documentMapper.getCategoryType(categoryTypeName);
         if (null != categoryType) {
             return new CategoryType(categoryType) ;
@@ -75,6 +76,7 @@ public class DocumentService {
     }
 
     public Category[] getAllCategoriesOfType(CategoryType categoryType) {
+        // Allow everyone to get a CategoryType. No security check.
         CategoryDomainObject[] categoryDomainObjects = documentMapper.getAllCategoriesOfType(categoryType.getInternal()) ;
         Category[] categories = new Category[categoryDomainObjects.length] ;
         for (int i = 0; i < categoryDomainObjects.length; i++) {
@@ -85,6 +87,7 @@ public class DocumentService {
     }
 
     public CategoryType[] getAllCategoryTypes() {
+        // Allow everyone to get a CategoryType. No security check.
         CategoryTypeDomainObject[] categoryTypeDomainObjects = documentMapper.getAllCategoryTypes() ;
         CategoryType[] categoryTypes = new CategoryType[categoryTypeDomainObjects.length];
         for (int i = 0; i < categoryTypeDomainObjects.length; i++) {
@@ -94,4 +97,16 @@ public class DocumentService {
         return categoryTypes ;
     }
 
+    public Section getSection( int sectionId ) {
+        // Allow everyone to get a Section. No security check.
+        SectionDomainObject[] sections = documentMapper.getAllSections();
+        Section result = null;
+        for (int i = 0; i < sections.length; i++) {
+            SectionDomainObject section = sections[i];
+            if( sectionId == section.getId() ) {
+                result = new Section( section );
+            }
+        }
+        return result;
+    }
 }

@@ -10,7 +10,7 @@
     }
 %>
 <body>
-<H1>Imcms public API samples</H1>
+<H1>imCMS public API samples</H1>
 
 <h2> Documentation </h2>
 <p>

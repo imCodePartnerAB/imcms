@@ -14,7 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.imcode.imcms.api.TextDocument;
+import com.imcode.imcms.api.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,6 +25,7 @@ public class DocumentMapper {
     protected ImcmsAuthenticatorAndUserMapper imcmsAAUM;
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
     private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
+    private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
 
     public DocumentMapper(IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM) {
         this.service = service;
@@ -38,12 +39,12 @@ public class DocumentMapper {
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
     private static final String SPROC_GET_USER_PERMISSION_SET = "GetUserPermissionSet";
     private static final String SPROC_GET_TEXT = "GetText";
-    private static final String sprocGetIncludes = "GetIncludes";
+    private static final String SPROC_GET_INCLUDES = "GetIncludes";
     private static final String SPROC_INSERT_TEXT = "InsertText";
     private static final String SPROC_UPDATE_PARENTS_DATE_MODIFIED = "UpdateParentsDateModified";
-    private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
     private static final String SPROC_INHERIT_PERMISSONS = "InheritPermissions";
     private static final String SPROC_CLASSIFICATION_FIX = "Classification_Fix";
+    private static final String SPROC_SECTION_GET_ALL = "SectionGetAll";
 
     // todo make sure all sproc and sql mehtods are private
     private static String[] sprocGetUserPermissionSet( IMCServiceInterface service, int metaId, int userId ) {
@@ -140,7 +141,7 @@ public class DocumentMapper {
     }
 
     public static String[] sprocGetIncludes( IMCServiceInterface imcref, int meta_id ) {
-        String[] included_docs = imcref.sqlProcedure( sprocGetIncludes, new String[]{String.valueOf( meta_id )} );
+        String[] included_docs = imcref.sqlProcedure( SPROC_GET_INCLUDES, new String[]{String.valueOf( meta_id )} );
         return included_docs;
     }
 
@@ -947,7 +948,7 @@ public class DocumentMapper {
     }
 
     /**
-     * @return the section for a document, or null if there was none *
+     * @return the sections for a document, empty array if there is none.
      */
     public static SectionDomainObject[] getSections( IMCServiceInterface service, int meta_id ) {
         String[][] sectionData = service.sqlProcedureMulti( SPROC_SECTION_GET_INHERIT_ID, new String[]{String.valueOf( meta_id )} );
@@ -963,7 +964,7 @@ public class DocumentMapper {
     }
 
     public static HashMap getDocumentTypsAndNames( IMCServiceInterface service, int metaId, int userId, String lang_prefix ) {
-        String[] docTypesQueryResult = service.sqlProcedure( "GetDocTypesForUser", new String[]{""+metaId, "" + userId, lang_prefix} );
+        String[] docTypesQueryResult = service.sqlProcedure( SPROC_GET_DOC_TYPES_FOR_USER, new String[]{""+metaId, "" + userId, lang_prefix} );
         HashMap docTypesIdAndNames = new HashMap();
         for (int j = 0; j < docTypesQueryResult.length; j+=2) {
             String keyId = docTypesQueryResult[j];
@@ -973,5 +974,15 @@ public class DocumentMapper {
         return docTypesIdAndNames;
     }
 
+    public SectionDomainObject[] getAllSections() {
+        String[] sqlResult = service.sqlProcedure(SPROC_SECTION_GET_ALL, new String[0]);
+        SectionDomainObject[] allSections = new SectionDomainObject[sqlResult.length/2];
+        for (int i = 0; i < sqlResult.length; i+=2) {
+            int sectionId = Integer.parseInt(sqlResult[i]);
+            String sectionName = sqlResult[i+1];
+            allSections[i/2] = new SectionDomainObject(sectionId, sectionName);
+        }
+        return allSections;
+    }
 }
 

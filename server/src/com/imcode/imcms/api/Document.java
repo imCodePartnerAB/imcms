@@ -174,6 +174,11 @@ public class Document {
         internalDocument.removeCategory( category.getInternal() );
     }
 
+    /**
+     *
+     * @return An array of Categoris, an empty if no one found.
+     * @throws NoPermissionException
+     */
     public Category[] getCategories() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
         CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategories();
@@ -199,6 +204,12 @@ public class Document {
         internalDocument.setPermissionSetForRole( role, permissionSet );
     }
 
+    /**
+     *
+     * @param categoryType
+     * @return an array of Categories, empty array if no one found.
+     * @throws NoPermissionException
+     */
     public Category[] getCategoriesOfType( CategoryType categoryType ) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
         CategoryDomainObject[] categoryDomainObjects = internalDocument.getCategoriesOfType( categoryType.getInternal() );
@@ -240,8 +251,64 @@ public class Document {
         internalDocument.setArchivedDatetime( datetime );
     }
 
+
+    public boolean getArchivedFlag() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission(this);
+        return internalDocument.isArchivedFlag();
+    }
+
+    public void setArchivedFlag( boolean value ) throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission(this);
+        internalDocument.setArchivedFlag( value );
+    }
+
     public void setPublisher( User user ) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
         internalDocument.setPublisher( user.getInternalUser() ) ;
+    }
+
+    /**
+     * @return An array of Sections, an empty arrya if no one found.
+     * @throws NoPermissionException
+     */
+    public Section[] getSections() throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        SectionDomainObject[] sectionDomainObjects = internalDocument.getSections();
+        Section[] sections = new Section[sectionDomainObjects.length];
+        for (int i = 0; i < sectionDomainObjects.length; i++) {
+            SectionDomainObject sectionDomainObject = sectionDomainObjects[i];
+            sections[i] = new Section( sectionDomainObject );
+        }
+        return sections;
+    }
+
+    public void setSections( Section[] sections ) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        SectionDomainObject[] internalSections = new SectionDomainObject[sections.length];
+        for (int i = 0; i < sections.length; i++) {
+            Section section = sections[i];
+            internalSections[i] = section.internalSection;
+        }
+        internalDocument.setSections(internalSections);
+    }
+
+    public Date getModifiedDateTime() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission(this);
+        return internalDocument.getModifiedDatetime();
+    }
+
+    public void setModifiedDateTime( Date date ) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        internalDocument.setModifiedDatetime(date);
+    }
+
+    public Date getCreatedDateTime() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission(this);
+        return internalDocument.getCreatedDatetime();
+    }
+
+    public void addSection( Section section ) throws NoPermissionException {
+        securityChecker.hasEditPermission(this);
+        internalDocument.addSection( section.internalSection );
     }
 }

@@ -5,18 +5,6 @@
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     int documentId = 1001 ;
     Document document = documentService.getTextDocument(documentId) ;
-
-    Category[] categories = document.getCategories();
-
-    StringBuffer categoriesBuffer = new StringBuffer();
-    for ( int i = 0 ; i < categories.length ; i++ ) {
-        if ( 0 != i ) {
-            categoriesBuffer.append( ", " );
-        }
-        Category category = categories[i];
-        categoriesBuffer.append('"').append(category).append('"') ;
-    }
-
 %>
 <html>
 <body>
@@ -25,11 +13,27 @@
 Headline: "<%=document.getHeadline()%>"
 Menu text: "<%=document.getMenuText()%>"
 Menu image url: "<%=document.getMenuImageURL()%>"
-Activated: <%=document.getActivatedDatetime()%>
-Archived: <%=document.getArchivedDatetime()%>
+Activated date/time: <%=document.getActivatedDatetime()%>
+Archived date/Time: <%=document.getArchivedDatetime()%>
+Archived flag: <%=document.getArchivedFlag()%>
+Sections:
+<%
+     Section[] sections = document.getSections();
+     for (int i = 0; i < sections.length; i++) {
+         Section section = sections[i];
+         %><%=section.getName()%><br><%
+     }
+%>
 Language: "<%=document.getLanguage()%>"
+Categories:
+<%
+    Category[] categories = document.getCategories();
+    for (int i = 0; i < categories.length; i++) {
+        Category category = categories[i];
+        %><%=category.getName()%><br><%
+    }
+%>
 Creator: <a href="mailto:<%=document.getCreator().getEmailAddress()%>"><%=document.getCreator().getLoginName()%></a>
-Categories: <%= categoriesBuffer %>
 Publisher:  <%= document.getPublisher() %>
 </pre>
 </body>

@@ -39,6 +39,7 @@ public class DocumentDomainObject implements IMCConstants {
     private Set categories = new HashSet() ;
     private Map rolesMappedToPermissionSetIds = new HashMap();
 
+
     // todo: classification/Search words is missing
 
     /* Filedocs only */
@@ -452,18 +453,6 @@ public class DocumentDomainObject implements IMCConstants {
         return languageIso639_2;
     }
 
-    public void removeCategory( CategoryDomainObject category ) {
-        categories.remove(category) ;
-    }
-
-    public void addCategory( CategoryDomainObject category ) {
-        categories.add(category) ;
-    }
-
-    public CategoryDomainObject[] getCategories() {
-        return (CategoryDomainObject[]) categories.toArray(new CategoryDomainObject[categories.size()]);
-    }
-
     public boolean equals( Object o ) {
         if ( this == o ) {
             return true;
@@ -493,6 +482,22 @@ public class DocumentDomainObject implements IMCConstants {
         return rolesMappedToPermissionSetIds;
     }
 
+    public CategoryDomainObject[] getCategories() {
+        return (CategoryDomainObject[]) categories.toArray(new CategoryDomainObject[categories.size()]);
+    }
+
+    public void addCategory( CategoryDomainObject category ) {
+        categories.add(category) ;
+    }
+
+    public void removeCategory( CategoryDomainObject category ) {
+        categories.remove(category) ;
+    }
+
+    public void removeAllCategories() {
+        categories.clear() ;
+    }
+
     public CategoryDomainObject[] getCategoriesOfType(CategoryTypeDomainObject type) {
         CategoryDomainObject[] categories = getCategories() ;
         List categoriesOfType = new ArrayList() ;
@@ -506,11 +511,19 @@ public class DocumentDomainObject implements IMCConstants {
         return (CategoryDomainObject[]) categoriesOfType.toArray(arrayOfCategoriesOfType) ;
     }
 
-    public void removeAllCategories() {
-        categories.clear() ;
-    }
-
     public void setPublisher( UserDomainObject user ) {
         publisher = user;
+    }
+
+    public void addSection( SectionDomainObject section ) {
+        sections.add( section );
+    }
+
+    public void removeSection( SectionDomainObject section ) {
+        sections.remove( section );
+    }
+
+    public void removeAllSection( SectionDomainObject section ) {
+        sections.clear();
     }
 }
