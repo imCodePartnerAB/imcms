@@ -318,9 +318,9 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
         getDocumentProperties().removeCategory( category );
     }
 
-    public abstract void saveDocument( DocumentMapper documentMapper );
+    public abstract void saveDocument( DocumentMapper documentMapper, UserDomainObject user );
 
-    public abstract void saveNewDocument( DocumentMapper documentMapper ) ;
+    public abstract void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) ;
 
     public void setPermissionSetForRole( RoleDomainObject role, int permissionSetId ) {
         getDocumentProperties().setPermissionSetForRole( role, permissionSetId );

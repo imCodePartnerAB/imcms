@@ -18,7 +18,7 @@ class DBConnect {
     private boolean trimStr = true;
     private int columnCount;                       // Column count
 
-    private final static Logger log = Logger.getLogger( "imcode.server.db.DBConnect" );
+    private final static Logger log = Logger.getLogger( DBConnect.class );
 
     // constructor
     DBConnect(ConnectionPool conPool) {

@@ -44,4 +44,9 @@ GO
 DROP PROCEDURE CopyDocs
 GO
 
+UPDATE images SET target = target_name WHERE target = '_other'
+ALTER TABLE images DROP COLUMN target_name
+GO
+
 -- 2004-03-23 Kreiger
+

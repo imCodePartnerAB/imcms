@@ -9,6 +9,7 @@ import javax.servlet.http.*;
 import imcode.util.*;
 import imcode.server.*;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 /**
@@ -72,7 +73,8 @@ public class ChangeImage extends HttpServlet {
         String imgNoStr = ( req.getParameter( "img_no" ) != null ) ? req.getParameter( "img_no" ) : req.getParameter( "img" );
         int img_no = Integer.parseInt( imgNoStr );
 
-        String[] sql = DocumentMapper.getDocumentImageData(imcref, meta_id, img_no);
+        DocumentMapper documentMapper = imcref.getDocumentMapper() ;
+        TextDocumentDomainObject.Image image = documentMapper.getDocumentImage( meta_id, img_no );
 
         // Check if ChangeImage is invoked by ImageBrowse, hence containing
         // an image filename as option value.
@@ -81,27 +83,27 @@ public class ChangeImage extends HttpServlet {
         if( null == paramCancel ) {
             imageListParam = req.getParameter( "imglist" );
         }
-        String img_preset = ( imageListParam == null ) ? "" : URLDecoder.decode( imageListParam );
+        String browsedImageUrl = ( imageListParam == null ) ? "" : URLDecoder.decode( imageListParam );
 
-        String imageName = ( "".equals( img_preset ) && sql.length > 0 ? sql[1] : img_preset ); // selected OPTION or ""
+        String imageUrl = ( "".equals( browsedImageUrl ) && null != image ? image.getUrl() : browsedImageUrl ); // selected OPTION or ""
 
         //****************************************************************
-        ImageFileMetaData image = new ImageFileMetaData( new File( image_path, imageName ) );
-        int width = image.getWidth();
-        int height = image.getHeight();
+        ImageFileMetaData imageFileMetaData = new ImageFileMetaData( new File( image_path, imageUrl ) );
+        int widthFromFile = imageFileMetaData.getWidth();
+        int heightFromFile = imageFileMetaData.getHeight();
         //****************************************************************
 
         Vector vec = new Vector();
-        if ( sql.length > 0 ) {
+        if ( null != image ) {
             int current_width = 0;
             try {
-                current_width = Integer.parseInt( img_preset.equals( "" ) ? sql[2] : "" + width );
+                current_width = "".equals( browsedImageUrl ) ? image.getWidth() : widthFromFile;
             } catch ( NumberFormatException ex ) {
 
             }
             int current_height = 0;
             try {
-                current_height = Integer.parseInt( img_preset.equals( "" ) ? sql[3] : "" + height );
+                current_height = "".equals( browsedImageUrl ) ? image.getHeight() : heightFromFile;
             } catch ( NumberFormatException ex ) {
 
             }
@@ -112,72 +114,72 @@ public class ChangeImage extends HttpServlet {
 
             String keepAspect = "checked";
 
-            if ( width * height != 0 && aspect != ( 100 * width / height ) ) {
+            if ( widthFromFile * heightFromFile != 0 && aspect != ( 100 * widthFromFile / heightFromFile ) ) {
                 keepAspect = "";
             }
 
             vec.add( "#imgName#" );
-            vec.add( HTMLConv.toHTMLSpecial(sql[0] ));
+            vec.add( HTMLConv.toHTMLSpecial(image.getName()));
             vec.add( "#imgRef#" );
-            vec.add( HTMLConv.toHTMLSpecial(imageName));
+            vec.add( HTMLConv.toHTMLSpecial(imageUrl));
             vec.add( "#imgWidth#" );
-            vec.add( current_width != 0 ? "" + current_width : "" + width );
+            vec.add( current_width != 0 ? "" + current_width : "" + widthFromFile );
             vec.add( "#origW#" ); // original imageWidth
-            vec.add( "" + width );
+            vec.add( "" + widthFromFile );
             vec.add( "#imgHeight#" );
-            vec.add( current_height != 0 ? "" + current_height : "" + height );
+            vec.add( current_height != 0 ? "" + current_height : "" + heightFromFile );
             vec.add( "#origH#" );
-            vec.add( "" + height ); // original imageHeight
+            vec.add( "" + heightFromFile ); // original imageHeight
 
             vec.add( "#keep_aspect#" );
             vec.add( keepAspect );
 
             vec.add( "#imgBorder#" );
-            vec.add( sql[4] );
+            vec.add( ""+image.getBorder() );
             vec.add( "#imgVerticalSpace#" );
-            vec.add( sql[5] );
+            vec.add( ""+image.getVerticalSpace() );
             vec.add( "#imgHorizontalSpace#" );
-            vec.add( sql[6] );
-            if ( "_top".equals( sql[7] ) ) {
+            vec.add( ""+image.getHorizontalSpace() );
+            if ( "_top".equals( image.getTarget() ) ) {
                 vec.add( "#target_name#" );
                 vec.add( "" );
                 vec.add( "#top_checked#" );
-            } else if ( "_self".equals( sql[7] ) ) {
+            } else if ( "_self".equals( image.getTarget() ) ) {
                 vec.add( "#target_name#" );
                 vec.add( "" );
                 vec.add( "#self_checked#" );
-            } else if ( "_blank".equals( sql[7] ) ) {
+            } else if ( "_blank".equals( image.getTarget() ) ) {
                 vec.add( "#target_name#" );
                 vec.add( "" );
                 vec.add( "#blank_checked#" );
-            } else if ( "_parent".equals( sql[7] ) ) {
+            } else if ( "_parent".equals( image.getTarget() ) ) {
                 vec.add( "#target_name#" );
                 vec.add( "" );
                 vec.add( "#blank_checked#" );
             } else {
                 vec.add( "#target_name#" );
-                vec.add( sql[8] );
+                vec.add( image.getTarget() );
                 vec.add( "#other_checked#" );
             }
             vec.add( "selected" );
 
-            if ( "baseline".equals( sql[9] ) ) {
+            if ( "baseline".equals( image.getAlign() ) ) {
                 vec.add( "#baseline_selected#" );
-            } else if ( "top".equals( sql[9] ) ) {
+            } else if ( "top".equals( image.getAlign() ) ) {
                 vec.add( "#top_selected#" );
-            } else if ( "middle".equals( sql[9] ) ) {
+            } else if ( "middle".equals( image.getAlign() ) ) {
                 vec.add( "#middle_selected#" );
-            } else if ( "bottom".equals( sql[9] ) ) {
+            } else if ( "bottom".equals( image.getAlign() ) ) {
                 vec.add( "#bottom_selected#" );
-            } else if ( "texttop".equals( sql[9] ) ) {
+            } else if ( "texttop".equals( image.getAlign() ) ) {
                 vec.add( "#texttop_selected#" );
-            } else if ( "absmiddle".equals( sql[9] ) ) {
+            } else if ( "absmiddle".equals( image.getAlign() ) ) {
                 vec.add( "#absmiddle_selected#" );
-            } else if ( "absbottom".equals( sql[9] ) ) {
+            } else if ( "absbottom".equals( image.getAlign() ) ) {
                 vec.add( "#absbottom_selected#" );
-            } else if ( "left".equals( sql[9] ) ) {
+            } else if ( "left".equals( image.getAlign() ) ) {
                 vec.add( "#left_selected#" );
-            } else if ( "right".equals( sql[9] ) ) {
+            } else if ( "right".equals( image.getAlign() ) ) {
                 vec.add( "#right_selected#" );
             } else {
                 vec.add( "#none_selected#" );
@@ -185,26 +187,26 @@ public class ChangeImage extends HttpServlet {
             vec.add( "selected" );
 
             vec.add( "#imgAltText#" );
-            vec.add( HTMLConv.toHTMLSpecial(sql[10]));
+            vec.add( HTMLConv.toHTMLSpecial(image.getAlternateText()));
             vec.add( "#imgLowScr#" );
-            vec.add( sql[11] );
+            vec.add( image.getLowResolutionUrl() );
             vec.add( "#imgRefLink#" );
-            vec.add( HTMLConv.toHTMLSpecial( sql[12] ));
+            vec.add( HTMLConv.toHTMLSpecial( image.getLinkUrl() ));
         } else {
 
             vec.add( "#imgName#" );
             vec.add( "" );
             vec.add( "#imgRef#" );
-            vec.add( imageName );
+            vec.add( imageUrl );
             vec.add( "#imgWidth#" );
-            vec.add( "" + width );
+            vec.add( "" + widthFromFile );
             vec.add( "#imgHeight#" );
-            vec.add( "" + height );
+            vec.add( "" + heightFromFile );
 
             vec.add( "#origW#" );
-            vec.add( "" + width );
+            vec.add( "" + widthFromFile );
             vec.add( "#origH#" );
-            vec.add( "" + height );
+            vec.add( "" + heightFromFile );
 
             vec.add( "#imgBorder#" );
             vec.add( "0" );

@@ -25,10 +25,10 @@ public abstract class FormerExternalDocument extends DocumentDomainObject {
         documentInformation.processNewFormerExternalDocument(newDocumentParentInformation, user, request, response, this );
     }
 
-    public void saveDocument(DocumentMapper documentMapper) {
+    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
     }
 
-    public void saveNewDocument( DocumentMapper documentMapper ) {
+    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
     }
 
     public void initDocument( DocumentMapper documentMapper ) {

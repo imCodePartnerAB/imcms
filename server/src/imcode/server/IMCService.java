@@ -417,7 +417,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Save an imageref.
      */
-    public void saveImage( int meta_id, UserDomainObject user, int img_no, imcode.server.ImageDomainObject image ) {
+    public void saveImage( int meta_id, UserDomainObject user, int img_no, TextDocumentDomainObject.Image image ) {
         documentMapper.saveDocumentImage( meta_id, img_no, image, user );
     }
 

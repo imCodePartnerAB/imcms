@@ -361,6 +361,7 @@ public class DocumentComposer extends HttpServlet {
                 newDocument = (DocumentDomainObject)parent.clone();
                 TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject)newDocument;
                 newTextDocument.removeAllTexts();
+                newTextDocument.removeAllImages();
                 int permissionSetId = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
                 TemplateMapper templateMapper = service.getTemplateMapper();
                 TemplateDomainObject template = null;
@@ -566,7 +567,7 @@ public class DocumentComposer extends HttpServlet {
         document.setPublisher( publisher );
     }
 
-    private String getTargetFromRequest( HttpServletRequest request ) {
+    public static String getTargetFromRequest( HttpServletRequest request ) {
         String[] possibleTargets = request.getParameterValues( PARAMETER__TARGET );
         String target = null;
         for ( int i = 0; i < possibleTargets.length; i++ ) {

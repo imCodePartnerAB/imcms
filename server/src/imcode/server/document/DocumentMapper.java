@@ -2,7 +2,10 @@ package imcode.server.document;
 
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.servlet.admin.DocumentComposer;
-import imcode.server.*;
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
+import imcode.server.LanguageMapper;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -58,7 +61,6 @@ public class DocumentMapper {
     private static final String TEMPLATE__STATUS_ARCHIVED = "textdoc/status/archived.frag";
     private static final String TEMPLATE__STATUS_APPROVED = "textdoc/status/approved.frag";
 
-
     public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
         this.imcmsAAUM = imcmsAAUM;
@@ -104,7 +106,7 @@ public class DocumentMapper {
                                                               + menuDocumentId );
                 }
             }
-            throw re ;
+            throw re;
         }
 
         service.updateLogs( "Link from [" + menuDocumentId + "] in menu [" + menuIndex + "] to [" + toBeAddedId
@@ -538,6 +540,7 @@ public class DocumentMapper {
             int textType = Integer.parseInt( sqlTextsRow[2] );
             document.setText( textIndex, new TextDocumentDomainObject.Text( text, textType ) );
         }
+        document.setImages( getDocumentImages( document ) );
     }
 
     void initUrlDocument( UrlDocumentDomainObject document ) {
@@ -747,7 +750,7 @@ public class DocumentMapper {
 
         document.setId( newMetaId );
 
-        document.saveNewDocument( this );
+        document.saveNewDocument( this, user );
 
         saveDocument( document, user );
     }
@@ -821,7 +824,7 @@ public class DocumentMapper {
         return metaId;
     }
 
-    void saveNewTextDocument( TextDocumentDomainObject textDocument ) {
+    void saveNewTextDocument( TextDocumentDomainObject textDocument, UserDomainObject user ) {
         String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template_1, default_template_2) VALUES (?,?,?,?,?)";
         service.sqlUpdateQuery( sqlTextDocsInsertStr,
                                 new String[]{
@@ -832,6 +835,7 @@ public class DocumentMapper {
                                 } );
 
         updateTextDocumentTexts( textDocument );
+        updateTextDocumentImages( textDocument,user );
     }
 
     void saveNewUrlDocument( UrlDocumentDomainObject document ) {
@@ -907,7 +911,7 @@ public class DocumentMapper {
 
         updateDocumentKeywords( document.getId(), document.getKeywords() );
 
-        document.saveDocument( this );
+        document.saveDocument( this, user );
 
         touchDocument( document );
     }
@@ -1562,86 +1566,101 @@ public class DocumentMapper {
         return Integer.parseInt( doc_type );
     }
 
-    public static String[] getDocumentImageData( IMCServiceInterface imcref, int meta_id, int img_no ) {
-        String[] sql = imcref.sqlQuery( "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images\n"
-                                        + "where meta_id = ? and name = ?",
-                                        new String[]{"" + meta_id, "" + img_no} );
-        return sql;
+    private final static String IMAGE_SQL_COLUMNS = "name,image_name,imgurl,width,height,border,v_space,h_space,target,align,alt_text,low_scr,linkurl";
+
+    public Map getDocumentImages( DocumentDomainObject document ) {
+        String[][] imageRows = service.sqlQueryMulti( "select " + IMAGE_SQL_COLUMNS + " from images\n"
+                                                      + "where meta_id = ?",
+                                                      new String[]{"" + document.getId()} );
+        Map imageMap = new HashMap();
+        for ( int i = 0; i < imageRows.length; i++ ) {
+            String[] imageRow = imageRows[i];
+            Integer imageIndex = Integer.valueOf( imageRow[0] );
+            TextDocumentDomainObject.Image image = createImageFromSqlResultRow( imageRow );
+            imageMap.put( imageIndex, image );
+        }
+        return imageMap;
     }
 
-    public ImageDomainObject getDocumentImage( int meta_id, int img_no ) {
-        String[] sqlResult = getDocumentImageData( service, meta_id, img_no );
+    public TextDocumentDomainObject.Image getDocumentImage( int meta_id, int img_no ) {
+        String[] sqlResult = service.sqlQuery( "select " + IMAGE_SQL_COLUMNS + " from images\n"
+                                               + "where meta_id = ? and name = ?",
+                                               new String[]{"" + meta_id, "" + img_no} );
 
         if ( sqlResult.length > 0 ) {
-            ImageDomainObject image = new ImageDomainObject();
-
-            image.setImageName( sqlResult[0] );
-            image.setImageRef( sqlResult[1] );
-            image.setImageWidth( Integer.parseInt( sqlResult[2] ) );
-            image.setImageHeight( Integer.parseInt( sqlResult[3] ) );
-            image.setImageBorder( Integer.parseInt( sqlResult[4] ) );
-            image.setVerticalSpace( Integer.parseInt( sqlResult[5] ) );
-            image.setHorizonalSpace( Integer.parseInt( sqlResult[6] ) );
-            image.setTarget( sqlResult[7] );
-            image.setTargetName( sqlResult[8] );
-            image.setImageAlign( sqlResult[9] );
-            image.setAltText( sqlResult[10] );
-            image.setLowScr( sqlResult[11] );
-            image.setImageRefLink( sqlResult[12] );
-
-            return image;
+            return createImageFromSqlResultRow( sqlResult );
         } else {
             return null;
         }
     }
 
-    public void saveDocumentImage( int meta_id, int img_no, ImageDomainObject image, UserDomainObject user ) {
-        String[] imageData = service.sqlQuery( "select * from images where meta_id = ? and name = ?",
-                                               new String[]{"" + meta_id, "" + img_no} );
-        String sqlStr;
-        if ( imageData.length > 0 ) {
-            sqlStr = "update images\n"
-                     + "set imgurl  = ?, \n"
-                     + "width       = ?, \n"
-                     + "height      = ?, \n"
-                     + "border      = ?, \n"
-                     + "v_space     = ?, \n"
-                     + "h_space     = ?, \n"
-                     + "image_name  = ?, \n"
-                     + "target      = ?, \n"
-                     + "target_name = ?, \n"
-                     + "align       = ?, \n"
-                     + "alt_text    = ?, \n"
-                     + "low_scr     = ?, \n"
-                     + "linkurl     = ?  \n"
-                     + "where meta_id = ? \n"
-                     + "and name = ? \n";
+    private TextDocumentDomainObject.Image createImageFromSqlResultRow( String[] sqlResult ) {
+        TextDocumentDomainObject.Image image = new TextDocumentDomainObject.Image();
 
-        } else {
-            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, target_name, align, alt_text, low_scr, linkurl, meta_id, name)"
-                     + " values(?,?,?, ?,?,?, ?,?,?, ?,?,?, ?,?,?)";
+        image.setName( sqlResult[1] );
+        image.setUrl( sqlResult[2] );
+        image.setWidth( Integer.parseInt( sqlResult[3] ) );
+        image.setHeight( Integer.parseInt( sqlResult[4] ) );
+        image.setBorder( Integer.parseInt( sqlResult[5] ) );
+        image.setVerticalSpace( Integer.parseInt( sqlResult[6] ) );
+        image.setHorizontalSpace( Integer.parseInt( sqlResult[7] ) );
+        image.setTarget( sqlResult[8] );
+        image.setAlign( sqlResult[9] );
+        image.setAlternateText( sqlResult[10] );
+        image.setLowResolutionUrl( sqlResult[11] );
+        image.setLinkUrl( sqlResult[12] );
+
+        return image;
+    }
+
+    public void saveDocumentImage( int meta_id, int img_no, TextDocumentDomainObject.Image image,
+                                   UserDomainObject user ) {
+        String sqlStr = "update images\n"
+                        + "set imgurl  = ?, \n"
+                        + "width       = ?, \n"
+                        + "height      = ?, \n"
+                        + "border      = ?, \n"
+                        + "v_space     = ?, \n"
+                        + "h_space     = ?, \n"
+                        + "image_name  = ?, \n"
+                        + "target      = ?, \n"
+                        + "align       = ?, \n"
+                        + "alt_text    = ?, \n"
+                        + "low_scr     = ?, \n"
+                        + "linkurl     = ?  \n"
+                        + "where meta_id = ? \n"
+                        + "and name = ? \n";
+
+        int rowUpdateCount = sqlImageUpdateQuery( sqlStr, image, meta_id, img_no );
+        if ( 0 == rowUpdateCount ) {
+            sqlStr = "insert into images (imgurl, width, height, border, v_space, h_space, image_name, target, align, alt_text, low_scr, linkurl, meta_id, name)"
+                     + " values(?,?,?, ?,?,?, ?,?,?, ?,?,?, ?,?)";
+
+            sqlImageUpdateQuery( sqlStr, image, meta_id, img_no );
         }
-        service.sqlUpdateQuery( sqlStr, new String[]{
-            image.getImageRef(),
-            "" + image.getImageWidth(),
-            "" + image.getImageHeight(),
-            "" + image.getImageBorder(),
+
+        service.updateLogs( "ImageRef " + img_no + " =" + image.getUrl() +
+                            " in  " + "[" + meta_id + "] modified by user: [" +
+                            user.getFullName() + "]" );
+    }
+
+    private int sqlImageUpdateQuery( String sqlStr, TextDocumentDomainObject.Image image, int meta_id, int img_no ) {
+        return service.sqlUpdateQuery( sqlStr, new String[]{
+            image.getUrl(),
+            "" + image.getWidth(),
+            "" + image.getHeight(),
+            "" + image.getBorder(),
             "" + image.getVerticalSpace(),
             "" + image.getHorizontalSpace(),
-            image.getImageName(),
+            image.getName(),
             image.getTarget(),
-            image.getTargetName(),
-            image.getImageAlign(),
-            image.getAltText(),
-            image.getLowScr(),
-            image.getImageRefLink(),
+            image.getAlign(),
+            image.getAlternateText(),
+            image.getLowResolutionUrl(),
+            image.getLinkUrl(),
             "" + meta_id,
             "" + img_no
         } );
-
-        service.updateLogs( "ImageRef " + img_no + " =" + image.getImageRef() +
-                            " in  " + "[" + meta_id + "] modified by user: [" +
-                            user.getFullName() + "]" );
     }
 
     public String[][] getAllMimeTypesWithDescriptions( UserDomainObject user ) {
@@ -1693,7 +1712,7 @@ public class DocumentMapper {
         return browser;
     }
 
-    void saveTextDocument( TextDocumentDomainObject textDocument ) {
+    void saveTextDocument( TextDocumentDomainObject textDocument, UserDomainObject user ) {
         String sqlStr = "UPDATE text_docs SET template_id = ?, group_id = ?,\n"
                         + "default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
@@ -1705,11 +1724,31 @@ public class DocumentMapper {
         } );
 
         updateTextDocumentTexts( textDocument );
+        updateTextDocumentImages( textDocument,user );
     }
 
     private void updateTextDocumentTexts( TextDocumentDomainObject textDocument ) {
         deleteTextDocumentTexts( textDocument );
         insertTextDocumentTexts( textDocument );
+    }
+
+    private void updateTextDocumentImages( TextDocumentDomainObject textDocument, UserDomainObject user ) {
+        deleteTextDocumentImages( textDocument );
+        insertTextDocumentImages( textDocument,user );
+    }
+
+    private void insertTextDocumentImages( TextDocumentDomainObject textDocument, UserDomainObject user ) {
+        Map images = textDocument.getImages() ;
+        for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
+            Integer imageIndex = (Integer)iterator.next();
+            TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)images.get(imageIndex) ;
+            saveDocumentImage( textDocument.getId(), imageIndex.intValue(), image, user);
+        }
+    }
+
+    private void deleteTextDocumentImages( TextDocumentDomainObject textDocument ) {
+        String sqlDeleteImages = "DELETE FROM images WHERE meta_id = ?";
+        service.sqlUpdateQuery( sqlDeleteImages, new String[]{"" + textDocument.getId()} );
     }
 
     private void insertTextDocumentTexts( TextDocumentDomainObject textDocument ) {
@@ -1795,7 +1834,6 @@ public class DocumentMapper {
         String statusIconTemplate = service.getAdminTemplate( statusIconTemplateName, user, null );
         return statusIconTemplate;
     }
-
 
 }
 

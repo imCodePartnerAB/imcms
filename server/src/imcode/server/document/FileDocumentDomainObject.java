@@ -57,11 +57,11 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     }
 
-    public void saveDocument( DocumentMapper documentMapper ) {
+    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
         documentMapper.saveFileDocument( this ) ;
     }
 
-    public void saveNewDocument( DocumentMapper documentMapper ) {
+    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
         documentMapper.saveNewFileDocument(this);
     }
 

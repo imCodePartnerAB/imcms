@@ -38,28 +38,27 @@ public class TextDocument extends Document {
                          String link_target, String link_targetname, String link_href,
                          String alt_text, String low_src) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        ImageDomainObject internalImage = new ImageDomainObject();
+        TextDocumentDomainObject.Image internalImage = new TextDocumentDomainObject.Image();
 
-        internalImage.setImageRef(image_src); // image srcurl,  relative imageurl
-        internalImage.setImageName(image_name);  // html imagetag name
-        internalImage.setImageWidth(width);
-        internalImage.setImageHeight(heigth);
-        internalImage.setImageBorder(border);
+        internalImage.setUrl(image_src); // image srcurl,  relative imageurl
+        internalImage.setName(image_name);  // html imagetag name
+        internalImage.setWidth(width);
+        internalImage.setHeight(heigth);
+        internalImage.setBorder(border);
         internalImage.setVerticalSpace(v_space);
-        internalImage.setHorizonalSpace(h_space);
+        internalImage.setHorizontalSpace(h_space);
         internalImage.setTarget(link_target); // link target
-        internalImage.setTargetName(link_targetname); // target to use if target = _other
-        internalImage.setImageAlign(align);
-        internalImage.setAltText(alt_text);
-        internalImage.setLowScr(low_src);
-        internalImage.setImageRefLink(link_href);  // link href
+        internalImage.setAlign(align);
+        internalImage.setAlternateText(alt_text);
+        internalImage.setLowResolutionUrl(low_src);
+        internalImage.setLinkUrl(link_href);  // link href
         documentMapper.saveDocumentImage(this.getId(), imageIndexInDocument, internalImage, super.securityChecker.getCurrentLoggedInUser());
 
     }
 
     public Image getImage( int imageIndexInDocument ) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        ImageDomainObject imageDomainObject = documentMapper.getDocumentImage( internalDocument.getId(), imageIndexInDocument );
+        TextDocumentDomainObject.Image imageDomainObject = documentMapper.getDocumentImage( internalDocument.getId(), imageIndexInDocument );
         if( null != imageDomainObject ) {
             return new Image(imageDomainObject, service);
         } else {

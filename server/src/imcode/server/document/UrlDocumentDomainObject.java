@@ -37,11 +37,11 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
         documentInformation.processNewUrlDocumentInformation( request, response, user );
     }
 
-    public void saveDocument( DocumentMapper documentMapper ) {
+    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
         documentMapper.saveUrlDocument(this) ;
     }
 
-    public void saveNewDocument( DocumentMapper documentMapper ) {
+    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
         documentMapper.saveNewUrlDocument( this );
     }
 

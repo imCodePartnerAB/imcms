@@ -239,7 +239,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         Iterator imit = Arrays.asList( images ).iterator();
         // This is where we gather all images from the database and put them in our maps.
         while ( imit.hasNext() ) {
-            imit.next();
             String imgnumber = (String)imit.next();
             String imgurl = (String)imit.next();
             String linkurl = (String)imit.next();
@@ -253,16 +252,14 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String alt = (String)imit.next();
             String lowscr = (String)imit.next();
             String target = (String)imit.next();
-            String target_name = (String)imit.next();
             StringBuffer value = new StringBuffer( 96 );
             if ( !"".equals( imgurl ) ) {
                 if ( !"".equals( linkurl ) ) {
-                    value.append( "<a href=\"" + linkurl + "\"" );
-                    if ( target.equals( "_other" ) ) {
-                        value.append( " target=\"" + target_name + "\">" );
-                    } else if ( !"".equals( target ) ) {
-                        value.append( " target=\"" + target + "\">" );
+                    value.append( "<a href=\"" ).append( linkurl ).append( "\"" );
+                    if ( !"".equals( target ) ) {
+                        value.append( " target=\"" ).append( target ).append( "\"" );
                     }
+                    value.append( '>' ) ;
                 }
 
                 value.append( "<img src=\"" + imageUrl + imgurl + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?

@@ -38,11 +38,11 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
 
     }
 
-    public void saveDocument( DocumentMapper documentMapper ) {
+    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
         documentMapper.saveBrowserDocument( this ) ;
     }
 
-    public void saveNewDocument( DocumentMapper documentMapper ) {
+    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
         documentMapper.saveNewBrowserDocument( this );
     }
 

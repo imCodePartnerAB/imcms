@@ -25,6 +25,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private int defaultTemplateIdForRestrictedPermissionSetOne;
     private int defaultTemplateIdForRestrictedPermissionSetTwo;
     private Map texts = new HashMap();
+    private Map images = new HashMap();
 
     public TemplateDomainObject getTemplate() {
         return template;
@@ -42,8 +43,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this.templateGroupId = v;
     }
 
-    public void setDefaultTemplateIdForRestrictedPermissionSetOne(
-            int defaultTemplateIdForRestrictedPermissionSetOne ) {
+    public void setDefaultTemplateIdForRestrictedPermissionSetOne( int defaultTemplateIdForRestrictedPermissionSetOne ) {
         this.defaultTemplateIdForRestrictedPermissionSetOne = defaultTemplateIdForRestrictedPermissionSetOne;
     }
 
@@ -51,8 +51,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return defaultTemplateIdForRestrictedPermissionSetOne;
     }
 
-    public void setDefaultTemplateIdForRestrictedPermissionSetTwo(
-            int defaultTemplateIdForRestrictedPermissionSetTwo ) {
+    public void setDefaultTemplateIdForRestrictedPermissionSetTwo( int defaultTemplateIdForRestrictedPermissionSetTwo ) {
         this.defaultTemplateIdForRestrictedPermissionSetTwo = defaultTemplateIdForRestrictedPermissionSetTwo;
     }
 
@@ -71,12 +70,12 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         documentComposer.processNewTextDocumentInformation( this, newDocumentParentInformation, request, response, user );
     }
 
-    public void saveDocument( DocumentMapper documentMapper ) {
-        documentMapper.saveTextDocument( this );
+    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
+        documentMapper.saveTextDocument( this,user );
     }
 
-    public void saveNewDocument( DocumentMapper documentMapper ) {
-        documentMapper.saveNewTextDocument( this );
+    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
+        documentMapper.saveNewTextDocument( this,user );
     }
 
     public void initDocument( DocumentMapper documentMapper ) {
@@ -99,7 +98,19 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void removeAllTexts() {
-        texts.clear() ;
+        texts.clear();
+    }
+
+    public void setImages( Map images ) {
+        this.images = images ;
+    }
+
+    public Map getImages() {
+        return Collections.unmodifiableMap( images );
+    }
+
+    public void removeAllImages() {
+        images.clear();
     }
 
     public static class Text implements Serializable {
@@ -195,6 +206,126 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
                 result = Parser.parseDoc( result, vp );
             }
             return result;
+        }
+
+    }
+
+    public static class Image implements Serializable {
+
+        private String url;
+        private String name;
+        private int width;
+        private int height;
+        private int border;
+        private String align;
+        private String alternateText;
+        private String lowResolutionUrl;
+        private int verticalSpace;
+        private int horizontalSpace;
+        private String target;
+        private String linkUrl;
+
+        public Image() {
+
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public int getBorder() {
+            return border;
+        }
+
+        public String getAlign() {
+            return align;
+        }
+
+        public String getAlternateText() {
+            return alternateText;
+        }
+
+        public String getLowResolutionUrl() {
+            return lowResolutionUrl;
+        }
+
+        public int getVerticalSpace() {
+            return verticalSpace;
+        }
+
+        public int getHorizontalSpace() {
+            return horizontalSpace;
+        }
+
+        public String getTarget() {
+            return target;
+        }
+
+        public String getLinkUrl() {
+            return linkUrl;
+        }
+
+        public void setUrl( String image_ref ) {
+            this.url = image_ref;
+        }
+
+        public void setName( String image_name ) {
+            this.name = image_name;
+        }
+
+        public void setWidth( int image_width ) {
+            this.width = image_width;
+        }
+
+        public void setHeight( int image_height ) {
+            this.height = image_height;
+        }
+
+        public void setBorder( int image_border ) {
+            this.border = image_border;
+        }
+
+        public void setAlign( String image_align ) {
+            this.align = image_align;
+        }
+
+        public void setAlternateText( String alt_text ) {
+            this.alternateText = alt_text;
+        }
+
+        public void setLowResolutionUrl( String low_scr ) {
+            this.lowResolutionUrl = low_scr;
+        }
+
+        public void setVerticalSpace( int v_space ) {
+            this.verticalSpace = v_space;
+        }
+
+        public void setHorizontalSpace( int h_space ) {
+            this.horizontalSpace = h_space;
+        }
+
+        public void setTarget( String target ) {
+            this.target = target;
+        }
+
+        public void setTargetName( String target_name ) {
+        }
+
+        public void setLinkUrl( String image_ref_link ) {
+            this.linkUrl = image_ref_link;
         }
 
     }

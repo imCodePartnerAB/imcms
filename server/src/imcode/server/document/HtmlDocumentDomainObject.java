@@ -38,11 +38,11 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
 
     }
 
-    public void saveDocument( DocumentMapper documentMapper ) {
+    public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
         documentMapper.saveHtmlDocument( this ) ;
     }
 
-    public void saveNewDocument( DocumentMapper documentMapper ) {
+    public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
         documentMapper.saveNewHtmlDocument( this );
     }
 

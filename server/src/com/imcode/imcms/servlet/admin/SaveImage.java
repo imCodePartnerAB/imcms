@@ -2,9 +2,9 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.server.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.TextDocumentDomainObject;
 import imcode.util.ImageFileMetaData;
 import imcode.util.Utility;
 
@@ -56,26 +56,26 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         String origWidth = req.getParameter( "origW" ); // width
         String origHeight = req.getParameter( "origH" ); // height
 
-        ImageDomainObject image = new ImageDomainObject();
+        TextDocumentDomainObject.Image image = new TextDocumentDomainObject.Image();
         try {
-            image.setImageHeight( Integer.parseInt( image_height ) );
+            image.setHeight( Integer.parseInt( image_height ) );
         } catch ( NumberFormatException ex ) {
             image_height = "0";
-            image.setImageHeight( 0 );
+            image.setHeight( 0 );
         }
 
         try {
-            image.setImageBorder( Integer.parseInt( image_border ) );
+            image.setBorder( Integer.parseInt( image_border ) );
         } catch ( NumberFormatException ex ) {
             image_border = "0";
-            image.setImageBorder( 0 );
+            image.setBorder( 0 );
         }
 
         try {
-            image.setImageWidth( Integer.parseInt( image_width ) );
+            image.setWidth( Integer.parseInt( image_width ) );
         } catch ( NumberFormatException ex ) {
             image_width = "0";
-            image.setImageWidth( 0 );
+            image.setWidth( 0 );
         }
 
         if ( keepAspectRatio && ( okParameter != null || showImageParam != null ) ) {
@@ -140,8 +140,8 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
                 iHeight = (int)( iWidth * asp_rat );
             }
 
-            image.setImageHeight( iHeight );
-            image.setImageWidth( iWidth );
+            image.setHeight( iHeight );
+            image.setWidth( iWidth );
             image_width = "" + iWidth;
             image_height = "" + iHeight;
         }
@@ -161,51 +161,46 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         }
 
         try {
-            image.setHorizonalSpace( Integer.parseInt( h_space ) );
+            image.setHorizontalSpace( Integer.parseInt( h_space ) );
         } catch ( NumberFormatException ex ) {
             h_space = "0";
-            image.setHorizonalSpace( 0 );
+            image.setHorizontalSpace( 0 );
         }
 
         // get imageref
         String image_ref = req.getParameter( "imageref" );
-        image.setImageRef( image_ref );
+        image.setUrl( image_ref );
         if( "".equals(image_ref ) ){  // remove width and height if user removes image ref
-                image.setImageWidth(0);
-                image.setImageHeight(0);
+                image.setWidth(0);
+                image.setHeight(0);
         }
 
         // get image_name
         String image_name = req.getParameter( "image_name" );
         if( null != image_name ) {
             image_name = image_name.trim();
-            image.setImageName( image_name );
+            image.setName( image_name );
         }
 
         // get image_align
         String image_align = req.getParameter( "image_align" );
-        image.setImageAlign( image_align );
+        image.setAlign( image_align );
 
         // get alt_text
         String alt_text = imcode.server.HTMLConv.toHTML( req.getParameter( "alt_text" ) );
-        image.setAltText( alt_text );
+        image.setAlternateText( alt_text );
 
         // get low_scr
         String low_scr = req.getParameter( "low_scr" );
-        image.setLowScr( low_scr );
+        image.setLowResolutionUrl( low_scr );
 
         // get target
-        String target = req.getParameter( "target" );
+        String target = DocumentComposer.getTargetFromRequest(req) ;
         image.setTarget( target );
-
-
-        // get target_name
-        String target_name = req.getParameter( "target_name" );
-        image.setTargetName( target_name );
 
         // get image_ref_link
         String imageref_link = req.getParameter( "imageref_link" );
-        image.setImageRefLink( imageref_link );
+        image.setLinkUrl( imageref_link );
 
         // Check if user has write rights
         UserDomainObject user = Utility.getLoggedOnUser( req );
@@ -292,7 +287,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
                 vec.add( "#blank_checked#" );
             } else {
                 vec.add( "#target_name#" );
-                vec.add( target_name );
+                vec.add( target );
                 vec.add( "#other_checked#" );
             }
             vec.add( "selected" );

@@ -5,7 +5,6 @@ import java.util.* ;
 
 import imcode.server.parser.ParserParameters ;
 import imcode.server.user.*;
-import imcode.server.document.TextDocumentDomainObject.Text;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.TextDocumentDomainObject;
@@ -36,7 +35,7 @@ public interface IMCServiceInterface {
     String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
     // Save an image
-    void saveImage(int meta_id,UserDomainObject user,int img_no,imcode.server.ImageDomainObject image)
+    void saveImage(int meta_id,UserDomainObject user,int img_no,TextDocumentDomainObject.Image image)
 	;
 
     /**

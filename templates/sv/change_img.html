@@ -344,17 +344,15 @@ writeFormField("TEXT","imageref_link",92,255,"100%","#imgRefLink#\" onFocus=\"ch
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>
-		<select name="target" size="1" onChange="document.forms.imgProp.target_name.value = document.forms.imgProp.target.options[document.forms.imgProp.target.selectedIndex].value">
+		<select name="target" size="1">
 			<option value="_top" #top_checked#><? templates/sv/change_img.html/47 ?>
 			<option value="_blank" #blank_checked#><? templates/sv/change_img.html/48 ?>
 			<option value="_parent" #parent_checked#><? templates/sv/change_img.html/49 ?>
 			<option value="_self" #self_checked#><? templates/sv/change_img.html/50 ?>
-			<option value="_other" #other_checked#><? templates/sv/change_img.html/51 ?>
+			<option #other_checked#><? templates/sv/change_img.html/51 ?>
 		</select></td>
 		<td>&nbsp;&nbsp;</td>
-		<td><script>
-writeFormField("TEXT","target_name",10,20,null,"#target_name#");
-</script></td>
+		<td><input type="text" name="target" size="10" maxlength="20" value="#target_name#"></td>
 	</tr>
 	</table></td>
 </tr>
