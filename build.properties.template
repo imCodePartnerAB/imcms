@@ -37,6 +37,19 @@ plugin-db-maxconnections = 20
 smtp-server = 
 
 
+# The name and e-mail-address of the servermaster.
+
+servermaster-name  = 
+servermaster-email = 
+
+
+# The name and e-mail-address of the webmaster.
+# Defaults to the values for the servermaster.
+
+webmaster-name  = ${servermaster-name}
+webmaster-email = ${servermaster-email}
+
+
 # The name of the webapp. Used for filenames and URIs.
 
 webappname = imcms

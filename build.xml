@@ -84,31 +84,37 @@
 
   <!-- Defines global filters. -->
   <target name="global-filters"
-          depends="check-build-properties"
+	  depends="check-build-properties"
 	  description="Defines global filters.">
 
     <!-- Global filters -->
-    <filter token="rooturl"         value="${rooturl}"/>
-    <filter token="servleturl"      value="${servleturl}"/>
-    <filter token="loginurl"        value="${loginurl}"/>
-    <filter token="imageurl"        value="${imageurl}"/>
-    <filter token="cssurl"          value="${cssurl}"/>
-    <filter token="postcardsurl"    value="${postcardsurl}"/>
-    <filter token="adminbuttonsurl" value="${adminbuttonsurl}"/>
+    <filter token="rooturl"            value="${rooturl}"/>
+    <filter token="servleturl"         value="${servleturl}"/>
+    <filter token="loginurl"           value="${loginurl}"/>
+    <filter token="imageurl"           value="${imageurl}"/>
+    <filter token="cssurl"             value="${cssurl}"/>
+    <filter token="postcardsurl"       value="${postcardsurl}"/>
+    <filter token="adminbuttonsurl"    value="${adminbuttonsurl}"/>
 
-    <filter token="db-host"         value="${db-host}"/>
-    <filter token="db-port"         value="${db-port}"/>
-    <filter token="db-name"         value="${db-name}"/>
-    <filter token="db-user"         value="${db-user}"/>
-    <filter token="db-pass"         value="${db-pass}"/>
+    <filter token="db-host"            value="${db-host}"/>
+    <filter token="db-port"            value="${db-port}"/>
+    <filter token="db-name"            value="${db-name}"/>
+    <filter token="db-user"            value="${db-user}"/>
+    <filter token="db-pass"            value="${db-pass}"/>
 
-    <filter token="plugin-db-host"  value="${plugin-db-host}"/>
-    <filter token="plugin-db-port"  value="${plugin-db-port}"/>
-    <filter token="plugin-db-name"  value="${plugin-db-name}"/>
-    <filter token="plugin-db-user"  value="${plugin-db-user}"/>
-    <filter token="plugin-db-pass"  value="${plugin-db-pass}"/>
+    <filter token="plugin-db-host"     value="${plugin-db-host}"/>
+    <filter token="plugin-db-port"     value="${plugin-db-port}"/>
+    <filter token="plugin-db-name"     value="${plugin-db-name}"/>
+    <filter token="plugin-db-user"     value="${plugin-db-user}"/>
+    <filter token="plugin-db-pass"     value="${plugin-db-pass}"/>
 
-    <filter token="smtp-server"     value="${smtp-server}"/>
+    <filter token="smtp-server"        value="${smtp-server}"/>
+
+    <filter token="servermaster-name"  value="${servermaster-name}"/>
+    <filter token="servermaster-email" value="${servermaster-email}"/>
+
+    <filter token="webmaster-name"  value="${servermaster-name}"/>
+    <filter token="webmaster-email" value="${servermaster-email}"/>
 
   </target>
 
@@ -137,7 +143,7 @@
     <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
       <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
     </uptodate>
-    
+
     <antcall target="fail-build-properties"/>
 
   </target>
@@ -206,8 +212,8 @@
 
   <!-- Create an xml-file representing the release. -->
   <target name="xmlversion"
-          depends="tools"
-          description="Creates an XML-file representing the release.">
+	  depends="tools"
+	  description="Creates an XML-file representing the release.">
     <taskdef name="xmlversion" classname="imcode.anttasks.XmlVersionTask">
 	<classpath>
 	    <pathelement path="build/WEB-INF/classes"/>
@@ -275,8 +281,8 @@
 
   <!-- Build extra tools needed for building. -->
   <target name="tools"
-          depends="server"
-          description="Builds extra tools needed for building.">
+	  depends="server"
+	  description="Builds extra tools needed for building.">
     <ant dir="tools"/>
   </target>
 
@@ -403,7 +409,7 @@
 
   <!-- Copies the adminbutton images. -->
   <target name="adminbutton-images"
-          depends="init"
+	  depends="init"
 	  description="Copies the adminbutton images.">
 
     <antcall target="adminbutton-images-lang">
@@ -421,7 +427,7 @@
 
   <!-- Copies the adminbutton images for one language. -->
   <target name="adminbutton-images-lang"
-          depends="language-properties"
+	  depends="language-properties"
 	  description="Copies the adminbutton images for one language.">
 
     <copy todir="${adminbuttons}/${language}">
@@ -436,7 +442,7 @@
 
   <!-- Copies the imagebrowse images. -->
   <target name="imagebrowse-images"
-          depends="init"
+	  depends="init"
 	  description="Copies the imagebrowse images.">
 
     <antcall target="imagebrowse-images-lang">
@@ -454,8 +460,8 @@
 
   <!-- Copies the imagebrowse images for one language. -->
   <target name="imagebrowse-images-lang"
-          depends="language-properties"
-          description="Copies the image-browse images for one language.">
+	  depends="language-properties"
+	  description="Copies the image-browse images for one language.">
 
     <copy todir="${images}/${language}/admin">
       <fileset dir="install/htdocs/${srclanguage}/imagebrowse"/>
@@ -474,7 +480,7 @@
 
   <!-- Copies and filters the texttemplates. -->
   <target name="texttemplates"
-          depends="init"
+	  depends="init"
 	  description="Copies and filters the texttemplates">
 
     <mkdir dir="${demotemplates}"/>
@@ -488,7 +494,7 @@
 
   <!-- Copies and filters the admintemplates. -->
   <target name="admintemplates"
-          depends="init"
+	  depends="init"
 	  description="Copies and filters the admintemplates.">
 
     <antcall target="admintemplates-lang">
@@ -506,8 +512,8 @@
 
   <!-- Copies and filters the admintemplates for one language. -->
   <target name="admintemplates-lang"
-          depends="language-properties,global-filters"
-          description="Copies and filters the admintemplates for one language">
+	  depends="language-properties,global-filters"
+	  description="Copies and filters the admintemplates for one language">
 
     <mkdir dir="${admintemplates}"/>
 
@@ -609,7 +615,7 @@
 
   <!-- The conference-templates. -->
   <target name="conference-templates-lang"
-          depends="language-properties,global-filters"
+	  depends="language-properties,global-filters"
 	  description="Copies the conference-templates for one language.">
 
     <copy todir="${conference-templates}" filtering="true">
