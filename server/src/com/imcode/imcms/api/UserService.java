@@ -32,9 +32,6 @@ public class UserService {
     }
 
     public User getUser( String userLoginName ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-        // todo: If useradmin has permission to edit this user, let him
-
         UserDomainObject internalUser = getMapper().getUser( userLoginName );
         User result = new User( internalUser, contentManagementSystem );
         return result;
