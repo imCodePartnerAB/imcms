@@ -66,7 +66,7 @@
                         </font></div>
                     </td>
                     <td> 
-                      <input type="checkbox" name="doc_type" value="2">
+                      <input type="checkbox" name="doc_type" value="2" checked>
                     </td>
                   </tr>
                   <tr> 
@@ -102,7 +102,7 @@
                         </font></div>
                     </td>
                     <td> 
-                      <input type="checkbox" name="doc_type" value="8">
+                      <input type="checkbox" name="doc_type" value="8" checked>
                     </td>
                   </tr>
                   <tr> 
@@ -111,7 +111,7 @@
                         dokument: </font></div>
                     </td>
                     <td> 
-                      <input type="checkbox" name="doc_type" value="101">
+                      <input type="checkbox" name="doc_type" value="101" checked>
                     </td>
                   </tr>
                   <tr> 
@@ -120,7 +120,7 @@
                         dokument: </font></div>
                     </td>
                     <td> 
-                      <input type="checkbox" name="doc_type" value="102">
+                      <input type="checkbox" name="doc_type" value="102" checked>
                     </td>
                   </tr>
                 </table>
@@ -206,13 +206,13 @@
               </td>
               <td width="25%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
                 <select name="sortBy">
+                  <option value="meta_id" selected>Meta ID</option>
+                  <option value="meta_headline">Rubrik</option>
                   <option value="doc_type">Dokument typ</option>
-                  <option value="change_date">&Auml;ndrat datum</option>
-                  <option value="create_date">Skapat datum</option>
-                  <option value="archive_date">Arkiverat datum</option>
-                  <option value="activate_date">Aktiverat datum</option>
-                  <option value="alphabetically">Bokstavsorning</option>
-                  <option value="meta_id">Meta ID</option>
+                  <option value="date_changed">&Auml;ndrat datum</option>
+                  <option value="date_created">Skapat datum</option>
+                  <option value="date_archived">Arkiverat datum</option>
+                  <option value="date_activated">Aktiverat datum</option>
                 </select>
                 </font></td>
               <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font></td>
@@ -222,11 +222,11 @@
                 <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Tr&auml;ffar 
                   per sida: </font></div>
               </td>
-              <td width="25%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+              <td width="25%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
                 <select name="HitsPerPage">
                   <option value="10">10</option>
                   <option value="25">25</option>
-                  <option value="50">50</option>
+                  <option value="50" selected>50</option>
                   <option value="100">100</option>
                 </select>
                 </font></td>
