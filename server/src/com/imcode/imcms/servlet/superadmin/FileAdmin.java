@@ -10,6 +10,7 @@ import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -60,7 +61,7 @@ public class FileAdmin extends HttpServlet {
     /**
      * Check to see if the path is a child to one of the rootpaths
      */
-    private boolean isUnderRoot( File path, File[] roots ) throws IOException {
+    private boolean isUnderRoot( File path, File[] roots ) {
         for ( int i = 0; i < roots.length; i++ ) {
             if ( FileUtility.directoryIsAncestorOfOrEqualTo( roots[i], path ) ) {
                 return true;
@@ -180,7 +181,7 @@ public class FileAdmin extends HttpServlet {
         }
     }
 
-    private File[] getRoots() throws IOException {
+    private File[] getRoots() {
         String rootpaths = Imcms.getServices().getConfig().getFileAdminRootPaths();
         List rootList = new ArrayList();
         if ( rootpaths != null ) {
@@ -222,19 +223,14 @@ public class FileAdmin extends HttpServlet {
             } else {
                 File[] destFiles = makeAbsoluteFileList( destDir, relativeSourceFileTree );
                 for ( int i = 0; i < sourceFileTree.length; i++ ) {
-                    destFiles[i].getParentFile().mkdirs();
-                    if ( sourceFileTree[i].isFile() ) {
-                        FileInputStream fin = new FileInputStream( sourceFileTree[i] );
-                        FileOutputStream fout = new FileOutputStream( destFiles[i] );
-                        byte[] buffer = new byte[BUFFER_SIZE];
-                        for ( int bytes_read; ( bytes_read = fin.read( buffer ) ) != -1; ) {
-                            fout.write( buffer, 0, bytes_read );
-                        }
-                        fout.close();
-                        fin.close();
+                    File destFile = destFiles[i];
+                    destFile.getParentFile().mkdirs();
+                    File sourceFile = sourceFileTree[i];
+                    if ( sourceFile.isFile() ) {
+                        FileUtils.copyFile( sourceFile, destFile );
                     }
-                    if ( sourceFileTree[i].length() == destFiles[i].length() ) {
-                        sourceFileTree[i].delete();
+                    if ( sourceFile.length() == destFile.length() ) {
+                        FileUtils.forceDelete(sourceFile);
                     }
                 }
             }
@@ -266,16 +262,13 @@ public class FileAdmin extends HttpServlet {
             } else {
                 File[] destFileTree = makeAbsoluteFileList( destDir, relativeSourceFileTree );
                 for ( int i = 0; i < sourceFileTree.length; i++ ) {
-                    if ( sourceFileTree[i].isDirectory() ) {
-                        destFileTree[i].mkdir();
+                    File sourceFile = sourceFileTree[i];
+                    File destFile = destFileTree[i];
+                    if ( sourceFile.isDirectory() ) {
+                        destFile.mkdir();
                         continue;
                     }
-                    FileInputStream fin = new FileInputStream( sourceFileTree[i] );
-                    FileOutputStream fout = new FileOutputStream( destFileTree[i] );
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    for ( int bytes_read; ( bytes_read = fin.read( buffer ) ) != -1; ) {
-                        fout.write( buffer, 0, bytes_read );
-                    }
+                    FileUtils.copyFile( sourceFile, destFile );
                 }
             }
         }
@@ -388,7 +381,6 @@ public class FileAdmin extends HttpServlet {
             bytes_read += in.read( buffer, bytes_read, length - bytes_read );
         }
         String contentType = req.getContentType();
-        // Min klass tar emot datan och plockar ut det som är intressant...
         MultipartFormdataParser mp = new MultipartFormdataParser( buffer, contentType );
         return mp;
     }
@@ -508,7 +500,6 @@ public class FileAdmin extends HttpServlet {
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminDeleteWarning.html", user, vec ) );
-        return;
     }
 
     private void outputBlankFilenameError( File dir1, File dir2, HttpServletResponse res, UserDomainObject user,
@@ -521,12 +512,9 @@ public class FileAdmin extends HttpServlet {
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminNameBlank.html", user, vec ) );
-        return;
     }
 
     private void moveOk( MultipartFormdataParser mp, File[] roots ) throws IOException {
-        byte[] buffer;
-        int bytes_read;
         String src = mp.getParameter( "source" );
         String dst = mp.getParameter( "dest" );
         String files = mp.getParameter( "files" );
@@ -541,17 +529,10 @@ public class FileAdmin extends HttpServlet {
                     File dest = new File( dstdir, foo );
                     dest.getParentFile().mkdirs();
                     if ( source.isFile() ) {
-                        FileInputStream fin = new FileInputStream( source );
-                        FileOutputStream fout = new FileOutputStream( dest );
-                        buffer = new byte[BUFFER_SIZE];
-                        while ( ( bytes_read = fin.read( buffer ) ) != -1 ) {
-                            fout.write( buffer, 0, bytes_read );
-                        }
-                        fout.close();
-                        fin.close();
+                        FileUtils.copyFile( source, dest );
                     }
                     if ( source.length() == dest.length() ) {
-                        source.delete();
+                        FileUtils.forceDelete( source );
                     }
                 }
             }
@@ -559,8 +540,6 @@ public class FileAdmin extends HttpServlet {
     }
 
     private void copyOk( MultipartFormdataParser mp, File[] roots ) throws IOException {
-        byte[] buffer;
-        int bytes_read;
         String src = mp.getParameter( "source" );
         String dst = mp.getParameter( "dest" );
         String files = mp.getParameter( "files" );
@@ -577,12 +556,7 @@ public class FileAdmin extends HttpServlet {
                         dest.mkdir();
                         continue;
                     }
-                    FileInputStream fin = new FileInputStream( source );
-                    FileOutputStream fout = new FileOutputStream( dest );
-                    buffer = new byte[BUFFER_SIZE];
-                    while ( ( bytes_read = fin.read( buffer ) ) != -1 ) {
-                        fout.write( buffer, 0, bytes_read );
-                    }
+                    FileUtils.copyFile( source, dest );
                 }
             }
         }
@@ -595,13 +569,13 @@ public class FileAdmin extends HttpServlet {
             while ( st.hasMoreTokens() ) {
                 File foo = new File( path, st.nextToken() );
                 if ( foo.exists() && isUnderRoot( foo.getParentFile(), roots ) ) {
-                    foo.delete();
+                    FileUtils.forceDelete(foo);
                 }
             }
         }
     }
 
-    private File changeDir( String[] files, File dir, File[] roots ) throws IOException {
+    private File changeDir( String[] files, File dir, File[] roots ) {
         File resultDir = dir;
         if ( files != null && files.length == 1 ) {	//Has the user chosen just one dir?
             File newDir = new File( files[0] );
