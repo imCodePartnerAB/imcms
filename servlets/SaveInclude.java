@@ -49,6 +49,11 @@ public class SaveInclude extends HttpServlet {
 	    if (included_meta_id != null && include_id != null) {
 		IMCServiceRMI.sqlUpdateProcedure(imcserver,"SetInclude "+meta_id_str+","+include_id+","+included_meta_id) ; 
 	    }
+	    byte[] tempbytes = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
+	    if ( tempbytes != null ) {
+		out.write(tempbytes) ;
+	    }
+	    return ;
 	}
     }
 

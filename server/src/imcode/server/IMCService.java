@@ -322,6 +322,10 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 									       || (user_perm_set & PERM_DT_TEXT_EDIT_INCLUDES) != 0 ) ;
 	    }
 
+	    dbc.setProcedure("GetIncludes",String.valueOf(meta_id)) ;
+	    Vector included_docs = (Vector)dbc.executeProcedure() ;
+	    dbc.clearResultSet() ;
+
 	    dbc.setProcedure("GetTextDocData",String.valueOf(meta_id)) ;
 	    Vector text_docs = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
@@ -953,7 +957,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 	    MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution(menus,menumode,tags) ;
 	    HashTagSubstitution hashtagsubstitution = new HashTagSubstitution(tags,numberedtags) ;
-	    ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution(user) ;
+	    ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution(user,meta_id,included_docs,includemode) ;
 
 	    LinkedList parse = new LinkedList() ;
 	    perl5util.split(parse,"/<!-(-\\/?)IMSCRIPT-->/i",template) ;
@@ -1273,9 +1277,24 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 	User user ;
 	int implicitInclude = 1 ;
+	int meta_id ;
+	boolean includemode ;
 
-	ImcmsTagSubstitution (User user) {
+	HashMap included_docs = new HashMap() ;
+
+	/**
+	   @param user           The user
+	   @param meta_id        The document-id
+	   @param included_list  A list of (include-id, included-meta-id, ...)
+	   @param includemode    Whether to include the admin-template instead of the included document.
+	**/
+	ImcmsTagSubstitution (User user, int meta_id, List included_list, boolean includemode) {
 	    this.user = user ;
+	    this.meta_id = meta_id ;
+	    this.includemode = includemode ;
+	    for (Iterator i = included_list.iterator(); i.hasNext() ;) {
+		included_docs.put(i.next(), i.next()) ;
+	    }
 	}
 
 	public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
@@ -1299,8 +1318,8 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 		    return ;
 		} else if ("document".equals(imcmstagattributename)) {
 		    try {
-			int meta_id = Integer.parseInt(imcmstagattributevalue) ;
-			String document = new String(parsePage(meta_id,user,-1),"8859_1") ;
+			int included_meta_id = Integer.parseInt(imcmstagattributevalue) ;
+			String document = new String(parsePage(included_meta_id,user,-1),"8859_1") ;
 			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
 			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
 			sb.append(document) ;
@@ -1320,14 +1339,25 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 		no = implicitInclude++ ;
 	    }
 	    try {
-		sb.append(imcode.util.Parser.parseDoc(getCachedFileString(new File(m_TemplateHome, user.getLangPrefix()+"/admin/change_include.html")),new String[]
-						 {
-						     "#servlet_url#", m_ServletUrl,
-						     "#include_id#",  String.valueOf(no),
-						     "#include_meta_id#",""
-						 }
-						 )) ;
-	    } catch (IOException ignored) {}
+		if (includemode) {
+		    sb.append(imcode.util.Parser.parseDoc(getCachedFileString(new File(m_TemplateHome, user.getLangPrefix()+"/admin/change_include.html")),new String[]
+			{
+			    "#meta_id#",     String.valueOf(meta_id),
+			    "#servlet_url#", m_ServletUrl,
+			    "#include_id#",  String.valueOf(no),
+			    "#include_meta_id#",""
+			}
+							  )) ;
+		} else {
+		    int included_meta_id = Integer.parseInt((String)included_docs.get(String.valueOf(no))) ;
+		    String document = new String(parsePage(included_meta_id,user,-1),"8859_1") ;
+		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+		    sb.append(document) ;
+		}
+	    }
+	    catch (NumberFormatException ignored) {}
+	    catch (IOException ignored) {}
 	}
     }
 
