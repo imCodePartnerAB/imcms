@@ -29,7 +29,7 @@ AS
 	admin_mode,     -- Unused?
 	last_page,      -- Unused?
 	archive_mode,   -- Unused?
-	lang_id,
+	users.lang_id,
 	user_type,      -- Unused?
 	active,
 	create_date,    -- Unused?
