@@ -1,5 +1,13 @@
 Version 1.12.0
 
+    Of importance to administrators:
+
+    * We're now using jTDS instead of Microsofts JDBC driver. The Microsoft driver still works,
+      but it is strongly recommended that you use jTDS instead. To do this,
+      change the values "JdbcDriver" and "JdbcUrl" in "server.properties" to "net.sourceforge.jtds.jdbc.Driver" and
+      "jdbc:jtds:sqlserver://{host}:{port}/;AppName=imCMS;DatabaseName={databasename}" respectively,
+      substituting correct values for "{host}", "{port}", and "{databasename}". (Bug 1850)
+      
     Of interest to API-using developers:
 
     * Added classes:
