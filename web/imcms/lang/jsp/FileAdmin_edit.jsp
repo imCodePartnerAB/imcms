@@ -5,10 +5,13 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
-String acceptedExt         = "HTM|HTML|VBS|JS|CSS|TXT|INC" ;
-String acceptedExtReadonly = "HTM|HTML|VBS|JS|CSS|TXT|INC|JSP|ASP" ;
+String acceptedExtPattern         = "/\\.(HTML?|CSS|JS|VBS|TXT|FRAG)+$/i" ;
+String acceptedExtPatternReadonly = "/" +
+	"(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)+$)" +
+	"|(\\.LOG+)" +
+	"/i" ;
 
-String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/" ; // path to buttons (with trailing /)
+String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ; // path to buttons (with trailing /)
 
 /* *******************************************************************
  *           INIT                                                    *
@@ -26,9 +29,11 @@ boolean isReadonly = (request.getParameter("readonly") != null) ? true : false ;
 String theSearchString = (request.getParameter("searchString") != null) ? request.getParameter("searchString") : "" ;
 
 /* Is editable file? */
-Perl5Util re                = new Perl5Util() ;
-if (isReadonly) acceptedExt = acceptedExtReadonly ;
-boolean isEditable          = re.match("/\\.(" + acceptedExt + ")+$/i", file) ;
+Perl5Util re = new Perl5Util() ;
+
+if (isReadonly) acceptedExtPattern = acceptedExtPatternReadonly ;
+
+boolean isEditable = re.match(acceptedExtPattern, file) ;
 
 /* reset file ? */
 
@@ -138,9 +143,10 @@ if (isEditable && !doSave) {
 
 
 } else if (!isEditable) {
-
+	
+	out.print("The file is not editable!") ;
 	return ;
-
+	
 }
 
 /*
