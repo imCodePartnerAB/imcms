@@ -1,3 +1,101 @@
+Version 1.11.0:
+
+    Of interest to users:
+
+    * Made it possible to upload several files in one filedocument. (Bug 2452)
+    * Fixed a race condition that could cause menus to be cleared when editing a text-document. (Bug 2569)
+    * File-extension "xls" on uploaded files is now recognized as a Microsoft Excel Spreadsheet. (Bug 2534)
+    * Fixed a problem with viewing uploaded PDF files with Adobe Acrobat 6.0.1. (Bug 2511)
+    * Fixed exception when trying to create an HTML-document. (Bug 2543)
+    * Changes some swedish names for different document types. (Bug 1496)
+    * Some form elements looked strange in "page info" in Internet Explorer 5.2 on Macintosh. (Bug 2391)
+
+    Of interest to API-using developers:
+
+    * Category now implements Comparable. Compares by name, ignoring case.
+    * UserService.getUser(String) no longer requires superadmin permissions. (Bug 2527)
+    * Added classes:
+        - MailService - provides methods for sending e-mail. (Bug 2551)
+        - Mail - represents a mail to be sent with MailService.
+          Uses javax.activation.DataSource for attachments. (Bug 2551)
+        - MailException - thrown by MailService. (Bug 2551)
+        - FileDocument - represents a filedocument (Bug 2490)
+        - FileDocument.FileDocumentFile - represents a single file in a filedocument.
+          Implements javax.activation.DataSource. (Bug 2490)
+    * Added methods:
+        - ContentManagementSystem.getMailService() - (Bug 2551)
+        - DocumentService.createNewFileDocument() - (Bug 2490)
+        - DocumentService.getXmlDomForDocument() - returns an org.w3c.dom.Document representing a document.
+          Currently only works with text-documents. (Bug 2551)
+        - Image.getSrc(String contextPath) - returns image-src with contextPath prepended. (Bug 2491)
+        - Image.getSrcRelativeToContextPath() - returns image-src without contextPath prepended. (Bug 2491)
+        - Image.getSize() - returns the size of the image in bytes. (Bug 2491)
+    * Removed fields:
+        - Document.Comparator.ACTIVATED_DATETIME - use Document.Comparator.PUBLICATION_START_DATETIME
+    * Removed methods
+        - Document.setModifiedDateTime(Date) - use Document.setModifiedDatetime(Date)
+        - Document.getModifiedDateTime() - use Document.getModifiedDatetime()
+        - Document.getCreatedDateTime() - use Document.getCreatedDatetime()
+        - Image.getSrc() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() (Bug 2491)
+        - Image.getSrcUrl() - use Image.getSrc(String contextPath) or Image.getSrcRelativeToContextPath() (Bug 2491)
+        - TextDocument.getMenuSortOrder() - use Menu.getSortOrder() (Bug 2560)
+        - TextDocument.setMenuSortOrder(int) - use Menu.setSortOrder() (Bug 2560)
+
+    Of interest to administrators:
+
+    * The "SelectMethod" in the database-url MUST be set to "SelectMethod=cursor". (Bug 2569)
+    * Disallow editing of user "user". (Bug 2479)
+    * Fixed a bug that made it impossible to create a category. (Bug 2514)
+    * Fixed a bug that prevented changing a category-type from multi-choice to single-choice. (Bug 2515)
+
+    Of interest to developers:
+
+    * The document-deletion procedure is now run in an transaction. (Bug 2495)
+    * It's now possible to send attachments with mails.
+      This uses the Java Activation Framework (javax.activation) and JavaMail API implementations from the
+      GNU classpathx project. (Bug 2542)
+    * Replaced imCMS own image-parsing routines with java.imageio.ImageIO (Bug 2493)
+    * Started to change the database API to allow for transactions. (Bug 2569)
+
+
+Version 1.10.3:
+
+    Of interest to API-using developers:
+
+    * Added constants for use in search-strings:
+        - TextDocument.TYPE_ID
+        - UrlDocument.TYPE_ID
+    * Added methods:
+        - boolean User.isSuperAdmin()
+        - boolean User.canEdit(Document) (Bug 2521)
+        - String[] User.getRoleNames() (Bug 2521)
+        - DocumentService.createNewTextDocument(Document)
+        - DocumentService.createNewUrlDocument(Document)
+    * Deprecated methods:
+        - DocumentService.createAndSaveNewTextDocument(Document)
+        - DocumentService.createAndSaveNewUrlDocument(Document)
+
+    Of interest to administrators:
+
+    * The ldap implementation should no longer be dependent on Microsoft Active Directory.
+      Rewrote a big part of the ldap-configuration in "server.properties":
+        - "LdapUserName" is replaced by "LdapBindDn",
+        - "LdapUserObjectClass" is set to "inetOrgPerson" by default.
+        - "LdapUserIdentifyingAttribute" is replaced by "LdapUserAttribute.LoginName" which is only
+          required if not using 'uid' in the "inetOrgPerson" objectclass.
+      Ldap-attributes can now be arbitrarily mapped to user-properties.
+      See the comments in "server.properties" for details.
+      (Bug 1981, bug 2516)
+    * Fixed a bug where removing a single phone number from a user had no effect. (Bug 2471)
+    * Use dos-style line-endings in the text-files in the zip file,
+      and unix-style line-endings in the tarball. (Bug 2485)
+
+    Of interest to developers:
+
+    * Instead of empty strings, use "localhost" for default database-host
+      and "imcms" for default database-name. (Bug 2488)
+
+
 Version 1.10.2:
 
     Of interest to API-using developers:
@@ -21,11 +119,6 @@ Version 1.10.2:
     * Fixed a bug with creating external links in the html-editor. (Bug 2418)
     * Fixed a couple of bugs related to creating new conferences and new conference-users. (Bugs 2461, 2466)
     * Made listing many users somewhat quicker. (Bug 2316)
-
-    Known issues:
-
-    * Removing a single phone number from a user has no effect.
-      Removing all phone numbers from a user still works. (Bug 2471)
 
 
 Version 1.10.1:
