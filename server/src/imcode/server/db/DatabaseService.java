@@ -981,4 +981,34 @@ public class DatabaseService {
         } );
         return queryResult.size() != 0;
     }
+
+    /**
+     * This procedure takes a list of document-ids (meta_ids)
+     * and returns a list of which of those are file-docs.
+     *
+     * @param meta_ids
+     * @return meta_id's that is files
+     */
+    public int[] sproc_CheckForFileDocs( int[] meta_ids ) {
+        String sql = "SELECT meta_id FROM meta WHERE doc_type = 8";
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer( rs.getInt("meta_id"));
+            }
+        } );
+
+        ArrayList fileDocIds = new ArrayList();
+        for( int i = 0; i < meta_ids.length; i++ ) {
+            Integer meta_id = new Integer(meta_ids[i]);
+            if( queryResult.contains( meta_id ) ){
+                fileDocIds.add( meta_id );
+            }
+        }
+
+        int[] result = new int[ fileDocIds.size() ];
+        for( int i = 0; i < result.length; i++ ) {
+           result[i] = ((Integer)fileDocIds.get(i)).intValue();
+        }
+        return result;
+    }
 }

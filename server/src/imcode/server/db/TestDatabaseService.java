@@ -27,6 +27,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private final static int ADMIN_ID = 1;
     private final static int USER_ID = 2;
     private final static int TEST_DOC_ID_FIRST = 9001;
+    private final static int TEST_DOC_ID_SECOND = 9002;
+    private final static int TEST_DOC_ID_THIRD_FILE_DOC_TYPE = 9003;
     private final static int TEST_DOC_ID_DETACHED = 9999;
 
 
@@ -321,6 +323,19 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertEquals( 4, mimer.sproc_getDocs(1, 1, 10000).length );
     }
 
+    public void test_sproc_CheckForFileDocs() {
+        test_sproc_CheckForFileDocs( sqlServer );
+        test_sproc_CheckForFileDocs( mySql );
+        test_sproc_CheckForFileDocs( mimer );
+    }
+
+    private void test_sproc_CheckForFileDocs( DatabaseService dbService ) {
+        int[] documentIds = new int[]{ TEST_DOC_ID_FIRST, TEST_DOC_ID_SECOND, TEST_DOC_ID_THIRD_FILE_DOC_TYPE, TEST_DOC_ID_DETACHED };
+        int[] fileDocumentIds = dbService.sproc_CheckForFileDocs( documentIds );
+        assertEquals( 1, fileDocumentIds.length );
+        assertEquals( TEST_DOC_ID_THIRD_FILE_DOC_TYPE,  fileDocumentIds[0] );
+    }
+
     public void test_sproc_getChilds() {
         test_sproc_getChilds( sqlServer );
         test_sproc_getChilds( mySql );
@@ -425,5 +440,4 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         dbService.initTestData();
         return dbService;
     }
-
 }
