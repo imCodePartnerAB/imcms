@@ -51,12 +51,16 @@ public class Utility {
 	}
 	domain = domain.trim() ;
 	StringTokenizer st = new StringTokenizer(Prefs.get("domains","servlet.cfg"),", ") ;
-	while ( st.hasMoreTokens() ) {
-	    if (st.nextToken().equals(domain)) {
-		return Prefs.get(pref, Prefs.get(domain+".properties","servlet.cfg"));
+	try {
+	    while ( st.hasMoreTokens() ) {
+		if (st.nextToken().trim().equals(domain)) {
+		    return Prefs.get(pref, Prefs.get(domain+".properties","servlet.cfg"));
+		}
 	    }
+	} catch (NullPointerException ex) {
+	    throw new IOException ("Domain \""+domain+".properties\" not found in servlet.cfg!") ;
 	}
-	throw new IOException ("Domain \""+domain+"\" not found!") ;
+	throw new IOException ("Domain \""+domain+"\" not found in servlet.cfg!") ;
     }
 
     /**
