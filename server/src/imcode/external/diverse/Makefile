@@ -5,7 +5,6 @@ SOURCE  = \
           FileManager.java \
           Html.java \
           HtmlGenerator.java \
-          JanusPrefs.java \
           MetaInfo.java \
           MetaTranslator.java \
           ParseServlet.java \
