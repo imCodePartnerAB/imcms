@@ -1148,7 +1148,7 @@ public class ConfDisc extends Conference {
 		StringManager strMan = new StringManager(str, " ") ;
 		String tmpStr = "" ;
 		String tmpItem = "" ;
-		String sqlStr = "(\n SELECT usr.user_id \n FROM conf_users usr \n WHERE " ;
+		String sqlStr = "(\n SELECT usr.user_id \n FROM A_conf_users usr \n WHERE " ;
 		//sqlStr += "usr.first_name LIKE 'Rickard%' OR usr.first_name LIKE 'Larsson%' \n" ;
 		// sqlStr += "OR usr.last_name LIKE 'Rickard%' OR usr.last_name LIKE 'Larsson%') \n " ;
 
