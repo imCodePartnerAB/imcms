@@ -8,15 +8,14 @@ import imcode.util.* ;
 import java.text.*;
 
 
-public class AdminRandomTextsFile extends Administrator {
+public class AdminRandomTextsFile extends Administrator implements imcode.server.IMCConstants{
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 	
-	private final static String HTML_TEMPLATE 	= "fortunes/admin_random_texts_file.html" ;
-	private final static String OPTION_LINE 	= "fortunes/option_line.frag" ;
-	private final static String DATE_ERROR 		= "fortunes/date_err_msg.frag" ;
-	private final static String TEXT_ERROR 		= "fortunes/text_err_msg.frag" ;
-
+	private final static String HTML_TEMPLATE 	= "admin_random_texts_file.html" ;
+	private final static String OPTION_LINE 	= "option_line.frag" ;
+	private final static String DATE_ERROR 		= "date_err_msg.frag" ;
+	private final static String TEXT_ERROR 		= "text_err_msg.frag" ;
 
 	/**
 	The GET method creates the html page when this side has been
@@ -93,9 +92,9 @@ public class AdminRandomTextsFile extends Administrator {
 			return;
 		}
 		else{
-			String options = IMCServiceRMI.parseDoc(imcServer, null, OPTION_LINE , user.getLangPrefix());
-			String errMsgDate	= IMCServiceRMI.parseDoc(imcServer, null, DATE_ERROR , user.getLangPrefix());
-			String errMsgTxt	= IMCServiceRMI.parseDoc(imcServer, null, TEXT_ERROR , user.getLangPrefix());
+			String options = IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(),DOCTYPE_FORTUNES+"");
+			String errMsgDate	= IMCServiceRMI.parseExternalDoc(imcServer, null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+			String errMsgTxt	= IMCServiceRMI.parseExternalDoc(imcServer, null, TEXT_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 
 			if ((req.getParameter("add")).equals("add")){
 				//hämta parametrar
@@ -173,7 +172,7 @@ public class AdminRandomTextsFile extends Administrator {
 			values.add("#options#");
 			values.add(buff.toString());
 
-			String parsed = IMCServiceRMI.parseDoc(imcServer, values, HTML_TEMPLATE  , user.getLangPrefix());
+			String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE  , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 			out.print(parsed);
 			return;
 		}
@@ -200,7 +199,7 @@ public class AdminRandomTextsFile extends Administrator {
 
 	private StringBuffer createOptionList(HttpServletRequest req, Map lines, String server, imcode.server.User user ) throws ServletException, IOException {
 		StringBuffer buff = new StringBuffer();
-		buff.append( IMCServiceRMI.parseDoc(server, null, OPTION_LINE , user.getLangPrefix()) );
+		buff.append( IMCServiceRMI.parseExternalDoc(server, null, OPTION_LINE , user.getLangPrefix(), DOCTYPE_FORTUNES+"") );
 		Set keyRows = lines.keySet();
 		Iterator rowIt = keyRows.iterator();
 		while(rowIt.hasNext())

@@ -6,14 +6,14 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 
 
-public class AdminRandomTexts extends Administrator{
+public class AdminRandomTexts extends Administrator implements imcode.server.IMCConstants{
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
-	private final static String HTML_TEMPLATE 		= "fortunes/admin_random_texts.html";
-	private final static String HTML_TEMPLATE_ADMIN = "fortunes/admin_random_texts_file.html";
-	private final static String OPTION_LINE 		= "fortunes/option_line.frag";
-
+	private final static String HTML_TEMPLATE 		= "admin_random_texts.html";
+	private final static String HTML_TEMPLATE_ADMIN = "admin_random_texts_file.html";
+	private final static String OPTION_LINE 		= "option_line.frag";
+	
 	/**
 	The GET method creates the html page when this side has been
 	redirected from somewhere else.
@@ -58,7 +58,7 @@ public class AdminRandomTexts extends Administrator{
 		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
 		File files[] = fortune_path.listFiles();
 
-		String options = IMCServiceRMI.parseDoc(imcServer, null, OPTION_LINE , user.getLangPrefix());
+		String options = IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 
 		for(int i=0;i<files.length;i++)	{
 			//remove suffixes and create optionstring
@@ -77,7 +77,7 @@ public class AdminRandomTexts extends Administrator{
 		values.add("#options#");
 		values.add(options);
 	
-		out.print(IMCServiceRMI.parseDoc(imcServer, values, HTML_TEMPLATE , user.getLangPrefix()));
+		out.print(IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
 
 	} // End doGet
 
@@ -166,7 +166,7 @@ public class AdminRandomTexts extends Administrator{
 		}*/
 
 		if (req.getParameter("edit")!=null)	{
-			String options = IMCServiceRMI.parseDoc(imcServer, null, OPTION_LINE , user.getLangPrefix());
+			String options = IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 
 			//öppna filen med detta namnet
 			String openFile = IMCServiceRMI.getFortune(imcServer,whichFile + ".txt") ;
@@ -202,7 +202,7 @@ public class AdminRandomTexts extends Administrator{
 			values.add("#options#");
 			values.add(options);
 			
-			out.print(IMCServiceRMI.parseDoc(imcServer, values, HTML_TEMPLATE_ADMIN , user.getLangPrefix()));
+			out.print(IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE_ADMIN , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
 
 			session.setAttribute("lines",lines);
 			return;
