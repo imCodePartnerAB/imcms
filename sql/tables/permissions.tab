@@ -1,0 +1,5 @@
+	<table name="permissions" idMethod="null" skipSql="false" abstract="false">
+        <column name="permission_id" primaryKey="true" required="true" type="TINYINT" autoIncrement="false" inheritance="false" />
+        <column default="swe" name="lang_prefix" primaryKey="true" required="true" size="3" type="VARCHAR" autoIncrement="false" inheritance="false" />
+        <column name="description" required="true" size="50" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+    </table>

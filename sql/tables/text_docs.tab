@@ -1,0 +1,17 @@
+	<table name="text_docs" idMethod="null" skipSql="false" abstract="false">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
+        <column name="template_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column default="1" name="group_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column default="(-1)" name="default_template_1" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column default="(-1)" name="default_template_2" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="default_template" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <foreign-key foreignTable="meta" onUpdate="none" onDelete="none">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+        <foreign-key foreignTable="templates" onUpdate="none" onDelete="none">
+            <reference foreign="template_id" local="template_id" />
+        </foreign-key>
+        <foreign-key foreignTable="templates" onUpdate="none" onDelete="none">
+            <reference foreign="template_id" local="default_template" />
+        </foreign-key>
+    </table>

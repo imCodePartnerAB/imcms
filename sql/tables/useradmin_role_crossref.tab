@@ -1,0 +1,10 @@
+	<table name="useradmin_role_crossref" idMethod="null" skipSql="false" abstract="false">
+        <column name="user_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
+        <column name="role_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
+        <foreign-key foreignTable="roles" onUpdate="none" onDelete="none">
+            <reference foreign="role_id" local="role_id" />
+        </foreign-key>
+        <foreign-key foreignTable="users" onUpdate="none" onDelete="none">
+            <reference foreign="user_id" local="user_id" />
+        </foreign-key>
+    </table>

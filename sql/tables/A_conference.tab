@@ -1,0 +1,5 @@
+	<table name="A_conference" idMethod="null" skipSql="false" abstract="false">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
+        <column name="name" size="255" type="VARCHAR" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <column default="B" name="sort_type" size="1" type="CHAR" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+    </table>

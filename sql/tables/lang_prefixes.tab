@@ -1,0 +1,4 @@
+	<table name="lang_prefixes" idMethod="null" skipSql="false" abstract="false">
+        <column name="lang_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
+        <column name="lang_prefix" size="3" type="CHAR" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+    </table>

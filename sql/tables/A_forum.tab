@@ -1,0 +1,7 @@
+	<table name="A_forum" idMethod="null" skipSql="false" abstract="false">
+        <column autoIncrement="true" name="forum_id" primaryKey="true" required="true" type="INTEGER" inheritance="false" />
+        <column default="30" name="archive_time" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="forum_name" size="255" type="VARCHAR" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <column default="A" name="archive_mode" required="true" size="1" type="CHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column default="20" name="discs_to_show" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+    </table>

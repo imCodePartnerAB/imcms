@@ -1,0 +1,5 @@
+	<table name="category_types" idMethod="null" skipSql="false" abstract="false">
+        <column autoIncrement="true" name="category_type_id" primaryKey="true" required="true" type="INTEGER" inheritance="false" />
+        <column name="name" required="true" size="50" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column default="0" name="max_choices" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+    </table>

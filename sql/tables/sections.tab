@@ -1,0 +1,4 @@
+	<table name="sections" idMethod="null" skipSql="false" abstract="false">
+        <column autoIncrement="true" name="section_id" primaryKey="true" required="true" type="INTEGER" inheritance="false" />
+        <column name="section_name" required="true" size="50" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+    </table>

@@ -1,0 +1,14 @@
+	<table name="A_discussion" idMethod="null" skipSql="false" abstract="false">
+        <column autoIncrement="true" name="discussion_id" primaryKey="true" required="true" type="INTEGER" inheritance="false" />
+        <column name="forum_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="reply_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="count_replies" type="INTEGER" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <column name="create_date" type="TIMESTAMP" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <column name="last_mod_date" type="TIMESTAMP" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <foreign-key foreignTable="A_forum" onUpdate="none" onDelete="none">
+            <reference foreign="forum_id" local="forum_id" />
+        </foreign-key>
+        <foreign-key foreignTable="A_replies" onUpdate="none" onDelete="none">
+            <reference foreign="reply_id" local="reply_id" />
+        </foreign-key>
+    </table>

@@ -308,6 +308,25 @@
 
     </target>
 
+    <target name="ddl.xml" depends="init,taskdef-cat">
+
+        <concat destfile="${tmp}/ddl.xml">
+            <header>&lt;database defaultIdMethod="native"&gt;</header>
+            <fileset dir="sql/tables" includes="*.tab"/>
+            <footer>&lt;/database&gt;</footer>
+        </concat>
+
+    </target>
+
+    <target name="ddl.sql" depends="init,ddl.xml">
+        <taskdef name="torque-sql" classname="org.apache.torque.task.TorqueSQLTask" classpathref="libraries"/>
+
+        <mkdir dir="${tmp}"/>
+        <torque-sql xmlfile="${tmp}/ddl.xml" outputfile="ddl.sql" targetdatabase="mssql"
+                    templatepath="sql/torque/" basepathtodbprops="sql/base/" controlTemplate="sql/base/Control.vm"
+                    outputdirectory="${tmp}"/>
+    </target>
+
     <!-- Copies the libraries (jar-files) needed for building. -->
     <target name="libraries" depends="init" description="Copies the jar-files.">
 
@@ -317,14 +336,12 @@
 
     </target>
 
-    <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
+    <target name="sql" depends="init,check-webappname,tools,ddl.sql,taskdef-cat" description="Concatenates the SQL-scripts into one large script.">
 
         <mkdir dir="${tmp}"/>
 
-        <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
-
         <cat destfile="${tmp}/imcms.sql" orderby="path" filtering="true">
-            <fileset file="sql/tables/tables.ascii.sql"/>
+            <fileset file="${tmp}/ddl.sql"/>
             <fileset dir="sql/sprocs" includes="*.prc"/>
 
             <fileset file="sql/conf/conf_sprocs.sql"/>
@@ -339,16 +356,12 @@
         </cat>
 
         <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
-            <fileset dir="sql/sprocs"/>
+            <fileset dir="sql/sprocs" includes="*.prc"/>
         </cat>
 
-        <cat destfile="${drop-sql}" orderby="path" filtering="true">
-            <fileset file="sql/tables/delete_db.sql"/>
-        </cat>
+        <copy file="sql/delete_db.sql" tofile="${drop-sql}" filtering="true"/>
 
-        <cat destfile="${create-sql}" orderby="path" filtering="true">
-            <fileset file="sql/tables/create_db.sql"/>
-        </cat>
+        <copy file="sql/create_db.sql" tofile="${create-sql}" filtering="true"/>
 
         <copy todir="${sql-diff}">
             <fileset dir="sql/diff" includes="diff-*.sql"/>
@@ -671,6 +684,10 @@
 
         <fail message="Set 'webappname' in '${build.properties}'!"/>
 
+    </target>
+
+    <target name="taskdef-cat">
+        <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
     </target>
 
 </project>

@@ -1,0 +1,13 @@
+	<table name="B_bill" idMethod="null" skipSql="false" abstract="false">
+        <column autoIncrement="true" name="bill_id" primaryKey="true" required="true" type="INTEGER" inheritance="false" />
+        <column name="section_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="create_date" required="true" type="TIMESTAMP" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="ip_adress" required="true" size="15" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="headline" required="true" size="255" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="text" required="true" type="CLOB" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="email" required="true" size="155" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="user_id" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <foreign-key foreignTable="B_section" onUpdate="none" onDelete="none">
+            <reference foreign="section_id" local="section_id" />
+        </foreign-key>
+    </table>

@@ -1,0 +1,20 @@
+	<table name="images" idMethod="null" skipSql="false" abstract="false">
+        <column name="meta_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
+        <column name="width" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="height" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="border" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="v_space" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="h_space" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="name" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
+        <column name="image_name" required="true" size="40" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="target" required="true" size="15" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="align" required="true" size="15" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="alt_text" required="true" size="255" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="low_scr" required="true" size="255" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="imgurl" required="true" size="255" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="linkurl" required="true" size="255" type="VARCHAR" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <column name="type" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+        <foreign-key foreignTable="meta" onUpdate="none" onDelete="none">
+            <reference foreign="meta_id" local="meta_id" />
+        </foreign-key>
+    </table>

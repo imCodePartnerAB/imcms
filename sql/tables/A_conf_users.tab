@@ -1,0 +1,7 @@
+	<table name="A_conf_users" idMethod="null" skipSql="false" abstract="false">
+        <column name="user_id" primaryKey="true" required="true" type="INTEGER" autoIncrement="false" inheritance="false" />
+        <column name="first_name" size="50" type="VARCHAR" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <column name="last_name" size="50" type="VARCHAR" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <column name="last_login_date_OLD" type="TIMESTAMP" primaryKey="false" required="false" autoIncrement="false" inheritance="false" />
+        <column default="1" name="replies_order_OLD" required="true" type="INTEGER" primaryKey="false" autoIncrement="false" inheritance="false" />
+    </table>
