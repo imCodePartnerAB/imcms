@@ -1,40 +1,29 @@
-import imcode.server.* ;
 import java.io.* ;
-import java.awt.* ;
-import java.util.* ;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
-import imcode.util.* ;
 
 public class BillBoardError extends BillBoard
 {//ConfError
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	private static final String ERROR_FILE = "BillBoard_Error.htm";
+    private static final String ERROR_FILE = "BillBoard_Error.htm";
 	private static final String ERROR_FILE_2 = "BillBoard_User_Error.htm";
-	
-	String myErrorHeader ;
-	String myErrorMessage ;
+
+    private String myErrorMessage ;
 
 
 	/**
 	Constructor which is used to read the error strings in the translation file. This
 	one should not be used to generate errormessages
 	*/
-	public BillBoardError() throws ServletException, IOException
-	{
-		myErrorHeader  = "" ;
-		myErrorMessage = "" ;
+	public BillBoardError() {
+        myErrorMessage = "" ;
 	}
 
-	public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)
-	throws ServletException, IOException
+	public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode) throws IOException
 	{
 
-		myErrorHeader = header ;
-		VariableManager vm = new VariableManager() ;
+        VariableManager vm = new VariableManager() ;
 
 		// Lets get the errormessage from the error file
 		String myErrorMessage = this.getErrorMessage(req, errorCode) ;
@@ -49,8 +38,7 @@ public class BillBoardError extends BillBoard
 		return ;
 
 	}
-	public BillBoardError(HttpServletRequest req, HttpServletResponse res, int errorCode)
-	throws ServletException, IOException
+	public BillBoardError(HttpServletRequest req, HttpServletResponse res, int errorCode) throws IOException
 	{
 
 		
@@ -69,8 +57,7 @@ public class BillBoardError extends BillBoard
 
 	}
 
-	public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, String msg, int errorCode)
-	throws ServletException, IOException
+	public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, String msg, int errorCode) throws IOException
 	{
 
 		VariableManager vm = new VariableManager() ;
@@ -93,8 +80,7 @@ public class BillBoardError extends BillBoard
 	/**
 	ConfError, takes a message instead of an int
 	*/
-	public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, String msg)
-	throws ServletException, IOException
+	public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, String msg) throws IOException
 	{
 
 		VariableManager vm = new VariableManager() ;
@@ -110,29 +96,7 @@ public class BillBoardError extends BillBoard
 
 	}
 
-
-
-	/**
-	Returns the error header och message for this object
-	*/
-
-	public String getErrorString()
-	{
-		return myErrorHeader + " " + myErrorMessage ;
-	}
-
-
-
-	/**
-	Returns the errormessageheader for this object
-	*/
-
-	public String getErrorHeader()
-	{
-		return myErrorHeader ;
-	}
-
-	/**
+    /**
 	Returns the errormessage for this object
 	*/
 
@@ -178,12 +142,10 @@ public class BillBoardError extends BillBoard
 	/*
 	For special messages, if we want to pass a special htmlfile
 	*/
-	public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode, String fileName)
-	throws ServletException, IOException
+	public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode, String fileName) throws IOException
 	{
 
-		myErrorHeader = header ;
-		VariableManager vm = new VariableManager() ;
+        VariableManager vm = new VariableManager() ;
 
 		// Lets get the errormessage from the error file
 		myErrorMessage = this.getErrorMessage(req, errorCode) ;
@@ -198,13 +160,9 @@ public class BillBoardError extends BillBoard
 
 	}
 
-	protected void sendErrorHtml( HttpServletRequest req, HttpServletResponse res,
-		VariableManager vm, String htmlFile ) throws ServletException, IOException
+	private void sendErrorHtml( HttpServletRequest req, HttpServletResponse res,
+		VariableManager vm, String htmlFile ) throws IOException
 	{
-
-		String host = req.getHeader("Host") ;
-		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid
 		File templateLib = this.getExternalTemplateFolder( req ) ;

@@ -1,18 +1,19 @@
 These are the development guidelines to be followed for imCMS.
-This will soon be rewritten in DocBook.
 
+See also, http://hate/cgi-bin/kiki.pl?imcms
+and http://hate/
 
 Ant:
 
     Learn how Ant works, and how to use it.
 
     Use 'ant -projecthelp' to find out the possible ant-targets.
-    
+
 
 Bugzilla:
 
     Learn how Bugzilla works, and how to use it.
-    
+
     As soon as you do something,
     make DAMNED sure there is a bug for it,
     and do try to assign it to you.
@@ -20,7 +21,7 @@ Bugzilla:
     If someone mails you important information,
     put it in the bugzilla.
     Don't let any information be lost.
-    
+
     Use Bugzilla as a discussion forum.
     Write down what you do.
 
@@ -47,10 +48,10 @@ CVS:
     'diff', 'status', and 'log'-commands.
 
     If something isn't in the CVS, it doesn't exist.
-    
+
     This means that any work you do that you don't put
     in the CVS is wasted.
-    
+
     Therefore, make sure that everything you work on
     is in the CVS!
 
@@ -63,12 +64,12 @@ Database-changes:
     Do not forget to put in the correct date.
     This script (the 'diff'-script) is used
     to upgrade old databases.
-    
+
     After changing tables, script out all tables
     to one file in "Ansi"-format (Ascii),
     and replace 'imCMS/1.3/sql/tables/tables.ascii.sql'
     with it.
-    
+
     After changing sprocs, script them out to files (one each)
     in "Ansi"-format", change the filenames to adhere
     to the naming standard and replace
@@ -80,7 +81,7 @@ Documentation (API):
     Every public and protected method of
     every java class or interface must be documented
     with javadoc-tags.
-    
+
     Every SProc must be documented with information
     on what it does, what parameters it takes,
     and what it returns.
@@ -93,22 +94,22 @@ Documentation (API):
 
     The title should both be in the title in the html-header,
     and in the header at the top of the html dialog.
-    
+
     Make sure your dialog/page looks like other system dialogs.
-    
+
     Right now this means a table with no borders,
     a blue header row, a gray spacing row, the contents of
     the dialog with 5% spacing cells at the sides,
     buttons at the bottom, followed by a spacing row.
-    
+
     The bottom buttons can be either of a set of three choices:
-    
+
     1 One 'Back'-button, for dialogs that only display
     information, with no possibility of changing anything.
 
     2 One 'Save'-button, for dialogs that enables you to save,
     without leaving the page, and possibly one 'Back'-button for leaving the page.
-    
+
     3 One 'OK'-button, and one 'Cancel' button. Both leave the page, but only
     the 'OK'-button saves.
 
@@ -122,7 +123,7 @@ Documentation (API):
     |  OK Cancel   | - Buttons
     |              | - Spacing row
     +--------------+
-    
+
 
 HTTP
 
@@ -139,21 +140,21 @@ Javascript and DHTML:
     An example of an acceptable javascript is one that
     sets the focus to a certain form element.
     It's a convenience for the user, and works without it.
-    
+
 
 Language-dependent Content:
 
     Never hard-code anything that is dependent on
     language/locale/time/currency/characters/word direction/platform.
-    
+
     Always check what
     language/locale/time/currency/character set/word direction/platform
     the user/imCMS wants or uses.
-    
+
     If you have to hard-code something,
     (like when supplying a default).
     Make sure to use a known common and safe standard.
-    
+
     Safe standards:
     For languages, this means the default-language set in imCMS.
     For locales, this probably depends on the default-language.
@@ -167,7 +168,7 @@ Logging:
 
     Also make sure not to leave any unnecessary
     logging statements in.
-    
+
 
 Names/Paths
 
@@ -193,7 +194,7 @@ Names/Paths
     I.e. the SProce 'SearchStoredProcedure' is stored in file
     'searchstoredprocedure.prc', and probably has
     something to do with the search engine.
-    
+
     Table-names are all lowercase, underscores allowed.
     When we make it possible to store the tables in separate
     files, we'll use the extension '.tab'.
@@ -201,11 +202,11 @@ Names/Paths
     Never hard-code a path if possible.
     Single known filenames are probably OK,
     but should be kept in String constants (final static String).
-    
+
     Use java.io.File to represent paths wherever possible,
     not java.lang.String.
     To combine two paths, use 'new File(file, path)'
-    
+
     Make sure all paths will work on any computer and platform.
     This means that all paths and files are case sensitive.
     Therefore, keep everything lowercase, and make sure they
@@ -221,25 +222,25 @@ Servlets and JSP:
     and format the results of queries and updates,
     by delegating the formatting
     to parser classes.
-    
+
     All the 'real' work is done by non-servlet classes.
-    
+
 
 SQL:
 
     Embedded SQL-code is the devils work,
     and must be avoided.
-    
+
     Seriously though, any time you find
     SQL-code anywhere but in a Stored Procedure,
-    that SQL-code should be replaced with a call 
+    that SQL-code should be replaced with a call
     to a Stored Procedure or a View.
 
 Standards to follow:
 
     For language-abbreviations, we use ISO-639.
     For country-abbreviations, we use country TLDs.
-    
+
     For content, we support browsers Netscape 4 and upwards,
     and Internet Explorer 4 and upwards,
 
@@ -250,7 +251,7 @@ Standards to follow:
 URIs/URLs:
 
     Learn the differences between URIs, URLs and URNs, and how they work.
-    
+
     All URLs or URNs are URIs, but not all URIs are URLs or URNs.
     Some URLs are also URNs, and vice versa.
 

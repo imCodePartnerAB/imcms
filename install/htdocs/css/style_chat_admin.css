@@ -1,0 +1,13 @@
+/* *******************************************************************************************
+ *         FOR THE CHAT-ADMIN                                                                *
+ ******************************************************************************************* */
+
+TH { font: bold x-small Verdana,Geneva,sans-serif; color:#ffffff; }
+TD, INPUT, SELECT { font: x-small Verdana,Geneva,sans-serif; color:#000000; }
+.chatError { x-small Verdana,Geneva,sans-serif; color:#cc0000; }
+
+
+B { font-weight: bold; }
+
+
+

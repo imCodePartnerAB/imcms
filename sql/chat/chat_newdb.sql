@@ -17,8 +17,7 @@ set IDENTITY_INSERT C_msg_type off
 
 insert into C_authorization_types(authorization_type,authorization_id)
 values('oregistrerad',1)
+
 insert into C_authorization_types(authorization_type,authorization_id)
-values('självregistrerad',2)
-insert into C_authorization_types(authorization_type,authorization_id)
-values('imCMSregistrerad',3)
+values('imCMS-registrerad',2)
 

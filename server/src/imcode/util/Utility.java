@@ -9,10 +9,8 @@ import java.util.* ;
 import org.apache.log4j.Category;
 
 public class Utility {
-    private final static String CVS_REV="$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
-    static protected Hashtable mimetypes ;
+    private static Hashtable mimetypes ;
 
     private static Category log = Category.getInstance( "server" ) ;
 
@@ -117,33 +115,6 @@ public class Utility {
     }
 
     /**
-       Does a local redirect.
-       @deprecated Is only guaranteed to work with http-requests on port 80, use {@link #redirect} instead.
-    */
-    public static void redirectTo ( HttpServletRequest req, HttpServletResponse res, String url ) throws IOException {
-	String scheme = req.getScheme() ;
-	String serverName = req.getServerName() ;
-	int p = req.getServerPort() ;
-	String port = ( p == 80 || p == 443 ) ? "" : ":" + p ;
-	res.sendRedirect( scheme + "://" + serverName + port + url ) ;
-    }
-
-    /**
-       Returns an url to the servlet virtual directory.
-       @deprecated Is only guaranteed to work with http-requests on port 80, use {@link javax.servlet.http.HttpUtils#getRequestURL} instead.
-    */
-    public static String servletPath ( HttpServletRequest req ) {
-	String scheme = req.getScheme() ;
-	String serverName = req.getServerName() ;
-	int p = req.getServerPort() ;
-	String port = ( p == 80 || p == 443 ) ? "" : ":" + p ;
-	String servletPath = req.getServletPath () ;
-	servletPath =  servletPath.substring(0,servletPath.lastIndexOf("/") + 1) ;
-	return scheme + "://" + serverName + port + servletPath ;
-    }
-
-
-    /**
      * Transforms a long containing an ip into a String.
      */
     public static String ipLongToString (long ip) {
@@ -164,20 +135,21 @@ public class Utility {
     }
 
     /**
-       Get the mime-type of a file-extension.
-       @param ext The extension, without a preceding dot.
-       @deprecated Use ServletContext.getMimeType(String file) instead.
-    */
-    public static String getMimeTypeFromExtension(String ext) {
-	return (String)mimetypes.get(ext) ;
-    }
-
-
-    /**
        Make a HttpServletResponse non-cacheable
     **/
     public static void setNoCache(HttpServletResponse res) {
 	res.setHeader("Cache-Control","no-cache; must-revalidate;") ;
 	res.setHeader("Pragma","no-cache;") ;
+    }
+
+    public static String joinArray(String[] array, String separator) {
+        StringBuffer result = new StringBuffer();
+        for (int i = 0; i < array.length; i++) {
+            if (0 != i) {
+                result.append(separator) ;
+            }
+            result.append(array[i]);
+        }
+        return result.toString();
     }
 }

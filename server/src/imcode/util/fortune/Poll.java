@@ -9,8 +9,6 @@ import imcode.util.* ;
    with possible answers, each with an answercount.
 **/
 public class Poll {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private DateRange dateRange ;
 
@@ -29,17 +27,6 @@ public class Poll {
 	    answers.put(answer,new Integer(1)) ;
 	} else {
 	    answers.put(answer, new Integer(answerCount.intValue() + 1)) ;
-	}
-    }
-
-    public void removeAnswer(String answer) {
-	Integer answerCount = (Integer)answers.get(answer) ;
-	if (answerCount != null) {
-	    if (answerCount.intValue() > 1) {
-		answers.put(answer, new Integer(answerCount.intValue() - 1)) ;
-	    } else {
-		answers.remove(answer) ;
-	    }
 	}
     }
 
@@ -65,10 +52,6 @@ public class Poll {
 	return dateRange ;
     }
 
-    public void setDateRange(DateRange dateRange) {
-	this.dateRange = dateRange ;
-    }
-
     public String getQuestion() {
 	return question ;
     }
@@ -77,7 +60,4 @@ public class Poll {
 	return answers.keySet().iterator() ;
     }
 
-    public void setQuestion(String question) {
-	this.question = question ;
-    }
 }

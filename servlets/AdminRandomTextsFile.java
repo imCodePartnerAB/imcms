@@ -10,11 +10,8 @@ import imcode.util.fortune.*;
 
 
 public class AdminRandomTextsFile extends Administrator implements imcode.server.IMCConstants{
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String HTML_TEMPLATE	= "admin_random_texts_file.html" ;
-    private final static String OPTION_LINE	= "option_line.frag" ;
     private final static String DATE_ERROR		= "date_err_msg.frag" ;
     private final static String TEXT_ERROR		= "text_err_msg.frag" ;
     private final static SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
@@ -181,7 +178,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	return;
     }
 
-    private void addLineToList(HttpServletRequest req, List lines) throws ServletException, IOException{
+    private void addLineToList(HttpServletRequest req, List lines) {
 	String	date1 = (req.getParameter("date1")).trim();
 	String	date2 = (req.getParameter("date2")).trim();
 	String	text =	(req.getParameter("text")).trim();
@@ -207,7 +204,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	return true;
     }
 
-    private StringBuffer createOptionList(HttpServletRequest req, List lines, imcode.server.User user ) throws ServletException, IOException {
+    private StringBuffer createOptionList(HttpServletRequest req, List lines, imcode.server.User user ) {
 	StringBuffer buff = new StringBuffer();
 	int counter = 0;
 	Iterator iter = lines.iterator();

@@ -338,25 +338,16 @@ public class PutInShoppingCart extends HttpServlet {
 
 	   @return the value of item
 	**/
-	public ShoppingItem getItem() {
+    private ShoppingItem getItem() {
 	    return this.item;
 	}
 
-	/**
-	   set-method for item
-
-	   @param item Value for item
-	**/
-	public void setItem(ShoppingItem item) {
-	    this.item = item;
-	}
-
-	/**
+        /**
 	   get-method for quantity
 
 	   @return the value of quantity
 	**/
-	public int getQuantity()  {
+        private int getQuantity()  {
 	    return this.quantity;
 	}
 
@@ -365,7 +356,7 @@ public class PutInShoppingCart extends HttpServlet {
 
 	   @param quantity Value for quantity
 	**/
-	public void setQuantity(int quantity) {
+    private void setQuantity(int quantity) {
 	    this.quantity = quantity;
 	}
 
@@ -374,7 +365,7 @@ public class PutInShoppingCart extends HttpServlet {
 
 	   @return Whether the item is supposed to be removed from the ShoppingCart
 	**/
-	public boolean getRemove() {
+    private boolean getRemove() {
 	    return this.remove ;
 	}
 
@@ -383,7 +374,7 @@ public class PutInShoppingCart extends HttpServlet {
 
 	   @param remove Whether the item is supposed to be removed from the ShoppingCart
 	**/
-	public void setRemove(boolean remove) {
+    private void setRemove(boolean remove) {
 	    this.remove = remove ;
 	}
 
@@ -392,7 +383,7 @@ public class PutInShoppingCart extends HttpServlet {
 
 	   @return Whether the item is supposed to be added to the the cart instead of replacing one in the cart.
 	**/
-	public boolean getAdd() {
+    private boolean getAdd() {
 	    return this.add ;
 	}
 
@@ -401,7 +392,7 @@ public class PutInShoppingCart extends HttpServlet {
 
 	   @param add Whether the item is supposed to be added to the the cart instead of replacing one in the cart.
 	**/
-	public void setAdd(boolean add) {
+    private void setAdd(boolean add) {
 	    this.add = add ;
 	}
     }

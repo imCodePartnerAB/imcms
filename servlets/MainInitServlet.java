@@ -16,8 +16,6 @@ import org.apache.log4j.xml.DOMConfigurator;
    @author  Christoffer Hammarström, kreiger@imcode.com
 **/
 public class MainInitServlet extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     public void init(ServletConfig config) throws ServletException {
 	try {

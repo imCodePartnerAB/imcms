@@ -1,0 +1,123 @@
+<html>
+<head>
+<title>Administrera formatmallar / formatgrupper</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<script language="JavaScript">
+<!--
+
+function editFile() {
+	var f = document.forms.TemplateEdit;
+	if (f.template.selectedIndex > 0) {
+		var sTemplateUrl  = "/WEB-INF/templates/text/" + f.template.options[f.template.selectedIndex].value + ".html";
+		var sTemplateName = f.template.options[f.template.selectedIndex].text;
+		popWinOpen(800,570,"@jspurl@/FileAdmin_edit.jsp?template=1&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0);
+	}
+}
+
+function popWinOpen(width,height,url,wName,scroll) {
+	if (screen) {
+		var window_width = width;
+		var window_height = height;
+		if (screen.height < 700) {
+			var window_top = 0;
+			var window_left = (screen.width-window_width)/2;
+		} else {
+			var window_top = (screen.height-window_height)/2;
+			var window_left = (screen.width-window_width)/2;
+		}
+		var popWindow = window.open(url,wName,"resizable=yes,menubar=0,scrollbars=" + scroll + ",width=" + window_width + ",height=" + window_height + ",top=" + window_top + ",left=" + window_left + "");
+		if (popWindow) popWindow.focus();
+	} else {
+		window.open(url,wName,"resizable=yes,menubar=0,scrollbars=" + scroll + ",width=" + width + ",height=" + height);
+	}
+}
+
+//-->
+</script>
+
+</head>
+<body bgcolor="#FFFFFF">
+
+<form name="TemplateAdmin" action="TemplateAdmin" method="post">
+<input type="HIDDEN" name="language" value="se">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Administrera formatmallar / formatgrupper</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatmallar:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_template" value="L&auml;gg till">
+	<input type="submit" name="delete_template" value="Ta bort">
+	<input type="submit" name="rename_template" value="Byt namn">
+	<input type="submit" name="get_template" value="H&auml;mta uppladdad">
+	<input type="submit" name="edit_template" value="Redigera" disabled><br>
+	<input type="submit" name="add_demotemplate" value="Ladda upp exempelmallar">
+	<input type="submit" name="show_templates" value="Visa formatmallar"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatgrupp:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_group" value="Skapa">
+	<input type="submit" name="delete_group" value="Ta bort">
+	<input type="submit" name="rename_group" value="Byt namn">
+	<input type="submit" name="assign_group" value="Tilldela formatmallar"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</form>
+
+<form name="TemplateEdit">
+<input type="hidden" name="language" value="se">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
+	<b>Redigera formatmall</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td><hr>
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td height="24" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatmall:&nbsp;&nbsp;</font></td>
+		<td><select name="template">
+		#templates#
+		</select></td>
+	</tr>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td><hr>
+	<input type="button" name="template_edit" value="Redigera" onClick="editFile(); return false">
+	<input type="button" name="back" value="Tillbaka" onClick="document.location = 'TemplateAdmin'; return false">&nbsp; <a href="@documentationurl@GetDoc?meta_id=40" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</form>
+
+</body>
+</html>

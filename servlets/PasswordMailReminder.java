@@ -11,7 +11,6 @@
 
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Vector;
 
 import javax.servlet.ServletConfig;
@@ -67,8 +66,6 @@ import imcode.server.* ;
  */
 
 public class PasswordMailReminder extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /* filnames for templates */
     private final static String USER_DONT_EXIST = "password_no_user.txt";
@@ -79,7 +76,6 @@ public class PasswordMailReminder extends HttpServlet {
 
     /* filnames for errors */
     private final static String ERROR_STRING = "password_error_input.txt";
-    private static final String HTML_EMAIL_ERROR = "Error.html";
 
     /* returning document */
     private final static String RETURNING_DOCUMENT_NO_USER_NAME = "password_no_user.html";
@@ -88,13 +84,7 @@ public class PasswordMailReminder extends HttpServlet {
     private final static String RETURNING_DOCUMENT_SENT = "password_sent.html";
     private final static String RETURNING_DOCUMENT_INPUT = "password_submit.html";
 
-    /* */
     private final static int PASSWORD_PERMISSION_ID = 1;
-
-    public void init(ServletConfig config) throws ServletException {
-
-	super.init(config);
-    }
 
     /**
      * showing input document whit out error
@@ -102,7 +92,6 @@ public class PasswordMailReminder extends HttpServlet {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 	/* server info */
-	String host = req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String deafultLanguagePrefix = imcref.getLanguage();
 
@@ -128,12 +117,6 @@ public class PasswordMailReminder extends HttpServlet {
 	/* server info */
 	String host = req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-	String hostName = emptyString;
-	try {
-	    hostName = InetAddress.getLocalHost().getHostName();
-	} catch ( SecurityException e ) {
-	    log( "checkConnect doesn't allow the operation" );
-	}
 
 	/* mailserver info */
 	imcode.server.SystemData sysData = imcref.getSystemData() ;
@@ -155,7 +138,7 @@ public class PasswordMailReminder extends HttpServlet {
 	    // Do nothing, let mailport stay at default.
 	}
 
-	int mailtimeout = 10000 ;
+	int mailtimeout = 60000 ;
 	try {
 	    mailtimeout = Integer.parseInt( stringMailtimeout );
 	} catch (NumberFormatException ignored) {
@@ -183,8 +166,8 @@ public class PasswordMailReminder extends HttpServlet {
 
 	if ( validLoginName ) {
 
-	    String sqlQ = "PermissionsGetPermission " + postedLoginName + ", " + PasswordMailReminder.PASSWORD_PERMISSION_ID;
-	    String[] queryResult = imcref.sqlProcedure( sqlQ ) ;
+	    String sqlProcedureName = "PermissionsGetPermission";
+	    String[] queryResult = imcref.sqlProcedure( sqlProcedureName, new String[] {postedLoginName, ""+PasswordMailReminder.PASSWORD_PERMISSION_ID} ) ;
 
 	    if ( (queryResult != null) && (queryResult.length > 0) ) {
 

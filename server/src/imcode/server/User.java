@@ -5,10 +5,6 @@ import java.util.* ;
 import org.apache.log4j.* ;
 
 public class User extends Hashtable {
-    private final static String CVS_REV="$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
-    private static Logger log = Logger.getLogger( User.class.getName() ) ;
 
     /** Good stuff **/
     private int userId ;

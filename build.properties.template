@@ -7,40 +7,40 @@
 # Do *not* use back-slashes ('\'). Use forward-slashes ('/').
 # You only need this if you want to use "ant install" and "ant install-war".
 
-deployroot = 
+deployroot =
 
 
 # Database parameters for the main database.
 
-db-host = 
+db-host =
 db-port = 1433
-db-name = 
-db-user = 
-db-pass = 
+db-name =
+db-user =
+db-pass =
 db-timeout = 30
 db-maxconnections = 20
 
 
 # The parameters for the database used by the plugins.
 
-plugin-db-host = 
+plugin-db-host =
 plugin-db-port = 1433
-plugin-db-name = 
-plugin-db-user = 
-plugin-db-pass = 
+plugin-db-name =
+plugin-db-user =
+plugin-db-pass =
 plugin-db-timeout = 30
 plugin-db-maxconnections = 20
 
 
 # The smtp-server used for sending mails.
 
-smtp-server = 
+smtp-server =
 
 
 # The name and e-mail-address of the servermaster.
 
-servermaster-name  = 
-servermaster-email = 
+servermaster-name  =
+servermaster-email =
 
 
 # The name and e-mail-address of the webmaster.
@@ -59,6 +59,11 @@ webappname = imcms
 
 rooturl = /${webappname}
 
+# The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
+# If you want to install a local server for handling (modifing) the documents
+# change this:
+
+documentation-host = doc.imcms.net
 
 # Whether the build should be optimized or not.
 # Warning: Turning this on may remove the version control constants from the class-files.
@@ -94,10 +99,11 @@ generate-xmlversion
 # Comment out any you don't want to build.
 
 build-billboard
-build-calender
 build-chat
 build-conference
 build-fortune
 build-postcard
 build-readrunner
 #build-shop
+build-htmleditor
+

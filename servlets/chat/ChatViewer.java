@@ -1,12 +1,13 @@
+
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import imcode.external.diverse.* ;
-import java.rmi.* ;
-import java.rmi.registry.* ;
 
+import imcode.external.diverse.*;
 import imcode.external.chat.*;
+import org.apache.log4j.Logger;
+import imcode.external.chat.ChatSessionsSingleton;
 
 
 //meningen är att denna ska ladda framesetet och kolla
@@ -14,87 +15,63 @@ import imcode.external.chat.*;
 
 public class ChatViewer extends ChatBase {
 
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	private final static String HTML_TEMPLATE = "Chat_Frameset.htm" ;
+    private final static String HTML_TEMPLATE = "Chat_Frameset.htm";
+
+    private final static Logger log = Logger.getLogger( "ChatViewer" );
+
+    public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+        HttpSession session = req.getSession( true );
+
+        // Lets validate the session, e.g has the user logged in to Janus?
+        if ( super.checkSession( req, res ) == false ) return;
+
+        // Lets get the standard SESSION parameters and validate them
+        Properties params = super.getSessionParameters( req );
+
+        // Lets get an user object
+        imcode.server.User user = super.getUserObj( req, res );
+        if ( user == null ) return;
+
+        if ( !isUserAuthorized( req, res, user ) ) {
+            return;
+        }
+
+        // Lets get all parameters in a string which we'll send to every servlet in the frameset
+        String paramStr = MetaInfo.passMeta( params );
+
+        //lets clean up some in the session just incase
+        session.removeAttribute( "checkBoxTextarr" ); //ska tas bort
+        session.removeAttribute( "chatParams" );
+        session.removeAttribute( "chatChecked" );
+
+        //lets crete the ChatMember object and add it to the session if there isnt anyone
+        ChatMember myMember = (ChatMember)session.getAttribute( "theChatMember" );
+        if ( myMember == null ) {
+            log( "there wasn't any member so return" );
+        }
 
 
-	public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
-		log("doPost");
-		doGet(req,res);
-	}
+        ChatMember member = (ChatMember)session.getAttribute( "theChatMember" );
+        ChatSessionsSingleton.putSession( member, session );
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
-		HttpSession session = req.getSession(true);
-		ServletContext myContext = getServletContext();
+        String _recipient =  req.getParameter( "recipient" ) == null ? "0" : req.getParameter( "recipient" ).trim();
 
-		// Lets validate the session, e.g has the user logged in to Janus?
-		if (super.checkSession(req,res) == false)	return ;
-
-		// Lets get the standard SESSION parameters and validate them
-		Properties params = super.getSessionParameters(req) ;
-
-		if (super.checkParameters(req, res, params) == false){
-			log("checkParameters == false so return");
-			return;
-		}
-
-		// Lets get an user object
-		imcode.server.User user = super.getUserObj(req,res) ;
-		if(user == null) return ;
-
-		if ( !isUserAuthorized( req, res, user ) ){
-			return;
-		}
-		String metaId = params.getProperty("META_ID") ;
-
-		// Lets get all parameters in a string which we'll send to every servlet in the frameset
-		String paramStr = MetaInfo.passMeta(params) ;
-
-		//lets clean up some in the session just incase
-		session.removeAttribute("checkBoxTextarr"); //ska tas bort
-		session.removeAttribute("chatParams");
-		session.removeAttribute("chatChecked");
-
-		//ok lets get the chat from the session
-		Chat chat = (Chat) myContext.getAttribute("theChat"+metaId);
-		if (chat == null){
-			log("the chat was null so we will return");
-			return;
-		}
-
-		//lets crete the ChatMember object and add it to the session if there isnt anyone
-		ChatMember myMember = (ChatMember) session.getAttribute("theChatMember");
-		if (myMember == null){
-			log("there wasn't any member so return");
-		}
-
-		//ok lets see if we have room
-		ChatGroup myGroup = myMember.getMyGroup();
-		if (myGroup == null){
-			log("there wasn't any group so return");
-		}
-
-		//ok lets see if we have an bindingListener
-		if (session.getAttribute("chatBinding") == null){
-			session.setAttribute("chatBinding",new ChatBindingListener());
-
-		}
-
-		// Lets build the Responsepage
-		Vector tags = new Vector();
-		tags.add("#CHAT_MESSAGES#");tags.add("ChatBoard?" + paramStr);
-		tags.add("#CHAT_CONTROL#"); tags.add("ChatControl?" + paramStr ) ;
-		this.sendHtml(req,res,tags, HTML_TEMPLATE,null) ;
-		return ;
-	}//end doGet
+        // Lets build the Responsepage
+        Vector tags = new Vector();
+        tags.add( "#CHAT_MESSAGES#" );
+        tags.add( "ChatBoard?" + paramStr );
+        tags.add( "#CHAT_CONTROL#" );
+        tags.add( "ChatControl?" + paramStr + "&recipient=" + _recipient );
+        this.sendHtml( req, res, tags, HTML_TEMPLATE, null );
+        return;
+    }//end doGet
 
 
-	/**
-	Log function, will work for both servletexec and Apache
-	**/
-	public void log( String str){
-		super.log("ChatViewer: " + str) ;
-	}
+    /**
+     Log function, will work for both servletexec and Apache
+     **/
+    public void log( String str ) {
+        log.debug( str );
+    }
 
 } // End of class

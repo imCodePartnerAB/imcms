@@ -13,8 +13,8 @@ import org.apache.log4j.* ;
 **/
 public class IMCText {
 
-    protected String text ;
-    protected int type ;
+    private String text ;
+    private int type ;
 
     /* Text-types. */
 
@@ -48,7 +48,7 @@ public class IMCText {
 
        @param text Value to assign to text
     **/
-    public void setText(String text){
+    private void setText(String text){
 	this.text = text;
     }
 
@@ -66,7 +66,7 @@ public class IMCText {
 
        @param type Value to assign to type
     **/
-    public void setType(int type){
+    private void setType(int type){
 	switch ( type ) {
 	case TEXT_TYPE_PLAIN:
 	case TEXT_TYPE_HTML:

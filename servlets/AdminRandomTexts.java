@@ -12,8 +12,6 @@ import java.text.SimpleDateFormat;
 
 
 public class AdminRandomTexts extends Administrator implements imcode.server.IMCConstants {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String HTML_TEMPLATE		= "admin_random_texts.html";
     private final static String HTML_TEMPLATE_ADMIN = "admin_random_texts_file.html";

@@ -1,8 +1,6 @@
 import java.io.*;
-import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.rmi.* ;
 
 import imcode.util.* ;
 import imcode.server.* ;
@@ -11,8 +9,6 @@ import imcode.server.* ;
    Start servlet in the system.
 */
 public class StartDoc extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /**
        doGet()
@@ -21,19 +17,11 @@ public class StartDoc extends HttpServlet {
 	String host = req.getHeader("host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	String start_url	= imcref.getStartUrl() ;
-	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
-	long time = System.currentTimeMillis() ;
 	imcode.server.User user ;
-	String htmlStr = "" ;
 	int meta_id ;
-	String test = "" ;
-	String type = "";
-	String version = "" ;
-	String plattform = "" ;
 
 	res.setContentType( "text/html" );
-	ServletOutputStream out = res.getOutputStream( );
 	// Get the session
 	HttpSession session = req.getSession( true );
 
@@ -85,29 +73,15 @@ public class StartDoc extends HttpServlet {
 
 	// ... and redirect to it.
 	// FIXME: Replace with a forward()...
-	String scheme = req.getScheme( );
-	String serverName = req.getServerName( );
-	int p = req.getServerPort( );
-	String port = (p == 80 || p == 443) ? "" : ":" + p;
 	Utility.redirect(req,res,"GetDoc?meta_id="+meta_id) ;
 
 	return ;
     }
 
     /**
-       Check if user exist in database
-    */
-    static protected imcode.server.User allowUser( String user_name, String passwd, String host ) throws IOException {
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-
-	// user information
-	return imcref.verifyUser( user_name,passwd ) ;
-    }
-
-    /**
        Ip login  - check if user exist in ip-table
     */
-    static protected imcode.server.User ipAssignUser( String remote_ip , String host) throws IOException {
+    static imcode.server.User ipAssignUser( String remote_ip , String host) throws IOException {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	imcode.server.User user = new imcode.server.User( ) ;
 
@@ -118,11 +92,11 @@ public class StartDoc extends HttpServlet {
 	sqlStr  = "select distinct login_name,login_password,ip_access_id from users,user_roles_crossref,ip_accesses\n" ;
 	sqlStr += "where user_roles_crossref.user_id = ip_accesses.user_id\n" ;
 	sqlStr += "and users.user_id = user_roles_crossref.user_id\n" ;
-	sqlStr += "and ip_accesses.ip_start <= " + ip + "\n" ;
-	sqlStr += "and ip_accesses.ip_end >= " + ip + "\n" ;
+	sqlStr += "and ip_accesses.ip_start <= ?\n" ;
+	sqlStr += "and ip_accesses.ip_end >= ?\n" ;
 	sqlStr += "order by ip_access_id desc" ;
 
-	String user_data[] = imcref.sqlQuery( sqlStr );
+	String user_data[] = imcref.sqlQuery( sqlStr, new String[] {""+ip,""+ip} );
 
 	if( user_data.length > 0 )  {
 	    user = imcref.verifyUser( user_data[0],user_data[1] ) ;
@@ -136,7 +110,7 @@ public class StartDoc extends HttpServlet {
 	return user ;
     }
 
-    static void incrementSessionCounter(IMCServiceInterface imcref, User user, HttpServletRequest req) throws IOException {
+    static void incrementSessionCounter(IMCServiceInterface imcref, User user, HttpServletRequest req) {
 	if (!( "user".equalsIgnoreCase(user.getLoginName())
 	       && req.getParameter("no_count")!=null) 
 	    ) {

@@ -10,9 +10,6 @@ import imcode.server.* ;
 
 
 public class AdminFortunes extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-    String HTML_TEMPLATE ;
 
     /**
        The GET method creates the html page when this side has been

@@ -6,10 +6,9 @@ import java.util.* ;
 	Parses multipart/form-data into parts, easily gettable with it's methods.
 */
 public class MultipartFormdataParser {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	MultipartParser mp ;	
-	String names[] ;
+
+    private MultipartParser mp ;
+	private String[] names ;
 	/**
 		Parses the multipartdata into parts.
 		@param data The multipartdata.
@@ -36,15 +35,7 @@ public class MultipartFormdataParser {
 		}
 	}
 
-	/**
-		Returns the MultipartParser responsible for parsing the data.
-		@return The parser.
-	*/
-	public MultipartParser getParser () {
-		return mp ;
-	}
-	
-	/**
+    /**
 		Returns the values of the specified parameter for the request as an array of strings, or null if the named parameter does not exist.
 		@param name the name of the parameter whose value is required. 
 		@return An array of strings, or null if the named parameter does not exist.
@@ -87,25 +78,15 @@ public class MultipartFormdataParser {
 	public String getFilename (String name) {
 		for ( int i = 0 ; i<names.length ; i++ ) {
 			if ( names[i].equals(name) ) {
-				return (mp.getHeaderParams(i,"content-disposition").getProperty("filename")) ;
+				String filename = (mp.getHeaderParams(i,"content-disposition").getProperty("filename")) ;
+                if (null != filename) {
+                    filename = filename.substring( filename.lastIndexOf( '/' ) + 1 );
+                    filename = filename.substring( filename.lastIndexOf( '\\' ) + 1 );
+                }
+                return filename ;
 			}
 		}
 		return null ;
-	}
-	
-	/**
-		Returns an iterator over a collection of strings containing parameternames.
-		@return the iterator.
-	*/
-	public Iterator getParameterNames () {
-		LinkedList list = new LinkedList () ;
-		for ( int i = 0 ; i < names.length ; i++ ) {
-			if ( !list.contains(names[i]) ) {
-				list.add(names[i]) ;
-			}
-		}
-		return list.iterator() ;
-		
 	}
 
 }

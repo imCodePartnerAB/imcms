@@ -10,9 +10,6 @@ import imcode.readrunner.* ;
  */
 public interface IMCServiceInterface {
 
-    final static String CVS_REV = "$Revision$" ;
-    final static String CVS_DATE = "$Date$" ;
-
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
     imcode.server.User verifyUser(String login, String password)
 	;
@@ -53,7 +50,7 @@ public interface IMCServiceInterface {
     void addExistingDoc(int meta_id,imcode.server.User user,int existing_meta_id,int doc_menu_no)
 	;
 
-    void saveManualSort(int meta_id,imcode.server.User user,java.util.Vector childs, java.util.Vector sort_no)
+    void saveManualSort(int meta_id,imcode.server.User user,List childs, List sort_no, int menuNumber)
 	;
 
     /**
@@ -73,83 +70,36 @@ public interface IMCServiceInterface {
     public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc)
 	;
 
-    // Save a url_doc
-    void saveUrlDoc(int meta_id,imcode.server.User user,imcode.server.Table doc)
-	;
-
-    // Save a new url_doc
-    void saveNewUrlDoc(int meta_id,imcode.server.User user,imcode.server.Table doc)
-	;
-
     // List all archived docs
     //    String listArchive(int meta_id,imcode.server.User user)
     //;
 
     // check if url doc
-    imcode.server.Table isUrlDoc(int meta_id,User user)
+    String isUrlDoc(int meta_id,User user)
 	;
 
     // Save a new frameset
-    void saveNewFrameset(int meta_id,imcode.server.User user,imcode.server.Table doc)
+    void saveNewFrameset(int meta_id,imcode.server.User user,String html)
 	;
 
     // Save a frameset
-    void saveFrameset(int meta_id,imcode.server.User user,imcode.server.Table doc)
+    void saveFrameset(int meta_id,imcode.server.User user,String html)
 	;
 
     // check if url doc
     String isFramesetDoc(int meta_id,User user)
 	;
 
-    // search docs
-    Vector searchDocs(int meta_id,User user,String question_str,
-		      String search_type,String string_match,String search_area)
-	;
-
     // check if external doc
     ExternalDocType isExternalDoc(int meta_id,User user)
-	;
-
-    // remove child from child table
-    void removeChild(int meta_id,int parent_meta_id,imcode.server.User user)
 	;
 
     // activate child to child table
     void activateChild(int meta_id,User user)
 	;
-    // make child inactive
-    void inActiveChild(int meta_id,User user)
-	;
-
-    // Parse doc replace variables with data
-    String  parseDoc(String htmlStr,java.util.Vector variables)
-	;
-
-    // Send a sqlquery to the database and return a string array
-    String[] sqlQuery(String sqlQuery)
-	;
-
-    // Send a sql update query to the database
-    void sqlUpdateQuery(String sqlStr)  ;
-
-    // Send a sqlquery to the database and return a string
-    String sqlQueryStr(String sqlQuery)
-	;
-
-    // Send a procedure to the database and return a string array
-    public String[] sqlProcedure(String procedure)
-	;
 
     // Send a procedure to the database and return a string array
     public String[] sqlProcedure(String procedure, String[] params)
-	;
-
-    // Send a procedure to the database and return a string
-    public String sqlProcedureStr(String procedure)
-	;
-
-    // Send a update procedure to the database
-    public int sqlUpdateProcedure(String procedure)
 	;
 
     // Parse doc replace variables with data, uses two vectors
@@ -170,37 +120,21 @@ public interface IMCServiceInterface {
     int setCounter(int value)  ;
 
     // set  session counter date
-    boolean setCounterDate(String date)  ;
+    void setCounterDate(String date)  ;
 
     // set  session counter date
     String getCounterDate()  ;
-
-    // Send a sqlquery to the database and return a string array and metadata
-    String[] sqlQueryExt(String sqlQuery)
-	;
-
-    // Send a procedure to the database and return a string array
-    public String[] sqlProcedureExt(String procedure)
-	;
-
-    // Send a sqlquery to the database and return a Hashtable
-    public Hashtable sqlQueryHash(String sqlQuery)
-	;
-
-    // Send a procedure to the database and return a Hashtable
-    public Hashtable sqlProcedureHash(String procedure)
-	;
 
     // parsedoc use template
     public String  parseDoc(java.util.List variables,String admin_template_name,
 			    String lang_prefix)  ;
 
     // parseExternaldoc use template
-    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)
+    public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type)
 	;
 
     // parseExternaldoc use template
-    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet)
+    public String parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type, String templateSet)
 	;
 
     // get templatehome
@@ -215,8 +149,11 @@ public interface IMCServiceInterface {
     public String getImageUrl()
 	;
 
-    // get file-path to images
-    public File getImagePath()
+    // Return url-path to imcmsimages.
+    public String getImcmsImageUrl();
+
+    // get file-path to imcmsimages
+    public File getImcmsImagePath()
 	;
 
     // get starturl
@@ -262,12 +199,8 @@ public interface IMCServiceInterface {
 	;
 
     // save demo template
-    public int saveDemoTemplate(int template_id,byte [] data, String suffix)
-	;
-
-    // save templategroup
-    public void saveTemplateGroup(String group_name,User user)
-	;
+    public int saveDemoTemplate(int template_id,byte [] data, String suffix) throws IOException
+    ;
 
     // delete templategroup
     public void deleteTemplateGroup(int group_id)
@@ -277,77 +210,49 @@ public interface IMCServiceInterface {
     public void changeTemplateGroupName(int group_id,String new_name)
 	;
 
-    //  unassign template from templategroups
-    public void unAssignTemplate(int template_id,int group_id[])
-	;
-
-    // Send a procedure to the database and return a multistring array
-    public String[][] sqlProcedureMulti(String procedure)
-	;
-
-    // Send a sqlQuery to the database and return a multistring array
-    public String[][] sqlQueryMulti(String sqlQuery)
-	;
-
     // get server date
     public Date getCurrentDate()
-	;
+    ;
 
     // get demotemplates
     public String[] getDemoTemplateList()
-	;
+    ;
 
     // delete demotemplate
-    public int deleteDemoTemplate(int template_id)
-	;
+    public void deleteDemoTemplate(int template_id) throws IOException
+    ;
 
     public String getMenuButtons(int meta_id, User user)  ;
 
     public String getMenuButtons(String meta_id, User user)  ;
 
-    public String getLanguage(String lang_id)  ;
-
     public SystemData getSystemData()  ;
 
     public void setSystemData(SystemData sd)  ;
 
-    // Get the information for each selected metaid. Used by existing documents
-    // Wow. Wonderful methodname. Indeed. Just beautiful.
-    public Hashtable ExistingDocsGetMetaIdInfo( String[] meta_id)   ;
-
     public String[] getDocumentTypesInList(String langPrefixStr)  ;
 
-    public Hashtable getDocumentTypesInHash(String langPrefixStr)   ;
-
     public boolean checkUserDocSharePermission(User user, int meta_id)  ;
-
-    public String getInclude(String path) throws IOException ;
 
     public String getFortune(String path) throws IOException ;
 
     public String getSearchTemplate(String path) throws IOException ;
 
-    public File getInternalTemplateFolder(int meta_id) ;
-
-    public void touchDocument(int meta_id, java.util.Date date) ;
-
     public void touchDocument(int meta_id) ;
 
-    public List getQuoteList(String quoteListName) throws IOException ;
+    public List getQuoteList(String quoteListName);
 
     public void setQuoteList(String quoteListName, List quoteList) throws IOException ;
 
-    public List getPollList(String pollListName) throws IOException ;
+    public List getPollList(String pollListName);
 
     public void setPollList(String pollListName, List pollList) throws IOException ;
 
     public imcode.server.parser.Document getDocument(int meta_id) ;
 
-    public String getSection(int meta_id) ;
+    public String[] getSections(int meta_id) ;
 
     public String getFilename(int meta_id) ;
-
-    public Template getTemplate(int meta_id) ;
 
     public boolean checkAdminRights(imcode.server.User user) ;
     public void setReadrunnerUserData(User user, ReadrunnerUserData rrUserData) ;
@@ -378,5 +283,25 @@ public interface IMCServiceInterface {
     public void setUserFlag(User user, String flagName);
 
     public void unsetUserFlag(User user, String flagName);
+
+    Hashtable sqlProcedureHash( String procedure, String[] params );
+
+    int sqlUpdateProcedure( String procedure, String[] params );
+
+    String sqlProcedureStr( String procedure, String[] params );
+
+    int sqlUpdateQuery(String sqlStr, String[] params);
+
+    void saveTreeSortIndex( int meta_id, User user, List childs, List sort_no, int menuNumber);
+
+    String[][] sqlProcedureMulti(String procedure, String[] params);
+
+    String[] sqlQuery(String sqlStr, String[] params);
+
+    String sqlQueryStr(String sqlStr, String[] params);
+
+    Hashtable sqlQueryHash(String sqlStr, String[] params);
+
+    String[][] sqlQueryMulti(String sqlstr, String[] params);
 
 }

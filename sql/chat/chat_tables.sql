@@ -10,10 +10,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_chat_ms
 ALTER TABLE [dbo].[C_chat_msg_type] DROP CONSTRAINT FK_chat_msg_type_chat
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_C_room_C_chat]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
-ALTER TABLE [dbo].[C_room] DROP CONSTRAINT FK_C_room_C_chat
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_chat_msg_type_msg_type]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[C_chat_msg_type] DROP CONSTRAINT FK_chat_msg_type_msg_type
 GO
@@ -50,10 +46,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_msg_type
 drop table [dbo].[C_msg_type]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_room]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-drop table [dbo].[C_room]
-GO
-
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[C_selfreg_roles]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[C_selfreg_roles]
 GO
@@ -63,14 +55,14 @@ drop table [dbo].[C_templates]
 GO
 
 CREATE TABLE [dbo].[C_authorization_types] (
-	[authorization_type] [varchar] (50)  NOT NULL ,
+	[authorization_type] [varchar] (50) NOT NULL ,
 	[authorization_id] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[C_chat] (
 	[meta_id] [int] NOT NULL ,
-	[name] [varchar] (255)  NULL ,
+	[name] [varchar] (255) NULL ,
 	[permType] [int] NULL 
 ) ON [PRIMARY]
 GO
@@ -113,27 +105,20 @@ GO
 
 CREATE TABLE [dbo].[C_msg_type] (
 	[msg_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[msg_string] [varchar] (25)  NOT NULL 
-) ON [PRIMARY]
-GO
-
-CREATE TABLE [dbo].[C_room] (
-	[room_id] [int] NOT NULL ,
-	[room_name] [varchar] (255)  NULL ,
-	[meta_id] [int] NOT NULL 
+	[msg_string] [varchar] (25) NOT NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[C_selfreg_roles] (
 	[selfreg_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[role_id] [int] NULL ,
-	[role_name] [char] (25)  NULL 
+	[role_name] [char] (25) NULL 
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[C_templates] (
 	[template_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[template_lib] [varchar] (50)  NOT NULL 
+	[template_lib] [varchar] (50) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -197,15 +182,7 @@ ALTER TABLE [dbo].[C_msg_type] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [dbo].[C_room] WITH NOCHECK ADD 
-	CONSTRAINT [PK_room] PRIMARY KEY  CLUSTERED 
-	(
-		[room_id],
-		[meta_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [dbo].[C_chatParameters] WITH NOCHECK ADD 
+ALTER TABLE [dbo].[C_chatParameters] ADD 
 	CONSTRAINT [DF_chatParameters_updateTime] DEFAULT (30) FOR [updateTime],
 	CONSTRAINT [DF_chatParameters_reload] DEFAULT (2) FOR [reload],
 	CONSTRAINT [DF_chatParameters_inOut] DEFAULT (2) FOR [inOut],
@@ -242,15 +219,6 @@ ALTER TABLE [dbo].[C_chat_msg_type] ADD
 		[msg_id]
 	) REFERENCES [dbo].[C_msg_type] (
 		[msg_id]
-	)
-GO
-
-ALTER TABLE [dbo].[C_room] ADD 
-	CONSTRAINT [FK_C_room_C_chat] FOREIGN KEY 
-	(
-		[meta_id]
-	) REFERENCES [dbo].[C_chat] (
-		[meta_id]
 	)
 GO
 

@@ -4,26 +4,24 @@ package imcode.server ;
    Storage-container for systemdata
  */
 public class SystemData implements java.io.Serializable {
-    private final static String CVS_REV="$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /** The startdocument **/
-    protected int startDocument ;
+    private int startDocument ;
 
     /** The servermaster */
-    protected String serverMaster ;
+    private String serverMaster ;
 
     /** The servermaster's address */
-    protected String serverMasterAddress ;
+    private String serverMasterAddress ;
 
     /** The webmaster */
-    protected String webMaster ;
+    private String webMaster ;
 
     /** The webmaster's address */
-    protected String webMasterAddress ;
+    private String webMasterAddress ;
 
     /** The systemmessage */
-    protected String systemMessage ;
+    private String systemMessage ;
 
 
     /** Get the startdocument **/

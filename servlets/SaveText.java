@@ -1,6 +1,4 @@
 import java.io.*;
-import java.util.*;
-import java.text.SimpleDateFormat;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.util.* ;
@@ -12,18 +10,6 @@ import org.apache.log4j.Category ;
    Save text in a document.
 */
 public class SaveText extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
-    /** A Log4J Category **/
-    private static Category log = Category.getInstance( IMCConstants.ERROR_LOG ) ;
-
-    /**
-       init()
-    */
-    public void init( ServletConfig config ) throws ServletException {
-	super.init( config ) ;
-    }
 
     /**
        doPost()
@@ -61,9 +47,14 @@ public class SaveText extends HttpServlet {
 	// get text
 	String text_string = req.getParameter( "text" ) ;
 
-	int text_type = Integer.parseInt(req.getParameter( "type" )) ;
+    int text_format = 0;
+    if(req.getParameter( "format_type" )!=null){
+	    text_format = Integer.parseInt(req.getParameter( "format_type" )) ;
+    }
 
-	IMCText text = new IMCText(text_string,text_type) ;
+
+
+	IMCText text = new IMCText(text_string, text_format) ;
 
 	// Get the session
 	HttpSession session = req.getSession( true );

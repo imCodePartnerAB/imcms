@@ -10,16 +10,8 @@ import imcode.server.* ;
 	Shows a change_meta.html which calls SaveMeta
 */
 public class ChangeExternalDoc2 extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	/**
-	init()
-	*/
-	public void init( ServletConfig config ) throws ServletException {
-		super.init( config ) ;
-	}
 
-	public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		doPost(req,res) ;
 	}
 

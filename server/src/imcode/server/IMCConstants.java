@@ -2,9 +2,6 @@ package imcode.server ;
 
 public interface IMCConstants {
 
-    final static String CVS_REV = "$Revision$" ;
-    final static String CVS_DATE = "$Date$" ;
-
     /* Documenttypes */
 
     /** Document-type for text-documents. **/
@@ -128,15 +125,10 @@ public interface IMCConstants {
 
 
     /* Menu-sort-orders. */
-
-    /** Menu sorted by headline. **/
     public final static int MENU_SORT_BY_HEADLINE        = 1 ;
-
-    /** Menu sorted by 'manual' order. **/
     public final static int MENU_SORT_BY_MANUAL_ORDER    = 2 ;
-
-    /** Menu sorted by datetime. **/
     public final static int MENU_SORT_BY_DATETIME        = 3 ;
+    public final static int MENU_SORT_BY_MANUAL_TREE_ORDER = 4;
 
     /** Default-dateTime-format **/
     public final static String DATETIME_FORMAT_STD        = "yyyy-MM-dd HH:mm" ;

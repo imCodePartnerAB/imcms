@@ -1,105 +1,110 @@
-import javax.servlet.* ;
-import javax.servlet.http.* ;
 
-import imcode.server.* ;
-
-import imcode.util.Check ;
-import imcode.util.Utility ;
-import imcode.util.IMCServiceRMI ;
-
-import java.io.IOException ;
-import java.io.Writer ;
-
-import java.util.Vector ;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
+import imcode.server.User;
+import imcode.util.Check;
+import imcode.util.IMCServiceRMI;
 import org.apache.log4j.Category;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Vector;
+
 public class SaveInclude extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
-    private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
-    private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;
+    private final static Category mainLog = Category.getInstance( IMCConstants.MAIN_LOG );
+    private final static DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss.SSS " );
 
-    public void init (ServletConfig config) throws ServletException {
-	super.init( config ) ;
+    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, java.io.IOException {
+        IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
+        String start_url = imcref.getStartUrl();
+
+        res.setContentType( "text/html" );
+
+        Writer out = res.getWriter();
+
+        imcode.server.User user;
+
+        String meta_id_str = req.getParameter( "meta_id" );
+        int meta_id = Integer.parseInt( meta_id_str );
+
+        // Check if the user logged on
+        if ((user = Check.userLoggedOn( req, res, start_url )) == null) {
+            return;
+        }
+
+        // Check if user has permission to edit includes for this document
+        if (!imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_INCLUDES )) {	// Checking to see if user may edit this
+            sendPermissionDenied( imcref, out, meta_id, user );
+            return;
+        }
+
+        String included_meta_id = req.getParameter( "include_meta_id" );
+        String include_id = req.getParameter( "include_id" );
+
+        if (included_meta_id != null && include_id != null) {
+            included_meta_id = included_meta_id.trim();
+            include_id = include_id.trim();
+            if ("".equals( included_meta_id )) {
+                imcref.sqlUpdateProcedure( "DeleteInclude", new String[]{meta_id_str, include_id} );
+                mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on [" + meta_id_str + "] removed by user: [" + user.getFullName() + "]" );
+            } else {
+                try {
+                    int included_meta_id_int = Integer.parseInt( included_meta_id );
+
+                    String[] docTypeStrArr = imcref.sqlProcedure( "GetDocType", new String[]{included_meta_id} );
+                    if( null == docTypeStrArr || 0 == docTypeStrArr.length  ) {
+                        sendBadId( imcref, out, meta_id, user );
+                    } else {
+                        int docType = Integer.parseInt( docTypeStrArr[0] );
+                        if (IMCConstants.DOCTYPE_TEXT != docType) {
+                            sendBadId( imcref, out, meta_id, user );
+                            return;
+                        }
+
+                        // Make sure the user has permission to share the included document
+                        if (imcref.checkUserDocSharePermission( user, included_meta_id_int )) {
+                            imcref.sqlUpdateProcedure( "SetInclude", new String[]{meta_id_str, include_id, included_meta_id} );
+                            mainLog.info( dateFormat.format( new java.util.Date() ) + "Include nr [" + include_id + "] on [" + meta_id_str + "] changed to [" + included_meta_id + "]  by user: [" + user.getFullName() + "]" );
+                        } else {
+                            sendPermissionDenied( imcref, out, meta_id, user );
+                            return;
+                        }
+                    }
+                } catch (NumberFormatException ignored) {
+                    sendBadId( imcref, out, meta_id, user );
+                    return;
+                }
+            }
+        }
+
+        String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
+        if (tempstring != null) {
+            out.write( tempstring );
+        }
+        return;
     }
 
-    public void doPost (HttpServletRequest req, HttpServletResponse res) throws ServletException, java.io.IOException {
-	String host			= req.getHeader("Host") ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
-	String start_url	= imcref.getStartUrl() ;
-
-	res.setContentType("text/html") ;
-
-	Writer out = res.getWriter() ;
-
-	imcode.server.User user ;
-
-	String meta_id_str = req.getParameter("meta_id") ;
-	int meta_id = Integer.parseInt(meta_id_str) ;
-
-	// Check if the user logged on
-	if ( (user = Check.userLoggedOn(req,res,start_url )) == null ) {
-	    return ;
-	}
-
-	// Check if user has permission to edit includes for this document
-	if ( !imcref.checkDocAdminRights(meta_id,user,imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_INCLUDES ) ) {	// Checking to see if user may edit this
-	    sendPermissionDenied(imcref,out,meta_id,user) ;
-	    return ;
-	}
-
-	String included_meta_id = req.getParameter("include_meta_id") ;
-
-	String include_id = req.getParameter("include_id") ;
-	if (included_meta_id != null && include_id != null) {
-	    if ("".equals(included_meta_id.trim())) {
-		imcref.sqlUpdateProcedure("DeleteInclude "+meta_id_str+","+include_id) ;
-		 mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" + include_id +	"] on ["+meta_id_str+"] removed by user: [" +user.getFullName() + "]");
-
-	    } else {
-		try {
-		    int included_meta_id_int = Integer.parseInt(included_meta_id) ;
-
-		    // Make sure the user has permission to share the included document
-		    if (imcref.checkUserDocSharePermission(user,included_meta_id_int)) {
-			imcref.sqlUpdateProcedure("SetInclude "+meta_id_str+","+include_id+","+included_meta_id) ;
-		    mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" +include_id  +	"] on ["+meta_id_str+"] changed to ["+ included_meta_id+ "]  by user: [" +user.getFullName() + "]");
-			} else {
-			sendPermissionDenied(imcref,out,meta_id,user) ;
-			return ;
-		    }
-		} catch (NumberFormatException ignored) {
-		    sendBadId(imcref,out,meta_id,user) ;
-		    return ;
-		}
-	    }
-	}
-
-	String tempstring = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
-	if ( tempstring != null ) {
-	    out.write(tempstring) ;
-	}
-	return ;
+    private void sendPermissionDenied( IMCServiceInterface imcref, Writer out, int meta_id, User user ) throws IOException {
+        Vector vec = new Vector( 2 );
+        vec.add( "#meta_id#" );
+        vec.add( String.valueOf( meta_id ) );
+        String htmlStr = imcref.parseDoc( vec, "include_permission_denied.html", user.getLangPrefix() );
+        out.write( htmlStr );
     }
 
-    protected void sendPermissionDenied(IMCServiceInterface imcref, Writer out, int meta_id, User user) throws IOException {
-	Vector vec = new Vector(2) ;
-	vec.add("#meta_id#") ;
-	vec.add(String.valueOf(meta_id)) ;
-	String htmlStr = imcref.parseDoc(vec,"include_permission_denied.html",user.getLangPrefix()) ;
-	out.write(htmlStr) ;
-    }
-
-    protected void sendBadId(IMCServiceInterface imcref, Writer out, int meta_id, User user) throws IOException {
-	Vector vec = new Vector(2) ;
-	vec.add("#meta_id#") ;
-	vec.add(String.valueOf(meta_id)) ;
-	String htmlStr = imcref.parseDoc(vec,"include_bad_id.html",user.getLangPrefix()) ;
-	out.write(htmlStr) ;
+    private void sendBadId( IMCServiceInterface imcref, Writer out, int meta_id, User user ) throws IOException {
+        Vector vec = new Vector( 2 );
+        vec.add( "#meta_id#" );
+        vec.add( String.valueOf( meta_id ) );
+        String htmlStr = imcref.parseDoc( vec, "include_bad_id.html", user.getLangPrefix() );
+        out.write( htmlStr );
     }
 
 }

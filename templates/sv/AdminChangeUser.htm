@@ -29,17 +29,6 @@ function evalEditUser() {
 		return true
 }
 
-function evalShowUser() {
-	if ( document.user_categoriesForm.searchstring.value.length < 1 ) {
-		alert ( " Skriv in minst ett tecken i användarnamnet som du vill visa ")
-		return false
-	}else 
-		return true
-}
-
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
 //-->
 </SCRIPT>
 </head>
@@ -72,15 +61,15 @@ function openHelp(id){
 		<select name="user_categories"  style="WIDTH: 200px">
 			<option value="All_Choice" selected>-- Alla kategorier --</option>	
            #USER_TYPES#
-          
+
         </select>
 		<br>
 		<br>
-		<input type="text" name="searchstring" size="15" maxlength="20"> (Ange minst ett tecken!)
+		<input type="text" name="searchstring" size="15" maxlength="20" value=#searchstring#> (Tomt fält visar alla!)
 		<br><br>
-		<input type="checkbox" name="showall" value="0">Visa &auml;ven EJ aktiva anv&auml;ndare.
+		<input type="checkbox" name="active" value="0" #active# >Visa &auml;ven EJ aktiva anv&auml;ndare.
 		<br><br>
-		<input type="submit" name="showUsers" value="Visa anv&auml;ndare" onClick="if(!evalShowUser()) return false;">
+		<input type="submit" name="showUsers" value="Visa anv&auml;ndare">
 		</font> 
 	  </form>
 	</td>
@@ -107,7 +96,7 @@ function openHelp(id){
 		<br>
 		<input type="submit" name="ADD_USER" value="L&auml;gg till">
 		<input type="submit" name="CHANGE_USER" value="Redigera " onClick="if( !evalEditUser() ) return false;">
-		<input type="submit" name="GO_BACK" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=38" target="_blank" onClick="openHelp('38'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		<input type="submit" name="GO_BACK" value="Tillbaka">&nbsp; <a href="@documentationurl@GetDoc?meta_id=38" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	  </form>
 	  &nbsp; <font size="2"> </font> </td>
 	<td width="5%" height="24">&nbsp;</td>

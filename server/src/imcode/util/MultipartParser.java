@@ -8,21 +8,19 @@ import org.apache.log4j.Category;
 	Parses MIME multipart/* data into parts and MIME-headers.
 */
 
-public class MultipartParser {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+class MultipartParser {
 
-	private static Category log = Category.getInstance("server");
-	String bodies[] ;	// Contains the MIME-bodies
-	Properties headers[] ;	//Contains the MIME-headers
-	Hashtable headparams[] ;	//Contains a Hashtable of Properties to keep track of the parameters for each individual header.
+    private static Category log = Category.getInstance("server");
+	private String[] bodies ;	// Contains the MIME-bodies
+	private Properties[] headers ;	//Contains the MIME-headers
+	private Hashtable[] headparams ;	//Contains a Hashtable of Properties to keep track of the parameters for each individual header.
 	
 	/**
 		Parses the multipartdata into parts.
 		@param data The multipartdata.
 		@param contenttype The MIME-header "Content-Type" for the data. Must contain a 'boundary=" "' parameter.
 	*/
-	public MultipartParser (byte data[], String contenttype) {
+    MultipartParser (byte data[], String contenttype) {
 		try {
 			parse (new String(data,"8859_1"),contenttype) ;
 		} catch ( java.io.UnsupportedEncodingException ex ) {
@@ -34,7 +32,7 @@ public class MultipartParser {
 		@param data The multipartdata.
 		@param contenttype The MIME-header "Content-Type" for the data. Must contain a 'boundary=" "' parameter.
 	*/
-	public MultipartParser (String data, String contenttype) {
+    MultipartParser (String data, String contenttype) {
 		parse (data,contenttype) ;
 	}
 	
@@ -111,26 +109,8 @@ public class MultipartParser {
 	public String getBody (int part) {
 		return bodies[part] ;
 	}
-	/**
-		Gets the MIME-headers from a part.
-		@param part The part to get the header from.
-		@return A propertylist containing the headers.
-	*/
-	public Properties getHeaders (int part) {
-		return headers[part] ;
-	}
-	
-	/**
-		Gets a single MIME-header from a part.
-		@param part The part to get the header from.
-		@param name The name of the header.
-		@return The value of the header.
-	*/
-	public String getHeader (int part, String name) {
-		return headers[part].getProperty(name) ;
-	}
-	
-	/**
+
+    /**
 		Gets the parameters of a single MIME-header from a part.
 		@param part The part to get the header from.
 		@param name The name of the header.

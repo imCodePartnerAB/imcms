@@ -4,10 +4,8 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-public class ReadTextFile {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-    
+class ReadTextFile {
+
     public synchronized static String getFile(File theFile) {
         String retStr = "" ;
         try {
@@ -35,16 +33,7 @@ public class ReadTextFile {
         return retStr ;
         
     }
-    
-        /**
-         *  Helper method for logging message to the console.
-         */
-    protected void log(Object msg) {
-        
-        System.out.println("SettingsDataAccessor: " + msg);
-    }
-    
-    
+
 } // End of class
 
 

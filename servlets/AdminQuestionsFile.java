@@ -10,11 +10,8 @@ import java.text.*;
 
 
 public class AdminQuestionsFile extends Administrator implements imcode.server.IMCConstants {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String ADMIN_TEMPLATE  = "admin_questions_file.html" ;
-    private final static String OPTION_LINE	= "option_line.frag" ;
     private final static String DATE_ERROR		= "date_err_msg.frag" ;
     private final static String TEXT_ERROR		= "text_err_msg.frag" ;
 
@@ -219,7 +216,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
     }//end doPost()
 
-    private StringBuffer createOptionList(HttpServletRequest req, List lines, IMCServiceInterface imcref, imcode.server.User user ) throws ServletException, IOException {
+    private StringBuffer createOptionList(HttpServletRequest req, List lines, IMCServiceInterface imcref, imcode.server.User user ) {
 	StringBuffer buff = new StringBuffer();
 	int counter = 0;
 	Iterator iter = lines.iterator();
@@ -231,7 +228,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	return buff;
     }
 
-    private void addLineToList(HttpServletRequest req, List lines) throws ServletException, IOException{
+    private void addLineToList(HttpServletRequest req, List lines) {
 	String	date1 = (req.getParameter("date1")).trim();
 	String	date2 = (req.getParameter("date2")).trim();
 	String	text = (req.getParameter("text")).trim();
@@ -270,7 +267,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	return true;
     }
 
-    private List getNewQuestion(IMCServiceInterface imcref,String whichFile) throws ServletException, IOException {
+    private List getNewQuestion(IMCServiceInterface imcref,String whichFile) {
 
 	List questionList = imcref.getQuoteList(whichFile+".poll.txt") ;
 

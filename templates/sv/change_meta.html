@@ -1,15 +1,7 @@
 <html>
 <head>
-<title>Admin - L&auml;gga till nytt dokument</title>
+<title>Admin - Redigera dokumentinformation</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-<SCRIPT language=JavaScript>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
 
 </head>
 <body bgcolor="#FFFFFF">
@@ -61,7 +53,7 @@ function openHelp(id){
 			<td></form><form name="abortForm" action="GetDoc"><input type="hidden" name="meta_id" value="#meta_id#">&nbsp;</td>
 			<td><input TYPE="button" value="Avbryt" onClick="document.forms.abortForm.submit(); return false"></td>
 			<td></form>&nbsp;</td>
-			<td><a href="GetDoc?meta_id=39" target="_blank" onClick="openHelp('39'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+			<td><a href="@documentationurl@GetDoc?meta_id=39" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
 		</tr>
 		</table></td>
 	</tr>

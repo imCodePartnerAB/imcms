@@ -9,8 +9,6 @@ import java.rmi.registry.* ;
 import imcode.util.* ;
 
 public class BillBoardHelp extends BillBoard {//ConfHelp
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String USER_TEMPLATE = "BillBoard_help_user.htm";//Conf_help_user.htm
     private final static String ADMIN_TEMPLATE = "BillBoard_help_admin.htm";//Conf_help_admin.htm
@@ -24,7 +22,7 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 
 	// Lets get all parameters for this servlet
 	Properties params = this.getParameters(req) ;
-	if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 	    return ;
 	}
 
@@ -77,13 +75,12 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
        Collects all the parameters used by this servlet
     **/
 
-    public Properties getParameters( HttpServletRequest req)
-	throws ServletException, IOException {
+    private Properties getParameters( HttpServletRequest req) {
 
-	Properties params = super.getSessionParameters(req) ;
+	Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
 
 	// Lets get the EXTENDED SESSION PARAMETERS
-	super.getExtSessionParameters(req, params) ;
+	super.addExtSessionParametersToProperties(req, params) ;
 
 	// Lets get our REQUESTPARAMETERS
 	String helpInfo = (req.getParameter("helparea")==null) ? "" : (req.getParameter("helparea")) ;
@@ -108,15 +105,6 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 	    this.doPost(req,res) ;
 	else
 	    this.doPost(req,res) ;
-    }
-
-
-    /**
-       Init
-    **/
-
-    public void init(ServletConfig config) throws ServletException {
-	super.init(config);
     }
 
     /**

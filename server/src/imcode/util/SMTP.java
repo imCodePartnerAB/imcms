@@ -10,15 +10,13 @@ import java.util.*;
    @version $Revision$
 */
 public class SMTP {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
-    protected PrintStream out;
-    protected BufferedReader in;
-    protected Socket sock ;
-    String host ;
-    int port ;
-    int timeout ;
+    private PrintStream out;
+    private BufferedReader in;
+    private Socket sock ;
+    private String host ;
+    private int port ;
+    private int timeout ;
 
     /**
        Connects to an SMTP-server
@@ -37,7 +35,7 @@ public class SMTP {
 	connect() ;
     }
 
-    public void connect () throws IOException, ProtocolException, IllegalArgumentException {
+    private void connect () throws IOException, ProtocolException, IllegalArgumentException {
 	sock = new Socket(host,port);
 	if (timeout <= 0)
 	    throw new IllegalArgumentException("Illegal timeout set.");
@@ -56,7 +54,7 @@ public class SMTP {
        @exception ProtocolException Is thrown whenever an errormessage is received from the server, i.e. an SMTP-protocol error.
        @exception IOException Thrown when an I/O-error occurs, or the connection times out.
     */
-    protected void greetServer () throws UnknownHostException, ProtocolException, IOException {
+    private void greetServer () throws UnknownHostException, ProtocolException, IOException {
 	InetAddress localHost = InetAddress.getLocalHost();
 	String greet = "HELO " + localHost.getHostAddress();
 	sendLine(greet);
@@ -70,7 +68,7 @@ public class SMTP {
 
        @return The three digit result code
     */
-    protected int readStatus () throws IOException {
+    private int readStatus () throws IOException {
 	String temp = readResponse();
 	if (temp.length()<=3)
 	    return 0;
@@ -83,7 +81,7 @@ public class SMTP {
        @param str The string.
        @return The three digit result code
     */
-    protected int status (String str) {
+    private int status (String str) {
 	try {
 	    return Integer.parseInt(str.substring(0,3));
 	} catch (NumberFormatException e) {
@@ -97,7 +95,7 @@ public class SMTP {
 
        @exception IOException Thrown when an I/O-error occurs, or if the connection times out.
     */
-    protected String readResponse () throws IOException {
+    private String readResponse () throws IOException {
 	String tmp;
 	String temp="";
 	while (true) {
@@ -121,7 +119,7 @@ public class SMTP {
 
        @param line The line to send.
     */
-    protected void sendLine (String line) throws IOException {
+    private void sendLine (String line) throws IOException {
 	//Remove comments to print all lines sent to the server to System.out.
 	//System.out.println(line);
 	out.print(line+"\r\n");
@@ -133,7 +131,7 @@ public class SMTP {
     /**
        Resets the state of the server. This aborts the current mail, and prepares for a new one.
     */
-    public void resetServer () throws ProtocolException, IOException {
+    private void resetServer () throws ProtocolException, IOException {
 	if (sock == null) {
 	    throw new IOException("Connection closed.");
 	}
@@ -152,12 +150,12 @@ public class SMTP {
        @exception ProtocolException Is thrown whenever an errormessage is received from the server, i.e. an SMTP-protocol error.
        @exception IOException Thrown when an I/O-error occurs, or if the connection times out.
     */
-    public void giveSender (String address) throws ProtocolException, IOException {
+    private void giveSender (String address) throws ProtocolException, IOException {
 	if (sock == null) {
 	    throw new IOException("Connection closed.");
 	}
 	address.trim();
-	String mail = "MAIL FROM:<"+address+">";
+	String mail = "MAIL FROM: <"+address+">";
 	sendLine(mail);
 	String resp = readResponse();
 	if (status(resp)!=250) {
@@ -175,7 +173,7 @@ public class SMTP {
        @exception ProtocolException Is thrown whenever an errormessage is received from the server, i.e. an SMTP-protocol error.
        @exception IOException Thrown when an I/O-error occurs, or the connection times out.
     */
-    public void giveRecipient (String address) throws ProtocolException, IOException {
+    private void giveRecipient (String address) throws ProtocolException, IOException {
 	if (sock == null) {
 	    throw new IOException("Connection closed.");
 	}
@@ -197,7 +195,7 @@ public class SMTP {
        @exception ProtocolException Is thrown whenever an errormessage is received from the server, i.e. an SMTP-protocol error.
        @exception IOException Thrown when an I/O-error occurs, or the connection times out.
     */
-    public void giveMail (String msg) throws ProtocolException, IOException {
+    private void giveMail (String[] headers, String msg) throws ProtocolException, IOException {
 	if (sock == null) {
 	    throw new IOException("Connection closed.");
 	}
@@ -207,6 +205,11 @@ public class SMTP {
 	    throw new ProtocolException("DATA response is: "+resp);
 	}
 	StringBuffer sb = new StringBuffer();
+	for (int i = 0; i < headers.length; ++i) {
+	    String header = headers[i] ;
+	    sb.append(header).append("\r\n") ;
+	}
+	sb.append("\r\n") ;
 	StringTokenizer st = new StringTokenizer(msg,"\r\n");
 	while (st.hasMoreTokens()) {
 	    String temp = st.nextToken();
@@ -222,18 +225,6 @@ public class SMTP {
 	if (status(resp)!=250 && status(resp)!=251) {
 	    throw new ProtocolException("DATA-body response is: "+resp);
 	}
-    }
-
-    /**
-       Shuts down the connection to the server. Should always be done when finished.
-
-       @exception IOException Thrown when an I/O-error occurs, or the connection times out.
-    */
-    public void close () throws IOException {
-	sendLine("QUIT");
-	readResponse();
-	sock.close();
-	sock = null ;
     }
 
     /**
@@ -270,7 +261,7 @@ public class SMTP {
        @exception ProtocolException Is thrown whenever an errormessage is received from the server, i.e. an SMTP-protocol error.
        @exception IOException Thrown when an I/O-error occurs, or if the connection times out.
     */
-    public void sendMailWait (String from, String[] to, String subject, String msg) throws ProtocolException, IOException {
+    private void sendMailWait (String from, String[] to, String subject, String msg) throws ProtocolException, IOException {
 	if (sock == null) {
 	    connect () ;
 	}
@@ -289,13 +280,16 @@ public class SMTP {
 	    toAddressesString.append(to[i]) ;
 	    giveRecipient(to[i]) ;
 	}
-	StringBuffer toString = new StringBuffer() ;
-	String temp = "From: "+from+"\r\nTo: "+toAddressesString.toString()+"\r\n";
-	if (subject!=null) {
-	    temp+="Subject: "+subject+"\r\n";
-	}
-	temp+=msg;
-	giveMail(temp);
+	String fromHeader = "From: "+from ;
+	String toHeader = "To: "+toAddressesString.toString() ;
+	String subjectHeader = "Subject: " + (subject == null ? "" : subject) ;
+
+	String[] headers = new String[] {
+	    fromHeader,
+	    toHeader,
+	    subjectHeader,
+	} ;
+	giveMail(headers,msg);
     }
 
 }

@@ -77,7 +77,7 @@ public class DeUmlaut
 	}
     }
 
-    static String fixText(String text) {
+    private static String fixText(String text) {
 	text = replaceString(text, "\n<BR>",    "\n") ;
 	text = replaceString(text, "\r<BR>",    "\r") ;
 
@@ -89,7 +89,7 @@ public class DeUmlaut
 	return text ;
     }
 
-    static String fixHtml(String text) {
+    private static String fixHtml(String text) {
 
 	text = replaceString(text, "&aring;",   "å") ;
 	text = replaceString(text, "&Aring;",   "Å") ;
@@ -117,7 +117,7 @@ public class DeUmlaut
 	return text ;
     }
 
-    static String replaceString(String text, String patternString, String replaceWith) {
+    private static String replaceString(String text, String patternString, String replaceWith) {
 	StringBuffer result = new StringBuffer() ;
 	int lastindex = 0 ;
 	int length = patternString.length() ;

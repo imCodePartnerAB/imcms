@@ -37,15 +37,8 @@ import imcode.server.* ;
 */
 
 public class TellaFriendMail extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	public void init(ServletConfig config) throws ServletException {
-
-		super.init(config);
-	}
-
-	/**
+    /**
         * Showing input document whit out error
         */
 

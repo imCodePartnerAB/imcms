@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Du &auml;r utloggad</title>
+<title>Logga in</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 </head>
@@ -17,7 +17,7 @@
 </tr>
 <tr>
 	<td colspan="4" align="center">
-	<font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#cc0000">Du har inte beh&ouml;righet till det h&auml;r dokumentet!</font></td>
+	<font size="2" face="Verdana, Arial, Helvetica, sans-serif">F&ouml;r att komma vidare m&aring;ste Du logga in. <br>Ange Ditt anv&auml;ndarnamn och l&ouml;senord nedan.</font></td>
 </tr>
 <tr>
 	<td colspan="4">&nbsp;</td>
@@ -28,7 +28,7 @@
 	<table border="0" cellpadding="1" cellspacing="0">
 	<form action="@servleturl@/VerifyUser" method="post">
 	<tr>
-		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Namn:</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Anv&auml;ndarnamn:&nbsp;</font></td>
 		<td><input type="text" name="name" size="15"></td>
 	</tr>
 	<tr>
@@ -37,11 +37,26 @@
 	</tr>
 	<tr>
 		<td>&nbsp;</td>
-		<td><input type="submit" name="Logga in" value="Logga in">&nbsp;<a href="javascript:openHelp('54');"><img alt="&Ouml;ppna hj&auml;lpsidan" border="0" height="21" src="@imageurl@/se/helpimages/btn_help_round.gif" width="19"></a></td>
+		<td><input type="submit" name="Logga in" value="Logga in">&nbsp;<a href="javascript:openHelp('54');"><img alt="&Ouml;ppna hj&auml;lpsidan" border="0" height="21" src="@imcmsimageurl@/btn_help_round.gif" width="19"></a></td>
 	</tr>
 	</form>
 	</table></td>
 	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td>
+	 <table border="0" cellspacing="0" cellpadding="0" width="100%">
+	  <tr>
+		 <td align="left"><a href="@servleturl@/PasswordMailReminder">Jag har gl&ouml;mt mitt l&ouml;senord.</a></td>
+     <td align="right"><a href="@servleturl@/StartDoc">Till startsidan.</a></td>
+		</tr>
+	 </table>
+	</td>
+  <td colspan="2">&nbsp;</td>
 </tr>
 <tr>
 	<td colspan="4">&nbsp;</td>

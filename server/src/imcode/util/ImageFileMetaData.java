@@ -12,47 +12,45 @@ import org.apache.log4j.Category;
  * @version 0.2
  **/
 public class ImageFileMetaData {
-    private final static String CVS_REV  = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /** PNG Header Byte Sequence 0x **/
-    public static final byte[] PNG_HEADER = { -119, 80, 78, 71, 13, 10, 26, 10 } ;
+    private static final byte[] PNG_HEADER = { -119, 80, 78, 71, 13, 10, 26, 10 } ;
 
     /** JPEG Start of segment marker **/
-    public static final int MARKER = 0xFF ;
+    private static final int MARKER = 0xFF ;
 
     /** JPEG Start of Image **/
-    public static final int SOI  = 0xD8 ;
+    private static final int SOI  = 0xD8 ;
 
     /** JPEG Start of frame 0 **/
-    public static final int SOF0 = 0xC0 ;
+    private static final int SOF0 = 0xC0 ;
 
     /** JPEG Start of frame 1 **/
-    public static final int SOF1 = 0xC1 ;
+    private static final int SOF1 = 0xC1 ;
 
     /** JPEG Start of frame 2 **/
-    public static final int SOF2 = 0xC2 ;
+    private static final int SOF2 = 0xC2 ;
 
     /** JPEG Start of frame 3 **/
-    public static final int SOF3 = 0xC3 ;
+    private static final int SOF3 = 0xC3 ;
 
     /** JPEG JFIF Segment Marker **/
-    public static final int APP0 = 0xE0 ;
+    private static final int APP0 = 0xE0 ;
 
     /** JPEG Start of Scan **/
-    public static final int SOS  = 0xDA ;
+    private static final int SOS  = 0xDA ;
 
     /** The width of the image **/
-    protected int width ;
+    private int width ;
 
     /** The height of the image **/
-    protected int height ;
+    private int height ;
 
     /** The image-file **/
-    protected File file ;
+    private File file ;
 
     /** The type of the image i.e. GIF87a, GIF89a, JFIF **/
-    protected String type ;
+    private String type ;
 
     private static Category log = Category.getInstance("server");
 
@@ -193,24 +191,6 @@ public class ImageFileMetaData {
     public int getHeight()
     {
 	return height;
-    }
-    /**
-     * getName
-     * @param none
-     * @return filename
-     **/
-    public String getName()
-    {
-	return file.getName();
-    }
-    /**
-     * getType
-     * @param none
-     * @return imagetype (returns GIF87a or GIF89a for GIF-files, nothing yet for JPG-files)
-     **/
-    public String getType()
-    {
-	return type;
     }
 
     /*

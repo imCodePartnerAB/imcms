@@ -10,7 +10,7 @@ public class ShoppingCart {
 
     private static Logger log = Logger.getLogger( ShoppingCart.class.getName() ) ;
 
-    Map cart = Collections.synchronizedMap(new HashMap()) ;
+    private Map cart = Collections.synchronizedMap(new HashMap()) ;
 
     public void putItem(ShoppingItem item, int quantity) {
 	log.debug("Putting "+quantity+" of item with price "+item.getPrice()) ;

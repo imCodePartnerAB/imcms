@@ -8,9 +8,8 @@ import java.io.File ;
 */
 
 public class WebAppGlobalConstants {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	private static WebAppGlobalConstants singletonInstance;
+
+    private static WebAppGlobalConstants singletonInstance;
 	
 	/** 
 	* This must be called before any other method is called.

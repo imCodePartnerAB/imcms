@@ -1,17 +1,16 @@
-import imcode.server.* ;
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import imcode.external.diverse.* ;
-import java.rmi.* ;
-import java.rmi.registry.* ;
+import imcode.external.diverse.MetaInfo;
+import imcode.external.diverse.VariableManager;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Properties;
 
 public class ConfViewer extends Conference {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
+	private String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
@@ -23,9 +22,9 @@ public class ConfViewer extends Conference {
 		// Properties params = super.getParameters(req) ;
 
 		// Lets get the standard SESSION parameters and validate them
-		Properties params = super.getSessionParameters(req) ;
+		Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getConferenceSessionParameters(req)) ;
 
-		if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 
 			/*
 			String header = "ConfViewer servlet. " ;

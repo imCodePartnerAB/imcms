@@ -9,8 +9,7 @@ import imcode.util.* ;
 
 
 public class AdminCounter extends Administrator {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+
     private final static String HTML_TEMPLATE = "AdminCounter.htm" ;
 
     /**
@@ -24,15 +23,15 @@ public class AdminCounter extends Administrator {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	// Lets validate the session
-	if (super.checkSession(req,res) == false)	return ;
+	if (checkSession(req,res) == false)	return ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.User user = getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminCounter." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;
 	    this.log(header + msg) ;
-	    AdminError err = new AdminError(req,res,header,msg) ;
+	    new AdminError(req,res,header,msg) ;
 	    return ;
 	}
 
@@ -41,7 +40,7 @@ public class AdminCounter extends Administrator {
 	    String header = "Error in AdminCounter." ;
 	    String msg = "The user is not an administrator."+ "<BR>" ;
 	    this.log(header + msg) ;
-	    AdminError err = new AdminError(req,res,header,msg) ;
+	    new AdminError(req,res,header,msg) ;
 	    return ;
 	}
 
@@ -64,17 +63,17 @@ public class AdminCounter extends Administrator {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 	// Lets validate the session
-	if (super.checkSession(req,res) == false) return ;
+	if (checkSession(req,res) == false) return ;
 
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.User user = getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminCounter." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;
 	    this.log(header + msg) ;
-	    AdminError err = new AdminError(req,res,header,msg) ;
+	    new AdminError(req,res,header,msg) ;
 	    return ;
 	}
 
@@ -82,13 +81,9 @@ public class AdminCounter extends Administrator {
 	    String header = "Error in AdminCounter." ;
 	    String msg = "The user is not an administrator."+ "<BR>" ;
 	    this.log(header + msg) ;
-	    AdminError err = new AdminError(req,res,header,msg) ;
+	    new AdminError(req,res,header,msg) ;
 	    return ;
 	}
-
-	// Ok, we passed, Lets check what the admin wants to do
-	// First, lets prepare the output to the htmlpage
-	VariableManager vm = new VariableManager() ;
 
 	// ***** RETURN TO ADMIN MANAGER *****
 	if( req.getParameter("CancelCounter") != null) {
@@ -102,19 +97,16 @@ public class AdminCounter extends Administrator {
 	    Properties props = this.getParameters(req) ;
 	    String userVal = props.getProperty("COUNTER_VALUE") ;
 	    //this.log("The user values was: " + userVal) ;
-	    String msg = "" ;
 	    int theUserInt = 0 ;
 
 	    boolean ok = true ;
 	    try {
 		if ( userVal.equals(""))  {
-		    msg = "Error: a counterValue couldnt be identified!" ;
 		    ok = false ;
 		}
 		theUserInt = Integer.parseInt(userVal) ;
 
 	    } catch (Exception e) {
-		msg = "Error: You must write numbers!" ;
 		ok = false ;
 	    }
 
@@ -127,8 +119,7 @@ public class AdminCounter extends Administrator {
 	if( req.getParameter("setDate") != null) {
 	    // Lets get the parameter and validate it
 	    String date = (req.getParameter("date_value")==null) ? "" : (req.getParameter("date_value")) ;
-	    boolean ok = imcref.setCounterDate(date) ;
-	    if(!ok)	log("Serverdate couldnt be set") ;
+	    imcref.setCounterDate(date) ;
 	    this.doGet(req, res) ;
 	    return ;
 	}
@@ -140,8 +131,7 @@ public class AdminCounter extends Administrator {
        Collects the parameters from the request object
     **/
 
-    public Properties getParameters( HttpServletRequest req)
-	throws ServletException, IOException {
+    private Properties getParameters( HttpServletRequest req) {
 
 	Properties reqParams = new Properties() ;
 	// Lets get the parameters we know we are supposed to get from the request object
@@ -150,19 +140,6 @@ public class AdminCounter extends Administrator {
 
 	return reqParams ;
     }
-
-
-    /**
-       Init: Detects paths and filenames.
-    */
-
-    public void init(ServletConfig config)
-	throws ServletException
-    {
-
-	super.init(config);
-    }
-
 
     /**
        Log function, will work for both servletexec and Apache

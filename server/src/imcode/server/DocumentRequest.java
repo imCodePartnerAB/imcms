@@ -1,69 +1,69 @@
-package imcode.server ;
+package imcode.server;
 
-import imcode.server.parser.* ;
+import javax.servlet.http.HttpServletRequest;
+
+import imcode.server.parser.*;
 
 /**
-   This class exists to store data about requests for documents in.
-**/
-public class DocumentRequest {
+ This class exists to store data about requests for documents in.
+ **/
+public class DocumentRequest implements Cloneable {
 
-    private String   remoteAddr ;
-    private String   sessionId ;
-    private String   userAgent ;
+    private HttpServletRequest httpServletRequest;
 
-    private User     user ;
-    private Document document ;
-    private Document referrer ;
+    private User user;
+    private Document document;
+    private Document referrer;
 
-    private IMCServiceInterface serverObject ;
-    private  Revisits            revisits ;
+    private IMCServiceInterface serverObject;
+    private Revisits revisits;
 
-    public DocumentRequest(IMCServiceInterface serverObject, String remoteAddr, String sessionId, User user, int metaId, Document referrer) {
-	this.serverObject = serverObject ;
-	this.remoteAddr   = remoteAddr ;
-	this.sessionId    = sessionId ;
-	this.user         = user ;
-	this.document     = serverObject.getDocument(metaId) ;
-	this.referrer     = referrer ;
+    public DocumentRequest( IMCServiceInterface serverObject, User user, int metaId, Document referrer, HttpServletRequest httpServletRequest ) {
+        this.serverObject = serverObject;
+        this.user = user;
+        this.httpServletRequest = httpServletRequest;
+        this.document = serverObject.getDocument( metaId );
+        this.referrer = referrer;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone() ;
     }
 
     public IMCServiceInterface getServerObject() {
-	return this.serverObject ;
+        return this.serverObject;
     }
 
-    public void setRevisits(Revisits revisits) {
-	this.revisits= revisits;
+    public void setRevisits( Revisits revisits ) {
+        this.revisits = revisits;
     }
 
     public Revisits getRevisits() {
-	return this.revisits ;
-    }
-
-    public String getRemoteAddr() {
-	return this.remoteAddr ;
-    }
-
-    public String getSessionId() {
-	return this.sessionId ;
+        return this.revisits;
     }
 
     public User getUser() {
-	return this.user ;
+        return this.user;
     }
 
     public Document getDocument() {
-	return document ;
+        return document;
     }
 
     public Document getReferrer() {
-	return referrer ;
+        return referrer;
     }
 
-    public void setUserAgent(String userAgent) {
-	this.userAgent = userAgent ;
+    public void setDocument( Document document ) {
+        this.document = document;
     }
 
-    public String getUserAgent() {
-	return this.userAgent ;
+    public void setReferrer( Document referrer ) {
+        this.referrer = referrer;
     }
+
+    public HttpServletRequest getHttpServletRequest() {
+        return httpServletRequest;
+    }
+
 }

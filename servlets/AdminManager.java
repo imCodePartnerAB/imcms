@@ -10,11 +10,10 @@ import imcode.util.* ;
 
 
 public class AdminManager extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-    String HTML_TEMPLATE ;
-	String HTML_ADMINTASK;
-	String HTML_USERADMINTASK;
+
+    private String HTML_TEMPLATE ;
+	private String HTML_ADMINTASK;
+	private String HTML_USERADMINTASK;
     /**
        The GET method creates the html page when this side has been
        redirected from somewhere else.

@@ -9,9 +9,7 @@ import javax.sql.* ;
 
 import org.apache.log4j.Category;
 
-public class InetPoolManager {
-    private final static String CVS_REV  = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
+class InetPoolManager {
 
     // Inet poolmanager
     private PoolManager manager ;
@@ -25,7 +23,7 @@ public class InetPoolManager {
     // Properties for the DataSource. Why, oh why, does not DataSource have something like that?
     private Properties props ;
 
-    public InetPoolManager(String serverName, Properties props) throws SQLException {
+    InetPoolManager(String serverName, Properties props) throws SQLException {
 
 	this.props = props ;
 
@@ -129,14 +127,14 @@ public class InetPoolManager {
     /**
        return used connections
     */
-    public int getUsedConnectionCount() {
+    private int getUsedConnectionCount() {
 	return manager.getUsedConnectionCount() ;
     }
 
     /**
        return max connections
     */
-    public int getMaxConnectionCount() {
+    private int getMaxConnectionCount() {
 	return manager.getMaxConnectionCount() ;
     }
 }

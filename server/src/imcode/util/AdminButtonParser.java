@@ -5,11 +5,9 @@ package imcode.util ;
 	permissions (v.1.3). Used for parsing the adminbuttons.
 */
 public class AdminButtonParser extends imcode.util.FileTagReplacer {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	
-	protected int set_id ;
-	protected int set ;
+
+    private int set_id ;
+	private int set ;
 
 	/**
 		Creates an AdminButtonParser.

@@ -36,10 +36,8 @@ import java.rmi.registry.* ;
  */
 
 public class BillBoardDiscView extends BillBoard {//ConfDiscView
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
-    String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
+    private String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
@@ -57,9 +55,9 @@ public class BillBoardDiscView extends BillBoard {//ConfDiscView
 	// Properties params = super.getParameters(req) ;
 
 	// Lets get the standard SESSION parameters and validate them
-	Properties params = super.getSessionParameters(req) ;
+	Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
 
-	if (super.checkParameters(req, res, params) == false)
+        if (true == false)
 	    {
 
 		String header = "BillBoardViewer servlet. " ;

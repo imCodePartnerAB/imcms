@@ -6,39 +6,28 @@ import java.util.*;
 import imcode.util.* ;
 
 public class ReDirecter extends HttpServlet {
-		
-	private final static int METAID_OFFSET_FROM_REDIRECT_STRING=3;
-	private final static String REDIRECT_STRING="RD";
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException
-    {
-		String host = req.getHeader("host");
-		String servlet_url	= Utility.getDomainPref( "servlet_url",host );
-        //String[] sURI=req.getRequestURI().split("/");
-		String reqa=req.getRequestURI();
-		String[] sURI=split(reqa,'/',true);
+    private final static int METAID_OFFSET=1;
 
-		for (int i=1; i<sURI.length; i++ ){
-			if (sURI[i].equals(REDIRECT_STRING) ){
-				if (sURI.length<=i+METAID_OFFSET_FROM_REDIRECT_STRING)
-				{
-					res.sendRedirect(servlet_url + "StartDoc");
-					break;
-				}else{
-					res.sendRedirect(servlet_url + "GetDoc?meta_id=" + sURI[i+METAID_OFFSET_FROM_REDIRECT_STRING]);
-					break;
-				}
-			}
-		}
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
+	String host = req.getHeader("host");
+	String servlet_url	= Utility.getDomainPref( "servlet_url",host );
+	String[] pathElements = split(req.getPathInfo(),'/',false);
+
+	if (pathElements.length > METAID_OFFSET) {
+	    res.sendRedirect(servlet_url + "GetDoc?meta_id=" + pathElements[METAID_OFFSET]);
+	} else {
+	    res.sendRedirect(servlet_url + "StartDoc");
+	}
     }
 
-	private static String[] split (String input, char splitChar, boolean includeSeparators) {
-		StringTokenizer tokenizer = new StringTokenizer(input,""+splitChar,includeSeparators) ;
-		String[] output = new String[tokenizer.countTokens()] ;
-		
-		for (int i = 0; i < output.length; ++i) {
-			output[i] = tokenizer.nextToken() ;
-		}
-		return output ;
+    private static String[] split (String input, char splitChar, boolean includeSeparators) {
+	StringTokenizer tokenizer = new StringTokenizer(input,""+splitChar,includeSeparators) ;
+	String[] output = new String[tokenizer.countTokens()] ;
+
+	for (int i = 0; i < output.length; ++i) {
+	    output[i] = tokenizer.nextToken() ;
+	}
+	return output ;
     }
 }

@@ -3,10 +3,8 @@ package imcode.server.parser ;
 import java.util.List ;
 
 public class SimpleText implements Text {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
-    String content ;
+    private String content ;
 
     public SimpleText(String text) {
 	content = text ;

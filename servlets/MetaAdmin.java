@@ -7,16 +7,10 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 public class MetaAdmin extends HttpServlet {
-        private final static String CVS_REV = "$Revision$" ;
-        private final static String CVS_DATE = "$Date$" ;
+
 		private final static int DEFAULT_META_START = 1001;
 
-        public void init(ServletConfig config) throws ServletException {
-                super.init(config) ;
-        }
-
-        public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-                String host                                 = req.getHeader("Host") ;
+    public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 				IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
                 String start_url                = imcref.getStartUrl() ;
 
@@ -50,8 +44,8 @@ public class MetaAdmin extends HttpServlet {
                         interval = 1000 ;
                 }
                 int start;
-                int min = Integer.parseInt(imcref.sqlQueryStr( "select min(meta_id) from meta")) ;
-                int max = Integer.parseInt(imcref.sqlQueryStr( "select max(meta_id) from meta")) ;
+                int min = Integer.parseInt(imcref.sqlQueryStr( "select min(meta_id) from meta", new String[0])) ;
+                int max = Integer.parseInt(imcref.sqlQueryStr( "select max(meta_id) from meta", new String[0])) ;
                 try {
                         start = Integer.parseInt(req.getParameter("start")) ;
                         list = true ;
@@ -76,7 +70,7 @@ public class MetaAdmin extends HttpServlet {
 				String[] meta_id = {""};
 				
 				if ( list ){
-					hash = imcref.sqlProcedureHash( "getDocs "+user_id+","+start+","+end ) ;
+					hash = imcref.sqlProcedureHash( "GetDocs", new String[] { ""+user_id, ""+start, ""+end }) ;
                 	meta_id = (String[])hash.get("meta_id") ;
 					try {
 						end =  Integer.parseInt(meta_id[meta_id.length-1]);
@@ -152,8 +146,7 @@ public class MetaAdmin extends HttpServlet {
                         }
                         out.println("<A name=\""+meta_id[i]+"\" href=\"AdminDoc?meta_id="+meta_id[i]+"\"><FONT COLOR=\"#FF0000\">"+meta_id[i]+"</FONT></A>&nbsp;<A name=\""+meta_id[i]+"\" href=\"GetDoc?meta_id="+meta_id[i]+"\">"+type+",&nbsp;"+pc[i]+"&nbsp;parents&nbsp;:&nbsp;"+Parser.parseDoc(hl[i],pd)+"</A>") ;
                         if ( types[i].equals("2") ) {
-                                //Hashtable h2 = imcref.sqlQueryHash( "select to_meta_id, meta_headline from childs c join meta m on c.to_meta_id = m.meta_id where c.meta_id = "+meta_id[i]+" order by to_meta_id") ;
-                                Hashtable h2 = imcref.sqlProcedureHash( "getMenuDocChilds "+meta_id[i]+", "+user_id) ;
+                                Hashtable h2 = imcref.sqlProcedureHash( "GetMenuDocChilds", new String[] { meta_id[i],""+user_id }) ;
                                 String[] childs = (String[])h2.get("to_meta_id") ;
                                 String[] hl2 = (String[])h2.get("meta_headline") ;
                                 if ( childs != null && childs.length !=0 ) {
@@ -170,7 +163,7 @@ public class MetaAdmin extends HttpServlet {
                                         out.println("</ul>") ;
                                 }
                         } else if ( types[i].equals("6") ) {
-                                Hashtable h2 = imcref.sqlProcedureHash( "getBrowserDocChilds "+meta_id[i]+", "+user_id ) ;
+                                Hashtable h2 = imcref.sqlProcedureHash( "GetBrowserDocChilds", new String[] { meta_id[i], ""+user_id } ) ;
                                 String[] childs = (String[])h2.get("to_meta_id") ;
                                 String[] hl2 = (String[])h2.get("meta_headline") ;
                                 if ( childs != null && childs.length !=0 ) {

@@ -6,15 +6,11 @@ import org.apache.oro.util.* ;
 import org.apache.log4j.Category;
 
 public class FileCache {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
     private final int m_FileCacheSize = 50 ;
     private CacheLRU fileCache = new CacheLRU(m_FileCacheSize) ;
 
-    private static Category log = Category.getInstance("server") ;
-
-    protected StringBuffer loadFile(File file) throws IOException {
+    private StringBuffer loadFile(File file) throws IOException {
 	StringBuffer tempbuffer = new StringBuffer() ;
 	char[] charbuffer = new char[16384] ;
 	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));

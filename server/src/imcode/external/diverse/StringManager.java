@@ -9,28 +9,12 @@ import java.util.* ;
  * the carriage-return character, and the form-feed character.
  */
 
-public class StringManager {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-    String delim ;
-    String str ;
-    
-    
-    public StringManager(){
-        
-    }
-    
-    public StringManager(String anStr) {
-        delim = "\t\n\r\f"  ;
-        str = anStr ;
-    }
-    
-    public StringManager(String anStr, String aDelim){
-        delim = aDelim ;
-        str = anStr ;
-    }
-    
-/**
+class StringManager {
+
+    private String delim ;
+    private String str ;
+
+    /**
  * Returns wanted item from string, returns empty if itemnumber not found
  */
     

@@ -2,12 +2,10 @@ package imcode.util ;
 
 import java.util.*;
 
-public class ExStringTokenizer implements Enumeration {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+class ExStringTokenizer implements Enumeration {
 
-	LinkedList list;
-	public ExStringTokenizer (String str, String delim) {
+    private LinkedList list;
+	ExStringTokenizer (String str, String delim) {
 		list = new LinkedList();
 		int i;
 		while((i = str.indexOf(delim))!=-1) {

@@ -3,9 +3,9 @@
 --
 -- !!!! SET @metaStart and @metaMax before you run the script !!!! 
 
-declare @metaStart varchar(4), @metaMax varchar(4), @serverName varchar(35)
-set @metaStart = 0  --( 1 )
-set @metaMax = 0    --( 400 )
+declare @metaStart int, @metaMax int, @serverName varchar(35)
+set @metaStart = 0 --( 1 )
+set @metaMax = 0  --(400)
 
 if (select @metaStart) < 1 or (select @metaMax) < 1 or (select @metaStart) > (select @metaMax)
   begin
@@ -26,13 +26,14 @@ print''
 print'-- Soures database = ' + db_name() + ''
 print'-- Server = ' + @serverName + ''
 print'-- Create date = ' + convert(char(10),getDate(),120)+ ''
-print'-- Update intervall = meta_id from ' + @metaStart + ' to ' + @metaMax + '' 
+print'-- Update intervall = meta_id from ' + convert(varchar(3),@metaStart) + ' to ' + convert(varchar(3),@metaMax) + '' 
 print''
 
 
 -- Först måste vi kolla att det inte redan finns mallar med id 2 tom 5 för dessa skall vi använda till hjälpmallar'
 print ''
 print '--Först kollar vi att det inte redan finns mallar med id 2 tom 5 för dessa skall vi använda till hjälpmallar'
+print '--samt att vi hittar en befintlig mallgrupp för hjälpsidor'
 print ''
 print 'DECLARE @temp int 
 declare @message varchar(100)
@@ -40,8 +41,18 @@ SET @temp = 0
 SELECT @temp = template_id
 FROM templates
 WHERE ( template_id > 1 and template_id < 6 ) and template_name not like ''Help%''
-IF @temp > 0 
-	select ''Det finns befintliga mallar som måste bytas namn på. Detta görs genom att köra script remove_templates.sql. Läs manualen för att se hur man ska göra!'' as message'
+
+declare @groupId int
+select @groupId = group_id from templategroups
+where group_name like ''%imCMShelp''
+
+IF @temp > 0 OR @groupId IS NULL
+	begin
+	IF @temp > 0
+		select ''Det finns befintliga mallar som måste bytas namn på. Detta görs genom att köra script remove_templates.sql. Läs manualen för att se hur man ska göra!'' as message
+	IF @groupId IS NULL
+	    select ''Kan inte hitta id-nummret för mallgruppen för hjälpsidor, kolla group_name i tabellen templategroups!'' as message
+	end'
 print''
 print'else
 begin
@@ -110,7 +121,7 @@ ALTER TABLE [dbo].[user_rights] DROP CONSTRAINT FK_user_rights_meta'
 
 -- get all meta_id 
 print'--First delete all meta_id '
-print'DELETE FROM meta WHERE meta_id >= ' + @metaStart + ' and meta_id <= ' + @metaMax + ''
+print'DELETE FROM meta WHERE meta_id >= ' + convert(varchar(3),@metaStart) + ' and meta_id <= ' + convert(varchar(3),@metaMax) + ''
 print''
 print'--Lets insert all meta_id'
 print''
@@ -375,7 +386,7 @@ where meta_id >= @metaStart and meta_id <= @metaMax
 order by meta_id
 
 print'--delete old'
-print'DELETE FROM images WHERE meta_id >= ' + @metaStart + ' and meta_id <= ' + @metaMax + ''
+print'DELETE FROM images WHERE meta_id >= ' + convert(varchar(3),@metaStart) + ' and meta_id <= ' + convert(varchar(3),@metaMax) + ''
 print''
 print'--lets insert all new in images'
 print''		
@@ -410,7 +421,7 @@ where meta_id >= @metaStart and meta_id <= @metaMax
 order by meta_id
 
 print'--delete old '
-print'DELETE FROM texts WHERE meta_id >= ' + @metaStart + ' and meta_id <= ' + @metaMax + ''
+print'DELETE FROM texts WHERE meta_id >= ' + convert(varchar(3),@metaStart) + ' and meta_id <= ' + convert(varchar(3),@metaMax) + ''
 print''
 print '-- insert new '
 
@@ -453,20 +464,9 @@ declare @template_id varchar(4), @template_name varchar(80), @simple_name varcha
 
 print'-- drop constraints '
 print'
-if exists (select * from dbo.sysobjects where id = object_id(N''[dbo].[FK_templates_cref_templates]'') and OBJECTPROPERTY(id, N''IsForeignKey'') = 1)
-ALTER TABLE [dbo].[templates_cref] DROP CONSTRAINT FK_templates_cref_templates
+if exists (select * from dbo.sysobjects where id = object_id(N''[dbo].[FK_templates_cref_templates]'') and OBJECTPROPERTY(id, N''IsForeignKey'') = 1) ALTER TABLE [dbo].[templates_cref] DROP CONSTRAINT FK_templates_cref_templates  if exists (select * from dbo.sysobjects where id = object_id(N''[dbo].[FK_text_docs_templates]'') and OBJECTPROPERTY(id, N''IsForeignKey'') = 1) ALTER TABLE [dbo].[text_docs] DROP CONSTRAINT FK_text_docs_templates' 
 
-if exists (select * from dbo.sysobjects where id = object_id(N''[dbo].[FK_text_docs_templates]'') and OBJECTPROPERTY(id, N''IsForeignKey'') = 1)
-ALTER TABLE [dbo].[text_docs] DROP CONSTRAINT FK_text_docs_templates'
-
-print'-- insert new help_templates'
-
-print'-- first get group_id for ''imCMShelp'' from templategroups'
-print'declare @groupId int
-select @groupId = group_id from templategroups
-where group_name = ''imCMShelp'''
 print''
-
 print''
 print'-- delete old help-template from templates and from templates_cref '
 print'DELETE FROM templates 
@@ -503,24 +503,11 @@ deallocate posCursor
 print''
 print'-- add constraints
 
-ALTER TABLE [dbo].[text_docs] ADD 
-	CONSTRAINT [FK_text_docs_templates] FOREIGN KEY 
-	(
-		[template_id]
-	) REFERENCES [dbo].[templates] (
-		[template_id]
-	)
+ALTER TABLE [dbo].[text_docs] ADD  	CONSTRAINT [FK_text_docs_templates] FOREIGN KEY  	( 		[template_id] 	) REFERENCES [dbo].[templates] ( 		[template_id] 	)
 
 
-ALTER TABLE [dbo].[templates_cref] ADD 
-	CONSTRAINT [FK_templates_cref_templates] FOREIGN KEY 
-	(
-		[template_id]
-	) REFERENCES [dbo].[templates] (
-		[template_id]
-	)
-'
-
+ALTER TABLE [dbo].[templates_cref] ADD  	CONSTRAINT [FK_templates_cref_templates] FOREIGN KEY  	( 		[template_id] 	) REFERENCES [dbo].[templates] ( 		[template_id] 	)
+' 
 -- lets set templates for all help meta_ids
 
 print'-- lets set templates for all help meta_ids'
@@ -533,7 +520,7 @@ where meta_id >= @metaStart and meta_id <= @metaMax
 order by meta_id
 
 print'-- delete old text_docs'
-print'DELETE FROM text_docs WHERE meta_id >= ' + @metaStart + ' and meta_id <= ' + @metaMax + ''
+print'DELETE FROM text_docs WHERE meta_id >= ' + convert(varchar(3),@metaStart) + ' and meta_id <= ' + convert(varchar(3),@metaMax) + ''
 print''
 print'-- insert new text_docs'
 
@@ -564,7 +551,7 @@ where to_meta_id >= @metaStart and to_meta_id <= @metaMax
 order by meta_id, to_meta_id
 
 print'--delete old'
-print'DELETE FROM childs WHERE to_meta_id >= ' + @metaStart + ' and to_meta_id <= ' + @metaMax + ''
+print'DELETE FROM childs WHERE to_meta_id >= ' + convert(varchar(3),@metaStart) + ' and to_meta_id <= ' + convert(varchar(3),@metaMax) + ''
 print''
 
 print'--insert new'
@@ -590,7 +577,7 @@ print''
 declare @role_id varchar(2), @set_id varchar(2)
 
 print'--delete old'
-print'DELETE FROM roles_rights WHERE meta_id >= ' + @metaStart + ' and meta_id <= ' + @metaMax + ''
+print'DELETE FROM roles_rights WHERE meta_id >= ' + convert(varchar(3),@metaStart) + ' and meta_id <= ' + convert(varchar(3),@metaMax) + ''
 print''
 
 

@@ -1,15 +1,66 @@
-<table border="0" cellpadding="0" cellspacing="0">
-<tr>
-	<td align="center">
-	<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Id: #getMetaId#&nbsp;Typ: #doc_type#</font>&nbsp; <a href="GetDoc?meta_id=55" target="_blank" onClick="openHelpW('55'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan" align="absmiddle"></a><br>
-	
-	<a href="BackDoc"><img src="@adminbuttonsurl@/sv/foregaende.gif" border="0"></a>#doc_buttons##1##4#<a href="LogOut"><img src="@adminbuttonsurl@/sv/loggaut.gif" border="0"></a>#superadmin#</td>
-</tr>
-</table>
-<SCRIPT language=JavaScript>
+<style type="text/css">
 <!--
-function openHelpW(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
-}
+/*
+
+/* IMCMS SPECIFIC */
+
+/* imCMS label. Ändra utseende om så önskas. */
+
+.imcms_label, .imcms_label:link, .imcms_label:visited { font: 10px Verdana; color:#c00000; text-decoration:none; background-color:#ffffcc }
+.imcms_label:active, .imcms_label:hover { font: 10px Verdana; color:#000099; text-decoration:underline; background-color:#ffffcc }
+
+/* adminMode */
+
+#adminPanelDiv      { padding: 15 0 10 0; }
+ .adminPanelTable    { border: 2px outset; background-color:#d6d3ce; }
+  .adminPanelTd1      { padding:1px; }
+    #adminPanelTd1_1  { }
+      .adminPanelLogo  { font: bold 11px Verdana,Geneva,sans-serif; color:#a6a3be; letter-spacing:-1px; }
+    #adminPanelTd1_2  {  }
+      .adminPanelText  { font: 11px Verdana,Geneva,sans-serif; color:#000000; }
+    #adminPanelTd1_3  {  }
+  .adminPanelTd2      { padding:3px; height:32; vertical-align:top; }
+
+  .adminPanelTd2 A IMG { filter: }
+  .adminPanelTd2 A:hover IMG {
+     filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=0, xray=0, mirror=0, invert=0, opacity=0.5, rotation=0);
+     position:relative; top:+1; left:+1; }
+
+/* changePage */
+
+#changePageDiv { padding: 0 0 10 0; }
+#changePageTable { border: 2px outset; background-color:#d6d3ce; }
+#changePageTd1 { font: 10px Verdana,Geneva,sans-serif; color:#000000; }
+#changePageTd21 {  }
+#changePageTd22 {  }
+#changePageTd23 {  }
+#changePageTd24 {  }
+.changePageSelect { font: 10px Verdana,Geneva,sans-serif; color:#000000; }
+.changePageButton { background-color:#e0e0e0; font: 10px Verdana,Geneva,sans-serif; color:#000000; cursor:hand; cursor:pointer; }
+.changePageHeading { font: bold 12px Verdana,Geneva,sans-serif; color:#999999; }
+-->
+</style>
+<div id="adminPanelDiv">
+<table border="0" cellspacing="0" cellpadding="2" class="adminPanelTable">
+<tr>
+	<td class="adminPanelTd1">
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+		<td id="adminPanelTd1_1" width="25%">
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelLogo"><b>imCMS</b></font></td>
+		<td id="adminPanelTd1_2" width="50%" align="center" nowrap>
+		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelText">
+		<b>Id:</b> #getMetaId# &nbsp; <b>Typ:</b> #doc_type#</font></td>
+		<td id="adminPanelTd1_3" width="25%">&nbsp;</td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td class="adminPanelTd2" align="center">
+	<a href="BackDoc" id="admHrefBackdoc"><img src="@adminbuttonsurl@/sv/foregaende.gif" alt="Föregående" id="admBtnBackdoc" border="0"></a>#doc_buttons##1##4#<a href="LogOut" id="admHrefLoggaut"><img src="@adminbuttonsurl@/sv/loggaut.gif" alt="Logga ut" id="admBtnLoggaut" border="0"></a>#superadmin#<a href="@documentationurl@GetDoc?meta_id=1" target="_blank"  id="admHrefHelp"><img src="@adminbuttonsurl@/sv/help.gif" alt="&Ouml;ppna hj&auml;lpsidan" id="admBtnHelp" border="0"></a></td>
+</tr>
+</table></div>
+<SCRIPT language=JavaScript>
+
 //-->
 </SCRIPT>

@@ -24,9 +24,6 @@ function doClear(){
   f.target_name.value = "";
 }
 
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
 //-->
 </SCRIPT>
 
@@ -50,10 +47,12 @@ function openHelp(id){
 								<tr>
 									<td align="center" valign="top" bgcolor="#BABABA" colspan="2">
 										<input type="submit" name="ok" value="L&auml;gg till">
-										<input type="HIDDEN" name="meta_id" value="#getMetaId#"> <input type="HIDDEN" name="img_no" value="#img_no#">
+										<input type="HIDDEN" name="meta_id" value="#getMetaId#">
+										<input type="HIDDEN" name="img_no" value="#img_no#">
+										<INPUT TYPE="HIDDEN" NAME="label" VALUE="#label#">
 										&nbsp;<select name="folder" size="1">
 												#folders#
-											</select>&nbsp; <a href="GetDoc?meta_id=72" target="_blank" onClick="openHelp('72'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+											</select>&nbsp; <a href="@documentationurl@GetDoc?meta_id=72" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 										</td>
 								</tr>
 							</table>
@@ -65,9 +64,11 @@ function openHelp(id){
           
          		<INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
         		<INPUT TYPE="HIDDEN" NAME="img_no" VALUE="#img_no#">
+        		<INPUT TYPE="HIDDEN" NAME="label" VALUE="#label#">
           
         		</form>
 						<form name="imgProp" method="POST" action="SaveImage">
+						<INPUT TYPE="HIDDEN" NAME="label" VALUE="#label#">
 						<center>
 							<table border="1" align="center" width="450" cellpadding="3" cellspacing="0">
 								<tr bgcolor="#333366">
@@ -156,7 +157,7 @@ function openHelp(id){
 									<td bgcolor="#BABABA" colspan="2">
 										<center>
 											<input type="SUBMIT" value="OK" name="ok"> <input type="button" value="Rensa" onClick="doClear();"> <input type="SUBMIT" value="Avbryt" name="cancel">
-&nbsp;<a href="GetDoc?meta_id=72" target="_blank" onClick="openHelp('72'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></center>
+&nbsp;<a href="@documentationurl@GetDoc?meta_id=72" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></center>
 									</td>
 								</tr>
 								<input type="HIDDEN" name="meta_id" value="#getMetaId#"> <input type="HIDDEN" name="img_no" value="#img_no#">
@@ -164,6 +165,9 @@ function openHelp(id){
 						</center>
 <input type="HIDDEN" name="origW" value="#origW#">
 <input type="HIDDEN" name="origH" value="#origH#">
+<input type="HIDDEN" name="oldW" value="#imgWidth#">
+<input type="HIDDEN" name="oldH" value="#imgHeight#">
+
 						</form>
 					</td>
 				</tr>

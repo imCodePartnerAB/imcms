@@ -9,10 +9,8 @@ import imcode.server.* ;
   Save a new framesetdocument.
   */
 public class SaveNewFrameset extends HttpServlet {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
-	/**
+    /**
 	init()
 	*/
 	public void init(ServletConfig config) throws ServletException {
@@ -43,14 +41,7 @@ public class SaveNewFrameset extends HttpServlet {
 		// get new_meta_id
 		new_meta_id = Integer.parseInt(req.getParameter("new_meta_id")) ;                           	
 
-		// save form data
-		imcode.server.Table doc = new imcode.server.Table() ;
-		String frame_set =  req.getParameter("frame_set") ;                          	
-		String[] tmpary = {
-			"'",	"''"
-		} ;
-		frame_set = Parser.parseDoc(frame_set,tmpary) ;
-		doc.addField("frame_set",frame_set) ;
+		String frame_set =  req.getParameter("frame_set") ;
 
 		// Get the session
 		HttpSession session = req.getSession(true);
@@ -86,7 +77,7 @@ public class SaveNewFrameset extends HttpServlet {
 			    out.write(output) ;
 			}
 		} else {
-			imcref.saveNewFrameset(new_meta_id,user,doc) ;
+			imcref.saveNewFrameset(new_meta_id,user,frame_set) ;
 			String output = AdminDoc.adminDoc(new_meta_id,new_meta_id,user,req,res) ;
 			if ( output != null ) {
 			    out.write(output) ;

@@ -5,91 +5,73 @@
 <!-- Start log4j configuration -->
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
 
-  <!-- Renderer for DocumentRequest -->
-  <renderer
-    renderingClass="imcode.util.log.FakeRequestRenderer"
-    renderedClass="imcode.server.DocumentRequest"/>
+    <!-- Renderer for DocumentRequest -->
+    <renderer
+        renderingClass="imcode.util.log.FakeRequestRenderer"
+        renderedClass="imcode.server.DocumentRequest"/>
 
-  <!-- The accesslog (logs usermovements) -->
-  <appender name="ACCESS" class="imcode.util.log.WebAppFileAppender">
-    <param name="File" value="WEB-INF/logs/access.log"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern"
-	     value="%d{ISO8601} %m%n"/>
-    </layout>
-  </appender>
+    <!-- The accesslog (logs usermovements) -->
+    <appender name="ACCESS" class="imcode.util.log.DailyRollingFileAppender">
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="%d{ISO8601} %m%n"/>
+        </layout>
+    </appender>
 
-  <!--
-    Set up an asynchronous appender.
-    This slows everything down at little or no load,
-    but makes logging "free" under non-CPU-intensive high load.
-    If you are performance testing,
-    and find the the CPU is maxed out,
-    you should consider commenting this out,
-    and changing the category below.
-  -->
-  <appender name="ASYNCACCESS" class="org.apache.log4j.AsyncAppender">
-    <appender-ref ref="ACCESS"/>
-  </appender>
+    <appender name="WEBAPPACCESS" class="imcode.util.log.WebAppFileAppender">
+        <param name="File" value="WEB-INF/logs/access.log"/>
+        <appender-ref ref="ACCESS"/>
+    </appender>
 
-  <!-- The mainlog (captures edits and changes) -->
-  <appender name="MAIN" class="imcode.util.log.WebAppFileAppender">
-    <param name="File" value="WEB-INF/logs/main.log"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n"/>
-    </layout>
-  </appender>
+    <!-- The mainlog (captures edits and changes) -->
+    <appender name="MAIN" class="org.apache.log4j.FileAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %m%n"/>
+        </layout>
+    </appender>
 
-  <!--
-    Set up an asynchronous appender.
-    This slows everything down at little or no load,
-    but makes logging "free" under non-CPU-intensive high load.
-    If you are performance testing,
-    and find the the CPU is maxed out,
-    you should consider commenting this out,
-    and changing the category below.
-  -->
-  <appender name="ASYNCMAIN" class="org.apache.log4j.AsyncAppender">
-    <appender-ref ref="MAIN"/>
-  </appender>
+    <appender name="WEBAPPMAIN" class="imcode.util.log.WebAppFileAppender">
+        <param name="File" value="WEB-INF/logs/main.log"/>
+        <appender-ref ref="MAIN"/>
+    </appender>
 
-  <!-- The errorlog (captures everything that doesn't go to one of the above. -->
-  <appender name="ERROR" class="imcode.util.log.WebAppFileAppender">
-    <param name="File" value="WEB-INF/logs/error.log"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
-    </layout>
-  </appender>
+    <!-- The errorlog (captures everything that doesn't go to one of the above. -->
+    <appender name="ERROR" class="org.apache.log4j.FileAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c - %m%n"/>
+        </layout>
+    </appender>
 
-  <!--
-    Set up an asynchronous appender.
-    This slows everything down at little or no load,
-    but makes logging "free" under non-CPU-intensive high load.
-    If you are performance testing,
-    and find the the CPU is maxed out,
-    you should consider commenting this out,
-    and changing the category below.
-  -->
-  <appender name="ASYNCERROR" class="org.apache.log4j.AsyncAppender">
-    <appender-ref ref="ERROR"/>
-  </appender>
+    <appender name="WEBAPPERROR" class="imcode.util.log.WebAppFileAppender">
+        <param name="File" value="WEB-INF/logs/error.log"/>
+        <appender-ref ref="ERROR"/>
+    </appender>
 
-  <!-- Set up accesslog with priority 'debug' -->
-  <category name="accesslog" additivity="false">
-    <priority value="debug"/>
-    <appender-ref ref="ASYNCACCESS"/>
-  </category>
+    <appender name="SOCKETERROR" class="org.apache.log4j.net.SocketAppender">
+        <param name="Port" value="4445"/>
+        <param name="RemoteHost" value="localhost"/>
+        <param name="LocationInfo" value="true"/>
+        <param name="ReconnectionDelay" value="5000"/>
+    </appender>
+    
+    <!-- Set up accesslog with priority 'debug' -->
+    <category name="accesslog" additivity="false">
+        <priority value="debug"/>
+        <appender-ref ref="WEBAPPACCESS"/>
+    </category>
 
-  <!-- Set up mainlog with priority 'debug' -->
-  <category name="mainlog" additivity="false">
-    <priority value="debug"/>
-    <appender-ref ref="ASYNCMAIN"/>
-  </category>
+    <!-- Set up mainlog with priority 'debug' -->
+    <category name="mainlog" additivity="false">
+        <priority value="debug"/>
+        <appender-ref ref="WEBAPPMAIN"/>
+    </category>
 
-  <!-- Set up the errorlog with priority 'debug' -->
-  <root>
-    <priority value="debug"/>
-    <appender-ref ref="ASYNCERROR"/>
-  </root>
+    <!-- Set up the errorlog with priority 'debug' -->
+    <root>
+        <priority value="debug"/>
+        <appender-ref ref="WEBAPPERROR"/>
+        <appender-ref ref="SOCKETERROR"/>
+    </root>
 
 </log4j:configuration>

@@ -8,26 +8,22 @@ import imcode.server.* ;
 import imcode.util.* ;
 
 public class AdminError2 extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-    String myErrorHeader ;
-    String myErrorMessage ;
+
+    private String myErrorMessage ;
 
 
     /**
        Constructor which is used to read the error strings in the translation file. This
        one should not be used to generate errormessages
     */
-    public AdminError2() throws ServletException, IOException {
-	myErrorHeader  = "" ;
-	myErrorMessage = "" ;
+    public AdminError2() {
+        myErrorMessage = "" ;
     }
 
     public AdminError2(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)
-	throws ServletException, IOException {
+	throws IOException {
 
-	myErrorHeader = header ;
-	VariableManager vm = new VariableManager() ;
+        VariableManager vm = new VariableManager() ;
 
 	// Lets get the errormessage from the error file
 	String myErrorMessage = this.getErrorMessage(req, res, errorCode) ;
@@ -44,7 +40,7 @@ public class AdminError2 extends Administrator {
     }
 
     public AdminError2(HttpServletRequest req, HttpServletResponse res, String header, String msg, int errorCode)
-	throws ServletException, IOException {
+	throws IOException {
 
 	VariableManager vm = new VariableManager() ;
 
@@ -67,7 +63,7 @@ public class AdminError2 extends Administrator {
        ConfError, takes a message instead of an int
     */
     public AdminError2(HttpServletRequest req, HttpServletResponse res, String header, String msg)
-	throws ServletException, IOException {
+	throws IOException {
 
 	VariableManager vm = new VariableManager() ;
 
@@ -80,26 +76,6 @@ public class AdminError2 extends Administrator {
 	super.sendHtml(req, res, vm, fileName) ;
 	return ;
 
-    }
-
-
-
-    /**
-       Returns the error header och message for this object
-    */
-
-    public String getErrorString() {
-	return myErrorHeader + " " + myErrorMessage ;
-    }
-
-
-
-    /**
-       Returns the errormessageheader for this object
-    */
-
-    public String getErrorHeader() {
-	return myErrorHeader ;
     }
 
     /**
@@ -115,7 +91,7 @@ public class AdminError2 extends Administrator {
        information from a file in the template folder called errmsg.ini
     */
 
-    public String getErrorMessage(HttpServletRequest req, HttpServletResponse res,int errCode) {
+    private String getErrorMessage(HttpServletRequest req, HttpServletResponse res,int errCode) {
 	try {
 	    // Lets get the path to the admin templates folder
 	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
@@ -148,10 +124,9 @@ public class AdminError2 extends Administrator {
       For special messages, if we want to pass a special htmlfile
     */
     public AdminError2(HttpServletRequest req, HttpServletResponse res, String header, int errorCode, String fileName)
-	throws ServletException, IOException {
+	throws IOException {
 
-	myErrorHeader = header ;
-	VariableManager vm = new VariableManager() ;
+        VariableManager vm = new VariableManager() ;
 
 	// Lets get the errormessage from the error file
 	myErrorMessage = this.getErrorMessage(req, res, errorCode) ;

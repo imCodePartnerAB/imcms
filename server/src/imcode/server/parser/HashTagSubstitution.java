@@ -5,17 +5,15 @@ import java.util.* ;
 
 import org.apache.log4j.Category;
 
-public class HashTagSubstitution implements Substitution {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	
+class HashTagSubstitution implements Substitution {
+
     private static Pattern HASHTAGNUMBER_PATTERN  = null ;
 	
 	private static Category log = Category.getInstance("server");
 
-    Properties tags ;
-    Properties numberedtags ;
-    Perl5Compiler patComp = new Perl5Compiler() ;
+    private Properties tags ;
+    private Properties numberedtags ;
+    private Perl5Compiler patComp = new Perl5Compiler() ;
 
     static {
 	Perl5Compiler patComp = new Perl5Compiler() ;
@@ -29,7 +27,7 @@ public class HashTagSubstitution implements Substitution {
 	}
     }
 
-    public HashTagSubstitution (Properties tags, Properties numberedtags) {
+    HashTagSubstitution (Properties tags, Properties numberedtags) {
 	this.tags = tags ;
 	this.numberedtags = numberedtags ;
     }
@@ -38,7 +36,7 @@ public class HashTagSubstitution implements Substitution {
 	sb.append(hashTagHandler(patMat,patComp,tags,numberedtags)) ;
     }
 
-    protected String hashTagHandler(PatternMatcher patMat, PatternCompiler patComp, Properties tags, Properties numberedtags) {
+    private String hashTagHandler(PatternMatcher patMat, PatternCompiler patComp, Properties tags, Properties numberedtags) {
 	MatchResult matres = patMat.getMatch() ;
 	String tag = matres.group(0) ;
 	String tagdata = tags.getProperty(tag) ;	// Get value of tag from hash

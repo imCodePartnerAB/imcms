@@ -7,8 +7,6 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 public class AdminSystemInfo extends Administrator {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String HTML_TEMPLATE = "AdminSystemMessage.htm" ;
 

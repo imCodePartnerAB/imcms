@@ -2,10 +2,9 @@ package imcode.external.diverse ;
 import java.util.* ;
 
 public class VariableManager {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-    Vector tags ;
-    Vector data ;
+
+    private Vector tags ;
+    private Vector data ;
     
     public VariableManager() {
         tags = new Vector() ;
@@ -16,19 +15,7 @@ public class VariableManager {
         tags.addElement(property) ;
         data.addElement(value) ;
     }
-    
-    public Vector getHtmlProperties(){
-        String tmp = "" ;
-        Vector aVector = (Vector) tags.clone();
-        for(int i = 0 ; i < aVector.size() ; i++){
-            tmp = aVector.elementAt(i).toString() ;
-            tmp = "#" + tmp +"#" ;
-            aVector.set(i, tmp) ;
-        }
-        return aVector ;
-    }
-    
-    
+
     public String getProperty(String aProp) {
         String tmp = "" ;
         for(int i = 0; i < tags.size(); i++) {
@@ -46,14 +33,7 @@ public class VariableManager {
     public Vector getAllValues(){
         return data ;
     }
-    
-    public boolean merge(VariableManager man) {
-        
-        this.merge(man.getAllProps(), man.getAllValues()) ;
-        return true ;
-    }
-    
-    
+
     public boolean merge(Vector tagVect, Vector datVect ) {
         
         // Lets assure that the vectors has the same size
@@ -72,23 +52,7 @@ public class VariableManager {
         }
         return true ;
     }
-    
-    public boolean merge(Properties props) {
-        
-        Enumeration enumValues = props.elements() ;
-        Enumeration enumKeys = props.keys() ;
-        
-        while((enumValues.hasMoreElements() && enumKeys.hasMoreElements())) {
-            Object tagObj = (enumKeys.nextElement()) ;
-            Object datObj = (enumValues.nextElement()) ;
-            if(datObj == null)
-                datObj = " " ;
-            this.addProperty(tagObj, datObj) ;
-            
-        }
-        return true ;
-    }
-    
+
     public String toString() {
         
         String tmp = "" ;
@@ -103,7 +67,7 @@ public class VariableManager {
     }
     
     
-    protected void log(Object msg) {
+    private void log(Object msg) {
         
         System.out.println("VariableManager: " + msg);
     }

@@ -6,44 +6,25 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-
-
-<SCRIPT language=JavaScript>
-
-<!--
-
-function openHelp(id) {
-
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
-
-}
-
-//-->
-
-</SCRIPT >
 <script language="JavaScript">
-				<!--
-				function checkInput(){
-				var f = document.forms[0];
-				var date1 = f.date1.value;
-				var date2 = f.date2.value;
-				var text = f.text.value;
-  				if(date1>date2){
-  					alert('Fel datum!') ;
-  				}
-else
-{
-f.add.value='add';
-f.submit();
-
+<!--
+function checkInput(){
+    var f = document.forms[0];
+    var date1 = f.date1.value;
+    var date2 = f.date2.value;
+    var text = f.text.value;
+    if(date1>date2){
+        alert('Fel datum!') ;
+    }
+    else{
+        f.add.value='add';
+        f.submit();
+    }
 }
-				}
-				//-->
-			  </script>
+//-->
+</script>
 
 </head>
-
-
 
 <body bgcolor="#FFFFFF">
 
@@ -132,8 +113,8 @@ f.submit();
       <td width="1%">&nbsp;</td>
       <td align="center" colspan="2" >        
         <input type="submit" name="save" value="OK">
-		<input type="submit" name="back" value="Avbryt"><a href="GetDoc?meta_id=99" target="_blank" onClick="openHelp('99'); return false;">
-		<img src="@imageurl@/se/helpimages/btn_help_round.gif" width="17" height="22" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>&nbsp; 
+		<input type="submit" name="back" value="Avbryt"><a href="@documentationurl@GetDoc?meta_id=99" target="_blank">
+		<img src="@imcmsimageurl@/btn_help_round.gif" width="17" height="22" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>&nbsp;
       </td>
       <td width="1%">&nbsp;</td>
     </tr>

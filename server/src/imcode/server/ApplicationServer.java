@@ -18,13 +18,8 @@ import org.apache.log4j.Category;
  *@created    den 30 augusti 2001
  */
 public class ApplicationServer {
-    private final static String CVS_REV="$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String CONFIG_FILE = "ImcServer.cfg";
-
-    private final static int LOGINTERVAL = 10000;
-    private final static int LOGSIZE = 16384;
 
     private final Hashtable serverObjects = new Hashtable();
 
@@ -100,14 +95,6 @@ public class ApplicationServer {
 
 
     // return server count
-    /**
-     *  Gets the serverCount attribute of the ApplicationServer object
-     *
-     *@return    The serverCount value
-     */
-    public int getServerCount() {
-	return serverObjects.size();
-    }
 
 
     /**

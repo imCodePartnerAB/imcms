@@ -11,8 +11,6 @@ import org.apache.log4j.Category;
 
 
 public class ReadrunnerFilter {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private static Category log = Category.getInstance("server");
 
@@ -43,7 +41,7 @@ public class ReadrunnerFilter {
 	    ++readrunnerQuoteSubstitutionCount ;
 	}
 
-	public int getReadrunnerQuoteSubstitutionCount() {
+	private int getReadrunnerQuoteSubstitutionCount() {
 	    return readrunnerQuoteSubstitutionCount ;
 	}
     } ;

@@ -12,14 +12,11 @@ import imcode.server.* ;
 
 
 public class AdminQuestions extends Administrator  implements imcode.server.IMCConstants {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private final static String ADMIN_QUESTION_FILE	= "admin_questions_file.html";
     private final static String ADMIN_QUESTION		= "admin_questions.html";
     private final static String QUESTION_RESULT		= "show_questions.html";
     private final static String RESULT_ERR_MSG	= "qustion_result_err_msg.frag";
-    private final static String OPTION_LINE		= "option_line.frag";
 
     private final static long ONE_DAY = 86400000 ;
 

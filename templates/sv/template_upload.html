@@ -62,7 +62,11 @@ function regExpTest(what,pattern) {
 }
 
 function setSize() {
-	if (moz) {
+    if(isGecko) {
+        document.getElementById("sfile").style.width = 300;
+		document.getElementById("sname").style.width = 200;
+    }
+	else if (moz) {
 		document.getElementById("sfile").style.width = 400;
 		document.getElementById("sname").style.width = 200;
 	}
@@ -72,10 +76,6 @@ if (moz) {
 	window.onload = setSize;
 }
 
-
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
 //-->
 </SCRIPT>
 
@@ -101,7 +101,9 @@ function openHelp(id){
 	<input type="submit" name="add_template" value="L&auml;gg till" disabled>
 	<input type="submit" name="delete_template" value="Ta bort">
 	<input type="submit" name="rename_template" value="Byt namn">
-	<input type="submit" name="get_template" value="H&auml;mta uppladdad"><br>
+	<input type="submit" name="get_template" value="H&auml;mta uppladdad">
+	<input type="submit" name="edit_template" value="Redigera"><br>
+
 	<input type="submit" name="add_demotemplate" value="Ladda upp exempelmallar">
 	<input type="submit" name="show_templates" value="Visa formatmallar"></td>
 	<td width="5%">&nbsp;</td>
@@ -191,7 +193,7 @@ function openHelp(id){
   <td width="5%">&nbsp;</td>
   <td colspan="2"><hr>
 	<input type="submit" name="ok" value="Ladda upp">
-	<input type="submit" name="cancel" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=22" target="_blank" onClick="openHelp('22'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+	<input type="submit" name="cancel" value="Tillbaka">&nbsp; <a href="@documentationurl@GetDoc?meta_id=22" target="_blank"><img src="@imcmsimageurl@/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
   </td>
   <td width="5%">&nbsp;</td>
 </tr>

@@ -7,8 +7,6 @@ import org.apache.oro.text.regex.* ;
 import java.util.* ;
 
 public class ParserParameters {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private String template;	//used to store the template if not default is wanted
     private String param;		//used to store the parameter param

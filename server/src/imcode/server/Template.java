@@ -4,8 +4,6 @@ import java.util.* ;
 
 
 public class Template {
-    private final static String CVS_REV="$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private int id ;
     private String name ;

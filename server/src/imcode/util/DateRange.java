@@ -9,9 +9,6 @@ This class represents a range of Dates.
 **/
 public class DateRange {
 
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
     private Date startDate ;
     private Date endDate ;
 
@@ -73,7 +70,7 @@ public class DateRange {
 
        @return true If and only if both start-dates and end-dates match.
     **/
-    public boolean equals(DateRange dateRange) {
+    private boolean equals(DateRange dateRange) {
 	return this.startDate.equals(dateRange.startDate) && this.endDate.equals(dateRange.endDate) ;
     }
 

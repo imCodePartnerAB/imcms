@@ -13,15 +13,6 @@ import imcode.server.* ;
    Edit text in a document.
 */
 public class ChangeText extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
-    /**
-       init()
-    */
-    public void init(ServletConfig config) throws ServletException {
-	super.init(config) ;
-    }
 
     /**
        doGet()
@@ -88,9 +79,13 @@ public class ChangeText extends HttpServlet {
 	if ( text.getType() == IMCText.TEXT_TYPE_HTML ) {
 	    vec.add("#html#") ;
 	    vec.add("checked") ;
+	    vec.add("#!html#") ;
+	    vec.add("") ;
 	} else {
 	    vec.add("#!html#") ;
 	    vec.add("checked") ;
+	    vec.add("#html#") ;
+	    vec.add("") ;
 	}
 	vec.add("#label#") ;
 	vec.add(label) ;
