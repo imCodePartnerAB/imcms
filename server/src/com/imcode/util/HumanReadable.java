@@ -21,6 +21,7 @@ public class HumanReadable {
      * Format a byte size like for example "1 kB" or "1.5 MB".
      *
      * @param size The size to be formatted
+     * @return formatted size
      **/
     public static String getHumanReadableByteSize( long size ) {
         double displaySize = size ;
@@ -43,12 +44,12 @@ public class HumanReadable {
     }
 
     /**
-     * Format a time interval like for example "3h, 4m, 5s, 60ms"
+     * Format a time span like for example "3h, 4m, 5s, 60ms"
      *
      * @param milliseconds
-     * @return
+     * @return formatted time span
      */
-    public static String getHumanReadableTimeLength(long milliseconds) {
+    public static String getHumanReadableTimeSpan(long milliseconds) {
         long ms = milliseconds ;
         TimeLengthSuffixPair[] pairs = new TimeLengthSuffixPair[] {
             new TimeLengthSuffixPair( DateUtils.MILLIS_IN_HOUR, "h" ),

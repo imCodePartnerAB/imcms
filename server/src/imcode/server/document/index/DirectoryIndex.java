@@ -171,7 +171,7 @@ class DirectoryIndex implements DocumentIndex {
 
     private void logIndexingCompleted( int numberOfDocuments, StopWatch indexingStopWatch ) {
         long time = indexingStopWatch.getTime();
-        String humanReadableTime = HumanReadable.getHumanReadableTimeLength( time ) ;
+        String humanReadableTime = HumanReadable.getHumanReadableTimeSpan( time ) ;
         long timePerDocument = time/numberOfDocuments ;
         log.info( "Completed index of " + numberOfDocuments + " documents in " + humanReadableTime+". "+timePerDocument+"ms per document." );
     }

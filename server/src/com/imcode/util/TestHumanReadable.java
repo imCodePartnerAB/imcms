@@ -5,13 +5,13 @@ import org.apache.commons.lang.time.DateUtils;
 
 public class TestHumanReadable extends TestCase {
 
-    public void testGetHumanReadableTimeLength() throws Exception {
-        assertEquals( "1ms", HumanReadable.getHumanReadableTimeLength( 1 ) );
-        assertEquals( "2s, 1ms", HumanReadable.getHumanReadableTimeLength( 2 * DateUtils.MILLIS_IN_SECOND + 1 ) );
-        assertEquals( "3m, 1s", HumanReadable.getHumanReadableTimeLength( 3 * DateUtils.MILLIS_IN_MINUTE
+    public void testGetHumanReadableTimeSpan() throws Exception {
+        assertEquals( "1ms", HumanReadable.getHumanReadableTimeSpan( 1 ) );
+        assertEquals( "2s, 1ms", HumanReadable.getHumanReadableTimeSpan( 2 * DateUtils.MILLIS_IN_SECOND + 1 ) );
+        assertEquals( "3m, 1s", HumanReadable.getHumanReadableTimeSpan( 3 * DateUtils.MILLIS_IN_MINUTE
                                                                        + 1 * DateUtils.MILLIS_IN_SECOND ) );
-        assertEquals( "4h, 1ms", HumanReadable.getHumanReadableTimeLength( 4 * DateUtils.MILLIS_IN_HOUR + 1 ) );
-        assertEquals( "1h, 1m, 1s, 1ms", HumanReadable.getHumanReadableTimeLength( DateUtils.MILLIS_IN_HOUR
+        assertEquals( "4h, 1ms", HumanReadable.getHumanReadableTimeSpan( 4 * DateUtils.MILLIS_IN_HOUR + 1 ) );
+        assertEquals( "1h, 1m, 1s, 1ms", HumanReadable.getHumanReadableTimeSpan( DateUtils.MILLIS_IN_HOUR
                                                                                 + DateUtils.MILLIS_IN_MINUTE
                                                                                 + DateUtils.MILLIS_IN_SECOND
                                                                                 + 1 ) );
