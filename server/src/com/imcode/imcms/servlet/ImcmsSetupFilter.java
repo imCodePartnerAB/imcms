@@ -9,6 +9,7 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
@@ -27,8 +28,8 @@ public class ImcmsSetupFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest)request;
         HttpSession session = httpServletRequest.getSession();
 
+        ImcmsServices service = Imcms.getServices();
         if ( session.isNew() ) {
-            ImcmsServices service = Imcms.getServices();
             service.incrementSessionCounter();
             setDomainSessionCookie( response, session );
         }
@@ -53,8 +54,17 @@ public class ImcmsSetupFilter implements Filter {
         NDC.push( StringUtils.substringAfterLast( ( (HttpServletRequest)request ).getRequestURI(), "/" ) );
         String path = httpServletRequest.getRequestURI() ;
         path = StringUtils.substringAfter( path, httpServletRequest.getContextPath() ) ;
-        if (path.matches( "/\\d+" )) {
-            request.getRequestDispatcher( "/servlet/GetDoc?meta_id="+path.substring( 1 )).forward( request, response );
+        String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
+        String documentIdString = null ;
+        if (StringUtils.isNotBlank( documentPathPrefix ) && path.startsWith( documentPathPrefix )) {
+            documentIdString = path.substring( documentPathPrefix.length() );
+        }
+        if (null != documentIdString && NumberUtils.isDigits( documentIdString )) {
+            int documentId = 1001 ;
+            try {
+                documentId = Integer.parseInt( documentIdString ) ;
+            } catch( NumberFormatException ignored ) {}
+            request.getRequestDispatcher( "/servlet/GetDoc?meta_id=" + documentId ).forward( request, response );
         } else {
             chain.doFilter( request, response );
         }

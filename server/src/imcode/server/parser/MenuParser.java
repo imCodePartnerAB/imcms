@@ -1,21 +1,22 @@
 package imcode.server.parser;
 
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.DocumentRequest;
+import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.IdNamePair;
+import imcode.util.Utility;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.oro.text.regex.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.StringSubstitution;
+import org.apache.oro.text.regex.Substitution;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -209,7 +210,6 @@ class MenuParser {
                                                                              Properties menuAttributes,
                                                                              PatternMatcher patMat,
                                                                              final int menuIndex ) {
-        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         Iterator menuItemsIterator = new FilterIterator( Arrays.asList( menu.getMenuItems() ).iterator(), new Predicate() {
             public boolean evaluate( Object o ) {
                 DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
@@ -367,8 +367,11 @@ class MenuParser {
         DocumentRequest documentRequest = parserParameters.getDocumentRequest();
 
         String template = parameters.getProperty( "template" );
-        String href = documentRequest.getHttpServletRequest().getContextPath()+"/"+ document.getId()
-                      + ( template != null ? "?template=" + URLEncoder.encode( template ) : "" );
+        String href = Utility.getAbsolutePathToDocument( documentRequest.getHttpServletRequest(), document );
+        if (null != template) {
+            href += -1 != href.indexOf( '?' ) ? '&' : '?' ;
+            href += "template=" + URLEncoder.encode( template ) ;
+        }
 
         List menuItemAHref = new ArrayList( 4 );
         menuItemAHref.add( "#href#" );
@@ -384,7 +387,6 @@ class MenuParser {
         tags.setProperty( "#/menuitemlinkonly#", "</a>" );
 
         boolean editingThisMenu = editingMenu( menuIndex );
-        DocumentMapper documentMapper = documentRequest.getServerObject().getDocumentMapper();
         if ( editingThisMenu ) {
             final int sortOrder = menu.getSortOrder();
             if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sortOrder

@@ -14,6 +14,7 @@ import imcode.util.shop.ShoppingOrderSystem;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
@@ -165,7 +166,7 @@ public class MockImcmsServices implements ImcmsServices {
         // TODO
     }
 
-    public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
+    public String getAdminButtons( HttpServletRequest request, UserDomainObject user, DocumentDomainObject document ) {
         return null;  // TODO
     }
 

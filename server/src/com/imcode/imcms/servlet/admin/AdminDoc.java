@@ -112,7 +112,7 @@ public class AdminDoc extends HttpServlet {
                 if ( doc_type != 1 && doc_type != 2 ) {
                     List vec = new ArrayList( 4 );
                     vec.add( "#adminMode#" );
-                    vec.add( imcref.getAdminButtons( user, document ) );
+                    vec.add( imcref.getAdminButtons( req, user, document ) );
                     vec.add( "#doc_type_description#" );
                     vec.add( imcref.getAdminTemplate( "adminbuttons/adminbuttons" + doc_type + "_description.html", user, null ) );
                     return imcref.getAdminTemplate( "docinfo.html", user, vec );

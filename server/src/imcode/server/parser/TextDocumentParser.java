@@ -180,7 +180,7 @@ public class TextDocumentParser {
         tags.setProperty( "#externalparam#", parserParameters.getExternalParameter() );
 
         if ( parserParameters.getFlags() >= 0 ) {
-            tags.setProperty( "#adminMode#", service.getAdminButtons( user, document ) );
+            tags.setProperty( "#adminMode#", service.getAdminButtons( parserParameters.getDocumentRequest().getHttpServletRequest(), user, document ) );
         }
 
         String changeTemplateUi = createChangeTemplateUi( templatemode, user, document );

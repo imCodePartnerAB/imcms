@@ -3,6 +3,7 @@ package imcode.util;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.StringUtils;
@@ -211,6 +212,14 @@ public class Utility {
 
     public static String formatUser( UserDomainObject user ) {
         return StringEscapeUtils.escapeHtml( user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")" );
+    }
+
+    public static String getAbsolutePathToDocument(HttpServletRequest request, DocumentDomainObject document) {
+        String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix() ;
+        if (StringUtils.isBlank( documentPathPrefix )) {
+            documentPathPrefix = "/servlet/GetDoc?meta_id=" ;
+        }
+        return request.getContextPath() + documentPathPrefix + document.getId() ;
     }
 
 }

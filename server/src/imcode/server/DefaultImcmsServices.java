@@ -23,6 +23,7 @@ import org.apache.log4j.NDC;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import javax.servlet.http.HttpServletRequest;
 import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.text.*;
@@ -281,7 +282,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     /**
      * Returns the menubuttonrow
      */
-    public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
+    public String getAdminButtons( HttpServletRequest request, UserDomainObject user, DocumentDomainObject document ) {
         int user_permission_set_id = user.getPermissionSetIdFor( document );
         if ( user_permission_set_id >= DocumentPermissionSetDomainObject.TYPE_ID__READ && !user.isUserAdmin() ) {
             return "";
@@ -296,6 +297,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             "document", document,
             "documentPermissionSet", documentPermissionSet,
             "statusicon", documentMapper.getStatusIconTemplate( document, user ),
+            "pathToDocument", Utility.getAbsolutePathToDocument(request, document),
             "documentTypeName", documentTypeName
         } );
 

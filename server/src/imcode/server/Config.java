@@ -17,6 +17,7 @@ public class Config {
     private String sessionCookieDomain;
     private String fileAdminRootPaths;
     private int indexingSchedulePeriodInMinutes ;
+    private String documentPathPrefix;
 
     public void setTemplatePath( File templatePath ) {
         this.templatePath = templatePath;
@@ -129,4 +130,11 @@ public class Config {
         this.indexingSchedulePeriodInMinutes = indexingSchedulePeriodInMinutes;
     }
 
+    public String getDocumentPathPrefix() {
+        return documentPathPrefix;
+    }
+
+    public void setDocumentPathPrefix( String documentPathPrefix ) {
+        this.documentPathPrefix = documentPathPrefix;
+    }
 }

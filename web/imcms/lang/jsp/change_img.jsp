@@ -139,7 +139,7 @@ function checkLinkOnBlur() {
                         ImageDomainObject.FileDocumentImageSource fileDocumentImageSource = (ImageDomainObject.FileDocumentImageSource)imageSource ;
                         FileDocumentDomainObject imageFileDocument = fileDocumentImageSource.getFileDocument() ;
                     %>
-                        <%= Imcms.getServices().getAdminButtons(Utility.getLoggedOnUser(request), imageFileDocument) %>
+                        <%= Imcms.getServices().getAdminButtons( request, Utility.getLoggedOnUser(request), imageFileDocument) %>
                 </td>
             </tr>
         <% } %>
