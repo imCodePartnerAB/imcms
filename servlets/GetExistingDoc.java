@@ -97,6 +97,7 @@ public class GetExistingDoc extends HttpServlet {
 		
 		//-----------------------------------------------------------------
 		// check form-parameters: sortBy
+		
 		Hashtable check = new Hashtable();
 		check.put("meta_id", "meta_id");
 		check.put("doc_type", "doc_type");

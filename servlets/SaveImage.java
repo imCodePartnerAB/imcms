@@ -96,7 +96,7 @@ public class SaveImage extends HttpServlet {
 			image.setImageWidth( 0 ) ;
 		}
 		
-// ****************************** Här börjar Mårtens lilla lekstuga
+// ****************************** keepAspectRatio
 		if(keepAspectRatio && req.getParameter("ok") != null) {
 		    int iHeight = 0 ;
 		    try {
@@ -273,10 +273,13 @@ public class SaveImage extends HttpServlet {
 					String imagePath = Utility.getDomainPref( "image_path",host );
 		//****************************************************************
 			// Delete relative path if there...
-					//String imageName = (image_ref.lastIndexOf("/") != -1)?image_ref.substring(image_ref.lastIndexOf("/") +1):image_ref;	
+			String imageName = (image_ref.lastIndexOf("/") != -1)?image_ref.substring(image_ref.lastIndexOf("/") +1):image_ref;	
 			//ImageIcon icon = new ImageIcon(imagePath + imageName);
-			int width = 0 ;//icon.getIconWidth();
-			int height = 0 ; //icon.getIconHeight();
+			log("IP: " + imagePath + " / " + imageName);
+			File file = new File(imagePath + imageName);
+			ImageFileMetaData imFMD = new ImageFileMetaData(file);
+			int width = imFMD.getWidth();
+			int height = imFMD.getHeight();
 		//****************************************************************
 			Vector vec = new Vector () ;
 			vec.add("#imgName#") ;
