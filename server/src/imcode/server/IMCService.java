@@ -29,7 +29,6 @@ import org.apache.velocity.app.VelocityEngine;
 
 import java.beans.PropertyDescriptor;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.text.Collator;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -346,26 +345,6 @@ final public class IMCService implements IMCServiceInterface {
      */
     public void saveImage( int meta_id, UserDomainObject user, int img_no, ImageDomainObject image ) {
         documentMapper.saveDocumentImage( meta_id, img_no, image, user );
-    }
-
-    /**
-     * Delete a doc and all data related. Delete from db and file system.
-     * Fixme:  delete doc from plugin db
-     */
-    public void deleteDocAll( int meta_id, UserDomainObject user ) {
-
-        String filename = meta_id + "_se";
-        File file = new File( config.getFilePath(), filename );
-
-        //If meta_id is a file document we have to delete the file from file system
-        if ( file.exists() ) {
-            file.delete();
-        }
-
-        // Create a db connection and execte sp DocumentDelete on meta_id
-        sqlUpdateProcedure( "DocumentDelete", new String[]{"" + meta_id} );
-        this.updateLogs( "Document  " + "[" + meta_id + "] ALL deleted by user: [" +
-                         user.getFullName() + "]" );
     }
 
     public void saveManualSort( int meta_id, UserDomainObject user, List childs,

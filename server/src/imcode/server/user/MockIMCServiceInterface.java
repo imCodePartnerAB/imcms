@@ -61,9 +61,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     public void saveImage( int meta_id, UserDomainObject user, int img_no, ImageDomainObject image ) {
     }
 
-    public void deleteDocAll( int meta_id, UserDomainObject user ) {
-    }
-
     public void saveManualSort( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber ) {
         // TODO
     }

@@ -1,6 +1,10 @@
 package imcode.server.document;
 
 import imcode.server.*;
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
+import imcode.server.LanguageMapper;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.index.AutorebuildingDocumentIndex;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.*;
@@ -15,7 +19,6 @@ import imcode.util.poll.PollHandlingSystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.log4j.NDC;
-import org.apache.lucene.search.Hits;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -1667,6 +1670,22 @@ public class DocumentMapper {
         service.sqlUpdateQuery(sqlStr, new String[]{htmlDocument.getHtmlDocumentHtml(), "" + htmlDocument.getId()});
     }
 
+    public void deleteDocument( DocumentDomainObject document, UserDomainObject user ) {
+
+        documentIndex.removeDocument( document );
+
+        //If meta_id is a file document we have to delete the file from file system
+        if ( !new File( service.getFilePath(), "" + document.getId() ).delete() ) {
+            new File( service.getFilePath(), document.getId() + "_se" ).delete();
+        }
+
+        // Create a db connection and execte sp DocumentDelete on meta_id
+        service.sqlUpdateProcedure( "DocumentDelete", new String[]{"" + document.getId()} );
+        service.updateLogs( "Document  " + "[" + document.getId() + "] ALL deleted by user: [" +
+                         user.getFullName() + "]" );
+
+    }
+
     private static class FileInputStreamSource implements InputStreamSource, Serializable {
 
         private final File file;
@@ -1817,20 +1836,6 @@ public class DocumentMapper {
             }
             return getDocument(documentIds[index++]);
         }
-    }
-
-    public List getDocumentListForHits(Hits hits, UserDomainObject searchingUser) throws IOException {
-        List documentList = new ArrayList(hits.length());
-        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface()
-                .getDocumentMapper();
-        for (int i = 0; i < hits.length(); ++i) {
-            int metaId = Integer.parseInt(hits.doc(i).get("meta_id"));
-            DocumentDomainObject document = documentMapper.getDocument(metaId);
-            if (documentMapper.userHasPermissionToSearchDocument(searchingUser, document)) {
-                documentList.add(document);
-            }
-        }
-        return documentList;
     }
 
 }
