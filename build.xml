@@ -227,9 +227,6 @@
     <!-- Tomcat targets -->
 
     <target name="tomcat-deploy" description="Deploy in running instance of tomcat">
-        <copy todir="${build}/WEB-INF/lib" flatten="true">
-            <fileset dir="lib" includes="nodist/*"/>
-        </copy>
         <taskdef name="install" classname="org.apache.catalina.ant.InstallTask" classpathref="libraries"/>
         <install url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
             path="/${webappname}" war="file:${tomcat-deployroot-local-directory}/${webappname}"/>
