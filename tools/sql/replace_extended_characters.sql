@@ -1,6 +1,6 @@
 /*
-Change extended characters in column texts.text, meta.meta_headline and meta.meta_text
-where meta_id > 1000
+Change extended characters in column texts.text where meta_id > 1000 and type=0 (0=text, 1=html)
+and in column meta.meta_headline and meta.meta_text where meta_id > 1000
 */
 
 -- table texts
@@ -27,6 +27,7 @@ declare posCursor  Cursor scroll
 for select meta_id, name
     from texts
     where meta_id > 1000  -- = @meta_id  
+    and type=0
 
 open posCursor
 fetch next from posCursor 
@@ -34,12 +35,12 @@ into @meta_id, @name
 while @@fetch_status = 0
    begin
         insert into #tmptexts (meta_id, name, text, newtext)
-        select @meta_id, @name, text, '' from texts where meta_id =@meta_id and name = @name
+        select @meta_id, @name, text, '' from texts where meta_id =@meta_id and name = @name and type =0
                
 	
         select @oldtext = substring(text,@start,1000), @length = len(substring(text,@start,1000))
        	from #tmptexts 
-       	where meta_id = @meta_id and name = @name
+       	where meta_id = @meta_id and name = @name 
        	
         update #tmptexts set newtext = @oldtext where meta_id =@meta_id and name = @name        
         
@@ -67,6 +68,10 @@ while @@fetch_status = 0
         where meta_id = @meta_id and name = @name                
 	update #tmptexts set newtext = replace((select newtext from #tmptexts where meta_id =@meta_id and name = @name),'&aacute;', 'á')
         where meta_id = @meta_id and name = @name                               
+        update #tmptexts set newtext = replace((select newtext from #tmptexts where meta_id =@meta_id and name = @name),'
+<BR>', '
+')
+        where meta_id = @meta_id and name = @name                               
 
 
         select @newtext = newtext 
@@ -75,7 +80,7 @@ while @@fetch_status = 0
         	
 	SELECT @ptrval = TEXTPTR(text) 
    	FROM texts
-      	WHERE meta_id = @meta_id and name = @name 
+      	WHERE meta_id = @meta_id and name = @name and type =0 
       	
         set @insert_offset = 0		--A value of 0 inserts the new data at the beginning of the existing data
         
@@ -123,6 +128,10 @@ while @@fetch_status = 0
             where meta_id = @meta_id and name = @name                
 	    update #tmptexts set newtext = replace((select newtext from #tmptexts where meta_id =@meta_id and name = @name),'&aacute;', 'á')
             where meta_id = @meta_id and name = @name                               
+            update #tmptexts set newtext = replace((select newtext from #tmptexts where meta_id =@meta_id and name = @name),'
+<BR>', '
+')
+        where meta_id = @meta_id and name = @name                               
 
 
             select @newtext = newtext 
@@ -132,7 +141,7 @@ while @@fetch_status = 0
 
 	    SELECT @ptrval = TEXTPTR(text) 
    	    FROM texts
-      	    WHERE meta_id = @meta_id and name = @name 
+      	    WHERE meta_id = @meta_id and name = @name and type = 0
     
             set @insert_offset = NULL	--A value of NULL appends the new data to the existing data value.
         
