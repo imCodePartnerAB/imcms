@@ -58,11 +58,12 @@ sub load {
 
     my $current_property = '';
     while (<$fh>) {
-        my $line_continues = /(\\+)$/ && (1 & length($1)) && !eof($fh);
+	my $eof = eof($fh) ;
+        my $line_continues = /(\\+)$/ && (1 & length($1)) && !$eof;
         if ( my $entryline = /^\s*[^#!\s]\S*/ .. !$line_continues ) {
             chomp;
             s!^\s*!!;
-            s!\\$!! if $line_continues;
+            s!\\$!! if $line_continues || $eof;
             $current_property .= $_;
             next unless $entryline =~ /E0$/;
         } elsif (/^\s*[#!]/) {
