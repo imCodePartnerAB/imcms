@@ -108,20 +108,20 @@ public class AdminUserProps extends Administrator {
             userToChange = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( Integer.parseInt( userToChangeId ) );
         }
 
-        String login_name = "";
-        String password1 = "";
-        String new_pwd1 = "";   //hidden fildes
+        String login_name ;
+        String password1 ;
+        String new_pwd1 = "" ;   //hidden fildes
         String new_pwd2 = "";   //hidden fildes
-        String first_name = "";
-        String last_name = "";
-        String title = "";
-        String company = "";
-        String address = "";
-        String city = "";
-        String zip = "";
-        String country = "";
-        String country_council = "";
-        String email = "";
+        String first_name ;
+        String last_name ;
+        String title  ;
+        String company ;
+        String address ;
+        String city ;
+        String zip ;
+        String country ;
+        String country_council ;
+        String email ;
 
         //Lets set values from session if we have any
         if ( tmp_userInfo != null ) {
@@ -508,12 +508,10 @@ public class AdminUserProps extends Administrator {
             if ( null != theUserRoles ) {
                 session.setAttribute( "tempUserRoles", theUserRoles );
             }
-            if ( null != userFromRequest ) {
-                session.setAttribute( "tempUser", userFromRequest );
-            }
             if ( null != theUseradminRoles ) {
                 session.setAttribute( "tempUseradminRoles", theUseradminRoles );
             }
+            session.setAttribute( "tempUser", userFromRequest );
 
             res.sendRedirect( "AdminUserUseradminSettings" );
             return;
@@ -609,8 +607,7 @@ public class AdminUserProps extends Administrator {
             if ( !userFromDatabase.getEmailAddress().equalsIgnoreCase( currentLogin ) ) {
                 newLogin = currentLogin;
             }
-            msg = msg = langproperties.getProperty( "error/servlet/AdminUserProps/username_or_email_already_exists" )
-                        + "<br>";
+            msg = langproperties.getProperty( "error/servlet/AdminUserProps/username_or_email_already_exists" ) + "<br>";
         }
 
         // check that the changed login name don´t already exists
@@ -692,15 +689,7 @@ public class AdminUserProps extends Administrator {
             //save phone numbers from phonesV  ( phonesV : id, number, user_id, phonetype_id )
             if ( null != phonesV && phonesV.size() > 0 ) {
 
-                //First delete existing phone number from db
-                imcref.sqlUpdateProcedure( "DelPhoneNr", new String[]{"" + userToChangeId} );
-
-                // Then save all number from session into db ( phonesV : id, number, user_id, phonetype_id )
-                for ( int i = 0; i < phonesV.size(); i++ ) {
-                    String[] aPhone = (String[])phonesV.elementAt( i );
-
-                    imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{"" + userToChangeId, aPhone[1], aPhone[3]} );
-                }
+                addPhonesToUser(userFromRequest, phonesV);
             }
 
         } else {
@@ -724,41 +713,19 @@ public class AdminUserProps extends Administrator {
 
             String workPhone = req.getParameter( "workphone" );
             String mobilePhone = req.getParameter( "mobilephone" );
-            // add new workphone
-            if ( ( "" ).equals( workPhoneId ) && !( "" ).equals( workPhone ) ) {
+            // set new workphone
+            if ( null != workPhoneId ) {
+                userFromRequest.setWorkPhone(workPhone);
 
-                imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{"" + userToChangeId, workPhone, "2"} );
-
-                // uppdate a workphone
-            } else if ( !( "" ).equals( workPhoneId ) && !( "" ).equals( workPhone ) ) {
-
-                imcref.sqlUpdateProcedure( "PhoneNbrUpdate", new String[]{"" + userToChangeId, workPhoneId, "2"} );
-
-                // delete a workphone
-            } else if ( !( "" ).equals( workPhoneId ) && ( "" ).equals( workPhone ) ) {
-
-                imcref.sqlUpdateProcedure( "PhoneNbrDelete", new String[]{workPhoneId} );
             }
 
-
-            // add new mobilephone
-            if ( ( "" ).equals( mobilePhoneId ) && !( "" ).equals( mobilePhone ) ) {
-
-                imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{"" + userToChangeId, mobilePhone, "3"} );
-
-                // uppdate a mobilephone
-            } else if ( !( "" ).equals( mobilePhoneId ) && !( "" ).equals( mobilePhone ) ) {
-
-                imcref.sqlUpdateProcedure( "PhoneNbrUpdate", new String[]{"" + userToChangeId, mobilePhoneId, "3"} );
-
-                // delete a mobilephone
-            } else if ( !( "" ).equals( mobilePhoneId ) && ( "" ).equals( mobilePhone ) ) {
-                imcref.sqlUpdateProcedure( "PhoneNbrDelete", new String[]{mobilePhoneId} );
+            // set new mobilephone
+            if ( null !=  mobilePhoneId )  {
+                userFromRequest.setMobilePhone(mobilePhone);
             }
         }
 
         ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
-        imcmsAuthenticatorAndUserAndRoleMapper.updateUser( userFromRequest.getLoginName(), userFromRequest );
 
         // if we are processing data from a admin template and
         // if user isSuperadmin or
@@ -795,7 +762,6 @@ public class AdminUserProps extends Administrator {
                 }
             }
 
-            imcmsAuthenticatorAndUserAndRoleMapper.updateUser( userFromRequest.getLoginName(), userFromRequest );
 
             // Lets add the new useradmin roles. but first, delete the current roles
             // and then add the new ones
@@ -812,6 +778,8 @@ public class AdminUserProps extends Administrator {
                 addUserAdminRoles( imcref, userToChangeId, useradminRolesV );
             }
         }
+
+        imcmsAuthenticatorAndUserAndRoleMapper.updateUser( userFromRequest.getLoginName(), userFromRequest );
 
         this.goNext( req, res, session );
     }
@@ -843,7 +811,7 @@ public class AdminUserProps extends Administrator {
         Properties langproperties = imcref.getLanguageProperties( user );
         String msg = langproperties.getProperty( "error/servlet/AdminUserProps/username_already_exists" ) + "<br>";
         if ( null != req.getParameter( "login_name" ) ) {
-            userName = userFromRequest.getLoginName();
+            userFromRequest.getLoginName();
         } else {
             userName = req.getParameter( "email" );
             userFromRequest.setLoginName( userName );
@@ -964,7 +932,7 @@ public class AdminUserProps extends Administrator {
 
         log.debug( "test" + req.getParameter( "edit_phones" ) );
 
-        String selectedPhoneId = "";
+        String selectedPhoneId ;
 
 
 
@@ -1286,7 +1254,7 @@ public class AdminUserProps extends Administrator {
             }
         }
 
-        // Only validate roles if request contains a parameter "roles", when user is edit his own properties it don't.     
+        // Only validate roles if request contains a parameter "roles", when user is edit his own properties it don't.
         String[] rolesParameterValues = req.getParameterValues( REQUEST_PARAMETER__ROLES );
         if ( null != rolesParameterValues && 0 == rolesParameterValues.length ) {
             return false;
@@ -1333,17 +1301,17 @@ public class AdminUserProps extends Administrator {
     private String createAdminPartHtml( UserDomainObject user, UserDomainObject userToChange,
                                         IMCServiceInterface imcref, HttpServletRequest req, HttpSession session ) {
 
-        String html_admin_part = "";
+        String html_admin_part;
         Vector vec_admin_part = new Vector();
 
         String[] userRoles = null;
         String[] useradminRoles = null;
         Properties userInfo = null;
 
-        Vector userRolesV = new Vector();
-        String rolesMenuStr = "";
+        Vector userRolesV ;
+        String rolesMenuStr;
 
-        Vector useradminRolesV = new Vector();
+        Vector useradminRolesV ;
         String rolesMenuUseradminStr = "";
 
         // check if user is a Superadmin, adminRole = 1
@@ -1357,7 +1325,7 @@ public class AdminUserProps extends Administrator {
         }
 
         // Lets get ROLES from DB
-        String[] rolesArr = {};
+        String[] rolesArr ;
 
         if ( user.isSuperAdmin() ) {
             rolesArr = imcref.sqlProcedure( "GetAllRoles", new String[0] );
@@ -1571,7 +1539,7 @@ public class AdminUserProps extends Administrator {
     public static boolean verifyPassword( String password1, String password2, HttpServletRequest req,
                                           HttpServletResponse res ) throws IOException {
 
-        String header = "Verify password error";
+        String header ;
 
         if ( !password1.equals( password2 ) ) {
             header = req.getServletPath();
@@ -1609,6 +1577,37 @@ public class AdminUserProps extends Administrator {
         };
 
         return params;
+    }
+
+    private void addPhonesToUser(UserDomainObject userToChange, Vector phonesV ){
+        final int PHONE_TYPE_OTHER_PHONE = 0;
+        final int PHONE_TYPE_HOME_PHONE = 1;
+        final int PHONE_TYPE_WORK_PHONE = 2;
+        final int PHONE_TYPE_WORK_MOBILE = 3;
+        final int PHONE_TYPE_FAX_PHONE = 4;
+
+        for ( int i = 0; i < phonesV.size(); i++ ) {
+            String[] aPhone = (String[])phonesV.elementAt( i );
+
+            switch(Integer.parseInt(aPhone[3])){
+
+                case PHONE_TYPE_OTHER_PHONE:
+                   userToChange.setOtherPhone(aPhone[1]);
+                   break;
+                case PHONE_TYPE_HOME_PHONE:
+                    userToChange.setHomePhone(aPhone[1]);
+                    break;
+                case PHONE_TYPE_WORK_PHONE:
+                    userToChange.setWorkPhone(aPhone[1]);
+                    break;
+                case PHONE_TYPE_WORK_MOBILE:
+                    userToChange.setMobilePhone(aPhone[1]);
+                    break;
+                case PHONE_TYPE_FAX_PHONE:
+                    userToChange.setFaxPhone(aPhone[1]);
+                    break;
+            }
+        }
     }
 
 }
