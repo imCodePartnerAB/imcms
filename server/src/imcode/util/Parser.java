@@ -18,10 +18,12 @@ public class Parser {
 		StringBuffer sb = new StringBuffer(doc) ;
 		int length ;
 		for ( int i = 0; i<tags.length ; i++ ) {
-			length = tags[i].length() ;
+		    length = tags[i].length() ;
+		    if (length > 0) {
 			for (int start = 0; (start = sb.toString().indexOf(tags[i],start))!=-1; start+=data[i].length()) {
 				sb.replace(start,start+length,data[i]) ;
 			}
+		    }
 		}
 		return sb.toString() ;
 	}
@@ -38,10 +40,12 @@ public class Parser {
 		StringBuffer sb = new StringBuffer(doc) ;
 		int length ;
 		for ( int i = 0; i<data.length ; i+=2 ) {
-			length = data[i].length() ;
+		    length = data[i].length() ;
+		    if (length > 0) {
 			for (int start = 0; (start = sb.toString().indexOf(data[i],start))!=-1; start+=data[i+1].length()) {
 				sb.replace(start,start+length,data[i+1]) ;
 			}
+		    }
 		}
 		return sb.toString() ;
 	}
@@ -73,14 +77,6 @@ public class Parser {
 		return sb.toString() ;
 	}
 
-    //	/**
-    //		@deprecated Replaced by {@link #parseTags(java.lang.StringBuffer, char, java.lang.String, java.util.Map, boolean, int)}, for obvious reasons.
-    //	*/
-    //	public static StringBuffer parseTags(StringBuffer str, char tagdelim, String nontag, Hashtable data, boolean removetaglikes, int recurse ) {
-    //			return parseTags (str,tagdelim,nontag,(Map)data,removetaglikes,recurse) ;
-    //	}
-
-
 	/**
 		A nice little parsefunction which searches a StringBuffer for "taglikes" (tags), and replaces them with Strings from a Map.
 
@@ -104,7 +100,7 @@ public class Parser {
 		boolean intag = false ;
 		int tagindex = 0 ;
 
-		// A FSA (Finite State Automata) to parse the StringBuffer for tags.
+		// A FSA (Finite State Automaton) to parse the StringBuffer for tags.
 		// Iterates over the chars in the StringBuffer and sets different states
 		// depending on what char is found.
 		for ( int i=0 ; i<length ; ++i ) {
