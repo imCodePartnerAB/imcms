@@ -167,11 +167,10 @@ public class DocumentComposer extends HttpServlet {
                 addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
                 forwardToDocinfoPage( request, response, user );
             } else if ( ACTION__PROCESS_NEW_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
-                if ( null == request.getParameter( PARAMETER_BUTTON__OK )
-                     || document instanceof TextDocumentDomainObject ) {
-                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
-                } else {
+                if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
                     processNewDocumentInformation( newDocumentParentInformation, request, response, user );
+                } else {
+                    redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
                 }
             } else if ( ACTION__CREATE_NEW_URL_DOCUMENT.equalsIgnoreCase( action ) ) {
                 if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
@@ -179,14 +178,14 @@ public class DocumentComposer extends HttpServlet {
                     UrlDocumentDomainObject newUrlDocument = (UrlDocumentDomainObject)document;
                     newUrlDocument.setUrlDocumentUrl( request.getParameter( PARAMETER__URL_DOC__URL ) );
                     newUrlDocument.setTarget( getTargetFromRequest( request ) );
-                    processNewDocumentInformation( newUrlDocument, newDocumentParentInformation, request, response, user );
+                    saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newUrlDocument, newDocumentParentInformation, user, request );
                 }
                 redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
             } else if ( ACTION__CREATE_NEW_HTML_DOCUMENT.equalsIgnoreCase( action ) ) {
                 if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
                     HtmlDocumentDomainObject newHtmlDocument = (HtmlDocumentDomainObject)document;
                     newHtmlDocument.setHtmlDocumentHtml( request.getParameter( PARAMETER__HTML_DOC__HTML ) );
-                    processNewDocumentInformation( newHtmlDocument, newDocumentParentInformation, request, response, user );
+                    saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newHtmlDocument, newDocumentParentInformation, user, request );
                 }
                 redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
             } else if ( ACTION__CREATE_NEW_FILE_DOCUMENT.equalsIgnoreCase( action ) ) {
@@ -196,13 +195,13 @@ public class DocumentComposer extends HttpServlet {
                     newFileDocument.setFileDocumentFilename( fileItem.getName() );
                     newFileDocument.setFileDocumentInputStream( fileItem.getInputStream() );
                     newFileDocument.setFileDocumentMimeType( getMimeTypeFromRequest( request ) );
-                    processNewDocumentInformation( newFileDocument, newDocumentParentInformation, request, response, user );
+                    saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newFileDocument, newDocumentParentInformation, user, request );
                 }
                 redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
             } else if ( ACTION__CREATE_NEW_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
                 if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
                     BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
-                    processNewDocumentInformation( newBrowserDocument, newDocumentParentInformation, request, response, user );
+                    saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newBrowserDocument, newDocumentParentInformation, user, request );
                 }
                 redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
             } else if ( ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action ) ) {
@@ -275,13 +274,6 @@ public class DocumentComposer extends HttpServlet {
             }
         }
         return mimeType;
-    }
-
-    public void processNewDocumentInformation( DocumentDomainObject newDocument,
-                                               NewDocumentParentInformation newDocumentParentInformation,
-                                               HttpServletRequest request, HttpServletResponse response,
-                                               UserDomainObject user ) throws IOException {
-        saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newDocument, newDocumentParentInformation, user, request );
     }
 
     private void redirectToDocumentIdInMenumode( HttpServletResponse response, int parentId ) throws IOException {
@@ -570,16 +562,17 @@ public class DocumentComposer extends HttpServlet {
         return calendar.getTime();
     }
 
-    public void processNewTextDocumentInformation( TextDocumentDomainObject textDocument,
+    public void processNewTextDocumentInformation( TextDocumentDomainObject newTextDocument,
                                                    NewDocumentParentInformation newDocumentParentInformation,
                                                    HttpServletRequest request, HttpServletResponse response,
                                                    UserDomainObject user ) throws IOException {
 
         if ( null != request.getParameter( PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS ) ) {
-            textDocument.setText( 1, new TextDocumentDomainObject.Text( textDocument.getHeadline(), TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN ) );
-            textDocument.setText( 2, new TextDocumentDomainObject.Text( textDocument.getMenuText(), TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN ) );
+            newTextDocument.setText( 1, new TextDocumentDomainObject.Text( newTextDocument.getHeadline(), TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN ) );
+            newTextDocument.setText( 2, new TextDocumentDomainObject.Text( newTextDocument.getMenuText(), TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN ) );
         }
-        processNewDocumentInformation( textDocument, newDocumentParentInformation, request, response, user );
+        saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newTextDocument, newDocumentParentInformation, user, request );
+        redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
     }
 
     public static class NewDocumentParentInformation {
