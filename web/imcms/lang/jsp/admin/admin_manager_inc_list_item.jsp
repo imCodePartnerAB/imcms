@@ -1,8 +1,9 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.document.DocumentMapper,
                  imcode.util.Utility,
-                 imcode.server.Imcms"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
-<% String IMG_SRC = documentMapper.getStatusIconTemplate(document, Utility.getLoggedOnUser( request ) ); %>
+                 imcode.server.Imcms,
+                 imcode.util.Html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<% String IMG_SRC = Html.getLinkedStatusIconTemplate(document, Utility.getLoggedOnUser( request ), request ); %>
 
 <vel:velocity>
 <% if ( expand ) { %>
@@ -10,7 +11,7 @@
 <tr valign="top" <%= i%2 == 1 ? "bgcolor=\"#ffffff\"" : "" %> >
     <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br>
         <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId() %>"><%= document.getId() %></a></td>
-    <td align="center"><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=1"><%= IMG_SRC %></a></td>
+    <td align="center"><%= IMG_SRC %></td>
     <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br>
         <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId()%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a><br>
         <%= StringEscapeUtils.escapeHtml(document.getMenuText() ) %></td>
@@ -49,7 +50,7 @@
     <tr valign="top" <%= i%2 == 1 ? "bgcolor=\"#ffffff\"" : "" %> >
         <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br>
             <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId() %>"><%= document.getId() %></a></td>
-        <td align="center"><a href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>&amp;flags=1"><%= IMG_SRC %></a></td>
+        <td align="center"><%= IMG_SRC %></td>
         <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br>
             <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId()%>"><%= StringEscapeUtils.escapeHtml(document.getHeadline()) %></a></td>
         <td align="right"><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3">

@@ -7,7 +7,7 @@
 </tr>
 <form method="post" name="subreport" action="AdminManager">
 <input type="hidden" name="list_type" value="<%= LIST_TYPE %>" >
-<input type="hidden" name="show" value="<%= TAB_TO_SHOW %>" >
+<input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= TAB_TO_SHOW %>" >
 <%if ( expand_listMap.containsKey(AdminManager.LIST_TYPE__list_new_not_approved) ) { %>
 <input type="hidden" name="list_new_not_approved_current_expand" value="<%= expand_listMap.get(AdminManager.LIST_TYPE__list_new_not_approved).toString() %>" >
 <%}if ( expand_listMap.containsKey(AdminManager.LIST_TYPE__list_documents_archived_less_then_one_week) ) { %>
@@ -57,22 +57,11 @@
             <%}%>
 
             <tr>
-                <td nowrap>Sortera efter:&nbsp;</td>
+                <td nowrap><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/7 ?>:&nbsp;</td>
                 <td>
                 <% SORTORDER_OPTION_SELECTED = current_sortorderMap.get( LIST_TYPE ).toString(); %>
                 <select name="new_sortorder" onChange="this.form.submit();">
-                    <option value="MOD" <%= SORTORDER_OPTION_SELECTED.equals("MOD") ? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option1 ?>
-                    <option value="MODR" <%= SORTORDER_OPTION_SELECTED.equals("MODR") ? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option2 ?>
-                    <option value="PUBS" <%= SORTORDER_OPTION_SELECTED.equals("PUBS") ? "selected" : "" %> >&nbsp; <? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option3 ?>
-                    <option value="PUBSR" <%= SORTORDER_OPTION_SELECTED.equals("PUBSR") ? "selected" : "" %> >&nbsp; <? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option4 ?>
-                    <option value="PUBE" <%= SORTORDER_OPTION_SELECTED.equals("PUBE") ? "selected" : "" %> >&nbsp; <? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option5 ?>
-                    <option value="PUBER" <%= SORTORDER_OPTION_SELECTED.equals("PUBER") ? "selected" : "" %> >&nbsp; <? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option6 ?>
-                    <option value="ARC" <%= SORTORDER_OPTION_SELECTED.equals("ARC") ? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option7 ?>
-                    <option value="ARCR" <%= SORTORDER_OPTION_SELECTED.equals("ARCR") ? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option8 ?>
-                    <option value="HEADL" <%= SORTORDER_OPTION_SELECTED.equals("HEADL") ? "selected" : "" %> >&nbsp; <? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option9 ?>
-                    <option value="HEADLR" <%= SORTORDER_OPTION_SELECTED.equals("HEADLR") ? "selected" : "" %> >&nbsp; <? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option10 ?>
-                    <option value="ID" <%= SORTORDER_OPTION_SELECTED.equals("ID") ? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option11 ?>
-                    <option value="IDR" <%= SORTORDER_OPTION_SELECTED.equals("IDR") ? "selected" : "" %> ><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/sort_option12 ?>
+                    <%@ include file="admin_manager_inc_sortorder_select_option.jsp" %>
                 </select></td>
             </tr>
             </table></td>

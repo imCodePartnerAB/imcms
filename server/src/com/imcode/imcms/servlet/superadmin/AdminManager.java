@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
+import com.imcode.imcms.servlet.AdminManagerSearchPage;
+import com.imcode.imcms.servlet.DocumentFinder;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -44,8 +46,8 @@ public class AdminManager extends Administrator {
     public final static String LIST_TYPE__list_documents_publication_end_less_then_one_week = "list_documents_publication_end_less_then_one_week";
     public final static String LIST_TYPE__list_documents_not_changed_in_six_month = "list_documents_not_changed_in_six_month";
     public final static String LIST_TYPE__list_documents_changed = "list_documents_changed";
+    public final static String LIST_TYPE__SEARCH_LIST = "search_list";
 
-    public static final String REQUEST_PARAMETER__DOCUMENTS_PER_PAGE = "doc_per_page";
     public static final int DEFAULT_DOCUMENTS_PER_PAGE = 20;
     public static final int DEFAULT_DOCUMENTS_PER_LIST = 5;
     public static final String REQUEST_PARAMETER__list_new_not_approved_current_sortorder = "list_new_not_approved_current_sortorder";
@@ -53,6 +55,7 @@ public class AdminManager extends Administrator {
     public static final String REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder = "list_documents_publication_end_less_then_one_week_current_sortorder";
     public static final String REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder = "list_documents_not_changed_in_six_month_current_sortorder";
     public static final String REQUEST_PARAMETER__list_documents_changed_current_sortorder = "list_documents_changed_current_sortorder";
+    public static final String REQUEST_PARAMETER__SEARCH_LIST_CURRENT_SORTORDER = "search_list_current_sortorder";
     private static final String REQUEST_PARAMETER__NEW_SORTORDER = "new_sortorder";
     private static final String REQUEST_PARAMETER__LIST_TYPE = "list_type";
     public static final String REQUEST_PARAMETER__list_new_not_approved_current_expand = "list_new_not_approved_current_expand";
@@ -62,6 +65,17 @@ public class AdminManager extends Administrator {
     public static final String REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_expand = "list_documents_not_changed_in_six_month_current_expand";
     public static final String REQUEST_PARAMETER__showAll = "showAll";
     public static final String REQUEST_PARAMETER__hideAll = "hideAll";
+    public static final String REQUEST_PARAMETER__SEARCH_BTN = "search_btn";
+    public static final String REQUEST_PARAMETER__SEARCH_STRING = "search_string";
+    public static final String REQUEST_PARAMETER__RESET_BTN = "reset_btn";
+    public static final String REQUEST_PARAMETER__PERMISSION = "permission";
+    public static final String REQUEST_PARAMETER__STATUS = "status";
+    public static final String REQUEST_PARAMETER__DATE_TYPE = "date_type";
+    public static final String REQUEST_PARAMETER__DATE_START = "date_start";
+    public static final String REQUEST_PARAMETER__DATE_END = "date_end";
+    public static final String REQUEST_PARAMETER__HITS_PER_PAGE = "hits_per_page";
+    public static final String REQUEST_PARAMETER__FROMPAGE = "frompage";
+    public static final String PAGE_SEARCH = "search";
 
 
     /**
@@ -107,6 +121,10 @@ public class AdminManager extends Administrator {
             }
         }
 
+        else if (PAGE_SEARCH.equals(req.getParameter(REQUEST_PARAMETER__FROMPAGE))) {
+            req.getRequestDispatcher("/servlet/SearchDocuments").forward(req, res);
+            return ;
+        }
 
         String tabToShow = null != req.getParameter(REQUEST_PARAMETER__SHOW) ? req.getParameter(REQUEST_PARAMETER__SHOW): PARAMETER_VALUE__SHOW_NEW;
         String fileToForwardTo = JSP__ADMIN_MANAGER_NEW;
@@ -128,18 +146,16 @@ public class AdminManager extends Administrator {
         List documents_publication_end_less_then_one_week = new LinkedList() ;  //PUBLICATION_END_DATETIME < 7 days
         List documents_not_changed_in_six_month = new LinkedList();
 
-       // AdminManagerSubreport documents_new_not_approved;
-
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         BooleanQuery booleanQuery = new BooleanQuery();
-        Query query = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId()+"" ) );
-        booleanQuery.add( query, true, false );
+        Query restrictingQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId()+"" ) );
+        booleanQuery.add( restrictingQuery, true, false );
 
 
         HashMap current_sortorderMap = new HashMap();
         HashMap expand_listMap = new HashMap();
-       // HashMap subreports = new HashMap();
-        String sortorder = "";
+        HashMap subreports = new HashMap();
+        String sortorder ;
         String new_sortorder = "";
         String list_toChange_sortorder = "";
         DocumentDomainObject[] documentsFound = index.search( booleanQuery, loggedOnUser);
@@ -156,7 +172,6 @@ public class AdminManager extends Administrator {
             sortorder = getSortorderForListType(list_toChange_sortorder, new_sortorder, req.getParameter(REQUEST_PARAMETER__list_new_not_approved_current_sortorder), LIST_TYPE__list_new_not_approved, "MOD");
             current_sortorderMap.put(LIST_TYPE__list_new_not_approved, sortorder );
             Collections.sort( documents_new, getChainableReversibleNullComparator(sortorder) ) ;
-            String expand_status;
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_new_not_approved, REQUEST_PARAMETER__list_new_not_approved_current_expand );
 
            // documents_new_not_approved = new AdminManagerSubreport(LIST_TYPE__list_new_not_approved, "", "", DEFAULT_DOCUMENTS_PER_LIST, documents_new  );
@@ -226,9 +241,8 @@ public class AdminManager extends Administrator {
             setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_not_changed_in_six_month, REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder );
 
 
-        }else if ( tabToShow.equals(PARAMETER_VALUE__SHOW_SEARCH) ) {
+        } else if ( tabToShow.equals(PARAMETER_VALUE__SHOW_SEARCH) ) {
             fileToForwardTo = JSP__ADMIN_MANAGER_SEARCH;
-
         }
 
 
@@ -239,10 +253,11 @@ public class AdminManager extends Administrator {
                                 documents_not_changed_in_six_month,
                                 fileToForwardTo,
                                 current_sortorderMap,
-                                expand_listMap);
+                                expand_listMap,
+                                subreports,
+                                restrictingQuery);
+
         page.forward(req, res, loggedOnUser);
-
-
     }
 
     private void setNewExpandStatusForList(HttpServletRequest req, HashMap expand_listMap, String list, String request_parameter ) {
@@ -274,7 +289,7 @@ public class AdminManager extends Administrator {
 
     public static class AdminManagerPage {
 
-        public static final String REQUEST_ATTRIBUTE__PAGE = "page";
+        public static final String REQUEST_ATTRIBUTE__PAGE = "ampage";
         String html_admin_part;
         List documents_new;
         List documents_changed;
@@ -284,6 +299,10 @@ public class AdminManager extends Administrator {
         String fileToForwardTo;
         HashMap current_sortorderMap;
         HashMap expand_listMap;
+        HashMap subreports;
+        Query restrictingQuery;
+
+        DocumentFinder documentFinder ;
 
         public AdminManagerPage(String html_admin_part,
                                 List documents_new,
@@ -293,7 +312,9 @@ public class AdminManager extends Administrator {
                                 List documents_not_changed_in_six_month,
                                 String filename,
                                 HashMap current_sortorderMap,
-                                HashMap expand_listMap) {
+                                HashMap expand_listMap,
+                                HashMap subreports,
+                                Query restrictingQuery ) {
             this.html_admin_part = html_admin_part;
             this.documents_new = documents_new;
             this.documents_changed = documents_changed;
@@ -303,7 +324,9 @@ public class AdminManager extends Administrator {
             this.fileToForwardTo = filename;
             this.current_sortorderMap = current_sortorderMap;
             this.expand_listMap = expand_listMap;
-
+            this.subreports = subreports;
+            documentFinder = new DocumentFinder(new AdminManagerSearchPage(this));
+            documentFinder.setRestrictingQuery(restrictingQuery);
         }
 
         public String getHtml_admin_part() {
@@ -331,9 +354,13 @@ public class AdminManager extends Administrator {
         }
 
         public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
+            if (JSP__ADMIN_MANAGER_SEARCH.equals(fileToForwardTo)) {
+                documentFinder.forward(request, response);
+            } else {
                 request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
                 String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/" + fileToForwardTo;
                 request.getRequestDispatcher( forwardPath ).forward( request, response );
+            }
         }
 
         public HashMap getCurrent_sortorderMap() {
@@ -343,24 +370,32 @@ public class AdminManager extends Administrator {
         public HashMap getExpand_listMap() {
             return expand_listMap;
         }
+
+        public HashMap getSubreports() {
+            return subreports;
+        }
+
+        public DocumentFinder getDocumentFinder() {
+            return documentFinder;
+        }
     }
 
     public static class AdminManagerSubreport {
         String name;
         String sortorder;
         String expand_status;
-        int maxItemToShow;
+        int hits_per_page;
         List documentsFound;
 
         public AdminManagerSubreport (String name,
                                       String sortorder,
                                       String expand_status,
-                                      int maxItemToShow,
+                                      int hits_per_page,
                                       List documentsFound) {
             this.name = name;
             this.sortorder = sortorder;
             this.expand_status = expand_status;
-            this.maxItemToShow = maxItemToShow;
+            this.hits_per_page = hits_per_page;
             this.documentsFound = documentsFound;
         }
 
@@ -376,8 +411,8 @@ public class AdminManager extends Administrator {
             return expand_status;
         }
 
-        public int getMaxItemToShow() {
-            return maxItemToShow;
+        public int getHits_per_page() {
+            return hits_per_page;
         }
     }
 

@@ -28,6 +28,9 @@ class IndexDocumentFactory {
         indexDocument.add( Field.UnStored( DocumentIndex.FIELD__META_TEXT, document.getMenuText() ) );
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__DOC_TYPE_ID, "" + document.getDocumentTypeId() ) );
         indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__CREATOR_ID, "" + document.getCreator().getId()) );
+        if ( null != document.getPublisher() ){
+            indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__PUBLISHER_ID, "" + document.getPublisher().getId()) );
+        }
         SectionDomainObject[] sections = document.getSections();
         for ( int i = 0; i < sections.length; i++ ) {
             SectionDomainObject section = sections[i];

@@ -16,7 +16,10 @@ public class SearchDocuments extends HttpServlet {
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
-        final SearchDocumentsPage page = SearchDocumentsPage.fromRequest( request );
+        DocumentFinder documentFinder = new DocumentFinder();
+        documentFinder.forward(request, response);
+        /*
+        final SearchDocumentsPage page = (SearchDocumentsPage) SearchDocumentsPage.fromRequest( request );
         final DocumentFinder documentFinder = page.getDocumentFinder();
 
         if ( page.isCancelButtonPressed() ) {
@@ -26,8 +29,9 @@ public class SearchDocuments extends HttpServlet {
         } else if ( null != page.getSelectedDocument() ) {
             documentFinder.selectDocument( page.getSelectedDocument(), request, response );
         } else {
-            documentFinder.forwardWithPage( page, request, response );
+            documentFinder.forwardWithPage(request, response, page);
         }
+    */
     }
 
     private void goToEditDocumentInformation( final SearchDocumentsPage page, final DocumentFinder documentFinder,
@@ -35,7 +39,7 @@ public class SearchDocuments extends HttpServlet {
         DocumentDomainObject documentSelectedForEditing = page.getDocumentSelectedForEditing();
         DispatchCommand returnCommand = new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                documentFinder.forwardWithPage( page, request, response );
+                documentFinder.forwardWithPage(request, response, page);
             }
         };
         EditDocumentInformationPageFlow editDocumentInformationPageFlow = new EditDocumentInformationPageFlow( documentSelectedForEditing, returnCommand, new DocumentMapper.SaveEditedDocumentCommand() );

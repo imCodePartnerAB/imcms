@@ -6,21 +6,19 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DefaultQueryParser;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
-import imcode.util.HttpSessionUtils;
-import imcode.util.Utility;
 import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
+import org.apache.commons.collections.SetUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.commons.collections.set.ListOrderedSet;
-import org.apache.commons.collections.SetUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 public class DocumentFinder extends WebComponent {
 
@@ -28,6 +26,16 @@ public class DocumentFinder extends WebComponent {
     private Query restrictingQuery;
     private QueryParser queryParser = new DefaultQueryParser();
     private Set extraSearchResultColumns = SetUtils.orderedSet( new HashSet() ) ;
+    private SearchDocumentsPage page ;
+
+    public DocumentFinder() {
+        this(new SearchDocumentsPage(null, null));
+    }
+
+    public DocumentFinder(SearchDocumentsPage page) {
+        this.page = page ;
+        page.setDocumentFinder(this);
+    }
 
     public void selectDocument( DocumentDomainObject selectedDocument, HttpServletRequest request,
                                 HttpServletResponse response ) throws IOException, ServletException {
@@ -35,13 +43,10 @@ public class DocumentFinder extends WebComponent {
     }
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        SearchDocumentsPage page = new SearchDocumentsPage();
-        page.setDocumentFinder(this);
-        forwardWithPage( page, request, response );
+        forwardWithPage(request, response, page);
     }
 
-    void forwardWithPage( SearchDocumentsPage page, HttpServletRequest request,
-                          HttpServletResponse response ) throws IOException, ServletException {
+    void forwardWithPage(HttpServletRequest request, HttpServletResponse response, SearchDocumentsPage page) throws IOException, ServletException {
         ImcmsServices service = Imcms.getServices();
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         BooleanQuery booleanQuery = new BooleanQuery();

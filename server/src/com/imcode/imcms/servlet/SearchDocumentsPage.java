@@ -28,13 +28,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SearchDocumentsPage {
+import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.flow.DispatchCommand;
+
+public class SearchDocumentsPage extends OkCancelPage {
 
     public static final String REQUEST_PARAMETER__SECTION_ID = "section_id";
     public static final String REQUEST_PARAMETER__DOCUMENTS_PER_PAGE = "num";
     public static final String REQUEST_PARAMETER__QUERY_STRING = "q";
     public static final String REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX = "start";
-    public static final String REQUEST_ATTRIBUTE__PAGE = "page";
+    public static final String REQUEST_ATTRIBUTE__PAGE = "sp";
     public static final String REQUEST_PARAMETER__SELECTED_DOCUMENT_ID = "select";
     public static final String REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID = "toedit";
     public static final String REQUEST_PARAMETER__SEARCH_BUTTON = "search";
@@ -55,17 +58,15 @@ public class SearchDocumentsPage {
     private boolean cancelButtonPressed;
 
     private String documentFinderSessionAttributeName;
-    private DocumentFinder documentFinder = new DocumentFinder();
+    DocumentFinder documentFinder ;
 
     private static final String REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER = "finder";
 
-    static SearchDocumentsPage fromRequest( HttpServletRequest request ) {
-        SearchDocumentsPage page = new SearchDocumentsPage();
-        page.setFromRequest( request );
-        return page;
+    public SearchDocumentsPage(DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand) {
+        super(okDispatchCommand, cancelDispatchCommand);
     }
 
-    private void setFromRequest( HttpServletRequest request ) {
+    protected void updateFromRequest(HttpServletRequest request) {
 
         setDocumentFinderFromRequest( request );
 
@@ -97,6 +98,10 @@ public class SearchDocumentsPage {
         queryString = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__QUERY_STRING ) );
         searchButtonPressed = null != request.getParameter( REQUEST_PARAMETER__SEARCH_BUTTON );
         query = createQuery( documentFinder );
+    }
+
+    protected void dispatchOther(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        documentFinder.forwardWithPage(request, response, this);
     }
 
     private void setDocumentFinderFromRequest( HttpServletRequest request ) {
@@ -163,13 +168,9 @@ public class SearchDocumentsPage {
         return query;
     }
 
-    void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        if (null != documentFinderSessionAttributeName) {
-            request.getSession().setAttribute( documentFinderSessionAttributeName, documentFinder );
-        }
-        request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+    public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         UserDomainObject user = Utility.getLoggedOnUser( request );
-        request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/search_documents.jsp" ).forward( request, response );
+        putInSessionAndForwardToPath("/imcms/" + user.getLanguageIso639_2() + "/jsp/search_documents.jsp", request, response );
     }
 
     public SectionDomainObject getSection() {

@@ -15,15 +15,13 @@
                  com.imcode.imcms.servlet.DocumentFinder,
                  com.imcode.imcms.servlet.SearchDocumentsPage,
                  imcode.util.Html,
-                 imcode.server.document.DocumentMapper"%>
+                 imcode.server.document.DocumentMapper,
+                 com.imcode.imcms.servlet.superadmin.AdminManager,
+                 com.imcode.imcms.flow.Page"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
-    SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage)request.getAttribute( SearchDocumentsPage.REQUEST_ATTRIBUTE__PAGE ) ;
+    SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     DocumentFinder documentFinder = searchDocumentsPage.getDocumentFinder() ;
-    DocumentDomainObject[] documentsFound = searchDocumentsPage.getDocumentsFound() ;
-    int firstDocumentIndex = searchDocumentsPage.getFirstDocumentIndex() ;
-    int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;
-    UserDomainObject user = Utility.getLoggedOnUser( request ) ;
 %>
 <vel:velocity>
 <html>
@@ -39,7 +37,7 @@
 #gui_outer_start()
 #gui_head( "<? templates/sv/search/search_documents.html/1 ?>" )
 
-<form method="GET" action="SearchDocuments">
+<form method="GET" action="PageDispatcher">
 
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>
@@ -51,189 +49,10 @@
 </table>
 
 #gui_mid()
-
-<%= searchDocumentsPage.getDocumentFinderHiddenInputHtml() %>
-    <table width="550" border="0" cellspacing="0">
-        <tr>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/search/search_documents.html/2 ?></font>
-        </tr>
-        <tr>
-            <td colspan="2" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif">
-                <input type="text" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__QUERY_STRING %>" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(searchDocumentsPage.getQueryString())) %>" size="65" style="width: 100%"></font></td>
-        </tr>
-        <tr>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-        <tr>
-            <td width="100%">
-                <table border="0" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td class="imcmsAdmText"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/search/search_documents.html/4 ?>&nbsp;</font></td>
-                        <td class="imcmsAdmText">
-                            <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__DOCUMENTS_PER_PAGE %>" size="1">
-                                <%
-                                    Integer[] ranges = new Integer[] {
-                                        new Integer( 10 ),
-                                        new Integer( 100 ),
-                                        new Integer( 1000 ),
-                                    } ;
-                                %>
-                                <%=
-                                    Html.createOptionList(Arrays.asList(ranges), new Integer( documentsPerPage ), new Transformer() {
-                                        public Object transform( Object input ) {
-                                            return new String[] {""+input, ""+input} ;
-                                        }
-                                    })
-                                %>
-                            </select></td>
-                        <td class="imcmsAdmText">
-                            <font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;<? templates/sv/search/search_documents.html/5 ?>&nbsp;</font>
-                        </td>
-                        <td class="imcmsAdmText">
-                            <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__SECTION_ID %>">
-                                <option value=""><? templates/sv/search/search_documents.html/3 ?></option>
-                                <%
-                                    DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-                                    SectionDomainObject[] sections = documentMapper.getAllSections() ;
-                                    Arrays.sort(sections) ;
-                                    SectionDomainObject selectedSection = searchDocumentsPage.getSection() ; %>
-                                    <%= Html.createOptionList(Arrays.asList(sections), selectedSection, new Transformer() {
-                                        public Object transform( Object input ) {
-                                            SectionDomainObject section = (SectionDomainObject)input ;
-                                            return new String[] { ""+section.getId(), section.getName() } ;
-                                        }
-                                    } ) %>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td align="right">
-                <input type="submit" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__SEARCH_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/search/search_documents.html/1 ?>">
-            </td>
-        </tr>
-        <tr>
-          <td colspan="2">&nbsp;</td>
-        </tr>
-    </table>
+<jsp:include page="search_documents_form.jsp" />
 </form>
-<% if (null != documentsFound) { %>
-    <table border="0" cellpadding="0" cellspacing="0" width="550">
-        <tr>
-            <td colspan="4">&nbsp;</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="imcmsAdmText"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><? templates/sv/search/search_result.html/7 ?></b></font></td>
-        </tr>
-        <tr>
-            <td colspan="4">&nbsp;</td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <table border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td class="imcmsAdmText"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><? templates/sv/search/search_result.html/1003 ?></b>&nbsp;&nbsp;</font></td>
-                    <td class="imcmsAdmText"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%= documentsFound.length %></font></td>
-                </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2"><hr></td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <table border="0" cellpadding="4" cellspacing="0" width="100%">
-                <%
-                    if (0 == documentsFound.length) { %>
-                    <tr>
-                        <td colspan="3"><font size="1" face="Verdana, Arial, Helvetica, sans-serif" color="#cc0000"><? templates/sv/search/search_result_no_hit.html/1 ?></font></td>
-                    </tr>
-                <% } else { %>
-                    <tr>
-                        <th>&nbsp;</th>
-                        <th align="left"><? imcms/lang/jsp/search_documents.jsp/document_id ?></th>
-                        <th align="left"><? imcms/lang/jsp/search_documents.jsp/document_headline ?></th>
-                        <%
-                                DocumentFinder.SearchResultColumn[] searchResultColumns = documentFinder.getExtraSearchResultColumns() ;
-                                for ( int i = 0; i < searchResultColumns.length; i++ ) {
-                                    DocumentFinder.SearchResultColumn searchResultColumn = searchResultColumns[i];
-                                    %><th align="left"><%= searchResultColumn.getName().toLocalizedString(request) %></th><%
-                                }
-                        %>
-                        <th width="100%">&nbsp;</th>
-                    </tr><%
-                    int firstDocumentIndexOnNextPage = ( firstDocumentIndex + documentsPerPage );
-                    for ( int i = firstDocumentIndex ; i < documentsFound.length
-                                                       && i < firstDocumentIndexOnNextPage; i++ ) {
-                        DocumentDomainObject document = documentsFound[i]; %>
-                        <tr valign="top" <% if (0 != (i - firstDocumentIndex) % 2) { %> bgcolor="#FFFFFF"<% } %>>
-                            <td>
-                                    <%
-                                        if (user.canEdit( document )) {
-                                            %><a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%= documentMapper.getStatusIconTemplate(document, user ) %></a><%
-                                        } else {
-                                            %>&nbsp;<%
-                                        }
-                                    %>
-                            </td>
-                            <td>
-                                <font size="1" face="Verdana, Arial, Helvetica, sans-serif"><%= document.getId() %></font>
-                            </td>
-                            <td nowrap>
-                                <font size="1" face="Verdana, Arial, Helvetica, sans-serif">
-                                    <a href="$contextPath/servlet/GetDoc?meta_id=<%= document.getId() %>"><b><%= document.getHeadline() %></b></a>
-                                </font>
-                            </td>
-                            <%
-                                for ( int j = 0; j < searchResultColumns.length; j++ ) {
-                                    DocumentFinder.SearchResultColumn searchResultColumn = searchResultColumns[j];
-                                    %><td><%= searchResultColumn.render(document, request ) %></td><%
-                                }
-                            %>
-                            <td align="right">&nbsp;
-                                <% if (documentFinder.isDocumentsSelectable()) { %>
-                                    <a href="$contextPath/servlet/SearchDocuments?<%= SearchDocumentsPage.REQUEST_PARAMETER__SELECTED_DOCUMENT_ID+"="+document.getId()+"&"+searchDocumentsPage.getParameterString(request)%>"><? imcms/lang/jsp/search_documents.jsp/select_document ?></a>
-                                <% } %>
-                            </td>
-                        </tr>
-                    <% }
-                } %>
-                </table>
-            </td>
-        </tr>
-        <% if (documentsFound.length > documentsPerPage) { %>
-        <tr>
-            <td colspan="2"><hr></td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <%
-                    if (firstDocumentIndex > 0) {
-                        int firstDocumentIndexOnPreviousPage = Math.max(0, firstDocumentIndex - documentsPerPage) ; %>
-                        <a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+firstDocumentIndexOnPreviousPage) %>">
-                            <? templates/sv/search/search_nav_prev.html/1001 ?></a>&nbsp;<%
-                    }
-                    for (int i = 0; (i * documentsPerPage) < documentsFound.length && documentsFound.length > documentsPerPage; i++) { %>
-                        <a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+(i*documentsPerPage)) %>"><%= i + 1 %></a>
-                        &nbsp;<%
-                    }
-                    int firstDocumentIndexOnNextPage = ( firstDocumentIndex + documentsPerPage );
-                    if (documentsFound.length > firstDocumentIndexOnNextPage) { %>
-                        <a href="$contextPath/servlet/SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+firstDocumentIndexOnNextPage) %>">
-                            <? templates/sv/search/search_nav_next.html/1001 ?>
-                        </a><%
-                    } %>
-            </td>
-        </tr>
-        <% } %>
-        <tr>
-            <td colspan="2">&nbsp;</td>
-        </tr>
-    </table>
-<% } %>
+
+
+<jsp:include page="search_documents_results.jsp" />
 #gui_end_of_page()
 </vel:velocity>

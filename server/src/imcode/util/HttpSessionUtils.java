@@ -33,7 +33,7 @@ public class HttpSessionUtils {
         }
     }
 
-    private static void put( HttpServletRequest request, String sessionAttributeName,
+    public static void put( HttpServletRequest request, String sessionAttributeName,
                              final Object objectToAddToSession ) {
         LRUMap sessionMap = getSessionMap( request );
         if (sessionMap.isFull()) {
