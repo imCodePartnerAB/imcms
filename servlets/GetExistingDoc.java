@@ -39,7 +39,7 @@ public class GetExistingDoc extends HttpServlet {
         String searchString = "";
         String searchPrep = "";
         String s12 = "";
-        String s13 = "";
+        String sortBy = "";
         String s14 = "";
         String s15 = "";
         String s17 = "";
@@ -74,7 +74,7 @@ public class GetExistingDoc extends HttpServlet {
             }
 
             s14 = created_date + ", " + changed_date + ", " + activated_date + ", " + archived_date;
-            s13 = req.getParameter("sortBy");
+            sortBy = req.getParameter("sortBy");
             s6 = req.getParameter("HitsPerPage");
             s9 = "" + user.getObject("user_id");
             s7 = "1";
@@ -86,7 +86,7 @@ public class GetExistingDoc extends HttpServlet {
             searchString = req.getParameter("searchString");
             searchPrep = req.getParameter("search_prep");
             s12 = req.getParameter("doc_types");
-            s13 = req.getParameter("sortBy");
+            sortBy = req.getParameter("sortBy");
             s14 = req.getParameter("includeDocStr");
             j = Integer.parseInt(req.getParameter("doc_count"));
             if(req.getParameter("next") != null)
@@ -94,7 +94,31 @@ public class GetExistingDoc extends HttpServlet {
             else
                 s7 = "" + (Integer.parseInt(s7) - Integer.parseInt(s6));
         }
-        sqlString = "EXEC SearchDocs " + s9 + ",'" + searchString + "', '" + searchPrep + "', '" + s12 + "', " + s7 + ", " + s6 + ", '" + s13 + "', " + s14 + ", '1'";
+		// kolla parametrar
+		// sortBy
+		//---------------------------
+		Hashtable check = new Hashtable();
+		check.put("meta_id", "meta_id");
+		check.put("doc_type", "doc_type");
+		check.put("meta_headline", "meta_headline");
+		check.put("meta_text", "meta_text");
+		check.put("show_meta", "show_meta");
+		check.put("disable_search", "disable_search");
+		check.put("date_created", "date_created");
+		check.put("date_modified", "date_modified");
+		check.put("date_activated", "date_activated");
+		check.put("date_archived", "date_archived");
+		check.put("archive", "archive");
+		check.put("shared", "shared");
+		if (check.get(sortBy) == null)
+		{
+			log("GetExistingDoc: invalid parameter:sortBy=" + sortBy
+			+ "\n      setting sortBy to 'meta_id'");
+			sortBy = "meta_id";
+			
+		}
+		//----------------------------
+        sqlString = "EXEC SearchDocs " + s9 + ",'" + searchString + "', '" + searchPrep + "', '" + s12 + "', " + s7 + ", " + s6 + ", '" + sortBy + "', " + s14 + ", '1'";
         String s19 = "";
         String s20 = "";
         Hashtable hashtable = IMCServiceRMI.sqlQueryHash(imcserver, sqlString);
@@ -170,7 +194,7 @@ public class GetExistingDoc extends HttpServlet {
         vector.add("#doc_types#");
         vector.add(s12);
         vector.add("#sortBy#");
-        vector.add(s13);
+        vector.add(sortBy);
         vector.add("#includeDocStr#");
         vector.add(s14);
         String langID = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = " + user.getInt("lang_id"));
