@@ -496,7 +496,7 @@ GO
 
 CREATE TABLE [dbo].[roles] (
 	[role_id] [int] NOT NULL ,
-	[role_name] [char] (25) NOT NULL ,
+	[role_name] [varchar] (30) NOT NULL ,
 	[permissions] [int] NOT NULL ,
 	[admin_role] [int] NOT NULL 
 ) ON [PRIMARY]

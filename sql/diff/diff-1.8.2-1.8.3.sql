@@ -63,3 +63,7 @@ ALTER TABLE menus ALTER COLUMN meta_id INT NOT NULL
 ALTER TABLE menus ADD CONSTRAINT UQ__menus__meta_id_menu_index UNIQUE (meta_id, menu_index)
 
 -- 2004-03-26 Kreiger
+
+ALTER TABLE roles ALTER COLUMN role_name VARCHAR(30) NOT NULL
+
+-- 2004-04-05 Kreiger

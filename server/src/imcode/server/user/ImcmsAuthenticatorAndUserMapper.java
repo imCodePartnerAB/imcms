@@ -96,8 +96,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         user.setCountyCouncil( sqlResult[11] );
         user.setEmailAddress( sqlResult[12] );
         user.setLangId( Integer.parseInt( sqlResult[13] ) );
-        user.setLanguageIso639_2(
-                (String)ObjectUtils.defaultIfNull( sqlResult[14], service.getDefaultLanguageAsIso639_2() ) );
+        user.setLanguageIso639_2( (String)ObjectUtils.defaultIfNull( sqlResult[14], service.getDefaultLanguageAsIso639_2() ) );
         user.setUserType( Integer.parseInt( sqlResult[15] ) );
         user.setActive( 0 != Integer.parseInt( sqlResult[16] ) );
         user.setCreateDate( sqlResult[17] );
@@ -116,7 +115,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         RoleDomainObject[] roles = new RoleDomainObject[sqlResult.length];
         for ( int i = 0; i < sqlResult.length; i++ ) {
             String[] sqlRow = sqlResult[i];
-            roles[i] = getRoleFromSqlResult( sqlRow ) ;
+            roles[i] = getRoleFromSqlResult( sqlRow );
         }
         return roles;
     }
@@ -322,10 +321,12 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         }
     }
 
-    /**
-     * @param wantedRoleName
-     * @return roleId
-     */
+    public RoleDomainObject getRoleById( int roleId ) {
+        String sqlStr = "SELECT role_id, role_name, admin_role FROM roles WHERE role_id = ?";
+        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{"" + roleId} );
+        return getRoleFromSqlResult( sqlResult );
+    }
+
     public RoleDomainObject getRoleByName( String wantedRoleName ) {
         String sqlStr = "SELECT role_id, role_name, admin_role FROM roles WHERE role_name = ?";
         String[] sqlResult = service.sqlQuery( sqlStr, new String[]{wantedRoleName} );
@@ -337,8 +338,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         if ( sqlResult.length > 0 ) {
             int roleId = Integer.parseInt( sqlResult[0] );
             String roleName = sqlResult[1];
-            int adminRoleId = Integer.parseInt( sqlResult[2] ) ;
-            role = new RoleDomainObject( roleId, roleName,adminRoleId );
+            int adminRoleId = Integer.parseInt( sqlResult[2] );
+            role = new RoleDomainObject( roleId, roleName, adminRoleId );
         }
         return role;
     }

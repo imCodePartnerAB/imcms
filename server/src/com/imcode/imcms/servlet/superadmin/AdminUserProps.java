@@ -6,6 +6,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -498,7 +499,7 @@ public class AdminUserProps extends Administrator {
         vm.addProperty( "COUNTRY_COUNCIL", userInfoP.getProperty( "country_council" ) );
         vm.addProperty( "EMAIL", userInfoP.getProperty( "email" ) );
 
-        //******** USERADMIN_STTINGS BUTTON WAS PUNSCHED ***********
+        //******** USERADMIN_SETTINGS BUTTON WAS PRESSED ***********
         if ( null != req.getParameter( "useradmin_settings" ) ) {
 
             String[] theUserRoles = req.getParameterValues( "roles" );
@@ -796,12 +797,12 @@ public class AdminUserProps extends Administrator {
 
             // Lets add the new users roles
             String[] roleId = imcref.sqlProcedure( "GetRoleIdByRoleName", new String[]{"Useradmin"} );
-            boolean isSelected = false;
+            boolean useradminRoleIsSelected = false;
             for ( int i = 0; i < rolesV.size(); i++ ) {
                 String aRole = rolesV.elementAt( i ).toString();
                 imcref.sqlUpdateProcedure( "AddUserRole", new String[]{"" + newUserId, "" + aRole} );
                 if ( aRole.equals( roleId[0] ) ) {
-                    isSelected = true; // role Useradmin is selected
+                    useradminRoleIsSelected = true; // role Useradmin is selected
                 }
             }
 
@@ -811,16 +812,13 @@ public class AdminUserProps extends Administrator {
                 imcref.sqlUpdateProcedure( "AddUserRole", new String[]{newUserId, roleId[0]} );
             }
 
-            if ( isSelected ) {  // role Useradmin is selected
+            if ( useradminRoleIsSelected ) {
 
                 // Lets get the useradmin_roles from htmlpage
                 Vector useradminRolesV = this.getRolesParameters( "useradmin_roles", req, res, imcref, user );
 
                 // Lets add the new useradmin roles.
-                for ( int i = 0; i < useradminRolesV.size(); i++ ) {
-                    String aRole = useradminRolesV.elementAt( i ).toString();
-                    imcref.sqlUpdateProcedure( "AddUseradminPermissibleRoles", new String[]{newUserId, aRole} );
-                }
+                addUserAdminRoles( imcref, newUserId, useradminRolesV );
             }
 
 
@@ -1109,12 +1107,12 @@ public class AdminUserProps extends Administrator {
                     }
                 }
                 String[] roleId = imcref.sqlProcedure( "GetRoleIdByRoleName", new String[]{"Useradmin"} );
-                boolean isSelected = false;
+                boolean useradminRoleIsSelected = false;
                 for ( int i = 0; i < rolesV.size(); i++ ) {
                     String aRole = rolesV.elementAt( i ).toString();
                     imcref.sqlUpdateProcedure( "AddUserRole", new String[]{userToChangeId, aRole} );
                     if ( aRole.equals( roleId[0] ) ) {
-                        isSelected = true; // role Useradmin is selected
+                        useradminRoleIsSelected = true; // role Useradmin is selected
                     }
                 }
 
@@ -1133,7 +1131,7 @@ public class AdminUserProps extends Administrator {
 
                 imcref.sqlUpdateProcedure( "DeleteUseradminPermissibleRoles", new String[]{userToChangeId} );
 
-                if ( isSelected ) { // role Useradmin is selected
+                if ( useradminRoleIsSelected ) {
 
                     // Lets get the useradmin_roles from htmlpage
                     Vector useradminRolesV = this.getRolesParameters( "useradmin_roles", req, res, imcref, user );
@@ -1141,12 +1139,9 @@ public class AdminUserProps extends Administrator {
                         return;
                     }
 
-                    for ( int i = 0; i < useradminRolesV.size(); i++ ) {
-                        String aRole = useradminRolesV.elementAt( i ).toString();
-                        imcref.sqlUpdateProcedure( "AddUseradminPermissibleRoles", new String[]{userToChangeId, aRole} );
-                    }
+                    // Lets add the new useradmin roles.
+                    addUserAdminRoles( imcref, userToChangeId, useradminRolesV );
                 }
-
             }
 
             this.goNext( req, res, session );
@@ -1173,6 +1168,20 @@ public class AdminUserProps extends Administrator {
         doGet( req, res );
         return;
     } // end HTTP POST
+
+    private void addUserAdminRoles( IMCServiceInterface imcref, String userIdToAddUserAdminRolesTo,
+                                    Vector useradminRolesV ) {
+        ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+        for ( int i = 0; i < useradminRolesV.size(); i++ ) {
+            String roleIdStr = useradminRolesV.elementAt( i ).toString().trim();
+            RoleDomainObject role = imcmsAuthenticatorAndUserMapper.getRoleById( Integer.parseInt( roleIdStr ) );
+            if ( !RoleDomainObject.SUPERADMIN.equals( role ) && !RoleDomainObject.USERADMIN.equals( role ) ) {
+                imcref.sqlUpdateProcedure( "AddUseradminPermissibleRoles", new String[]{
+                    userIdToAddUserAdminRolesTo, "" + role.getId()
+                } );
+            }
+        }
+    }
 
     private String addNewUser( IMCServiceInterface imcref, Properties params ) {
         String newUserId = imcref.sqlProcedureStr( "GetHighestUserId", new String[0] );
@@ -1223,7 +1232,8 @@ public class AdminUserProps extends Administrator {
                                        IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
         // Lets get the roles
         // Vector rolesV = this.getRolesParameters(req) ;
-        String[] roles = ( req.getParameterValues( name ) == null ) ? new String[0] : ( req.getParameterValues( name ) );
+        String[] roles = ( req.getParameterValues( name ) == null )
+                         ? new String[0] : ( req.getParameterValues( name ) );
         Vector rolesV = new Vector( java.util.Arrays.asList( roles ) );
         if ( rolesV.size() == 0 && name.equals( "roles" ) ) { // user must get at least one user role
             String header = "Error in AdminUserProps ";
@@ -1458,9 +1468,10 @@ public class AdminUserProps extends Administrator {
         } else {
             rolesArr = imcref.sqlProcedure( "GetUseradminPermissibleRoles", new String[]{"" + user.getId()} );
         }
+        for ( int i = 0; i < rolesArr.length; i++ ) {
+            rolesArr[i] = rolesArr[i].trim();
+        }
         Vector allRolesV = new Vector( java.util.Arrays.asList( rolesArr ) );
-
-
 
         //Lets get all ROLES from DB except of Useradmin and Superadmin
         Vector rolesV = (Vector)allRolesV.clone();
@@ -1469,7 +1480,7 @@ public class AdminUserProps extends Administrator {
         while ( listiter.hasNext() ) {
             listiter.next();
             String rolename = listiter.next().toString();
-            if ( rolename.equals( "Superadmin" ) || rolename.equals( "Useradmin" ) ) {
+            if ( "Superadmin".equalsIgnoreCase( rolename ) || "Useradmin".equalsIgnoreCase( rolename ) ) {
                 listiter.remove();
                 listiter.previous();
                 listiter.remove();
@@ -1483,15 +1494,11 @@ public class AdminUserProps extends Administrator {
 
         if ( userToChange == null ) {   // ADD_USER mode
 
-
             // Lets set default usertype to 1 "Authenticated user" if we don´t have got any from session.
             if ( userType == null ) {
                 userType = "1";
             }
             log( "userType:" + userType );
-
-
-
 
             // Lets get the information for users roles and put them in a vector
             // if we don´t have got any roles from session we try to get them from request object
@@ -1500,9 +1507,6 @@ public class AdminUserProps extends Administrator {
                             ? new String[0] : req.getParameterValues( "roles" );
             }
             userRolesV = new Vector( java.util.Arrays.asList( userRoles ) );
-
-            log( "Size allRolesV: " + allRolesV.size() );
-            log( "Size theUserRolesV: " + userRolesV.size() );
 
             // Lets create html option for user roles
             rolesMenuStr = Html.createOptionList( allRolesV, userRolesV );
@@ -1515,8 +1519,6 @@ public class AdminUserProps extends Administrator {
                                      ? new String[0] : req.getParameterValues( "useradmin_roles" );
                 }
                 useradminRolesV = new Vector( java.util.Arrays.asList( useradminRoles ) );
-
-                log( "Size theUsersdminRolesV: " + useradminRolesV.size() );
 
                 // Lets create html option for useradmin roles
                 rolesMenuUseradminStr = Html.createOptionList( rolesV, useradminRolesV );
