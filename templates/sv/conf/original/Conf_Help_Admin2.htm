@@ -1,942 +1,1894 @@
-<html>
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
 <head>
-<title>Hj&auml;lpsida</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 9">
+<meta name=Originator content="Microsoft Word 9">
+<link rel=File-List href="./Conf_Help_Admin2-filer/filelist.xml">
+<title>Hjälpsida</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Camilla Leveau</o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor>Camilla Leveau</o:LastAuthor>
+  <o:Revision>18</o:Revision>
+  <o:TotalTime>128</o:TotalTime>
+  <o:Created>2001-05-07T09:55:00Z</o:Created>
+  <o:LastSaved>2001-05-07T12:27:00Z</o:LastSaved>
+  <o:Pages>6</o:Pages>
+  <o:Words>1584</o:Words>
+  <o:Characters>9030</o:Characters>
+  <o:Company>imcode</o:Company>
+  <o:Lines>75</o:Lines>
+  <o:Paragraphs>18</o:Paragraphs>
+  <o:CharactersWithSpaces>11089</o:CharactersWithSpaces>
+  <o:Version>9.3821</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:HyphenationZone>21</w:HyphenationZone>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536871559 0 0 0 415 0;}
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+p
+	{margin-right:0in;
+	mso-margin-top-alt:auto;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="1027"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
 </head>
 
-<body bgcolor="#FFFFFF">
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Hj&auml;lpsida 
-  f&ouml;r konferensadministrat&ouml;rer</b><br>
-  </font></p>
-<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif">F&ouml;r att skapa 
-  nya htmlmallar finns det ett antal taggar per mallsida som man kan anv&auml;nda 
-  sig av.<br>
-  N&aring;gra taggar kan alltid anv&auml;ndas i samtliga mallsidor. Dessa f&ouml;ljer 
-  nedan. Efter dessa f&ouml;ljer de taggar respektive<br>
-  de kommando som kan skickas till de olika servlets som anv&auml;nds i konferensen.<br>
-  </font></p>
-<table width="100%" border="0">
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="3"><b><font size="2"><a href="#General_tags">Gemensamma 
-      taggar </a></font></b></font></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b><a href="#General_parameters">Gemensamma 
-      parametrar </a></b></font></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b><a href="#Conf_Add">ConfAdd 
-      servlet </a></b></font></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b><a href="#Conf_Admin">ConfAdmin 
-      servlet</a></b></font></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><a href="#Conf_Creator">ConfCreator 
-      servlet </a></b></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><a href="#Conf_Disc">ConfDisc 
-      servlet</a></b></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="2"><a href="#Conf_Disc_View">ConfDiscView 
-      servlet</a></font></b></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b><a href="#Conf_Error">ConfError 
-      servlet </a> </b></font></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Forum"><font size="2"><b>ConfForum 
-      servlet</b></font></a></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Help"><font size="2"><b>ConfHelp 
-      servlet</b></font></a></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Login"><font size="2"><b>ConfLogin 
-      servlet</b></font></a></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Help"><font size="2"><b>ConfHelp 
-      servlet</b></font></a></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Manager"><font size="2"><b>ConfManager 
-      servlet</b></font></a></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Reply"><font size="2"><b>ConfReply 
-      servlet</b></font></a></font></td>
-  </tr>
-  <tr> 
-    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_View"><font size="2"><b>ConfViewer 
-      servlet</b></font></a></font></td>
-  </tr>
+<body bgcolor=white lang=SV link=blue vlink=blue style='tab-interval:65.2pt'>
+
+<div class=Section1>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Hjälpsida för
+konferensadministratörer</span></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Verdana'>För att skapa nya
+htmlmallar finns det ett antal taggar per mallsida som man kan använda sig av.<br>
+Några taggar kan alltid användas i samtliga mallsidor. Dessa följer nedan.
+Efter dessa följer de taggar respektive<br>
+de kommando som kan skickas till de olika servlets som används i konferensen.</span></p>
+
+<table border=0 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'><a
+  href="#General_tags">Gemensamma taggar </a></span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'><a
+  href="#General_parameters">Gemensamma parametrar </a></span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'><a
+  href="#Conf_Add"><span lang=EN-US style='mso-ansi-language:EN-US'>ConfAdd
+  servlet </span></a></span></b><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'><a
+  href="#Conf_Admin"><span lang=EN-US style='mso-ansi-language:EN-US'>ConfAdmin
+  servlet</span></a></span></b><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'><a
+  href="#Conf_Creator"><span lang=EN-US style='mso-ansi-language:EN-US'>ConfCreator
+  servlet </span></a></span></b><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'><a
+  href="#Conf_Disc"><span lang=EN-US style='mso-ansi-language:EN-US'>ConfDisc
+  servlet</span></a></span></b><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'><a
+  href="#Conf_Disc_View"><span lang=EN-US style='mso-ansi-language:EN-US'>ConfDiscView
+  servlet</span></a></span></b><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'><a
+  href="#Conf_Error"><span lang=EN-US style='mso-ansi-language:EN-US'>ConfError
+  servlet </span></a></span></b><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-family:Verdana'><a href="#Conf_Forum"><b><span
+  lang=EN-US style='font-size:10.0pt;mso-ansi-language:EN-US'>ConfForum servlet</span></b></a></span><span
+  lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-family:Verdana'><a href="#Conf_Help"><b><span
+  lang=EN-US style='font-size:10.0pt;mso-ansi-language:EN-US'>ConfHelp servlet</span></b></a></span><span
+  lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-family:Verdana'><a href="#Conf_Login"><b><span
+  lang=EN-US style='font-size:10.0pt;mso-ansi-language:EN-US'>ConfLogin servlet</span></b></a></span><span
+  lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-family:Verdana'><a href="#Conf_Help"><b><span
+  lang=EN-US style='font-size:10.0pt;mso-ansi-language:EN-US'>ConfHelp servlet</span></b></a></span><span
+  lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-family:Verdana'><a href="#Conf_Manager"><b><span
+  lang=EN-US style='font-size:10.0pt;mso-ansi-language:EN-US'>ConfManager
+  servlet</span></b></a></span><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-family:Verdana'><a href="#Conf_Reply"><b><span
+  lang=EN-US style='font-size:10.0pt;mso-ansi-language:EN-US'>ConfReply servlet</span></b></a></span><span
+  lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="93%" style='width:93.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-family:Verdana'><a href="#Conf_View"><b><span
+  lang=EN-US style='font-size:10.0pt;mso-ansi-language:EN-US'>ConfViewer
+  servlet</span></b></a></span><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
 </table>
-<p>&nbsp; </p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="General_tags"></a>Gemensamma 
-  taggar.</b></font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-    <td width="37%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Exempel</font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;SERVLET_URL&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      s&ouml;kv&auml;gen till servletmappen.</font></td>
-    <td width="37%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#SERVLET_URL#</font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;IMAGE_URL&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      s&ouml;kv&auml;g till konferensen bildmapp</font></td>
-    <td width="37%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#IMAGE_URL#</font></td>
-  </tr>
+
+<p><span lang=EN-US style='mso-ansi-language:EN-US'>&nbsp; <o:p></o:p></span></p>
+
+<p><a name="General_tags"></a><b><span style='font-size:10.0pt;font-family:
+Verdana'>Gemensamma taggar.</span></b></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Exempel</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#SERVLET_URL#</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  sökvägen till servletmappen.</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#SERVLET_URL#</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#IMAGE_URL#</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  sökväg till konferensen bildmapp</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#IMAGE_URL#</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="General_parameters"></a>Gemensamma 
-  parametrar<br>
-  </b>En del parametrar anv&auml;nder sig servletarna av fr&aring;n och till. 
-  Dessa h&auml;mtas i f&ouml;rsta hand fr&aring;n requestobjektet och om det inte 
-  har angetts d&auml;r h&auml;mtas det fr&aring;n sessionobjektet.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parametrar</b></font></td>
-    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-  </tr>
-  <tr> 
-    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META_ID</font></td>
-    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      meta id: et f&ouml;r konferensen</font></td>
-  </tr>
-  <tr> 
-    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">PARENT_META_ID</font></td>
-    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilket meta_id som &quot;v&aring;rt&quot; meta_id &auml;r l&ouml;v under</font></td>
-  </tr>
-  <tr> 
-    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">COOKIE_ID</font></td>
-    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Oanv&auml;nt 
-      i denna modul.</font></td>
-  </tr>
-  <tr> 
-    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FORUM_ID</font></td>
-    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilket forum som &auml;r aktuellt</font></td>
-  </tr>
-  <tr> 
-    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DISC_ID</font></td>
-    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilken diskussion som &auml;r aktuell</font></td>
-  </tr>
-  <tr> 
-    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">LAST_LOGIN_DATE</font></td>
-    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilket datum anv&auml;ndaren sist var inloggad i konferensen</font></td>
-  </tr>
-  <tr> 
-    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">USER_ID</font></td>
-    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilken anv&auml;ndare som &auml;r inloggad</font></td>
-  </tr>
-  <tr> 
-    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DISC_INDEX</font></td>
-    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilket v&auml;rde som diskussionsindex har. Dvs vilken diskussion som anv&auml;nds 
-      f&ouml;r att ber&auml;kna vilka diskussioner som skall visas f&ouml;r anv&auml;ndaren.</font></td>
-  </tr>
+
+<p><a name="General_parameters"></a><b><span style='font-size:10.0pt;
+font-family:Verdana'>Gemensamma parametrar<br>
+</span></b><span style='font-size:10.0pt;font-family:Verdana'>En del parametrar
+använder sig servletarna av från och till. Dessa hämtas i första hand från
+requestobjektet och om det inte har angetts där hämtas det från
+sessionobjektet.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parametrar</span></b></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>META_ID</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger MetaId:et
+  för konferensen</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>PARENT_META_ID</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilket MetaId som &quot;vårt&quot; MetaId är löv under</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>COOKIE_ID</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Oanvänt
+  i denna modul</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>FORUM_ID</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilket forum som är aktuellt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>DISC_ID</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilken diskussion som är aktuell</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>LAST_LOGIN_DATE</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilket datum användaren sist var inloggad i konferensen</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>USER_ID</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilken användare som är inloggad</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>DISC_INDEX</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilket värde som diskussionsindex har. Dvs vilken diskussion som används för
+  att beräkna vilka diskussioner som skall visas för användaren.</span></p>
+  </td>
+ </tr>
 </table>
+
 <p>&nbsp;</p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Add"></a>ConfAdd 
-  servlet</b><br>
-  <b>Post parametrar</b>: ConfAdd servlet st&ouml;der f&ouml;ljande parametrar.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="13%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parametrar</b></font></td>
-    <td width="59%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>V&auml;rden</b></font></td>
-  </tr>
-  <tr> 
-    <td width="13%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CANCEL</font></td>
-    <td width="59%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      att anv&auml;ndaren vill avbryta skapandet av inl&auml;gg/diskussion</font></td>
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="13%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD</font></td>
-    <td width="59%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      att anv&auml;ndaren vill l&auml;gga till nytt diskussion/inl&auml;gg</font></td>
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Godtyckligt</font></td>
-  </tr>
+
+<p><a name="Conf_Add"></a><b><span style='font-size:10.0pt;font-family:Verdana'>ConfAdd
+servlet</span></b><span style='font-size:10.0pt;font-family:Verdana'><br>
+<b>Post parametrar</b>: ConfAdd servlet stöder följande parametrar:</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parametrar</span></b></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Värden</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>CANCEL</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  att användaren vill avbryta skapandet av inlägg/diskussion</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADD</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  att användaren vill lägga till nytt diskussion/inlägg</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Godtyckligt</span></p>
+  </td>
+ </tr>
 </table>
-<p><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add 
-  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
-  Om funktionsparametern &auml;r add kr&auml;vs f&ouml;ljande parametrar:</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_HEADER</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      rubriken p&aring; inl&auml;gget</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Godtycklig</font></td>
-  </tr>
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_TEXT</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      text p&aring; inl&auml;gget</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Godtycklig</font></td>
-  </tr>
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADDTYPE</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilken typ av inl&auml;gg som g&ouml;rs. Kommentar eller starta diskussion</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REPLY, 
-      DISCUSSION</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana;color:black'>Add
+parametrar</span></b><b><span style='font-size:10.0pt;font-family:Verdana'>:</span></b><span
+style='font-size:10.0pt;font-family:Verdana'> Om funktionsparametern är add
+krävs följande parametrar:</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADD_HEADER</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  rubriken på inlägget</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Godtycklig</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADD_TEXT</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  text på inlägget</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Godtycklig</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADDTYPE</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilken typ av inlägg som görs. Kommentar eller starta diskussion</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>REPLY,
+  DISCUSSION</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Taggar</b>: 
-  ConfAdd servlet st&ouml;der f&ouml;ljande taggar.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-  </tr>
-  <tr> 
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;FIRST_NAMEL&#035;</font></td>
-    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      skribentens f&ouml;rnamn</font></td>
-  </tr>
-  <tr> 
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;LAST_NAMEL&#035;</font></td>
-    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      skribentens f&ouml;rnamn</font></td>
-  </tr>
-  <tr> 
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;ADD_TYPE&#035;</font></td>
-    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      typ av inl&auml;gg (DISCUSSION/REPLY)</font></td>
-  </tr>
-  <tr> 
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;DISC_HEADER&#035;</font></td>
-    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      aktuell diskussions rubrik</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Taggar</span></b><span
+style='font-size:10.0pt;font-family:Verdana'>: ConfAdd servlet stöder följande
+taggar:</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#FIRST_NAME#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  skribentens förnamn</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#LAST_NAME#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  skribentens efternamn</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#ADD_TYPE#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  typ av inlägg (DISCUSSION/REPLY)</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#DISC_HEADER#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  aktuell diskussions rubrik</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Admin"></a>ConfAdmin 
-  servlet</b><br>
-  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Get 
-      parameter</b></font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;EXTERNAL_PATH&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anv&auml;nds 
-      i adminl&auml;ge f&ouml;r att ange var n&aring;gonstans en uppladdad fil 
-      skall placeras p&aring; server. </font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META 
-      </font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;TEMPLATE_LIST&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      en lista med vilka mallset som finns</font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META 
-      </font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;A_META_ID&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilket meta id den aktiva konferensen har</font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META 
-      </font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CURRENT_TEMPLATE_SET&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anv&auml;nds 
-      f&ouml;r att visa vilket templateset som anv&auml;nds </font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META 
-      </font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;FORUM_LIST&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      en lista med de forum som finns i konferensen</font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FORUM</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NBR_OF_DISCS_TO_SHOW_LIST&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      en speciell form av forumulista som f&ouml;rutom forumnamnen &auml;ven inneh&aring;ller 
-      antalet diskussioner som visas</font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FORUM</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NEW_A_HREF_LIST&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      alla nya diskussioner sedan admin sist var inloggad</font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DISCUSSION</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;OLD_A_HREF_LIST&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      alla gamla diskussioner sedan admin sist var inloggad</font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DISCUSSION</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;USER_SORT_ORDER&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      anv&auml;ndarens sorteringsorder p&aring; inl&auml;ggen. Kan vara 1 eller 
-      0.</font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REPLY</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CHECKBOX_STATE&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      ordet checked / eller inget beroende p&aring; anv&auml;ndarens sorteringsorder. 
-      </font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REPLY</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;REPLIES_RECORDS&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      lista med samtliga inl&auml;gg i en diskussion</font></td>
-    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REPLY</font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_UNADMIN_BUTTON&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      bild p&aring; knapp f&ouml;r avsluta administration</font></td>
-    <td width="37%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_UNADMIN_LINK&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      knapp f&ouml;r att avsluta administration</font></td>
-    <td width="37%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font></td>
-  </tr>
+
+<p><a name="Conf_Admin"></a><b><span style='font-size:10.0pt;font-family:Verdana'>ConfAdmin
+servlet</span></b><span style='font-size:10.0pt;font-family:Verdana'><br>
+<b>Taggar</b>: Följande taggar stöds:</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Get
+  parameter</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#EXTERNAL_PATH#</span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Används
+  i adminläge för att ange var någonstans en uppladdad fil skall placeras på
+  servern. </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>META </span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#TEMPLATE_LIST#</span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  en lista med vilka mallset som finns</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>META </span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#A_META_ID#</span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilket MetaId den aktiva konferensen har</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>META </span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CURRENT_TEMPLATE_SET#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Används
+  för att visa vilket templateset som används </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>META </span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#FORUM_LIST#</span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  en lista med de forum som finns i konferensen</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>FORUM</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#NBR_OF_DISCS_TO_SHOW_LIST#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  en speciell form av forumlista som förutom forumnamnen även innehåller
+  antalet diskussioner som visas</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>FORUM</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#NEW_A_HREF_LIST#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  alla nya diskussioner sedan admin sist var inloggad</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>DISCUSSION</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#OLD_A_HREF_LIST#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  alla gamla diskussioner sedan admin sist var inloggad</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>DISCUSSION</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#USER_SORT_ORDER#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  användarens sorteringsorder på inläggen. Kan vara 1 eller 0.</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>REPLY</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CHECKBOX_STATE#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  ordet checked/eller inget beroende på användarens sorteringsorder. </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>REPLY</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#REPLIES_RECORDS#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  lista med samtliga inlägg i en diskussion</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>REPLY</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CONF_UNADMIN_BUTTON#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  bild på knapp för att avsluta administration</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.22%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CONF_UNADMIN_LINK#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.36%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  knapp för att avsluta administration</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+  </td>
+ </tr>
 </table>
-<p><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Postparametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
-  </font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
-      parameter v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REGISTER_TEMPLATE_LIB</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Registrerar 
-      ett nytt mallset </font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">UPLOAD_CONF</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      namnet p&aring; det f&ouml;rsta forumet</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SET_TEMPLATE_LIB</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilket mallset som skall anv&auml;ndas i en diskussion</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DELETE_REPLY</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Tar 
-      bort ett inl&auml;gg i en diskussion </font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">RESAVE_REPLY</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Sparar 
-      om ett editerat inl&auml;gg</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DELETE_DISCUSSION</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Tar 
-      bort en diskussion</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DELETE_FORUM</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Tar 
-      bort ett forum</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_FORUM</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">L&auml;gger 
-      till ett forum</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CHANGE_FORUM_NAME</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">&Auml;ndrar 
-      namnet p&aring; ett befintligt forum</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SHOW_DISCUSSION_NBR</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">S&auml;tter 
-      antalet diskusssioner som skall visas i ett forum</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana;color:black'>Postparametrar</span></b><b><span
+style='font-size:10.0pt;font-family:Verdana'>:</span></b><span
+style='font-size:10.0pt;font-family:Verdana'> </span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>REGISTER_TEMPLATE_LIB</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Registrerar
+  ett nytt mallset </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>UPLOAD_CONF</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Anger namnet på det första forumet</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>SET_TEMPLATE_LIB</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilket mallset som skall användas i en diskussion</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>DELETE_REPLY</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Tar bort ett inlägg i en diskussion </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>RESAVE_REPLY</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Sparar
+  om ett editerat inlägg</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>DELETE_DISCUSSION</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Tar bort en diskussion</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>DELETE_FORUM</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Tar bort ett forum</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADD_FORUM</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Lägger
+  till ett forum</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>CHANGE_FORUM_NAME</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Ändrar namnet på ett befintligt forum</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>SHOW_DISCUSSION_NBR</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Sätter
+  antalet diskusssioner som skall visas i ett forum</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
 </table>
-<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>REGISTER_TEMPLATE_LIB</b></font><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
-  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
-  Om funktionsparametern &auml;r REGISTER_TEMPLATE_LIB kr&auml;vs f&ouml;ljande 
-  parametrar.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="15%">TEMPLATE_LIB_NAME</td>
-    <td width="85%"><font size="2">Anger det nya namnet p&aring; det nya mallsetet</font></td>
-    <td width="85%"><font size="2">Godtycklig</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>REGISTER_TEMPLATE_LIB<span
+style='color:black'> parametrar</span>:</span></b><span style='font-size:10.0pt;
+font-family:Verdana'> Om funktionsparametern är REGISTER_TEMPLATE_LIB krävs
+följande parametrar.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>TEMPLATE_LIB_NAME<o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt'>Anger det nya namnet på det
+  nya mallsetet</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt'>Godtycklig</span></p>
+  </td>
+ </tr>
 </table>
-<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>UPLOAD_CONF</b></font><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
-  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
-  Om funktionsparametern &auml;r UPLOAD_CONF kr&auml;vs f&ouml;ljande parametrar.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">TEMPLATE_NAME</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      namnet p&aring; det mallset uploaden skall utf&ouml;ras p&aring;</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Befintligt 
-      mallset (v&auml;ljs ur lista)</font></td>
-  </tr>
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">UPLOAD_TYPE</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      filtypen som laddas upp.</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">IMAGE/TEMPLATE</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>UPLOAD_CONF<span
+style='color:black'> parametrar</span>:</span></b><span style='font-size:10.0pt;
+font-family:Verdana'> Om funktionsparametern är UPLOAD_CONF krävs följande
+parametrar.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>TEMPLATE_NAME</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  namnet på det mallset uploaden skall utföras på</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Befintligt
+  mallset (väljs ur lista)</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>UPLOAD_TYPE</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  filtypen som laddas upp</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>IMAGE/TEMPLATE</span></p>
+  </td>
+ </tr>
 </table>
-<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>SET_TEMPLATE_LIB</b></font><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
-  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
-  Om funktionsparametern &auml;r SET_TEMPLATE_LIB kr&auml;vs f&ouml;ljande parametrar.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="15%"><font face="Verdana, Arial, Helvetica, sans-serif">TEMPLATE_ID</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      id:et p&aring; det nya templatesetet som v&auml;ljs</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Befintligt 
-      mallset (v&auml;ljs ur lista)</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>SET_TEMPLATE_LIB<span
+style='color:black'> parametrar</span>:</span></b><span style='font-size:10.0pt;
+font-family:Verdana'> Om funktionsparametern är SET_TEMPLATE_LIB krävs följande
+parametrar.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-family:Verdana'>TEMPLATE_ID</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  id:et på det nya templateset som väljs</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Befintligt
+  mallset (väljs ur lista)</span></p>
+  </td>
+ </tr>
 </table>
-<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>RESAVE_REPLY</b></font><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
-  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
-  Om funktionsparametern &auml;r RESAVE_REPLY kr&auml;vs f&ouml;ljande parametrar.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">TEXT_BOX_x</font></td>
-    <td width="43%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      Texbox id:et p&aring; ett inl&auml;gg.</font></td>
-    <td width="45%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Exempel: 
-      TEXT_BOX_2 // Anger textbox nr 2 </font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">REPLY_HEADER_x</font></td>
-    <td width="43%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      Texbox id:et p&aring; ett inl&auml;gg.</font></td>
-    <td width="45%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Exempel: 
-      REPLY_HEADER_2 // Anger inl&auml;ggsrubrik nr 2 </font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>RESAVE_REPLY<span
+style='color:black'> parametrar</span>:</span></b><span style='font-size:10.0pt;
+font-family:Verdana'> Om funktionsparametern är RESAVE_REPLY krävs följande
+parametrar.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>TEXT_BOX_x</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  Texbox id:et på ett inlägg</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Exempel:
+  TEXT_BOX_2 // Anger textbox nr 2 </span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>REPLY_HEADER_x</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger inläggsrubrik
+  id:et på ett inlägg</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Exempel:
+  REPLY_HEADER_2 // Anger inläggsrubrik nr 2 </span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><br>
-  <a name="Conf_Creator"></a>ConfCreator servlet</b><br>
-  <b>Taggar</b>: Saknar egna taggar.<br>
-  <b>Postparametrar: </b> </font></p>
-<p></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
-      parameter v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">action</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Skapar 
-      ny konferens</font></td>
-    <td width="21%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">ADD_CONF</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'><br>
+<a name="Conf_Creator"></a>ConfCreator servlet</span></b><span
+style='font-size:10.0pt;font-family:Verdana'><br>
+<b>Taggar</b>: Saknar egna taggar.<br>
+<b>Postparametrar: </b></span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Händelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>action</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Skapar ny konferens</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADD_CONF</span></p>
+  </td>
+ </tr>
 </table>
-<p><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add_conf 
-  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
-  Om action &auml;r Add_Conf kr&auml;vs f&ouml;ljande parametrar:</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
-      parameter v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">conference_name</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      ett internt namn p&aring; konferensen</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">forum_name</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      namnet p&aring; det f&ouml;rsta forumet</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana;color:black'>Add_conf
+parametrar</span></b><b><span style='font-size:10.0pt;font-family:Verdana'>:</span></b><span
+style='font-size:10.0pt;font-family:Verdana'> Om action är Add_Conf krävs
+följande parametrar:</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>conference_name</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  ett internt namn på konferensen</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>forum_name</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Anger namnet på det första forumet</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
 </table>
+
 <p>&nbsp; </p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Disc"></a>ConfDisc 
-  servlet</b><br>
-  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;A_HREF_LIST&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      lista med samtliga diskussioner i ett forum. Kommer i en a href tag</font></td>
-  </tr>
-  <tr> 
-    <td width="18%" height="20"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;PREVIOUS_BUTTON&#035;</font></td>
-    <td width="60%" height="20"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      knapp f&ouml;r lista f&ouml;rg&aring;nede diskussioner.</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NEXT_BUTTON&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      knapp f&ouml;r lista n&auml;st diskussioner.</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NEW_DISC_BUTTON&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      knapp f&ouml;r att l&auml;gga till diskussioner.</font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_BUTTON&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      bild p&aring; administrationsknapp</font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_LINK&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      knapp f&ouml;r administration av diskussion</font></td>
-  </tr>
+
+<p><a name="Conf_Disc"></a><b><span style='font-size:10.0pt;font-family:Verdana'>ConfDisc
+servlet</span></b><span style='font-size:10.0pt;font-family:Verdana'><br>
+<b>Taggar</b>: Följande taggar stöds.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#A_HREF_LIST#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  lista med samtliga diskussioner i ett forum. Kommer i en a href tag.</span></p>
+  </td>
+ </tr>
+ <tr style='height:15.0pt'>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt;
+  height:15.0pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#PREVIOUS_BUTTON#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt;
+  height:15.0pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  knapp för att lista föregående diskussioner</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#NEXT_BUTTON#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  knapp för att lista nästa diskussioner</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#NEW_DISC_BUTTON#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  knapp för att lägga till diskussioner</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CONF_ADMIN_BUTTON#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  bild på administrationsknapp</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CONF_ADMIN_LINK#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  knapp för administration av diskussion</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Getparametrar: 
-  </b>Inga <b><br>
-  Postparametrar: </b> </font></p>
-<p></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
-      parameter v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">UPDATE</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Uppdaterar 
-      diskussionsservleten</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">NEXT</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Generar 
-      en ny discussionslista med x antal senare skapade diskussioner om det finns 
-      s&aring;dana.</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">PREVIOUS</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Generar 
-      en ny discussionslista med x antal tidigare skapade diskussioner om det 
-      finns s&aring;dana.</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">SEARCH</font></td>
-    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Generar 
-      en ny discussionslista med alla tr&auml;ffar som gjorts f&ouml;r en s&ouml;kning</font></td>
-    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Getparametrar: </span></b><span
+style='font-size:10.0pt;font-family:Verdana'>Inga <b><br>
+Postparametrar: </b></span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Händelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>UPDATE</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Uppdaterar diskussionsservleten</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>NEXT</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Generar en ny diskussionslista med x antal senare skapade diskussioner
+  om det finns sådana</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>PREVIOUS</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Generar en ny diskussionslista med x antal tidigare skapade diskussioner
+  om det finns sådana</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>SEARCH</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>Generar en ny diskussionslista med alla träffar som gjorts för
+  en sökning</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana;
+  color:black'>godtyckligt</span></p>
+  </td>
+ </tr>
 </table>
-<p></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>S&ouml;kparametrar:</b><br>
-  F&ouml;ljande parametrar kommer att beh&ouml;vas om parametern SEARCH har skickats 
-  till ConfDisc Post funktion.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>S&ouml;k 
-      parameter</b></font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Inneb&ouml;rd</b></font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
-      parameter v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CATEGORY</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      vilken kategori s&ouml;kningen skall utf&ouml;ras i. 0=rubriker, 1=texter, 
-      2=anv&auml;ndare</font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">0/1/2</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SEARCH</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      s&ouml;kordet/orden som skall s&ouml;kas efter</font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FR_DATE</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      startdatum som s&ouml;kningen skall g&auml;lla f&ouml;r </font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FR_VALUE</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      det defaultv&auml;rde som st&aring;r i datumrutan. F&ouml;r svenska g&auml;ller 
-      Ig&aring;r. FR_VALUE skall &ouml;verenst&auml;mma m FR_DATE defaultv&auml;rde</font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">TO_DATE</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      slutdatum som s&ouml;kningen skall g&auml;lla f&ouml;r </font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">TO_VALUE</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      det defaultv&auml;rde som st&aring;r i datumrutan. F&ouml;r svenska g&auml;ller 
-      Idag. TO_VALUE skall &ouml;verenst&auml;mma m TO_DATE defaultv&auml;rde</font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Sökparametrar:</span></b><span
+style='font-size:10.0pt;font-family:Verdana'><br>
+Följande parametrar kommer att behövas om parametern SEARCH har skickats till
+ConfDisc Post funktion.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Sök
+  parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Innebörd</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>CATEGORY</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  vilken kategori sökningen skall utföras i. 0=rubriker, 1=texter, 2=användare.</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>0/1/2</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>SEARCH</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  sökordet/orden som skall sökas efter</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>FR_DATE</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  startdatum som sökningen skall gälla för </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>FR_VALUE</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  det defaultvärde som står i datumrutan. För svenska gäller Igår. FR_VALUE
+  skall överenstämma m FR_DATE defaultvärde.</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>TO_DATE</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  slutdatum som sökningen skall gälla för </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>godtyckligt</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>TO_VALUE</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  det defaultvärde som står i datumrutan. För svenska gäller Idag. TO_VALUE
+  skall överenstämma m TO_DATE defaultvärde.</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>godtyckligt</span></p>
+  </td>
+ </tr>
 </table>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
-</font> 
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Disc_View"></a>ConfDiscView 
-  servlet</b><br>
-  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-  </tr>
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_DISC&#035;</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      referens till servleten som inneh&aring;ller diskussionsservleten</font></td>
-  </tr>
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_REPLY&#035;</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      referens till servleten som inneh&aring;ller inl&auml;ggsservleten</font></td>
-  </tr>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+<p><a name="Conf_Disc_View"></a><b><span style='font-size:10.0pt;font-family:
+Verdana'>ConfDiscView servlet</span></b><span style='font-size:10.0pt;
+font-family:Verdana'><br>
+<b>Taggar</b>: Följande taggar stöds.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#CONF_DISC#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  referens till servleten som innehåller diskussionsservleten</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#CONF_REPLY#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  referens till servleten som innehåller inläggsservleten</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Post: </b>Saknas 
-  </font></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Error"> 
-  </a>ConfError servlet</b><br>
-  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-  </tr>
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;ERROR_HEADER&#035;</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      felmeddelandes rubrik</font></td>
-  </tr>
-  <tr> 
-    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;ERROR_MESSAGE&#035;</font></td>
-    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      felmeddelandes text</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Post: </span></b><span
+style='font-size:10.0pt;font-family:Verdana'>Saknas </span></p>
+
+<p><a name="Conf_Error"></a><b><span style='font-size:10.0pt;font-family:Verdana'>ConfError
+servlet</span></b><span style='font-size:10.0pt;font-family:Verdana'><br>
+<b>Taggar</b>: Följande taggar stöds.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#ERROR_HEADER#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  felmeddelandets rubrik</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#ERROR_MESSAGE#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  felmeddelandets text</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Get: </b>Saknas<br>
-  <b>Post: </b>Saknas <br>
-  <br>
-  <b><a name="Conf_Forum"> </a>ConfForum servlet</b><br>
-  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;FORUM_LIST&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      en optionlista med forum</font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_BUTTON&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      bild p&aring; administrationsknapp</font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_LINK&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      knapp f&ouml;r administration av forum</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Get: </span></b><span
+style='font-size:10.0pt;font-family:Verdana'>Saknas<br>
+<b>Post: </b>Saknas <br>
+<br>
+<a name="Conf_Forum"></a><b>ConfForum servlet</b><br>
+<b>Taggar</b>: Följande taggar stöds.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#FORUM_LIST#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  en optionlista med forum</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CONF_ADMIN_BUTTON#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  bild på administrationsknapp</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CONF_ADMIN_LINK#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  knapp för administration av forum</span></p>
+  </td>
+ </tr>
 </table>
-<p></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Get: </b>Saknas<br>
-  <b>Postparametrar: </b></font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
-      parameter v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">CHANGE_FORUM</font></td>
-    <td width="67%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ser 
-      till att listningen av diskussioner b&ouml;rjar om fr&aring;n b&ouml;rjan.</font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CHANGE</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Get: </span></b><span
+style='font-size:10.0pt;font-family:Verdana'>Saknas<br>
+<b>Postparametrar: </b></span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Händelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>CHANGE_FORUM</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Ser
+  till att listningen av diskussioner börjar om från början</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>CHANGE</span></p>
+  </td>
+ </tr>
 </table>
+
 <p>&nbsp;</p>
-<p></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><br>
-  <a name="Conf_Help"></a>ConfHelp servlet</b><br>
-  <b>Taggar</b>: Saknar egna taggar.<br>
-  <b>Get: </b>Saknas<br>
-  <b>Postparametrar: </b> </font></p>
-<p></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
-      parameter v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">helparea</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Ingen, 
-      tills vidare. Skickas ifall hj&auml;lpsidan skall byggas ut.</font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">forum/discussion/reply/meta</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">helpmode</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Genererar 
-      hj&auml;lp-htmlsida f&ouml;r administrat&ouml;rer</font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADMIN</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">helpmode</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Genererar 
-      hj&auml;lp-htmlsida f&ouml;r anv&auml;ndare</font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">USER</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'><br>
+<a name="Conf_Help"></a>ConfHelp servlet</span></b><span style='font-size:10.0pt;
+font-family:Verdana'><br>
+<b>Taggar</b>: Saknar egna taggar.<br>
+<b>Get: </b>Saknas<br>
+<b>Postparametrar: </b></span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Händelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>helparea</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Ingen,
+  tills vidare. Skickas ifall hjälpsidan skall byggas ut.</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>forum/discussion/reply/meta</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>helpmode</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Genererar
+  hjälp-htmlsida för administratörer</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADMIN</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>helpmode</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Genererar
+  hjälp-htmlsida för användare</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>USER</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
-  <br>
-  <b><a name="Conf_Login"> </a>ConfLogin servlet</b><br>
-  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds. Get tar tv&aring; parametrar, 
-  om inga av dessa parametrar anges genereras loginsidan automatiskt.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;USERS_MENU&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      en optionlista med anv&auml;ndarna i konferensen</font></td>
-  </tr>
+
+<p><span style='font-size:10.0pt;font-family:Verdana'><br>
+<br>
+<a name="Conf_Login"></a><b>ConfLogin servlet</b><br>
+<b>Taggar</b>: Följande taggar stöds. Get tar två parametrar, om inga av dessa
+parametrar anges genereras loginsidan automatiskt.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#USERS_MENU#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  en optionlista med användarna i konferensen</span></p>
+  </td>
+ </tr>
 </table>
-<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
-<b>Getparametrar: </b> </font> 
-<p></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="56%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
-    <td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
-      parameter v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
-    <td width="56%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Generar 
-      htmlsida avsedd f&ouml;r att administrera anv&auml;ndare </font></td>
-    <td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADMIN_USER</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
-    <td width="56%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Generar 
-      htmlsida avsedd f&ouml;r att l&auml;gga till ny anv&auml;ndare</font></td>
-    <td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_USER</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;</font></td>
-    <td width="56%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Genererar 
-      htmlsida avsedd f&ouml;r att logga in</font></td>
-    <td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">inget 
-      (genereras om ingen av ovanst&aring;ende anges)</font></td>
-  </tr>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'><br>
+<b>Getparametrar: </b></span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Händelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>login_type</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Generar
+  htmlsida avsedd för att administrera användare </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADMIN_USER</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>login_type</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Generar
+  htmlsida avsedd för att lägga till ny användare</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADD_USER</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>&nbsp;</span></p>
+  </td>
+  <td width="53%" style='width:53.52%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Genererar
+  htmlsida avsedd för att logga in</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>inget
+  (genereras om ingen av ovanstående anges)</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Postparametrar: 
-  </b> </font></p>
-<p></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
-      parameter v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Utf&ouml;rs 
-      om login_type OCH submit har skickats. Verifierar inloggning i konferensen.</font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">LOGIN</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Adderar 
-      en anv&auml;ndare in i Janus user db och till konferensens db </font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_USER</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
-    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Sparar 
-      en anv&auml;ndares anv&auml;ndarniv&aring; till konferens db </font></td>
-    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SAVE_USER</font></td>
-  </tr>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Postparametrar: </span></b></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Händelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>login_type</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Utförs om
+  login_type OCH submit har skickats. Verifierar inloggning i konferensen.</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>LOGIN</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>login_type</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Adderar
+  en användare in i Janus user db och till konferensens db </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ADD_USER</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>login_type</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Sparar
+  en användares användarnivå till konferens db </span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>SAVE_USER</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
-  <b><a name="Conf_Manager"> </a>ConfManager servlet</b><br>
-  <b>Taggar</b>: Saknar egna taggar. </font></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Post: </b>Saknas<br>
-  <b>Get: </b>ConfManager l&auml;ser in parametern action och redirectar sedan 
-  vidare beroende p&aring; v&auml;rdet.</font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="68%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
-    <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>parameter 
-      v&auml;rde</b></font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">action</font></td>
-    <td width="68%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Redirectar 
-      till ConfCreator?action=New</font></td>
-    <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">NEW</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">action</font></td>
-    <td width="68%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Redirectar 
-      till ConfLogin?login_type=login</font></td>
-    <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">VIEW</font></td>
-  </tr>
-  <tr> 
-    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">action</font></td>
-    <td width="68%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ChangeExternalDoc2?meta_id&amp;parent_meta_id&amp;cookie_id&amp;metadata=meta</font></td>
-    <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CHANGE</font></td>
-  </tr>
+
+<p><span style='font-size:10.0pt;font-family:Verdana'><br>
+<a name="Conf_Manager"></a><b>ConfManager servlet</b><br>
+<b>Taggar</b>: Saknar egna taggar. </span></p>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Post: </span></b><span
+style='font-size:10.0pt;font-family:Verdana'>Saknas<br>
+<b>Get: </b>ConfManager läser in parametern action och redirectar sedan vidare
+beroende på värdet.</span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Händelse</span></b></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>parameter
+  värde</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>action</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>Redirectar till ConfCreator?action=New</span><span
+  lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>NEW</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>action</span><span lang=EN-US style='mso-ansi-language:
+  EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>Redirectar till ConfLogin?login_type=login</span><span
+  lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>VIEW</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>action</span></p>
+  </td>
+  <td width="53%" style='width:53.5%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>ChangeExternalDoc2?meta_id&amp;parent_meta_id&amp;cookie_id&amp;metadata=meta</span></p>
+  </td>
+  <td width="21%" style='width:21.62%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>CHANGE</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
-  <b><a name="Conf_Reply"> </a>ConfReply servlet</b><br>
-  <b>Taggar</b>: Saknar egna taggar. </font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="60%"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="2">Betydelse</font></b></font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;USER_SORT_ORDER&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      anv&auml;ndarens sorteringsorder p&aring; inl&auml;ggen. Kan vara 1 eller 
-      0.</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CHECKBOX_STATE&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      ordet checked / eller inget beroende p&aring; anv&auml;ndarens sorteringsorder. 
-      </font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;REPLIES_RECORDS&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      lista med samtliga inl&auml;gg i en diskussion</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NEW_COMMENT&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      knapp f&ouml;r att l&auml;gga till kommentar.</font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_BUTTON&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      bild p&aring; administrationsknapp</font></td>
-  </tr>
-  <tr> 
-    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_LINK&#035;</font></td>
-    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      knapp f&ouml;r administration av kommentarer</font></td>
-  </tr>
+
+<p><span style='font-size:10.0pt;font-family:Verdana'><br>
+<a name="Conf_Reply"></a><b>ConfReply servlet</b><br>
+<b>Taggar</b>: Saknar egna taggar. </span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#USER_SORT_ORDER#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  användarens sorteringsorder på inläggen. Kan vara 1 eller 0.</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#CHECKBOX_STATE#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  ordet checked/eller inget beroende på användarens sorteringsorder</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#REPLIES_RECORDS#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  lista med samtliga inlägg i en diskussion</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#NEW_COMMENT#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  knapp för att lägga till kommentar</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CONF_ADMIN_BUTTON#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  bild på administrationsknapp</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CONF_ADMIN_LINK#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  knapp för administration av kommentarer</span></p>
+  </td>
+ </tr>
 </table>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
-  <b>Getparametrar: </b>Saknas.</font></p>
-<p></p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Postparametrar: 
-  </b> </font></p>
-<p></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">V&auml;rde</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SORT_ORDER</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">1 
-      eller saknas</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      anv&auml;ndarens sorteringsordning.</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">UPDATE</font></td>
-    <td width="60%"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
-      att inl&auml;ggsservleten skall uppdateras</font></td>
-  </tr>
+
+<p><span style='font-size:10.0pt;font-family:Verdana'><br>
+<b>Getparametrar: </b>Saknas.</span></p>
+
+<p><b><span style='font-size:10.0pt;font-family:Verdana'>Postparametrar: </span></b></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Parameter</span></b></p>
+  </td>
+  <td width="53%" style='width:53.3%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Värde</span></p>
+  </td>
+  <td width="21%" style='width:21.82%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>SORT_ORDER</span></p>
+  </td>
+  <td width="53%" style='width:53.3%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>1 eller
+  saknas</span></p>
+  </td>
+  <td width="21%" style='width:21.82%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  användarens sorteringsordning.</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>UPDATE</span></p>
+  </td>
+  <td width="53%" style='width:53.3%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-family:Verdana'>&nbsp;</span></p>
+  </td>
+  <td width="21%" style='width:21.82%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Anger
+  att inläggsservleten skall uppdateras</span></p>
+  </td>
+ </tr>
 </table>
+
 <p>&nbsp; </p>
-<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_View"> 
-  </a>ConfViewer servlet</b><br>
-  <b>Taggar</b>: </font></p>
-<table width="100%" border="1">
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
-    <td width="60%"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="2">Betydelse</font></b></font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_FORUM&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      referens till servleten som genererar forum frame inneh&aring;llet</font></td>
-  </tr>
-  <tr> 
-    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_DISC_VIEW&#035;</font></td>
-    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
-      referens till servleten som genererar diskussions/inl&auml;ggs huvudframen</font></td>
-  </tr>
+
+<p><a name="Conf_View"></a><b><span lang=EN-US style='font-size:10.0pt;
+font-family:Verdana;mso-ansi-language:EN-US'>ConfViewer servlet</span></b><span
+lang=EN-US style='font-size:10.0pt;font-family:Verdana;mso-ansi-language:EN-US'><br>
+<b>Taggar</b>: </span><span lang=EN-US style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+
+<table border=1 cellpadding=0 width="100%" style='width:100.0%;mso-cellspacing:
+ 1.5pt'>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Tag</span></b></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:10.0pt;font-family:Verdana'>Betydelse</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>#CONF_FORUM#</span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  referens till servleten som genererar forum frame innehållet</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="24%" style='width:24.06%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:Verdana;
+  mso-ansi-language:EN-US'>#CONF_DISC_VIEW#</span><span lang=EN-US
+  style='mso-ansi-language:EN-US'><o:p></o:p></span></p>
+  </td>
+  <td width="75%" style='width:75.34%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:10.0pt;font-family:Verdana'>Infogar
+  referens till servleten som genererar diskussions/inläggs huvudframen</span></p>
+  </td>
+ </tr>
 </table>
+
 <p>&nbsp; </p>
+
+</div>
+
 </body>
+
 </html>
