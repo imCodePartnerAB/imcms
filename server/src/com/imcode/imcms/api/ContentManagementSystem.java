@@ -6,9 +6,6 @@ import imcode.server.user.UserDomainObject;
 
 public abstract class ContentManagementSystem {
 
-    protected ImcmsServices service;
-    protected SecurityChecker securityChecker;
-
     public abstract UserService getUserService();
 
     public abstract DocumentService getDocumentService();
@@ -27,11 +24,7 @@ public abstract class ContentManagementSystem {
         return cms;
     }
 
-    ImcmsServices getInternal() {
-        return service ;
-    }
+    abstract ImcmsServices getInternal() ;
 
-    SecurityChecker getSecurityChecker() {
-        return securityChecker;
-    }
+    abstract SecurityChecker getSecurityChecker() ;
 }

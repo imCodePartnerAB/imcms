@@ -11,6 +11,8 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
     private TemplateService templateService;
     private DatabaseService databaseService;
     private User currentUser;
+    protected ImcmsServices service;
+    protected SecurityChecker securityChecker;
 
     public DefaultContentManagementSystem( ImcmsServices service, UserDomainObject accessor ) {
         this.service = service ;
@@ -44,6 +46,14 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
 
     public TemplateService getTemplateService() {
         return templateService;
+    }
+
+    ImcmsServices getInternal() {
+        return service ;
+    }
+
+    SecurityChecker getSecurityChecker() {
+        return securityChecker ;
     }
 
 }
