@@ -137,18 +137,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         DatabaseService.Table_users user = createDummyUser( nextFreeUserId );
         if( testMimer ) {
             mimer.sproc_AddNewuser( user );
-            int mimerRowAffected = mimer.sproc_updateUser( user );
-            assertEquals( 1, mimerRowAffected );
+            int mimerRowCount = mimer.sproc_updateUser( user );
+            assertEquals( 1, mimerRowCount );
         }
 
         sqlServer.sproc_AddNewuser( user );
         mySql.sproc_AddNewuser( user );
 
-        int sqlServerRowAffected = sqlServer.sproc_updateUser( user );
-        int mySqlRowAffected = mySql.sproc_updateUser( user );
+        int sqlServerRowCount = sqlServer.sproc_updateUser( user );
+        int mySqlRowCount = mySql.sproc_updateUser( user );
 
-        assertEquals( 1, sqlServerRowAffected );
-        assertEquals( 1, mySqlRowAffected );
+        assertEquals( 1, sqlServerRowCount );
+        assertEquals( 1, mySqlRowCount );
 
         DatabaseService.Table_users[] sqlServerUsers = sqlServer.sprocGetAllUsers_OrderByLastName();
         DatabaseService.Table_users modifiedUser = null;
@@ -186,17 +186,17 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         DatabaseService.Table_users user = createDummyUser( 3 );
 
         sqlServer.sproc_AddNewuser( user );
-        int sqlServerRowAffected = sqlServer.sproc_phoneNbrAdd( 3, "1234567", 0 );
-        assertEquals( 1, sqlServerRowAffected );
+        int sqlServerRowCount = sqlServer.sproc_phoneNbrAdd( 3, "1234567", 0 );
+        assertEquals( 1, sqlServerRowCount );
 
         mySql.sproc_AddNewuser( user );
-        int mySqlRowAffected = mySql.sproc_phoneNbrAdd( 3, "1234567", 0 );
-        assertEquals( 1, mySqlRowAffected );
+        int mySqlRowCount = mySql.sproc_phoneNbrAdd( 3, "1234567", 0 );
+        assertEquals( 1, mySqlRowCount );
 
         if( testMimer ) {
             mimer.sproc_AddNewuser( user );
-            int mimerRowAffected = mimer.sproc_phoneNbrAdd( 3, "1234567", 0 );
-            assertEquals( 1, mimerRowAffected );
+            int mimerRowCount = mimer.sproc_phoneNbrAdd( 3, "1234567", 0 );
+            assertEquals( 1, mimerRowCount );
         }
     }
 

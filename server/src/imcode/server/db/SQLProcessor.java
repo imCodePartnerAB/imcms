@@ -25,15 +25,66 @@ public class SQLProcessor {
         abstract Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException;
     }
 
+    class SQLTransaction {
+        private Connection con;
+        private SQLProcessor sqlProcessor;
+
+        public SQLTransaction( SQLProcessor sqlProcessor, Connection con ) throws SQLException {
+            this.con = con;
+            this.sqlProcessor = sqlProcessor;
+            this.con.setAutoCommit( false );
+        }
+
+        public int executeUpdate( String sql, Object[] params ) throws SQLException {
+            return sqlProcessor.executeUpdate( con, sql, params );
+        }
+
+        public void commit() {
+            try {
+                con.commit();
+            } catch (SQLException ex ) {
+                static_logSQLException( "SQLException in commit()", ex );
+            }
+            finally {
+                static_closeConnection( con );
+            }
+        }
+
+        public void rollback() {
+            try {
+                con.rollback();
+            } catch (SQLException ex ) {
+                static_logSQLException( "SQLException in commit()", ex );
+            }
+            finally {
+                static_closeConnection( con );
+            }
+        }
+    }
+
+    public SQLTransaction startTransaction() {
+        SQLTransaction result = null;
+        Connection con = null;
+        try {
+             con = connectionPool.getConnection();
+             result = new SQLTransaction( this, con );
+        }
+        catch( SQLException ex ) {
+            static_logSQLException( "SQLExcetion in startTransaction()", ex );
+        }
+        return result;
+    }
+
+
     ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProc ) {
-        Connection conn = null;
+        Connection con = null;
         ArrayList result = new ArrayList();
         PreparedStatement statement = null;
         try {
-            conn = connectionPool.getConnection();
+            con = connectionPool.getConnection();
             ResultSet rs1 = null;
             try {
-                statement = conn.prepareStatement( sql );
+                statement = con.prepareStatement( sql );
                 if( paramValues != null ) {
                     static_buildStatement( statement, paramValues );
                 }
@@ -52,41 +103,41 @@ public class SQLProcessor {
             log.fatal( "Exception in executeQuery()", ex );
         } finally {
             static_closeStatement( statement );
-            static_closeConnection( conn );
+            static_closeConnection( con );
         }
         return result;
     }
 
     int executeUpdate( String sql, Object[] paramValues ) {
-        Connection conn = null;
+        Connection con = null;
         int rowsModified = 0;
         try {
-            conn = connectionPool.getConnection();
-            rowsModified = executeUpdate( conn, sql, paramValues );
+            con = connectionPool.getConnection();
+            rowsModified = executeUpdate( con, sql, paramValues );
         } catch (SQLException ex ) {
             log.fatal( "Exception in static_executeUpdate()", ex );
         } finally {
-            static_closeConnection( conn );
+            static_closeConnection( con );
         }
         return rowsModified;
     }
 
     void executeBatchUpdate( String[] sqlCommands ) {
-        Connection conn = null;
+        Connection con = null;
         try {
-            conn = connectionPool.getConnection();
-            static_executeBatchUpdate( conn, sqlCommands );
+            con = connectionPool.getConnection();
+            static_executeBatchUpdate( con, sqlCommands );
         } catch( SQLException  ex ) {
             static_logSQLException( "Exception in static_executeBatchUpdate()", ex );
         }
         finally {
-            static_closeConnection( conn );
+            static_closeConnection( con );
         }
     }
 
-    private static void static_executeBatchUpdate( Connection conn, String[] sqlCommands ) {
+    private static void static_executeBatchUpdate( Connection con, String[] sqlCommands ) {
         try {
-            Statement statment = conn.createStatement();
+            Statement statment = con.createStatement();
             for( int i = 0; i < sqlCommands.length; i++ ) {
                 String command = sqlCommands[i];
                 statment.addBatch( command );
@@ -98,22 +149,22 @@ public class SQLProcessor {
         }
     }
 
-    private int executeUpdate( Connection conn, String sql, Object[] statmentValues ) {
+    private int executeUpdate( Connection con, String sql, Object[] statmentValues ) {
         PreparedStatement statement = null;
-        int rowsModified = 0;
+        int rowCount = 0;
         try {
-            statement = conn.prepareStatement( sql );
+            statement = con.prepareStatement( sql );
             if( statmentValues != null ) {
                 static_buildStatement( statement, statmentValues );
             }
-            rowsModified = statement.executeUpdate();
+            rowCount = statement.executeUpdate();
         } catch( SQLException ex ) {
             static_logSQLException( sql, ex );
         }
         finally {
             static_closeStatement( statement );
         }
-        return rowsModified;
+        return rowCount;
     }
 
     private static void static_logSQLException( String sql, SQLException ex ) {
@@ -143,10 +194,10 @@ public class SQLProcessor {
         }
     }
 
-    private static void static_closeConnection( Connection conn ) {
+    private static void static_closeConnection( Connection con ) {
         try {
-            if( conn != null ) {
-                conn.close();
+            if( con != null ) {
+                con.close();
             }
         } catch( SQLException ex ) {
             // Swallow

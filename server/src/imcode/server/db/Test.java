@@ -19,11 +19,11 @@ public class Test {
         new Thread( new Runnable() {
                 public void run() {
                     try {
-                        Connection conn = setUpConnection( connectionPool );
-                        int maxMetaId1 = getMax( conn );
+                        Connection con = setUpConnection( connectionPool );
+                        int maxMetaId1 = getMax( con );
                         //Thread.sleep( 10 );
-                        insertNextRow( conn, maxMetaId1, "Första tråden" );
-                        conn.commit();
+                        insertNextRow( con, maxMetaId1, "Första tråden" );
+                        con.commit();
                         System.out.println( "första tråden klar" );
                     } catch( Exception ex ) {
                         System.out.println( ex );
@@ -33,31 +33,31 @@ public class Test {
 
         //Thread.sleep( 10 );
         System.out.println( "Nu borde vi vänta!" );
-        Connection conn = setUpConnection( connectionPool );
-        int maxMetaId1 = getMax( conn );
-        insertNextRow( conn, maxMetaId1, "Andra tråden" );
-        conn.commit();
-        conn.close();
+        Connection con = setUpConnection( connectionPool );
+        int maxMetaId1 = getMax( con );
+        insertNextRow( con, maxMetaId1, "Andra tråden" );
+        con.commit();
+        con.close();
         System.out.println( "klart!" );
     }
 
     private static Connection setUpConnection( ConnectionPool connectionPool ) throws SQLException {
-        final Connection conn = connectionPool.getConnection();
-        conn.setTransactionIsolation( Connection.TRANSACTION_SERIALIZABLE );
-        conn.setAutoCommit(false);
-        return conn;
+        final Connection con = connectionPool.getConnection();
+        con.setTransactionIsolation( Connection.TRANSACTION_SERIALIZABLE );
+        con.setAutoCommit(false);
+        return con;
     }
 
-    private static void insertNextRow( final Connection conn, int maxMetaId1, String name ) throws SQLException {
-        PreparedStatement insertStatment = conn.prepareStatement("insert into sections (section_id, section_name) values (?,?)" );
+    private static void insertNextRow( final Connection con, int maxMetaId1, String name ) throws SQLException {
+        PreparedStatement insertStatment = con.prepareStatement("insert into sections (section_id, section_name) values (?,?)" );
         int nextMax = maxMetaId1 + 1;
         insertStatment.setObject( 1, new Integer(nextMax) );
         insertStatment.setObject( 2, name );
         insertStatment.executeUpdate();
     }
 
-    private static int getMax( final Connection conn ) throws SQLException {
-        Statement maxStatment = conn.createStatement();
+    private static int getMax( final Connection con ) throws SQLException {
+        Statement maxStatment = con.createStatement();
         maxStatment.execute( "select max(section_id) from sections");
         ResultSet rs = maxStatment.getResultSet();
         rs.next();

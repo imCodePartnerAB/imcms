@@ -70,7 +70,7 @@ public class DatabaseService {
             ConnectionPool connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
             sqlProcessor = new SQLProcessor( connectionPool );
         } catch( Exception ex ) {
-            log.fatal( "Couldn't initialize connection pool: serverName :' " + serverName + "', jdbcDriver : '" + jdbcDriver + "', serverUrl : " + serverUrl + "', user : '" + user + "', login_password :' " + password + "'"  );
+            log.fatal( "Couldn't initialize connection pool: serverName :' " + serverName + "', jdbcDriver : '" + jdbcDriver + "', serverUrl : " + serverUrl + "', user : '" + user + "', login_password :' " + password + "'" );
             log.fatal( ex );
         }
     }
@@ -83,7 +83,7 @@ public class DatabaseService {
 
             commands = readCommandsFromFile( CREATE_TABLES );
             switch( databaseType ) {
-                case SQL_SERVER :
+                case SQL_SERVER:
                 case MY_SQL:
                     commands = changeTimestampToDateTimeType( commands );
                     break;
@@ -103,10 +103,9 @@ public class DatabaseService {
             }
             sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
             log.info( "Inserted data, finished!" );
+        } catch( IOException ex ) {
+            log.fatal( "Couldn't open a file ", ex );
         }
-         catch( IOException ex ) {
-            log.fatal("Couldn't open a file ", ex );
-         }
     }
 
     private Vector changeCharInCurrentTimestampCast( Vector commands ) {
@@ -114,12 +113,12 @@ public class DatabaseService {
         // CAST(CURRENT_TIMESTAMP AS CHAR(80)) is changed to CAST(CURRENT_TIMESTAMP AS CHAR)"
         String patternStr = "CAST *\\( *CURRENT_TIMESTAMP *AS *CHAR *\\( *[0-9]+ *\\) *\\)";
         String replacementStr = "CAST(CURRENT_TIMESTAMP AS CHAR)";
-        Pattern pattern = Pattern.compile(patternStr, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile( patternStr, Pattern.CASE_INSENSITIVE );
 
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
-            Matcher matcher = pattern.matcher(command);
-            String modifiedCommand = matcher.replaceAll(replacementStr);
+            Matcher matcher = pattern.matcher( command );
+            String modifiedCommand = matcher.replaceAll( replacementStr );
             modifiedCommands.add( modifiedCommand );
         }
 
@@ -136,16 +135,16 @@ public class DatabaseService {
         return modifiedCommands;
     }
 
-     private void executeCommands( Vector commands ) {
+    private void executeCommands( Vector commands ) {
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
-//            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
+            //            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
             sqlProcessor.executeUpdate( command, null );
         }
 
         // I tried to use batchUpdate but for the current Mimer driver that only works for SELECT, INSERT, UPDATE,
         // and DELETE operations and this method is also used for create table and drop table commands. /Hasse
-        // sqlProcessor.executeBatchUpdate( conn, (String[])commands.toArray( new String[commands.size()] ) );
+        // sqlProcessor.executeBatchUpdate( con, (String[])commands.toArray( new String[commands.size()] ) );
     }
 
     private Vector readCommandsFromFile( String fileName ) throws IOException {
@@ -296,8 +295,8 @@ public class DatabaseService {
                 return false;
             if( county_council != null ? !county_council.equals( usersTabelData.county_council ) : usersTabelData.county_council != null )
                 return false;
-//            if( create_date != null ? !create_date.equals( usersTabelData.create_date ) : usersTabelData.create_date != null )
-//                return false;
+            //            if( create_date != null ? !create_date.equals( usersTabelData.create_date ) : usersTabelData.create_date != null )
+            //                return false;
             if( email != null ? !email.equals( usersTabelData.email ) : usersTabelData.email != null )
                 return false;
             if( first_name != null ? !first_name.equals( usersTabelData.first_name ) : usersTabelData.first_name != null )
@@ -328,38 +327,37 @@ public class DatabaseService {
 
     Table_users[] sprocGetAllUsers_OrderByLastName() {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
-        Object[] paramValues = null;
 
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 Table_users result = null;
                 int user_id = rs.getInt( "user_id" );
-                String login_name = rs.getString("login_name");
-                String login_password = rs.getString("login_password");
-                String first_name = rs.getString("first_name");
-                String last_name = rs.getString("last_name");
-                String title = rs.getString("title");
-                String company = rs.getString("company");
-                String address = rs.getString("address");
-                String city = rs.getString("city");
-                String zip = rs.getString("zip");
-                String country = rs.getString("country");
-                String county_council = rs.getString("county_council");
-                String email = rs.getString("email");
-                int external = rs.getInt("external");
-                int last_page = rs.getInt("last_page");
-                int archive_mode = rs.getInt("archive_mode");
-                int lang_id = rs.getInt("lang_id");
-                int user_type = rs.getInt("user_type");
-                int active = rs.getInt("active");
-                Timestamp create_date = rs.getTimestamp("create_date");
+                String login_name = rs.getString( "login_name" );
+                String login_password = rs.getString( "login_password" );
+                String first_name = rs.getString( "first_name" );
+                String last_name = rs.getString( "last_name" );
+                String title = rs.getString( "title" );
+                String company = rs.getString( "company" );
+                String address = rs.getString( "address" );
+                String city = rs.getString( "city" );
+                String zip = rs.getString( "zip" );
+                String country = rs.getString( "country" );
+                String county_council = rs.getString( "county_council" );
+                String email = rs.getString( "email" );
+                int external = rs.getInt( "external" );
+                int last_page = rs.getInt( "last_page" );
+                int archive_mode = rs.getInt( "archive_mode" );
+                int lang_id = rs.getInt( "lang_id" );
+                int user_type = rs.getInt( "user_type" );
+                int active = rs.getInt( "active" );
+                Timestamp create_date = rs.getTimestamp( "create_date" );
                 result = new Table_users( user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date );
                 return result;
             }
         };
 
-        ArrayList result = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
-        return (Table_users[])result.toArray(new Table_users[result.size()]);
+        ArrayList result = sqlProcessor.executeQuery( sql, null, resultProcessor );
+        return (Table_users[])result.toArray( new Table_users[result.size()] );
     }
 
     static class ViewTemplateGroup {
@@ -389,16 +387,14 @@ public class DatabaseService {
     }
 
     ViewTemplateGroup[] sprocGetTemplatesInGroup( int groupId ) {
-        String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " +
-            "WHERE c.group_id = ? " +
-            "ORDER BY simple_name";
-        Object[] paramValues = new Object[]{ new Integer(groupId) };
+        String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " + "WHERE c.group_id = ? " + "ORDER BY simple_name";
+        Object[] paramValues = new Object[]{new Integer( groupId )};
 
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 ViewTemplateGroup result = null;
-                int templateId = rs.getInt("template_id");
-                String simpleName = rs.getString("simple_name");
+                int templateId = rs.getInt( "template_id" );
+                String simpleName = rs.getString( "simple_name" );
                 result = new ViewTemplateGroup( templateId, simpleName );
                 return result;
             }
@@ -410,9 +406,8 @@ public class DatabaseService {
 
     // todo, ska man behöva stoppa in user_id här? Kan man inte bara få ett unikt?
     int sproc_AddNewuser( Table_users userData ) {
-        String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date ) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Object[] paramValues = new Object[]{ new Integer( userData.user_id ), userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.external ), new Integer(1001), new Integer(0), new Integer(userData.lang_id), new Integer(userData.user_type), new Integer( userData.active ), userData.create_date };
+        String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date ) " + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        Object[] paramValues = new Object[]{new Integer( userData.user_id ), userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.external ), new Integer( 1001 ), new Integer( 0 ), new Integer( userData.lang_id ), new Integer( userData.user_type ), new Integer( userData.active ), userData.create_date};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
@@ -423,30 +418,11 @@ public class DatabaseService {
     }
 
     int sproc_updateUser( Table_users userData ) {
-        String sql = "Update users set " +
-            "login_name = ?, " +
-            "login_password = ?, " +
-            "first_name = ?, " +
-            "last_name = ?, " +
-            "title = ?, " +
-            "company = ?, " +
-            "address =  ?, " +
-            "city = ?, " +
-            "zip = ?, " +
-            "country = ?, " +
-            "county_council =?, " +
-            "email = ?, " +
-            "user_type = ?, " +
-            "active = ?, " +
-            "lang_id = ? " +
-            "WHERE user_id = ?";
-       Object[] paramValues = new Object[]{ userData.login_name, userData.login_password, userData.first_name, userData.last_name,
-                                              userData.title, userData.company, userData.address, userData.city, userData.zip,
-                                              userData.country, userData.county_council, userData.email,
-                                              new Integer(userData.user_type), new Integer( userData.active ), new Integer(userData.lang_id),
-                                             new Integer( userData.user_id ) };
+        String sql = "Update users set " + "login_name = ?, " + "login_password = ?, " + "first_name = ?, " + "last_name = ?, " + "title = ?, " + "company = ?, " + "address =  ?, " + "city = ?, " + "zip = ?, " + "country = ?, " + "county_council =?, " + "email = ?, " + "user_type = ?, " + "active = ?, " + "lang_id = ? " + "WHERE user_id = ?";
+        Object[] paramValues = new Object[]{userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.user_type ), new Integer( userData.active ), new Integer( userData.lang_id ), new Integer( userData.user_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
+
     /*
     This function adds a new phone numbers to the db. Used by AdminUserProps
     */
@@ -456,21 +432,20 @@ public class DatabaseService {
         int newPhoneId = 1 + getMaxIntValue( tableName, primaryKeyColumnName );
 
         String sql = "INSERT INTO PHONES ( phone_id , number , user_id, phonetype_id ) VALUES ( ? , ?, ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer(newPhoneId), number, new Integer(userId), new Integer(phoneType) };
+        Object[] paramValues = new Object[]{new Integer( newPhoneId ), number, new Integer( userId ), new Integer( phoneType )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
     private int getMaxIntValue( String tableName, String columnName ) {
         String sql = "SELECT MAX(" + columnName + ") FROM " + tableName;
-        Object[] paramValues = null;
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int id = rs.getInt(1);
+                int id = rs.getInt( 1 );
                 return new Integer( id );
             }
         };
-        ArrayList result = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
-        Integer id =  (Integer)(result.get(0));
+        ArrayList result = sqlProcessor.executeQuery( sql, null, resultProcessor );
+        Integer id = (Integer)(result.get( 0 ));
         if( id == null ) {
             return 0;
         } else {
@@ -478,17 +453,23 @@ public class DatabaseService {
         }
     }
 
-    // todo: ta bort från samtliga forreign key ställen( och inte bara från user_roles_crossref);
-    // todo, phones, user_flags_crossref, user_rights, useradmin_role_crossref
+    // todo: ta bort från samtliga forreign key ställen (och inte bara från user_roles_crossref)? phones, user_flags_crossref, user_rights, useradmin_role_crossref
     // todo: transaktion?
     // todo: Split into two, depending on how it is used.
     int sproc_delUser( int user_id ) {
-        String sqlUserRoles = "DELETE FROM user_roles_crossref WHERE user_id = " + user_id;
-        int rowsModified =  sqlProcessor.executeUpdate( sqlUserRoles, null ) ;
+        SQLProcessor.SQLTransaction trans = sqlProcessor.startTransaction();
+        int rowCount = 0;
+        try {
+            String sqlUserRoles = "DELETE FROM user_roles_crossref WHERE user_id = " + user_id;
+            rowCount = trans.executeUpdate( sqlUserRoles, null );
 
-        String sqlUsers = "DELETE FROM users WHERE user_id = " + user_id;
-        rowsModified +=  sqlProcessor.executeUpdate( sqlUsers, null ) ;
+            String sqlUsers = "DELETE FROM users WHERE user_id = " + user_id;
+            rowCount += trans.executeUpdate( sqlUsers, null );
 
-        return rowsModified;
+            trans.commit();
+        } catch( SQLException ex ) {
+            trans.rollback();
+        }
+        return rowCount;
     }
 }
