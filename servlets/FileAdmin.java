@@ -837,12 +837,12 @@ public class FileAdmin extends HttpServlet {
 			}
 			optionlist+="<option value=\"..\">..\\</option>" ;
 			File[] filelist = fd2.listFiles(dirfilt) ;
-			for ( int i = 0 ; i < filelist.length ; i++ ) {
+			for ( int i = 0 ; filelist!=null && i < filelist.length ; i++ ) {
 				String foo = filelist[i].getName() + File.separator ; 
 				optionlist+="<option value=\""+foo+"\">"+foo+"</option>" ;
 			}
 			filelist = fd2.listFiles(notdirfilt) ;
-			for ( int i = 0 ; i < filelist.length ; i++ ) {
+			for ( int i = 0 ; filelist!=null && i < filelist.length ; i++ ) {
 				String foo = filelist[i].getName() + " ["+filelist[i].length()+"]" ; 
 				optionlist+="<option value=\""+filelist[i].getName()+"\">"+foo+"</option>" ;
 			}
