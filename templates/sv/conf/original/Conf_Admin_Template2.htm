@@ -44,7 +44,9 @@ function closeThisWindow(){
         <form method="post" action="#SERVLET_URL#GenericUpload" enctype="multipart/form-data" name="AddTemplateForm">
           <font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&Auml;GG 
           UPP NY ( template / image) TILL BEFINTLIG MALLFIL</font> 
-          <input type="hidden" name="path" value="#EXTERNAL_PATH#">
+		  <input type="hidden" name="metaId" value="#META_ID#">
+		  <input type="hidden" name="uploadType" value="#UPLOAD_TYPE#">
+		  <input type="hidden" name="folderName" value="#FOLDER_NAME#">
           <input type="hidden" name="target" value="#SERVLET_URL#ConfAdmin?ADMIN_TYPE=META">
           <br>
           <font face="Verdana, Arial, Helvetica, sans-serif" size="2">H&auml;mta 
@@ -67,8 +69,7 @@ function closeThisWindow(){
           <input type="submit" name="cancel" value="Avbryt">
         </form>
       </td>
-      <td width="31%" valign="middle" nowrap><a href="#SERVLET_URL#ConfViewer" target="_self">#CONF_UNADMIN_LINK#</a> 
-      </td>
+      <td width="31%" valign="middle" nowrap>#CONF_UNADMIN_LINK#</td>
     </tr>
     <tr>
       <td width="31%" valign="middle" nowrap><a href="#SERVLET_URL#ConfHelp?helpmode=admin&amp;helparea=Forum#Template" target="_ConfHelp"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">HJ&Auml;LP</font></a></td>
