@@ -12,20 +12,14 @@ class SecurityChecker {
 
     private DocumentMapper docMapper;
     private UserDomainObject accessingUser;
-    private HashSet accessorRoles;
 
-    private boolean isSuperAdmin;
-
-    SecurityChecker( DocumentMapper docMapper, UserDomainObject accessor, String[] accessorRoles ) {
+    SecurityChecker( DocumentMapper docMapper, UserDomainObject accessor ) {
         this.docMapper = docMapper;
         this.accessingUser = accessor;
-        this.accessorRoles = new HashSet( Arrays.asList( accessorRoles ) );
-
-        isSuperAdmin = this.accessorRoles.contains( SUPERADMIN_ROLE );
     }
 
     void isSuperAdmin() throws NoPermissionException {
-        if( !isSuperAdmin ) {
+        if( !accessingUser.isSuperAdmin() ) {
             throw new NoPermissionException( "User is not " + SUPERADMIN_ROLE );
         }
     }
@@ -61,7 +55,7 @@ class SecurityChecker {
     }
 
     void isSuperAdminOrSameUser(User user) throws NoPermissionException {
-        if (!isSuperAdmin && !user.getInternalUser().equals( accessingUser )) {
+        if (!accessingUser.isSuperAdmin() && !user.getInternalUser().equals( accessingUser )) {
             throw new NoPermissionException( "Must be the same user or " + SUPERADMIN_ROLE );
         }
     }

@@ -15,7 +15,7 @@
 
     TextDocument.Menu menu = document.getMenu(MENU_INDEX_IN_DOCUMENT) ;
 
-    TextDocument documentToBeAdded = documentService.getTextDocument(DOCUMENT_TO_BE_ADDED_ID) ;
+    Document documentToBeAdded = documentService.getDocument(DOCUMENT_TO_BE_ADDED_ID) ;
     if( null != documentToBeAdded ) {
         try {
             menu.addDocument(documentToBeAdded) ;

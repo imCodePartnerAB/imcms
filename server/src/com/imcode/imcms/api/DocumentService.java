@@ -83,22 +83,67 @@ public class DocumentService {
         return (UrlDocument)doc;
     }
 
-    public UrlDocument createNewUrlDocument( int parentId, int parentMenuNumber )  throws NoPermissionException {
-        securityChecker.hasEditPermission( parentId );
-        UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        UrlDocumentDomainObject newDoc = documentMapper.createNewUrlDocument( user, parentId, parentMenuNumber, DocumentDomainObject.DOCTYPE_URL, "", "" );
-        UrlDocument result = new UrlDocument( newDoc, service, securityChecker, this, documentMapper,
-                                                documentPermissionSetMapper, userAndRoleMapper );
-        return result;
+    public TextDocument createAndSaveNewTextDocument( Document parent ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
+        DocumentDomainObject newDoc = createAndSaveNewDocument( DocumentDomainObject.DOCTYPE_TEXT, parent );
+        return (TextDocument) getDocument( newDoc.getId() );
     }
 
-    public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) throws NoPermissionException {
-        securityChecker.hasEditPermission( parentId );
+    public UrlDocument createAndSaveNewUrlDocument( Document parent ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
+        DocumentDomainObject newDoc = createAndSaveNewDocument( DocumentDomainObject.DOCTYPE_URL, parent );
+        return (UrlDocument) getDocument( newDoc.getId() );
+    }
+
+    private DocumentDomainObject createAndSaveNewDocument( int doctype, Document parent ) throws MaxCategoriesOfTypeExceededException, NoPermissionException {
+        securityChecker.hasEditPermission( parent.getId() );
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        TextDocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, DocumentDomainObject.DOCTYPE_TEXT, parentMenuNumber );
-        TextDocument result = new TextDocument( newDoc, service, securityChecker, this, documentMapper,
-                                                documentPermissionSetMapper, userAndRoleMapper );
-        return result;
+        DocumentDomainObject newDoc = documentMapper.createDocumentOfTypeFromParent( doctype, parent.internalDocument, user);
+        try {
+            documentMapper.saveNewDocument( newDoc, user);
+        } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
+            throw new MaxCategoriesOfTypeExceededException( e );
+        }
+        return newDoc;
+    }
+
+    /**
+     * @deprecated Use createNewUrlDocument( int parentId ) instead.
+     */
+    public UrlDocument createNewUrlDocument( int parentId, int parentMenuNumber )  throws NoPermissionException {
+        Document parentDocument = getDocument( parentId );
+        UrlDocument newUrlDocument = null;
+        try {
+            newUrlDocument = createAndSaveNewUrlDocument( parentDocument );
+        } catch (MaxCategoriesOfTypeExceededException e) {
+            throw new RuntimeException( e );
+        }
+        addDocumentToMenu( parentDocument, parentMenuNumber, newUrlDocument );
+
+        return newUrlDocument;
+    }
+
+    /**
+     * @deprecated Use createNewTextDocument( int parentId ) instead.
+     */
+    public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) throws NoPermissionException {
+        Document parentDocument = getDocument( parentId );
+        TextDocument newTextDocument = null;
+        try {
+            newTextDocument = createAndSaveNewTextDocument( parentDocument );
+        } catch (MaxCategoriesOfTypeExceededException e) {
+            throw new RuntimeException( e );
+        }
+        addDocumentToMenu( parentDocument, parentMenuNumber, newTextDocument );
+
+        return newTextDocument;
+    }
+
+    private void addDocumentToMenu( Document parentDocument, int parentMenuNumber, Document document ) {
+        UserDomainObject user = securityChecker.getCurrentLoggedInUser();
+        try {
+            documentMapper.addDocumentToMenu( user, parentDocument.internalDocument, parentMenuNumber, document.internalDocument );
+        } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
+            throw new RuntimeException( e );
+        }
     }
 
     public void saveChanges( Document document ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {

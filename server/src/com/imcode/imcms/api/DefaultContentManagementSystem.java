@@ -18,9 +18,8 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
         DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
 
         ImcmsAuthenticatorAndUserMapper imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( service );
-        String[] roleNames = imcmsAAUM.getRoleNames( accessor );
         DocumentMapper documentMapper = service.getDocumentMapper();
-        SecurityChecker securityChecker = new SecurityChecker( documentMapper, accessor, roleNames );
+        SecurityChecker securityChecker = new SecurityChecker( documentMapper, accessor );
 
         currentUser = new User( accessor, imcmsAAUM, securityChecker );
 

@@ -167,15 +167,7 @@ public class DocumentComposer extends HttpServlet {
                 DocumentDomainObject newDocument;
                 if ( null == document ) {
                     DocumentDomainObject parentDocument = documentMapper.getDocument( newDocumentParentInformation.parentId );
-                    newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument, user );
-                    newDocument.setHeadline( "" );
-                    newDocument.setMenuText( "" );
-                    newDocument.setMenuImage( "" );
-                    newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
-                    newDocument.setPublicationStartDatetime( new Date() );
-                    newDocument.setArchivedDatetime( null );
-                    newDocument.setPublicationEndDatetime( null );
-
+                    newDocument = documentMapper.createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument, user );
                 } else { // returning from image browse
                     newDocument = document;
                 }
@@ -350,45 +342,6 @@ public class DocumentComposer extends HttpServlet {
         request.setAttribute( REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME, getSessionAttributeNameFromRequest( request, REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) );
 
         newDocument.processNewDocumentInformation( this, newDocumentParentInformation, user, request, response );
-    }
-
-    private DocumentDomainObject createDocumentOfTypeFromParent( int documentTypeId, final DocumentDomainObject parent,
-                                                                 UserDomainObject user ) throws ServletException {
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-        DocumentMapper documentMapper = service.getDocumentMapper();
-        if ( !documentMapper.userCanCreateDocumentOfTypeIdFromParent( user, documentTypeId, parent ) ) {
-            return null;
-        }
-        DocumentDomainObject newDocument;
-        try {
-            if ( DocumentDomainObject.DOCTYPE_TEXT == documentTypeId ) {
-                newDocument = (DocumentDomainObject)parent.clone();
-                TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject)newDocument;
-                newTextDocument.removeAllTexts();
-                newTextDocument.removeAllImages();
-                newTextDocument.removeAllIncludes();
-                int permissionSetId = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
-                TemplateMapper templateMapper = service.getTemplateMapper();
-                TemplateDomainObject template = null;
-                if ( IMCConstants.DOC_PERM_SET_RESTRICTED_1 == permissionSetId ) {
-                    template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetOne() );
-                } else if ( IMCConstants.DOC_PERM_SET_RESTRICTED_2 == permissionSetId ) {
-                    template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo() );
-                }
-                if ( null != template ) {
-                    newTextDocument.setTemplate( template );
-                }
-            } else {
-                newDocument = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
-                newDocument.setAttributes( (DocumentDomainObject.Attributes)parent.getAttributes().clone() );
-            }
-        } catch ( CloneNotSupportedException e ) {
-            throw new ServletException( e );
-        }
-        newDocument.setCreator( user );
-        newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
-
-        return newDocument;
     }
 
     public void processNewBrowserDocumentInformation( HttpServletRequest request, HttpServletResponse response,
