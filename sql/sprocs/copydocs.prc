@@ -179,8 +179,6 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 	SELECT	@copy_id,
 		template_id,
 		group_id,
-		sort_order,
-
 		default_template_1,
 		default_template_2
 	FROM	text_docs
@@ -290,23 +288,6 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
        		section_id
 	FROM   	meta_section
 	WHERE  	meta_id = @meta_id
-	INSERT INTO menus
-	SELECT  @copy_id
-	        menu_index,
-	        sort_order
-	FROM menus
-	INSERT INTO childs
-	SELECT	@copy_id,
-			to_meta_id,
-			menu_sort,
-			manual_sort_order,
-			tree_sort_index
-	FROM		childs
-	WHERE	meta_id = @meta_id
-	DECLARE @child_max INT
-	-- FIXME: manual_sort_order should be an identity column
-	SELECT @child_max = MAX(manual_sort_order)+10 FROM childs WHERE meta_id = @parent_id AND menu_sort = @menu_id
-	INSERT INTO childs (meta_id, to_meta_id, menu_sort, manual_sort_order, tree_sort_index) VALUES(@parent_id, @copy_id, @menu_id, @child_max, '')
 	FETCH NEXT FROM documents_cursor
 	INTO	@meta_id,
 		@doc_type,
