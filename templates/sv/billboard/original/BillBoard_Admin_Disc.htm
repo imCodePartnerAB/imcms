@@ -28,20 +28,19 @@ function confirmDelDiscForm(){
   <br>
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr> 
-      <td nowrap width="33%">&nbsp;</td>
-      <td width="34%">&nbsp;</td>
-	  <td width="33%">&nbsp;<select name="MOVE_TO_SECTION" size="1">#SECTION_LIST#</select></td>
-    </tr>
-    <tr> 
       <td nowrap width="33%">
 	  	<input name=DELETE_DISCUSSION type=submit value="TA BORT" style="FONT-SIZE: 10px" onClick="confirmDelDiscForm();">
-	  </td> 
-	  <td width="34%">
-        &nbsp;<input name=ADMIN_OLD_BILLS type=submit value="VISA ARKIVERADE" style="FONT-SIZE: 10px">		
 	  </td>
-      <td width="33%">
-	  			<input type="hidden" name="BILLTYPES" value="NEW_ONES">
-	  	&nbsp;<input name=MOVE_BILLS type=submit value="FLYTTA" style="FONT-SIZE: 10px">
+      <td width="34%">
+	  	<input name=ADMIN_OLD_BILLS type=submit value="VISA ARKIVERADE" style="FONT-SIZE: 10px">
+	  </td>
+	  <td width="33%">&nbsp;</td>
+    </tr>
+    <tr> 
+      <td colspan="3" width="33%">
+	  	<input name=MOVE_BILLS type=submit value="FLYTTA" style="FONT-SIZE: 10px">&nbsp;	  
+	  	markerade till avdelning&nbsp;<select name="MOVE_TO_SECTION" size="1">#SECTION_LIST#</select>
+      	<input type="hidden" name="BILLTYPES" value="NEW_ONES">
 	  </td>
     </tr>
   </table>
