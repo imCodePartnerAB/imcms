@@ -116,7 +116,7 @@ public class AdminSection extends Administrator {
 	//This is a bit ugly so I think I need to explain it a bit!
 	//Ok the delete procedure works like this
 	//first time we need to get the delete-page
-	//second time we need to se if there is any internalDocument connected to the one we intend to delete
+	//second time we need to see if there is any internalDocument connected to the one we intend to delete
 	//if not we just delete it and then get the delete-page again
 	//but if ther is any connections we need to ask the admin what to do (move or get rid of connections)
 	//before we can delete it and get the delate page again
@@ -143,7 +143,7 @@ public class AdminSection extends Administrator {
 	    //ok first we need to see if any section was choosen
 	    String section_id = req.getParameter("section_list")==null ? "-1":req.getParameter("section_list");
 	    if ( !section_id.equals("-1") ) {
-		//ok we have a request for delete lets se if there is any docs connected to that section_id
+		//ok we have a request for delete lets see if there is any docs connected to that section_id
                 String doc_nrs = imcref.sqlProcedureStr("SectionCount", new String[]{section_id});
 		int doc_int = 0;
 		if (doc_nrs != null) {

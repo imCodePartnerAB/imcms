@@ -95,7 +95,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     }
 
     /**
-     * Only used for testing, se main-method above
+     * Only used for testing, see main-method above
      */
     public void testConnectionWithSQLDriverOnly() throws ClassNotFoundException, SQLException {
         Class.forName( DRIVER_CLASS_NAME );
@@ -104,7 +104,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     }
 
     /**
-     * Only used for testing, se main-method above
+     * Only used for testing, see main-method above
      */
     public void testConnectionWithPool() throws Exception {
         ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( DRIVER_CLASS_NAME, dbUrl, userName, passWord, 20 );
@@ -116,7 +116,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     }
 
     /**
-     * Only used for testing, se main-method above
+     * Only used for testing, see main-method above
      */
     public void testCallStoredProcedureWithParam() throws Exception {
         ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( DRIVER_CLASS_NAME, dbUrl, userName, passWord, 20 );
@@ -132,7 +132,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     }
 
     /**
-     * Only used for testing, se main-method above
+     * Only used for testing, see main-method above
      */
     public void testListAllTables() throws Exception {
         DatabaseMetaData metaData = getConnectionMetaData( DRIVER_CLASS_NAME, dbUrl, userName, passWord );
@@ -147,7 +147,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     }
 
     /**
-     * Only used for testing, se main-method above
+     * Only used for testing, see main-method above
      */
     public void testListAllStoredProcedures() throws Exception {
         DatabaseMetaData metaData = getConnectionMetaData( DRIVER_CLASS_NAME, dbUrl, userName, passWord );
@@ -161,7 +161,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     }
 
     /**
-     * Only used for testing, se main-method above
+     * Only used for testing, see main-method above
      */
     private static DatabaseMetaData getConnectionMetaData( String driverClassName, String dbUrl, String userName, String passWord ) throws Exception {
         ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( driverClassName, dbUrl, userName, passWord, 20 );

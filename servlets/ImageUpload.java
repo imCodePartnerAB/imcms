@@ -55,7 +55,7 @@ public class ImageUpload extends HttpServlet {
             res.sendRedirect( "ChangeImage?meta_id=" + mp.getParameter( "meta_id" ) + "&img_no=" + mp.getParameter( "img_no" ) + "&label=" + label );
             return;
         }
-        String folder = mp.getParameter( "folder" );//ex: /se
+        String folder = mp.getParameter( "folder" );
         if ( folder == null ) folder = "";
         //submitted with Browse Images button, no ImageUpload (M Wallin)
         if ( mp.getParameter( "browse_images" ) != null ) { // Browse Image Library

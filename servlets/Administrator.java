@@ -27,7 +27,7 @@ import org.apache.log4j.*;
  * <p/>
  * stored procedures in use:
  * - GetLangPrefixFromId
- * 
+ *
  * @version 1.1 27 Oct 2000
  */
 public class Administrator extends HttpServlet {
@@ -117,8 +117,6 @@ public class Administrator extends HttpServlet {
      GetAdminTemplateFolder. Takes the userobject as argument to detect the language
      from the user and and returns the base path to the internal folder, hangs on the
      language prefix and an "/admin/" string afterwards...
-
-     Example : D:\apache\htdocs\templates\se\admin\
      */
     public File getAdminTemplateFolder( IMCServiceInterface imcref, imcode.server.user.UserDomainObject user ) throws IOException {
 
@@ -172,7 +170,7 @@ public class Administrator extends HttpServlet {
 
     /**
      * send error message
-     * 
+     *
      * @param errorCode         is the code to loock upp in ErrMsg.ini file
      */
     void sendErrorMessage(IMCServiceInterface imcref, String eMailServerMaster,

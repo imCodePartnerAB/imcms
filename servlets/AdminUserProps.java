@@ -272,9 +272,9 @@ public class AdminUserProps extends Administrator {
         vec.add( "#ADMIN_TASK#" );
         vec.add( adminTask );
 
-
         // Lets get the the users language id
-        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{"se"} ); // FIXME: Get the correct language for the user
+        String userLanguage = user.getLangPrefix();
+        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{userLanguage} );
         Vector selectedLangV = new Vector();
         selectedLangV.add( "" + userToChange.getLangId() );
         vec.add( "LANG_TYPES" );
@@ -411,8 +411,8 @@ public class AdminUserProps extends Administrator {
         vec.add( createAdminPartHtml( user, null, imcref, req, session ) );
 
 
-        // language id: lets set swedish as default
-        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{"se"} );
+        String userLanguage = user.getLangPrefix();
+        String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{userLanguage} );
         Vector selectedLangV = new Vector();
         selectedLangV.add( "1" );
         vec.add( "#LANG_TYPES#" );

@@ -14,7 +14,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 
  Created on den 11 september 2001, 08:47
 
- @author  Hasse Brattberg, hasse@erudio.se
+ @author  Hasse Brattberg
  @author  Christoffer Hammarström, kreiger@imcode.com
  **/
 public class MainInitServlet extends HttpServlet {

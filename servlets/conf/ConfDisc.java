@@ -35,7 +35,7 @@ import imcode.external.diverse.*;
  * <p/>
  * stored procedures in use:
  * -
- * 
+ *
  * @author Rickard Larsson
  * @author Jerker Drottenmyr
  * @version 1.6 21 Nov 2000
@@ -341,7 +341,6 @@ public class ConfDisc extends Conference {
         String aLoginDate = params.getProperty( "LAST_LOGIN_DATE" );
         // log("GetLastLoginDate: " + aLoginDate ) ;
 
-        // Lets get path to the imagefolder. http://dev.imcode.com/images/se/102/ConfDiscNew.gif
         String imagePath = super.getExternalImageFolder( req ) + "ConfDiscNew.gif";
 
         // Lets get the part of an html page, wich will be parsed for every a Href reference

@@ -43,7 +43,7 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 		file = USER_TEMPLATE	;
 	    } else if ( params.getProperty("HELP_MODE").equalsIgnoreCase("ADMIN") ) {
 
-		//lets se if user has adminrights
+		//lets see if user has adminrights
 		int metaId = getMetaId( req );
 		if ( userHasAdminRights( imcref, metaId, user ) ) {
 		    file = ADMIN_TEMPLATE ;

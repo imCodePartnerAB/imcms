@@ -296,7 +296,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     // *********************** GETEXTERNAL TEMPLATE FUNCTIONS *********************
 
     /**
-     * Gives the folder to the root external folder,Example /templates/se/102/
+     * Gives the folder to the root external folder
      */
     File getExternalTemplateRootFolder( HttpServletRequest req ) throws IOException {
 
@@ -410,8 +410,8 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
     /**
      * checks if user is authorized
-     * 
-     * @param req  
+     *
+     * @param req
      * @param res  is used if error (send user to conference_starturl )
      * @param user används av bla ChatViewer
      *             <p/>
@@ -445,11 +445,11 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
     /**
      * checks if user is authorized
-     * 
+     *
      * @param req    is used for collecting serverinfo and session
      * @param res    is used if error (send user to conference_starturl )
      * @param metaId conference metaId
-     * @param user   
+     * @param user
      */
     protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, int metaId, UserDomainObject user )
             throws IOException {
@@ -470,10 +470,10 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
     /**
      * check if user is admin and has rights to edit
-     * 
+     *
      * @param imcref imCMS IMCServiceInterface instance
      * @param metaId metaId for conference
-     * @param user   
+     * @param user
      */
     protected boolean userHasAdminRights( IMCServiceInterface imcref, int metaId,
                                           UserDomainObject user ) {

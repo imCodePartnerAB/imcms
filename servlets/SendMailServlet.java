@@ -20,7 +20,7 @@ import java.util.Vector;
 
 /**
  * PARAMS in use, in doPost()
- * mailTo (the email adress were to send this ex. nisse@swipnet.se)
+ * mailTo (the email adress were to send this.
  * mailFrom (the senders email adress, the replyTo adress)
  * mailSubject (the subject line) it also decides if its a from or at to mail
  * -if there is a subject the mail sends to webbmaster atherwise it sends from the webbmaster

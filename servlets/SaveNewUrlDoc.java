@@ -65,8 +65,9 @@ public class SaveNewUrlDoc extends HttpServlet {
             return;
         }
 
+        String userLanguage = user.getLangPrefix();
         String sqlStr = "insert into url_docs (meta_id, frame_name,target,url_ref,url_txt,lang_prefix)\n" +
-                "values (?,'','',?,'','se')\n" +
+                "values (?,'','',?,''," + userLanguage + ")\n" +
                 "update meta set activate = 1, target = ? where meta_id = ?";
         imcref.sqlUpdateQuery( sqlStr, new String[]{new_meta_id, url_ref, target, new_meta_id} );
 

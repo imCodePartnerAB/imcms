@@ -49,7 +49,7 @@ import org.apache.commons.lang.StringUtils;
  * - ListDocsGetInternalDocTypes
  * - ListDocsGetInternalDocTypesValue
  * - GetLangPrefixFromId
- * 
+ *
  * @author Jerker Drottenmyr
  * @version 1.04 11 Nov 2000
  */
@@ -164,7 +164,7 @@ public class AdminListDocs extends Administrator {
             String startDate = request.getParameter( "START_DATE" );
             String endDate = request.getParameter( "END_DATE" );
 
-            /* lets se if any errors in requared fields or if some is missing */
+            /* lets see if any errors in requared fields or if some is missing */
             try {
                 if ( listMod != null ) {
                     int mod = Integer.parseInt( listMod );

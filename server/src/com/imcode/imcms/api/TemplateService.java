@@ -25,7 +25,7 @@ public class TemplateService {
     /**
      * Get a list of all
      *
-     * @param textDocument The textDocument for witch we would like to se the possible groups.
+     * @param textDocument The textDocument for witch we would like to see the possible groups.
      * @return Only the templategroups that the current logged in user has the permissions to see
      * @throws NoPermissionException If the current user isn't superadmin
      */

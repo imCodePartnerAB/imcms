@@ -35,7 +35,7 @@ import java.util.Hashtable;
  * <p/>
  * stored procedures in use:
  * -
- * 
+ *
  * @author Jerker Drottenmyr
  * @version 1.02 11 Nov 2000
  */
@@ -142,7 +142,7 @@ public class ChatAdmin extends Administrator {
 	String startDate = request.getParameter( "START_DATE" );
 	String endDate = request.getParameter( "END_DATE" );
 
-	/* lets se if any errors in requared fields or if some is missing */
+	/* lets see if any errors in requared fields or if some is missing */
 	try {
 	    if ( listMode != null ) {
 		int  mode = Integer.parseInt( listMode );

@@ -64,7 +64,7 @@ import java.util.Vector;
  * B_SetNbrOfDiscsToShow
  * B_SetNbrOfDaysToShow
  * B_SetTemplateLib
- * 
+ *
  * @author Rickard Larsson
  * @author Jerker Drottenmyr
  * @author REBUILD TO BillBoardAdmin BY Peter Östergren
@@ -639,8 +639,6 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             // Lets get parameters
             String aMetaId = params.getProperty( "META_ID" );
             String aSectionId = params.getProperty( "SECTION_ID" );
-
-            // Lets get path to the imagefolder. http://dev.imcode.com/images/se/102/ConfDiscNew.gif
 
             // Lets get the part of an html page, wich will be parsed for every a Href reference
             File aHrefHtmlFile = new File( super.getExternalTemplateFolder( req ), adminDiscList );

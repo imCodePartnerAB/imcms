@@ -681,7 +681,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * The preferred way of getting data from the db.
      * String.trim()'s the results.
-     * 
+     *
      * @param procedure The name of the procedure
      * @param params    The parameters of the procedure
      */
@@ -695,7 +695,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
      * The preferred way of getting data to the db.
-     * 
+     *
      * @param procedure The name of the procedure
      * @param params    The parameters of the procedure
      * @return updateCount or -1 if error
@@ -731,7 +731,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String parseDoc( java.util.List variables, String admin_template_name, String lang_prefix ) {
         // FIXME Fugly workaround
         if ("sv".equals(lang_prefix)) {
-            lang_prefix = "se" ;
+            lang_prefix = "se";
         }
         try {
             String htmlStr = fileCache.getCachedFileString( new File( m_TemplateHome, lang_prefix + "/admin/" + admin_template_name ) );
@@ -980,7 +980,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
      * Checks to see if a user has any permission of a particular set of permissions for a document.
-     * 
+     *
      * @param meta_id    The document-id
      * @param user       The user
      * @param permission A bitmap containing the permissions.
@@ -1008,7 +1008,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
      * Checks to see if a user has a particular set of permissions for a document.
-     * 
+     *
      * @param meta_id    The document-id
      * @param user       The user
      * @param permission A bitmap containing the permissions.
@@ -1039,7 +1039,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
      * Gets the users most privileged permission_set for the document.
-     * 
+     *
      * @param meta_id The document-id
      * @param user_id The user_id
      * @return the most privileged permission_set a user has for the document.
@@ -1488,7 +1488,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
      * Get a list of quotes
-     * 
+     *
      * @param quoteListName The name of the quote-List.
      * @return the quote-List.
      */
@@ -1510,7 +1510,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
      * Set a quote-list
-     * 
+     *
      * @param quoteListName The name of the quote-List.
      * @param quoteList     The quote-List
      */
@@ -1547,7 +1547,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
      * Set a poll-list
-     * 
+     *
      * @param pollListName The name of the poll-List.
      * @param pollList     The poll-List
      */
@@ -1564,7 +1564,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
      * Set the modified datetime of a document to the given date
-     * 
+     *
      * @param meta_id The id of the document
      * @param date    The datetime to set
      */
@@ -1576,7 +1576,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
      * Set the modified datetime of a document to now
-     * 
+     *
      * @param meta_id The id of the document
      */
     public void touchDocument(int meta_id) {

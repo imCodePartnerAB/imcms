@@ -318,7 +318,6 @@ public class ImageBrowse extends HttpServlet {
      * from the user and and returns the base path to the internal folder, hangs on the
      * language prefix and an "/admin/" string afterwards...
      * <p/>
-     * Example : D:\apache\htdocs\templates\se\admin\
      */
     private static File getAdminTemplateFolder( IMCServiceInterface imcref, imcode.server.user.UserDomainObject user ) {
 

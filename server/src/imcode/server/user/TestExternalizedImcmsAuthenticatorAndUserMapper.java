@@ -10,6 +10,8 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
    private LdapUserAndRoleMapper ldapUserMapper;
 
+   String DEFAULT_LANGUAGE = "se";
+
    public void testDummy() {
       assertTrue( true );
    }
@@ -28,7 +30,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       String ldapPassword = "hasbra";
       ldapUserMapper = new LdapUserAndRoleMapper( ldapURL, LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE, ldapUserObjectClass, ldapUserIdentifyingAttribute, ldapUserName, ldapPassword, new String[]{LdapUserAndRoleMapper.NONSTANDARD_COMPANY} );
       imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( mockImcmsService );
-      externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, ldapUserMapper, ldapUserMapper, "se" );
+      externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, ldapUserMapper, ldapUserMapper, DEFAULT_LANGUAGE );
    }
 
    public void testImcmsOnlyExisting() {
@@ -119,7 +121,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
 
    public void testNullExternalAuthenticator() {
       try {
-         new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, null, ldapUserMapper, "se" );
+         new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, null, ldapUserMapper, DEFAULT_LANGUAGE );
          fail();
       } catch( IllegalArgumentException ex ) {
          //OK
@@ -128,7 +130,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
 
    public void testNullExternalUserMapper() {
       try {
-         new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, ldapUserMapper, null, "se" );
+         new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, ldapUserMapper, null, DEFAULT_LANGUAGE );
          fail();
       } catch( IllegalArgumentException ex ) {
          //OK
@@ -138,7 +140,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    public void testNullAuthenticatorAndNullUserMapper() {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
-      ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, null, null, "se" );
+      ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, null, null, DEFAULT_LANGUAGE );
       authAndMapper.authenticate( LOGIN_NAME_ADMIN, LOGIN_NAME_ADMIN );
       authAndMapper.getUser( LOGIN_NAME_ADMIN );
       authAndMapper.synchRolesWithExternal();

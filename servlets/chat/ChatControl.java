@@ -85,7 +85,7 @@ public class ChatControl extends ChatBase {
 	//lets get the room
         ChatGroup myGroup = myMember.getGroup();
 
-	//ok lets se if the user wants the change setting page
+	//ok lets see if the user wants the change setting page
 	if (req.getParameter("settings")!= null){
 	    //ok we have to fix this method
 	    this.createSettingsPage(req,res, metaId, user, myMember);

@@ -77,7 +77,7 @@ public class ChatLogin extends ChatBase {
         aliasBol = rolV.contains( "1" );
         imCmsRegBol = rolV.contains( "2" );
 
-        //ok lets se if the user realy has loged in or
+        //ok lets see if the user realy has loged in or
         if ( !user.getLoginName().equals( "user" ) ) {
             loggedOnOk = true;
         }
@@ -173,7 +173,7 @@ public class ChatLogin extends ChatBase {
 
         //*********logs a user into imcms and into the chat with username *****
         if ( req.getParameter( "loginToImCms" ) != null ) {
-            //ok lets se if there is any user whith this id and pw
+            //ok lets see if there is any user whith this id and pw
             log( "Ok, nu försöker vi verifiera logga in!" );
             Properties lparams = this.getLoginParams( req );
 

@@ -147,7 +147,7 @@ public class AdminConference extends Administrator {
         String startDate = request.getParameter( "START_DATE" );
         String endDate = request.getParameter( "END_DATE" );
 
-        /* lets se if any errors in requared fields or if some is missing */
+        /* lets see if any errors in requared fields or if some is missing */
         try {
             if ( listMode != null ) {
                 int mode = Integer.parseInt( listMode );

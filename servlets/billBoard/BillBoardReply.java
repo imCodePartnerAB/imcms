@@ -29,7 +29,7 @@ import imcode.external.diverse.*;
  * stored procedures in use:
  * B_GetCurrentBill
  * B_GetBillHeader
- * 
+ *
  * @author Rickard Larsson
  * @author Jerker Drottenmyr REBUILD TO BillBoardReply BY Peter Östergren
  * @version 1.2 20 Aug 2001
@@ -110,7 +110,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	File templateLib = super.getExternalTemplateFolder(req) ;
 	File aSnippetFile = new File(templateLib, RECS_PREV_HTML) ;
 
-	//ok here we se if we have a prevue to handle
+	//ok here we see     if we have a prevue to handle
 	Hashtable billPrevData = (Hashtable) session.getAttribute("billPrevData");
 	//log("PREVIEWMODE: "+req.getParameter("PREVIEWMODE"));
         if (billPrevData != null && req.getParameter("PREVIEWMODE") != null) { //ok PREVIEW-mode

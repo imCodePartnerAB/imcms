@@ -38,7 +38,7 @@ import imcode.external.diverse.*;
  * B_GetTemplateLib
  * B_GetFirstSection
  * B_GetLastDiscussionId
- * 
+ *
  * @author Rickard Larsson, Jerker Drottenmyr, REBUILD TO BILLBOARD BY Peter Östergren
  * @version 1.2 20 Aug 2001
  */
@@ -108,7 +108,7 @@ public class BillBoard extends HttpServlet { //Conference
      * <p/>
      * Conference.forum_id
      * Conference.discussion_id
-     * 
+     *
      * @param params if a properties object is passed, we will fill the object with the extended paramters, otherwise we will create one.
      */
 
@@ -155,7 +155,7 @@ public class BillBoard extends HttpServlet { //Conference
     }
 
     /**
-     * Gives the folder to the root external folder,Example /templates/se/102/
+     * Gives the folder to the root external folder
      */
 
     File getExternalTemplateRootFolder( HttpServletRequest req )//p ok
@@ -342,7 +342,7 @@ public class BillBoard extends HttpServlet { //Conference
      * Checks whether or not the user is an administrator and
      * Creates the html code, used to view the adminimage and an appropriate link
      * to the adminservlet.
-     * 
+     *
      * @param req           requestobject
      * @param user          userobject
      * @param adminButtonVM hashtabele of tags to replace
@@ -456,10 +456,10 @@ public class BillBoard extends HttpServlet { //Conference
 
     /**
      * checks if user is authorized
-     * 
-     * @param req  
+     *
+     * @param req
      * @param res  is used if error (send user to conference_starturl )
-     * @param user 
+     * @param user
      */
     boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, imcode.server.user.UserDomainObject user )
             throws IOException {
@@ -486,11 +486,11 @@ public class BillBoard extends HttpServlet { //Conference
 
     /**
      * checks if user is authorized
-     * 
+     *
      * @param req    is used for collecting serverinfo and session
      * @param res    is used if error (send user to conference_starturl )
      * @param metaId conference metaId
-     * @param user   
+     * @param user
      */
     boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, int metaId, imcode.server.user.UserDomainObject user )
             throws IOException {
@@ -511,10 +511,10 @@ public class BillBoard extends HttpServlet { //Conference
 
     /**
      * check if user has right to edit
-     * 
+     *
      * @param imcref imCMS IMCServiceInterface instance
      * @param metaId metaId for conference
-     * @param user   
+     * @param user
      */
     boolean userHasRightToEdit( IMCServiceInterface imcref, int metaId,
                                 imcode.server.user.UserDomainObject user ) throws java.io.IOException {
@@ -525,10 +525,10 @@ public class BillBoard extends HttpServlet { //Conference
 
     /**
      * check if user is admin and has rights to edit
-     * 
+     *
      * @param imcref imCMS IMCServiceInterface instance
      * @param metaId metaId for conference
-     * @param user   
+     * @param user
      */
     boolean userHasAdminRights( IMCServiceInterface imcref, int metaId,
                                 imcode.server.user.UserDomainObject user ) {
