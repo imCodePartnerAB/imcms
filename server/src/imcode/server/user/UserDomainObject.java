@@ -1,13 +1,14 @@
 package imcode.server.user;
 
-import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.Imcms;
+import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.DocumentDomainObject;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
-import java.io.Serializable;
 
 public class UserDomainObject extends Hashtable {
 
@@ -492,6 +493,10 @@ public class UserDomainObject extends Hashtable {
 
     public boolean isUserAdmin() {
         return hasRole( RoleDomainObject.USERADMIN );
+    }
+
+    public boolean canEdit( DocumentDomainObject document ) {
+        return Imcms.getServices().getDocumentMapper().userHasMoreThanReadPermissionOnDocument( this, document );
     }
 
     public String toString() {

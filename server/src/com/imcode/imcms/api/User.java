@@ -1,6 +1,14 @@
 package com.imcode.imcms.api;
 
+import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.collections.Transformer;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 public class User {
     private UserDomainObject internalUser;
@@ -81,10 +89,52 @@ public class User {
 
     public boolean hasRole(String roleName) throws NoPermissionException {
         contentManagementSystem.getSecurityChecker().isSuperAdminOrSameUser(this);
-        return internalUser.hasRole(contentManagementSystem.getInternal().getImcmsAuthenticatorAndUserAndRoleMapper().getRoleByName( roleName )) ;
+        RoleDomainObject role = getMapper().getRoleByName( roleName );
+        return internalUser.hasRole(role) ;
     }
 
     public boolean isSuperAdmin() {
         return internalUser.isSuperAdmin() ;
+    }
+
+    public boolean canEdit(Document document) {
+        return internalUser.canEdit(document.getInternal()) ;
+    }
+
+    private ImcmsAuthenticatorAndUserMapper getMapper() {
+        return contentManagementSystem.getInternal().getImcmsAuthenticatorAndUserAndRoleMapper();
+    }
+
+    public boolean equals( Object o ) {
+        if ( this == o ) {
+            return true;
+        }
+        if ( !( o instanceof User ) ) {
+            return false;
+        }
+
+        final User user = (User)o;
+
+        if ( internalUser != null ? !internalUser.equals( user.internalUser ) : user.internalUser != null ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public int hashCode() {
+        return internalUser != null ? internalUser.hashCode() : 0;
+    }
+
+    public String[] getRoleNames() {
+        Iterator roleNamesIterator = IteratorUtils.arrayIterator( internalUser.getRoles() );
+        Collection roleNames = CollectionUtils.collect( roleNamesIterator, new RoleToRoleNameTransformer()) ;
+        return (String[])roleNames.toArray( new String[roleNames.size()] );
+    }
+
+    private static class RoleToRoleNameTransformer implements Transformer {
+        public Object transform( Object role ) {
+            return ((RoleDomainObject)role).getName() ;
+        }
     }
 }

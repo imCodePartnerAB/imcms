@@ -33,7 +33,7 @@ public class UserService {
 
     public User getUser( String userLoginName ) throws NoPermissionException {
         getSecurityChecker().isSuperAdmin();
-        // todo: If the user has permission to edit this user, let him
+        // todo: If useradmin has permission to edit this user, let him
 
         UserDomainObject internalUser = getMapper().getUser( userLoginName );
         User result = new User( internalUser, contentManagementSystem );
@@ -47,11 +47,7 @@ public class UserService {
     }
 
     public String[] getRoleNames( User user ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-        // todo: If the user has permission to edit this user, let him
-
-        User userImpl = user;
-        return getMapper().getRoleNames( userImpl.getInternal() );
+        return user.getRoleNames() ;
     }
 
     public void setUserRoles( User user, String[] roleNames ) throws NoPermissionException {
