@@ -536,6 +536,7 @@
         <copy todir="${imcmsimages}/${defaultlanguage}/admin">
             <fileset dir="install/htdocs/imcms/images"/>
             <fileset dir="install/htdocs/imcmsimages"/>
+            <fileset dir="install/htdocs/sv/images"/>
         </copy>
 
         <copy todir="${imcmscss}" filtering="true">
@@ -807,9 +808,7 @@
     <!-- Copies and filters the html-editor files. -->
     <target name="html-editor"
 	    depends="init"
-	    description="Copies the html-editor files."
-	    if="build-htmleditor">
-
+	    description="Copies the html-editor files.">
         <mkdir dir="${htmleditor}"/>
 
         <copy todir="${htmleditor}" filtering="true">
@@ -818,9 +817,6 @@
         <copy todir="${htmleditor}/images">
             <fileset dir="install/htdocs/sv/htmleditor/editor/images" includes="*.jpg,*.gif"/>
         </copy>
-        <copy todir="${admintemplates}" filtering="true"
-            file="install/htdocs/sv/htmleditor/change_text.html"
-            overwrite="yes"/>
     </target>
 
 
