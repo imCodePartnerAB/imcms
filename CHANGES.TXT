@@ -85,7 +85,7 @@ Version 1.11.0:
         - TextDocument.setMenuSortOrder(int) - use Menu.setSortOrder(int) (Bug 2560)
         - DocumentPermissionSet.getEditHeadlinePermission() -
           use DocumentPermissionSet.getEditDocumentInformationPermission() (Bug 2609)
-          DocumentPermissionSet.setEditHeadlinePermission(boolean) -
+        - DocumentPermissionSet.setEditHeadlinePermission(boolean) -
           use DocumentPermissionSet.setEditDocumentInformationPermission(boolean) (Bug 2609)
         - DocumentPermissionSet.getEditableMenuDocumentTypeNames() - removed, returning type-names is broken. (Bug 2609)
 
