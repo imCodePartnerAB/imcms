@@ -60,6 +60,11 @@
     <appender-ref ref="WEBAPPMAIN"/>
   </category>
 
+  <category name="velocity" additivity="false">
+      <priority value="warn"/>
+      <appender-ref ref="WEBAPPERROR"/>
+  </category>
+
   <!-- Set up the errorlog with priority 'info' -->
   <root>
     <priority value="info"/>

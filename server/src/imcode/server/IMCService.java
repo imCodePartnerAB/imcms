@@ -615,7 +615,7 @@ final public class IMCService implements IMCServiceInterface {
 
     private synchronized VelocityEngine createVelocityEngine( String languageIso639_2 ) throws Exception {
         VelocityEngine velocity = new VelocityEngine();
-        log.debug( "createVelocityEngine", new Throwable() );
+        log.debug( "createVelocityEngine" );
         velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath.getCanonicalPath() );
         velocity.setProperty( VelocityEngine.VM_LIBRARY, languageIso639_2 + "/gui.vm" );
         velocity.setProperty( VelocityEngine.VM_LIBRARY_AUTORELOAD, "true" );
