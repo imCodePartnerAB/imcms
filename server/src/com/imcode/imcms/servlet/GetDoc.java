@@ -44,7 +44,7 @@ public class GetDoc extends HttpServlet {
             // Find the start-page
             meta_id = imcref.getSystemData().getStartDocument();
         }
-        String tempstring = getDoc( meta_id, meta_id, req, res );
+        String tempstring = getDoc( meta_id, req, res );
         if ( tempstring != null ) {
             byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
             res.setContentLength( tempbytes.length );
@@ -52,7 +52,7 @@ public class GetDoc extends HttpServlet {
         }
     }
 
-    public static String getDoc( int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res )
+    public static String getDoc(int meta_id, HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -173,7 +173,7 @@ public class GetDoc extends HttpServlet {
                 meta_id = ( (Integer)browserDocumentIdMap.get( BrowserDocumentDomainObject.Browser.DEFAULT ) ).intValue();
             }
 
-            res.sendRedirect( "GetDoc?meta_id=" + meta_id + "&parent_meta_id=" + parent_meta_id );
+            res.sendRedirect( "GetDoc?meta_id=" + meta_id );
             // Log to accesslog
             trackLog.info( documentRequest );
             return null;
@@ -268,5 +268,5 @@ public class GetDoc extends HttpServlet {
         String paramStr = "?meta_id=" + document.getId() + "&";
         paramStr += "cookie_id=1A&action=" + action;
         res.sendRedirect( externalDocumentTypeServlet + paramStr );
-    }
+        }
 }

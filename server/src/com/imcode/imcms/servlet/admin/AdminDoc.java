@@ -122,7 +122,7 @@ public class AdminDoc extends HttpServlet {
         }
 
         if ( !imcref.checkDocAdminRights( meta_id, user, flags ) ) {
-            return GetDoc.getDoc( meta_id, parent_meta_id, req, res );
+            return GetDoc.getDoc( meta_id, req, res );
         }
 
         String metaImageUri = ImageBrowse.getImageUri( req );

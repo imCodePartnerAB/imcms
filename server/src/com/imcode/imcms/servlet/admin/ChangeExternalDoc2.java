@@ -28,14 +28,11 @@ public class ChangeExternalDoc2 extends HttpServlet {
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
-		String htmlStr;
 		int meta_id ;
-		int parent_meta_id ;
 
 		Utility.setDefaultHtmlContentType( res );
 		Writer out = res.getWriter( );
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
-		parent_meta_id = Integer.parseInt( req.getParameter( "parent_meta_id" ) ) ;
 
 		UserDomainObject user=Utility.getLoggedOnUser( req );
 		if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this
@@ -46,8 +43,6 @@ public class ChangeExternalDoc2 extends HttpServlet {
 			return ;
 		}
 
-		String output = GetDoc.getDoc(parent_meta_id,parent_meta_id,req,res) ;
-		out.write ( output ) ;
-
+		GetDoc.getDoc(meta_id, req,res) ;
 	}
 }
