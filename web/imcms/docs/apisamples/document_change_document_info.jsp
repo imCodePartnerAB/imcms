@@ -13,7 +13,6 @@
     document.setPublicationStartDatetime( new Date() );
     document.setArchivedDatetime( new Date() );
     document.setStatus( Document.STATUS_PUBLICATION_APPROVED );
-
     document.setVisibleInMenusForUnauthorizedUsers( false );
 
     int sectionId = 1;
@@ -40,12 +39,13 @@
         }
     }
 
-    // publisher
     UserService userService = imcmsSystem.getUserService();
     User admin = userService.getUser("admin");
+
     document.setPublisher( admin );
+    document.setCreator( admin ) ;
 
     // don't forget to save your changes!
     documentService.saveChanges( document );
 %>
-Done changing document <a href="../servlet/GetDoc?meta_id=<%= documentId %>"><%= documentId %></a>.
+Done changing document <a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=<%= documentId %>"><%= documentId %></a>.

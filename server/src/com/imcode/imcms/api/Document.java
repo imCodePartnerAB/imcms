@@ -171,6 +171,11 @@ public class Document {
         return new User( internalDocument.getCreator(), userAndRoleMapper, securityChecker );
     }
 
+    public void setCreator( User creator ) throws NoPermissionException {
+        securityChecker.hasEditPermission( this ) ;
+        internalDocument.setCreator( creator.getInternalUser() );
+    }
+
     DocumentDomainObject getInternal() {
         return internalDocument;
     }
