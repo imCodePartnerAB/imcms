@@ -35,6 +35,8 @@ public class AdminSystemInfo extends Administrator {
 
 	imcode.server.SystemData sysData = imcref.getSystemData() ;
 
+	int startDoc = sysData.getStartDocument() ;
+
 	String msg = sysData.getSystemMessage() ;
 
 	String webMaster = sysData.getWebMaster() ;
@@ -45,6 +47,7 @@ public class AdminSystemInfo extends Administrator {
 
 	// Lets generate the html page
 	VariableManager vm = new VariableManager() ;
+	vm.addProperty("STARTDOCUMENT", ""+startDoc) ;
 	vm.addProperty("SYSTEM_MESSAGE", msg) ;
 	vm.addProperty("WEB_MASTER", webMaster ) ;
 	vm.addProperty("WEB_MASTER_EMAIL", webMasterEmail ) ;
@@ -80,6 +83,20 @@ public class AdminSystemInfo extends Administrator {
 	    String header = "Error in AdminCounter." ;
 	    String msg = "The user is not an administrator."+ "<BR>" ;
 	    AdminError err = new AdminError(req,res,header,msg) ;
+	    return ;
+	}
+
+	if( req.getParameter("SetStartDoc") != null ) {
+	    String metaIdString = req.getParameter("STARTDOCUMENT") ;
+	    try {
+		imcode.server.SystemData sysData = imcref.getSystemData() ;
+		sysData.setStartDocument(Integer.parseInt(metaIdString)) ;
+		imcref.setSystemData(sysData) ;
+	    } catch (NumberFormatException ignored) {
+		// Illegal meta-id, ignored.
+	    }
+
+	    doGet(req, res) ;
 	    return ;
 	}
 

@@ -1,4 +1,6 @@
 SET IDENTITY_INSERT sys_data ON 
+INSERT INTO sys_data (sys_id, type_id, value)
+ VALUES(0, 0, 1001)
 INSERT INTO sys_data (sys_id, type_id, value) 
  VALUES(1, 1, 0)
 INSERT INTO sys_data (sys_id, type_id, value) 

@@ -33,7 +33,8 @@ public class AdminDoc extends HttpServlet {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
-	int start_doc				= imcref.getDefaultHomePage() ;
+	// Find the start-page
+	int start_doc = imcref.getSystemData().getStartDocument() ;
 	imcode.server.User user ;
 	String htmlStr = "" ;
 	int meta_id ;
@@ -72,7 +73,8 @@ public class AdminDoc extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 	String host = req.getHeader("host") ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
-	int start_doc					= imcref.getDefaultHomePage() ;
+	// Find the start-page
+	int start_doc = imcref.getSystemData().getStartDocument() ;
 
 	String htmlStr = "" ;
 	String lang_prefix = user.getLangPrefix() ;

@@ -110,6 +110,7 @@ INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(26,'Macintosh 
 INSERT INTO browsers (browser_id, name, user_agent, value) VALUES(0,'Övriga','%',0)
 
 SET IDENTITY_INSERT sys_types ON
+INSERT INTO sys_types (type_id,name) VALUES(0,'StartDocument')
 INSERT INTO sys_types (type_id,name) VALUES(1,'SessionCounter')
 INSERT INTO sys_types (type_id,name) VALUES(2,'SessionCounterDate')
 INSERT INTO sys_types (type_id,name) VALUES(3,'SystemMessage')

@@ -123,9 +123,6 @@ public interface IMCServiceInterface {
 		      String search_type,String string_match,String search_area)
 	;
 
-    // get home page meta_id
-    int getDefaultHomePage()  ;
-
     // check if external doc
     ExternalDocType isExternalDoc(int meta_id,User user)
 	;

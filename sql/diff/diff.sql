@@ -455,6 +455,18 @@ EXEC sp_fulltext_table texts, 'Start_background_updateindex'
 GO
 --2002-04-04
 
+-- Insert default start document into the database.
+SET IDENTITY_INSERT sys_types ON
+INSERT INTO sys_types (type_id, name)
+ VALUES(0, 'StartDocument')
+SET IDENTITY_INSERT sys_types OFF
+SET IDENTITY_INSERT sys_data ON
+INSERT INTO sys_data (sys_id, type_id, value)
+ VALUES(0, 0, 1001)
+SET IDENTITY_INSERT sys_data OFF
+
+--2002-07-29
+
 print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
 
 

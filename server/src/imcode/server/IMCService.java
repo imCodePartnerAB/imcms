@@ -37,12 +37,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private File m_IncludePath ;
     private File m_FortunePath ;
     private File m_ImagePath ;
-    private int m_DefaultHomePage ;        // default home page
     private String m_StartUrl  ;			   // start url
     private String m_ServletUrl  ;			   // servlet url
     private String m_ImageUrl ;            // image folder
     private String m_Language          = "" ;      // language
     private String m_serverName        = "" ;      // servername
+
+    private static final int DEFAULT_STARTDOCUMENT = 1001 ;
 
     private SystemData sysData ;
 
@@ -82,15 +83,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String fortunePathString = props.getProperty("FortunePath").trim() ;
 	m_FortunePath       = imcode.util.Utility.getAbsolutePathFromString(fortunePathString) ;
 	log.info("FortunePath: " + m_IncludePath) ;
-
-	try {
-	    m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument").trim()) ;    //FIXME: Get from DB
-	} catch (NumberFormatException ex) {
-	    throw new RuntimeException ("No StartDocument given in properties-file.") ;
-	} catch (NullPointerException ex) {
-	    throw new RuntimeException ("No StartDocument given in properties-file.") ;
-	}
-	log.info("StartDocument: " + m_DefaultHomePage) ;
 
 	m_StartUrl       = props.getProperty("StartUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
 	log.info("StartUrl: " + m_StartUrl) ;
@@ -147,14 +139,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String getSessionCounterDate() {
 	return m_SessionCounterDate ;
     }
-
-    /**
-     * Get the start document
-     */
-    public int getDefaultHomePage() {
-	return m_DefaultHomePage ;
-    }
-
 
     /**
      * Verify a Internet/Intranet user. User data retrived from SQL Database.
@@ -2592,6 +2576,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     protected SystemData getSystemDataFromDb() {
 
 	/** Fetch everything from the DB */
+	String startDocument = this.sqlProcedureStr("StartDocGet") ;
 	String serverMaster[] = this.sqlProcedure("ServerMasterGet") ;
 	String webMaster[] = this.sqlProcedure("WebMasterGet") ;
 	String systemMessage = this.sqlProcedureStr("SystemMessageGet") ;
@@ -2601,6 +2586,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	/** Store everything in the object */
 
+	sd.setStartDocument(startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt(startDocument) ) ;
 	sd.setSystemMessage(systemMessage) ;
 
 	if (serverMaster.length > 0) {
@@ -2625,15 +2611,22 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     public void setSystemData (SystemData sd) {
-	sysData = sd ;
-	String sqlStr = "WebMasterSet '"+sd.getWebMaster()+"','"+sd.getWebMasterAddress()+"'" ;
-	sqlUpdateProcedure(sqlStr) ;
+	String[] sqlParams ;
 
-	sqlStr = "ServerMasterSet '"+sd.getServerMaster()+"','"+sd.getServerMasterAddress()+"'" ;
-	sqlUpdateProcedure(sqlStr) ;
+	sqlParams = new String[] { "" + sd.getStartDocument() } ;
+	sqlUpdateProcedure("StartDocSet", sqlParams) ;
 
-	sqlStr = "SystemMessageSet '"+sd.getSystemMessage()+"'" ;
-	sqlUpdateProcedure(sqlStr) ;
+	sqlParams = new String[] { sd.getWebMaster(), sd.getWebMasterAddress() } ;
+	sqlUpdateProcedure("WebMasterSet", sqlParams) ;
+
+	sqlParams = new String[] { sd.getServerMaster(), sd.getServerMasterAddress() } ;
+	sqlUpdateProcedure("ServerMasterSet", sqlParams) ;
+
+	sqlParams = new String[] { sd.getSystemMessage() } ;
+	sqlUpdateProcedure("SystemMessageSet", sqlParams) ;
+
+	/* Update the local copy last, so we stay aware of any database errors */
+	this.sysData = sd ;
     }
 
     /**

@@ -26,7 +26,8 @@ public class BackDoc extends HttpServlet {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String start_url	= imcref.getStartUrl() ;
 	String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
-	int start_doc					= imcref.getDefaultHomePage() ;
+	// Find the start-page
+	int start_doc = imcref.getSystemData().getStartDocument() ;
 
 	res.setContentType( "text/html" );
 	Writer out = res.getWriter() ;

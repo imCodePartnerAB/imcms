@@ -27,11 +27,12 @@ function openHelp(id){
 	<td colspan="2">&nbsp;</td>
 	<td width="5%">&nbsp;</td>
   </tr>
+
   <tr bgcolor="#bababa"> 
 	<td width="5%">&nbsp;</td>
 	<td colspan="2"> 
 	  <div align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Ange 
-		system meddelande</b></font></div>
+		startsida</b></font></div>
 	</td>
 	<td width="5%">&nbsp;</td>
   </tr>
@@ -39,7 +40,62 @@ function openHelp(id){
 	<td width="5%"><font size="2">&nbsp;</font></td>
 	<td colspan="2"> 
 	  <div align="left"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">I 
-		textrutan nedan anges det aktuella meddelandet fr&aring;n systemadministrat&ouml;ren.</font></div>
+		textrutan nedan anges meta-id för den sida som besökare kommer till först.</font></div>
+	</td>
+	<td width="5%"><font size="2">&nbsp;</font></td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">&nbsp;</td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%"><font size="2">&nbsp;</font></td>
+	<td colspan="2"> 
+	  <form method="post" action="AdminSystemInfo">
+		<table width="100%" border="0">
+		  <tr> 
+			<td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Aktuell 
+			  startsida:</font></td>
+			<td width="68%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#STARTDOCUMENT#</font></td>
+		  </tr>
+		  <tr> 
+			<td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&Auml;ndra 
+			  startsida:</font></td>
+			<td width="68%"> <font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+			  <input type="text" name="STARTDOCUMENT" value="#STARTDOCUMENT#" maxlength="10" size="5">
+  			  <input type="submit" name="SetStartDoc" value="Uppdatera">
+			  </font>
+			</td>
+		  </tr>
+		</table>
+		<font size="2"><br>
+		</font> 
+	  </form>
+	</td>
+	<td width="5%"><font size="2">&nbsp;</font></td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"> 
+	  <hr>
+	</td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"> 
+	  <div align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Ange 
+		system-meddelande</b></font></div>
+	</td>
+	<td width="5%">&nbsp;</td>
+  </tr>
+  <tr bgcolor="#bababa"> 
+	<td width="5%"><font size="2">&nbsp;</font></td>
+	<td colspan="2"> 
+	  <div align="left"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">I 
+		textrutan nedan anges det aktuella meddelandet fr&aring;n systemadministrat&ouml;ren.</font>
+	  </div>
 	</td>
 	<td width="5%"><font size="2">&nbsp;</font></td>
   </tr>

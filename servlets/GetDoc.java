@@ -61,7 +61,8 @@ public class GetDoc extends HttpServlet {
 	try {
 	    meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
 	} catch ( NumberFormatException ex ) {
-	    meta_id = imcref.getDefaultHomePage() ;
+	    // Find the start-page
+	    meta_id = imcref.getSystemData().getStartDocument() ;
 	    log.debug("Exception occured" + ex );
 	}
 	String tempstring = getDoc(meta_id,meta_id,req,res) ;

@@ -83,10 +83,11 @@ public class StartDoc extends HttpServlet {
 
 	// The real purpose of StartDoc:
 	// Note that everything else in this servlet
-	// but this redirect is merely cruft
+	// but this redirect is merely cruft.
+	// Of course, it's necessary cruft...
 
 	// Find the start-page
-	meta_id = imcref.getDefaultHomePage() ;
+	meta_id = imcref.getSystemData().getStartDocument() ;
 
 	// ... and redirect to it.
 	// FIXME: Replace with a forward()...
