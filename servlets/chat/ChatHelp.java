@@ -154,8 +154,7 @@ public class ChatHelp extends ChatBase
 
 	public void log( String str)
 	{
-		super.log(str) ;
-		System.out.println("ConfHelp: " +  str ) ;	
+		super.log("ChatHelp: " +  str) ;	
 	}
 
 } // End of class

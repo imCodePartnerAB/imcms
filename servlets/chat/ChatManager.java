@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
@@ -106,36 +107,7 @@ String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 				log("Redirect till:" + loginPage) ;
 				res.sendRedirect(loginPage) ;
 				return ;
-		/*	if(! loginType.equalsIgnoreCase("VERIFY"))
-			{
-				// Lets store  the standard metavalues in his session object
-				HttpSession session = req.getSession(false) ;
-				if (session != null)
-				{
-					// log("Ok nu sätter vi metavärdena");
-					session.putValue("Chat.meta_id", params.getProperty("META_ID")) ;
-					session.putValue("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-					session.putValue("Chat.cookie_id", params.getProperty("COOKIE_ID")) ;
-					session.putValue("Chat.viewedDiscList", new Properties()) ;
-					log("OK, nu sätter vi viewedDiscList") ;
-				}
-
-				String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
-				log("Redirect till:" + loginPage) ;
-				res.sendRedirect(loginPage) ;
-				return ;
-			}
-
-			log("Ok, användaren har loggat in, förbered honom för chatten" ) ;
-			//  Lets update the users sessionobject with a ok login to the conference
-			//	Send him to the manager with the ability to get in
-			if(!super.prepareUserForChat(req, res, params, userId) )
-			{
-				log("Error in prepareUserFor Chat" ) ;
-			}
-
-
-			return ;*/
+		
 		} // End of View
 
 		// ********* CHANGE ********
@@ -169,12 +141,12 @@ String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 			if( mode == null) mode  = "1" ;
 
 			StringBuffer sql = new StringBuffer() ;
-			sql.append("AdminStatistics1" + " " + metaId + ", '" + frDate + "', '" );
+			sql.append("C_AdminStatistics1" + " " + metaId + ", '" + frDate + "', '" );
 			sql.append(toDate + "', " + mode) ;
-			log("AdminStatistics sql: " + sql.toString()) ;
+			log("C_AdminStatistics sql: " + sql.toString()) ;
 			String[][] arr = ChatManager.getStatistics(ChatPoolServer, sql.toString()) ;
 
-			log("AdminStatistics sql: " + arr.length) ;
+			log("C_AdminStatistics sql: " + arr.length) ;
 		} // End if
 
 
@@ -187,8 +159,8 @@ String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 
 	public void log( String str)
 	{
-		super.log(str) ;
-		System.out.println("ChatManager: " + str ) ;
+		super.log("ChatManager: " + str ) ;
+		//System.out.println("ChatManager: " + str ) ;
 	}
 
 	/**
@@ -199,21 +171,6 @@ String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 	throws ServletException, IOException
 	{
 
-		// RmiConf rmi = new RmiConf(user) ;
-
-		// Lets get serverinformation
-		//String host = req.getHeader("Host") ;
-		//String imcServer = Utility.getDomainPref("userserver",host) ;
-		//String ChatPoolServer = Utility.getDomainPref("conference_server",host) ;
-
-		// Lets fix the date stuff
-		//  if( frDate.equals("0")) frDate  = "1991-01-01 00:00" ;
-		//  if( toDate.equals("0")) toDate  = "2070-01-01 00:00" ;
-
-		// StringBuffer sql = new StringBuffer() ;
-		// sql.append(sprocName + " " + metaId + ", '" + frDate + "', '" );
-		// sql.append(toDate + "', " + mode) ;
-		//log("AdminStatistics sql: " + sql.toString()) ;
 		String[][] arr = RmiConf.execProcedureMulti(confServer,sproc) ;
 		//log("AdminStatistics sql: " + arr.length) ;
 		return arr ;

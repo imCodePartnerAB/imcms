@@ -20,6 +20,7 @@ public class ChatBoard extends ChatBase
 
 
 	String HTML_TEMPLATE ;
+	private final static String HTML_LINE = "Chat_line.html";
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
@@ -40,19 +41,17 @@ public class ChatBoard extends ChatBase
 		// Lets get the standard SESSION parameters and validate them
 		//måste oxå kollas så att de funkar
 		Properties params = this.getSessionParameters(req) ;
-
-		//log("params :"+params);
+		if (params == null)
+		{
+			log("the params was null so return");
+			return;
+		}
+		log("params :"+params);
 
 		if (super.checkParameters(req, res, params) == false)
 		{
-		/*
-			String header = "ChatBoard servlet. " ;
-			String msg = params.toString() ;
-			ChatError err = new ChatError(req,res,header,1212) ;
-		*/
 			log("return i checkparameters");
 			return ;
-		
 		}
 
 		// Lets get the user object
@@ -77,12 +76,13 @@ public class ChatBoard extends ChatBase
 		servletHome += "ChatBoard";
 
 		// Lets get parameters
-		String aMetaId = params.getProperty("META_ID") ;
-		//log("aMetaId = "+aMetaId);
-		//		int metaId = Integer.parseInt( aMetaId );
+		String metaId = params.getProperty("META_ID") ;
+		//log("metaId = "+metaId);
+		//		int metaId = Integer.parseInt( metaId );
 		String aChatId = params.getProperty("CHAT_ID") ;//=id strängen för chatten ????
 		//	log("aChatId = "+aChatId);
 		HttpSession session = req.getSession(false) ;
+		ServletContext myContext = getServletContext();
 
 		//ok lets get the settings
 
@@ -103,15 +103,27 @@ public class ChatBoard extends ChatBase
 				return;
 			}
 
-			//ok lets get the Chat and stuff
-			Chat myChat = (Chat)session.getValue("theChat");
-			//	log("myChat = "+myChat);
 			ChatMember myMember = (ChatMember)session.getValue("theChatMember");
-			//	log("myMember = "+myMember);	
-			ChatGroup myGrupp = (ChatGroup)session.getValue("theRoom");		
-			//	log("myGrupp = "+myGrupp);
-
-
+			if (myMember==null)
+			{
+				log("membern was null so return");
+				return;
+			}
+			Chat myChat = myMember.getMyParent();
+			if (myChat==null)
+			{
+				log("myChat was null so return");
+				return;
+			}
+			ChatGroup myGrupp = myMember.getMyGroup();
+			if (myGrupp==null)
+			{
+				log("myGrupp was null so return");
+				return;
+			}
+			String templetUrl =	super.getExternalTemplateFolder(req);
+			HtmlGenerator generator = new HtmlGenerator(templetUrl,HTML_LINE);
+			
 			//lets get all the settings for this page
 			Hashtable theSettings = (Hashtable) session.getValue("ChatBoardHashTable");
 			if (theSettings == null)
@@ -125,10 +137,13 @@ public class ChatBoard extends ChatBase
 			boolean privateMsg = ((Boolean)theSettings.get("privateMsgBoolean")).booleanValue();
 			boolean autoReload = ((Boolean)theSettings.get("reloadBoolean")).booleanValue();
 			boolean inOut = ((Boolean)theSettings.get("inOutBoolean")).booleanValue();
-			int fontSize = ((Integer)theSettings.get("fontSizeInteger")).intValue();
-			int time = ((Integer)theSettings.get("reloadInteger")).intValue();
+			int fontSizeInt = ((Integer)theSettings.get("fontSizeInteger")).intValue();
+			log("%%%= "+ fontSizeInt);
+			String time = ((Integer)theSettings.get("reloadInteger")).toString();
+			log("reload"+time);
+			String fontSize = Integer.toString(fontSizeInt);
 
-			//log("autoReload = "+autoReload);
+			log("autoReload = "+autoReload);
 			//lets set up the autoreload or not
 			if (autoReload)
 			{
@@ -138,13 +153,15 @@ public class ChatBoard extends ChatBase
 			//lets get the ignore-list
 			//doesnt have one yet
 
-
+			int lastMsgInt = myMember.getLastMsgNr();
 			//let's get all the messages		
 			ListIterator msgIter =  myMember.getMessages();
-
+			Vector dataV = new Vector();
 			//lets fix the html-string containing all messags			
 			while(msgIter.hasNext())
 			{
+				VariableManager vm = new VariableManager();
+				boolean parse = false;
 				ChatMsg tempMsg = (ChatMsg) msgIter.next();
 				//must check if it is a public msg
 				if (tempMsg.getMsgType() == 101)
@@ -153,30 +170,38 @@ public class ChatBoard extends ChatBase
 					{
 						if (tempMsg.getReciever() == myMember.getUserId())//ok it's to mee
 						{	
-							sendMsgString.append("<font color=\"Green\" size=\""+ fontSize+"\">");
+							vm.addProperty("color","Green");
+							vm.addProperty("size",fontSize);
 							if (dateOn)//show dateTime
 							{
-								sendMsgString.append(tempMsg.getDateTime());	
+								vm.addProperty("date",tempMsg.getDateTime());	
 							}
-							sendMsgString.append(" "+tempMsg.getSenderStr());
-							sendMsgString.append(" "+tempMsg.getMsgTypeStr());
-							sendMsgString.append(" "+tempMsg.getRecieverStr());
-							sendMsgString.append(" "+tempMsg.getMessage() );
-							sendMsgString.append("<br>");
-							sendMsgString.append("</font>");
+							else
+							{
+								vm.addProperty("date","");
+							}
+							vm.addProperty("sender",tempMsg.getSenderStr());
+							vm.addProperty("msgType",tempMsg.getMsgTypeStr());
+							vm.addProperty("reciever",tempMsg.getRecieverStr());
+							vm.addProperty("message",tempMsg.getMessage() );
+							parse = true;
 						}else if(tempMsg.getSender()== myMember.getUserId())//it's was I who sent it
 						{
-							sendMsgString.append("<font color=\"Green\" size=\""+ fontSize+"\">");
+							vm.addProperty("color","Blue");
+							vm.addProperty("size",fontSize);
 							if (dateOn)//show dateTime
 							{
-								sendMsgString.append(tempMsg.getDateTime());	
+								vm.addProperty("date",tempMsg.getDateTime());	
 							}
-							sendMsgString.append(" "+tempMsg.getSenderStr());
-							sendMsgString.append(" "+tempMsg.getMsgTypeStr());
-							sendMsgString.append(" "+tempMsg.getRecieverStr());
-							sendMsgString.append(" "+tempMsg.getMessage() );
-							sendMsgString.append("<br>");
-							sendMsgString.append("</font>");						
+							else
+							{
+								vm.addProperty("date","");
+							}
+							vm.addProperty("sender",tempMsg.getSenderStr());
+							vm.addProperty("msgType",tempMsg.getMsgTypeStr());
+							vm.addProperty("reciever",tempMsg.getRecieverStr());
+							vm.addProperty("message",tempMsg.getMessage() );
+							parse = true;						
 						}
 					}//end privateMsg
 				}else
@@ -186,36 +211,54 @@ public class ChatBoard extends ChatBase
 					{
 						if (inOut)//show enter/leave messages
 						{
-							sendMsgString.append("<font color=\"Black\" size=\""+ fontSize+"\">");
+							vm.addProperty("color","Black");
+							vm.addProperty("size",fontSize);
 							if (dateOn)//show dateTime
 							{
-								sendMsgString.append(tempMsg.getDateTime());	
+								vm.addProperty("date",tempMsg.getDateTime());	
 							}
-							sendMsgString.append(" "+tempMsg.getSenderStr());
-							sendMsgString.append(" "+tempMsg.getMsgTypeStr());
-							sendMsgString.append(" "+tempMsg.getRecieverStr());
-							sendMsgString.append(" "+tempMsg.getMessage() );
-							sendMsgString.append("<br>");
-							sendMsgString.append("</font>");
+							else
+							{
+								vm.addProperty("date","");
+							}
+							vm.addProperty("sender",tempMsg.getSenderStr());
+							vm.addProperty("msgType",tempMsg.getMsgTypeStr());
+							vm.addProperty("reciever",tempMsg.getRecieverStr());
+							vm.addProperty("message",tempMsg.getMessage() );
+							parse = true;
 						}					
 					}else
 					{
 						if (true)//(publicMsg)//show public messages
 						{
-							sendMsgString.append("<font color=\"Black\" size=\""+ fontSize+"\">");
+							vm.addProperty("color","Black");
+							vm.addProperty("size",fontSize);
 							if (dateOn)//show dateTime
 							{
-								sendMsgString.append(tempMsg.getDateTime());	
+								vm.addProperty("date",tempMsg.getDateTime());	
 							}
-							sendMsgString.append(" "+tempMsg.getSenderStr());
-							sendMsgString.append(" "+tempMsg.getMsgTypeStr());
-							sendMsgString.append(" "+tempMsg.getRecieverStr());
-							sendMsgString.append(" "+tempMsg.getMessage() );
-							sendMsgString.append("<br>");
-							sendMsgString.append("</font>");
+							else
+							{
+								vm.addProperty("date","");
+							}
+							vm.addProperty("sender",tempMsg.getSenderStr());
+							vm.addProperty("msgType",tempMsg.getMsgTypeStr());
+							vm.addProperty("reciever",tempMsg.getRecieverStr());
+							vm.addProperty("message",tempMsg.getMessage() );
+							parse = true;
 						}
 					}				
 				}//end it was a public message
+				//lets parse this line
+				if (parse)
+				{
+					sendMsgString.append(generator.createHtmlString(vm, req)+"<br>\n");
+					if (lastMsgInt == tempMsg.getIdNumber())
+					{
+						sendMsgString.append("<hr>\n");
+					}
+				}
+				
 			}//end while loop
 		
 		}//end if (req.getParameter("ROOM_ID") != null )	
@@ -234,7 +277,19 @@ public class ChatBoard extends ChatBase
 
 	} //***  end DoGet  *****  end doGet  *****  end doGet *****  end doGet ***
 
-
+	protected Vector createTags()
+	{
+		Vector tags = new Vector();
+		tags.add("#color#");
+		tags.add("#date#");
+		tags.add("#sender#");
+		tags.add("#msgType#");
+		tags.add("#reciever#");
+		tags.add("#message#");
+		return tags;		
+	}
+	
+	
 	/**
 	Collects the standard parameters from the SESSION object.
 	**/
@@ -315,8 +370,8 @@ public class ChatBoard extends ChatBase
 	**/
 	public void log( String str)
 	{
-		super.log(str) ;
-		System.out.println("ChatBoard: " + str ) ;
+		super.log("ChatBoard: " + str) ;
+		//System.out.println("ChatBoard: " + str ) ;
 	}
 
 

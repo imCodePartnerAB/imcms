@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -268,7 +269,7 @@ public class ChatAdmin extends Administrator{
 			{
 
 				String metaId = listOfChats[i][0];
-				String sprocetForum = "AdminStatistics1 " + metaId + ", '" + startDate + "', '" + endDate + "', " + listMode;
+				String sprocetForum = "C_AdminStatistics1 " + metaId + ", '" + startDate + "', '" + endDate + "', " + listMode;
 				String[][] queryResultForum = ChatManager.getStatistics( ChatPoolServer, sprocetForum );
 
 				//lets create forumList for this Chaterence
@@ -278,7 +279,7 @@ public class ChatAdmin extends Administrator{
 				{
 
 					String forumId = queryResultForum[j][0];
-					String sprocetDebate = "AdminStatistics2 " + metaId + ", " + forumId + ", '" + startDate + "', '" + endDate + "', " + listMode;
+					String sprocetDebate = "C_AdminStatistics2 " + metaId + ", " + forumId + ", '" + startDate + "', '" + endDate + "', " + listMode;
 					String[][] queryResultDebate = ChatManager.getStatistics( ChatPoolServer, sprocetDebate );
 
 					// lets create debatelist for this forum
@@ -306,7 +307,7 @@ public class ChatAdmin extends Administrator{
 
 			//Lets generate the html page
 			VariableManager vm = new VariableManager();
-			vm.addProperty( "CONFERENCE_LIST", ChaterencesListTag.toString() );
+			vm.addProperty( "CHAT_LIST", ChaterencesListTag.toString() );
 
 			this.sendHtml( request, response, vm, this.TEMPLATE_LIST );
 

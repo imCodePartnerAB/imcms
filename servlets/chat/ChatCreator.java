@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.*;
 import java.lang.*;
@@ -6,6 +7,13 @@ import javax.servlet.http.*;
 import imcode.external.diverse.*;
 import imcode.external.chat.*;
 import imcode.util.* ;
+
+
+//obs här ska det byggas om rejält
+//har dock haft problem med att jag får olika servletContext
+//vilket innebär att jag tappar chatten och användar sessionen därför
+//använder jag jsdk2.0 så långt det går, i väntan på att jag eller någon löst 
+//servletContext problemet
 
 public class ChatCreator extends ChatBase
 {
@@ -19,24 +27,40 @@ public class ChatCreator extends ChatBase
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-
+		log("start doPost");
 		// Lets validate the session and get the session
-		if (super.checkSession(req,res) == false)	return ;
+		if (super.checkSession(req,res) == false)
+		{
+			log("checkSession == false");
+			return ;
+		}
 		HttpSession session = req.getSession(false);
 
 
 		// Lets get the standard parameters and validate them
 		Properties params = super.getSessionParameters(req) ;
-		if (super.checkParameters(req, res, params) == false) return ;
+		if (super.checkParameters(req, res, params) == false)
+		{
+			log("getSessionParameters==false");
+			return ;
+		}
 
 		// Lets get the new chat parameters
 		Properties chatParams = super.getNewChatParameters(req) ;
-		if (super.checkParameters(req, res, chatParams) == false) return ;
+		if (super.checkParameters(req, res, chatParams) == false) 
+		{
+			log("checkParameters==false");
+			return ;
+		}
 
 		// Lets get an user object
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
-		if ( !isUserAuthorized( req, res, user ) ) return;
+		if ( !isUserAuthorized( req, res, user ) ) 
+		{
+			log("isUserAuthorized==false");
+			return ;
+		}
 
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
@@ -56,59 +80,34 @@ public class ChatCreator extends ChatBase
 		}
 
 	
-	//	String chatName = (String)session.getValue("chatName");
-	//	if(chatName == null) chatName = "";
-
 		// ********* If a NEW CHAT is created  ********
 		if(action.equalsIgnoreCase("ADD_CHAT"))
 		{
-			log("OK, nu skapar vi Chatten") ;
-
-			//******************************** Get all New Chatparameters********************************
+			log("action = ADD_CHAT") ;
+		
+			//*************** Get all New Chatparameters ********************
 
 			//get the msgTypes
-			Vector msgTypesV = new Vector();
-
-			if( (Vector)session.getValue("msgTypesV")==null )
-			{
-				String[] msgTypes = rmi.execSqlProcedure(chatPoolServer, "GetBaseMsgTypes");
-				String[] msgTypesId = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypesId");
-
-				for(int i =0;i<msgTypes.length;i++)
-				{
-					log("Stringmsgtype: " + msgTypes[i] );
-					msgTypesV.add(msgTypesId[i]);
-					msgTypesV.add(msgTypes[i]);
-				}
-
+			Vector msgTypesV ;
+			if( (Vector)session.getValue("msgTypesV")==null ){
+				String[][] msgTypes = rmi.execProcedureMulti(chatPoolServer, "C_GetTheMsgTypesBase");
+				msgTypesV = super.convert2Vector(msgTypes);
 				session.putValue("msgTypesV",msgTypesV);
-
 			}
-
 			msgTypesV = (Vector)session.getValue("msgTypesV");
 
 			//get the authorization types 
-			Vector autTypeV = new Vector();
-
-			if( (Vector)session.getValue("autTypesV")==null )
-			{
-				String[] autTypes = rmi.execSqlProcedure(chatPoolServer, "GetAuthorizationTypes");
-
-				for(int i =0;i<autTypes.length;i++)
-				{
-					log("Stringauttype: " + autTypes[i] );
-					autTypeV.add(String.valueOf(i+1));
-					autTypeV.add(autTypes[i]);
-				}
-
+			Vector autTypeV ;
+			if( (Vector)session.getValue("autTypesV")==null ){
+				String[][] autTypes = rmi.execProcedureMulti(chatPoolServer, "C_GetAuthorizationTypes");
+				autTypeV = super.convert2Vector(autTypes);
 				session.putValue("autTypesV",autTypeV);
 			}
-			
+			autTypeV = (Vector)session.getValue("autTypesV");
+	   		
 			//lets get the selected autotypes
 			String[] selAuto = (req.getParameterValues("authorized")==null) ? new String[0] : (req.getParameterValues("authorized"));
-			Vector selAutoV = super.convert2Vector(selAuto);
-
-			autTypeV = (Vector)session.getValue("autTypesV");
+			Vector selAutoV = super.convert2Vector(selAuto);			
 
 			//get existing rooms
 			Vector roomsV = ( (Vector)session.getValue("roomList")==null ) ? new Vector() : (Vector)session.getValue("roomList");
@@ -117,26 +116,26 @@ public class ChatCreator extends ChatBase
 			Vector newMsgTypeV = ( (Vector)session.getValue("newMsgTypes")==null ) ? new Vector() : (Vector)session.getValue("newMsgTypes");
 
 
-			//****************If newRoom or newMsgTypebutton is pressed:*********************************
-
+			//****************If newRoom or newMsgTypebutton is pressed:************************
+		
 			if ( req.getParameter("addRoom") != null || req.getParameter("addMsgType") != null)
 			{
-
+				log("addRoom or addMsgType" );
+			
 				VariableManager vm = new VariableManager() ;
 				Html htm = new  Html();
 
 				//get new parameters
+				if ( req.getParameter("chatRoom")==null ){
+					chatParams.setProperty("chatRoom",""); 
+				}else{
+					chatParams.setProperty("chatRoom",req.getParameter("chatRoom").trim());
+				}
 
-				if ( req.getParameter("chatRoom")==null )
-				{chatParams.setProperty("chatRoom",""); 
-				}
-				else{chatParams.setProperty("chatRoom",req.getParameter("chatRoom").trim());
-				}
-
-				if ( req.getParameter("msgType")==null )
-				{chatParams.setProperty("msgType"," ") ;
-				}
-				else{chatParams.setProperty("msgType",req.getParameter("msgType").trim());
+				if ( req.getParameter("msgType")==null ){
+					chatParams.setProperty("msgType"," ") ;
+				}else{
+					chatParams.setProperty("msgType",req.getParameter("msgType").trim());
 				}
 
 				String theRoom = chatParams.getProperty("chatRoom");
@@ -148,45 +147,37 @@ public class ChatCreator extends ChatBase
 				{
 					String paramName = (String)chatEnum.nextElement();
 
-
 					//Add new Room
 					if ( req.getParameter("addRoom") != null && paramName.equals("chatRoom") )
 					{
 						//add new room to roomlist
 						theRoom = chatParams.getProperty(paramName) ;
-						log("Rum: " + theRoom );
+						//log("Rum: " + theRoom );
 
 						roomsV.add(" ");
 						roomsV.add( theRoom );
 
 						//add room to session
-						session.putValue("roomList",roomsV);					
-
-
+						session.putValue("roomList",roomsV);
 					}
 					//Add new MsgType
 					else if ( req.getParameter("addMsgType") != null && paramName.equals("msgType") )
 					{
 						//add new msgType to msgTypelist
 						theType = chatParams.getProperty(paramName);
-						log("MsgTyp: " +  theType);
+						//log("MsgTyp: " +  theType);
 
 						msgTypesV.add(" ");
 						msgTypesV.add(theType);
-
-
 						newMsgTypeV.add( theType );
 
 						//add type to session
 						session.putValue("newMsgTypes",newMsgTypeV);
-
 						session.putValue("msgTypesV",msgTypesV);
-
-
 					}
-
-				}
-
+				}//end while
+				
+				//ok lets set up the page
 				String updateTime = chatParams.getProperty("updateTime");
 				log("Updatetime: 1 " + updateTime);
 				vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
@@ -194,9 +185,6 @@ public class ChatCreator extends ChatBase
 				vm.addProperty("roomList", htm.createHtmlCode("ID_OPTION",theRoom, roomsV) ) ;
 				vm.addProperty("msgType"," ");
 				vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION",theType, msgTypesV) ) ;
-				////FIX selV ska helst bort
-				//Vector selV = new Vector();
-				//selV.add("oregistrerad");
 				vm.addProperty("authorized", htm.createHtmlCode("ID_OPTION",selAutoV, autTypeV) ) ;
 				vm.addProperty("chatName",chatParams.getProperty("chatName")  );
 				vm.addProperty("updateTime",chatParams.getProperty("updateTime") );
@@ -208,16 +196,18 @@ public class ChatCreator extends ChatBase
 				vm.addProperty("dateTime", htm.createRadioButton("dateTime",buttonValues,chatParams.getProperty("dateTime") ) );
 				vm.addProperty("font", htm.createRadioButton("font",buttonValues,chatParams.getProperty("font") ) );
 				sendHtml(req,res,vm, HTML_TEMPLATE) ;
+				
+			
+				log("end addRoom or addMsgType");
 				return ;
-
-			}
-
+			}//end adding new msgTypes or rooms
+		   
 			//get the new metaId
 			String metaId = params.getProperty("META_ID") ;
 			log("metaid: "+ metaId);
 
 			//check that its really a new metaId
-			String foundMetaId = rmi.execSqlProcedureStr(chatPoolServer, "MetaIdExists " + metaId) ;
+			String foundMetaId = rmi.execSqlProcedureStr(chatPoolServer, "C_MetaIdExists " + metaId) ;
 
 			if( !foundMetaId.equals("1") )
 			{
@@ -228,76 +218,51 @@ public class ChatCreator extends ChatBase
 				return ;
 			}
 			
-
+			
 			//******************* save to db **********************************
 
 			// Lets add a new Chat to DB
 			String chatName = chatParams.getProperty("chatName");
-			log("chatnameCheck: " + chatName);
-
+			log("chatName: " + chatName);
+		   
 			String permission = chatParams.getProperty("permission");
-
-			String sqlQ = "AddNewChat " + metaId + ",'" + chatName + "'," + permission;
-			log("AddNewChat sql:" + sqlQ ) ;
+			log("permission: "+permission);
+		   
+			String sqlQ = "C_AddNewChat " + metaId + ",'" + chatName + "'," + permission;
+			log("C_AddNewChat sql:" + sqlQ ) ;
 			rmi.execSqlUpdateProcedure(chatPoolServer, sqlQ) ;
-
-			Vector theRooms = new Vector();
-
-			// Lets add the new rooms to the db
+		   
+			
+			//lets save the rooms and assosiate them with this chat
 			for (int i=0;i<roomsV.size();i+=2)
 			{
-				//Lets get the highest roomId
-				String roomId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxRoomId");
-				roomsV.set(i,roomId);
-
-				String newRsql = "AddNewRoom " +  " '" +roomId + "', " + roomsV.get(i+1);
-				log("AddNewRoom sql:" + newRsql ) ;
-				rmi.execSqlUpdateProcedure(chatPoolServer, newRsql) ;
-
-
-				//add room to connection db
-				rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewChatRoom " + " '"+ metaId + "' , '" + roomId + "' ") ;
-
-				log("RoomsV: " + roomsV.get(i+1) +" RoomId: " + roomsV.get(i));
-
-				ChatGroup tempGroup = new ChatGroup( Integer.parseInt( (String)roomsV.get(i)  ) , (String)roomsV.get(i+1) );
-				theRooms.add(tempGroup);
-
+				String newRsql = "C_AddNewChatRoom "  +metaId + ", '" + roomsV.get(i+1)+"'";
+				log("C_AddNewChatRoom sql:" + newRsql ) ;
+				rmi.execSqlUpdateProcedure(chatPoolServer, newRsql) ;			
 			}
-
+			
 			//lets connect the standard msgTypes with the chat		
-			String[] tempTypes = rmi.execSqlProcedure(chatPoolServer, "GetBaseMsgTypes");
-
+			String[] tempTypes = rmi.execSqlProcedure(chatPoolServer, "C_GetBaseMsgTypes");
 			for(int i=0;i<tempTypes.length;i++)
 			{
-				String tempTypeId = rmi.execSqlProcedureStr(chatPoolServer, "GetMsgTypeId " + "'"+ tempTypes[i] +"'");
-				rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewChatMsg " + tempTypeId + " , " + metaId ) ;
+				String tempTypeId = rmi.execSqlProcedureStr(chatPoolServer, "C_GetMsgTypeId " + "'"+ tempTypes[i] +"'");
+				rmi.execSqlUpdateProcedure(chatPoolServer,"C_AddNewChatMsg " + tempTypeId + " , " + metaId ) ;
 			}
-
-			// Lets add the new msgTypes to the db
+			
+			// Lets add the new msgTypes to the db /ugly but it works
 			for (int i=0;i<newMsgTypeV.size();i++)
 			{
 				//save newMsgTypes to db
-
 				//Lets get the highest msgId
-				String msgTypeId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxMsgTypeId");
-
-				String newMsql = "AddNewMsgType " +  " '" + msgTypeId + "', " + newMsgTypeV.get(i);
+				//String msgTypeId = rmi.execSqlProcedureStr(chatPoolServer, "C_GetMaxMsgTypeId");
+				
+				String newMsql = "C_AddMessageType " +  " '" + metaId + "', " + newMsgTypeV.get(i);
 				log("AddNewMsgType sql:" + newMsql ) ;
 				rmi.execSqlUpdateProcedure(chatPoolServer,newMsql);
-
-
-				//add newTypes to msgTypesV
-				msgTypesV.add( msgTypeId );
-				msgTypesV.add( newMsgTypeV.get(i) );
-
-				//add msgType to connection db
-				rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewChatMsg " + msgTypeId + " , " + metaId ) ;
-
 			}
 			
 			//	Vector valuesV = new Vector();
-			String valuesS = "AddChatParams ";
+			String valuesS = "C_AddChatParams ";
 
 			valuesS = valuesS + metaId +"," 
 				+ chatParams.getProperty("updateTime")+"," 
@@ -319,24 +284,20 @@ public class ChatCreator extends ChatBase
 			{
 				selAutoV.addElement(new String("1"));
 			}
-//################
 	
 			for(int i=0; i<selAutoV.size(); i++)
 			{
-				String newAutoSql = "ChatAutoTypes " +  " '" + selAutoV.elementAt(i) + "', " + metaId;
+				String newAutoSql = "C_ChatAutoTypes " +  " '" + selAutoV.elementAt(i) + "', " + metaId;
 				log("ChatAutoTypes sql:" + newAutoSql ) ;
 				rmi.execSqlUpdateProcedure(chatPoolServer,newAutoSql);
 			}
 			
-			
-//################			
-
-			//put the new chat in the session
+			//put the parameters needed to create a chat in the session
 			session.putValue("chatId",metaId);
-			session.putValue("roomList",roomsV);
-			session.putValue("msgTypes",msgTypesV);
-			session.putValue("chatParams",chatParams);			
-
+			//session.putValue("roomList",roomsV);
+			//session.putValue("msgTypes",msgTypesV);
+			//session.putValue("chatParams",chatParams);			
+			
 			Enumeration e = chatParams.propertyNames();
 			while (e.hasMoreElements())
 			{
@@ -344,23 +305,32 @@ public class ChatCreator extends ChatBase
 				log( "testParams: " + temp + " Value: " + chatParams.getProperty( temp) );
 			} 
 
-
-			Chat theChat = new Chat( Integer.parseInt(metaId), theRooms, msgTypesV, chatParams );
-
-			session.putValue("theChat", theChat);
-
-			session.getValue("theChat");
-			log("chat: " + theChat);
-
-			// Ok, we're done creating the conference. Lets tell imCMS system to show this child.
+			//ok lets create the chat object and its rooms
+			String[] types = rmi.execSqlProcedure(chatPoolServer, "C_GetChatAutoTypes '"+ metaId  + "' ");
+			
+			Chat theChat = new Chat( Integer.parseInt(metaId), msgTypesV, chatParams, types );
+			//lets get the rooms data from db
+			String[][] roomIdNr = rmi.execProcedureMulti(chatPoolServer, "C_GetRooms " + metaId) ;
+			//log("C_GetRooms " + metaId);
+			for(int i=0; i<roomIdNr.length;i++)
+			{
+				log("#########"+roomIdNr[i][0]);
+				theChat.createNewChatGroup(Integer.parseInt(roomIdNr[i][0]), roomIdNr[i][1]);
+			}
+			
+			
+			ServletContext myContext = getServletContext();
+			myContext.setAttribute("theChat"+metaId, theChat);
+			
+			// Ok, we're done creating the chat. Lets tell imCMS system to show this child.
 			rmi.activateChild(imcServer, metaId) ;
 
 			// Ok, we're done adding the chat, Lets log in to it!
 			String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 			res.sendRedirect(loginPage) ;
-
-			return ;
-
+			
+			log("end ADD_CHAT");
+			return ;			
 		}
 
 		/****************************************************************************************************
@@ -369,13 +339,12 @@ public class ChatCreator extends ChatBase
 
 		if (action.equalsIgnoreCase("admin_chat"))
 		{
-			//öppna administrationssida
-			log("open adminpage");
+			log("*** start admin_chat ***");
 
 			VariableManager vm = new VariableManager() ;
 			Html htm = new  Html();
 
-			//lägg in lämpliga parametrar
+//FIX ugly		//lets get the chatMember
 			//check which chat we have
 			String chatName = req.getParameter("chatName");
 			if(chatName==null)chatName ="";
@@ -384,13 +353,22 @@ public class ChatCreator extends ChatBase
 
 			String metaId = (String)session.getValue("Chat.meta_id");
 			log("MetaId: " + metaId);
-
-			Chat theChat = (Chat)session.getValue("theChat");
-			log("Chat: " + theChat);
-
+			ChatMember myMember = (ChatMember) session.getValue("theChatMember");
+			if (myMember == null)
+			{
+				log("chatMembern was null so return");
+				return;
+			}
+			Chat myChat = myMember.getMyParent();
+			if (myChat == null)
+			{
+				log("theChat was null so return");
+				return;
+			}
+//FIX end
 			//************** add new room *************************
 			//get chatrooms
-			Enumeration groupE = theChat.getAllChatGroups();
+			Enumeration groupE = myChat.getAllChatGroups();
 			Vector groupsV = new Vector();
 			while (groupE.hasMoreElements())
 			{
@@ -405,29 +383,30 @@ public class ChatCreator extends ChatBase
 
 			if ( req.getParameter("addRoom") != null )
 			{
+				log("*** start addRoom ***");
+				//lets get the room to add
 				String newRoom = req.getParameter("chatRoom");
-				//hämta redan tillagda rum
-
 				addGroups.add(newRoom);
 				addGroups.add(newRoom);
-
+				
 				session.putValue("NewRooms",addGroups);
+				log("*** end addRoom ***");
 			}
 
 			//********* delete room *****************
 			if ( req.getParameter("removeRoom") != null )
 			{
+				log("*** start removeRoom ***");
 				//vilket rum ska tas bort
 				String delRoom = req.getParameter("roomList");
 				log("roomList: " +  delRoom);
 
 				//deleta rummet i listan
-
 				delGroups.add(delRoom);
 				delGroups.add(delRoom);
 
 				session.putValue("DelRooms",delGroups);
-
+				log("*** end removeRoom ***");
 			}
 
 			//lägg ihop rummen
@@ -443,13 +422,13 @@ public class ChatCreator extends ChatBase
 
 			//************ add new msgTypes ********************
 
-			Vector theTypes = theChat.getMsgTypes();
+			Vector theTypes = myChat.getMsgTypes();
 
 			Vector msgTypeV	= new Vector();
-			for(int i = 1; i<theTypes.size();i+=2)
+			for(int i = 0; i<theTypes.size();i+=2)
 			{
-				msgTypeV.add(theTypes.get(i));
-				msgTypeV.add(theTypes.get(i));				
+				msgTypeV.add(theTypes.get(i+1));
+				msgTypeV.add(theTypes.get(i+1));				
 			}
 
 			//hämta redan tillagda typer
@@ -487,7 +466,7 @@ public class ChatCreator extends ChatBase
 
 			}
 
-			//lägg ihop rummen
+			//lägg ihop msgTyperna
 			for(int i=0;i<addTypes.size();i++)
 			{
 				msgTypeV.add(addTypes.get(i));
@@ -522,97 +501,141 @@ public class ChatCreator extends ChatBase
 			//###################################################################			
 			if (req.getParameter("okChat") != null )
 			{
+				log("*** start okChat ***");
 				//spara värden till databas 
 
-				//rum
+				
 				//ta bort alla rum tillhörande den här chatten
-				String delete = "DeleteConnections " + metaId;
-				rmi.execSqlUpdateProcedure(chatPoolServer , delete );
+				//String delete = "C_DeleteConnections " + metaId;
+				//rmi.execSqlUpdateProcedure(chatPoolServer , delete );
 
-				//lägga in alla nya
-				//hämta alla befintliga rum
-				String[] allRooms = rmi.execSqlProcedure(chatPoolServer, "GetAllRooms ");
-				//gå igenom alla, jämför med roomsV och lägg in de som inte finns
-
-				for(int j=1;j<groupsV.size();j+=2)
+				//lets get all current connected rooms 
+				Vector currGroupsV 		= (Vector)session.getValue("chat_V_room");
+				Vector currMsgTypesV 	= (Vector)session.getValue("chat_V_msgTypes");
+				if (currGroupsV == null)
 				{
-					String tempId;
-					boolean found = false;
-
-					for(int i=0;i<allRooms.length;i++)
+					//fixa så att de hämtas från db #### OBS ####
+				}
+				if (currMsgTypesV == null)
+				{
+					//fixa så att de hämtas från db #### OBS ####
+					//eller från chatten direct kanske är smartare
+				}
+				
+				//now we have to see if we need to do anything to the db
+				//lets start whit the Groups
+				for(int i=0;i<groupsV.size();i+=2)
+				{
+					boolean found=false;
+					String name 	= (String)	groupsV.get(i+1);
+					for(int e=0;e< currGroupsV.size();e+=2)
 					{
-						if ( ((String)allRooms[i]).equalsIgnoreCase( (String)groupsV.get(j) ) )
+						String name2 = (String) currGroupsV.get(e+1);
+						if (name.equals(name2))
 						{
 							found = true;
+							break;
 						}
 					}
-
-					if (!found)
+					if ( !found )//then there is a new one lets save it to db
 					{
-						//add room
-						tempId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxRoomId");
-
-						String newRsql = "AddNewRoom "  + tempId + ", " + groupsV.get(j);
-						log("AddNewRoom sql:" + newRsql ) ;
-
-
-						rmi.execSqlUpdateProcedure(chatPoolServer, newRsql) ;
-					}  
-
-					String roomId = rmi.execSqlProcedureStr( chatPoolServer,"GetRoomId " + (String)groupsV.get(j) );
-					log("roomId: " + roomId);
-					log("AddNewChatRoom " + " '"+ metaId + "' , '" + roomId + "' ");
-					rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewChatRoom " + " '"+ metaId + "' , '" + roomId + "' ") ;
-					groupsV.add(j-1,roomId);
-				}//end for
-
-				//msgTypes
-				//lägga in alla nya
-				//hämta alla befintliga rum
-				String[] allTypes = rmi.execSqlProcedure(chatPoolServer, "GetAllTypes ");
-				//gå igenom alla, jämför med roomsV och lägg in de som inte finns
-				for(int j=1;j<msgTypeV.size();j+=2)
+						rmi.execSqlUpdateProcedure(chatPoolServer, "C_AddNewChatRoom '"+metaId+"','"+name+"'");
+					}					
+				}
+				session.removeValue("NewRooms");
+				//lets see if there is any to delete
+				Vector dellV = (Vector) session.getValue("DelRooms");
+				session.removeValue("DelRooms");
+				if (dellV != null)//ok we have some to delete
 				{
-					boolean found = false;
-					String tempId;
-
-					for(int i=0;i<allTypes.length;i++)
+					for(int i=0; i<dellV.size();i+=2)
 					{
-						if ( ((String)allTypes[i]).equalsIgnoreCase( (String)msgTypeV.get(j) ) )
+						boolean found = false;
+						String name 	= (String)	dellV.get(i+1);
+						log("name1= "+name);
+						for(int e=0;e<currGroupsV.size();e+=2)
+						{
+							String name2 = (String)currGroupsV.get(e+1);
+							log("name2 = "+name2);
+							if (name.equals(name2))//ok lets leave this one
+							{
+								found = true;
+								break;
+							}
+						}
+						if (found)//lets delete this on
+						{
+							String roomId = rmi.execSqlProcedureStr(chatPoolServer, "C_GetTheRoomId '"+metaId+"','"+name+"'");
+							rmi.execSqlUpdateProcedure(chatPoolServer, "C_DeleteChatRoom '"+metaId+"','"+roomId+"'");
+						}
+					}
+				}
+
+				//now lets se how it is whith the messageTypes
+				for(int i=0;i<msgTypeV.size();i+=2)
+				{
+					boolean found=false;
+					String name 	= (String)	msgTypeV.get(i+1);
+					for(int e=0;e< currMsgTypesV.size();e+=2)
+					{
+						String name2 = (String) currMsgTypesV.get(e+1);
+						if (name.equals(name2))
 						{
 							found = true;
+							break;
 						}
 					}
-
-					if (!found)
+					if ( !found )//then there is a new one lets save it to db
 					{
-						//add room
-						tempId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxMsgTypeId ");
-
-						String newRsql = "AddNewMsgType " +  " '" +tempId + "', " + msgTypeV.get(j);
-						log("AddNewMsgType sql:" + newRsql ) ;
-						rmi.execSqlUpdateProcedure(chatPoolServer, newRsql) ;
-					} 
-
-					String typeId = rmi.execSqlProcedureStr( chatPoolServer,"GetMsgTypeId " + (String)msgTypeV.get(j) );
-					rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewChatMsg " + typeId + " , " + metaId ) ;
-
-				}			
+						log("add new msgtype stringen C_AddMessageType '"+metaId+"','"+name+"'");
+						rmi.execSqlUpdateProcedure(chatPoolServer, "C_AddMessageType '"+metaId+"','"+name+"'");
+					}					
+				}
+				
+				session.removeValue("NewTypes");
+				//lets see if there is any to delete
+				Vector dellMsgV = (Vector) session.getValue("DelTypes");
+				session.removeValue("DelTypes");
+				if (dellMsgV != null)//ok we have some to delete
+				{
+					for(int i=0; i<dellMsgV.size();i+=2)
+					{
+						boolean found = false;
+						String name 	= (String)	dellMsgV.get(i+1);
+						log("name1= "+name);
+						for(int e=0;e<currMsgTypesV.size();e+=2)
+						{
+							String name2 = (String)currMsgTypesV.get(e+1);
+							log("name2 = "+name2);
+							if (name.equals(name2))//ok lets leave this one
+							{
+								found = true;
+								break;
+							}
+						}
+						if (found)//lets delete this on
+						{
+							String msgId = rmi.execSqlProcedureStr(chatPoolServer, "C_GetMessageId "+name);
+							rmi.execSqlUpdateProcedure(chatPoolServer, "C_DeleteMessage '"+metaId+"','"+msgId+"'");
+						}
+					}
+				}
 
 				//uppdatera databasen med chatP
-				String update = "UpdateChatParameters " + metaId;
-				update=update + chatP.getProperty("updateTime");
-				update=update + chatP.getProperty("reload");
-				update=update + chatP.getProperty("inOut");
-				update=update + chatP.getProperty("privat");
-				update=update + chatP.getProperty("publik");
-				update=update + chatP.getProperty("dateTime");
-				update=update + chatP.getProperty("font");
-
-				rmi.execSqlUpdateProcedure(chatPoolServer, update );
+				StringBuffer update = new StringBuffer("C_UpdateChatParams '" + metaId);
+				update.append("','"+ chatP.getProperty("updateTime"));
+				update.append("','"+ chatP.getProperty("reload"));
+				update.append("','"+ chatP.getProperty("inOut"));
+				update.append("','"+ chatP.getProperty("privat"));
+				update.append("','"+ chatP.getProperty("publik"));
+				update.append("','"+ chatP.getProperty("dateTime"));
+				update.append("','"+ chatP.getProperty("font")+"'");
+				
+				log(update.toString());
+				rmi.execSqlUpdateProcedure(chatPoolServer, update.toString() );
 
 				//lets get rid off old authorizations if there is any
-				String delAutho = "DeleteAuthorizations " + metaId;
+				String delAutho = "C_DeleteAuthorizations " + metaId;
 				rmi.execSqlUpdateProcedure(chatPoolServer , delAutho );			
 	   
 				//ok lets save the new ones to db
@@ -624,45 +647,86 @@ public class ChatCreator extends ChatBase
 				}	
 				for(int i=0; i<selAutoV.size(); i++)
 				{
-					String newAutoSql = "ChatAutoTypes " +  " '" + selAutoV.elementAt(i) + "', " + metaId;
-					log("ChatAutoTypes sql:" + newAutoSql ) ;
+					String newAutoSql = "C_ChatAutoTypes " +  " '" + selAutoV.elementAt(i) + "', " + metaId;
+					log("C_ChatAutoTypes sql:" + newAutoSql ) ;
 					rmi.execSqlUpdateProcedure(chatPoolServer,newAutoSql);
 				}
-			
-			
-		
-
-				
-				//lägg in chatten i sessionen
-				Vector groups = new Vector();
-				for(int i= 0; i < groupsV.size()-1;i+=2)
+							
+				//ok lets set up the chat whith the new settings	
+				String[] types = rmi.execSqlProcedure(chatPoolServer, "C_GetChatAutoTypes '"+ metaId  + "' ");
+				myChat.setAuthorizations(types);
+				//Chat theChat = new Chat( Integer.parseInt(metaId), msgTypesV, chatParams, types );
+				//lets get the rooms data from db
+				String[][] roomIdNr = rmi.execProcedureMulti(chatPoolServer, "C_GetRooms " + metaId) ;
+				//ok lets see if there is any rooms we have to get rid of
+				Enumeration enum = myChat.getAllChatGroups();
+				while (enum.hasMoreElements())
 				{
-					log("grrrr2 " + groupsV.get(i));
-					String value = (String)groupsV.get(i+1);
-					String id = (String)groupsV.get(i);
-					Integer temp = new Integer(id);
-					int idT = temp.intValue();	
-					log("id: " + id + " 3 Value: " + value);
-					ChatGroup tempGroup= new ChatGroup( idT,value );
-					groups.add(tempGroup);
+					ChatGroup temp = (ChatGroup) enum.nextElement();
+					boolean found=false;
+					int x=0;
+					while (!found && x<roomIdNr.length)
+					{
+						if (temp.getGroupId() == Integer.parseInt(roomIdNr[x][0]))
+						{
+							temp.setChatGroupName(roomIdNr[x][1]);//just incase
+							found = true;
+						}
+						x++;
+					}
+					if (!found)
+					{//lets remove it
+						myChat.removeChatGroup(temp.getGroupId());
+						temp = null;//ugly if there is any members in it they will have a null pointer i think
+					}
+					
 				}
+				//ok lets add new groups if there is any lets get the existing groups 
+				enum = myChat.getAllChatGroups();
+				for(int i=0; i<roomIdNr.length;i++)//ugly but it works
+				{
+					boolean found=false;
+					while (enum.hasMoreElements() && !found)
+					{
+						ChatGroup temp = (ChatGroup) enum.nextElement();
+						if (temp.getGroupId() == Integer.parseInt(roomIdNr[i][0]))
+						{
+							found = true;
+						}
+					}
+					if (!found)
+					{
+						myChat.createNewChatGroup(Integer.parseInt(roomIdNr[i][0]), roomIdNr[i][1]);
+					}
+				}				
+				//ok lets get the propertys from db
+				String getParamsSql = "C_GetChatParameters "+metaId;
+				String[] param = rmi.execSqlProcedure(chatPoolServer, "C_GetChatParameters '"+ metaId  + "' ");	
+						
+				chatParams = super.getChatParams(param);
+				String[] chatData = rmi.execSqlProcedure(chatPoolServer, "C_GetChatNameAndPerm '"+ metaId  + "' ");	
+				chatParams.setProperty("chatName",chatData[0]);
+				chatParams.setProperty("permission",chatData[1]);
 				
-				super.removeChat(Integer.parseInt(metaId));
-				Chat newChat = new Chat( Integer.parseInt(metaId), groups, msgTypeV, chatP );
-				super.addChat(Integer.parseInt(metaId), newChat);
+				myChat.setParams(chatParams);				
+				String sqlQ = "C_GetTheMsgTypes " + metaId;
+				String[][] msgTypes = rmi.execProcedureMulti(chatPoolServer,sqlQ);
+				Vector theMsgTypesV = super.convert2Vector(msgTypes);
+				myChat.setMsgTypes(theMsgTypesV);
 				
-				session.putValue("theChat", newChat);
-
+				myMember.setProperties(myChat.getChatParameters());
+				
 				//redirect to chatViewer
 				String url = MetaInfo.getServletPath(req) ;
 				url += "ChatViewer" ;
+				log("*** end okChat ***");
 				res.sendRedirect(url) ;
 
 				return;
 			}//end okChat
-
+			
+			log("*** end admin_chat ***");
 			return ;
-
 		}
 
 
@@ -673,11 +737,11 @@ public class ChatCreator extends ChatBase
 	The GET method creates the html page when this side has been
 	redirected from somewhere else.
 	**/
-
+	//laddar admin sida osv
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-
+		log("start doGet");
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 		HttpSession session = req.getSession(false);
@@ -717,48 +781,26 @@ public class ChatCreator extends ChatBase
 		// ********* Create NEW Chat *********************************************************
 		if(action.equalsIgnoreCase("NEW"))
 		{
-			//******************* Get Chat Standard Parameters ****************
-
-			//FIXget the standard msgTypes in the db
-			String headline = (String)session.getValue("meta_headline");
-			log("metaheadline: " + session.getValueNames());
-
-			//Rensa sessionen från gamla rum och meddelandetyper
-			session.putValue("roomList",null);
-			session.putValue("msgTypesV",null);
-
-			String[] msgTypes = rmi.execSqlProcedure(chatPoolServer, "GetBaseMsgTypes");
-			String[] msgTypesId = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypesId");
-			Vector msgTypesV = new Vector();
-
-			for(int i =0;i<msgTypes.length;i++)
-			{
-				log("Stringmsgtype: " + msgTypes[i] );
-				msgTypesV.add(msgTypesId[i]);
-				msgTypesV.add(msgTypes[i]);
-			}
-
+			log("action = NEW");
+//#ugly			//Rensa sessionen från gamla rum och meddelandetyper
+			session.removeValue("roomList");
+			session.removeValue("msgTypesV");
+			
+			//lets get some data from db
+			String[][] msgTypes = rmi.execProcedureMulti(chatPoolServer, "C_GetTheMsgTypesBase");
+			String[][] autTypes = rmi.execProcedureMulti(chatPoolServer, "C_GetAuthorizationTypes");
+			
+			//lets convert it to vector
+			Vector msgTypesV = super.convert2Vector(msgTypes);			
+			Vector autTypeV = super.convert2Vector(autTypes);
+			
+			//add it into the session
 			session.putValue("msgTypesV",msgTypesV);
-
-			//get the authorization types 
-			String[] autTypes = rmi.execSqlProcedure(chatPoolServer, "GetAuthorizationTypes");
-			Vector autTypeV = new Vector();
-			for(int i =0;i<autTypes.length;i++)
-			{
-				log("StringAuttype: " + autTypes[i] );
-				autTypeV.add(String.valueOf(i+1));
-				autTypeV.add(autTypes[i]);
-			}
-
 			session.putValue("autTypeV",autTypeV);
-
-		//	Vector selV = new Vector();					    
-		//	selV.add("");selV.add("oregistrerad");
 
 			// Lets build the Responsepage to the loginpage
 			Html htm = new Html();
 			VariableManager vm = new VariableManager() ;
-
 
 			Vector buttonValues = new Vector();buttonValues.add("1");buttonValues.add("2");buttonValues.add("3");
 
@@ -777,13 +819,14 @@ public class ChatCreator extends ChatBase
 			vm.addProperty("font", htm.createRadioButton("font",buttonValues,chatParams.getProperty("font") ) );
 
 			sendHtml(req,res,vm, HTML_TEMPLATE) ;
+			log("end NEW");
 			return ;
 		}
 
 		if (action.equalsIgnoreCase("admin_chat"))
 		{
 			//öppna administrationssida
-			log("open adminpage");
+			log("action =  admin_chat");
 
 			VariableManager vm = new VariableManager() ;
 			Html htm = new  Html();
@@ -797,8 +840,9 @@ public class ChatCreator extends ChatBase
 
 			String metaId = (String)session.getValue("Chat.meta_id");
 			log("MetaId: " + metaId);
-
-			Chat theChat = (Chat)session.getValue("theChat");
+			
+			ServletContext myContext = getServletContext();
+			Chat theChat = (Chat)myContext.getAttribute("theChat"+metaId);
 
 			log("Chat: " + theChat);
 			
@@ -806,18 +850,13 @@ public class ChatCreator extends ChatBase
 			
 //###############
 			//get the authorization types 
-			String[] autTypes = rmi.execSqlProcedure(chatPoolServer, "GetAuthorizationTypes");
-			Vector autTypeV = new Vector();
-			for(int i =0;i<autTypes.length;i++)
-			{
-				log("StringAuttype: " + autTypes[i] );
-				autTypeV.add(String.valueOf(i+1));
-				autTypeV.add(autTypes[i]);
-			}
+			String[][] autTypes = rmi.execProcedureMulti(chatPoolServer, "C_GetAuthorizationTypes");
+			Vector autTypeV = super.convert2Vector(autTypes);
+			
 			session.putValue("Chat_autTypeV",autTypeV);
 			
 			//lets get the selected authorization types
-			String[] types = rmi.execSqlProcedure(chatPoolServer, "GetChatAutoTypes '"+ metaId  + "' ");
+			String[] types = rmi.execSqlProcedure(chatPoolServer, "C_GetChatAutoTypes '"+ metaId  + "' ");
 			for(int i=0; i<types.length;i++)
 			{
 				log("i doGeten first time = "+types[i]);
@@ -832,7 +871,7 @@ public class ChatCreator extends ChatBase
 			while (groupE.hasMoreElements())
 			{
 				ChatGroup temp = (ChatGroup)groupE.nextElement(); 
-				groupsV.add( Integer.toString(temp.getGroupId()) );
+				groupsV.add( temp.getGroupName() );
 				groupsV.add( temp.getGroupName() );
 				log("grupp: " + temp );
 			}
@@ -840,10 +879,17 @@ public class ChatCreator extends ChatBase
 
 			//get msgTypes
 			vm.addProperty("msgType", "" ) ;
-			Vector msgTypesV = theChat.getMsgTypes();
+			Vector msgTypesV1 = theChat.getMsgTypes();
+			Vector msgTypesV = new Vector();
+			for(int i=0;i<msgTypesV1.size(); i+=2)
+			{
+			
+				msgTypesV.add(msgTypesV1.get(i+1));
+				msgTypesV.add(msgTypesV1.get(i+1));				
+			}
 			vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION","", msgTypesV) ) ;
-
-
+			
+			
 			Properties chatP = theChat.getChatParameters();
 			Enumeration propE = chatP.propertyNames();
 			while (propE.hasMoreElements())
@@ -851,6 +897,11 @@ public class ChatCreator extends ChatBase
 				String value = (String)propE.nextElement();
 				log( "props: " + value +" value: " + chatP.getProperty( value ) );
 			}
+			
+			//lets save the current rooms and msg types into the session
+			session.putValue("chat_V_room", groupsV);
+			session.putValue("chat_V_msgTypes",msgTypesV);
+			
 			//	vm.addProperty("chatName",chatP.getProperty("chatName") );
 			vm.addProperty("updateTime",chatP.getProperty("updateTime") );
 			Vector buttonValues = new Vector();buttonValues.add("1");buttonValues.add("2");buttonValues.add("3");
@@ -881,23 +932,7 @@ public class ChatCreator extends ChatBase
 		HTML_TEMPLATE = "createChat.HTM" ;
 		ADMIN_TEMPLATE = "adminChat.HTM";
 
-		// log("Nu init vi") ;
-		/*
-		HTML_TEMPLATE = getInitParameter("html_template") ;
-
-		if( HTML_TEMPLATE == null ) {
-		Enumeration initParams = getInitParameterNames();
-		System.err.println("ChatCreator: The init parameters were: ");
-		while (initParams.hasMoreElements()) {
-		System.err.println(initParams.nextElement());
-		}
-		System.err.println("ChatCreator: Should have seen one parameter name");
-		throw new UnavailableException (this,
-		"Not given a path to the asp diagram files");
-		}
-
-		log("HTML_TEMPLATE:" + HTML_TEMPLATE ) ;
-		*/
+		
 	} // End of INIT
 
 	/**
@@ -906,8 +941,8 @@ public class ChatCreator extends ChatBase
 
 	public void log( String str)
 	{
-		super.log(str) ;
-		System.out.println("ChatCreator: " + str ) ;
+		super.log("ChatCreator: " + str) ;
+		//System.out.println("ChatCreator: " + str ) ;
 	}
 
 

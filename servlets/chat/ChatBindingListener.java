@@ -1,3 +1,4 @@
+
 import javax.servlet.http.*;
 import java.util.Hashtable;
 import imcode.external.chat.*;
@@ -9,14 +10,11 @@ import java.util.*;
 
 public class ChatBindingListener implements HttpSessionBindingListener
 { 
-	private static Hashtable _theSessions;
+	private static Hashtable _sessions;
 	static
 	{
-		_theSessions = new Hashtable();
-	}
-	
-	public ChatBindingListener(){}
-	
+		_sessions = new Hashtable();
+	} 
 	
 	//****  methods  ***
 	public void valueBound(HttpSessionBindingEvent event)
@@ -25,54 +23,57 @@ public class ChatBindingListener implements HttpSessionBindingListener
 		
 		ChatMember member = (ChatMember) session.getValue("theChatMember");
 		int idNr = member.getUserId();
-		
-		_theSessions.put(String.valueOf(idNr), session);	
+		_sessions.put(Integer.toString(idNr), session);
+		//System.out.println("ok value bound");	
 	} 
 	
 	public void valueUnbound(HttpSessionBindingEvent event)
 	{
 		HttpSession session = event.getSession();
 		
-		if (session.getValue("theChat") != null)
+		if (session.getValue("theChatMember") != null)
 		{
-			System.out.println("theChat wasn't null so lets rock");
-			Chat chat = (Chat)session.getValue("theChat");
-			ChatGroup group = (ChatGroup) session.getValue("theRoom");
-			ChatMember member = (ChatMember)session.getValue("theChatMember");
-
+			//System.out.println("ok we have the member so lets rock");
+			ChatMember myMember = (ChatMember)session.getValue("theChatMember");
+			Chat myChat = myMember.getMyParent();
+			ChatGroup myGroup = myMember.getMyGroup();
+			
 			String theDateTime = ChatBase.getDateToday() +" : "+ ChatBase.getTimeNow();
-			int senderNr = member.getUserId();
-			String senderName = member.getName();
+			int senderNr = myMember.getUserId();
+			_sessions.remove(Integer.toString(senderNr));
+			
+			String senderName = myMember.getName();
 			ChatMsg newLeaveMsg = new ChatMsg(	ChatBase.LEAVE_MSG,"",
 											ChatBase.CHAT_ENTER_LEAVE_INT,
 											ChatBase.CHAT_ENTER_LEAVE_INT,"",
 											senderName, -1, theDateTime);
 			//lets send the message									   
-			member.addNewMsg(newLeaveMsg);
+			myGroup.addNewMsg(newLeaveMsg);
 		
-			group.removeGroupMember(member);
-			chat.removeChatMember(senderNr);
-			
-			_theSessions.remove(String.valueOf(senderNr));
+			myGroup.removeGroupMember(myMember);
+			myChat.removeChatMember(senderNr);
+			//System.out.println("OK WE HAVE GOT RID OF THE USER");
 		}else
 		{
 			System.out.println("theChat null so it doesn't rock at all");
 		}
+	
 	}
 	
-	public static java.util.Enumeration getKeys()
-	{	
-		System.out.println("get keys in listenern");
-		return _theSessions.keys();
-		
-	}
-    /*	
-	public static HttpSession getASession(int memberNr)
+	public static void getKickoutSession(int memberNr)
 	{
-		return (HttpSession)_theSessions.get(String.valueOf(memberNr));
-		
+		HttpSession session = (HttpSession)_sessions.get(Integer.toString(memberNr));
+		if (session != null)
+		{
+			System.out.println("ok we have a session So Lets Rock");
+			session.invalidate();
+		}else
+		{
+			System.out.println("something got fucked up, when kick out");
+		}
 	}
-    */
+	
+	
 }//end class
 
 /*

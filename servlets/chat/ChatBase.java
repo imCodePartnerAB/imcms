@@ -192,6 +192,21 @@ public class ChatBase extends HttpServlet {
 	}
 
 
+	protected synchronized Properties getChatParams(String[] propps)
+	{
+		Properties chatP = new Properties();
+		//chatP.setProperty("chatName", chatName.trim());
+		//chatP.setProperty("permission",permission.trim());
+		chatP.setProperty("updateTime",propps[1]);
+		chatP.setProperty("reload",propps[2]);
+		chatP.setProperty("inOut",propps[3]);
+		chatP.setProperty("privat",propps[4]);
+		chatP.setProperty("publik",propps[5]);
+		chatP.setProperty("dateTime",propps[6]);
+		chatP.setProperty("font",propps[7]);
+		return chatP;		
+	}
+
 	/**
 	Returns an user object. If an error occurs, an errorpage will be generated.
 	*/
@@ -339,9 +354,7 @@ public class ChatBase extends HttpServlet {
 		Properties params = mInfo.getParameters(req) ;
 		if( mInfo.checkParameters(params) == false)
 		{
-			String header = "Chat servlet." ;
-			String msg = params.toString() ;
-			ChatError err = new ChatError(req, res, header, msg, 1) ;
+			log("checkParameters had a null value") ;
 			return false;
 		}
 		return true ;
@@ -354,10 +367,8 @@ public class ChatBase extends HttpServlet {
 		MetaInfo mInfo = new MetaInfo() ;
 		if( mInfo.checkParameters(params) == false)
 		{
-			String header = "Chat servlet." ;
-			String msg = params.toString() ;
-			ChatError err = new ChatError(req, res, header, msg, 1) ;
-			log(err.getErrorString()) ;
+			
+			log("checkParameters had a null value") ;
 			return false;
 		}
 		return true ;
@@ -371,17 +382,7 @@ public class ChatBase extends HttpServlet {
 	protected boolean getAdminRights(String server, String metaId, imcode.server.User user)
 	{
 
-		/* Rickards old style
-		try {
-		// Lets verify if the user has admin rights for the metaid
-		RmiConf rmi = new RmiConf(user) ;
-		return rmi.checkAdminRights( server, metaId , user ) ;
-		} catch	(Exception e) {
-		log("GetAdminRights failed!!!") ;
-		return false ;
-
-		}
-		*/
+	
 		try {
 			return userHasAdminRights( server, Integer.parseInt( metaId ), user );
 		} catch ( IOException e )
@@ -404,28 +405,19 @@ public class ChatBase extends HttpServlet {
 	{
 
 
-		try
+		// Lets verify that the user who tries to add a new user is an SUPERADMIN
+		RmiLayer imc = new RmiLayer(user) ;
+		int currUser_id = user.getInt("user_id") ;
+		String checkAdminSql = "CheckAdminRights " + currUser_id ;
+		String[] roles = imc.execSqlProcedure(server, checkAdminSql) ;
+		boolean returnValue = false;
+		for(int i = 0 ; i< roles.length; i++ )
 		{
-
-			// Lets verify that the user who tries to add a new user is an SUPERADMIN
-			RmiLayer imc = new RmiLayer(user) ;
-			int currUser_id = user.getInt("user_id") ;
-			String checkAdminSql = "CheckAdminRights " + currUser_id ;
-			String[] roles = imc.execSqlProcedure(server, checkAdminSql) ;
-
-			for(int i = 0 ; i< roles.length; i++ )
-			{
-				String aRole = roles[i] ;
-				if(aRole.equalsIgnoreCase("0") )
-					return true ;
-			}
-			return false ;
-		} catch (IOException e)
-		{
-			this.log("An error occured in CheckAdminRights") ;
-			this.log(e.getMessage() ) ;
+			String aRole = roles[i] ;
+			if(aRole.equalsIgnoreCase("0") )
+				returnValue = true ;
 		}
-		return false ;
+		return returnValue ;
 
 	} // checkAdminRights
 
@@ -501,7 +493,6 @@ public class ChatBase extends HttpServlet {
 	public String getExternalTemplateFolder (HttpServletRequest req)
 	throws ServletException, IOException
 	{
-
 		String externalTemplateLib = "" ;
 		String metaId = this.getMetaId(req) ;
 		if( metaId == null)
@@ -527,7 +518,6 @@ public class ChatBase extends HttpServlet {
 	public String getExternalTemplateFolder (String server, String metaId )
 	throws ServletException, IOException
 	{
-
 		String externalTemplateLib = "" ;
 		if( metaId == null)
 		{
@@ -551,7 +541,7 @@ public class ChatBase extends HttpServlet {
 	throws ServletException, IOException
 	{
 		// RmiConf aRmiObj = new RmiConf() ;
-		String sqlQ = "GetTemplateLib " + meta_id ;
+		String sqlQ = "C_GetTemplateLib " + meta_id ;
 		String libName = RmiConf.execSqlProcedureStr(server, sqlQ) ;
 		if( libName == null)
 		{
@@ -611,8 +601,6 @@ public class ChatBase extends HttpServlet {
 		VariableManager vm, String htmlFile) throws ServletException, IOException
 	{
 
-		imcode.server.User user = getUserObj(req,res) ;
-		// RmiConf rmi = new RmiConf(user) ;
 		String metaId = this.getMetaId(req) ;
 		if (metaId == null)
 		{
@@ -622,57 +610,23 @@ public class ChatBase extends HttpServlet {
 			return ;
 		}
 
-		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("chat_server",host) ;
-
-		// This is the old version, which was ok before the double server installation
-		// Lets get the TemplateFolder  and the foldername used for this certain metaid
-		//	String templateLib = this.getExternalTemplateFolder(imcServer, metaId) ;
-		// log("TemplateLib: " + templateLib) ;
-		// Lets get the path to the imagefolder.
-		//	String imagePath = servletPath + this.getExternalImageFolder(imcServer, metaId) ;
-
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid
 		String templateLib = this.getExternalTemplateFolder(req) ;
 		//String templateLib = this.getExternalTemplateFolder(imcServer, metaId) ;
-		//log("TemplateLib: " + templateLib) ;
-
+		
 		// Lets add 3 server hostadresses
 		String servletPath = MetaInfo.getServletPath(req) ;
 
 		// Lets get the path to the imagefolder.
-		String imagePath = this.getExternalImageFolder(req) ;
-		//log("ImagePath: " + imagePath) ;
-
-		VariableManager adminButtonVM = new VariableManager();
-		adminButtonVM.addProperty( "IMAGE_URL", imagePath);
-		adminButtonVM.addProperty( "SERVLET_URL", servletPath);
-		adminButtonVM.addProperty( "ADMIN_LINK_HTML", vm.getProperty( "ADMIN_LINK_HTML" ) );
-
-		//log("vm: " + vm.toString()) ;
-		VariableManager unAdminButtonVM = new VariableManager();
-		unAdminButtonVM.addProperty( "IMAGE_URL", imagePath);
-		unAdminButtonVM.addProperty( "SERVLET_URL", servletPath);
-		unAdminButtonVM.addProperty( "UNADMIN_LINK_HTML", vm.getProperty("UNADMIN_LINK_HTML"));
-
+		String imagePath = this.getExternalImageFolder(req, res) ;
+		
 		vm.addProperty("IMAGE_URL", imagePath);
 		vm.addProperty("SERVLET_URL", servletPath);
-
-		//String adminBtn = this.getAdminButtonLink( req, user, adminButtonVM ) ;
-		String adminBtn = this.getAdminButtonLink( req, user, adminButtonVM ) ;
-		vm.addProperty("CONF_ADMIN_LINK", adminBtn);
-
-		// log("before UNadminBUttonlink: " + imagePath) ;
-		String unAdminBtn = this.getUnAdminButtonLink(req, user, unAdminButtonVM) ;
-		vm.addProperty("CONF_UNADMIN_LINK", unAdminBtn);
 
 		// log("Before HTmlgenerator: ") ;
 		HtmlGenerator htmlObj = new HtmlGenerator(templateLib, htmlFile) ;
 		String html = htmlObj.createHtmlString(vm,req) ;
-		//log("Before sendToBrowser: ") ;
-
+		
 		htmlObj.sendToBrowser(req,res,html) ;
 		//log("after sendToBrowser: ") ;
 
@@ -684,8 +638,9 @@ public class ChatBase extends HttpServlet {
 
 	public void log(String msg)
 	{
-		super.log(msg) ;
-		System.out.println("ChatBase: " + msg) ;
+		if(msg == null)msg="the msg who come in to ChatBase.log was was null";
+		super.log(""+msg) ;
+		System.out.println( msg ) ;
 
 	}
 
@@ -749,166 +704,18 @@ public class ChatBase extends HttpServlet {
 		return rolesV ;
 	}
 
-	/**
-	Creates Sql characters. Encapsulates a string with ' ' signs. And surrounding
-	Space.
-	Example. this.sqlChar("myString")  --> " 'myString' "
-	*/
-
-	public static String sqlChar(String s)
+	public synchronized Vector convert2Vector(String[][] arr)
 	{
-		return " '" + s + "' " ;
-	}
-
-	/**
-	Creates Sql characters. Encapsulates a string with ' ' signs. + an comma.
-	And surrounding space.
-	Example. this.sqlP("myString")  --> " 'myString', "
-	*/
-
-	public static String sqlPDelim(String s)
-	{
-		return " '" + s + "', " ;
-	}
-
-	/**
-	Creates Sql characters. Encapsulates a string with ' ' signs. And surrounding
-	Space.
-	Example. this.sqlP("myString")  --> " 'myString' "
-	*/
-
-	public static String sqlP(String s)
-	{
-		return " '" + s + "' " ;
-	}
-
-
-	/**
-	Adds a delimiter to the end of the string.
-	Example. this.sqlDelim("myString")  --> "myString, "
-	*/
-
-	public static String sqlDelim(String s)
-	{
-		return s + ", " ;
-	}
-
-
-	/**
-	Prepare user for the conference
-	**/
-
-	public boolean prepareUserForChat(HttpServletRequest req, HttpServletResponse res,
-		Properties params, String loginUserId)  throws ServletException, IOException
-	{
-
-		// Lets get the user object
-		imcode.server.User user = this.getUserObj(req,res) ;
-		if(user == null) return false ;
-
-		// Lets get userparameters
-		Properties userParams = this.getUserParameters(user) ;
-		String metaId = params.getProperty("META_ID") ;
-		RmiConf rmi = new RmiConf(user) ;
-
-		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ChatPoolServer = Utility.getDomainPref("chat_server",host) ;
-
-		// Ok, Lets prepare the user for the conference.
-		// Lets get his lastLoginDate and update it to today
-		String sqlStoredProc = "GetLastLoginDate2 " + metaId + ", " + loginUserId ;
-		String lastLoginDate = rmi.execSqlProcedureStr(ChatPoolServer, sqlStoredProc) ;
-		String firstName = "" ;
-		String lastName = "" ;
-
-		// Ok, if lastlogindate is null, then it has to be the a user who has logged in
-		// to the system and comes here to the conference for the first time
-		// Lets add the user to conference db.
-		if(lastLoginDate == null)
-		{
-			log("Ok, det är första gången användaren är här.") ;
-
-			firstName = userParams.getProperty("FIRST_NAME") ;
-			lastName = userParams.getProperty("LAST_NAME") ;
-			String firstTimeInChatSql = "ChatUsersAdd " + loginUserId + ", " + metaId + ", '";
-			firstTimeInChatSql += firstName + "', '" + lastName + "'" ;
-
-			log("AddExistingUserToChat: " + firstTimeInChatSql) ;
-			rmi.execSqlUpdateQuery(ChatPoolServer, firstTimeInChatSql) ;
-
-			// Ok, try to get the lastLoginDate now and validate it
-			log("Ok, nu försöker vi hämta lastlogindate igen") ;
-			lastLoginDate	= rmi.execSqlProcedureStr(ChatPoolServer, sqlStoredProc) ;
-
-			if(lastLoginDate == null)
-			{
-				String header = "ChatManager servlet. " ;
-				ChatError err = new ChatError(req,res,header,30) ;
-				log(header + err.getErrorMsg()) ;
-				return false;
-			}	// End lastLoginCheck
-			// Exta add 2000-09-14, Lets set the lastlogindate in the users
-			// object to an old date so all discussions will have a new flag
-			// so all flags will be shown
-			lastLoginDate = "1997-01-01 00:00" ;
-			// log("Nytt last login date:" + lastLoginDate) ;
-
+		Vector rolesV  = new Vector() ;
+		for(int i = 0; i<arr.length; i++){
+			for(int e=0;e<arr[i].length;e++){
+				rolesV.add(arr[i][e]);	
+			}
 		}
-		else
-		{
-			// Ok, the user has logged in to the conference by the loginpage
-			// for the conference, he has a logindate. Lets get his names
-			// Lets get the users first and last names
-			String sqlName = "GetChatLoginNames " + metaId +", "+ loginUserId +", "+  1 ;
-			firstName = (String) rmi.execSqlProcedureStr(ChatPoolServer, sqlName ) ;
-			sqlName = "GetChatLoginNames " + metaId +", "+ loginUserId +", "+  2 ;
-			lastName = (String) rmi.execSqlProcedureStr(ChatPoolServer, sqlName ) ;
-		} // end else
-
-		// Lets update his logindate and usernames
-		String sqlQuest = "ChatUsersUpdate " + metaId +", "+ loginUserId +", '" ;
-		sqlQuest += firstName + "', '" + lastName + "'" ;
-		// log("Update users info in db: " + sqlQuest) ;
-		rmi.execSqlUpdateQuery(ChatPoolServer, sqlQuest) ;
-		// Lets store some values in his session object
-		HttpSession session = req.getSession(false) ;
-		if (session != null)
-		{
-			session.putValue("Chat.meta_id", params.getProperty("META_ID")) ;
-			session.putValue("Chat.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-			session.putValue("Chat.cookie_id", params.getProperty("COOKIE_ID")) ;
-			session.putValue("Chat.viewedDiscList", new Properties()) ;
-			session.putValue("Chat.last_login_date", lastLoginDate);
-			session.putValue("Chat.user_id", loginUserId) ;
-			session.putValue("Chat.disc_index", "0");
-
-
-			// Ok, we need to catch a forum_id. Lets get the first one for this meta_id.
-			// if not a forumid exists, the sp will return -1
-			rmi = new RmiConf(user) ;
-			String aForumId = rmi.execSqlProcedureStr(ChatPoolServer, "GetFirstForum " + params.getProperty("META_ID")) ;
-			session.putValue("Chat.forum_id", aForumId) ;
-
-			// Ok, Lets get the last discussion in that forum
-			String aDiscId = rmi.execSqlProcedureStr(ChatPoolServer, "GetLastDiscussionId " +
-				params.getProperty("META_ID") + ", " + aForumId) ;
-
-			// Lets get the lastdiscussionid for that forum
-			// if not a aDiscId exists, then the  sp will return -1
-			session.putValue("Chat.disc_id", aDiscId) ;
-
-			String url = MetaInfo.getServletPath(req) ;
-			url += "ChatViewer" ;
-			// this.log("Redirects to:" + url) ;
-			res.sendRedirect(url) ;
-			return true;
-		}
-		return false ;
-
-	} // End prepare user for conference
-
+		return rolesV ;
+	}
+	
+	
 	// ****************** GetImageFolder Functions *********************
 
 	/**
@@ -917,8 +724,9 @@ public class ChatBase extends HttpServlet {
 	name of the folder which contains the templates for a certain meta id
 	*/
 
-	public String getExternalImageFolder (HttpServletRequest req) throws ServletException, IOException
+	public String getExternalImageFolder (HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
 	{
+		imcode.server.User user = getUserObj(req,res) ;
 		String metaId = this.getMetaId(req) ;
 		if( metaId == null)
 		{
@@ -931,7 +739,7 @@ public class ChatBase extends HttpServlet {
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("chat_server",host) ;
 
-		String extFolder = this.getExternalImageFolder(imcServer, metaId) ;
+		String extFolder = this.getExternalImageFolder(imcServer, metaId, user) ;
 		return extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
 	}
 
@@ -939,16 +747,11 @@ public class ChatBase extends HttpServlet {
 	/**
 	Returns the folder where this templates are situated for a certain metaid.
 	**/
-
-	protected String getExternalImageFolder(String server, String meta_id) throws ServletException, IOException
+	protected String getExternalImageFolder(String server, String meta_id,imcode.server.User user ) throws ServletException, IOException
 	{
-		RmiConf rmi = new RmiConf() ;
+		RmiConf rmi = new RmiConf(user) ;
 		// Ok, Lets get the language for the system
 		String imageLib = rmi.getExternalImageFolder(server, meta_id) ;
-
-		// Lets get the foldername used for this meta id . Default is original
-		//imageLib += this.getTemplateLibName(server, meta_id )  ;
-		//log("ImageLib: " + imageLib) ;
 		return imageLib ;
 	} // End of getImageLibName
 
@@ -956,14 +759,14 @@ public class ChatBase extends HttpServlet {
 	/**
 	Returns the foldername where the templates are situated for a certain metaid.
 	**/
-	protected String getImageLibName(String server, String meta_id ) throws ServletException, IOException
+/*	protected String getImageLibName(String server, String meta_id ) throws ServletException, IOException
 	{
 		String sqlQ = "GetTemplateLib " + meta_id ;
 		String libName = "" + RmiConf.execSqlProcedureStr(server, sqlQ) + "/";
 		return libName ;
 
 	} // End of getImageLibName
-
+*/
 	/**
 	Returns the foldername where the templates are situated for a certain metaid.
 	**/
@@ -973,101 +776,11 @@ public class ChatBase extends HttpServlet {
 
 	} // End of getInternalImageFolder
 
-	// ***************** RETURNS THE HTML CODE TO THE ADMINIMAGE **************
-	/**
-	 * Checks whether or not the user is an administrator and
-	 * Creates the html code, used to view the adminimage and an appropriate link
-	 * to the adminservlet.
-	 *
-	 * @param reg requestobject
-	 * @param user userobject
-	 * @param adminButtonTags hashtabele of tags to replace
-	 *
-	 * @return returns string of html code for adminlink
-	*/
-
-	public String getAdminButtonLink(HttpServletRequest req,imcode.server.User user, VariableManager adminButtonVM )
-	throws ServletException, IOException
-	{
-
-		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ChatPoolServer = Utility.getDomainPref("chat_server",host) ;
-
-		String adminLink = "&nbsp;";
-		String metaId = getMetaId( req );
-		int intMetaId = Integer.parseInt( metaId );
-
-		//log("before getAdminRights") ;
-		//lets generat adminbutton if user has administrator rights and rights to edit
-		if ( userHasAdminRights( imcServer, intMetaId, user ) )
-		{
-
-			//lets save tags we need later
-			VariableManager adminLinkVM = new VariableManager();
-			adminLinkVM.addProperty( "SERVLET_URL", adminButtonVM.getProperty( "SERVLET_URL" ) );
-			String adminLinkFile = adminButtonVM.getProperty( "ADMIN_LINK_HTML" );
-
-			//lets create adminbuttonhtml
-			String templateLib = this.getExternalTemplateFolder( req );
-			HtmlGenerator htmlObj = new HtmlGenerator( templateLib, this.ADMIN_BUTTON_TEMPLATE );
-			String adminBtn = htmlObj.createHtmlString( adminButtonVM, req );
-
-			//lets create adminlink
-			adminLinkVM.addProperty( "ADMIN_BUTTON", adminBtn );
-			HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, adminLinkFile );
-			adminLink = linkHtmlObj.createHtmlString( adminLinkVM, req );
-
-		}
-		//log("After getAdminRights") ;
-		return adminLink ;
-	} // End CreateAdminHtml
-
-	/**
-	Checks whether or not the user is an administrator and
-	Creates the html code, used to view the adminimage and an appropriate link
-	to the adminservlet.
-	*/
-	public String getUnAdminButtonLink(HttpServletRequest req,imcode.server.User user, VariableManager unAdminButtonVM )
-	throws ServletException, IOException
-	{
-
-		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ChatPoolServer = Utility.getDomainPref("conference_server",host) ;
-
-		String unAdminLink = "&nbsp;";
-		String metaId = getMetaId(req);
-		int intMetaId = Integer.parseInt( metaId );
-
-		//lets generat unadminbutton if user has administrator rights and rights to edit
-		if ( userHasAdminRights( imcServer, intMetaId, user ) )
-		{
-
-			//lets save tags we need later
-			VariableManager unAdminLinkVM = new VariableManager();
-			unAdminLinkVM.addProperty( "SERVLET_URL", unAdminButtonVM.getProperty( "SERVLET_URL" ) );
-			String unAdminLinkFile = unAdminButtonVM.getProperty( "UNADMIN_LINK_HTML" );
-
-			//lets create unadminbuttonhtml
-			String templateLib = this.getExternalTemplateFolder( req );
-			HtmlGenerator htmlObj = new HtmlGenerator( templateLib, this.UNADMIN_BUTTON_TEMPLATE );
-			String unAdminBtn = htmlObj.createHtmlString( unAdminButtonVM, req );
-
-			//lets create unadminlink
-			unAdminLinkVM.addProperty( "UNADMIN_BUTTON", unAdminBtn );
-			HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, unAdminLinkFile );
-			unAdminLink = linkHtmlObj.createHtmlString( unAdminLinkVM, req );
-		}
-		return unAdminLink ;
-	} // End CreateAdminHtml
 
 	/**
 	Examines a text, and watches for ' signs, which will extended with another ' sign
 	*/
-	public String verifySqlText(String str )
+	public String verifySqlText(String str )//in use by verifyForSql
 	{
 		StringBuffer buf =  new StringBuffer(str) ;
 		// log("Innan: " + str) ;
@@ -1091,7 +804,7 @@ public class ChatBase extends HttpServlet {
 	/**
 	Checks for illegal sql parameters.
 	**/
-	public Properties verifyForSql(Properties aPropObj)
+	public Properties verifyForSql(Properties aPropObj)//in use by ChatManager
 	{
 		// Ok, Lets find all apostrofes and if any,add another one
 		Enumeration enumValues = aPropObj.elements() ;
@@ -1108,29 +821,6 @@ public class ChatBase extends HttpServlet {
 		return aPropObj ;
 	} // verifyForSql
 
-	/**
-	Checks for illegal sql parameters.
-	**/
-	public String props2String(Properties p)
-	{
-
-		Enumeration enumValues = p.elements() ;
-		Enumeration enumKeys = p.keys() ;
-		String aLine = "";
-		while((enumValues.hasMoreElements() && enumKeys.hasMoreElements()))
-		{
-			String oKeys = (String) (enumKeys.nextElement()) ;
-			String oValue = (String) (enumValues.nextElement()) ;
-			if(oValue == null)
-			{
-				oValue = "NULL" ;
-
-			}
-			aLine += oKeys.toString() + "=" + oValue.toString() + '\n' ;
-		}
-		return aLine ;
-	}
-	
 	
 
 	/**
@@ -1233,89 +923,37 @@ public class ChatBase extends HttpServlet {
 
 	}
 
-	//******** methods to handle the cheared chat objects ************
-	/**
-	*checks if the chatobject exists or if it has to bee created
-	*@param chatId - the key to identify the chat
-	*@return true if one exists
-	*/
-	public boolean checkChat(int chatId)
-	{
-		String id = Integer.toString(chatId);
-		return ChatHolder.hasAChat(id);
-	}
-
-	/**
-	*adds a chatobject into a global HashMap
-	*@param chatId - a string representation of the key
-	*@param theChat - the chat object too be stored
-	*@return true if ok, if there is a key whit the key false is returned
-	*/
-	public boolean addChat(int chatId, Chat theChat)
-	{
-		if ( !checkChat(chatId))
-		{
-			String id = Integer.toString(chatId);
-			ChatHolder.addNewChat(id, theChat);
-			return true;
-		}else
-		{
-			return false;
-		}
-	}
-
-	/**
-	*removes a chat object 
-	*@param chatId - the key of the chat to remove
-	*/
-	public void removeChat(int chatId)
-	{
-		String id = Integer.toString(chatId);
-		ChatHolder.removeAChat(id);
-	}
-
-	/**
-	*gets a chat
-	*@param chatId - the key of the chat to get
-	*@return The wanted Chat or null if there isn't anyone found
-	*/
-	public Chat getChat(int chatId)
-	{
-		String id = Integer.toString(chatId);
-		return ChatHolder.getAChat(id);
-
-
-	}
-
-	public Enumeration getAllChats()
-	{
-		Enumeration chatE = ChatHolder.getAllTheChats();
-		return chatE;
-	}
 	
 	//**************** does the setup for chatboard  **********************
-	//lets get the settings for the chat and convert them 
+	//lets get the settings for the chat and convert them
 	//and add them into HashTable and add it into the session
-	public Hashtable prepareChatBoardSettings(Chat chat, HttpServletRequest req, boolean bool)
+	//ugly it should moves into the ChatMember obj, but i haven't got the time to do it now
+	public synchronized Hashtable prepareChatBoardSettings(Chat member, HttpServletRequest req, boolean bool)
 	{
 		//now we sets up the settings for this chat
-		Hashtable hash = new Hashtable();
-		Properties settings = chat.getChatParameters();	
+		HttpSession session = req.getSession(true);
+		
+		Hashtable hash = (Hashtable)session.getValue("ChatBoardHashTable");
+		if (hash == null)
+		{
+		 	hash = new Hashtable();
+		}
+		Properties settings = member.getChatParameters();	
 		log("settings "+settings);
 		//lets convert them
 		boolean onOff = false;
 
 		//sets up show datTime or not
-		log("settings.getProperty(dateTime) = "+settings.getProperty("dateTime"));
-		if(settings.getProperty("dateTime").equals("2"))
+		String dateTime = "dateTime";		
+		if(settings.getProperty(dateTime).equals("2"))
 		{
 			onOff = false;
 		}else{
 			if (bool)
 			{
-				if (settings.getProperty("dateTime").equals("3"))
+				if (settings.getProperty(dateTime).equals("3"))
 				{
-					onOff = req.getParameter("dateTime") == null ? false : true;
+					onOff = req.getParameter(dateTime) == null ? false : true;
 				}else{
 					onOff = true;	 
 				}
@@ -1331,17 +969,17 @@ public class ChatBase extends HttpServlet {
 		// onOff = req.getParameter("") == null ? false : true;
 
 		//sets up show public msg or not
-		log("settings.getProperty(publik) = "+settings.getProperty("publik"));
-		if(settings.getProperty("publik").equals("2"))
+		String publik = "publik";
+		if(settings.getProperty(publik).equals("2"))
 		{
 			onOff = false;
 		}else
 		{
 			if (bool)
 			{
-				if(settings.getProperty("publik").equals("3"))
+				if(settings.getProperty(publik).equals("3"))
 				{
-					onOff = req.getParameter("publik") == null ? false : true;
+					onOff = req.getParameter(publik) == null ? false : true;
 				}else
 				{
 					onOff = true;
@@ -1356,17 +994,17 @@ public class ChatBase extends HttpServlet {
 
 
 		//sets up show private msg or not
-		log("settings.getProperty(privat) = "+settings.getProperty("privat"));
-		if(settings.getProperty("privat").equals("2"))
+		String privat = "privat";
+		if(settings.getProperty(privat).equals("2"))
 		{
 			onOff = false;
 		}else
 		{
 			if (bool)
 			{
-				if (settings.getProperty("privat").equals("3"))
+				if (settings.getProperty(privat).equals("3"))
 				{
-					onOff = req.getParameter("privat") == null ? false : true;
+					onOff = req.getParameter(privat) == null ? false : true;
 				}else
 				{
 					onOff = true;
@@ -1382,17 +1020,17 @@ public class ChatBase extends HttpServlet {
 
 
 		//sets up show entrense and exits, or not
-		log("settings.getProperty(inOut) = "+settings.getProperty("inOut"));
-		if(settings.getProperty("inOut").equals("2"))
+		String inOut = "inOut";		
+		if(settings.getProperty(inOut).equals("2"))
 		{
 			onOff = false;
 		}else
 		{
 			if (bool)
 			{
-				if (settings.getProperty("inOut").equals("3"))
+				if (settings.getProperty(inOut).equals("3"))
 				{
-					onOff = req.getParameter("inOut") == null ? false : true;
+					onOff = req.getParameter(inOut) == null ? false : true;
 				}else
 				{
 					onOff = true;
@@ -1408,9 +1046,11 @@ public class ChatBase extends HttpServlet {
 
 
 		//sets up autoreload on off
-		log("settings.getProperty(reload) = "+settings.getProperty("reload"));
+		String reload = "reload";
+		String updateTime = "updateTime";
 		String timeStr = "30";
-		if(settings.getProperty("reload").equals("2"))
+		
+		if(settings.getProperty(reload).equals("2"))
 		{
 			onOff = false;
 			timeStr = "30";
@@ -1418,19 +1058,22 @@ public class ChatBase extends HttpServlet {
 		{
 			if (bool)
 			{
-				if (settings.getProperty("reload").equals("3"))
-				{
-					onOff = req.getParameter("reload") == null ? false : true;
-					timeStr = settings.getProperty("updateTime");
-				}else
+				if (settings.getProperty(reload).equals("3"))
 				{
 					onOff = true;
-					timeStr = settings.getProperty("updateTime");
+					timeStr = settings.getProperty(updateTime);
+					log("¤¤¤= "+timeStr);
+				}else
+				{
+					onOff = false;
+					timeStr = settings.getProperty(updateTime);
+					log("¤¤¤= "+timeStr);
 				}				
 			}else
 			{	
 				onOff = true;
-				timeStr = settings.getProperty("updateTime");
+				timeStr = settings.getProperty(updateTime);
+				log("¤¤¤= "+timeStr);
 			}
 		}
 		try
@@ -1441,44 +1084,41 @@ public class ChatBase extends HttpServlet {
 			log(nfe.getMessage());
 			hash.put("reloadInteger", new Integer("30"));
 		}
+		
 		log("reloadBoolean = "+onOff);
 		hash.put("reloadBoolean", new Boolean(onOff));
 
 
 		//ok first time we dont have the font size so lets set it to 3
-		int size;
-		if (settings.getProperty("font").equals("2"))
+		int size = 3;
+		String fontSizeInteger = "fontSizeInteger";
+		log(fontSizeInteger+"= "+((Integer)hash.get(fontSizeInteger)));
+		System.out.println( hash.hashCode() );
+		if (settings.getProperty("font").equals("3"))
 		{
-			if (settings.getProperty("font").equals("3"))
+			if (req.getParameter("fontInc") != null)
 			{
-				if (bool)
-				{
-					if (req.getParameter("fontInc") != null)
-					{
-						size = ((Integer)hash.get("fontSizeInteger")).intValue() +1;
-						if(size > 7) size = 7;
-					}else if (req.getParameter("fontDec") != null)
-					{
-						size = ((Integer)hash.get("fontSizeInteger")).intValue() -1;
-						if(size < 1)size = 1;
-					}else
-					{
-						size = ((Integer)hash.get("fontSizeInteger")).intValue();
-					}
-				}else
-				{
-					size = 3;
-				}
+				Integer temp = (Integer)hash.get(fontSizeInteger);
+				size = temp.intValue();
+				size++;
+				if(size > 7) size = 7;
+			}else if (req.getParameter("fontDec") != null)
+			{
+				Integer temp = (Integer)hash.get(fontSizeInteger);
+				size = temp.intValue();
+				size--;
+				if(size < 1)size = 1;
 			}else
 			{
 				size = 3;
-			}	
+			}
 		}else
 		{
 			size = 3;
 		}
-		//log("1size = "+size);
-		hash.put("fontSizeInteger", new Integer(size));
+		Integer inten = new Integer(size);
+		hash.put(fontSizeInteger, inten);
+		
 
 		return	hash;	
 
