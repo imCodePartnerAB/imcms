@@ -22,8 +22,11 @@ public abstract class DocumentPageFlow extends HttpPageFlow {
 
     public abstract DocumentDomainObject getDocument() ;
 
-    protected void saveDocument( HttpServletRequest request ) throws IOException, ServletException {
-        saveDocumentCommand.saveDocument( getDocument(), Utility.getLoggedOnUser( request ) );
+    protected synchronized void saveDocument( HttpServletRequest request ) throws IOException, ServletException {
+        if (null != saveDocumentCommand) {
+            saveDocumentCommand.saveDocument( getDocument(), Utility.getLoggedOnUser( request ) );
+            saveDocumentCommand = null ;
+        }
     }
 
     protected void saveDocumentAndReturn( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {

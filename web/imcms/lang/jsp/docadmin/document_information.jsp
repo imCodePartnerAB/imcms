@@ -558,7 +558,7 @@ function checkFocus() {
 			document.writeln('<td>&nbsp;&nbsp;</td>') ;
 		}
 		</script>
-		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>"
+		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>" onClick="return singleclicked();"
 		value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> "></td>
 		<td>&nbsp;</td>
 		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>"

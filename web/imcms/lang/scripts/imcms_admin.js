@@ -32,6 +32,15 @@ function inStr(str,val,cas) {
  *         Functions                                                                         *
  ******************************************************************************************* */
 
+function singleclicked() {
+    if (!('clicked' in this)) {
+        this.clicked = 1;
+        return true;
+    } else {
+        return false ;
+    }
+}
+
 function focusField(theFormName, theElementName) {
 	var f = (!isNaN(theFormName)) ? eval("document.forms[" + theFormName + "]") : eval("document.forms." + theFormName);
 	if (f) {

@@ -97,7 +97,7 @@
 </tr>
 <tr>
 	<td colspan="3" align="right">
-	<input type="SUBMIT" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2005 ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>">
+	<input type="SUBMIT" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2005 ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>" onClick="return singleclicked();">
 	<input type="RESET" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2006 ?>" name="reset">
 	<input type="SUBMIT" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2007 ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>"></td>
 </tr>

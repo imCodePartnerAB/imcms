@@ -185,7 +185,7 @@ if (!files.isEmpty()) { %>
 <tr>
 	<td align="right"><%
 	if (!files.isEmpty()) { %>
-	<input type="submit" class="imcmsFormBtn" value="<? global/OK ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>"><%
+	<input type="submit" class="imcmsFormBtn" value="<? global/OK ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>" onClick="return singleclicked();"><%
 	} %>
 	<input type="submit" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/cancel ?>"></td>
 </tr>
