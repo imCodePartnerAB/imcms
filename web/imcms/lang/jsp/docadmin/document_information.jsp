@@ -637,7 +637,6 @@ function toggleAdvanced(show) {
 	document.getElementById("advanced_button1").value = advancedButtonValue ;
 	document.getElementById("advanced_button2").value = advancedButtonValue ;
 	setCookie(viewCookieName, viewCookieValue) ;
-	mozScrollbarFix() ;
 }
 
 function setCookie(sName, sValue) {
@@ -650,17 +649,6 @@ function setCookie(sName, sValue) {
 	sCookieCont += "; path=" + sPath;
 	document.cookie = sCookieCont;
 }
-
-// Fix for Mozilla
-
-function mozScrollbarFix() {
-	if (isGecko) {
-		var el = document.getElementById("theBody") ;
-		var db = document.body ;
-		el.style.marginRight = (db.scrollHeight == db.clientHeight) ? "16px" : "0" ;
-	}
-}
-mozScrollbarFix() ;
 // -->
 </script>
 

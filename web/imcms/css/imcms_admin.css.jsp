@@ -178,7 +178,12 @@ if (isNS) { %>
 .white { color:#ffffff; }
 .lighterBlue { color:#20568D;}
 
-BODY { margin: 30 10; background-color:#efece7; }
+BODY {
+	margin: 30 10;
+	background-color:#efece7;
+	overflow: -moz-scrollbars-vertical;
+}
+
 B    { font-weight:bold; }
 I    { font-style:italic; }<%
 if (!isNS) { %>
