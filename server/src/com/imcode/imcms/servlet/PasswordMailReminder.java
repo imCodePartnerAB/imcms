@@ -239,11 +239,11 @@ public class PasswordMailReminder extends HttpServlet {
             returnString = imcref.getAdminTemplate( returnFileBody, user, null );
 
         } else {
-            String errorString = imcref.parseDoc( PasswordMailReminder.ERROR_STRING, null, null );
+            String errorString = imcref.getAdminTemplate( PasswordMailReminder.ERROR_STRING, null, null );
 
             errorParsVector.add("#errorininput#");
             errorParsVector.add(errorString);
-            returnString = imcref.parseDoc( PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null, errorParsVector );
+            returnString = imcref.getAdminTemplate( PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null, errorParsVector );
         }
 
         res.setContentType("text/html");

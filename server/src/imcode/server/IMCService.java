@@ -686,7 +686,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Parse doc replace variables with data, uses two vectors
      */
-    public String parseDoc( String htmlStr, java.util.Vector variables, java.util.Vector data ) {
+    public String replaceTagsInStringWithData( String htmlStr, java.util.Vector variables, java.util.Vector data ) {
         String[] foo = new String[variables.size()];
         String[] bar = new String[data.size()];
         return imcode.util.Parser.parseDoc( htmlStr, (String[])variables.toArray( foo ), (String[])data.toArray( bar ) );

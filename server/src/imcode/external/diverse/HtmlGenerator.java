@@ -79,7 +79,7 @@ public class HtmlGenerator {
 
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-        String theHtml = imcref.parseDoc(srcHtml, htmlTags, data);
+        String theHtml = imcref.replaceTagsInStringWithData(srcHtml, htmlTags, data);
         return theHtml;
     }
 

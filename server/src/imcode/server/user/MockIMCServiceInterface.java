@@ -158,7 +158,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // Parse doc replace variables with data, uses two vectors
-   public String parseDoc( String htmlStr, Vector variables, Vector data ) {
+   public String replaceTagsInStringWithData( String htmlStr, Vector variables, Vector data ) {
       return null;
    }
 

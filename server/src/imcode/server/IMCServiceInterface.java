@@ -84,7 +84,7 @@ public interface IMCServiceInterface {
     ;
 
     // Parse doc replace variables with data, uses two vectors
-    String  parseDoc(String htmlStr,java.util.Vector variables,java.util.Vector data)
+    String  replaceTagsInStringWithData(String htmlStr,java.util.Vector variables,java.util.Vector data)
 	;
 
     // get external template folder

@@ -372,7 +372,7 @@ public class GetExistingDoc extends HttpServlet {
         outVector.add( searchResults.toString() );
 
         // Send page to browser
-        // htmlOut = imcref.parseDoc( htmlOut, outVector);
+        // htmlOut = imcref.replaceTagsInStringWithData( htmlOut, outVector);
         String htmlOut = imcref.getAdminTemplate( "existing_doc.html", user, outVector );
         out.write( htmlOut );
         return;
