@@ -43,6 +43,10 @@ public class GetDoc extends HttpServlet {
             // Find the start-page
             meta_id = imcref.getSystemData().getStartDocument();
         }
+        output( meta_id, req, res );
+    }
+
+    static void output( int meta_id, HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException {
         String tempstring = getDoc( meta_id, req, res );
         if ( tempstring != null ) {
             byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );

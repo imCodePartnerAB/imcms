@@ -52,6 +52,13 @@ public class ImcmsSetupFilter implements Filter {
             NDC.push( contextPath );
         }
         NDC.push( StringUtils.substringAfterLast( ( (HttpServletRequest)request ).getRequestURI(), "/" ) );
+
+        handleDocumentUri( httpServletRequest, service, request, response, chain );
+        NDC.setMaxDepth( 0 );
+    }
+
+    private void handleDocumentUri( HttpServletRequest httpServletRequest, ImcmsServices service,
+                                    ServletRequest request, ServletResponse response, FilterChain chain ) throws ServletException, IOException {
         String path = httpServletRequest.getRequestURI() ;
         path = StringUtils.substringAfter( path, httpServletRequest.getContextPath() ) ;
         String documentPathPrefix = service.getConfig().getDocumentPathPrefix() ;
@@ -60,15 +67,15 @@ public class ImcmsSetupFilter implements Filter {
             documentIdString = path.substring( documentPathPrefix.length() );
         }
         if (null != documentIdString && NumberUtils.isDigits( documentIdString )) {
-            int documentId = 1001 ;
             try {
-                documentId = Integer.parseInt( documentIdString ) ;
-            } catch( NumberFormatException ignored ) {}
-            request.getRequestDispatcher( "/servlet/GetDoc?meta_id=" + documentId ).forward( request, response );
+                int documentId = Integer.parseInt( documentIdString ) ;
+                GetDoc.output( documentId, httpServletRequest, (HttpServletResponse)response );
+            } catch( NumberFormatException nfe ) {
+                chain.doFilter( request, response );
+            }
         } else {
             chain.doFilter( request, response );
         }
-        NDC.setMaxDepth( 0 );
     }
 
     private void setDomainSessionCookie( ServletResponse response, HttpSession session ) throws IOException {
