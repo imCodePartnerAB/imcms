@@ -403,16 +403,14 @@ public class MetaDataParser {
             vec.add(imcref.parseDoc(null, PUBLISHER_NONE_MSG_TEMPLATE, lang_prefix));
         }
 
-        UserDomainObject[] users = userAndRoleMapper.getAllUsers();
+        UserDomainObject[] users = userAndRoleMapper.getUsers( false, false );
         List usersInOptionList = new ArrayList();
         usersInOptionList.add("");
         usersInOptionList.add("");
         for (int i = 0; i < users.length; i++) {
             UserDomainObject user = users[i];
-            if (user.isActive()){
-                usersInOptionList.add( "" + user.getUserId() );
-                usersInOptionList.add( user.getLastName() + ", " + user.getFirstName() );
-            }
+            usersInOptionList.add( "" + user.getUserId() );
+            usersInOptionList.add( user.getLastName() + ", " + user.getFirstName() );
         }
 
         String optionList;
@@ -932,7 +930,7 @@ public class MetaDataParser {
 
         vec.setPrefix("permissions/define_permission_");
 
-        return Parser.parseTags(complete, '#', " <>\"\n\r\t", (Map) vec, true, 1).toString();
+        return Parser.parseTags(complete, '#', " <>\"\n\r\t", vec, true, 1).toString();
     }
 
 } // End of class

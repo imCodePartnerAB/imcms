@@ -34,6 +34,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    private static final String SPROC_PHONE_NBR_ADD = "phoneNbrAdd";
    private static final String SPROC_DEL_PHONE_NR = "DelPhoneNr";
 
+   private static final int USER_EXTERN_ID = 2;
+
    private IMCServiceInterface service;
    private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
 
@@ -233,7 +235,23 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       return result;
    }
 
-   public void setUserRoles( UserDomainObject user, String[] roleNames ) {
+    public UserDomainObject[] getUsers( boolean includeUserExtern, boolean includeInactiveUsers ) {
+        UserDomainObject[] users = getAllUsers();
+        List filterdUsers = new ArrayList();
+        if( !includeUserExtern ) {
+            for (int i = 0; i < users.length; i++) {
+                UserDomainObject user = users[i];
+                boolean includeAcordingToUserExtern = !includeUserExtern && USER_EXTERN_ID != user.getUserId();
+                boolean includeAcordingToInactiveUser = user.isActive() || includeInactiveUsers;
+                if( includeAcordingToUserExtern && includeAcordingToInactiveUser ){
+                    filterdUsers.add(user);
+                }
+            }
+        }
+        return (UserDomainObject[]) filterdUsers.toArray( new UserDomainObject[filterdUsers.size()] );
+    }
+
+    public void setUserRoles( UserDomainObject user, String[] roleNames ) {
       this.removeAllRoles( user );
 
       for( int i = 0; i < roleNames.length; i++ ) {
