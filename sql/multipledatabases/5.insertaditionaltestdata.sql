@@ -51,3 +51,5 @@ INSERT INTO new_doc_permission_sets_ex VALUES(9001,1,8,2);
 INSERT INTO sections VALUES(1,'TestSection');
 INSERT INTO meta_section VALUES(9001,1);
 
+INSERT INTO ip_accesses VALUES(1,3,6666,7777);
+

@@ -66,10 +66,6 @@ getuserrolesdocpermissions.prc
 getuserswhobelongstorole.prc
 inheritpermissions.prc
 inserttext.prc
-ipaccessadd.prc
-ipaccessdelete.prc
-ipaccessesgetall.prc
-ipaccessupdate.prc
 listconferences.prc
 listdocsbydate.prc
 listdocsgetinternaldoctypes.prc
@@ -107,8 +103,6 @@ shop_getshoppingitemsfororder.prc
 shop_getshoppingorderforuserbyid.prc
 shop_getshoppingordersforuser.prc
 sortorder_getexistingdocs.prc
-systemmessageset.prc
-unsetuserflag.prc
 updatedefaulttemplates.prc
 updateparentsdatemodified.prc
 updatetemplatetextsandimages.prc

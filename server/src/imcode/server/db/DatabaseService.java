@@ -323,24 +323,24 @@ public abstract class DatabaseService {
         throws SQLException {
         String tableName = "phones";
         String primaryKeyColumnName = "phone_id";
-        int newPhoneId = 1 + getMaxIntValue( transaction, tableName, primaryKeyColumnName );
+        Integer newPhoneId = getMaxIntValuePlusOne( transaction, tableName, primaryKeyColumnName );
         String sql = "INSERT INTO phones ( phone_id , number , user_id, phonetype_id ) VALUES ( ? , ?, ?, ? )";
-        Object[] paramValues = new Object[]{new Integer( newPhoneId ), number, userId, phoneType};
+        Object[] paramValues = new Object[]{ newPhoneId, number, userId, phoneType};
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    private int getMaxIntValue( SQLTransaction transaction, String tableName, String columnName ) throws SQLException {
+    private Integer getMaxIntValuePlusOne( SQLTransaction transaction, String tableName, String columnName ) throws SQLException {
         String sql = "SELECT MAX(" + columnName + ") FROM " + tableName;
         ArrayList queryResult = transaction.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 int id = rs.getInt( 1 );
-                return new Integer( id );
+                return new Integer( id + 1 );
             }
         } );
         if( queryResult.isEmpty() ) {
-            return 0;
+            return new Integer( 0 );
         } else {
-            return ((Integer)queryResult.get( 0 )).intValue();
+            return ((Integer)queryResult.get( 0 ));
         }
     }
 
@@ -1734,38 +1734,38 @@ public abstract class DatabaseService {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                int nexFreeMetaId = 1 + getMaxIntValue( transaction, "meta", "meta_id" );
+                Integer nexFreeMetaId = getMaxIntValuePlusOne( transaction, "meta", "meta_id" );
                 Table_meta metaToBeCopied = selectFrom_meta( meta_id );
-                metaToBeCopied.meta_id = nexFreeMetaId;
+                metaToBeCopied.meta_id = nexFreeMetaId.intValue();
                 insertInto_meta( transaction, metaToBeCopied );
 
                 Table_text_docs textDocsToBeCopied = selectFrom_text_docs( meta_id );
                 if( null != textDocsToBeCopied ) {
-                    textDocsToBeCopied.meta_id = nexFreeMetaId;
+                    textDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_text_docs( transaction, textDocsToBeCopied );
                 }
 
                 Table_url_docs urlDocsToBeCopied = selectFrom_url_docs( meta_id );
                 if( null != urlDocsToBeCopied ) {
-                    urlDocsToBeCopied.meta_id = nexFreeMetaId;
+                    urlDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_url_docs( transaction, urlDocsToBeCopied );
                 }
 
                 Table_browser_docs browserDocsToBeCopied = selectFrom_browser_docs( meta_id );
                 if( null != browserDocsToBeCopied ) {
-                    browserDocsToBeCopied.meta_id = nexFreeMetaId;
+                    browserDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_browser_docs( transaction, browserDocsToBeCopied );
                 }
 
                 Table_frameset_docs framesetDocsToBeCopied = selectFrom_frameset_docs( meta_id );
                 if( null != framesetDocsToBeCopied ) {
-                    framesetDocsToBeCopied.meta_id = nexFreeMetaId;
+                    framesetDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_frameset_docs( transaction, framesetDocsToBeCopied );
                 }
 
                 Table_fileupload_docs fileUploadDocsToBeCopied = selectFrom_fileupload_docs( meta_id );
                 if( null != fileUploadDocsToBeCopied ) {
-                    fileUploadDocsToBeCopied.meta_id = nexFreeMetaId;
+                    fileUploadDocsToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_fileupload_docs( transaction, fileUploadDocsToBeCopied );
                 }
 
@@ -1773,8 +1773,8 @@ public abstract class DatabaseService {
                 for( int i = 0; i < textsToBeCopied.length; i++ ) {
                     Table_texts textToBeCopied = textsToBeCopied[i];
                     textToBeCopied.meta_id = meta_id.intValue();
-                    int newCounterValue = getMaxIntValue( transaction, "texts", "counter" );
-                    textToBeCopied.counter = newCounterValue;
+                    Integer newCounterValue = getMaxIntValuePlusOne( transaction, "texts", "counter" );
+                    textToBeCopied.counter = newCounterValue.intValue();
                     insertInto_texts( transaction, textToBeCopied );
                 }
 
@@ -1788,49 +1788,49 @@ public abstract class DatabaseService {
                 Table_includes[] includesToBeCopied = selectFrom_includes( meta_id );
                 for( int i = 0; i < includesToBeCopied.length; i++ ) {
                     Table_includes table_includes = includesToBeCopied[i];
-                    table_includes.meta_id = nexFreeMetaId;
+                    table_includes.meta_id = nexFreeMetaId.intValue();
                     insertInto_includes( transaction, table_includes );
                 }
 
                 Table_doc_permission_sets docPermissionSetsToBeCopied = selectFrom_doc_permission_sets( meta_id );
                 if( null != docPermissionSetsToBeCopied ) {
-                    docPermissionSetsToBeCopied.meta_id = nexFreeMetaId;
+                    docPermissionSetsToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_doc_permission_sets( transaction, docPermissionSetsToBeCopied );
                 }
 
                 Table_new_doc_permission_sets newDocPermissionSetsToBeCopied = selectFrom_new_doc_permission_sets( meta_id );
                 if( null != newDocPermissionSetsToBeCopied ) {
-                    newDocPermissionSetsToBeCopied.meta_id = nexFreeMetaId;
+                    newDocPermissionSetsToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_new_doc_permission_sets( transaction, newDocPermissionSetsToBeCopied );
                 }
 
                 Table_doc_permission_sets_ex docPermissionsSetsExToBeCopied = selectFrom_doc_permission_sets_ex( meta_id );
                 if( null != docPermissionsSetsExToBeCopied ) {
-                    docPermissionsSetsExToBeCopied.meta_id = nexFreeMetaId;
+                    docPermissionsSetsExToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_doc_permission_sets_ex( transaction, docPermissionsSetsExToBeCopied );
                 }
 
                 Table_new_doc_permission_sets_ex newDocPermissionSetsExToBeCopied = selectFrom_new_doc_permission_sets_ex( meta_id );
                 if( null != newDocPermissionSetsExToBeCopied ) {
-                    newDocPermissionSetsExToBeCopied.meta_id = nexFreeMetaId;
+                    newDocPermissionSetsExToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_new_doc_permission_sets_ex( transaction, newDocPermissionSetsExToBeCopied );
                 }
 
                 Table_roles_rights rolesRightsToBeCopied = selectFrom_roles_rights( meta_id );
                 if( null != rolesRightsToBeCopied ) {
-                    rolesRightsToBeCopied.meta_id = nexFreeMetaId;
+                    rolesRightsToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_roles_rights( transaction, rolesRightsToBeCopied );
                 }
 
                 Table_meta_classification metaClassificationToBeCopied = selectFrom_meta_classification( meta_id );
                 if( null != metaClassificationToBeCopied ) {
-                    metaClassificationToBeCopied.meta_id = nexFreeMetaId;
+                    metaClassificationToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_meta_classification( transaction, metaClassificationToBeCopied );
                 }
 
                 Table_meta_section metaSectionToBeCopied = selectFrom_meta_section( meta_id );
                 if( null != metaSectionToBeCopied ) {
-                    metaSectionToBeCopied.meta_id = nexFreeMetaId;
+                    metaSectionToBeCopied.meta_id = nexFreeMetaId.intValue();
                     insertInto_meta_section( transaction, metaSectionToBeCopied );
                 }
             }
@@ -2452,9 +2452,9 @@ public abstract class DatabaseService {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                int newRoleId = 1 + getMaxIntValue( transaction, "roles", "role_id" );
+                Integer newRoleId = getMaxIntValuePlusOne( transaction, "roles", "role_id" );
                 String sql = "INSERT INTO roles ( role_id , role_name, permissions, admin_role ) VALUES( ?, ?, ?, ? )";
-                Object[] paramValues = new Object[]{new Integer( newRoleId ), role_name, new Integer( 0 ), new Integer( 0 )};
+                Object[] paramValues = new Object[]{ newRoleId, role_name, new Integer( 0 ), new Integer( 0 )};
                 transaction.executeUpdate( sql, paramValues );
             }
         } );
@@ -2582,5 +2582,105 @@ public abstract class DatabaseService {
         } else {
             return (Integer)queryResult.get(0);
         }
+    }
+
+    // todo: Christoffer varför är ip_start och ip_end flyttal? Det verkar inte vara så i koden, vad är det för något?
+    public static class Table_ip_accesses {
+        int ip_access_id;
+        int user_id;
+        long ip_start;
+        long ip_end;
+
+        public Table_ip_accesses(){}
+        public Table_ip_accesses( ResultSet rs ) throws SQLException {
+            ip_access_id = rs.getInt("ip_access_id");
+            user_id = rs.getInt("user_id");
+            ip_start = rs.getLong("ip_start");
+            ip_end = rs.getLong("ip_end");
+        }
+    }
+
+    /**
+     * Lets get all IPaccesses from db. Used  by the AdminIpAccesses
+    */
+    // todo: denna returnerar endast users som finns kvar i systemet. Gamla user_ids försvinner, ska det vara så?
+    Table_ip_accesses[] sproc_IPAccessesGetAll() {
+        String sql = "SELECT ip.ip_access_id, ip.user_id, usr.login_name, ip.ip_start, ip.ip_end " +
+            "FROM IP_ACCESSES ip, USERS usr WHERE ip.user_id = usr.user_id";
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_ip_accesses(rs);
+            }
+        } );
+        return (Table_ip_accesses[])queryResult.toArray( new Table_ip_accesses[queryResult.size()]);
+    }
+
+    /**
+     * This function adds a new ip-access to the db. Used by AdminManager
+     * @param user_id
+     * @param ip_start
+     * @param ip_end
+     * @return
+     */
+    // todo: Borde inte ip_access_id vara en primary key, och user_id en forreign?
+    int sproc_IPAccessAdd( final int user_id, final long ip_start, final long ip_end ) {
+        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        transaction.executeAndCommit( new TransactionContent() {
+            public void execute() throws SQLException {
+                Integer new_ip_access_id = getMaxIntValuePlusOne(transaction,"ip_accesses", "ip_access_id");
+                String sql = "INSERT INTO ip_accesses ( ip_access_id, user_id , ip_start , ip_end ) VALUES (?,?,?,?)";
+                Object[] paramValues = new Object[]{ new_ip_access_id, new Integer(user_id), new Long(ip_start), new Long(ip_end) };
+                transaction.executeUpdate( sql, paramValues );
+            }
+        } );
+        return transaction.getRowCount();
+    }
+
+
+    /**
+     * Updates the IPaccess table
+     */
+    int sproc_IPAccessUpdate( Table_ip_accesses tableData ) {
+        String sql = "UPDATE ip_accesses SET user_id = ? , ip_start = ?, ip_end = ? WHERE ip_access_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( tableData.user_id ), new Double(tableData.ip_start),
+                                             new Long(tableData.ip_end ), new Long(tableData.ip_access_id) };
+        return sqlProcessor.executeUpdate( sql, paramValues );
+    }
+
+    /**
+     * Deletes an Ip-access for a user. Used by the AdminIpAccess servlet
+    */
+    int sproc_IPAccessDelete( int ip_access_id ) {
+        String sql = "DELETE FROM ip_accesses WHERE ip_access_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( ip_access_id ) };
+        return sqlProcessor.executeUpdate( sql, paramValues );
+    }
+
+    public static class MoreThanOneTable_sort_by_display_name {
+        String sort_by_type;
+        String display_name;
+
+        public MoreThanOneTable_sort_by_display_name( ResultSet rs ) throws SQLException {
+            sort_by_type = rs.getString("sort_by_type");
+            display_name = rs.getString("display_name");
+        }
+    }
+
+    /**
+     * This sproc is used by the GetExistingDoc servlet, it takes the lang id string as argument and returns
+     * the sortorder options  display text for that language.
+     * Example: SortOrder_GetExistingDocs 'se'.
+     */
+    MoreThanOneTable_sort_by_display_name[] sproc_SortOrder_GetExistingDocs( String lang_prefix ) {
+        String sql = "SELECT sType.sort_by_type , display.display_name FROM lang_prefixes lang " +
+            "INNER JOIN display_name display ON display.lang_id = lang.lang_id AND lang.lang_prefix = ? " +
+            "INNER JOIN sort_by sType ON sType.sort_by_id = display.sort_by_id";
+        Object[] paramValues = new Object[]{ lang_prefix };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new MoreThanOneTable_sort_by_display_name(rs);
+            }
+        } );
+        return (MoreThanOneTable_sort_by_display_name[])queryResult.toArray(new MoreThanOneTable_sort_by_display_name[queryResult.size()]);
     }
 }

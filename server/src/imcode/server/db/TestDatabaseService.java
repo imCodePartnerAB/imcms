@@ -59,6 +59,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static final int SECTION_TEST_ID = 1;
     private static final String SECTION_TEST_NAME = "TestSection";
     private static final String USER_NAME_NON_EXISTING = "adsnfpjpacidfjaoökjadfac";
+    private static final int IP_ACCESS_ID = 1;
 
     protected void setUp() throws IOException {
         databaseServices = new DatabaseService[]{
@@ -124,8 +125,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_getTemplategroups( databaseService );
             test_sproc_getText( databaseService );
             test_sproc_GetUserTypes( databaseService );
+            test_sproc_IPAccessesGetAll( databaseService );
+            test_sproc_SortOrder_GetExistingDocs( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_SortOrder_GetExistingDocs( DatabaseService databaseService ) {
+        assertEquals(7, databaseService.sproc_SortOrder_GetExistingDocs(LANG_PREFIX_SWEDEN).length );
+    }
+
+    private void test_sproc_IPAccessesGetAll( DatabaseService databaseService ) {
+        assertEquals( 1, databaseService.sproc_IPAccessesGetAll().length );
     }
 
     private void test_sproc_GetUserTypes( DatabaseService databaseService ) {
@@ -657,11 +668,39 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             assertEquals( 0, databaseService.sproc_UpdateParentsDateModified( DOC_TEST_FIRST_ID ) );
         }
     }
+
+    public void test_sproc_sproc_IPAccessAdd() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 1, databaseService.sproc_IPAccessAdd( USER_TEST_ID, 192193043002L, 239098543002L ) );
+            assertEquals( 2, databaseService.sproc_IPAccessesGetAll().length );
+        }
+    }
+
+    public void test_sproc_IPAccessUpdate() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            DatabaseService.Table_ip_accesses tableData = new DatabaseService.Table_ip_accesses();
+            tableData.ip_access_id = IP_ACCESS_ID;
+            tableData.user_id = USER_TEST_ID;
+            tableData.ip_start = 100000000L;
+            tableData.ip_end = 200000000L;
+            assertEquals( 1, databaseService.sproc_IPAccessUpdate( tableData ) );
+            assertEquals( 1, databaseService.sproc_IPAccessesGetAll().length );
+        }
+    }
+
+    public void test_IPAccessDelete() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 1, databaseService.sproc_IPAccessDelete( IP_ACCESS_ID ) );
+            assertEquals( 0, databaseService.sproc_IPAccessDelete( IP_ACCESS_ID ) );
+        }
+    }
+
     // Below is helper functions to more than one test.
     private static DatabaseService.Table_users static_createDummyUser() {
         DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", false, DOC_FIRST_PAGE_ID, 0, 1, 1, true, new Timestamp( new java.util.Date().getTime() ) );
         return user;
     }
-
-
 }
