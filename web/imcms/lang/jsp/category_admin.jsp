@@ -6,8 +6,16 @@
 
 #gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/17 ?>" "AdminManager" "back" 124 "focusField(1,'template')" )
 
+<%
+    AdminCategories.Page adminCategoriesPage = (AdminCategories.Page)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
+    String mode = adminCategoriesPage.getMode() ;
+    StringBuffer messageToUser = new StringBuffer("");
+
+    CategoryDomainObject categoryToEdit = adminCategoriesPage.getCategoryToEdit() ;
+%>
 <table  width="400">
 <form name="head" action="AdminCategories" method="post">
+
     <tr>
         <td colspan="2" class="imcmsAdmText"><b class="lighterBlue"><? install/htdocs/sv/jsp/category_admin/category_type ?>:</b></td>
     </tr>
@@ -32,13 +40,6 @@
 </form>
 </table>
 
-<%
-    AdminCategories.Page adminCategoriesPage = (AdminCategories.Page)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
-    String mode = adminCategoriesPage.getMode() ;
-    StringBuffer messageToUser = new StringBuffer("");
-
-    CategoryDomainObject categoryToEdit = adminCategoriesPage.getCategoryToEdit() ;
-%>
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="main" action="AdminCategories" method="post">
@@ -175,28 +176,33 @@
     <%} // ------ add category -------
     else if(inAddCategoryMode) {
 
+        if( AdminCategories.createHtmlOptionListOfCategoryTypes(null).equals("") ){
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_create_category_type_first ?> ");
+            inAddCategoryMode = false;
+        }
         if( request.getParameter("category_add") != null && !adminCategoriesPage.getUniqueCategoryName() ) {
             messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/1 ?> \"");
             messageToUser.append(request.getParameter("name") + "\" ");
             messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/2 ?> \"" + categoryToEdit.getType().getName() + "\". ");
             messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/3 ?>!");
         }
-    %>
+        %>
 
 
         <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__ADD_CATEGORY %>" value="1">
-    <% if (null != categoryToEdit) {
-        boolean readonly = false; %>
+        <% if (null != categoryToEdit) {
+            boolean readonly = false;
+            if( !AdminCategories.createHtmlOptionListOfCategoryTypes(null).equals("") ){ %>
+                <%@include file="category_admin_category.jsp"%>
+            <%}
+        }
 
-        <%@include file="category_admin_category.jsp"%>
-    <% } %>
-
-    <%if( messageToUser.length() > 0 ) { %>
-    <tr><td colspan="2">&nbsp;</td></tr>
-    <tr>
-        <td colspan="2" height="24" class="imcmsAdmText" ><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="red"> <%=messageToUser %> </font></td>
-    </tr>
-    <%}
+        if( messageToUser.length() > 0 ) { %>
+            <tr><td colspan="2">&nbsp;</td></tr>
+            <tr>
+                <td colspan="2" height="24" class="imcmsAdmText" ><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="red"> <%=messageToUser %> </font></td>
+            </tr>
+        <% }
     }  // ---------- edit category ------------
     else if(inEditCategoryMode) {
 
