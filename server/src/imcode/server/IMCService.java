@@ -52,8 +52,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
    private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG );
    private final static Logger log = Logger.getLogger( IMCService.class.getName() );
    private static final String EXTERNAL_AUTHENTICATOR_SMB = "SMB";
-   private static final String LDAP_PROPERTIES_FILE = "ldap.properties";
-   private static final String SMB_PROPERTIES_FILE = "smb.properties";
    private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
 
    static {
@@ -777,11 +775,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     */
    public imcode.server.Table isUrlDoc( int meta_id, User user ) {
       String sqlStr = "";
-      int to_meta_id;
       imcode.server.Table url_doc;
-
-      to_meta_id = meta_id;
-
 
       DBConnect dbc = new DBConnect( m_conPool );
       dbc.getConnection();
@@ -789,9 +783,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       sqlStr = "select doc_type from meta where meta_id = " + meta_id;
       dbc.setSQLString( sqlStr );
       dbc.createStatement();
-      Vector vec_doc_type = (Vector)dbc.executeQuery();
+      Vector vec_doc_type = dbc.executeQuery();
       dbc.clearResultSet();
-
 
       if( Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() ) == 5 ) {
          sqlStr = "select * from url_docs where meta_id = " + meta_id;
@@ -894,7 +887,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       sqlStr = "select doc_type from meta where meta_id = " + meta_id;
       dbc.setSQLString( sqlStr );
       dbc.createStatement();
-      Vector vec_doc_type = (Vector)dbc.executeQuery();
+      Vector vec_doc_type = dbc.executeQuery();
       dbc.clearResultSet();
 
 
@@ -902,7 +895,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          sqlStr = "select frame_set from frameset_docs where meta_id = " + meta_id;
          dbc.setSQLString( sqlStr );
          dbc.createStatement();
-         frame_set = (Vector)dbc.executeQuery();
+         frame_set = dbc.executeQuery();
          dbc.clearResultSet();
          html_str = frame_set.elementAt( 0 ).toString();
       } else
@@ -931,7 +924,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       sqlStr = "select doc_type from meta where meta_id = " + meta_id;
       dbc.setSQLString( sqlStr );
       dbc.createStatement();
-      Vector vec_doc_type = (Vector)dbc.executeQuery();
+      Vector vec_doc_type = dbc.executeQuery();
       dbc.clearResultSet();
 
       int doc_type = Integer.parseInt( vec_doc_type.elementAt( 0 ).toString() );
@@ -1044,7 +1037,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
       dbc.getConnection();
       dbc.createStatement();
-      data = (Vector)dbc.executeQuery();
+      data = dbc.executeQuery();
 
       dbc.clearResultSet();
       dbc.closeConnection();
@@ -1072,7 +1065,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
       dbc.getConnection();
       dbc.createStatement();
-      data = (Vector)dbc.executeQuery();
+      data = dbc.executeQuery();
 
       dbc.clearResultSet();
       dbc.closeConnection();
@@ -1109,7 +1102,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       dbc.getConnection();
       dbc.setProcedure( procedure );
       // dbc.createStatement() ;
-      Vector data = (Vector)dbc.executeProcedure();
+      Vector data = dbc.executeProcedure();
 
       dbc.clearResultSet();
       dbc.closeConnection();
@@ -1192,7 +1185,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       DBConnect dbc = new DBConnect( m_conPool );
       dbc.getConnection();
       dbc.setProcedure( procedure );
-      data = (Vector)dbc.executeProcedure();
+      data = dbc.executeProcedure();
 
       dbc.clearResultSet();
       dbc.closeConnection();
@@ -1272,9 +1265,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       DBConnect dbc = new DBConnect( m_conPool, sqlQuery );
       dbc.getConnection();
       dbc.createStatement();
-      Vector data = (Vector)dbc.executeQuery();
+      Vector data = dbc.executeQuery();
 
-      String[] meta = (String[])dbc.getMetaData();
+      String[] meta = dbc.getMetaData();
 
       if( data.size() > 0 ) {
          String result[] = new String[data.size() + dbc.getColumnCount() + 1];
@@ -1323,8 +1316,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       dbc.setProcedure( procedure );
 
 
-      Vector data = (Vector)dbc.executeProcedure();
-      String[] meta = (String[])dbc.getMetaData();
+      Vector data = dbc.executeProcedure();
+      String[] meta = dbc.getMetaData();
 
       if( data != null && data.size() > 0 ) {
 
@@ -1370,8 +1363,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       dbc.getConnection();
       dbc.createStatement();
 
-      Vector data = (Vector)dbc.executeQuery();
-      String[] meta = (String[])dbc.getMetaData();
+      Vector data = dbc.executeQuery();
+      String[] meta = dbc.getMetaData();
 
       int columns = dbc.getColumnCount();
 
@@ -1414,8 +1407,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       dbc.setProcedure( procedure );
 
 
-      Vector data = (Vector)dbc.executeProcedure();
-      String[] meta = (String[])dbc.getMetaData();
+      Vector data = dbc.executeProcedure();
+      String[] meta = dbc.getMetaData();
       int columns = dbc.getColumnCount();
 
 
@@ -1469,7 +1462,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       }
 
       dbc.setProcedure( procedure, params );
-      data = (Vector)dbc.executeProcedure();
+      data = dbc.executeProcedure();
       int columns = dbc.getColumnCount();
       dbc.clearResultSet();
       dbc.closeConnection();
@@ -1498,7 +1491,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       dbc.getConnection();
       dbc.setProcedure( procedure );
 
-      data = (Vector)dbc.executeProcedure();
+      data = dbc.executeProcedure();
       int columns = dbc.getColumnCount();
 
       if( columns == 0 )
@@ -1533,7 +1526,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       dbc.getConnection();
       dbc.createStatement();
 
-      data = (Vector)dbc.executeQuery();
+      data = dbc.executeQuery();
       int columns = dbc.getColumnCount();
 
       if( columns == 0 )
@@ -1643,7 +1636,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       dbc.setSQLString( sqlStr );
       dbc.getConnection();
       dbc.createStatement();
-      data = (Vector)dbc.executeQuery();
+      data = dbc.executeQuery();
 
       dbc.clearResultSet();
       dbc.closeConnection();
@@ -1740,23 +1733,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
    }
 
    /**
-    Remove elements from a vector.
-    */
-   private Vector removeElement( Vector vec, int elements ) {
-      Vector tempVec = new Vector();
-      for( int i = 0; i < vec.size(); i += (elements + 1) )
-         tempVec.addElement( vec.elementAt( i + elements ) );
-      return tempVec;
-   }
-
-   /**
     get doctype
     */
    public int getDocType( int meta_id ) {
       DBConnect dbc = new DBConnect( m_conPool );
       dbc.getConnection();
       dbc.setProcedure( "GetDocType " + meta_id );
-      Vector data = (Vector)dbc.executeProcedure();
+      Vector data = dbc.executeProcedure();
       dbc.clearResultSet();
       dbc.closeConnection();
       dbc = null;
@@ -1807,7 +1790,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          String sqlStr = "GetUserPermissionSet";
          String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
          dbc.setProcedure( sqlStr, sqlAry );
-         Vector perms = (Vector)dbc.executeProcedure();
+         Vector perms = dbc.executeProcedure();
          dbc.clearResultSet();
          dbc.closeConnection();
 
@@ -1834,7 +1817,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          String sqlStr = "GetUserPermissionSet";
          String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
          dbc.setProcedure( sqlStr, sqlAry );
-         Vector perms = (Vector)dbc.executeProcedure();
+         Vector perms = dbc.executeProcedure();
          dbc.clearResultSet();
          dbc.closeConnection();
 
@@ -1863,7 +1846,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          String sqlStr = "GetUserPermissionSet";
          String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
          dbc.setProcedure( sqlStr, sqlAry );
-         Vector perms = (Vector)dbc.executeProcedure();
+         Vector perms = dbc.executeProcedure();
          dbc.clearResultSet();
          dbc.closeConnection();
 
@@ -1896,7 +1879,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          String sqlStr = "GetUserPermissionSet";
          String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
          dbc.setProcedure( sqlStr, sqlAry );
-         Vector perms = (Vector)dbc.executeProcedure();
+         Vector perms = dbc.executeProcedure();
          dbc.clearResultSet();
          dbc.closeConnection();
 
@@ -1934,7 +1917,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          String sqlStr = "GetUserPermissionSet";
          String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user_id )};
          dbc.setProcedure( sqlStr, sqlAry );
-         Vector perms = (Vector)dbc.executeProcedure();
+         Vector perms = dbc.executeProcedure();
          dbc.clearResultSet();
          dbc.closeConnection();
 
@@ -1965,7 +1948,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     save template to disk
     */
    public int saveTemplate( String name, String file_name, byte[] template, boolean overwrite, String lang_prefix ) {
-      BufferedOutputStream out;
       String sqlStr = "";
       String file;
       String new_template_id = "";
@@ -1997,7 +1979,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       sqlStr += "where simple_name = '" + name + "'";
       dbc.setSQLString( sqlStr );
       dbc.createStatement();
-      Vector template_id = (Vector)dbc.executeQuery();
+      Vector template_id = dbc.executeQuery();
       dbc.clearResultSet();
       if( template_id.size() == 0 ) {
 
@@ -2005,7 +1987,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          sqlStr = "select max(template_id) + 1 from templates\n";
          dbc.setSQLString( sqlStr );
          dbc.createStatement();
-         new_template_id = ((Vector)dbc.executeQuery()).elementAt( 0 ).toString();
+         new_template_id = dbc.executeQuery().elementAt( 0 ).toString();
          dbc.clearResultSet();
 
 
@@ -2215,7 +2197,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       sqlStr += "and user_id =" + user.getUserId();
       dbc.setSQLString( sqlStr );
       dbc.createStatement();
-      String lang_prefix = ((Vector)dbc.executeQuery()).elementAt( 0 ).toString();
+      String lang_prefix = dbc.executeQuery().elementAt( 0 ).toString();
       dbc.clearResultSet();
 
 
@@ -2223,7 +2205,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       sqlStr = "select max(group_id) + 1 from templategroups\n";
       dbc.setSQLString( sqlStr );
       dbc.createStatement();
-      String new_group_id = ((Vector)dbc.executeQuery()).elementAt( 0 ).toString();
+      String new_group_id = dbc.executeQuery().elementAt( 0 ).toString();
       dbc.clearResultSet();
 
 
@@ -2449,8 +2431,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       DBConnect dbc = new DBConnect( m_conPool );
       dbc.getConnection();
       dbc.setProcedure( "ExistingDocsGetSelectedMetaIds ", sBuf.toString() );
-      Vector data = (Vector)dbc.executeProcedure();
-      String[] meta = (String[])dbc.getMetaData();
+      Vector data = dbc.executeProcedure();
+      String[] meta = dbc.getMetaData();
       int columns = dbc.getColumnCount();
       dbc.clearResultSet();
       dbc.closeConnection();
@@ -2605,7 +2587,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          dbc.setSQLString( sqlStr );
          dbc.getConnection();
          dbc.createStatement();
-         data = (Vector)dbc.executeQuery();
+         data = dbc.executeQuery();
 
          dbc.clearResultSet();
          dbc.closeConnection();
@@ -2648,7 +2630,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       Iterator it = Arrays.asList( texts ).iterator();
       while( it.hasNext() ) {
          try {
-            String key = (String)it.next();
+            it.next(); // the key, not needed
             String txt_no = (String)it.next();
             int txt_type = Integer.parseInt( (String)it.next() );
             String value = (String)it.next();
@@ -2656,7 +2638,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          } catch( NumberFormatException e ) {
             log.error( "SProc 'GetTexts " + meta_id + "' returned a non-number where a number was expected.", e );
             return null;
-         } // end of try-catch
+         }
       }
       return textMap;
    }
