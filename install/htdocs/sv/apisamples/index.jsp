@@ -68,6 +68,7 @@ List all possible document categories, <%= makeLink("categories_show_all.jsp") %
 Show template for a document, <%= makeLink("document_show_templates.jsp") %><br>
 Change template for a document, <%= makeLink("document_change_template.jsp") %><br>
 Set template for a document to "Start", <%= makeLink("document_change_template_by_name.jsp") %><br>
+Set template for a document to one with id=1, <%= makeLink("document_change_template_by_id.jsp") %><br>
 <br>
 Get the first text field from the document, <%= makeLink("document_get_text_from_field.jsp") %><br>
 Change the first and the second field, <%= makeLink("document_set_text_field.jsp") %><br>

@@ -81,4 +81,9 @@ public class TemplateService {
         return (null != template) ? new Template(template) : null ;
     }
 
+    public Template getTemplateById(int templateId) {
+        TemplateDomainObject template = templateMapper.getTemplateById(templateId);
+        return (null != template) ? new Template(template) : null ;
+    }
+
 }
