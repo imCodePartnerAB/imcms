@@ -234,9 +234,9 @@ public abstract class DatabaseService {
     }
 
     public Table_users[] sproc_GetAllUsers_OrderByLastName() {
-        String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip," +
+        String sql = "SELECT user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip," +
             "country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date " +
-            "from users ORDER BY last_name";
+            "FROM users ORDER BY last_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new Table_users( rs );
@@ -249,7 +249,8 @@ public abstract class DatabaseService {
     public int sproc_AddNewuser( Table_users userData ) {
         String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, " +
             "company, address, city, zip, country, county_council, email, external, last_page, archive_mode, " +
-            "lang_id, user_type, active, create_date ) " + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            "lang_id, user_type, active, create_date ) " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         Object[] paramValues = new Object[]{new Integer( userData.user_id ), userData.login_name,
                                             userData.login_password, userData.first_name, userData.last_name,
                                             userData.title, userData.company, userData.address, userData.city,
@@ -267,7 +268,7 @@ public abstract class DatabaseService {
     }
 
     public int sproc_updateUser( Table_users userData ) {
-        String sql = "Update users set " + "login_name = ?, " + "login_password = ?, " + "first_name = ?, " +
+        String sql = "Update users SET " + "login_name = ?, " + "login_password = ?, " + "first_name = ?, " +
             "last_name = ?, " + "title = ?, " + "company = ?, " + "address =  ?, " + "city = ?, " + "zip = ?, " +
             "country = ?, " + "county_council =?, " + "email = ?, " + "user_type = ?, " + "active = ?, " +
             "lang_id = ? " + "WHERE user_id = ?";
@@ -438,15 +439,15 @@ public abstract class DatabaseService {
 
     public int sproc_PhoneNbrUpdate( int user_id, int phone_id, String number, int phonetype_id ) {
         String sql = "UPDATE phones SET number = ?, phonetype_id = ? " +
-            "WHERE user_id = ? AND phone_id = ? ";
+                     "WHERE user_id = ? AND phone_id = ? ";
         Object[] paramValues = new Object[]{number, new Integer( phonetype_id ),
                                             new Integer( user_id ), new Integer( phone_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
     public String sproc_GetPhonetypeName( int phonetype_id, int lang_id ) {
-        String sql = "select typename from phonetypes " +
-            "where phonetype_id = ? and lang_id = ? ";
+        String sql = "SELECT typename FROM phonetypes " +
+            "WHERE phonetype_id = ? AND lang_id = ? ";
         Object[] paramValues = new Object[]{new Integer( phonetype_id ), new Integer( lang_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -543,25 +544,25 @@ public abstract class DatabaseService {
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 Object[] paramValues = new Object[]{new Integer( meta_id )};
-                transaction.executeUpdate( "delete from meta_classification where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from childs where to_meta_id = 	?", paramValues );
-                transaction.executeUpdate( "delete from childs where meta_id =	?", paramValues );
-                transaction.executeUpdate( "delete from text_docs where meta_id = 	?", paramValues );
-                transaction.executeUpdate( "delete from texts where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from images where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from roles_rights where meta_id = ?", paramValues );
-                // transaction.executeUpdate( "delete from user_rights where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from url_docs where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from browser_docs where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from fileupload_docs where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from frameset_docs where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from new_doc_permission_sets_ex where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from new_doc_permission_sets where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from doc_permission_sets_ex where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from doc_permission_sets where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from includes where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from meta_section where meta_id = ?", paramValues );
-                transaction.executeUpdate( "delete from meta where meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM meta_classification WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM childs WHERE to_meta_id = 	?", paramValues );
+                transaction.executeUpdate( "DELETE FROM childs WHERE meta_id =	?", paramValues );
+                transaction.executeUpdate( "DELETE FROM text_docs WHERE meta_id = 	?", paramValues );
+                transaction.executeUpdate( "DELETE FROM texts WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM images WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM roles_rights WHERE meta_id = ?", paramValues );
+                // transaction.executeUpdate( "DELETE FROM user_rights WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM url_docs WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM browser_docs WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM fileupload_docs WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM frameset_docs WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM new_doc_permission_sets_ex WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM new_doc_permission_sets WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM doc_permission_sets_ex WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM doc_permission_sets WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM includes WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM meta_section WHERE meta_id = ?", paramValues );
+                transaction.executeUpdate( "DELETE FROM meta WHERE meta_id = ?", paramValues );
             }
         } );
         return transaction.getRowCount();
@@ -591,7 +592,7 @@ public abstract class DatabaseService {
     // todo: Ska inte ändringsdatumen uppdateras i denna också?
     public int sproc_AddExistingDocToMenu( int meta_id, int existing_meta_id, int doc_menu_no ) {
         // test if this is the first child
-        String sqlLinksCount = "select count(*) from childs where meta_id = ?  and menu_sort = ? ";
+        String sqlLinksCount = "SELECT COUNT(*) FROM childs WHERE meta_id = ?  AND menu_sort = ? ";
         Object[] paramValuesLinksCount = new Object[]{new Integer( meta_id ), new Integer( doc_menu_no )};
         ArrayList countResult = sqlProcessor.executeQuery( sqlLinksCount, paramValuesLinksCount, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -602,7 +603,7 @@ public abstract class DatabaseService {
 
         int manualSortOrder = 500;
         if( countItem.intValue() > 0 ) {// update manual_sort_order
-            String sqlSortOrder = "select max(manual_sort_order) from childs where meta_id = ? and menu_sort = ?";
+            String sqlSortOrder = "SELECT max(manual_sort_order) FROM childs WHERE meta_id = ? AND menu_sort = ?";
             Object[] paramValuesSortOrder = new Object[]{new Integer( meta_id ), new Integer( doc_menu_no )};
             ArrayList sortOrderResult = sqlProcessor.executeQuery( sqlSortOrder, paramValuesSortOrder, new ResultProcessor() {
                 public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -613,7 +614,7 @@ public abstract class DatabaseService {
         }
 
         //- test if child already exist in this menu. If not, then we will add the child to the menu.
-        String sqlThisLinksCount = "select count(*) from childs where meta_id = ? and to_meta_id = ? and menu_sort = ?";
+        String sqlThisLinksCount = "SELECT COUNT(*) FROM childs WHERE meta_id = ? AND to_meta_id = ? AND menu_sort = ?";
         Object[] paramValuesThisLinksCount = new Object[]{new Integer( meta_id ), new Integer( existing_meta_id ), new Integer( doc_menu_no )};
         ArrayList queryResult = sqlProcessor.executeQuery( sqlThisLinksCount, paramValuesThisLinksCount, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -721,35 +722,36 @@ public abstract class DatabaseService {
     public JoinedTables_meta_childs[] sproc_getChilds( int meta_id, int user_id ) {
         Integer sortOrder = getMenuSortOrder( meta_id );
         String sql =
-            "select to_meta_id, c.menu_sort,manual_sort_order, doc_type," +
+            "SELECT to_meta_id, c.menu_sort,manual_sort_order, doc_type," +
             "  archive,target, date_created, date_modified," +
             "  meta_headline,meta_text,meta_image,frame_name," +
             "  activated_datetime,archived_datetime," +
             //            "  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1))," +
             "fd.filename " +
-            "from  childs c " +
-            "join meta m " +
-            "   on m.meta_id = c.to_meta_id " + // meta.meta_id corresponds to childs.to_meta_id
-            "   and  m.activate > 0 " + // Only include the documents that are active in the meta table
-            "   and  c.meta_id = ? " + // Only include documents that are children to this particular meta_id
-            "left join roles_rights rr " + // We may have permission, even though we don't have anything in role-permissions... That is, if we're docowner or superadmin
-            "   on c.to_meta_id = rr.meta_id " + // Only include rows with the documents we are interested in
-            "left join doc_permission_sets dps " + // Include the permission_sets
-            "   on c.to_meta_id = dps.meta_id " + // for each document
-            "   and dps.set_id = rr.set_id " + // and only the sets for the roles we are interested in
-            "   and dps.permission_id > 0 " + // and only the sets that have any permission
-            "join user_roles_crossref urc " + // This table tells us which users have which roles
-            "   on urc.user_id = ? " + // Only include the rows with the user we are interested in...
-            "   and ( " +
+            "FROM  childs c " +
+            "JOIN meta m " +
+            "   ON m.meta_id = c.to_meta_id " + // meta.meta_id corresponds to childs.to_meta_id
+            "   AND  m.activate > 0 " + // Only include the documents that are active in the meta table
+            "   AND  c.meta_id = ? " + // Only include documents that are children to this particular meta_id
+            "LEFT JOIN roles_rights rr " + // We may have permission, even though we don't have anything in role-permissions... That is, if we're docowner or superadmin
+            "   ON c.to_meta_id = rr.meta_id " + // Only include rows with the documents we are interested in
+            "LEFT JOIN doc_permission_sets dps " + // Include the permission_sets
+            "   ON c.to_meta_id = dps.meta_id " + // for each document
+            "   AND dps.set_id = rr.set_id " + // and only the sets for the roles we are interested in
+            "   AND dps.permission_id > 0 " + // and only the sets that have any permission
+            "JOIN user_roles_crossref urc " + // This table tells us which users have which roles
+            "   ON urc.user_id = ? " + // Only include the rows with the user we are interested in...
+            "   AND ( " +
             "      rr.role_id = urc.role_id " + //  Include rows where the users roles match the roles that have permissions on the documents
             "   or urc.role_id = 0" + // and also include the rows that tells us this user is a superadmin
             "      or ( " +
             "         m.show_meta != 0 " + //  and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
             "      ) " +
             "   ) " +
-            "left join fileupload_docs fd " +
-            "   on fd.meta_id = c.to_meta_id " +
-            "group by to_meta_id, c.menu_sort,manual_sort_order, doc_type, archive,target, date_created, date_modified, meta_headline,meta_text,meta_image,frame_name, activated_datetime,archived_datetime, fd.filename ";
+            "LEFT JOIN fileupload_docs fd " +
+            "   ON fd.meta_id = c.to_meta_id " +
+            "GROUP BY to_meta_id, c.menu_sort,manual_sort_order, doc_type, archive,target, date_created, date_modified, " +
+            "meta_headline,meta_text,meta_image,frame_name, activated_datetime,archived_datetime, fd.filename ";
         Object[] paramValues = new Object[]{new Integer( meta_id ), new Integer( user_id )};
 
         if( sortOrder.intValue() == 3 ) {
@@ -769,7 +771,7 @@ public abstract class DatabaseService {
     }
 
     private Integer getMenuSortOrder( int meta_id ) {
-        String sql = "select sort_order from text_docs where meta_id = ?";
+        String sql = "SELECT sort_order FROM text_docs WHERE meta_id = ?";
         Object[] paramValues = new Object[]{new Integer( meta_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -790,8 +792,10 @@ public abstract class DatabaseService {
     // But I think that it should return a boolean true or fals if it is a
     public boolean sproc_CheckAdminRights( int user_id ) {
         String sql = "SELECT roles.role_id FROM users " +
-            "INNER JOIN user_roles_crossref ON users.user_id = user_roles_crossref.user_id " +
-            "INNER JOIN roles ON user_roles_crossref.role_id = roles.role_id " +
+            "INNER JOIN user_roles_crossref " +
+                "ON users.user_id = user_roles_crossref.user_id " +
+            "INNER JOIN roles " +
+                "ON user_roles_crossref.role_id = roles.role_id " +
             "WHERE roles.role_id = 0 AND users.user_id = ?";
         Object[] paramValues = new Object[]{new Integer( user_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -812,7 +816,8 @@ public abstract class DatabaseService {
     // med admin_role satt till 1 resp 2.
     public boolean sproc_checkUserAdminrole( int user_id, int admin_role ) {
         String sql = "SELECT admin_role FROM user_roles_crossref " +
-            "INNER JOIN roles ON user_roles_crossref.role_id = roles.role_id " +
+            "INNER JOIN roles " +
+                "ON user_roles_crossref.role_id = roles.role_id " +
             "WHERE (user_roles_crossref.user_id = ? ) AND (roles.admin_role = ? )";
         Object[] paramValues = new Object[]{new Integer( user_id ), new Integer( admin_role )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -827,7 +832,7 @@ public abstract class DatabaseService {
     public boolean sproc_CheckUserDocSharePermission( int user_id, int meta_id ) {
         String sql = "SELECT m.meta_id FROM meta m " +
             "JOIN user_roles_crossref urc ON urc.user_id = ? AND m.meta_id = ? " +
-            "LEFT join roles_rights rr ON rr.meta_id = m.meta_id AND rr.role_id = urc.role_id " +
+            "LEFT JOIN roles_rights rr ON rr.meta_id = m.meta_id AND rr.role_id = urc.role_id " +
             "WHERE ( shared = 1 OR	rr.set_id < 3 OR urc.role_id = 0 ) ";
         Object[] parameterValues = new Object[]{new Integer( user_id ), new Integer( meta_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, parameterValues, new ResultProcessor() {
@@ -1862,7 +1867,7 @@ public abstract class DatabaseService {
     }
 
     Table_users selectFrom_users( Integer user_id ) {
-        String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users " +
+        String sql = "SELECT user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date FROM users " +
             "WHERE user_id = ? ";
         Object[] paramValues = new Object[]{user_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -1878,7 +1883,7 @@ public abstract class DatabaseService {
     }
 
     public String[] sproc_GetUserRoles( int user_id ) {
-        String sql = "SELECT role_name from roles, user_roles_crossref " +
+        String sql = "SELECT role_name FROM roles, user_roles_crossref " +
             "WHERE roles.role_id = user_roles_crossref.role_id AND user_roles_crossref.user_id = ?";
         Object paramValues[] = new Object[]{new Integer( user_id )};
         List roleNames = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -1910,7 +1915,7 @@ public abstract class DatabaseService {
     }
 
     public Table_languages[] sproc_getLanguages() {
-        String sql = "select lang_prefix, user_prefix, language from languages order by language";
+        String sql = "SELECT lang_prefix, user_prefix, language FROM languages order by language";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new Table_languages( rs );
@@ -1995,7 +2000,7 @@ public abstract class DatabaseService {
     }
 
     public Table_templates selectFrom_templates( int template_id ) {
-        String sql = "select template_id, simple_name from templates WHERE template_id = ? ";
+        String sql = "SELECT template_id, simple_name FROM templates WHERE template_id = ? ";
         Object[] paramValues = new Object[]{new Integer( template_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -2010,7 +2015,7 @@ public abstract class DatabaseService {
     }
 
     public Table_templates[] sproc_getTemplates() {
-        String sql = "select template_id, simple_name from templates";
+        String sql = "SELECT template_id, simple_name FROM templates";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new Table_templates( rs );
@@ -2111,7 +2116,7 @@ public abstract class DatabaseService {
      */
     // todo: Denna returnerar inte riktigt samma som tidigare. För och Efternamn är uppdelat i olika fält.
     public PartOfTable_users[] sproc_GetAllUsersInList() {
-        String sql = "SELECT user_id, last_name, first_name from users ORDER BY last_name";
+        String sql = "SELECT user_id, last_name, first_name FROM users ORDER BY last_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new PartOfTable_users( rs );
@@ -2226,7 +2231,7 @@ public abstract class DatabaseService {
     public Table_section sproc_SectionGetInheritId( int parent_meta_id ) {
         String sql = "SELECT s.section_id, s.section_name " +
             "FROM sections s, meta_section ms, meta m " +
-            "where m.meta_id=ms.meta_id and m.meta_id= ? and ms.section_id=s.section_id";
+            "WHERE m.meta_id=ms.meta_id AND m.meta_id= ? AND ms.section_id=s.section_id";
         Object[] paramValues = new Object[]{new Integer( parent_meta_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -2247,7 +2252,7 @@ public abstract class DatabaseService {
                 Integer oldSectionId = new Integer( old_section_id );
                 Integer newSectionId = new Integer( new_section_id );
                 deleteFrom_section( transaction, oldSectionId );
-                String sql = "update meta_section set section_id = ? where section_id = ? ";
+                String sql = "update meta_section SET section_id = ? WHERE section_id = ? ";
                 Object[] paramValues = new Object[]{newSectionId, oldSectionId};
                 transaction.executeUpdate( sql, paramValues );
             }
@@ -2275,9 +2280,10 @@ public abstract class DatabaseService {
     }
 
     public Table_section_count[] sproc_SectionGetAllCount() {
-        String sql = "select s.section_id, s.section_name, count(meta_id) AS doc_count " +
-            "from sections s left join meta_section ms on s.section_id = ms.section_id " +
-            "group by s.section_name, s.section_id order by section_name";
+        String sql = "SELECT s.section_id, s.section_name, COUNT(meta_id) AS doc_count " +
+            "FROM sections s " +
+            "LEFT JOIN meta_section ms ON s.section_id = ms.section_id " +
+            "GROUP BY s.section_name, s.section_id order by section_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new Table_section_count( rs );
@@ -2290,7 +2296,7 @@ public abstract class DatabaseService {
      * Gets the number of docs that is connected to that section_id
      */
     public int sproc_SectionCount( int section_id ) {
-        String sql = "select count(meta_id) AS meta_id_count from meta_section where section_id= ? ";
+        String sql = "SELECT COUNT(meta_id) AS meta_id_count FROM meta_section WHERE section_id= ? ";
         Object[] paramValues = new Object[]{new Integer( section_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
@@ -2340,7 +2346,7 @@ public abstract class DatabaseService {
     }
 
     private int update_sections( SQLTransaction transaction, Table_section sectionData ) throws SQLException {
-        String sql = "UPDATE sections set section_name= ? WHERE section_id = ? ";
+        String sql = "UPDATE sections SET section_name= ? WHERE section_id = ? ";
         Object[] paramValues = new Object[]{sectionData.section_name, new Integer( sectionData.section_id )};
         return transaction.executeUpdate( sql, paramValues );
     }
@@ -2522,7 +2528,7 @@ public abstract class DatabaseService {
     }
 
     public Table_templategroups[] sproc_getTemplategroups() {
-        String sql = "SELECT group_id,group_name from templategroups order by group_name";
+        String sql = "SELECT group_id,group_name FROM templategroups order by group_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new Table_templategroups( rs );
@@ -2854,5 +2860,60 @@ public abstract class DatabaseService {
             }
         } );
         return (Table_poll_questions[])queryResult.toArray( new Table_poll_questions[ queryResult.size()]);
+    }
+
+    /**
+    * Get one answer option for a question
+    */
+    Table_poll_answers sproc_Poll_GetAnswer( int question_id, int option_no ) {
+        String sql = "SELECT * FROM poll_answers WHERE question_id = ? AND option_number = ? ";
+        Object[] paramValues = new Object[]{ new Integer( question_id ), new Integer( option_no ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_poll_answers( rs );
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (Table_poll_answers)queryResult.get(0);
+        }
+    }
+
+    /*
+    * Get all data for a poll by meta_id
+    */
+    Table_polls sproc_Poll_GetOne( int meta_id ) {
+        String sql = "SELECT id, name, description, meta_id, popup_freq, set_cookie, hide_result, confirmation_text, email_recipients, result_template FROM polls WHERE meta_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( meta_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_polls( rs );
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (Table_polls)queryResult.get(0);
+        }
+    }
+
+
+    /*
+    * Get a question by meta_id and question numbe
+    */
+    Table_poll_answers sproc_Poll_GetQuestion( int poll_id, int question_number ) {
+        String sql = "SELECT id, poll_id, question_number, text_id FROM poll_questions WHERE poll_id = ? AND question_number = ? ";
+        Object[] paramValues = new Object[]{ new Integer( poll_id ), new Integer( question_number ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_poll_answers( rs );
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (Table_poll_answers)queryResult.get(0);
+        }
     }
 }

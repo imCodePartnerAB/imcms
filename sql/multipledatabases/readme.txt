@@ -61,10 +61,6 @@ removeuserfromrole.prc
 poll_addanswer.prc
 poll_addnew.prc
 poll_addquestion.prc
-poll_getallquestions.prc
-poll_getanswer.prc
-poll_getone.prc
-poll_getquestion.prc
 poll_increaseansweroption.prc
 poll_setanswerpoint.prc
 poll_setparameter.prc

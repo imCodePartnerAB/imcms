@@ -65,7 +65,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            //DatabaseTestInitializer.static_initMimer(),
+            DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -132,18 +132,39 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_Poll_GetAll( databaseService );
             test_sproc_Poll_GetAllAnswers( databaseService );
             test_sproc_Poll_GetAllQuestions( databaseService );
+            test_sproc_Poll_GetOne( databaseService );
+            test_sproc_Poll_GetQuestion( databaseService );
+            test_sproc_Poll_GetAnswer( databaseService );
             testIsFileDoc( databaseService );
         }
     }
 
+    // todo: more test data
+    private void test_sproc_Poll_GetOne( DatabaseService databaseService ) {
+        assertNull( databaseService.sproc_Poll_GetOne(1) );
+    }
+
+    // todo: more test data
+    private void test_sproc_Poll_GetAnswer( DatabaseService databaseService ) {
+        assertNull( databaseService.sproc_Poll_GetAnswer(1,1) );
+    }
+
+    // todo: more test data
+    private void test_sproc_Poll_GetQuestion( DatabaseService databaseService ) {
+        assertNull( databaseService.sproc_Poll_GetQuestion(1,1) );
+    }
+
+    // todo: more test data
     private void test_sproc_Poll_GetAllQuestions( DatabaseService databaseService ) {
         assertEquals( 0, databaseService.sproc_Poll_GetAllQuestions(1).length );
     }
 
+    // todo: more test data
     private void test_sproc_Poll_GetAllAnswers( DatabaseService databaseService ) {
         assertEquals( 0, databaseService.sproc_Poll_GetAllAnswers(1).length );
     }
 
+    // todo: more test data
     private void test_sproc_Poll_GetAll( DatabaseService databaseService ) {
         assertEquals( 0, databaseService.sproc_Poll_GetAll().length );
     }
