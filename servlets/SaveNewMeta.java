@@ -385,7 +385,7 @@ public class SaveNewMeta extends HttpServlet {
         // check if external doc
         ExternalDocType ex_doc;
         ex_doc = imcref.isExternalDoc( metaId, user );
-        String paramStr = "?metaId=" + metaId + "&";
+        String paramStr = "?meta_id=" + metaId + "&";
         paramStr += "parent_meta_id=" + parentMetaId + "&";
         paramStr += "cookie_id=" + "1A" + "&action=new";
         res.sendRedirect( ex_doc.getCallServlet() + paramStr );
