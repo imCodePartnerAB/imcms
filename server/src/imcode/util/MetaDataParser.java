@@ -330,9 +330,6 @@ public class MetaDataParser {
 		String temp_role_set_id = (String)temp_perm_hash.get(role_id) ;
 		if ( temp_role_set_id!=null ) {
 		    role_set_id = Integer.parseInt(temp_role_set_id) ;
-		} else {
-		    // This has a permission in the db, but is currently about to be disabled.
-		    role_set_id = IMCConstants.DOC_PERM_SET_NONE ;
 		}
 	    }
 	    // If the role has no permissions for this document, we put it away in a special html-optionlist.
