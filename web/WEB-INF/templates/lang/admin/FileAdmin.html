@@ -255,7 +255,7 @@ function openFile(iside) {
 	var sdir = (iside == 2) ? f.dir2.value : f.dir1.value;
 	var sfile = getFile(iside);
 	sfile = wDir[iside] + sfile;
-	window.open(imC_PATH + sfile);
+	window.open(imC_PATH + "/" + sfile);
 }
 
 function editFile(iside,readonlyFlag) {
@@ -487,8 +487,8 @@ if (gecko && !isMac) {
  * Put them in an easy accessable, array[what_side] array.
  */
 
-wDir[1] = document.forms[0].dir1.value;
-wDir[2] = document.forms[0].dir2.value;
+wDir[1] = document.forms[0].dir1.value.replace(/\\\\/g, "/") ;
+wDir[2] = document.forms[0].dir2.value.replace(/\\\\/g, "/") ;
 
 /*
  * make the file-select's wider.

@@ -10,7 +10,7 @@
 	        java.awt.image.BufferedImage,
 	        javax.imageio.ImageIO"
 	
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><vel:velocity><%
+%><%
 
 /* *******************************************************************
  *           SETTINGS                                                *
@@ -132,6 +132,8 @@ try {
 }
 
 //out.print("fn.length(): " + fn.length() + "<br><br>iSize: " + iSize + "<br><br>size: " + size) ;
+
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><vel:velocity><%
 
 /* *******************************************************************************************
  *         FRAME MAIN                                                                        *
