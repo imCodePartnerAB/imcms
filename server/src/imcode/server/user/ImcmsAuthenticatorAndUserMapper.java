@@ -14,10 +14,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     private static final String SPROC_ADD_NEW_USER = "AddNewUser";
     private static final String SPROC_UPDATE_USER = "UpdateUser";
 
-    private static final String SPROC_GET_ROLE_ID_BY_ROLE_NAME = "GetRoleIdByRoleName";
     private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
     private static final String SPROC_DEL_USER_ROLES = "DelUserRoles";
-    private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
 
     private static final String SPROC_PHONE_NBR_ADD = "phoneNbrAdd";
     private static final String SPROC_DEL_PHONE_NR = "DelPhoneNr";
@@ -178,8 +176,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         String userIdStr = String.valueOf( user.getUserId() );
         addRole( roleName );
         log.debug( "Trying to assign role " + roleName + " to user " + user.getLoginName() );
-        String rolesIdStr = staticSprocCallGetRoleIdByRoleName( service, roleName );
-        service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{userIdStr, rolesIdStr} );
+        int rolesId = databaseService.sproc_GetRoleIdByRoleName( roleName );
+        service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{userIdStr, ""+rolesId} );
     }
 
     public UserDomainObject[] getAllUsers() {
@@ -206,22 +204,15 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     public UserDomainObject[] getAllUsersWithRole( String roleName ) {
-        String rolesIdStr = staticSprocCallGetRoleIdByRoleName( service, roleName );
-        String[] usersWithRole = service.sqlProcedure( SPROC_GET_USERS_WHO_BELONGS_TO_ROLE, new String[]{rolesIdStr} );
-        UserDomainObject[] result = new UserDomainObject[usersWithRole.length / 2];
-
-        for( int i = 0; i < result.length; i++ ) {
-            String userIdStr = usersWithRole[i * 2];
-            UserDomainObject user = getUser( Integer.parseInt( userIdStr ) );
+        int rolesId = databaseService.sproc_GetRoleIdByRoleName( roleName );
+        DatabaseService.PartOfTable_users[] usersWithRole = databaseService.sproc_GetUsersWhoBelongsToRole( rolesId );
+        UserDomainObject[] result = new UserDomainObject[usersWithRole.length];
+        for (int i = 0; i < usersWithRole.length; i++) {
+            DatabaseService.PartOfTable_users partOfTable_users = usersWithRole[i];
+            UserDomainObject user = getUser( partOfTable_users.user_id);
             result[i] = user;
         }
         return result;
-    }
-
-    private static String staticSprocCallGetRoleIdByRoleName( IMCServiceInterface service,
-                                                              String roleName ) {
-        String rolesIdStr = service.sqlProcedureStr( SPROC_GET_ROLE_ID_BY_ROLE_NAME, new String[]{roleName} );
-        return rolesIdStr;
     }
 
     public static void staticSprocPhoneNbrAdd( IMCServiceInterface service,
