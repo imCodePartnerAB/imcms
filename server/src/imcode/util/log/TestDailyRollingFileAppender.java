@@ -3,7 +3,6 @@ package imcode.util.log;
 import junit.framework.TestCase;
 import org.apache.log4j.*;
 import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.LoggerRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +19,7 @@ import java.text.DateFormat;
  */
 public class TestDailyRollingFileAppender extends TestCase {
 
-    private static final String DATE_PATTERN = ".yyyy-MM-dd HH:mm";
+    private static final String DATE_PATTERN = ".yyyy-MM-dd-HH-mm";
 
     public TestDailyRollingFileAppender(String name) {
         super(name) ;
@@ -38,6 +37,7 @@ public class TestDailyRollingFileAppender extends TestCase {
     public void testLineLogged() throws IOException {
         DailyRollingFileAppender appender = createAppender( getTempFile() ) ;
         appender.doAppend(getLoggingEvent() );
+        appender.close();
         assertTrue(getTempFile().length() > 0) ;
     }
 
@@ -47,6 +47,7 @@ public class TestDailyRollingFileAppender extends TestCase {
         appender.doAppend(getLoggingEvent()) ;
         waitForMinuteRollOver() ;
         appender.doAppend(getLoggingEvent()) ;
+        appender.close();
 
         File rolledOverFile = getRolledOverFile( tempFile );
 
