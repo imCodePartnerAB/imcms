@@ -6,8 +6,9 @@
 
     int parentId = 1001;
     int parentMenuNumber = 1;
-    Document document = documentService.createNewTextDocument( parentId, parentMenuNumber ) ;
-    document.setHeadline( "Nyligen skapat dokument" );
+    TextDocument document = documentService.createNewTextDocument( parentId, parentMenuNumber ) ;
+    document.setHeadline( "Testrubrik" );
+    documentService.saveChanges(document);
 %>
-Skapade dokument med id "<%= document.getId() %>"  med länk från dokument med id "<%= parentId %>".<br>
-Se resultatet <a href="../servlet/GetDoc?meta_id=1001">här.</a><br>
+Created document with id "<a href="../servlet/GetDoc?meta_id=<%= document.getId() %>"><%= document.getId() %></a>"
+with link from the document with id "<a href="../servlet/GetDoc?meta_id=<%= parentId %>"><%= parentId %></a>".<br>

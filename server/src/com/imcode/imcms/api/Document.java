@@ -88,6 +88,10 @@ public class Document {
         return internalDocument.getMetaId();
     }
 
+    public User getCreator() {
+        return new User(internalDocument.getCreator()) ;
+    }
+
     DocumentDomainObject getInternal() {
         return internalDocument;
     }

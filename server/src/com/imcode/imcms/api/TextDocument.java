@@ -67,7 +67,7 @@ public class TextDocument extends Document {
 
     public void setInclude( int includeIndexInDocument, TextDocument documentToBeIncluded ) throws NoPermissionException {
         securityChecker.hasEditPermission( internalDocument );
-        if (null == documentToBeIncluded) {
+        if ( null == documentToBeIncluded ) {
             documentMapper.removeInclusion(this.getId(), includeIndexInDocument) ;
         } else {
             documentMapper.setInclude(this.getId(), includeIndexInDocument, documentToBeIncluded.getId()) ;

@@ -12,5 +12,5 @@
     // don't forget to save your changes!
     documentService.saveChanges( document );
 %>
-Done.
-
+Done changing the headline, menutext and menuimageurl of
+document <a href="../servlet/GetDoc?meta_id=<%= documentId %>"><%= documentId %></a>.

@@ -8,6 +8,9 @@
 %>
 
 <h3>Document information</h3>
-Headline: "<%=document.getHeadline()%>"<br>
-Menu text: "<%=document.getMenuText()%>"<br>
-Menu picture: "<%=document.getMenuImageURL()%>"<br>
+<pre>
+Headline: "<%=document.getHeadline()%>"
+Menu text: "<%=document.getMenuText()%>"
+Menu picture: "<%=document.getMenuImageURL()%>"
+Creator: <a href="mailto:<%=document.getCreator().getEmailAddress()%>"><%=document.getCreator().getLoginName()%></a>
+</pre>
