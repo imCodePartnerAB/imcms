@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import imcode.server.document.DocumentIndex;
 import imcode.server.ApplicationServer;
 import imcode.util.Prefs;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -12,6 +13,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * MainInitServlet.java
@@ -35,19 +37,27 @@ public class MainInitServlet extends HttpServlet {
 
             configureLogging( confPath );
 
-            Thread indexThread = new Thread("Startup indexing thread") {
-                public void run() {
-                    DocumentIndex documentIndexer = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex() ;
-                    documentIndexer.indexAllDocuments();
-                }
-            };
-            indexThread.setDaemon( true );
-            indexThread.start();
+            createIndex();
 
         } catch ( Exception e ) {
             System.err.println( e.getMessage() );
         }
         NDC.pop() ;
+    }
+
+    private void createIndex() throws IOException {
+        boolean createIndex = Boolean.valueOf( Utility.getDomainPref( "create_index_on_startup" )).booleanValue() ;
+        if (!createIndex) {
+            return ;
+        }
+        Thread indexThread = new Thread("Startup indexing thread") {
+            public void run() {
+                DocumentIndex documentIndexer = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getDocumentIndex() ;
+                documentIndexer.indexAllDocuments();
+            }
+        };
+        indexThread.setDaemon( true );
+        indexThread.start();
     }
 
     private void configureLogging( File confPath ) {
