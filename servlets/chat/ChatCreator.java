@@ -577,7 +577,7 @@ public class ChatCreator extends ChatBase
 				
 				//lägg in chatten i sessionen
 				Vector groups = new Vector();
-				for(int i= 0; i < groupsV.size();i+=2)
+				for(int i= 0; i < groupsV.size()-1;i+=2)
 				{
 					log("grrrr2 " + groupsV.get(i));
 					String value = (String)groupsV.get(i+1);
