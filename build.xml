@@ -370,7 +370,7 @@
 	    <copy todir="${webapproot}">
 	        <fileset dir="${build}"/>
 	    </copy>
-        <copy todir="${webapproot}/WEB-INF/lib">
+        <copy todir="${webapproot}/WEB-INF/lib" flatten="true" >
             <fileset dir="lib" includes="nodist/*" />
         </copy>
     </target>
