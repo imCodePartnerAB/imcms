@@ -225,8 +225,8 @@ public class ImcmsTagSubstitution implements Substitution {
 	    result = "" ;
 	}
 	if (textMode) {
-	    result = "<img src=\""+imageUrl+"red.gif\" border=\"0\">&nbsp;"+result+"<a href=\"ChangeText?meta_id="+meta_id+"&txt="+noStr+"&type=1\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
-	} else {
+	    result = "<img src=\""+imageUrl+"red.gif\" border=\"0\">&nbsp;"+result+"<a href=\"ChangeText?meta_id="+meta_id+"&txt="+noStr+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
+	} else if (!"".equals(result)) { // Else, if we're not in adminmode, and we have something other than the empty string...
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
 		result = tempAtt + result ;
@@ -262,7 +262,7 @@ public class ImcmsTagSubstitution implements Substitution {
 	    result = "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"bild.gif\" border=\"0\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
 	} else if (imageMode) {               // If imageMode, with data in the db-field.
 	    result += "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
-	} else {                              // Else...
+	} else if(!"".equals(result)) {                              // Else, if we're not in adminmode, and we have something other than the empty string...
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
 		result = tempAtt + result ;   // Prepend the contents of the 'pre'-attribute.
