@@ -54,9 +54,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         // TODO
     }
 
-    public void deleteChilds( int meta_id, int menu, UserDomainObject user, String[] childsThisMenu ) {
-   }
-
     public void updateLogs( String logMessage ) {
         //To change body of implemented methods use Options | File Templates.
     }

@@ -462,10 +462,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                     user.getFullName() + "]" );
     }
 
-    public void deleteChilds( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu ) {
-        DocumentMapper.deleteChilds( this, meta_id, doc_menu_no, user, childsThisMenu );
-    }
-
     /**
      * Archive childs for a menu.
      */

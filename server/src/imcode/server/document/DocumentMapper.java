@@ -65,14 +65,14 @@ public class DocumentMapper {
         this.documentIndex = new DocumentIndex( indexDirectory );
     }
 
-    public void addDocumentToMenu( UserDomainObject user, int menuDocumentId, int menuIndex, int toBeAddedId )
+    public void addDocumentToMenu( UserDomainObject user, DocumentDomainObject menuDocument, int menuIndex, DocumentDomainObject documentToBeAdded )
             throws DocumentAlreadyInMenuException {
 
-        String menuIdStr = sqlSelectMenuId( menuDocumentId, menuIndex );
+        String menuIdStr = sqlSelectMenuId( menuDocument, menuIndex );
         if ( null == menuIdStr ) {
-            sqlInsertMenu( menuDocumentId, menuIndex );
+            sqlInsertMenu( menuDocument, menuIndex );
             // FIXME: Get generated menu_id primary key from insert without selecting it.
-            menuIdStr = sqlSelectMenuId( menuDocumentId, menuIndex );
+            menuIdStr = sqlSelectMenuId( menuDocument, menuIndex );
         }
         int menuId = Integer.parseInt( menuIdStr );
 
@@ -88,38 +88,41 @@ public class DocumentMapper {
                                 + "VALUES(?,?,?,'')";
         try {
             service.sqlUpdateQuery( sqlInsertChild, new String[]{
-                "" + menuId, "" + toBeAddedId, ""
+                "" + menuId, "" + documentToBeAdded.getId(), ""
                                                + newManualSortIndex
             } );
         } catch ( RuntimeException re ) {
             if ( re.getCause() instanceof SQLException ) {
                 SQLException sqlException = (SQLException)re.getCause();
                 if ( XOPEN_SQLSTATE__INTEGRITY_CONSTRAINT_VIOLATION.equals( sqlException.getSQLState() ) ) {
-                    throw new DocumentAlreadyInMenuException( "Failed to add document " + toBeAddedId + " to menu "
+                    throw new DocumentAlreadyInMenuException( "Failed to add document " + documentToBeAdded.getId() + " to menu "
                                                               + menuIndex
                                                               + " on document "
-                                                              + menuDocumentId );
+                                                              + menuDocument.getId() );
                 }
             }
             throw re;
         }
 
-        service.updateLogs( "Link from [" + menuDocumentId + "] in menu [" + menuIndex + "] to [" + toBeAddedId
+        indexDocument( menuDocument );
+        indexDocument( documentToBeAdded );
+
+        service.updateLogs( "Link from [" + menuDocument.getId() + "] in menu [" + menuIndex + "] to [" + documentToBeAdded.getId()
                             + "] added by user: ["
                             + user.getFullName()
                             + "]" );
     }
 
-    private void sqlInsertMenu( int menuDocumentId, int menuIndex ) {
+    private void sqlInsertMenu( DocumentDomainObject menuDocument, int menuIndex ) {
         String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?)";
         service.sqlUpdateQuery( sqlInsertMenu, new String[]{
-            "" + menuDocumentId, "" + menuIndex, "" + IMCConstants.MENU_SORT_DEFAULT
+            "" + menuDocument.getId(), "" + menuIndex, "" + IMCConstants.MENU_SORT_DEFAULT
         } );
     }
 
-    private String sqlSelectMenuId( int menuDocumentId, int menuIndex ) {
+    private String sqlSelectMenuId( DocumentDomainObject menuDocument, int menuIndex ) {
         String sqlSelectMenuId = "SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?";
-        String menuIdStr = service.sqlQueryStr( sqlSelectMenuId, new String[]{"" + menuDocumentId, "" + menuIndex} );
+        String menuIdStr = service.sqlQueryStr( sqlSelectMenuId, new String[]{"" + menuDocument.getId(), "" + menuIndex} );
         return menuIdStr;
     }
 
@@ -227,7 +230,7 @@ public class DocumentMapper {
 
     /**
      * Inspired by the SaveNewMeta servlet... I went throu the code and tried to extract the nessesary parts. /Hasse
-     * todo: make the SaveNewMeta to use this method instead.
+     * @deprecated Use {@link #saveNewDocument(imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)}
      */
     private int createNewMeta( int parentId, int parentMenuNumber, int documentType, UserDomainObject user ) {
         Date nowDateTime = new Date();
@@ -246,7 +249,7 @@ public class DocumentMapper {
         sqlUpdateDocType( service, newMetaId, documentType );
 
         try {
-            addDocumentToMenu( user, parentId, parentMenuNumber, newMetaId );
+            addDocumentToMenu( user, getDocument( parentId ), parentMenuNumber, getDocument( newMetaId ));
             // update parents modfied date because it has gotten an new link
             sqlUpdateModifiedDate( service, parentId, nowDateTime );
         } catch ( DocumentAlreadyInMenuException e ) {
@@ -279,15 +282,15 @@ public class DocumentMapper {
     /**
      * Delete childs from a menu.
      */
-    public static void deleteChilds( IMCServiceInterface service, int meta_id, int menu, UserDomainObject user,
+    public void deleteChilds( DocumentDomainObject document, int menu, UserDomainObject user,
                                      String[] childsThisMenu ) {
         StringBuffer childStr = new StringBuffer( "[" );
         // create a db connection an get meta data
 
         for ( int i = 0; i < childsThisMenu.length; i++ ) {
             int childId = Integer.parseInt( childsThisMenu[i] );
-
-            removeDocumentFromMenu( service, user, meta_id, menu, childId );
+            DocumentDomainObject child = getDocument( childId ) ;
+            removeDocumentFromMenu( user, document, menu, child );
 
             childStr.append( childsThisMenu[i] );
             if ( i < childsThisMenu.length - 1 ) {
@@ -295,7 +298,7 @@ public class DocumentMapper {
             }
         }
         childStr.append( "]" );
-
+        indexDocument( document );
     }
 
     public CategoryDomainObject[] getAllCategoriesOfType( CategoryTypeDomainObject categoryType ) {
@@ -359,30 +362,6 @@ public class DocumentMapper {
             final String categoryImge = sqlResult[3];
 
             return new CategoryDomainObject( categoryId, categoryNameFromDb, categoryDescription, categoryImge,
-                                             categoryType );
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @param categoryId
-     * @return
-     * @deprecated Use getCategoryById instead?
-     */
-    public CategoryDomainObject getCategory( int categoryId ) {
-        String sqlQuery = "SELECT categories.name, categories.description, category_types.name, categories.image \n" +
-                          "FROM categories\n" + "JOIN category_types\n"
-                          + "ON categories.category_type_id = category_types.category_type_id\n" +
-                          "WHERE categories.category_id = ?";
-        String[] sqlResult = service.sqlQuery( sqlQuery, new String[]{"" + categoryId} );
-        if ( 0 != sqlResult.length ) {
-            final String categoryNameFromDb = sqlResult[0];
-            final String categoryDescription = sqlResult[1];
-            final String categoryTypeName = sqlResult[2];
-            final String categoryImage = sqlResult[3];
-            CategoryTypeDomainObject categoryType = getCategoryType( categoryTypeName );
-            return new CategoryDomainObject( categoryId, categoryNameFromDb, categoryDescription, categoryImage,
                                              categoryType );
         } else {
             return null;
@@ -745,10 +724,6 @@ public class DocumentMapper {
         } catch ( IOException e ) {
             log.error( "Failed to index document " + document.getId(), e );
         }
-    }
-
-    public void removeDocumentFromMenu( UserDomainObject user, int menuDocumentId, int menuIndex, int toBeRemovedId ) {
-        removeDocumentFromMenu( service, user, menuDocumentId, menuIndex, toBeRemovedId );
     }
 
     public void removeInclusion( int includingMetaId, int includeIndex ) {
@@ -1341,26 +1316,27 @@ public class DocumentMapper {
         imcref.sqlUpdateQuery( "DELETE FROM meta_section WHERE meta_id = ?", new String[]{"" + metaId} );
     }
 
-    private static void removeDocumentFromMenu( IMCServiceInterface service, UserDomainObject user, int menuDocumentId,
-                                                int menuIndex, int toBeRemovedId ) {
+    public void removeDocumentFromMenu( UserDomainObject user, DocumentDomainObject menuDocument,
+                                                int menuIndex, DocumentDomainObject toBeRemoved ) {
         String sqlStr = "delete from childs\n" + "where to_meta_id = ?\n"
                         + "and menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
 
         int updatedRows = service.sqlUpdateQuery( sqlStr,
                                                   new String[]{
-                                                      "" + toBeRemovedId, "" + menuDocumentId, "" + menuIndex
+                                                      "" + toBeRemoved.getId(), "" + menuDocument.getId(), "" + menuIndex
                                                   } );
 
         if ( 1 == updatedRows ) {	// if existing doc is added to the menu
-            service.updateLogs( "Link from [" + menuDocumentId + "] in menu [" + menuIndex + "] to [" + toBeRemovedId
+            service.updateLogs( "Link from [" + menuDocument.getId() + "] in menu [" + menuIndex + "] to [" + toBeRemoved.getId()
                                 + "] removed by user: ["
                                 + user.getFullName()
                                 + "]" );
         } else {
-            throw new RuntimeException( "Failed to remove document " + toBeRemovedId + " from menu " + menuIndex
+            throw new RuntimeException( "Failed to remove document " + toBeRemoved.getId() + " from menu " + menuIndex
                                         + " on document "
-                                        + menuDocumentId );
+                                        + menuDocument.getId() );
         }
+        indexDocument( toBeRemoved );
     }
 
     private void updateDocumentSections( int metaId,
@@ -1698,9 +1674,9 @@ public class DocumentMapper {
     public void saveNewDocumentAndAddToMenu( DocumentDomainObject newDocument, UserDomainObject user,
                                              DocumentComposer.NewDocumentParentInformation newDocumentParentInformation ) throws IOException, MaxCategoryDomainObjectsOfTypeExceededException, DocumentAlreadyInMenuException {
         saveNewDocument( newDocument, user );
-        addDocumentToMenu( user, newDocumentParentInformation.parentId,
+        addDocumentToMenu( user, getDocument(newDocumentParentInformation.parentId),
                            newDocumentParentInformation.parentMenuIndex,
-                           newDocument.getId() );
+                           newDocument );
 
     }
 

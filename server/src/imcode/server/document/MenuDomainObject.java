@@ -32,14 +32,14 @@ public class MenuDomainObject {
 
      public void addDocument( DocumentDomainObject documentToAdd, UserDomainObject user ) throws NoPermissionException, DocumentAlreadyInMenuException {
          try {
-             documentMapper.addDocumentToMenu( user, ownerDocument.getId(), menuIndex, documentToAdd.getId() );
+             documentMapper.addDocumentToMenu( user, ownerDocument, menuIndex, documentToAdd );
          } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
              throw new DocumentAlreadyInMenuException( "Menu " + menuIndex + " of ownerDocument " + ownerDocument.getId() + " already contains ownerDocument " + documentToAdd.getId() );
          }
      }
 
      public void removeDocument( DocumentDomainObject documentToRemove, UserDomainObject user ) throws NoPermissionException {
-         documentMapper.removeDocumentFromMenu( user, ownerDocument.getId(), menuIndex, documentToRemove.getId() );
+         documentMapper.removeDocumentFromMenu( user, ownerDocument, menuIndex, documentToRemove);
      }
 
     public DocumentDomainObject getOwnerDocument() {

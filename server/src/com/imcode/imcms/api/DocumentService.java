@@ -122,7 +122,7 @@ public class DocumentService {
 
     public Category getCategory( int categoryId ) {
         // Allow everyone to get a Category. No security check.
-        final CategoryDomainObject category = documentMapper.getCategory( categoryId );
+        final CategoryDomainObject category = documentMapper.getCategoryById( categoryId );
         if ( null != category ) {
             return new Category( category );
         } else {

@@ -300,7 +300,7 @@ public class TextDocument extends Document {
             securityChecker.hasEditPermission(documentToAdd.getId());
             securityChecker.hasSharePermission(documentToAdd);
             try {
-                documentMapper.addDocumentToMenu(securityChecker.getCurrentLoggedInUser(), internalMenu.getOwnerDocument().getId(), internalMenu.getMenuIndex(), documentToAdd.getId());
+                documentMapper.addDocumentToMenu(securityChecker.getCurrentLoggedInUser(), internalMenu.getOwnerDocument(), internalMenu.getMenuIndex(), documentToAdd.getInternal());
             } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
                 throw new DocumentAlreadyInMenuException("Menu " + internalMenu.getMenuIndex() + " of owner " +
                         internalMenu.getOwnerDocument().getId() + " already contains owner " + documentToAdd.getId());
@@ -316,9 +316,9 @@ public class TextDocument extends Document {
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
             securityChecker.hasEditPermission(documentToRemove.getId());
             documentMapper.removeDocumentFromMenu(securityChecker.getCurrentLoggedInUser(),
-                    internalMenu.getOwnerDocument().getId(),
+                    internalMenu.getOwnerDocument(),
                     internalMenu.getMenuIndex(),
-                    documentToRemove.getId());
+                    documentToRemove.getInternal());
 
         }
 

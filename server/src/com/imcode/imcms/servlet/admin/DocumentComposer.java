@@ -147,9 +147,10 @@ public class DocumentComposer extends HttpServlet {
 
         try {
             // TODO: Replace this rats-nest of dispatching with a bunch of Application Controllers a la Fowler,
-            // (or use the struts framework?/Hasse)
             // preferably stored in the session instead of the objects we put there now.
             // http://www.martinfowler.com/eaaCatalog/applicationController.html
+            // (or use the struts framework?/Hasse)
+            // (No, please. We're talking about a relatively small refactoring versus XML madness. /Kreiger)
 
             if ( null != request.getParameter( PARAMETER__RETURNING_FROM_IMAGE_BROWSE ) ) {
                 action = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );

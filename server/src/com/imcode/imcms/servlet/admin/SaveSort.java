@@ -64,7 +64,7 @@ public class SaveSort extends HttpServlet {
 
         selectedChildrenIds = req.getParameterValues( "archiveDelBox" );
 
-        user.put( "flags", new Integer( 262144 ) );
+        user.put( "flags", new Integer( IMCConstants.DISPATCH_FLAG__EDIT_MENU ) );
 
         int menuIndex = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
         String sortParam = req.getParameter( "sort" );
@@ -91,7 +91,7 @@ public class SaveSort extends HttpServlet {
             }
         } else if ( req.getParameter( "delete" ) != null ) {
             if ( selectedChildrenIds != null ) {
-                imcref.deleteChilds( documentId, menuIndex, user, selectedChildrenIds );
+                documentMapper.deleteChilds( document, menuIndex, user, selectedChildrenIds );
             }
         } else if ( req.getParameter( "archive" ) != null ) {
             if ( selectedChildrenIds != null ) {
@@ -110,7 +110,7 @@ public class SaveSort extends HttpServlet {
                         selectedChild.setStatus( DocumentDomainObject.STATUS_NEW );
                         selectedChild.setPublicationStartDatetime( new Date() );
                         documentMapper.saveNewDocument( selectedChild, user );
-                        documentMapper.addDocumentToMenu( user, documentId, menuIndex, selectedChild.getId());
+                        documentMapper.addDocumentToMenu( user, document, menuIndex, selectedChild);
                     } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
                         throw new RuntimeException(e) ;
                     } catch ( DocumentMapper.DocumentAlreadyInMenuException e ) {

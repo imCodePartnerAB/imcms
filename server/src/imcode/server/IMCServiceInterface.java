@@ -223,8 +223,6 @@ public interface IMCServiceInterface {
 
     void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime );
 
-    void deleteChilds( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu );
-
     void updateLogs( String logMessage );
 
     ConnectionPool getConnectionPool();
