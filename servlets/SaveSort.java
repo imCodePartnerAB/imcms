@@ -10,7 +10,7 @@ import imcode.util.* ;
 public class SaveSort extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-
+	private final static String COPY_PREFIX_TEMPLATE = "copy_prefix.html";
 	/**
 	init()
 	*/
@@ -120,7 +120,9 @@ public class SaveSort extends HttpServlet {
 		    }
 		} else if( req.getParameter("copy")!=null ) {
 		    if( childsThisMenu != null ) {
-			IMCServiceRMI.copyDocs( imcserver,meta_id,doc_menu_no,user,childsThisMenu ) ;
+			String copyPrefix = IMCServiceRMI.parseDoc(imcserver, null, COPY_PREFIX_TEMPLATE, user.getLangPrefix());
+			
+			IMCServiceRMI.copyDocs( imcserver,meta_id,doc_menu_no,user,childsThisMenu,copyPrefix ) ;
 		    }
 		}
 
