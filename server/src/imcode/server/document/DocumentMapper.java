@@ -266,8 +266,8 @@ public class DocumentMapper {
         String sqlQuery = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
                 + "FROM categories\n"
                 + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
-                + "WHERE category_types.name = ?";
-        String[][] sqlResult = service.sqlQueryMulti( sqlQuery, new String[]{categoryType.getName()} );
+                + "WHERE categories.category_type_id = ?";
+        String[][] sqlResult = service.sqlQueryMulti( sqlQuery, new String[]{""+ categoryType.getId()} );
         CategoryDomainObject[] categoryDomainObjects = new CategoryDomainObject[sqlResult.length];
         for (int i = 0; i < sqlResult.length; i++) {
             int categoryId = Integer.parseInt( sqlResult[i][0] );
