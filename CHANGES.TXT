@@ -91,7 +91,7 @@ Version 2.0.0
         - SaveException - Thrown when something can't be saved.
         - AlreadyExistsException - Extends SaveException.
         - TextDocumentViewing - Accessible in included JSPs and velocity code.
-          Represents one viewing of a text document. (Bug 2776)
+            Represents one viewing of a text document. (Bug 2776)
     * Changed classes:
         - MaxCategoriesOfTypeExceededException - Extends SaveException
         - CategoryAlreadyExistsException - Extends AlreadyExistsException
@@ -107,6 +107,8 @@ Version 2.0.0
         - Document.getPermissionSetIdForRole(Role) - Get the permission set id for a role
         - DocumentService.getSection(String) - Get a section by name. (Bug 2648)
         - Section.getId() - Get the id for a section.
+        - TextDocument.Menu.getVisibleDocuments() - Returns the documents visible in the menu.
+        - TextDocument.Menu.getVisibleMenuItems() - Returns the menuitems visible in the menu.
         - User.getRoles() - Get the user's roles.
         - User.setRoles(Role[]) - Set the user's roles.
         - User.hasRole(Role) - Returns true if the user has the role.

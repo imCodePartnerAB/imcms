@@ -269,7 +269,7 @@ class MenuParser {
 
     boolean userCanSeeDocumentInMenu( UserDomainObject user, DocumentDomainObject document,
                                               final int menuIndex ) {
-        return user.canSeeDocumentInMenus( document ) && document.isPublishedAndNotArchived() || editingMenu( menuIndex ) && user.canEdit( document ) ;
+        return user.canSeeDocumentInMenus( document ) || editingMenu( menuIndex ) && user.canSeeDocumentWhenEditingMenus( document ) ;
     }
 
     /**

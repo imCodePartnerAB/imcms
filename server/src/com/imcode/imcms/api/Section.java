@@ -12,6 +12,9 @@ public class Section {
        return this.internalSection.getName();
    }
 
+    /**
+         @since 2.0
+     */
    public int getId() {
        return internalSection.getId();
    }

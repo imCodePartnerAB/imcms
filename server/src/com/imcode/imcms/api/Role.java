@@ -2,6 +2,9 @@ package com.imcode.imcms.api;
 
 import imcode.server.user.RoleDomainObject;
 
+/**
+ * @since 2.0
+ */
 public class Role implements Comparable {
 
     public static final int SUPERADMIN_ID = RoleDomainObject.SUPERADMIN_ID ;

@@ -28,6 +28,10 @@ public abstract class ContentManagementSystem {
         return cms;
     }
 
+    /**
+     * @return The ContentManagementSystem for the request
+     * @since 2.0
+     */ 
     public static ContentManagementSystem fromRequest(ServletRequest request) {
         return (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     }

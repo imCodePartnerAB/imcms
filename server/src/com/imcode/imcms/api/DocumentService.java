@@ -205,6 +205,9 @@ public class DocumentService {
         return new Section( section ) ;
     }
 
+    /**
+         @since 2.0
+     */
     public Section getSection(String name) {
         SectionDomainObject section = getDocumentMapper().getSectionByName( name );
         if ( null == section ) {

@@ -63,15 +63,15 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public MenuItemDomainObject[] getMenuItemsUserCanSee( UserDomainObject user ) {
-        List menuItemsUserCanSee = getListOfMenuItemsUserCanSee( user );
+        List menuItemsUserCanSee = getMenuItemsVisibleToUser( user );
         return (MenuItemDomainObject[])menuItemsUserCanSee.toArray( new MenuItemDomainObject[menuItemsUserCanSee.size()] );
     }
 
-    private List getListOfMenuItemsUserCanSee( UserDomainObject user ) {
+    private List getMenuItemsVisibleToUser( UserDomainObject user ) {
         List menuItemsUserCanSee = new ArrayList(menuItems.size()) ;
         for ( Iterator iterator = menuItems.values().iterator(); iterator.hasNext(); ) {
             MenuItemDomainObject menuItem = (MenuItemDomainObject)iterator.next();
-            if (user.canSeeDocumentInMenus( menuItem.getDocument() )) {
+            if (user.canSeeDocumentWhenEditingMenus( menuItem.getDocument() )) {
                 menuItemsUserCanSee.add(menuItem) ;
             }
         }
@@ -80,10 +80,10 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee( UserDomainObject user ) {
-        List menuItems = getListOfMenuItemsUserCanSee( user ) ;
+        List menuItems = getMenuItemsVisibleToUser( user ) ;
         CollectionUtils.filter( menuItems, new Predicate() {
             public boolean evaluate( Object object ) {
-                return ((MenuItemDomainObject)object).getDocument().isPublishedAndNotArchived() ;
+                return ((MenuItemDomainObject)object).getDocument().isActive() ;
             }
         } );
         return (MenuItemDomainObject[])menuItems.toArray( new MenuItemDomainObject[menuItems.size()] );

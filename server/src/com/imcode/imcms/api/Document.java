@@ -224,6 +224,7 @@ public class Document {
 
     /**
         @param permissionSetId One of the constants in {@link DocumentPermissionSet}.
+        @since 2.0
      **/
     public void setPermissionSetIdForRole( Role role, int permissionSetId ) throws NoSuchRoleException, NoPermissionException {
         getSecurityChecker().hasEditPermission( this );
@@ -232,6 +233,9 @@ public class Document {
         }
     }
 
+    /**
+         @since 2.0
+     */
     public int getPermissionSetIdForRole( Role role ) {
         return internalDocument.getPermissionSetIdForRole( role.getInternal() );
     }

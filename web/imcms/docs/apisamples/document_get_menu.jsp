@@ -56,7 +56,9 @@
     TextDocument document = documentService.getTextDocument(documentId) ;
     TextDocument.Menu menu = document.getMenu(menuIndex) ;
 
-    TextDocument.MenuItem[] menuItems = menu.getMenuItems();
+    TextDocument.MenuItem[] menuItems = menu.getVisibleMenuItems();
+    // To also get non-visible menuitems:
+    // TextDocument.MenuItem[] menuItems = menu.getMenuItems();
     if (menuItems.length > 0) { %>
         <ul><%
         for ( int i = 0; i < menuItems.length; i++ ) {

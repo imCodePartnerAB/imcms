@@ -297,7 +297,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return isPublishedAtTime( new Date() );
     }
 
-    public boolean isPublishedAndNotArchived() {
+    public boolean isActive() {
         return isPublished() && !isArchived();
     }
 

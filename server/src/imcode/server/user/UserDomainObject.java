@@ -622,7 +622,11 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean canSeeDocumentInMenus( DocumentDomainObject document ) {
-        return document.isVisibleInMenusForUnauthorizedUsers() || canAccess( document );
-
+        return document.isActive() && canSeeDocumentWhenEditingMenus( document );
     }
+
+    public boolean canSeeDocumentWhenEditingMenus( DocumentDomainObject document ) {
+        return document.isVisibleInMenusForUnauthorizedUsers() || canAccess( document );
+    }
+
 }

@@ -94,6 +94,9 @@ public class User {
         return getLoginName();
     }
 
+    /**
+     * @since 2.0
+     */
     public boolean hasRole(Role role) {
         return internalUser.hasRole( role.getInternal() ) ;
     }
@@ -141,6 +144,9 @@ public class User {
         return internalUser != null ? internalUser.hashCode() : 0;
     }
 
+    /**
+     * @since 2.0
+     */
     public Role[] getRoles() {
         RoleDomainObject[] roleDOs = internalUser.getRoles();
         Role[] roles = new Role[roleDOs.length];
@@ -150,6 +156,9 @@ public class User {
         return roles ;
     }
 
+    /**
+     * @since 2.0
+     */
     public void setRoles(Role[] roles) {
         RoleDomainObject[] roleDOs = new RoleDomainObject[roles.length];
         for ( int i = 0; i < roles.length; i++ ) {
@@ -158,10 +167,16 @@ public class User {
         internalUser.setRoles( roleDOs );
     }
 
+    /**
+     * @since 2.0
+     */
     public void addRole(Role role) {
         internalUser.addRole( role.getInternal() );
     }
 
+    /**
+     * @since 2.0
+     */
     public void removeRole(Role role) {
         internalUser.removeRole( role.getInternal() ) ;
     }

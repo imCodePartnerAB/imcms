@@ -117,7 +117,7 @@ public class Html {
             statusIconTemplateName = TEMPLATE__STATUS_NEW;
         } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus() ) {
             statusIconTemplateName = TEMPLATE__STATUS_DISAPPROVED;
-        } else if ( document.isPublishedAndNotArchived() ) {
+        } else if ( document.isActive() ) {
             statusIconTemplateName = TEMPLATE__STATUS_PUBLISHED;
         } else if ( document.isNoLongerPublished() ) {
             statusIconTemplateName = TEMPLATE__STATUS_UNPUBLISHED;

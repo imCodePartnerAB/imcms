@@ -359,19 +359,19 @@ public class TextDocument extends Document {
 
     public static class Menu {
         /**
-         * Menu sorted by headline. *
+         * Menu sorted by headline.
          */
         public final static int SORT_BY_HEADLINE = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE;
         /**
-         * Menu sorted by 'manual' order. *
+         * Menu sorted by 'manual' order.
          */
         public final static int SORT_BY_MANUAL_ORDER_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED;
         /**
-         * Menu sorted by datetime. *
+         * Menu sorted by datetime.
          */
         public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED;
         /**
-         * Menu sorted by tree sort order
+         * Menu sorted by tree sort order.
          */
         public final static int SORT_BY_TREE_ORDER_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
 
@@ -383,19 +383,6 @@ public class TextDocument extends Document {
             this.internalTextDocument = document.getInternalTextDocument();
             this.menuIndex = menuIndex;
             this.contentManagementSystem = document.getContentManagementSystem() ;
-        }
-
-        public MenuItem[] getMenuItems() {
-            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems();
-            List menuItems = new ArrayList(menuItemsDomainObjects.length);
-            UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            for (int i = 0; i < menuItemsDomainObjects.length; i++) {
-                MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
-                if (user.canSeeDocumentInMenus( menuItemDomainObject.getDocument() )) {
-                    menuItems.add(new MenuItem(menuItemDomainObject, contentManagementSystem ));
-                }
-            }
-            return (MenuItem[])menuItems.toArray( new MenuItem[menuItems.size()] );
         }
 
         /**
@@ -422,22 +409,83 @@ public class TextDocument extends Document {
             internalTextDocument.getMenu(menuIndex).removeMenuItemByDocumentId(documentToRemove.getId());
         }
 
-        public Document[] getDocuments() {
-            MenuItem[] menuItems = getMenuItems() ;
-            Document[] documents = new Document[menuItems.length];
-            for (int i = 0; i < menuItems.length; i++) {
-                MenuItem menuItem = menuItems[i];
-                documents[i] = menuItem.getDocument() ;
-            }
-            return documents ;
-        }
-
+        /**
+         * @param sortOrder One of {@link #SORT_BY_HEADLINE}, {@link #SORT_BY_MANUAL_ORDER_DESCENDING},
+         *                  {@link #SORT_BY_MODIFIED_DATETIME_DESCENDING}, or {@link #SORT_BY_TREE_ORDER_DESCENDING}
+         */
         public void setSortOrder( int sortOrder ) {
-            internalTextDocument.getMenu( menuIndex ).setSortOrder( sortOrder ) ;
+            internalTextDocument.getMenu( menuIndex ).setSortOrder( sortOrder );
         }
 
         public int getSortOrder() {
             return internalTextDocument.getMenu( menuIndex ).getSortOrder();
         }
+
+        /**
+         * @return The visible menuitems in this menu.
+         * @since 2.0
+         */
+        public MenuItem[] getVisibleMenuItems() {
+            final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
+            DocumentPredicate documentPredicate = new DocumentPredicate() {
+                public boolean evaluateDocument( DocumentDomainObject document ) {
+                    return user.canSeeDocumentInMenus( document ) ;
+                }
+            };
+            return getMenuItems( documentPredicate );
+        }
+
+        /**
+         * @return the documents returned by {@link #getVisibleMenuItems()}.
+         * @since 2.0
+         */
+        public Document[] getVisibleDocuments() {
+            MenuItem[] menuItems = getVisibleMenuItems() ;
+            Document[] documents = getDocumentsFromMenuItems( menuItems );
+            return documents ;
+        }
+
+        /**
+         * @return The menuitems in this menu.
+         */
+        public MenuItem[] getMenuItems() {
+            final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
+            return getMenuItems( new DocumentPredicate() {
+                public boolean evaluateDocument( DocumentDomainObject document ) {
+                    return user.canSeeDocumentInMenus( document ) || user.canEdit( document ) ;
+                }
+            } ) ;
+        }
+
+        /**
+         * @return the documents returned by {@link #getMenuItems()}.
+         */
+        public Document[] getDocuments() {
+            return getDocumentsFromMenuItems( getMenuItems() );
+        }
+
+        private MenuItem[] getMenuItems( DocumentPredicate documentPredicate ) {
+            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu( menuIndex ).getMenuItems();
+            List menuItems = new ArrayList( menuItemsDomainObjects.length );
+            for ( int i = 0; i < menuItemsDomainObjects.length; i++ ) {
+                MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
+                DocumentDomainObject document = menuItemDomainObject.getDocument();
+                if ( documentPredicate.evaluateDocument( document ) ) {
+                    menuItems.add( new MenuItem( menuItemDomainObject, contentManagementSystem ) );
+                }
+            }
+            return (MenuItem[])menuItems.toArray( new MenuItem[menuItems.size()] );
+        }
+
+        private Document[] getDocumentsFromMenuItems( MenuItem[] menuItems ) {
+            Document[] documents = new Document[menuItems.length];
+            for ( int i = 0; i < menuItems.length; i++ ) {
+                MenuItem menuItem = menuItems[i];
+                documents[i] = menuItem.getDocument();
+            }
+            return documents;
+        }
+
     }
+
 }

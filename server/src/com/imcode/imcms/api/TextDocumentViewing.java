@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
  * An instance of this class is fetchable in JSPs included in text documents (with &lt;?imcms:include path="..."?&gt;)
  * via {@link #fromRequest(javax.servlet.http.HttpServletRequest)},
  * and in velocity code in text templates as <code>$viewing</code>.
+ *
+ * @since 2.0
  */
 public class TextDocumentViewing {
 

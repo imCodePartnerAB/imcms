@@ -40,6 +40,9 @@ public class UserService {
         return result;
     }
 
+    /**
+     * @since 2.0
+     */
     public Role[] getAllRoles() throws NoPermissionException {
         getSecurityChecker().isSuperAdmin();
 
@@ -63,6 +66,9 @@ public class UserService {
         return user.getRoleNames() ;
     }
 
+    /**
+     * @since 2.0
+     */
     public Role getRole( int roleId ) throws NoPermissionException {
         getSecurityChecker().isSuperAdmin();
 
@@ -70,6 +76,9 @@ public class UserService {
         return null == roleDO ? null : new Role( roleDO );
     }
 
+    /**
+     * @since 2.0
+     */
     public Role getRole( String roleName ) throws NoPermissionException {
         getSecurityChecker().isSuperAdmin();
 
@@ -77,6 +86,9 @@ public class UserService {
         return null == roleDO ? null : new Role( roleDO );
     }
 
+    /**
+     * @since 2.0
+     */
     public void deleteRole( Role role ) throws NoPermissionException {
         getSecurityChecker().isSuperAdmin();
 
@@ -104,6 +116,9 @@ public class UserService {
         return getAllUsersWithRole( getRole( roleName ) );
     }
 
+    /**
+     * @since 2.0
+     */
     public User[] getAllUsersWithRole( Role role ) throws NoPermissionException {
         getSecurityChecker().isSuperAdmin();
 
@@ -126,13 +141,18 @@ public class UserService {
         mapper.deleteRole( mapper.getRoleByName( role ) );
     }
 
+    /**
+     * @since 2.0
+     */
     public Role createNewRole( String roleName ) {
         return new Role( new RoleDomainObject( roleName ) );
     }
 
     /**
      * @throws NoPermissionException unless superadmin.
-     * @throws SaveException if another role with the same name exists.
+     * @throws AlreadyExistsException if another role with the same name exists.
+     * @throws SaveException if the name is too long.
+     * @since 2.0
      */
     public void saveRole( Role role ) throws NoPermissionException, SaveException {
         if (null == role) {
