@@ -13,10 +13,9 @@ SOURCE  = \
 	IMCConstants.java \
 	IMCServiceInterface.java \
 	IMCService.java \
-	ImcServer.java \
 	SystemData.java
 
-RMI_SOURCE = IMCPool.java IMCService.java
+RMI_SOURCE =
 
 MAIN       = ImcServer
 

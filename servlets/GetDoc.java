@@ -15,7 +15,6 @@ import java.io.File;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpUtils;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,8 +40,6 @@ import imcode.util.IMCServiceRMI;
 public class GetDoc extends HttpServlet {
 
     private static final int COOKIE_EXPIRE_TIME = 518400;
-
-    private static ServletContext sc ;
 
     final static String EOL = System.getProperty("line.separator") ;
     
@@ -81,7 +78,6 @@ public class GetDoc extends HttpServlet {
     */
     public void init( ServletConfig config ) throws ServletException {
 	super.init( config ) ;
-	sc = config.getServletContext() ;
     }
 
     /**
@@ -175,9 +171,6 @@ public class GetDoc extends HttpServlet {
 
 	String[] emp_ary = req.getParameterValues("emp") ;
 	if (emp_ary != null) {
-	    for (int i = 0; i<emp_ary.length ; ++i) {
-		sc.log("emp_ary: "+emp_ary[i]);
-	    }
 	    user.put("emphasize",emp_ary) ;
 	}
 
@@ -197,7 +190,6 @@ public class GetDoc extends HttpServlet {
 	if ( !IMCServiceRMI.checkDocRights(imcserver,meta_id,user ) ) {
 	    session.putValue("login.target", HttpUtils.getRequestURL(req).toString()+"?"+req.getQueryString());
 	    String redirect = no_permission_url ;
-	    sc.log ("Redirecting to: "+redirect) ;
 	    res.sendRedirect( redirect ) ;
 	    return null ;
 	}
@@ -222,7 +214,6 @@ public class GetDoc extends HttpServlet {
 	    paramStr += "parent_meta_id=" + parent_meta_id + "&" ;
 	    paramStr += "cookie_id=" + "1A" + "&" ;
 	    paramStr += "action=view" ;
-	    sc.log ( ex_doc.getCallServlet( ) + paramStr ) ;
 	    Utility.redirect( req,res,ex_doc.getCallServlet( ) + paramStr ) ;
 	    return null ;
 	}
@@ -240,7 +231,6 @@ public class GetDoc extends HttpServlet {
 	    if ( temp.indexOf("://")==-1 ) {
 		temp = "http://"+temp ;
 	    }
-	    sc.log ("Redirecting to: "+temp) ;
 	    res.sendRedirect( temp ) ;
 	    return null ;
 
@@ -285,7 +275,6 @@ public class GetDoc extends HttpServlet {
 	    String range = req.getHeader("Range") ;
 	    String content_type = mimetype/*+"; name=\""+filename+"\""*/ ;
 	    String content_disposition = "inline; filename="+filename ;
-	    //sc.log ("Content-Disposition: "+content_disposition) ;
 	    res.setContentLength( len ) ;
 	    res.setContentType( content_type ) ;
 	    res.setHeader( "Content-Disposition", content_disposition ) ;

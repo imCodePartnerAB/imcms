@@ -13,16 +13,16 @@ public class InetPoolManager {
 
 
     // Inet poolmanager
-    PoolManager manager ;
+    private PoolManager manager ;
 
     // DataSource
-    ConnectionPoolDataSource ds;
+    private ConnectionPoolDataSource ds;
 
     // Log
-    Log log = Log.getLog("server") ;
+    private Log log = Log.getLog("server") ;
 
     // Properties for the DataSource. Why, oh why, does not DataSource have something like that?
-    Properties props ;
+    private Properties props ;
 
     public InetPoolManager(Properties props) throws SQLException {
 
@@ -124,13 +124,6 @@ public class InetPoolManager {
 	    log.log(Log.WARNING, err, ex.getMessage()) ;
 	    throw ex ;
 	}
-    }
-
-    /**
-       return a pool manager
-    */
-    public PoolManager getManager() {
-	return manager ;
     }
 
     /**

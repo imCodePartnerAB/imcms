@@ -5,7 +5,6 @@ import org.apache.oro.text.* ;
 import org.apache.oro.text.regex.* ;
 import org.apache.oro.text.perl.* ;
 import java.sql.*;
-import java.rmi.server.* ;
 import java.sql.Date ;
 import java.io.*;
 import java.util.*;
@@ -19,103 +18,144 @@ import imcode.util.log.* ;
    Main services for the Imcode Net Server.
    Made final, since only a complete and utter moron would want to extend it.
 **/
-final public class IMCService extends UnicastRemoteObject implements IMCServiceInterface, IMCConstants {
+final public class IMCService implements IMCServiceInterface, IMCConstants {
     
-    imcode.server.InetPoolManager m_conPool ; // inet pool of connections
-    String m_TemplateHome ;           // template home
-    String m_IncludePath ;
-    int m_DefaultHomePage ;        // default home page
-    String m_ServletUrl  ; 			   // servlet url
-    String m_ImageFolder ;            // image folder
-    String m_Language          = "" ;      // language
-    String m_serverName        = "" ;      // servername
+    private class FileCache {
 
-    int m_FileCacheSize = 0 ;
-    //boolean m_PrintLogToWindow = false ;  // flag - if true -> print log to app. window
+	private final int m_FileCacheSize = 50 ;
+	private CacheLRU fileCache = new CacheLRU(m_FileCacheSize) ;
+
+	/**
+	   Fetch a file from the cache, if it hasn't changed on disc.
+	*/
+	synchronized private String getCachedFileString(String filename) throws IOException {
+	    return getCachedFileString(new File(filename)) ;
+	}
+	
+	/**
+	   Fetch a file from the cache, if it hasn't changed on disc.
+	*/
+	synchronized String getCachedFileString(File file) throws IOException {
+	    
+	    if (m_FileCacheSize > 0) {
+		Object[] file_and_date = (Object[])(fileCache.getElement(file)) ; // Get the cached file, if any.
+		if (file_and_date == null || file.lastModified() > ((Long)file_and_date[1]).longValue() ) {
+		    // No (new) file found?
+		    String temp = loadFile(file).toString() ; // Load it.
+		    fileCache.addElement(file, new Object[] {temp,new Long(System.currentTimeMillis())}) ;  // Cache it.
+		    return temp ;
+		}
+		return (String)file_and_date[0] ;
+	    } else {
+		return loadFile(file).toString() ;
+	    }
+	}
+    }
     
-    SystemData sysData ;
+    private final imcode.server.InetPoolManager m_conPool ; // inet pool of connections
+    private String m_TemplateHome ;           // template home
+    private String m_IncludePath ;
+    private int m_DefaultHomePage ;        // default home page
+    private String m_ServletUrl  ;			   // servlet url
+    private String m_ImageFolder ;            // image folder
+    private String m_Language          = "" ;      // language
+    private String m_serverName        = "" ;      // servername
+
+    private SystemData sysData ;
     
-    ExternalDocType m_ExDoc[] ;
-    String m_SessionCounterDate = "" ;
-    int m_SessionCounter = 0 ;
-    int m_NoOfTemplates  ;
-    Template m_Template[] ;
+    private ExternalDocType m_ExDoc[] ;
+    private String m_SessionCounterDate = "" ;
+    private int m_SessionCounter = 0 ;
+    private int m_NoOfTemplates  ;
     
-    CacheLRU fileCache = new CacheLRU(m_FileCacheSize) ;
+    private FileCache fileCache = new FileCache() ;
+
+    private final static Perl5Util    perl5util = new Perl5Util() ; // Internally synchronized
+
+    private static Pattern OBSOLETE_MENU_PATTERN = null ;
+    private static Pattern HASHTAG_PATTERN  = null ;
+    private static Pattern HASHTAGNUMBER_PATTERN  = null ;
+    private static Pattern MENU_PATTERN  = null ;
+    private static Pattern MENULOOP_PATTERN  = null ;
+    private static Pattern MENUITEM_PATTERN  = null ;
+    private static Pattern MENUITEMHIDE_PATTERN  = null ;
+    private static Pattern MENUITEMHIDETAG_PATTERN  = null ;
+    private static Pattern IMCMS_TAG_PATTERN  = null ;
+    private static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN  = null ;
+    private static Pattern HTML_PREBODY_PATTERN  = null ;
+    private static Pattern HTML_POSTBODY_PATTERN  = null ;
+    private static Pattern TR_START_PATTERN  = null ;
+    private static Pattern TR_STOP_PATTERN  = null ;
+    private static Pattern TD_START_PATTERN  = null ;
+    private static Pattern TD_STOP_PATTERN  = null ;
+    private static Pattern MENU_NO_PATTERN  = null ;
+    private static Pattern HTML_TAG_PATTERN  = null ;
+
+    private Log log = Log.getLog("server") ;
+
+    static {
+	Perl5Compiler patComp = new Perl5Compiler() ;
+
+	try {
+
+	    OBSOLETE_MENU_PATTERN = patComp.compile("[\\r\\n]\\s*menu\\s+no=(\\d+)\\s+rows=(\\d+)\\s+table_col=(\\d+)\\s*",Perl5Compiler.READ_ONLY_MASK) ;
+	    //                                       newline     menu    no=123456    rows=123456    table_col=123456
+
+	    HASHTAG_PATTERN = patComp.compile("#[^#\"<> \\t\\r\\n]+#",Perl5Compiler.READ_ONLY_MASK) ;
+	    //                                                          # none of the above #
+
+	    HASHTAGNUMBER_PATTERN = patComp.compile("(\\d+)#$", Perl5Compiler.READ_ONLY_MASK) ;
+	    //                                                                123456#
+
+	    MENU_PATTERN = patComp.compile("<\\?imcms:menu(?:\\s+no=\"(\\d+)\")?\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+
+	    MENULOOP_PATTERN = patComp.compile("<\\?imcms:menuloop\\?>(.*?)<\\?\\/imcms:menuloop\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    
+	    MENUITEM_PATTERN = patComp.compile("<\\?imcms:menuitem\\?>(.*?)<\\?\\/imcms:menuitem\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
     
-    final static Perl5Util    perl5util = new Perl5Util() ;
-    final static Perl5Compiler patComp = new Perl5Compiler() ;
-    final static PatternCache patCache = new PatternCacheLRU(50, patComp) ;
+	    MENUITEMHIDE_PATTERN = patComp.compile("<\\?imcms:menuitemhide\\?>(.*?)<\\?\\/imcms:menuitemhide\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 
+	    MENUITEMHIDETAG_PATTERN = patComp.compile("<\\?\\/?imcms:menuitemhide\\?>", Perl5Compiler.READ_ONLY_MASK) ;
 
-    final static Pattern OBSOLETE_MENU_PATTERN = patCache.getPattern("[\\r\\n]\\s*menu\\s+no=(\\d+)\\s+rows=(\\d+)\\s+table_col=(\\d+)\\s*",Perl5Compiler.READ_ONLY_MASK) ;
-    //                                                                newline     menu    no=123456    rows=123456    table_col=123456
+	    IMCMS_TAG_PATTERN = patComp.compile("<\\?imcms:(\\w+)(.*?)\\?>", Perl5Compiler.READ_ONLY_MASK) ;
+	    IMCMS_TAG_ATTRIBUTES_PATTERN = patComp.compile("\\s*(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.READ_ONLY_MASK) ;
 
-    final static Pattern HASHTAG_PATTERN = patCache.getPattern("#[^#\"<> \\t\\r\\n]+#",Perl5Compiler.READ_ONLY_MASK) ;
-    //                                                          # none of the above #
+	    HTML_PREBODY_PATTERN = patComp.compile("^.*?<[Bb][Oo][Dd][Yy].*?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    HTML_POSTBODY_PATTERN = patComp.compile("<\\/[Bb][Oo][Dd][Yy]>.*$", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 
-    final static Pattern HASHTAGNUMBER_PATTERN = patCache.getPattern("(\\d+)#$", Perl5Compiler.READ_ONLY_MASK) ;
-    //                                                                123456#
-
-    final static Pattern MENU_PATTERN = patCache.getPattern("<\\?imcms:menu(?:\\s+no=\"(\\d+)\")?\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-
-    final static Pattern MENULOOP_PATTERN = patCache.getPattern("<\\?imcms:menuloop\\?>(.*?)<\\?\\/imcms:menuloop\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-
-    final static Pattern MENUITEM_PATTERN = patCache.getPattern("<\\?imcms:menuitem\\?>(.*?)<\\?\\/imcms:menuitem\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-
-    final static Pattern MENUITEMHIDE_PATTERN = patCache.getPattern("<\\?imcms:menuitemhide\\?>(.*?)<\\?\\/imcms:menuitemhide\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-
-    final static Pattern MENUITEMHIDETAG_PATTERN = patCache.getPattern("<\\?\\/?imcms:menuitemhide\\?>", Perl5Compiler.READ_ONLY_MASK) ;
-
-    final static Pattern IMCMS_TAG_PATTERN = patCache.getPattern("<\\?imcms:(\\w+)(.*?)\\?>", Perl5Compiler.READ_ONLY_MASK) ;
-    final static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN = patCache.getPattern("\\s*(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.READ_ONLY_MASK) ;
-
-    final static Pattern HTML_PREBODY_PATTERN = patCache.getPattern("^.*?<[Bb][Oo][Dd][Yy].*?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-    final static Pattern HTML_POSTBODY_PATTERN = patCache.getPattern("<\\/[Bb][Oo][Dd][Yy]>.*$", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-
-    final static Pattern TR_START_PATTERN = patCache.getPattern("^(\\<tr[^>]*?\\>)",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-    final static Pattern TR_STOP_PATTERN = patCache.getPattern("(\\<\\/tr\\>)\\s*$",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-    final static Pattern TD_START_PATTERN = patCache.getPattern("^(\\<td[^>]*?\\>)",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-    final static Pattern TD_STOP_PATTERN = patCache.getPattern("(\\<\\/td\\>)\\s*$",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-
-    final static Pattern MENU_NO_PATTERN = patCache.getPattern("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
-
-    // OK, so this is simple, ugly, and prone to give a lot of errors.
-    // Very good. Very good. Know something? NO SOUP FOR YOU!
-    final static Pattern HTML_TAG_PATTERN = patCache.getPattern("<[^>]+?>",Perl5Compiler.READ_ONLY_MASK) ;
-
-    //final static Perl5Substitution EMPHASIZE_SUBSTITUTION = new Perl5Substitution("<b><em><!--emphasized-->$1<!--/emphasized--></em></b>", Perl5Substitution.INTERPOLATE_ALL) ;
-
-    final static Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
-
-    SimpleDateFormat DATETIMEFORMAT = new SimpleDateFormat("yyyy-MM-ddHH:mm") ;
-
-    SimpleDateFormat SQL_DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd") ;
-
-    Log log = Log.getLog("server") ;
+	    TR_START_PATTERN = patComp.compile("^(\\<tr[^>]*?\\>)",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    TR_STOP_PATTERN = patComp.compile("(\\<\\/tr\\>)\\s*$",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    TD_START_PATTERN = patComp.compile("^(\\<td[^>]*?\\>)",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    TD_STOP_PATTERN = patComp.compile("(\\<\\/td\\>)\\s*$",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    
+	    MENU_NO_PATTERN = patComp.compile("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
+	    
+	    // OK, so this is simple, ugly, and prone to give a lot of errors.
+	    // Very good. Very good. Know something? NO SOUP FOR YOU!
+	    HTML_TAG_PATTERN = patComp.compile("<[^>]+?>",Perl5Compiler.READ_ONLY_MASK) ;
+	} catch (MalformedPatternException ignored) {
+	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
+	    Log log = Log.getLog("server") ;
+	    log.log(Log.CRITICAL, "Danger, Will Robinson!") ;
+	}
+    }
 
     
     /**
      * <p>Contructs an IMCService object.
      */
     //	public IMCService(ConnectionPool conPool,javax.swing.JTextArea output,String serverName)
-    public IMCService(imcode.server.InetPoolManager conPool,Properties props) throws java.rmi.RemoteException {
+    public IMCService(imcode.server.InetPoolManager conPool,Properties props) {
 	super();
 	m_conPool    = conPool ;
 	    
-  	sysData = getSystemDataFromDb() ;
+	sysData = getSystemDataFromDb() ;
 	    
 	m_TemplateHome      = props.getProperty("TemplatePath") ;
 	log.log(Log.INFO, "TemplatePath: " + m_TemplateHome) ;
 	    
 	m_IncludePath       = props.getProperty("IncludePath") ;
 	log.log(Log.INFO, "IncludePath: " + m_IncludePath) ;
-	    
-	try {
-	    m_FileCacheSize     = Integer.parseInt(props.getProperty("FileCacheSize")) ;
-	} catch (NumberFormatException ignored) {
-	}
-	log.log(Log.INFO, "FileCacheSize: " + m_FileCacheSize) ;
 	    
 	try {
 	    m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument")) ;    //FIXME: Get from DB
@@ -158,17 +198,17 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	try {
 	    m_SessionCounter     = Integer.parseInt(this.sqlProcedureStr("GetCurrentSessionCounter")) ;
 	    m_SessionCounterDate = this.sqlProcedureStr("GetCurrentSessionCounterDate") ;
-	    m_NoOfTemplates      = this.sqlProcedureInt("GetNoOfTemplates") ;
+	    //m_NoOfTemplates      = this.sqlProcedureInt("GetNoOfTemplates") ;
 	} catch ( NumberFormatException ex ) {
 	    log.log(Log.CRITICAL, "Failed to get SessionCounter from db.", ex) ;
 	    throw ex ;
 	}
 	    
-	m_Template = new Template[m_NoOfTemplates] ;
+	//m_Template = new Template[m_NoOfTemplates] ;
 	    
 	log.log(Log.INFO, "SessionCounter: "+m_SessionCounter) ;
 	log.log(Log.INFO, "SessionCounterDate: "+m_SessionCounterDate) ;
-	log.log(Log.INFO, "TemplateCount: "+m_NoOfTemplates) ;
+	//log.log(Log.INFO, "TemplateCount: "+m_NoOfTemplates) ;
     }
     
     
@@ -417,7 +457,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 	    // Get the images from the db
 	    // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
-	    //	   				0                                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
+	    //					0                                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
 
 	    sqlStr = "select date_modified, meta_headline, meta_image from meta where meta_id = " + meta_id ;
 	    dbc.setSQLString(sqlStr);
@@ -459,8 +499,9 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 	    dbc.closeConnection() ;			// Close connection to db.
 
-	    String emphasize_string = getCachedFileString(m_TemplateHome + lang_prefix +"/admin/emphasize.html") ;
+	    String emphasize_string = fileCache.getCachedFileString(m_TemplateHome + lang_prefix +"/admin/emphasize.html") ;
 
+	    Perl5Compiler patComp = new Perl5Compiler() ;
 	    Perl5Matcher patMat = new Perl5Matcher() ;
 
 	    Perl5Substitution emphasize_substitution = new Perl5Substitution(emphasize_string) ;
@@ -504,16 +545,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 		    String value = (String)it.next() ;
 
 		    if (emp!=null) {
-			// for each string to emphasize
-			for (int i = 0 ; i < emp.length ; ++i) {
-			    value = org.apache.oro.text.regex.Util.substitute(
-									      patMat,
-									      patCache.getPattern("("+Perl5Compiler.quotemeta(emp[i])+")",Perl5Compiler.CASE_INSENSITIVE_MASK),
-									      emphasize_substitution,
-									      value,
-									      org.apache.oro.text.regex.Util.SUBSTITUTE_ALL
-									      ) ;
-			}
+			value = emphasizeString(value,emp,emphasize_substitution,patMat) ;
 		    }
 
 		    if ( value.length()>0 ) {
@@ -653,6 +685,8 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 		java.util.Date archived_date = null ;
 		java.util.Date activate_date = null ;
+
+		SimpleDateFormat DATETIMEFORMAT = new SimpleDateFormat("yyyy-MM-ddHH:mm") ;
 
 		try {
 		    archived_date = DATETIMEFORMAT.parse(child_archived_date_time) ;
@@ -887,7 +921,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 		String existing_doc_filename = m_TemplateHome + lang_prefix + "/admin/existing_doc_name.html" ;
 		String existing_doc_name = null ;
 
-		existing_doc_name = getCachedFileString(existing_doc_filename) ;
+		existing_doc_name = fileCache.getCachedFileString(existing_doc_filename) ;
 
 		if (doc_types_vec != null && doc_types_vec.size() > 0) {
 		    doc_types_sb.append("<option value=\"0\">"+existing_doc_name+"</option>") ;
@@ -920,7 +954,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 		    String filetag = (String)propenum.nextElement() ;
 		    String templatebufferfilename = toload.getProperty(filetag) ;
-		    String templatebufferstring = getCachedFileString(templatebufferfilename) ;
+		    String templatebufferstring = fileCache.getCachedFileString(templatebufferfilename) ;
 				// Humm... Now we must replace the tags in the loaded files too.
 		    templatebufferstring = org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,temptagsmapsubstitution,templatebufferstring,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
 
@@ -953,7 +987,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 	    // Now... let's load the template!
 	    // Get templatedir and read the file.
-	    StringBuffer templatebuffer = new StringBuffer(getCachedFileString(m_TemplateHome + "text/" + template_id + ".html")) ;
+	    StringBuffer templatebuffer = new StringBuffer(fileCache.getCachedFileString(m_TemplateHome + "text/" + template_id + ".html")) ;
 
 	    // Check file for tags
 	    String template = templatebuffer.toString() ;
@@ -1059,18 +1093,27 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 				   String[] emp,
 				   Substitution emphasize_substitution,
 				   PatternMatcher patMat) {
+	
+	Perl5Compiler empCompiler = new Perl5Compiler() ;
+	// for each string to emphasize
 	for (int i = 0 ; i < emp.length ; ++i) {
-	    str = org.apache.oro.text.regex.Util.substitute(patMat,
-							    patCache.getPattern("("+Perl5Compiler.quotemeta(emp[i])+")",Perl5Compiler.CASE_INSENSITIVE_MASK),
-							    emphasize_substitution,
-							    str,
-							    org.apache.oro.text.regex.Util.SUBSTITUTE_ALL
-							    ) ;
+	    try {
+		Pattern empPattern = empCompiler.compile("("+Perl5Compiler.quotemeta(emp[i])+")",Perl5Compiler.CASE_INSENSITIVE_MASK) ;
+		str = org.apache.oro.text.regex.Util.substitute( // Threadsafe
+								patMat,
+								empPattern,
+								emphasize_substitution,
+								str,
+								org.apache.oro.text.regex.Util.SUBSTITUTE_ALL
+								) ;
+	    } catch (MalformedPatternException ex) {
+		log.log(Log.WARNING, "Dynamic Pattern-compilation failed in IMCService.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"+emp[i]+"'",ex) ;
+	    }
 	}
 	return str ;
     }
 
-    private String hashTagHandler(PatternMatcher patMat, Properties tags, Properties numberedtags) {
+    private String hashTagHandler(PatternMatcher patMat, PatternCompiler patComp, Properties tags, Properties numberedtags) {
 	MatchResult matres = patMat.getMatch() ;
 	String tag = matres.group(0) ;
 	String tagdata = tags.getProperty(tag) ;	// Get value of tag from hash
@@ -1085,7 +1128,11 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 		    tagdata = "" ;
 		} else if ( (numbertag = numberedtags.getProperty(tagexp))!=null ) {	// Is it a numbered tag which has data to insert the number in? (Is the four first chars listed in "numberedtags"?) Get the tag to replace with the number.
 		    String qm = Perl5Compiler.quotemeta(numbertag) ; // FIXME: Run quotemeta on them before putting them in numberedtags, instead of doing it every iteration.
-		    tagdata = org.apache.oro.text.regex.Util.substitute(patMat,patCache.getPattern(qm),new StringSubstitution(tagnumber),tagdata,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+		    try {
+			tagdata = org.apache.oro.text.regex.Util.substitute(patMat,patComp.compile(qm),new StringSubstitution(tagnumber),tagdata,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+		    } catch (MalformedPatternException ex) {
+			log.log(Log.WARNING, "Dynamic Pattern-compilation failed in IMCService.hashTagHandler(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '"+numbertag+"'",ex) ;
+		    }
 		}
 	    } else {
 		tagdata = "" ;
@@ -1162,6 +1209,8 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 		// Loop over the menus
 		MapSubstitution mapsubstitution = new MapSubstitution() ;
+		Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
+
 		for (Iterator mit = currentMenu.iterator() ; mit.hasNext() ; ) {
 		    // Make sure we loop over the templates.
 		    if (!mitit.hasNext()) {
@@ -1232,32 +1281,6 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
     }
 
-    /**
-       Fetch a file from the cache, if it hasn't changed on disc.
-    */
-    protected String getCachedFileString(String filename) throws IOException {
-	return getCachedFileString(new File(filename)) ;
-    }
-
-    /**
-       Fetch a file from the cache, if it hasn't changed on disc.
-    */
-    protected String getCachedFileString(File file) throws IOException {
-	
-	if (m_FileCacheSize > 0) {
-	    Object[] file_and_date = (Object[])(fileCache.getElement(file)) ; // Get the cached file, if any.
-	    if (file_and_date == null || file.lastModified() > ((Long)file_and_date[1]).longValue() ) {
-		// No (new) file found?
-		String temp = loadFile(file).toString() ; // Load it.
-		fileCache.addElement(file, new Object[] {temp,new Long(System.currentTimeMillis())}) ;  // Cache it.
-		return temp ;
-	    }
-	    return (String)file_and_date[0] ;
-	} else {
-	    return loadFile(file).toString() ;
-	}
-    }
-
     protected class MenuParserSubstitution implements Substitution {
 
 	Map menus ;
@@ -1284,6 +1307,8 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	int meta_id ;
 	boolean includemode ;
 	int includelevel ;
+
+	private final Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
 	HashMap included_docs = new HashMap() ;
 
@@ -1319,7 +1344,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 		String imcmstagattributevalue = attribute_matres.group(3) ;
 		if ("file".equals(imcmstagattributename)) {
 		    try {
-			sb.append(getCachedFileString(new File(m_IncludePath, imcmstagattributevalue))) ;
+			sb.append(fileCache.getCachedFileString(new File(m_IncludePath, imcmstagattributevalue))) ;
 		    }
 		    catch (IOException ignored) {}
 		    return ;
@@ -1350,7 +1375,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	    try {
 		if (includemode) {
 		    String included_meta_id_str = (String)included_docs.get(String.valueOf(no)) ;
-		    sb.append(imcode.util.Parser.parseDoc(getCachedFileString(new File(m_TemplateHome, user.getLangPrefix()+"/admin/change_include.html")),
+		    sb.append(imcode.util.Parser.parseDoc(fileCache.getCachedFileString(new File(m_TemplateHome, user.getLangPrefix()+"/admin/change_include.html")),
 							  new String[] {
 							      "#meta_id#",         String.valueOf(meta_id),
 							      "#servlet_url#",     m_ServletUrl,
@@ -1378,13 +1403,15 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	Properties tags ;
 	Properties numberedtags ;
 
+	Perl5Compiler patComp = new Perl5Compiler() ;
+
 	public HashTagSubstitution (Properties tags, Properties numberedtags) {
 	    this.tags = tags ;
-    	    this.numberedtags = numberedtags ;
+	    this.numberedtags = numberedtags ;
 	}
 
 	public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
-	    sb.append(hashTagHandler(patMat,tags,numberedtags)) ;
+	    sb.append(hashTagHandler(patMat,patComp,tags,numberedtags)) ;
 	}
 
     }
@@ -1465,6 +1492,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	String trstop = "</tr><!-- /tr -->\r\n" ;   // Html-tag for end of tablerow (menurow)
 	String tdstart = "\r\n<!-- td --><td valign=\"top\">" ;    // Html-tag for start of table-cell (menuelement)
 	String tdstop = "</td><!-- /td -->\r\n" ;   // Html-tag for end of table-cell (menuelement)
+	Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
 	/** Added 010212 **/
 	if ( patMat.contains(menurowstr,TR_START_PATTERN) ) {
@@ -1499,7 +1527,6 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	} else {
 	    menurowstr = "#adminStart#"+menurowstr ;
 	}
-	final Pattern HASHTAG_PATTERN = patCache.getPattern("#[^#\"<> \\t\\r\\n]+#") ;
 	// for each element of the menu...
 	log.log(Log.WILD, "Starting to parse the "+currentMenu.size()+" items of the menu." ) ;
 	MapSubstitution mapsubstitution = new MapSubstitution() ;
@@ -1574,9 +1601,9 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 		String templatebuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons.html" ;
 		String superadmin_filename = lang_prefix + "/admin/adminbuttons/superadminbutton.html" ;
 
-		tempbuffer = new StringBuffer(getCachedFileString(new File(m_TemplateHome, tempbuffer_filename))) ;
-		templatebuffer = new StringBuffer(getCachedFileString(new File(m_TemplateHome, templatebuffer_filename))) ;
-		superadmin = new StringBuffer(getCachedFileString(new File(m_TemplateHome, superadmin_filename))) ;
+		tempbuffer = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, tempbuffer_filename))) ;
+		templatebuffer = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, templatebuffer_filename))) ;
+		superadmin = new StringBuffer(fileCache.getCachedFileString(new File(m_TemplateHome, superadmin_filename))) ;
 
 	    } catch(IOException e) {
 		log.log(Log.ERROR, "An error occurred reading adminbuttonfile", e );
@@ -1677,7 +1704,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	dbc.closeConnection() ;
 	dbc = null ;
 
-	this.updateLogs("Text " + txt_no + 	" in  " + "[" + meta_id + "] modified by user: [" +
+	this.updateLogs("Text " + txt_no +	" in  " + "[" + meta_id + "] modified by user: [" +
 			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
     }
@@ -1873,7 +1900,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	dbc.getConnection() ;
 
 	//	 m_output.append("Childs"  + childs.toString() + "\n");
-	// 	 m_output.append("sort_no" + sort_no.toString() + "\n");
+	//	 m_output.append("sort_no" + sort_no.toString() + "\n");
 
 
 	// update child table
@@ -2078,7 +2105,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	dbc.closeConnection() ;
 	dbc = null ;
 
-	this.updateLogs("UrlDoc [" + meta_id + 	"] modified by user: [" +
+	this.updateLogs("UrlDoc [" + meta_id +	"] modified by user: [" +
 			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
     }
@@ -2114,7 +2141,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 	this.activateChild(meta_id,user) ;
 
-	this.updateLogs("UrlDoc [" + meta_id + 	"] created by user: [" +
+	this.updateLogs("UrlDoc [" + meta_id +	"] created by user: [" +
 			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
     }
@@ -2249,7 +2276,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 	this.activateChild(meta_id,user) ;
 
-	this.updateLogs("FramesetDoc [" + meta_id + 	"] created by user: [" +
+	this.updateLogs("FramesetDoc [" + meta_id +	"] created by user: [" +
 			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
     }
@@ -2278,7 +2305,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	// close connection
 	dbc.closeConnection() ;
 
-	this.updateLogs("FramesetDoc [" + meta_id + 	"] updated by user: [" +
+	this.updateLogs("FramesetDoc [" + meta_id +	"] updated by user: [" +
 			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
     }
@@ -2588,7 +2615,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	dbc.createStatement() ;
 	dbc.executeUpdateQuery() ;
 
-	this.updateLogs("Child [" + meta_id + 	"] removed from " + parent_meta_id +
+	this.updateLogs("Child [" + meta_id +	"] removed from " + parent_meta_id +
 			"by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
 
@@ -2618,7 +2645,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	dbc.createStatement() ;
 	dbc.executeUpdateQuery() ;
 
-	this.updateLogs("Child [" + meta_id + 	"] activated  " +
+	this.updateLogs("Child [" + meta_id +	"] activated  " +
 			"by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
 
@@ -2646,7 +2673,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	dbc.createStatement() ;
 	dbc.executeUpdateQuery() ;
 
-	this.updateLogs("Child [" + meta_id + 	"] made inactive  " +
+	this.updateLogs("Child [" + meta_id +	"] made inactive  " +
 			"by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
 
 
@@ -2878,7 +2905,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
     */
     public String parseDoc(java.util.Vector variables, String admin_template_name, String lang_prefix) {
 	try {
-	    String htmlStr = getCachedFileString(new File(m_TemplateHome,lang_prefix+"/admin/"+admin_template_name)) ;
+	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/admin/"+admin_template_name)) ;
 	    if (variables == null) {
 		return htmlStr ;
 	    }
@@ -3427,7 +3454,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	    int set = Integer.parseInt((String)perms.elementAt(1)) ;
 
 	    if (perms.size() > 0
-		&& set_id == 0 		// User has full permission for this document
+		&& set_id == 0		// User has full permission for this document
 		|| (set_id < 3 && ((set & permission) > 0))	// User has at least one of the permissions given.
 		) {
 		return true ;
@@ -3464,7 +3491,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	    int set_id = Integer.parseInt((String)perms.elementAt(0)) ;
 	    int set = Integer.parseInt((String)perms.elementAt(1)) ;
 
-	    if (set_id == 0 		// User has full permission for this document
+	    if (set_id == 0		// User has full permission for this document
 		|| (set_id < 3 && ((set & permission) == permission))	// User has all the permissions given.
 		) {
 		return true ;
@@ -3930,7 +3957,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 
     /**
-     * 	<p>Return  language. Returns the langprefix from the db. Takes a lang id
+     *	<p>Return  language. Returns the langprefix from the db. Takes a lang id
      as argument. Will return null if something goes wrong.
      Example: If the language id number for swedish is 1. then the call
      myObject.getLanguage("1") will return 'se'
@@ -3999,7 +4026,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	for( int i = 0; i< meta_id.length; i++ ) {
 	    sBuf.append(meta_id[i])  ;
 	    if(i != meta_id.length)
-                sBuf.append(",") ;
+		sBuf.append(",") ;
 	}
 
 	DBConnect dbc = new DBConnect(m_conPool) ;

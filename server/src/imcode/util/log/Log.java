@@ -24,27 +24,27 @@ public class Log implements LogLevels {
     static {
 	Runtime.getRuntime().addShutdownHook(
 					     new Thread() {
-		/** Flushes all logs. */
-		public void run () {
-		    Log.flushAll() ;
-		}
-		
-	    }
+						 /** Flushes all logs. */
+						 public void run () {
+						     Log.flushAll() ;
+						 }
+						 
+					     }
 					     ) ;
     }
 
     /**
        Contains the pool of logs for this VM.
     */
-    protected static HashMap logs = new HashMap() ;
+    private static HashMap logs = new HashMap() ;
 
 
     /**
        The listeners on this log.
     */
-    protected HashSet logListeners = new HashSet() ;
+    private HashSet logListeners = new HashSet() ;
 
-    protected String name ;
+    private final String name ;
 
     /**
        Constructs a log.

@@ -28,9 +28,9 @@ public class AddDoc extends HttpServlet {
 	doPost()
 	*/
 	public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-		String imcserver 			= imcode.util.Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= imcode.util.Utility.getDomainPref( "start_url",host ) ;
+		String host				= req.getHeader("Host") ;
+		String imcserver			= imcode.util.Utility.getDomainPref("adminserver",host) ;
+		String start_url	= imcode.util.Utility.getDomainPref( "start_url",host ) ;
 
 		imcode.server.User user ;
 
@@ -89,49 +89,49 @@ public class AddDoc extends HttpServlet {
 			vec.add("#doc_menu_no#") ;
 			vec.add(doc_menu_no) ;
 
-                        // Lets get todays date
-                        SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd");
-                        Date toDay = new Date() ;
-                        vec.add("#start_date#") ;
-                        vec.add(  formatter.format(toDay) ) ;
-                        vec.add("#end_date#") ;
-                        vec.add(  formatter.format(toDay) ) ;
+			// Lets get todays date
+			SimpleDateFormat formatter = new SimpleDateFormat ("yyyy-MM-dd");
+			Date toDay = new Date() ;
+			vec.add("#start_date#") ;
+			vec.add(  formatter.format(toDay) ) ;
+			vec.add("#end_date#") ;
+			vec.add(  formatter.format(toDay) ) ;
 
-                        vec.add("#searchstring#") ;
-                        vec.add("") ;
+			vec.add("#searchstring#") ;
+			vec.add("") ;
 
-                        vec.add("#searchResults#") ;
-                        vec.add("") ;
+			vec.add("#searchResults#") ;
+			vec.add("") ;
 
-                      // Lets fix the sortby list, first get the displaytexts from the database
-                        String[] sortOrder = IMCServiceRMI.sqlProcedure(imcserver,  "SortOrder_GetExistingDocs '" + lang_prefix + "'") ;
-                        Vector sortOrderV = this.convert2Vector(sortOrder) ;
-                        sortOrderV.copyInto(sortOrder) ;
-                        Html htm  = new Html() ;
-                        String sortOrderStr = htm.createHtmlCode("ID_OPTION","", sortOrderV) ;
-                        vec.add("#sortBy#") ;
-                        vec.add( sortOrderStr ) ;
+		      // Lets fix the sortby list, first get the displaytexts from the database
+			String[] sortOrder = IMCServiceRMI.sqlProcedure(imcserver,  "SortOrder_GetExistingDocs '" + lang_prefix + "'") ;
+			Vector sortOrderV = this.convert2Vector(sortOrder) ;
+			sortOrderV.copyInto(sortOrder) ;
+			Html htm  = new Html() ;
+			String sortOrderStr = htm.createHtmlCode("ID_OPTION","", sortOrderV) ;
+			vec.add("#sortBy#") ;
+			vec.add( sortOrderStr ) ;
 
-                        // Lets set all the the documenttypes as selected in the html file
-                        String[] allDocTypesArray = IMCServiceRMI.getDocumentTypesInList(imcserver, lang_prefix) ;
-                        for(int i = 0 ; i < allDocTypesArray.length; i+=2 ) {
-                          vec.add("#checked_" + allDocTypesArray[i] + "#" ) ;
-                          vec.add("checked" ) ;
-                        }
+			// Lets set all the the documenttypes as selected in the html file
+			String[] allDocTypesArray = IMCServiceRMI.getDocumentTypesInList(imcserver, lang_prefix) ;
+			for(int i = 0 ; i < allDocTypesArray.length; i+=2 ) {
+			  vec.add("#checked_" + allDocTypesArray[i] + "#" ) ;
+			  vec.add("checked" ) ;
+			}
 
-                        // Lets set the create/ change types as selected in the html file
-                        String[] allPossibleIncludeDocsValues = {"created", "changed"} ;
-                        for(int i = 0 ; i < allPossibleIncludeDocsValues.length; i++ ) {
-                          vec.add("#include_check_" + allPossibleIncludeDocsValues[i] + "#" ) ;
-                          vec.add("checked" ) ;
-                        }
+			// Lets set the create/ change types as selected in the html file
+			String[] allPossibleIncludeDocsValues = {"created", "changed"} ;
+			for(int i = 0 ; i < allPossibleIncludeDocsValues.length; i++ ) {
+			  vec.add("#include_check_" + allPossibleIncludeDocsValues[i] + "#" ) ;
+			  vec.add("checked" ) ;
+			}
 
-                        // Lets set the and / or search preposition
-                        String[] allPossibleSearchPreps = {"and", "or"} ;
-                        for(int i = 0 ; i < allPossibleSearchPreps.length; i++ ) {
-                          vec.add("#search_prep_check_" + allPossibleSearchPreps[i] + "#" ) ;
-                          vec.add("checked" ) ;
-                        }
+			// Lets set the and / or search preposition
+			String[] allPossibleSearchPreps = {"and", "or"} ;
+			for(int i = 0 ; i < allPossibleSearchPreps.length; i++ ) {
+			  vec.add("#search_prep_check_" + allPossibleSearchPreps[i] + "#" ) ;
+			  vec.add("checked" ) ;
+			}
 		      // Lets parse the html page which consists of the add an existing doc
 			out.print(IMCServiceRMI.parseDoc(imcserver,vec,"existing_doc.html",lang_prefix)) ;
 			return ;
@@ -143,8 +143,8 @@ public class AddDoc extends HttpServlet {
 		}
 
 
-		final int NORMAL 	= 0 ;
-		final int CHECKBOX 	= 1 ;
+		final int NORMAL	= 0 ;
+		final int CHECKBOX	= 1 ;
 		final int OPTION	= 2 ;
 
 		String [] metatable = {
@@ -318,19 +318,18 @@ public class AddDoc extends HttpServlet {
 		}
 
 	}
-         /**
-         * Convert array to vector
-         */
+	 /**
+	 * Convert array to vector
+	 */
 
-        private static Vector convert2Vector(String[] arr) {
-        if(arr == null)
-          return new Vector() ;
+	private static Vector convert2Vector(String[] arr) {
+	if(arr == null)
+	  return new Vector() ;
 
-        Vector v = new Vector(arr.length) ;
-        for(int i = 0; i<arr.length; i++)
-            v.add(arr[i]) ;
-        return v ;
+	Vector v = new Vector(arr.length) ;
+	for(int i = 0; i<arr.length; i++)
+	    v.add(arr[i]) ;
+	return v ;
     }
 
 }
-

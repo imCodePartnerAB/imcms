@@ -1,5 +1,3 @@
-
-
 import javax.servlet.http.*;
 import java.util.Hashtable;
 import imcode.external.chat.*;
@@ -68,13 +66,13 @@ public class ChatBindingListener implements HttpSessionBindingListener
 		return _theSessions.keys();
 		
 	}
-	
+    /*	
 	public static HttpSession getASession(int memberNr)
 	{
 		return (HttpSession)_theSessions.get(String.valueOf(memberNr));
 		
 	}
-	
+    */
 }//end class
 
 /*

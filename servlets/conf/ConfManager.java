@@ -29,31 +29,31 @@ public class ConfManager extends Conference {
 
 	  int testMetaId = Integer.parseInt( params.getProperty("META_ID") );
 	  if ( !isUserAuthorized( req, res, testMetaId, user ) ) {
-	  	return;
+		return;
 	  }
 
-	 	String action = req.getParameter("action") ;
+		String action = req.getParameter("action") ;
 		//log("ConfManager is in action...") ;
-	 	if(action == null) {
-    	action = "" ;
-    	String header = "ConfManager servlet. " ;
+		if(action == null) {
+	action = "" ;
+	String header = "ConfManager servlet. " ;
 		  ConfError err = new ConfError(req,res,header,3) ;
-	 		log(header + err.getErrorMsg()) ;
-	 		return ;
+			log(header + err.getErrorMsg()) ;
+			return ;
     }
 
-   	// ********* NEW ********
+	// ********* NEW ********
 	  if(action.equalsIgnoreCase("NEW")) {
-	  	log("Lets add a conference");
+		log("Lets add a conference");
 			HttpSession session = req.getSession(false) ;
-	  	if (session != null) {
-	  		// log("Ok nu sätter vi metavärdena");
-	  		session.putValue("Conference.meta_id", params.getProperty("META_ID")) ;
-	  		session.putValue("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-	  		session.putValue("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
-	  	}
+		if (session != null) {
+			// log("Ok nu sätter vi metavärdena");
+			session.putValue("Conference.meta_id", params.getProperty("META_ID")) ;
+			session.putValue("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
+			session.putValue("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
+		}
 
-			String url = MetaInfo.getServletPath(req) + "ConfCreator?action=NEW" ;
+			String url = "ConfCreator?action=NEW" ;
 			//log("Redirect till:" + url) ;
 			res.sendRedirect(url) ;
 			return ;
@@ -80,15 +80,15 @@ public class ConfManager extends Conference {
 
 			if(! loginType.equalsIgnoreCase("VERIFY")) {
 				// Lets store  the standard metavalues in his session object
-	 			HttpSession session = req.getSession(false) ;
+				HttpSession session = req.getSession(false) ;
 				if (session != null) {
 					// log("Ok nu sätter vi metavärdena");
 					session.putValue("Conference.meta_id", params.getProperty("META_ID")) ;
 					session.putValue("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
 					session.putValue("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
 					session.putValue("Conference.viewedDiscList", new Properties()) ;
-          log("OK, nu sätter vi viewedDiscList") ;
-        }
+	  log("OK, nu sätter vi viewedDiscList") ;
+	}
 
 				String loginPage = MetaInfo.getServletPath(req) + "ConfLogin?login_type=login" ;
 				//log("Redirect till:" + loginPage) ;
@@ -104,16 +104,16 @@ public class ConfManager extends Conference {
 			}
 
 
-	 		return ;
-	 	} // End of View
+			return ;
+		} // End of View
 
 		// ********* CHANGE ********
 	   if(action.equalsIgnoreCase("CHANGE")) {
-		 		MetaInfo mInfo = new MetaInfo() ;
+				MetaInfo mInfo = new MetaInfo() ;
 				String url = MetaInfo.getServletPath(req) + "ChangeExternalDoc2?"
 					 + mInfo.passMeta(params) + "&metadata=meta" ;
-	   		//this.log("Redirects to:" + url) ;
- 	 			res.sendRedirect(url) ;
+			//this.log("Redirects to:" + url) ;
+				res.sendRedirect(url) ;
 				return ;
 	    } // End if
 
@@ -121,19 +121,19 @@ public class ConfManager extends Conference {
 	   if(action.equalsIgnoreCase("STATISTICS")) {
 
     // Lets get serverinformation
- 		  String host = req.getHeader("Host") ;
-  		  String imcServer = Utility.getDomainPref("userserver",host) ;
-        String ConfPoolServer = Utility.getDomainPref("conference_server",host) ;
-        log("confpoolserver " + ConfPoolServer ) ;
-        String metaId = req.getParameter("meta_id") ;
-        String frDate = req.getParameter("from_date") ;
-        String toDate = req.getParameter("to_date") ;
-        String mode = req.getParameter("list_mode") ;
+		  String host = req.getHeader("Host") ;
+		  String imcServer = Utility.getDomainPref("userserver",host) ;
+	String ConfPoolServer = Utility.getDomainPref("conference_server",host) ;
+	log("confpoolserver " + ConfPoolServer ) ;
+	String metaId = req.getParameter("meta_id") ;
+	String frDate = req.getParameter("from_date") ;
+	String toDate = req.getParameter("to_date") ;
+	String mode = req.getParameter("list_mode") ;
 
     // Lets fix the date stuff
-        if( frDate.equals("0")) frDate  = "1991-01-01 00:00" ;
-        if( toDate.equals("0")) toDate  = "2070-01-01 00:00" ;
-        if( mode == null) mode  = "1" ;
+	if( frDate.equals("0")) frDate  = "1991-01-01 00:00" ;
+	if( toDate.equals("0")) toDate  = "2070-01-01 00:00" ;
+	if( mode == null) mode  = "1" ;
 
       StringBuffer sql = new StringBuffer() ;
       sql.append("AdminStatistics1" + " " + metaId + ", '" + frDate + "', '" );
@@ -162,14 +162,14 @@ public void log( String str) {
 **/
 
 	public static String[][] getStatistics (String confServer,String sproc)
-   	 throws ServletException, IOException {
+	 throws ServletException, IOException {
 
      // RmiConf rmi = new RmiConf(user) ;
 
     // Lets get serverinformation
-  		//String host = req.getHeader("Host") ;
-  		//String imcServer = Utility.getDomainPref("userserver",host) ;
-  		//String ConfPoolServer = Utility.getDomainPref("conference_server",host) ;
+		//String host = req.getHeader("Host") ;
+		//String imcServer = Utility.getDomainPref("userserver",host) ;
+		//String ConfPoolServer = Utility.getDomainPref("conference_server",host) ;
 
     // Lets fix the date stuff
     //  if( frDate.equals("0")) frDate  = "1991-01-01 00:00" ;
@@ -190,4 +190,3 @@ public void log( String str) {
 
 
 } // End of class
-

@@ -7,10 +7,10 @@
 *-----------------------------------------------------------------------------------*
 * Author      : Magnus Isenberg : Magnum Software (c) 1998,1999                     *
 *-----------------------------------------------------------------------------------*
-* PLATFORM    : PC/MAC/SOLARIS                             			             *
+* PLATFORM    : PC/MAC/SOLARIS			             *
 * ENVIRONMENT : WINDOWS 95/98/NT MacOS UNIX OS2 LINUX runs from command line.       *
-* TOOLS       : JavaSoft JDK1.2, KAWA IDE                    				         *
-* REFERENCE   : The Java Class Libraries 1 & 2             		                 *
+* TOOLS       : JavaSoft JDK1.2, KAWA IDE				         *
+* REFERENCE   : The Java Class Libraries 1 & 2		                 *
 *               Getting Staring Using RMI (www.javasoft.com)                        *
 * Thanks to   : Andreas Bengtsson : Software Engineer : Entra Memtek Education AB   *
 *             : Hasse Brattberg   : Software Engineer : Entra Memtek Education AB   *
@@ -32,7 +32,6 @@
 package imcode.server ;
 
 import java.sql.*;
-import java.rmi.server.* ;
 import java.sql.Date ;
 import java.io.*;
 import java.util.*;
@@ -43,7 +42,7 @@ import imcode.server.* ;
 /**
   Database connection pool for the Imcode Net Server
   */
-public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
+public class IMCPool implements IMCPoolInterface {
     //	ConnectionPool m_conPool ;            // our pool of connections
     imcode.server.InetPoolManager m_conPool ; // inet pool of connections
 
@@ -51,7 +50,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
        Construct a pool object
     */
     //	public IMCPool(ConnectionPool conPool,javax.swing.JTextArea output)
-    public IMCPool(imcode.server.InetPoolManager conPool,Properties props) throws java.rmi.RemoteException {
+    public IMCPool(imcode.server.InetPoolManager conPool,Properties props) {
 	super();
 	m_conPool = conPool ;
     }
@@ -201,7 +200,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
     /**
        Send a procedure to the database and return a string
     */
-    public String sqlProcedureStr(String procedure) throws  java.rmi.RemoteException {
+    public String sqlProcedureStr(String procedure) {
 	Vector data = new Vector() ;
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
@@ -224,7 +223,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 		return null ;
 	    }
 	} else {
-	    throw new java.rmi.RemoteException()  ;
+	    throw new java.lang.NullPointerException("Null in IMCPool.sqlProcedureStr(String)" )  ;
 	}
     }
 
@@ -302,15 +301,15 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 
 	Vector data = new Vector() ;
 	// Vector meta = new Vector() ;
-        String[] meta = new String[0] ;
+	String[] meta = new String[0] ;
 
 	DBConnect dbc = new DBConnect(m_conPool,sqlQuery) ;
 	dbc.getConnection() ;
 	dbc.createStatement() ;
-        data = (Vector)dbc.executeQuery();
-        meta = dbc.getMetaData() ;
+	data = (Vector)dbc.executeQuery();
+	meta = dbc.getMetaData() ;
 
-        //meta = (Vector)dbc.getMetaData().clone() ;
+	//meta = (Vector)dbc.getMetaData().clone() ;
 	//data = (Vector)dbc.executeQuery().clone() ;
 	//meta = (Vector)dbc.getMetaData().clone() ;
 
@@ -354,8 +353,8 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
     public String[] sqlProcedureExt(String procedure) {
 
 	Vector data = new Vector() ;
-        //	Vector meta = new Vector() ;
-        String[] meta = new String[0] ;
+	//	Vector meta = new Vector() ;
+	String[] meta = new String[0] ;
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
@@ -412,7 +411,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 
 	Vector data = new Vector() ;
 	//Vector meta = new Vector() ;
-        String[] meta = new String[0] ;
+	String[] meta = new String[0] ;
 
 	DBConnect dbc = new DBConnect(m_conPool,sqlQuery) ;
 	dbc.getConnection() ;
@@ -420,8 +419,8 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	data = (Vector)dbc.executeQuery().clone() ;
 	//meta = (Vector)dbc.getMetaData().clone() ;
 
-        meta = dbc.getMetaData() ;
-        int columns = dbc.getColumnCount() ;
+	meta = dbc.getMetaData() ;
+	int columns = dbc.getColumnCount() ;
 
 	Hashtable result = new Hashtable(columns,0.5f) ;
 
@@ -596,13 +595,5 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 
 
 	return result ;
-
-
-
     }
-
-
-
-
-
 } // END CLASS IMCPool

@@ -72,7 +72,7 @@ public class DiagramDriver{
     String table = aHtml.createTable(params, templateLib) ;  
     
     dd.log("Templatelib: " + templateLib) ;
-   	dd.log("tableHeader:" + tableHeader) ;
+	dd.log("tableHeader:" + tableHeader) ;
 	//	dd.log("table:" + table) ;
 	*/
 		
@@ -209,10 +209,10 @@ HtmlGenerator htmObj = new HtmlGenerator() ;
 	/*
 	 Html ht = new Html() ;
 		 
- 	 Vector vProps = new Vector() ;
- 	 Vector vValues = new Vector() ;
- 	 vProps.add("1") ;
- 	 vProps.add("10") ;
+	 Vector vProps = new Vector() ;
+	 Vector vValues = new Vector() ;
+	 vProps.add("1") ;
+	 vProps.add("10") ;
    vProps.add("100") ;
    vProps.add("1000") ;
    vProps.add("10000") ;
@@ -220,7 +220,7 @@ HtmlGenerator htmObj = new HtmlGenerator() ;
    vProps.add("1000000") ;
   
    vValues.add("1:1") ;
- 	 vValues.add("1:10") ;
+	 vValues.add("1:10") ;
    vValues.add("1:100") ;
    vValues.add("1:1000") ;
    vValues.add("1:10000") ;
@@ -288,7 +288,7 @@ end function
 		System.out.println(	setAcc.getSetting("HEADER")) ;
 		setAcc.setSetting("HEADER", "Tafs") ;
 		System.out.println(	setAcc.getSetting("HEADER")) ;
-	 	setAcc.saveSettings() ;
+		setAcc.saveSettings() ;
 	 */
 		 
 	 // HÄR ÄR DIAGRAMVALUE ACCESSOR
@@ -327,7 +327,7 @@ end function
 	while (st.hasMoreTokens()) {
 	  String tmp = st.nextToken() ;
 		if( counter == itemNbr) 
-      	retVal = tmp ;	
+	retVal = tmp ;	
     counter = counter + 1 ;
 	}
 		return retVal ;
@@ -386,7 +386,7 @@ public boolean createFile(String thePath, String newFile) {
 			// Lets create a new file 
 			ok = fileObj.createNewFile() ;
 		  if(ok != true)
-		 		log("The file could not be created!" + thePath + newFile) ;
+				log("The file could not be created!" + thePath + newFile) ;
 		} catch (NullPointerException e) {
 					log("The file couldnt be deleted " + e.getMessage()) ;
 			}
@@ -405,12 +405,12 @@ public boolean copyFile(String srcPath, String srcFile, String targPath, String 
 		try {
 			if( this.fileExists(srcPath + srcFile))
 				okFlag = writeFileCopy(srcPath + srcFile, targPath + targFile) ;
-	 	
-	 	}	catch (FileNotFoundException exc) {
+		
+		}	catch (FileNotFoundException exc) {
 			log("Could not find the file \"" + srcPath + srcFile + "\".");
 			log("Make sure it is in the current directory.") ;
 			log("" + exc);
-	 		return false ;
+			return false ;
 			
 		}	catch (IOException exc) {
 			log("IO error occurred while reading file: " + targPath + targFile);
@@ -423,7 +423,7 @@ public boolean copyFile(String srcPath, String srcFile, String targPath, String 
 
 
  public boolean writeFileCopy(String srcFile, String targetFile)
- 	throws IOException {
+	throws IOException {
 		
 		boolean ok = false ;
 		try	{
@@ -476,12 +476,12 @@ protected Vector readValues(BufferedReader inputFromFile) throws IOException {
 public boolean saveValues() {
 		try {
 			writeValues() ;
-	 	
-	 	}	catch (FileNotFoundException exc) {
+		
+		}	catch (FileNotFoundException exc) {
 			log("Could not find the file \"" + FILE_NAME + "\".");
 			log("Make sure it is in the current directory.") ;
 			log(exc);
-	 		return false ;
+			return false ;
 			
 		}	catch (IOException exc) {
 			log("IO error occurred while reading file: " + FILE_NAME);
@@ -506,7 +506,7 @@ public boolean saveValues() {
 		
 			for(int i = 0 ; i < diagramValues.size() ; i++) {
 				str = (String) diagramValues.get(i) ;
-     	 	outputToFile.println(str) ;		
+		outputToFile.println(str) ;		
 			}
 
 			outputToFile.close() ;

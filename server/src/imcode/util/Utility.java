@@ -4,8 +4,6 @@ import javax.servlet.http.* ;
 import javax.servlet.http.HttpUtils ;
 import java.io.* ;
 import java.util.* ;
-import java.rmi.* ;
-import java.rmi.registry.* ;
 
 import imcode.util.log.* ;
 

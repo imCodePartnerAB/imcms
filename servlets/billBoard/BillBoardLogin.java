@@ -9,7 +9,7 @@ import imcode.util.* ;
  * The class used to generate login pages, and administrate users page
  * 
  * TEMPLATES: The following html files and fragments are used by this servlet.
- * 	BillBoard_Login_Error.htm 
+ *	BillBoard_Login_Error.htm 
  *	
  * @version 1.2 20 Aug 2001
  * @author Rickard Larsson REBUILD TO BillBoardLogin BY Peter Östergren
@@ -19,7 +19,7 @@ import imcode.util.* ;
 public class BillBoardLogin extends BillBoard {//ConfLogin
 
 	private final static String USER_UNADMIN_LINK_TEMPLATE = "BillBoard_User_Unadmin_Link.htm";//Conf_User_Unadmin_Link.htm
-	private static Vector test;
+    //private static Vector test;
 	
 
 	//String CREATE_HTML = "BillBoard_Add_User.htm" ;   // The create new user page Conf_Add_User.htm
@@ -78,8 +78,8 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	<PRE>
 			Parameter	Händelse	parameter värde
 	login_type	Utförs om login_type OCH submit har skickats. Verifierar inloggning i konferensen.	LOGIN
-	login_type	Adderar en användare in i Janus user db och till konferensens db 	ADD_USER
-	login_type	Sparar en användares användarnivå till konferens db 	SAVE_USER
+	login_type	Adderar en användare in i Janus user db och till konferensens db	ADD_USER
+	login_type	Sparar en användares användarnivå till konferens db	SAVE_USER
 	Reacts on the actions sent.
 
 	PARAMETERS:
@@ -240,6 +240,3 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	} // End getCurrentUserId
 
 } // End class
-
-
-

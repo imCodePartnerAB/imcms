@@ -226,7 +226,7 @@ public class PasswordMailReminder extends HttpServlet {
 					
 					String userLanguagePrefix = queryResult[5];
 					String userMessage = IMCServiceRMI.parseDoc(imcserver, parsVector, 
-					                         PasswordMailReminder.USER_MAIL_BODY, userLanguagePrefix);
+								 PasswordMailReminder.USER_MAIL_BODY, userLanguagePrefix);
 					
 					smtp.sendMailWait( mailFrom, userEmail ,null , userMessage );
 				
@@ -240,7 +240,7 @@ public class PasswordMailReminder extends HttpServlet {
 				parsVector.add( userEmail );
 				
 				String serverMasterMessage = IMCServiceRMI.parseDoc(imcserver, parsVector, serverMasterMailBody,
-				                                                    deafultLanguagePrefix);
+										    deafultLanguagePrefix);
 		
 				smtp.sendMailWait( emailFromServer, eMailServerMaster, null , serverMasterMessage );
 					
@@ -259,12 +259,12 @@ public class PasswordMailReminder extends HttpServlet {
 			
 		} else {
 			String errorString = IMCServiceRMI.parseDoc(imcserver, null, PasswordMailReminder.ERROR_STRING,
-			                                            deafultLanguagePrefix );
+								    deafultLanguagePrefix );
 			
 			errorParsVector.add( "#errorininput#" );
 			errorParsVector.add( errorString );
 			returnString = IMCServiceRMI.parseDoc(imcserver, errorParsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT,
-			                                    deafultLanguagePrefix );
+							    deafultLanguagePrefix );
 		}
 		
 		res.setContentType("text/html");

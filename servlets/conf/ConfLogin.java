@@ -10,11 +10,11 @@ import imcode.util.* ;
  * <pre>
   TEMPLATES: The following html files and fragments are used by this servlet.
 
- 	Conf_admin_user.htm : Used to generate a selection list of users
+	Conf_admin_user.htm : Used to generate a selection list of users
   Conf_admin_user_resp.htm : Used to administrate a user
- 	Conf_Login.htm : Html file used to prompt the user for username / password (usermode)
- 	Conf_Add_User.htm : Html file used to add a new user (adminmode)
- 	Conf_Login_Error.htm : Html file used to generate a login failure. (adminmode)
+	Conf_Login.htm : Html file used to prompt the user for username / password (usermode)
+	Conf_Add_User.htm : Html file used to add a new user (adminmode)
+	Conf_Login_Error.htm : Html file used to generate a login failure. (adminmode)
  </pre>
  * @author  Rickard Larsson
  * @version 1.0
@@ -135,8 +135,8 @@ public class ConfLogin extends Conference {
 	<PRE>
 			Parameter	Händelse	parameter värde
 	login_type	Utförs om login_type OCH submit har skickats. Verifierar inloggning i konferensen.	LOGIN
-	login_type	Adderar en användare in i Janus user db och till konferensens db 	ADD_USER
-	login_type	Sparar en användares användarnivå till konferens db 	SAVE_USER
+	login_type	Adderar en användare in i Janus user db och till konferensens db	ADD_USER
+	login_type	Sparar en användares användarnivå till konferens db	SAVE_USER
 	Reacts on the actions sent.
 
 	PARAMETERS:
@@ -305,13 +305,13 @@ public class ConfLogin extends Conference {
 			// Lets build the users information into a string and add it to db
 			//String userStr = createUserInfoString(userParams, newUserId) ;
 
-                        // Lets get the language id the user will have, or set the lang_id to 1
-                        // as default
-                        if( userParams.getProperty("lang_id") == null )
-                          userParams.setProperty("lang_id", "1") ;
+			// Lets get the language id the user will have, or set the lang_id to 1
+			// as default
+			if( userParams.getProperty("lang_id") == null )
+			  userParams.setProperty("lang_id", "1") ;
 
 			userParams.setProperty("user_id", newUserId) ;
-                        //log("Userparams: " + userParams.toString());
+			//log("Userparams: " + userParams.toString());
 			String userStr =  UserHandler.createUserInfoString(userParams) ;
 			//log("UserDBStr: " + userStr) ;
 
@@ -472,16 +472,14 @@ public class ConfLogin extends Conference {
 			//	log("SqlQ: " + sqlQ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 
-				String url = MetaInfo.getServletPath(req) ;
-			url += "ConfLogin?login_type=admin_user" ;
+			String url = "ConfLogin?login_type=admin_user" ;
 			res.sendRedirect(url) ;
 			return ;
 		}
 
 		// ***** RETURN TO ADMIN MANAGER *****
 		if( loginType.equalsIgnoreCase("GoBack")) {
-			String url = MetaInfo.getServletPath(req) ;
-			url += "ConfLogin?login_type=admin_user" ;
+			String url = "ConfLogin?login_type=admin_user" ;
 			res.sendRedirect(url) ;
 			return ;
 		}
@@ -707,15 +705,15 @@ public class ConfLogin extends Conference {
 
 	if( ! pwd1.equals(pwd2) ) {
 	ConfError err = new ConfError(req,res,header,52, LOGIN_ERROR_HTML ) ;
-	 			log(header + err.getErrorMsg()) ;
-	  	return false ;
+				log(header + err.getErrorMsg()) ;
+		return false ;
 	}
 
 	  if( pwd1.length() < 4) {
 	ConfError err = new ConfError(req,res,header,53, LOGIN_ERROR_HTML ) ;
-	 			log(header + err.getErrorMsg()) ;
-	  	return false ;
-	 		}
+				log(header + err.getErrorMsg()) ;
+		return false ;
+			}
 
 	return true ;
 
@@ -873,6 +871,3 @@ public class ConfLogin extends Conference {
 	} // End getCurrentUserId
 
 } // End class
-
-
-

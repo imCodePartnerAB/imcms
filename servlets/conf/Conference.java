@@ -316,9 +316,6 @@ public class Conference extends HttpServlet {
 
 	protected boolean checkAdminRights(String server, imcode.server.User user) {
 
-
-		try {
-
 			// Lets verify that the user who tries to add a new user is an SUPERADMIN
 			RmiLayer imc = new RmiLayer(user) ;
 			int currUser_id = user.getInt("user_id") ;
@@ -331,11 +328,6 @@ public class Conference extends HttpServlet {
 					return true ;
 			}
 			return false ;
-		} catch (IOException e) {
-			this.log("An error occured in CheckAdminRights") ;
-			this.log(e.getMessage() ) ;
-		}
-		return false ;
 
 	} // checkAdminRights
 
@@ -545,8 +537,8 @@ public class Conference extends HttpServlet {
 		adminButtonVM.addProperty( "SERVLET_URL", servletPath);
 		adminButtonVM.addProperty( "ADMIN_LINK_HTML", vm.getProperty( "ADMIN_LINK_HTML" ) );
 
-                //log("vm: " + vm.toString()) ;
-                VariableManager unAdminButtonVM = new VariableManager();
+		//log("vm: " + vm.toString()) ;
+		VariableManager unAdminButtonVM = new VariableManager();
 		unAdminButtonVM.addProperty( "IMAGE_URL", imagePath);
 		unAdminButtonVM.addProperty( "SERVLET_URL", servletPath);
 		unAdminButtonVM.addProperty( "UNADMIN_LINK_HTML", vm.getProperty("UNADMIN_LINK_HTML"));
@@ -819,14 +811,13 @@ public class Conference extends HttpServlet {
 	Returns the folder where this templates are situated for a certain metaid.
 	**/
 	protected String getExternalImageFolder(String server, String meta_id) throws ServletException, IOException {
-		RmiConf rmi = new RmiConf() ;
-		// Ok, Lets get the language for the system
-		String imageLib = rmi.getExternalImageFolder(server, meta_id) ;
-
-		// Lets get the foldername used for this meta id . Default is original
-		//imageLib += this.getTemplateLibName(server, meta_id )  ;
-		//log("ImageLib: " + imageLib) ;
-		return imageLib ;
+	    // Ok, Lets get the language for the system
+	    String imageLib = RmiConf.getExternalImageFolder(server, meta_id) ;
+	    
+	    // Lets get the foldername used for this meta id . Default is original
+	    //imageLib += this.getTemplateLibName(server, meta_id )  ;
+	    //log("ImageLib: " + imageLib) ;
+	    return imageLib ;
 	} // End of getImageLibName
 
 
@@ -843,7 +834,7 @@ public class Conference extends HttpServlet {
 	/**
 	Returns the foldername where the templates are situated for a certain metaid.
 	**/
-	protected String getInternalImageFolder(String server)  	 throws ServletException, IOException {
+	protected String getInternalImageFolder(String server)	 throws ServletException, IOException {
 		return RmiConf.getInternalImageFolder(server) ;
 
 	} // End of getInternalImageFolder
@@ -885,7 +876,7 @@ public class Conference extends HttpServlet {
 			//lets create adminbuttonhtml
 			String templateLib = this.getExternalTemplateFolder( req );
 			HtmlGenerator htmlObj = new HtmlGenerator( templateLib, this.ADMIN_BUTTON_TEMPLATE );
-                        String adminBtn = htmlObj.createHtmlString( adminButtonVM, req );
+			String adminBtn = htmlObj.createHtmlString( adminButtonVM, req );
 
 			//lets create adminlink
 			adminLinkVM.addProperty( "ADMIN_BUTTON", adminBtn );
@@ -1001,7 +992,7 @@ public class Conference extends HttpServlet {
 	 * @param user
 	*/
 	protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, imcode.server.User user )
-					 	  throws ServletException, IOException {
+						  throws ServletException, IOException {
 
 		// Lets get serverinformation
 		String host = req.getHeader( "Host" ) ;
@@ -1034,7 +1025,7 @@ public class Conference extends HttpServlet {
 	 * @param user
 	*/
 	protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, int metaId, imcode.server.User user )
-					 	  throws ServletException, IOException {
+						  throws ServletException, IOException {
 
 		// Lets get serverinformation
 		String host = req.getHeader( "Host" ) ;
@@ -1062,7 +1053,7 @@ public class Conference extends HttpServlet {
 	 * @param user
 	*/
 	protected boolean userHasRightToEdit( String imcServer, int metaId,
-	                      imcode.server.User user ) throws java.io.IOException {
+			      imcode.server.User user ) throws java.io.IOException {
 
 		return ( IMCServiceRMI.checkDocRights( imcServer, metaId, user ) &&
 			 IMCServiceRMI.checkDocAdminRights( imcServer, metaId, user ) );
@@ -1075,7 +1066,7 @@ public class Conference extends HttpServlet {
 	 * @param user
 	*/
 	protected boolean userHasAdminRights( String imcServer, int metaId,
-	                      imcode.server.User user ) throws java.io.IOException {
+			      imcode.server.User user ) throws java.io.IOException {
 		return ( IMCServiceRMI.checkDocAdminRights( imcServer, metaId, user ) &&
 		     IMCServiceRMI.checkDocAdminRights( imcServer, metaId, user, 65536 ) );
 

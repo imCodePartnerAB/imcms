@@ -10,24 +10,21 @@ import imcode.server.* ;
   */
 public class AdminDoc extends HttpServlet {
 
-	private static ServletContext sc ;
-
 	/**
 	 init()
 	*/
 	public void init( ServletConfig config ) throws ServletException {
 		super.init( config ) ;
-		sc = config.getServletContext() ;
 	}
 
 	/**
 	doGet()
 	*/
 	public void doGet( HttpServletRequest req,	HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
+		String host				= req.getHeader("Host") ;
+		String start_url	= Utility.getDomainPref( "start_url",host ) ;
+		String imcserver			= Utility.getDomainPref("adminserver",host) ;
+		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 		int start_doc				= IMCServiceRMI.getDefaultHomePage(imcserver) ;
 		imcode.server.User user ; 
 		String htmlStr = "" ;     
@@ -68,9 +65,9 @@ public class AdminDoc extends HttpServlet {
 
 	public static byte[] adminDoc (int meta_id, int parent_meta_id, String host, User user, HttpServletRequest req, HttpServletResponse res) throws IOException {
 
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
+		String imcserver			= Utility.getDomainPref("adminserver",host) ;
+		String start_url	= Utility.getDomainPref( "start_url",host ) ;
+		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 		int start_doc					= IMCServiceRMI.getDefaultHomePage(imcserver) ;
 
 		String htmlStr = "" ;
@@ -122,8 +119,7 @@ public class AdminDoc extends HttpServlet {
 */		} else if ((flags & 4) != 0) { // User rights
 			htmlStr = imcode.util.MetaDataParser.parseMetaPermission(String.valueOf(meta_id), String.valueOf(meta_id),user,host,"change_meta_rights.html" ) ;
 			//String status = imcode.util.MetaDataParser.getRolesFromDb(String.valueOf(meta_id),user,host ) ;
-			//sc.log("GetRoles: " + status) ;
-			return htmlStr.getBytes("8859_1") ;          	
+			return htmlStr.getBytes("8859_1") ;	
 		}        
 
 
@@ -172,7 +168,7 @@ public class AdminDoc extends HttpServlet {
 			} else {
 			    urlvec.add("#_other#") ;
 			    urlvec.add("checked") ;
-                            frame_name = target ;
+			    frame_name = target ;
 			}
 			urlvec.add("#frame_name#") ;
 			urlvec.add(frame_name) ;
@@ -301,6 +297,3 @@ public class AdminDoc extends HttpServlet {
 		return htmlStr.getBytes("8859_1") ;
 	}
 }
-
-
-

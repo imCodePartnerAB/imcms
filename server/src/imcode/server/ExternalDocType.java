@@ -1,11 +1,10 @@
-
 package imcode.server ;
 
 public class ExternalDocType implements java.io.Serializable {
-	int    m_DocType ;
-	String m_CallServlet ;
-	String m_DocName ;
-	String m_ParamStr ;
+	private int    m_DocType ;
+	private String m_CallServlet ;
+	private String m_DocName ;
+	private String m_ParamStr ;
 
 	public ExternalDocType(int DocType,String CallServet,String DocName,String ParamStr) {
 		m_DocType     = DocType ;

@@ -43,7 +43,6 @@ public class ErrorMessageGenerator {
 	private String errorHeader;
 	private String errorMessage;
 	private String htmlErrorTemplate;
-	private Vector tagParsList = new Vector();
 
 	/**
 	 * Creats an error message with pased heade and message.
@@ -57,7 +56,7 @@ public class ErrorMessageGenerator {
 	 * @param htmlErrorTemplate documnet to pars
 	*/
 	public ErrorMessageGenerator( String server, String emailServerMaster, 
-	                              String languagePrefix, String errorHeader,
+				      String languagePrefix, String errorHeader,
 								  String errorMessage, String htmlErrorTemplate ) {
 									  
 		this.server = server;
@@ -81,7 +80,7 @@ public class ErrorMessageGenerator {
 	 * @param htmlErrorTemplate documnet to pars
 	*/	
 	public ErrorMessageGenerator( String server, String emailServerMaster,
-	                              String languagePrefix, String errorHeader, 
+				      String languagePrefix, String errorHeader, 
 								  String htmlErrorTemplate, int errorCode) {
 									  
 		this( server, emailServerMaster, languagePrefix, errorHeader, "", htmlErrorTemplate );
@@ -101,7 +100,7 @@ public class ErrorMessageGenerator {
 	 * @param htmlErrorTemplate documnet to pars
 	*/	
 	public ErrorMessageGenerator( String server, String emailServerMaster, 
-	                              String languagePrefix, String errorHeader,
+				      String languagePrefix, String errorHeader,
 								  String errorMessage, String htmlErrorTemplate, 
 								  int errorCode) {
 								  
@@ -124,6 +123,8 @@ public class ErrorMessageGenerator {
 	 * creats error page as string object
 	*/
 	public String createErrorString() throws IOException {
+
+	    Vector tagParsList = new Vector() ;
 	
 		tagParsList.add( "#ERROR_HEADER#" );
 		tagParsList.add( errorHeader );

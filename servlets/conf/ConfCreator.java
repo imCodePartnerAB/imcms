@@ -103,7 +103,7 @@ public class ConfCreator extends Conference {
 			rmi.activateChild(imcServer, metaId) ;
 
 			// Ok, Were done adding the conference, Lets go back to the Manager
-			String loginPage = MetaInfo.getServletPath(req) + "ConfLogin?login_type=login" ;
+			String loginPage = "ConfLogin?login_type=login" ;
 			res.sendRedirect(loginPage) ;
 			return ;
 		}

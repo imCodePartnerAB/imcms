@@ -966,7 +966,7 @@ public class ChatBase extends HttpServlet {
 	/**
 	Returns the foldername where the templates are situated for a certain metaid.
 	**/
-	protected String getInternalImageFolder(String server)  	 throws ServletException, IOException
+	protected String getInternalImageFolder(String server)	 throws ServletException, IOException
 	{
 		return RmiConf.getInternalImageFolder(server) ;
 
@@ -1479,7 +1479,7 @@ public class ChatBase extends HttpServlet {
 		//log("1size = "+size);
 		hash.put("fontSizeInteger", new Integer(size));
 
-		return 	hash;	
+		return	hash;	
 
 	}//end prepareSettings
 	

@@ -8,13 +8,11 @@ import imcode.server.* ;
 
 public class BackDoc extends HttpServlet {
 	
-	private static ServletContext sc ;
 	/**
 	init()
 	*/
 	public void init( ServletConfig config ) throws ServletException {
 		super.init( config ) ;
-		sc = config.getServletContext() ;
 	}
 
 	/**
@@ -22,10 +20,10 @@ public class BackDoc extends HttpServlet {
 	*/
 	public void doGet( HttpServletRequest req, HttpServletResponse res )	throws ServletException, IOException {
 	
-		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("userserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		String no_permission_url 	= Utility.getDomainPref( "no_permission_url",host ) ;
+		String host				= req.getHeader("Host") ;
+		String imcserver			= Utility.getDomainPref("userserver",host) ;
+		String start_url	= Utility.getDomainPref( "start_url",host ) ;
+		String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
 		int start_doc					= IMCServiceRMI.getDefaultHomePage(imcserver) ;
 		ServletOutputStream out = res.getOutputStream() ;
 

@@ -20,10 +20,10 @@ public class SaveNewMeta extends HttpServlet {
 	doPost()
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
+		String host				= req.getHeader("Host") ;
+		String imcserver			= Utility.getDomainPref("adminserver",host) ;
+		String start_url	= Utility.getDomainPref( "start_url",host ) ;
+		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 		imcode.server.User user ;
 		String htmlStr = "" ;
@@ -203,7 +203,7 @@ public class SaveNewMeta extends HttpServlet {
 
 
 	/*
-			sqlStr 	= "insert into doc_permission_sets\n"
+			sqlStr	= "insert into doc_permission_sets\n"
 					+ "select "+meta_id+", ndps.set_id, ndps.permission_id from new_doc_permission_sets ndps where meta_id = "+parent_meta_id+"\n"
 
 					+ "insert into doc_permission_sets_ex\n"
@@ -223,7 +223,7 @@ public class SaveNewMeta extends HttpServlet {
 		//	log ("OK 1") ;
 
 	// Lets add the sortorder to the parents childlist
-			sqlStr = 	"declare @new_sort int\n" +
+			sqlStr =	"declare @new_sort int\n" +
 				"select @new_sort = max(manual_sort_order)+10 from childs where meta_id = "+parent_meta_id +" and menu_sort = "+doc_menu_no+"\n"+
 				"if @new_sort is null begin set @new_sort = 500 end\n"+
 				"insert into childs (meta_id, to_meta_id, menu_sort, manual_sort_order) values ("+parent_meta_id+","+meta_id+","+doc_menu_no+",@new_sort)\n" ;
@@ -402,8 +402,8 @@ public class SaveNewMeta extends HttpServlet {
 			//		int new_meta_id = IMCServiceRMI.saveNewDoc( imcserver,meta_id,user,doc,0,roles_rights,user_rights) ;
 			//		htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver,new_meta_id,user,"adv_new_meta.html",doc.getInt( "doc_type" ),meta_id,0,doc_menu_no ) ;
 
-			final int NORMAL 	= 0 ;
-			final int CHECKBOX 	= 1 ;
+			final int NORMAL	= 0 ;
+			final int CHECKBOX	= 1 ;
 			final int OPTION	= 2 ;
 
 			int metatabletype[] = {
@@ -538,7 +538,3 @@ public class SaveNewMeta extends HttpServlet {
 		return false ;
 	}
 }
-
-
-
-

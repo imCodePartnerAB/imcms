@@ -22,10 +22,10 @@ public class StartDoc extends HttpServlet {
 	doGet()
 	*/
 	public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-		String imcserver 			= Utility.getDomainPref("userserver",host) ;
-		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-		String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
+		String host				= req.getHeader("Host") ;
+		String imcserver			= Utility.getDomainPref("userserver",host) ;
+		String start_url	= Utility.getDomainPref( "start_url",host ) ;
+		String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 		long time = System.currentTimeMillis() ;
 		imcode.server.User user ;
@@ -102,7 +102,7 @@ public class StartDoc extends HttpServlet {
 	Check if user exist in database
 	*/
 	static protected imcode.server.User allowUser( String user_name, String passwd, String host ) throws IOException {
-		String imcserver 			= Utility.getDomainPref("userserver",host) ;
+		String imcserver			= Utility.getDomainPref("userserver",host) ;
 
 		// user information
 		String fieldNames[] = {"user_id","login_name","login_password","first_name",
@@ -115,7 +115,7 @@ public class StartDoc extends HttpServlet {
 	Ip login  - check if user exist in ip-table
 	*/
 	static protected imcode.server.User ipAssignUser( String remote_ip , String host) throws IOException {
-		String imcserver 			= Utility.getDomainPref("userserver",host) ;
+		String imcserver			= Utility.getDomainPref("userserver",host) ;
 		imcode.server.User user = new imcode.server.User( ) ;
 
 		long ip = Utility.ipStringToLong(remote_ip) ;
@@ -142,6 +142,3 @@ public class StartDoc extends HttpServlet {
 		return user ;
 	}
 }
-
-
-
