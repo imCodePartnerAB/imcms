@@ -7,6 +7,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.HTMLConv;
 import imcode.server.IMCServiceInterface;
 import imcode.server.SystemData;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.fortune.Quote;
 import imcode.util.net.SMTP;
@@ -83,12 +84,17 @@ public class PostcardServlet extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         String host = req.getHeader( "Host" );
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        // Get the session
+        HttpSession session = req.getSession( true );
+        // Check if user logged on
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
+
         SystemData sysData = imcref.getSystemData();
 
         File templateLib = getExternalTemplateFolder( req );
 
-        HttpSession session = req.getSession( true );
 
         String qLine = "1";
         String metaId = "";
@@ -149,7 +155,7 @@ public class PostcardServlet extends HttpServlet {
         vect.add( HTMLConv.toHTML( HTMLConv.toHTMLSpecial( senderMessage ) ) );
 
         //ok nu ska vi parsa skiten med ett mall skrälle
-        String html = imcref.parseExternalDoc( vect, HTML_TEMPLATE, imcref.getDefaultLanguageAsIso639_1(), "105" );
+        String html = imcref.parseExternalDoc( vect, HTML_TEMPLATE, imcref.getLangPrefix(user), "105" );
         //lets get the name to use on the file
         String pcFileName = (String)session.getAttribute( "pcFileName" );
         if ( pcFileName == null ) {
@@ -187,8 +193,7 @@ public class PostcardServlet extends HttpServlet {
         }
 
         //ok lets save the bottom frame page, incase it has been removed
-        //by some stupid sysAdmin¨
-        String bottomString = imcref.parseExternalDoc( new Vector(), POSTCARD_BOTTOM, imcref.getDefaultLanguageAsIso639_1(), "105" );
+        String bottomString = imcref.parseExternalDoc( new Vector(), POSTCARD_BOTTOM, imcref.getLangPrefix(user), "105" );
         File imagePathFile = imcode.util.Utility.getDomainPrefPath( "image_path" );
 
         File postcardFolder = new File( imagePathFile.getParent(), POSTCARD_FOLDER );
@@ -213,7 +218,7 @@ public class PostcardServlet extends HttpServlet {
         vm.add( "#bottom#" );
         vm.add( req.getContextPath() + "/postcards/bottom.html" );
 
-        String frameSetHtml = imcref.parseExternalDoc( vm, POSTCARD_SET, imcref.getDefaultLanguageAsIso639_1(), "105" );
+        String frameSetHtml = imcref.parseExternalDoc( vm, POSTCARD_SET, imcref.getLangPrefix(user), "105" );
 
         res.setContentType( "text/html" );
         PrintWriter out = res.getWriter();
@@ -228,7 +233,7 @@ public class PostcardServlet extends HttpServlet {
         //ok lets parse the mailSubject line
         vect.add( "#mailSubject#" );
         vect.add( senderName );
-        mailArr[2] = imcref.parseExternalDoc( vect, POSTCARD_MAIL_SUBJECT, imcref.getDefaultLanguageAsIso639_1(), "105" );
+        mailArr[2] = imcref.parseExternalDoc( vect, POSTCARD_MAIL_SUBJECT, imcref.getLangPrefix(user), "105" );
 
         //lets parse the mailBody
         vect.add( "#mailText0#" );
@@ -239,7 +244,7 @@ public class PostcardServlet extends HttpServlet {
         vect.add( "http://" + host );
         vect.add( "#mailText3#" );
         vect.add( pcFileName );
-        mailArr[3] = imcref.parseExternalDoc( vect, POSTCARD_MAIL_BODY, imcref.getDefaultLanguageAsIso639_1(), "105" );
+        mailArr[3] = imcref.parseExternalDoc( vect, POSTCARD_MAIL_BODY, imcref.getLangPrefix(user), "105" );
 
         session.setAttribute( "postcardMail", mailArr );
         return;
@@ -249,11 +254,11 @@ public class PostcardServlet extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         HttpSession session = req.getSession( true );
-        Object done = session.getAttribute( "logon.isDone" );
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
+        // Check if user logged on
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
 
         // Since our templates are located into the 105 folder, we'll have to hang on 105
-        File templateLib = new File( imcref.getTemplateHome(), user.getLangPrefix() );
+        File templateLib = new File( imcref.getTemplateHome(), imcref.getLangPrefix(user) );
         templateLib = new File( templateLib, "105" );
 
         return templateLib;
@@ -272,6 +277,13 @@ public class PostcardServlet extends HttpServlet {
     private void sendPostcardMail( HttpServletRequest req, HttpServletResponse res ) throws IOException {
         /* mailserver info */
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        HttpSession session = req.getSession( false );
+        if ( session == null )
+            res.sendRedirect( req.getContextPath() + "/servlet/StartDoc" );
+
+        // Check if user logged on
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
+
         String mailserver = Utility.getDomainPref( "smtp_server" );
         String stringMailPort = Utility.getDomainPref( "smtp_port" );
         String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
@@ -279,9 +291,6 @@ public class PostcardServlet extends HttpServlet {
         res.setContentType( "text/html" );
         PrintWriter out = res.getWriter();
 
-        HttpSession session = req.getSession( false );
-        if ( session == null )
-            res.sendRedirect( req.getContextPath() + "/servlet/StartDoc" );
 
         String[] mailNfo = (String[])session.getAttribute( "postcardMail" );
 
@@ -307,16 +316,16 @@ public class PostcardServlet extends HttpServlet {
             smtp.sendMailWait( mailNfo[0], mailNfo[1], mailNfo[2], mailNfo[3] );
 
         } catch ( ProtocolException ex ) {
-            out.println( imcref.parseExternalDoc( new Vector(), POSTCARD_MAIL_ERROR, imcref.getDefaultLanguageAsIso639_1(), "105" ) );
+            out.println( imcref.parseExternalDoc( new Vector(), POSTCARD_MAIL_ERROR, imcref.getLangPrefix(user), "105" ) );
             log( "Protocol error while sending mail. " + ex.getMessage() );
             return;
         } catch ( IOException ex ) {
-            out.println( imcref.parseExternalDoc( new Vector(), POSTCARD_MAIL_ERROR, imcref.getDefaultLanguageAsIso639_1(), "105" ) );
+            out.println( imcref.parseExternalDoc( new Vector(), POSTCARD_MAIL_ERROR, imcref.getLangPrefix(user), "105" ) );
             log( "The mailservlet probably timed out. " + ex.getMessage() );
             return;
         }
 
-        out.println( imcref.parseExternalDoc( new Vector(), POSTCARD_MAIL_SENT, imcref.getDefaultLanguageAsIso639_1(), "105" ) );
+        out.println( imcref.parseExternalDoc( new Vector(), POSTCARD_MAIL_SENT, imcref.getLangPrefix(user), "105" ) );
         return;
     }
 

@@ -301,9 +301,15 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     File getExternalTemplateRootFolder( HttpServletRequest req ) throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        // Get the session
+        HttpSession session = req.getSession( true );
+        // Does the session indicate this user already logged in?
+        Object done = session.getAttribute( "logon.isDone" );  // marker object
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
+        
         // Lets get serverinformation
         int metaId = getMetaId( req );
-        return imcref.getExternalTemplateFolder(  metaId  );
+        return imcref.getExternalTemplateFolder(  metaId, imcref.getLangPrefix(user));
     }
 
     /**
@@ -311,13 +317,13 @@ public class ChatBase extends HttpServlet implements ChatConstants {
      * This method will call its helper method getTemplateLibName to get the
      * name of the folder which contains the templates for a certain meta id
      */
-    protected File getExternalTemplateFolder( HttpServletRequest req ) throws IOException {
+    protected File getExternalTemplateFolder(HttpServletRequest req, String lang_prefix) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
         int metaId = getMetaId( req );
         // Lets get serverinformation
-        return new File( imcref.getExternalTemplateFolder( metaId ), getTemplateLibName( chatref, metaId ) );
+        return new File( imcref.getExternalTemplateFolder( metaId, lang_prefix), getTemplateLibName( chatref, metaId ) );
     }
 
     /**
@@ -351,6 +357,18 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
+        // Get the session
+        HttpSession session = req.getSession();
+
+        // Check if user logged on
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
+
+        // Set lang_prefix
+        String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
+        if(user != null){
+            lang_prefix = user.getLangPrefix();
+        }
+
         int metaId;
         if ( chat != null ) {
             metaId = chat.getChatId();
@@ -362,7 +380,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        final String htmlStr = imcref.parseExternalDoc( vect, template, imcref.getDefaultLanguageAsIso639_1(), "103", templateSet );
+        final String htmlStr = imcref.parseExternalDoc( vect, template, lang_prefix, "103", templateSet );
         out.print( htmlStr );
         out.flush();
         out.close();
@@ -402,9 +420,21 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
+        // Get the session
+        HttpSession session = req.getSession();
+
+        // Check if user logged on
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
+
+        // Set lang_prefix
+        String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
+        if(user != null){
+            lang_prefix = user.getLangPrefix();
+        }
+
         int metaId = getMetaId( req );
 
-        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId );
+        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, lang_prefix);
         return extFolder += getTemplateLibName( chatref, metaId );
     }
 

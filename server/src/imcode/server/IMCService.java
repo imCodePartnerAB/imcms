@@ -39,12 +39,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private File m_TemplateHome;           // template home
     private File m_IncludePath;
     private File m_FortunePath;
-    private File m_ImagePath;
-    private File m_ImcmsImagePath;
+    private File m_ImagePath;             //  folder  /images
+    private File m_ImcmsPath;             //  folder  /imcms
     private File m_FilePath;
     private String m_StartUrl;
-    private String m_ImageUrl;
-    private String m_ImcmsImageUrl;            // imcmsimage folder
+    private String m_ImageUrl;            //  folder  /images
+    private String m_ImcmsUrl;            //  folder  /imcms
     private String defaultLanguageAsIso639_2 ;
     private static final int DEFAULT_STARTDOCUMENT = 1001;
 
@@ -90,9 +90,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         m_ImagePath = imcode.util.Utility.getAbsolutePathFromString( imagePathString );
         log.info( "ImagePath: " + m_ImagePath );
 
-        String imcmsImagePathString = props.getProperty( "ImcmsImagePath" ).trim();
-        m_ImcmsImagePath = imcode.util.Utility.getAbsolutePathFromString( imcmsImagePathString );
-        log.info( "ImcmsImagePath: " + m_ImcmsImagePath );
+        String imcmsPathString = props.getProperty( "ImcmsPath" ).trim();
+        m_ImcmsPath = imcode.util.Utility.getAbsolutePathFromString( imcmsPathString );
+        log.info( "ImcmsPath: " + m_ImcmsPath );
 
         String includePathString = props.getProperty( "IncludePath" ).trim();
         m_IncludePath = Utility.getAbsolutePathFromString( includePathString );
@@ -113,12 +113,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         m_ImageUrl = props.getProperty( "ImageUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
         log.info( "ImageUrl: " + m_ImageUrl );
 
-        m_ImcmsImageUrl = props.getProperty( "ImcmsImageUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
-        log.info( "ImcmsImageUrl: " + m_ImcmsImageUrl );
+        m_ImcmsUrl = props.getProperty( "ImcmsUrl" ).trim(); //FIXME: Get from webserver, or get rid of if possible.
+        log.info( "ImcmsUrl: " + m_ImcmsUrl );
 
         defaultLanguageAsIso639_2 = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
         try {
-            defaultLanguageAsIso639_2 = LanguageMapper.convert639_1to639_2( defaultLanguageAsIso639_2 );
+            if(defaultLanguageAsIso639_2.length() < 3){
+                defaultLanguageAsIso639_2 = LanguageMapper.convert639_1to639_2( defaultLanguageAsIso639_2 );
+            }
         } catch ( LanguageMapper.LanguageNotSupportedException e1 ) {
             log.fatal( "Configured default language " + defaultLanguageAsIso639_2 + " is not supported either." );
             defaultLanguageAsIso639_2 = null;
@@ -791,9 +793,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * @deprecated Ugly use {@link #parseExternalDoc(java.util.List variables, String external_template_name, String lang_prefix, String doc_type)}
      *             or something else instead.
      */
-    public File getExternalTemplateFolder(int meta_id) {
+    public File getExternalTemplateFolder(int meta_id, String lang_prefix) {
         int docType = getDocType(meta_id) ;
-        return new File(m_TemplateHome, getDefaultLanguageAsIso639_1() + "/" + docType + "/");
+        return new File(m_TemplateHome, lang_prefix + "/" + docType + "/");
     }
 
     /**
@@ -813,8 +815,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Return url-path to imcmsimages.
      */
-    public String getImcmsImageUrl() {
-        return m_ImcmsImageUrl;
+    public String getImcmsUrl() {
+        return m_ImcmsUrl;
     }
 
     /**
@@ -829,8 +831,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      *         Return file-path to imcmsimages
      */
     // Return file-path to imcmsimages
-    public File getImcmsImagePath() {
-        return m_ImcmsImagePath;
+    public File getImcmsPath() {
+        return m_ImcmsPath;
     }
 
     /**
@@ -855,6 +857,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String getDefaultLanguageAsIso639_2() {
         return defaultLanguageAsIso639_2 ;
     }
+
+    // get language prefix for user
+    public String getLangPrefix( UserDomainObject user ) {
+        String lang_prefix = this.getDefaultLanguageAsIso639_2();
+        if ( user != null){
+            return user.getLangPrefix();
+        }else{
+            return lang_prefix;
+        }
+    }
+
 
     /**
      * Increment session counter.

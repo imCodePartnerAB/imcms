@@ -155,7 +155,13 @@ public class Conference extends HttpServlet {
 
         int metaId = this.getMetaId( req );
 
-        return imcref.getExternalTemplateFolder( metaId );
+        // Get the session
+        HttpSession session = req.getSession( true );
+        // Does the session indicate this user already logged in?
+        Object done = session.getAttribute( "logon.isDone" );  // marker object
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
+
+        return imcref.getExternalTemplateFolder( metaId, imcref.getLangPrefix(user));
     }
 
     /**
@@ -167,11 +173,20 @@ public class Conference extends HttpServlet {
     File getExternalTemplateFolder( HttpServletRequest req )
             throws IOException {
 
-        int metaId = this.getMetaId( req );
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
-        File extFolder = imcref.getExternalTemplateFolder( metaId );
+
+        // Get the session
+        HttpSession session = req.getSession( true );
+        // Does the session indicate this user already logged in?
+        Object done = session.getAttribute( "logon.isDone" );  // marker object
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
+
+
+        int metaId = this.getMetaId( req );
+
+        File extFolder = imcref.getExternalTemplateFolder( metaId, imcref.getLangPrefix(user) );
         return new File( extFolder, this.getTemplateLibName( confref, metaId ) );
     }
 
@@ -360,8 +375,20 @@ public class Conference extends HttpServlet {
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
+        // Get the session
+        HttpSession session = req.getSession( true );
+        // Does the session indicate this user already logged in?
+        Object done = session.getAttribute( "logon.isDone" );  // marker object
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
 
-        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId );
+        String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
+
+        if( user != null){
+            lang_prefix = user.getLangPrefix();
+        }
+
+        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, lang_prefix);
+
         return extFolder += this.getTemplateLibName( confref, metaId );
     }
 

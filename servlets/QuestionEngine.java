@@ -30,8 +30,13 @@ public class QuestionEngine extends HttpServlet
     {
 
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	File fortune_path = Utility.getDomainPrefPath("FortunePath" );
+    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+    // Get the session
+    HttpSession session = req.getSession( true );
+    // Check if user logged on
+    imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
+
+    File fortune_path = Utility.getDomainPrefPath("FortunePath" );
 
 	res.setContentType("text/html");
 	PrintWriter out = res.getWriter();
@@ -81,7 +86,7 @@ public class QuestionEngine extends HttpServlet
 	values.add("#file#");
 	values.add(inFile);
 
-	String parsed = imcref.parseExternalDoc( values, questionTemplate, imcref.getDefaultLanguageAsIso639_1(), "106");
+	String parsed = imcref.parseExternalDoc( values, questionTemplate, imcref.getLangPrefix(user), "106");
 
 	out.print(parsed);
 

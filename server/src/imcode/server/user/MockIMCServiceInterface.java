@@ -229,7 +229,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // get external template folder
-   public File getExternalTemplateFolder( int meta_id ) {
+   public File getExternalTemplateFolder(int meta_id, String lang_prefix) {
       return null;
    }
 
@@ -319,12 +319,12 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
     // Return url-path to imcmsimages.
-    public String getImcmsImageUrl() {
+    public String getImcmsUrl() {
         return null;  // TODO
     }
 
     // get file-path to imcmsimages
-    public File getImcmsImagePath() {
+    public File getImcmsPath() {
         return null;  // TODO
     }
 

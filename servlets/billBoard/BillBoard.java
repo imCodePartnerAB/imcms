@@ -70,6 +70,11 @@ public class BillBoard extends HttpServlet { //Conference
     imcode.server.user.UserDomainObject getUserObj( HttpServletRequest req,
                                                     HttpServletResponse res ) throws IOException {
 
+        // Lets get serverinformation
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+
+        String default_lang_prefix = imcref.getDefaultLanguageAsIso639_2();
+
         if ( checkSession( req, res ) == true ) {
 
             // Get the session
@@ -80,7 +85,7 @@ public class BillBoard extends HttpServlet { //Conference
             return user;
         } else {
             String header = "BillBoard servlet.";
-            new BillBoardError( req, res, header, 2 );
+            new BillBoardError( req, res, header, 2, default_lang_prefix );
             return null;
         }
     }
@@ -160,11 +165,18 @@ public class BillBoard extends HttpServlet { //Conference
 
     File getExternalTemplateRootFolder( HttpServletRequest req )//p ok
             throws IOException {
+
+         // Get the session
+         HttpSession session = req.getSession( true );
+        // Does the session indicate this user already logged in?
+         UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
+
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
+
         int metaId = this.getMetaId( req );
-        return imcref.getExternalTemplateFolder( metaId );
+        return imcref.getExternalTemplateFolder( metaId, imcref.getLangPrefix(user));
     }
 
     /**
@@ -179,8 +191,15 @@ public class BillBoard extends HttpServlet { //Conference
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface billref = ApplicationServer.getIMCPoolInterface();
+        // Get the session
+        HttpSession session = req.getSession( true );
+        UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
 
-        return new File( this.getExternalTemplateFolder( imcref, metaId ), this.getTemplateLibName( billref, metaId ) );
+        String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
+        if( user != null){
+            lang_prefix = user.getLangPrefix();
+        }
+        return new File( this.getExternalTemplateFolder( imcref, metaId, lang_prefix), this.getTemplateLibName( billref, metaId ) );
     }
 
     /**
@@ -189,9 +208,9 @@ public class BillBoard extends HttpServlet { //Conference
      * name of the folder which contains the templates for a certain meta id
      */
 
-    private File getExternalTemplateFolder( IMCServiceInterface imcref, int metaId ) {
+    private File getExternalTemplateFolder(IMCServiceInterface imcref, int metaId, String lang_prefix) {
 
-        return imcref.getExternalTemplateFolder( metaId );
+        return imcref.getExternalTemplateFolder( metaId, lang_prefix);
     }
 
     /**
@@ -332,7 +351,7 @@ public class BillBoard extends HttpServlet { //Conference
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface billref = ApplicationServer.getIMCPoolInterface();
 
-        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId );
+        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, user.getLangPrefix());
         extFolder += this.getTemplateLibName( billref, metaId );
 
         return extFolder;

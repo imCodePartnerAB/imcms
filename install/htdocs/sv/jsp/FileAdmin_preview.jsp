@@ -5,7 +5,7 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
-String IMG_PATH   = "@imcmsimageurllang@/" ; // path to buttons (with trailing /)
+String IMG_PATH   = "@imcmsimageurl@/" ; // path to buttons (with trailing /)
 String imC_PATH   = "@rooturl@" ;              // "/imcms" if used - "" if not
 
 /* *******************************************************************

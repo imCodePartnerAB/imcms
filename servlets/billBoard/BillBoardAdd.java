@@ -124,14 +124,14 @@ public class BillBoardAdd extends BillBoard {
                 if ( !validateEmail( addEpost ) ) {
                     log( "invalid epostadress" );
                     String header = SERVLET_NAME + " servlet. ";
-                    new BillBoardError( req, res, header, 76 );
+                    new BillBoardError( req, res, header, 76, user.getLangPrefix());
                     return;
                 }
 
                 // Lets check the data size
                 if ( addText.length() > 32000 ) {
                     String header = SERVLET_NAME + " servlet. ";
-                    new BillBoardError( req, res, header, 75 );
+                    new BillBoardError( req, res, header, 75, user.getLangPrefix());
                     return;
                 }
 
@@ -210,14 +210,14 @@ public class BillBoardAdd extends BillBoard {
                     if ( !validateEmail( addEpost ) ) {
                         log( "invalid epostadress" );
                         String header = SERVLET_NAME + " servlet. ";
-                        new BillBoardError( req, res, header, 76 );
+                        new BillBoardError( req, res, header, 76, user.getLangPrefix());
                         return;
                     }
 
                     // Lets check the data size
                     if ( addText.length() > 32000 ) {
                         String header = SERVLET_NAME + " servlet. ";
-                        new BillBoardError( req, res, header, 75 );
+                        new BillBoardError( req, res, header, 75, user.getLangPrefix());
                         return;
                     }
                 }
@@ -283,7 +283,7 @@ public class BillBoardAdd extends BillBoard {
                     // Lets check the data size
                     if ( addText.length() > 32000 ) {
                         String header = SERVLET_NAME + " servlet. ";
-                        new BillBoardError( req, res, header, 74 );
+                        new BillBoardError( req, res, header, 74, user.getLangPrefix());
                         return;
                     }
                 }
@@ -301,7 +301,7 @@ public class BillBoardAdd extends BillBoard {
                 try {
                     this.sendReplieEmail( toEmail, addEpost, subjectStr, addText, addHeader );
                 } catch ( ProtocolException pe ) {
-                    new BillBoardError( req, res, "BillBoardAdd servlet. ", 76 );
+                    new BillBoardError( req, res, "BillBoardAdd servlet. ", 76, user.getLangPrefix());
                     log( pe.getMessage() );
                     return;
                 }
@@ -314,7 +314,7 @@ public class BillBoardAdd extends BillBoard {
             }
         } else {
             String header = SERVLET_NAME + " servlet. ";
-            new BillBoardError( req, res, header, 100 );
+            new BillBoardError( req, res, header, 100, user.getLangPrefix());
             return;
         }
 
@@ -391,7 +391,7 @@ public class BillBoardAdd extends BillBoard {
             return;
         } else {
             String header = SERVLET_NAME + " servlet. ";
-            new BillBoardError( req, res, header, 100 );
+            new BillBoardError( req, res, header, 100, user.getLangPrefix());
             return;
         }
 

@@ -59,7 +59,7 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
         if ( action == null ) {
             action = "";
             String header = "BillBoardCreator servlet. ";
-            BillBoardError err = new BillBoardError( req, res, header, 3 );
+            BillBoardError err = new BillBoardError( req, res, header, 3, user.getLangPrefix());
             log( header + err.getErrorMsg() );
             return;
         }
@@ -82,7 +82,7 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
             if ( !foundMetaId.equals( "1" ) ) {
                 action = "";
                 String header = "BillBoardCreator servlet. ";
-                BillBoardError err = new BillBoardError( req, res, header, 90 );
+                BillBoardError err = new BillBoardError( req, res, header, 90, user.getLangPrefix());
                 log( header + err.getErrorMsg() );
                 return;
             }
@@ -137,7 +137,7 @@ public class BillBoardCreator extends BillBoard {//BillBoardCreator
         if ( action == null ) {
             action = "";
             String header = "BillBoardCreator servlet. ";
-            BillBoardError err = new BillBoardError( req, res, header, 3 );
+            BillBoardError err = new BillBoardError( req, res, header, 3, user.getLangPrefix());
             log( header + err.getErrorMsg() );
             return;
         }

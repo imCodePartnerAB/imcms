@@ -103,7 +103,7 @@ public interface IMCServiceInterface {
 	;
 
     // get external template folder
-    File getExternalTemplateFolder(int meta_id)
+    File getExternalTemplateFolder(int meta_id, String lang_prefix)
 	;
 
     // increment session counter
@@ -146,10 +146,10 @@ public interface IMCServiceInterface {
 	;
 
     // Return url-path to imcmsimages.
-    public String getImcmsImageUrl();
+    public String getImcmsUrl();
 
     // get file-path to imcmsimages
-    public File getImcmsImagePath()
+    public File getImcmsPath()
 	;
 
     // get starturl
@@ -159,6 +159,10 @@ public interface IMCServiceInterface {
     // get language
     public String getDefaultLanguageAsIso639_1()
 	;
+
+    // get language prefix for user
+    public String getLangPrefix( UserDomainObject user )
+    ;
 
     // get doctype
     public int getDocType(int meta_id)

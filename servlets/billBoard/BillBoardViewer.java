@@ -5,6 +5,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
 
 /**
  * Html template in use:
@@ -34,14 +36,6 @@ public class BillBoardViewer extends BillBoard {//ConfViewer
 
         // Lets get the standard SESSION parameters and validate them
         Properties params = MetaInfo.createPropertiesFromMetaInfoParameters( super.getBillBoardSessionParameters( req ) );
-
-        if ( true == false ) {
-
-            String header = "BillBoardViewer servlet. ";
-            new BillBoardError( req, res, header, 1 );
-            log( "BillBoardViewer error checkParameters == false" );
-            return;
-        }
 
         // Lets get an user object
         imcode.server.user.UserDomainObject user = super.getUserObj( req, res );

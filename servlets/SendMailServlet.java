@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.StringTokenizer;
@@ -57,7 +58,13 @@ public class SendMailServlet extends HttpServlet {
         /* server info */
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String lang_prefix = imcref.getDefaultLanguageAsIso639_1();
+
+        // Get the session
+        HttpSession session = req.getSession(true);
+        // Check if user logged on
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
+
+
         SystemData sysData = imcref.getSystemData();
 
         // Lets get the parameters we need
@@ -118,7 +125,7 @@ public class SendMailServlet extends HttpServlet {
             mailTextV.add( mailTo );
             mailTextV.add( "#mailFrom#" );
             mailTextV.add( mailFrom );
-            mailBody = imcref.parseDoc( mailTextV, BODY_TEMPLATE_SHOP, lang_prefix );
+            mailBody = imcref.parseDoc( mailTextV, BODY_TEMPLATE_SHOP, imcref.getLangPrefix(user) );
         } else {
             //ok lets see if we got a subject or not
             if ( mailSubject != null ) {
@@ -129,7 +136,7 @@ public class SendMailServlet extends HttpServlet {
                 mailTextV.add( mailTo );
                 mailTextV.add( "#mailFrom#" );
                 mailTextV.add( mailFrom );
-                mailBody = imcref.parseDoc( mailTextV, BODY_TEMPLATE_TO_ADMIN, lang_prefix );
+                mailBody = imcref.parseDoc( mailTextV, BODY_TEMPLATE_TO_ADMIN, imcref.getLangPrefix(user) );
             } else {
                 //its a mail from the system
                 mailFrom = webmaster;
@@ -138,9 +145,9 @@ public class SendMailServlet extends HttpServlet {
                 mailTextV.add( "#mailFrom#" );
                 mailTextV.add( mailFrom );
                 //it also means that we must parse the subject line thrue SUBJECT_TEMPLATE so lets rock
-                mailSubject = imcref.parseDoc( mailTextV, SUBJECT_TEMPLATE, lang_prefix );
+                mailSubject = imcref.parseDoc( mailTextV, SUBJECT_TEMPLATE, imcref.getLangPrefix(user) );
                 //ok lets parse the mailbody into a string
-                mailBody = imcref.parseDoc( mailTextV, BODY_TEMPLATE, lang_prefix );
+                mailBody = imcref.parseDoc( mailTextV, BODY_TEMPLATE, imcref.getLangPrefix(user) );
             }
         }
         //a simple check that @ symbol exists

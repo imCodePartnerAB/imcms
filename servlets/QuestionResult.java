@@ -28,6 +28,10 @@ public class QuestionResult extends HttpServlet
 	{
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        // Get the session
+        HttpSession session = req.getSession( true );
+        // Check if user logged on
+        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
 
 		//get answer
 		String file = req.getParameter("file");
@@ -78,7 +82,7 @@ public class QuestionResult extends HttpServlet
 		values.add("#total#");
 		values.add(""+(int)totalAnswerCount);
 
-		String parsed = imcref.parseExternalDoc( values, RESULTTEMPLATE, imcref.getDefaultLanguageAsIso639_1(), "106");
+		String parsed = imcref.parseExternalDoc( values, RESULTTEMPLATE, imcref.getLangPrefix(user), "106");
 
 		res.setContentType("text/html");
 		Writer out = res.getWriter();

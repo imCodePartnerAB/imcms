@@ -119,9 +119,9 @@ public class ChatControl extends ChatBase {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	if(userHasAdminRights( imcref, meta_Id, user )){
-	    chatAdminLink = createAdminButton(req, ADMIN_BUTTON,metaId,chatName);
+	    chatAdminLink = createAdminButton(req, ADMIN_BUTTON,metaId,chatName, user.getLangPrefix());
 	    //lets set up the kick out button OBS fixa detta
-	    adminButtonKickOut = createAdminButton(req, ADMIN_GET_RID_OF_A_SESSION,metaId,"");
+	    adminButtonKickOut = createAdminButton(req, ADMIN_GET_RID_OF_A_SESSION,metaId,"", user.getLangPrefix());
 	}
 
 	//lets set up the page to send
@@ -140,19 +140,20 @@ public class ChatControl extends ChatBase {
         tags.add( "#CHAT_ADMIN_DISCUSSION#" );
         tags.add( adminButtonKickOut );
         tags.add( "#SETTINGS#" );
-        tags.add( settingsButton( myChat ) );
+        tags.add( settingsButton( myChat, user.getLangPrefix()) );
 
 	this.sendHtml(req,res,tags, HTML_TEMPLATE, null) ;
 	return;
     } //**** end doGet ***** end doGet ***** end doGet ******
 
 
-    private String settingsButton( imcode.external.chat.Chat chat)throws IOException {
+    private String settingsButton(imcode.external.chat.Chat chat, String lang_prefix)throws IOException {
 	if (chat.settingsPage() ) {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
+
 	    int metaId = chat.getChatId();
-	    return imcref.parseExternalDoc(null, SETTINGS_BUTTON , imcref.getDefaultLanguageAsIso639_1(), "103", getTemplateLibName(chatref,metaId));
+	    return imcref.parseExternalDoc(null, SETTINGS_BUTTON , lang_prefix, "103", getTemplateLibName(chatref,metaId));
 	}else {
 	    return "&nbsp;";
 	}
@@ -348,7 +349,7 @@ public class ChatControl extends ChatBase {
                                                   String metaId, imcode.server.user.UserDomainObject user, ChatMember member)
             throws IOException {
 	Vector vect = new Vector();
-	File templetUrl =	super.getExternalTemplateFolder(req);
+	File templetUrl =	super.getExternalTemplateFolder(req, user.getLangPrefix());
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 	String[] arr;
@@ -442,14 +443,14 @@ public class ChatControl extends ChatBase {
     }//end createSettingsPage
 
 
-    private synchronized String createAdminButton( HttpServletRequest req, String template, String chatId, String name )
+    private synchronized String createAdminButton(HttpServletRequest req, String template, String chatId, String name, String lang_preffix)
             throws IOException {
         VariableManager vm = new VariableManager();
         vm.addProperty( "chatId", chatId );
         vm.addProperty( "chatName", name );
 
         //lets create adminbuttonhtml
-        File templateLib = super.getExternalTemplateFolder( req );
+        File templateLib = super.getExternalTemplateFolder( req, lang_preffix);
         HtmlGenerator htmlObj = new HtmlGenerator( templateLib, template );
         return htmlObj.createHtmlString( vm, req );
     }

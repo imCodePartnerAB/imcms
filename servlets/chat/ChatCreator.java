@@ -131,13 +131,14 @@ public class ChatCreator extends ChatBase {
 			new ChatError(req,res,header, 84) ;//obs kolla om rätt nr
 			return ;
 		    }
-                    chatref.sqlUpdateProcedure("C_AddTemplateLib", new String[]{newLibName});
+            log("lang_prefix for External Template Folder = " + user.getLangPrefix() );
+            chatref.sqlUpdateProcedure("C_AddTemplateLib", new String[]{newLibName});
 		    // Lets copy the original folders to the new foldernames
 		    FileManager fileObj = new FileManager() ;
-		    File templateSrc = new File(imcref.getExternalTemplateFolder(metaId), "original") ;
-		    File imageSrc = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId), "original") ;
-		    File templateTarget = new File(imcref.getExternalTemplateFolder(metaId), newLibName) ;
-		    File imageTarget = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId), newLibName) ;
+		    File templateSrc = new File(imcref.getExternalTemplateFolder(metaId, user.getLangPrefix()), "original") ;
+		    File imageSrc = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user.getLangPrefix()), "original") ;
+		    File templateTarget = new File(imcref.getExternalTemplateFolder(metaId, user.getLangPrefix()), newLibName) ;
+		    File imageTarget = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user.getLangPrefix()), newLibName) ;
 
 		    fileObj.copyDirectory(templateSrc, templateTarget) ;
 		    fileObj.copyDirectory(imageSrc, imageTarget) ;
@@ -214,7 +215,7 @@ public class ChatCreator extends ChatBase {
 
 	}//end if(action.equalsIgnoreCase("ADD_CHAT"))
 	log("default köret");
-	sendHtml(req,res,createTaggs( myChat),HTML_TEMPLATE,myChat);
+	sendHtml(req,res,createTaggs( myChat, user.getLangPrefix()),HTML_TEMPLATE,myChat);
 	return ;
 
     } // End POST
@@ -327,7 +328,7 @@ public class ChatCreator extends ChatBase {
 	    Chat myChat = createChat(req, user, meta_id);
 	    session.setAttribute("myChat",myChat);
 	    // Lets build the Responsepage to the loginpage
-	    Vector vect = createTaggs( myChat);
+	    Vector vect = createTaggs( myChat, user.getLangPrefix());
 	    sendHtml(req,res,vect,HTML_TEMPLATE,myChat);
 	    return ;
 	}
@@ -356,7 +357,7 @@ public class ChatCreator extends ChatBase {
 
 	    log("Chat: " + myChat);
 
-	    Vector vect = createTaggs( myChat);
+	    Vector vect = createTaggs( myChat, user.getLangPrefix());
 	    sendHtml(req,res,vect,HTML_TEMPLATE,myChat);
 	    return ;
 
@@ -364,14 +365,14 @@ public class ChatCreator extends ChatBase {
 
     } // End doGet
 
-    private String getTemplateButtonHtml(int metaId) throws IOException {
+    private String getTemplateButtonHtml(int metaId, String lang_prefix) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface() ;
-	return imcref.parseExternalDoc(null, HTML_TEMPLATES_BUTTON , imcref.getDefaultLanguageAsIso639_1(), "103", getTemplateLibName(chatref,metaId));
+	    IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface() ;
+	    return imcref.parseExternalDoc(null, HTML_TEMPLATES_BUTTON , lang_prefix, "103", getTemplateLibName(chatref,metaId));
     }
 
     //peter keep
-    private Vector createTaggs( Chat chat) throws IOException {
+    private Vector createTaggs(Chat chat, String lang_prefix) throws IOException {
 
         Vector bv = new Vector();
         bv.add("1");
@@ -398,7 +399,7 @@ public class ChatCreator extends ChatBase {
         taggs.add(createRadioButton("font", bv, chat.getfont() + ""));
 
         taggs.add("#templates#");
-        taggs.add(getTemplateButtonHtml(chat.getChatId()));
+        taggs.add(getTemplateButtonHtml(chat.getChatId(), lang_prefix));
 
         return taggs;
     }

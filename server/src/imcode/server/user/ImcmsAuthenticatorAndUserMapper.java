@@ -74,7 +74,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
          user = staticExtractUserFromStringArray( user_data );
 
          if( null == user.getLangPrefix() ) {
-            user.setLangPrefix( service.getDefaultLanguageAsIso639_1() );
+            user.setLangPrefix( service.getDefaultLanguageAsIso639_2() );
          }
 
          String[][] phoneNbr = service.sqlProcedureMulti( SPROC_GET_USER_PHONE_NUMBERS, new String[] { user_data[0] } );

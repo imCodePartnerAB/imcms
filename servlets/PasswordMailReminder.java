@@ -18,11 +18,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 /**
  * Proces if user can and has right to recive password by mail.
@@ -92,7 +94,7 @@ public class PasswordMailReminder extends HttpServlet {
         /* server info */
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String defaultLanguagePrefix = imcref.getDefaultLanguageAsIso639_1();
+
 
         res.setContentType("text/html");
         ServletOutputStream out = res.getOutputStream();
@@ -102,7 +104,7 @@ public class PasswordMailReminder extends HttpServlet {
         parsVector.add("#errorininput#");
         parsVector.add("");
 
-        String returnString = imcref.parseDoc(parsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT, defaultLanguagePrefix);
+        String returnString = imcref.parseDoc(parsVector, PasswordMailReminder.RETURNING_DOCUMENT_INPUT, imcref.getDefaultLanguageAsIso639_2());
         out.print(returnString);
     }
 
@@ -121,7 +123,7 @@ public class PasswordMailReminder extends HttpServlet {
         String emailFromServer = sysData.getServerMasterAddress();
 
         String mailFrom = eMailServerMaster;
-        String deafultLanguagePrefix = imcref.getDefaultLanguageAsIso639_1();
+        String deafultLanguagePrefix = imcref.getDefaultLanguageAsIso639_2();
 
         String mailserver = Utility.getDomainPref("smtp_server");
         String stringMailPort = Utility.getDomainPref("smtp_port");

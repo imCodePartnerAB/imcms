@@ -19,12 +19,13 @@ public class BillBoardError extends BillBoard {
         myErrorMessage = "";
     }
 
-    public BillBoardError( HttpServletRequest req, HttpServletResponse res, String header, int errorCode ) throws IOException {
+    public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode) throws IOException {
 
         VariableManager vm = new VariableManager();
 
         // Lets get the errormessage from the error file
-        String myErrorMessage = this.getErrorMessage( req, errorCode );
+        String myErrorMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLangPrefix());
+
 
         vm.addProperty( "ERROR_HEADER", header );
         vm.addProperty( "ERROR_MESSAGE", myErrorMessage );
@@ -42,7 +43,7 @@ public class BillBoardError extends BillBoard {
         VariableManager vm = new VariableManager();
 
         // Lets get the errormessage from the error file
-        String myErrorMessage = this.getErrorMessage( req, errorCode );
+        String myErrorMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLangPrefix());
 
         vm.addProperty( "ERROR_MESSAGE", myErrorMessage );
         //String fileName = "Conf_Error.htm" ;
@@ -59,7 +60,7 @@ public class BillBoardError extends BillBoard {
         VariableManager vm = new VariableManager();
 
         // Lets get the errormessage from the error file
-        String aMessage = this.getErrorMessage( req, errorCode );
+        String aMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLangPrefix());
         aMessage += " " + msg;
 
         vm.addProperty( "ERROR_HEADER", header );
@@ -104,7 +105,7 @@ public class BillBoardError extends BillBoard {
      * information from a file in the template folder called errmsg.ini
      */
 
-    public String getErrorMessage( HttpServletRequest req, int errCode ) {
+    public String getErrorMessage(HttpServletRequest req, int errCode, String lang_prefix) {
         try {
             // Lets get the path to the template library
             File folder = super.getExternalTemplateRootFolder( req );
@@ -136,7 +137,7 @@ public class BillBoardError extends BillBoard {
         VariableManager vm = new VariableManager();
 
         // Lets get the errormessage from the error file
-        myErrorMessage = this.getErrorMessage( req, errorCode );
+        myErrorMessage = this.getErrorMessage( req, errorCode, this.getUserObj(req,res).getLangPrefix());
         vm.addProperty( "ERROR_CODE", "" + errorCode );
         vm.addProperty( "ERROR_HEADER", header );
         vm.addProperty( "ERROR_MESSAGE", myErrorMessage );

@@ -194,7 +194,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
             if ( params == null ) {
                 log( "An illegal searchdateparameter was sent to server" );
                 BillBoardError msgErr = new BillBoardError();
-                searchMsg = msgErr.getErrorMessage( req, 42 );
+                searchMsg = msgErr.getErrorMessage( req, 42, user.getLangPrefix());
                 searchParamsOk = false;
             }
 
@@ -206,7 +206,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
                 //this.log("ItsOk: " + itsOk) ;
                 if ( !itsOk ) {
                     BillBoardError msgErr = new BillBoardError();
-                    searchMsg = msgErr.getErrorMessage( req, 40 );
+                    searchMsg = msgErr.getErrorMessage( req, 40, user.getLangPrefix());
                     //log("searchMsg: " + searchMsg) ;
                     searchParamsOk = false;
                 }
@@ -252,7 +252,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
                     allRecs = preParse( sqlAnswer, tagsV, aHreHtmlFile );
                     if ( allRecs == null ) {
                         BillBoardError msgErr = new BillBoardError();
-                        allRecs = msgErr.getErrorMessage( req, 41 );
+                        allRecs = msgErr.getErrorMessage( req, 41, user.getLangPrefix());
                         msgErr = null;
                     }
                 }
@@ -261,7 +261,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
                 // Ok, we coulnt find anything
                 if ( searchParamsOk ) {
                     BillBoardError msgErr = new BillBoardError();
-                    allRecs = msgErr.getErrorMessage( req, 41 );
+                    allRecs = msgErr.getErrorMessage( req, 41, user.getLangPrefix());
                     msgErr = null;
                 }
             }

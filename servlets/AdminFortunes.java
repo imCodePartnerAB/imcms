@@ -24,7 +24,7 @@ public class AdminFortunes extends Administrator {
 	PrintWriter out = res.getWriter();
 
 	// Lets get the server this request was aimed for
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	// Lets validate the session
 	if (super.checkSession(req,res) == false)	return ;
@@ -100,7 +100,10 @@ public class AdminFortunes extends Administrator {
 	PrintWriter out = res.getWriter();
 
 	// Lets get the server this request was aimed for
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+
+    // Lets get an user object
+	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
 
 	HttpSession session = req.getSession();
 
@@ -157,7 +160,7 @@ public class AdminFortunes extends Administrator {
 			values.add(options);
 
 
-			String parsed = imcref.parseExternalDoc( values, "ShowQuestions.htm" , imcref.getDefaultLanguageAsIso639_1(), "admin");
+			String parsed = imcref.parseExternalDoc( values, "ShowQuestions.htm" , imcref.getLangPrefix(user), "admin");
 			out.print(parsed);
 
 			session.setAttribute("results",results);
@@ -220,7 +223,7 @@ public class AdminFortunes extends Administrator {
 		values.add(options);
 
 
-		String parsed = imcref.parseExternalDoc(values, "AdminFortuneFile.htm" , imcref.getDefaultLanguageAsIso639_1(), "admin");
+		String parsed = imcref.parseExternalDoc(values, "AdminFortuneFile.htm" , imcref.getLangPrefix(user), "admin");
 		out.print(parsed);
 
 		session.setAttribute("lines",lines);

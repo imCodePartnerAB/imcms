@@ -64,7 +64,7 @@ public class AdminConference extends Administrator {
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
         // lets get ready for errors
-        String defaultLanguagePrefix = imcref.getDefaultLanguageAsIso639_1( );
+        String defaultLanguagePrefix = imcref.getDefaultLanguageAsIso639_2( );
 
         // Lets validate the session
         if ( checkSession( request, response ) == false ) {

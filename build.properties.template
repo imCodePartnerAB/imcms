@@ -125,8 +125,3 @@ webapp.manager.url = http://localhost:8080/manager
 # Which components to build.
 # Comment out any you don't want to build.
 
-build-billboard
-build-chat
-build-conference
-build-postcard
-build-shop

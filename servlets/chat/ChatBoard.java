@@ -74,7 +74,7 @@ public class ChatBoard extends ChatBase {
             ChatMessage message = (ChatMessage)msgIter.next();
 
             if ( lastMsgInt == message.getIdNumber() ) {
-                sendMsgString.append( imcref.parseExternalDoc( null, HTML_HR, imcref.getDefaultLanguageAsIso639_1(), "103", getTemplateLibName( chatref, myChat.getChatId() ) ) );
+                sendMsgString.append( imcref.parseExternalDoc( null, HTML_HR, user.getLangPrefix(), "103", getTemplateLibName( chatref, myChat.getChatId() ) ) );
                 //sendMsgString.append( "<hr>\n" );
 
 		    }

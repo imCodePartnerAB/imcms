@@ -222,7 +222,7 @@ public class PutInShoppingCart extends HttpServlet {
     private void sendMail (HttpServletRequest req, UserDomainObject user) throws IOException {
 
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+    IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	String mailServer = Utility.getDomainPref( "smtp_server" );
 	String stringMailPort = Utility.getDomainPref( "smtp_port" );
@@ -246,8 +246,8 @@ public class PutInShoppingCart extends HttpServlet {
 	String mailFromAddress = Prefs.get("mail-from-address", SHOP_CONFIG) ;
 	String mailToAddress   = Prefs.get("mail-to-address",   SHOP_CONFIG) ;
 	String mailSubject     = Prefs.get("mail-subject",      SHOP_CONFIG) ;
-	String mailFormat      = imcref.parseDoc(null, MAIL_FORMAT, imcref.getDefaultLanguageAsIso639_1()) ;
-	String mailItemFormat  = imcref.parseDoc(null, MAIL_ITEM_FORMAT, imcref.getDefaultLanguageAsIso639_1()) ;
+	String mailFormat      = imcref.parseDoc(null, MAIL_FORMAT, user.getLangPrefix()) ;
+	String mailItemFormat  = imcref.parseDoc(null, MAIL_ITEM_FORMAT, user.getLangPrefix()) ;
 
 	Perl5Matcher patternMatcher = new Perl5Matcher() ;
 

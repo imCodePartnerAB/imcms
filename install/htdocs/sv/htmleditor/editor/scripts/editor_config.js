@@ -90,7 +90,7 @@ arrCssPaths[1] = "";
  ******************************************************************************************* */
 
 arrCssWordPaths = new Array();
-arrCssWordPaths[0] = "@rooturl@/htmleditor/css/default_word.css";
+arrCssWordPaths[0] = "@htmleditorurl@/css/default_word.css";
 arrCssWordPaths[1] = "";
 
 /* *******************************************************************************************
