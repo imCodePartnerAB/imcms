@@ -35,7 +35,7 @@
 
 </head>
 
-<body bgcolor="#FFFFFF" onLoad="document.forms[0].question_field.focus()">
+<body bgcolor="#FFFFFF" onLoad="document.forms[0].<%= StringEscapeUtils.escapeJavaScript(SearchDocumentsPage.REQUEST_PARAMETER__QUERY_STRING) %>.focus()">
 #gui_outer_start()
 #gui_head( "<? templates/sv/search/search_documents.html/1 ?>" )
 
