@@ -12,6 +12,8 @@ import imcode.util.IdNamePair;
 import imcode.util.Utility;
 import org.apache.oro.text.regex.*;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.collections.iterators.FilterIterator;
+import org.apache.commons.collections.Predicate;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -196,8 +198,13 @@ class MenuParserSubstitution implements Substitution {
                                                                              final List menuLoopNodeChildren,
                                                                              StringBuffer result,
                                                                              Properties menuAttributes,
-                                                                             PatternMatcher patMat, int menuIndex ) {
-        Iterator menuItemsIterator = Arrays.asList(menu.getMenuItems()).iterator() ;
+                                                                             PatternMatcher patMat, final int menuIndex ) {
+        Iterator menuItemsIterator = new FilterIterator(Arrays.asList(menu.getMenuItems()).iterator(), new Predicate() {
+            public boolean evaluate( Object o ) {
+                DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument() ;
+                return editingMenu( menuIndex ) || document.isPublishedAndNotArchived() ;
+            }
+        });
         int menuItemIndexStart = 0;
         try {
             menuItemIndexStart = Integer.parseInt( menuAttributes.getProperty( "indexstart" ) );
@@ -362,9 +369,7 @@ class MenuParserSubstitution implements Substitution {
         tags.setProperty( "#menuitemlinkonly#", a_href );
         tags.setProperty( "#/menuitemlinkonly#", "</a>" );
 
-        Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-        boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex
-                                  && menuMode;
+        boolean editingThisMenu = editingMenu( menuIndex );
         DocumentMapper documentMapper = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper() ;
         if ( editingThisMenu ) {
             final int sortOrder = menu.getSortOrder();
@@ -413,6 +418,13 @@ class MenuParserSubstitution implements Substitution {
                           : "</a>" );
 
         return new MapSubstitution( tags, true );
+    }
+
+    private boolean editingMenu( int menuIndex ) {
+        Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
+        boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex
+                                  && menuMode;
+        return editingThisMenu;
     }
 
 }

@@ -253,11 +253,7 @@
 
 
     <!-- Copies and filters the config-files with the correct properties. -->
-    <target name="conf" depends="init" description="Builds the config-directory.">
-        <dependset>
-            <srcfileset file="${build.properties}"/>
-            <targetfileset dir="${conf}"/>
-        </dependset>
+    <target name="conf" depends="init,web" description="Builds the config-directory.">
 
         <copy file="imcms_swe.properties" tofile="${conf}/swe.properties"/>
         <copy file="imcms_eng.properties" tofile="${conf}/eng.properties"/>
@@ -336,8 +332,13 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-        depends="init,tools,check-language-property-files-in-sync"
+        depends="init"
         description="Translates and copies the webfiles.">
+
+        <dependset>
+            <srcfileset file="${build.properties}"/>
+            <targetfileset dir="${conf}"/>
+        </dependset>
 
         <mkdir dir="${imcms}"/>
         <mkdir dir="${login}"/>
@@ -384,7 +385,7 @@
     </target>
 
 
-    <target name="web-lang" depends="init,tools">
+    <target name="web-lang" depends="init,tools,check-language-property-files-in-sync">
 
         <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpathref="tools-and-libraries"/>
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
@@ -420,8 +421,7 @@
 
     <target name="clean-build-install-tomcat-reload" depends="clean-build-install, tomcat-reload" description="Build, install, and reload the webapp in tomcat"/>
 
-    <target name="web-install" depends="web,install" description="Run targets 'web', and 'nobuild-install'" />
-
+    <target name="web-install" depends="web,install" description="Run targets 'web', and 'install'" />
 
     <!-- Init targets -->
 

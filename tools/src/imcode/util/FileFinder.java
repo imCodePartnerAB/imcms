@@ -1,10 +1,7 @@
 package imcode.util;
 
-import java.io.FileFilter;
 import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.Set;
+import java.io.FileFilter;
 
 /**
  * @author kreiger

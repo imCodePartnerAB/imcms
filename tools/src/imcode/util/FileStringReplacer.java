@@ -1,7 +1,6 @@
 package imcode.util;
 
 import java.io.*;
-import java.util.Properties;
 
 /**
  * @author kreiger
@@ -12,7 +11,6 @@ public class FileStringReplacer implements FileFilter {
     private String replacement;
 
     public FileStringReplacer( String string, String replacement ) {
-
         this.string = string;
         this.replacement = replacement;
     }
@@ -28,7 +26,7 @@ public class FileStringReplacer implements FileFilter {
             return false;
         }
         try {
-            if (translateFile( file, destFile )) {
+            if (replaceStringInFile( file, destFile )) {
                 if ( !destFile.renameTo( file ) ) {
                     throw new IOException( "Failed to rename " + destFile + " to " + file );
                 }
@@ -44,14 +42,14 @@ public class FileStringReplacer implements FileFilter {
         return true;
     }
 
-    private boolean translateFile( File sourceFile, File destFile ) throws IOException {
+    private boolean replaceStringInFile( File sourceFile, File destFile ) throws IOException {
         InputStream sourceStream = new FileInputStream( sourceFile );
         FileOutputStream destStream = new FileOutputStream( destFile );
         LineReader lineReader = new LineReader(new BufferedReader( new InputStreamReader( sourceStream ) ) );
         BufferedWriter destWriter = new BufferedWriter( new OutputStreamWriter( destStream ) );
         boolean linesTranslated = false ;
         for ( String line; null != ( line = lineReader.readLine() ); ) {
-            String translatedLine = translateLine( sourceFile, line );
+            String translatedLine = replaceStringInLine( sourceFile, line );
             if (!translatedLine.equals(line)) {
                 linesTranslated = true ;
             }
@@ -62,7 +60,7 @@ public class FileStringReplacer implements FileFilter {
         return linesTranslated ;
     }
 
-    private String translateLine( File sourceFile, String line ) {
+    private String replaceStringInLine( File sourceFile, String line ) {
         String translatedLine = line;
         for (int index = 0; -1 != (index = translatedLine.indexOf(string,index)); ) {
             translatedLine = translatedLine.substring(0,index) + replacement + translatedLine.substring(index+string.length()) ;
