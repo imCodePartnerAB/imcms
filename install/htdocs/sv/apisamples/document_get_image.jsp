@@ -13,13 +13,17 @@ Image <%= imageIndex %> in document <%= documentId %> has content:<br>
     TextDocument document = documentService.getTextDocument(documentId) ;
     Image image = document.getImage(imageIndex) ;
 %>
-imageSrc = <%=image.getSrc()%><br>
-imageHeigth = <%=image.getHeight()%><br>
-imageWidth = <%=image.getWidth()%><br>
-imageAltText = <%=image.getAltText()%><br>
-imageLinkTarget = <%=image.getLinkTarget()%><br>
-imageLinkHref = <%=image.getLinkHref()%><br>
-imageSrcUrl = <%=image.getSrcUrl()%><br>
+<% if( null != image ) { %>
+    imageSrc = <%=image.getSrc()%><br>
+    imageHeigth = <%=image.getHeight()%><br>
+    imageWidth = <%=image.getWidth()%><br>
+    imageAltText = <%=image.getAltText()%><br>
+    imageLinkTarget = <%=image.getLinkTarget()%><br>
+    imageLinkHref = <%=image.getLinkHref()%><br>
+    imageSrcUrl = <%=image.getSrcUrl()%><br>
+<%} else { %>
+    <%= "No image found at index " + imageIndex + " in document with id " + documentId %>
+<%}%>
 <%
 %>
 </body>

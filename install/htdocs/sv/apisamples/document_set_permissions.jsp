@@ -2,7 +2,7 @@
 java.util.*" errorPage="error.jsp" %>
 <%!
     int documentId = 1001;
-    int permissionSet = DocumentPermissionSet.READ;
+    int permissionSet = DocumentPermissionSet.NONE;
     String roleName = RoleConstants.USERS;
     //String roleName = "Non-existent role" ;
 %>

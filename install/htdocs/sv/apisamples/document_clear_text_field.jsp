@@ -13,5 +13,7 @@
     textFieldIndexInDocument = 2;
     String newPlainText = "";
     document.setPlainTextField( textFieldIndexInDocument, newPlainText ) ;
+
+    documentService.saveChanges( document );
 %>
 Done.

@@ -52,8 +52,11 @@ public class DocumentService {
      */
     public Document getDocument( int documentId ) throws NoPermissionException {
         DocumentDomainObject doc = documentMapper.getDocument( documentId );
-        Document result = createDocumentOfSubtype(doc);
-        securityChecker.hasAtLeastDocumentReadPermission( result );
+        Document result = null;
+        if( null != doc ) {
+            result = createDocumentOfSubtype(doc);
+            securityChecker.hasAtLeastDocumentReadPermission( result );
+        }
         return result;
     }
 

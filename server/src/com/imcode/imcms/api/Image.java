@@ -3,11 +3,6 @@ package com.imcode.imcms.api;
 import imcode.server.ImageDomainObject;
 import imcode.server.IMCServiceInterface;
 
-/**
- * User: lenake
- * Date: 2004-feb-17
- * Time: 10:24:25
-*/
 public class Image {
     private ImageDomainObject internalImage;
     private IMCServiceInterface service;

@@ -22,12 +22,6 @@
         textDocumentWithSomeTexts.setPlainTextField(2,"Einstein: Everything should be made as simple as possible, but not simpler." );
         documentService.saveChanges(textDocumentWithSomeTexts);
 
-        TextDocument oneMoreTextDocumentWithSomeOtherTexts = documentService.createNewTextDocument(parentId,1);
-        oneMoreTextDocumentWithSomeOtherTexts.setHeadline("Another text document with some texts");
-        oneMoreTextDocumentWithSomeOtherTexts.setPlainTextField(1,"Einstein: If A equals success, then the formula is: A = X + Y + Z, X is work. Y is play. Z is keep your mouth shut." );
-        oneMoreTextDocumentWithSomeOtherTexts.setPlainTextField(2,"Einstein: Gravitation is not responsible for people falling in love." );
-        documentService.saveChanges(oneMoreTextDocumentWithSomeOtherTexts);
-
         TextDocument textDocumentWithLargerText = documentService.createNewTextDocument(parentId,1);
         textDocumentWithLargerText.setHeadline("A text document with larger text");
         textDocumentWithLargerText.setHtmlTextField(1,largeHtmlText );
@@ -49,13 +43,12 @@
         textDocumentWithTreeIncludes.setHeadline("Text document with three includes");
         textDocumentWithTreeIncludes.setInclude(1, helloWorldTextDocument );
         textDocumentWithTreeIncludes.setInclude(2, textDocumentWithSomeTexts );
-        textDocumentWithTreeIncludes.setInclude(3, oneMoreTextDocumentWithSomeOtherTexts );
+        textDocumentWithTreeIncludes.setInclude(3, textDocumentWithLargerText );
         documentService.saveChanges(textDocumentWithTreeIncludes);
         %>
             Created the following documents:<br>
             'HelloWorld' document id = <%=helloWorldTextDocument.getId()%><br>
             Text document with some texts id = <%=textDocumentWithSomeTexts.getId()%><br>
-            One more text document with some other texts id = <%=oneMoreTextDocumentWithSomeOtherTexts.getId()%><br>
             Text document with a larger text = <%=textDocumentWithLargerText.getId()%><br>
             Text document with one include id = <%=textDocumentWithOneInclude.getId()%><br>
             Text document with tree includes id = <%=textDocumentWithTreeIncludes.getId()%><br>

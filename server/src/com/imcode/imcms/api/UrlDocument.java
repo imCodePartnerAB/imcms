@@ -6,13 +6,6 @@ import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.user.UserAndRoleMapper;
 import imcode.server.IMCServiceInterface;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Hasse
- * Date: 2004-feb-11
- * Time: 09:54:10
- * To change this template use File | Settings | File Templates.
- */
 public class UrlDocument extends Document {
     public UrlDocument(UrlDocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
         super(document, service, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);

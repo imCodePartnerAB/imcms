@@ -6,21 +6,15 @@ import imcode.server.user.UserDomainObject;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
-
-public class SecurityChecker {
+class SecurityChecker {
 
     private final static String SUPERADMIN_ROLE = "Superadmin";
-    private final static String USER_ADMIN = "Useradmin";
 
     private DocumentMapper docMapper;
     private UserDomainObject accessingUser;
     private HashSet accessorRoles;
 
     private boolean isSuperAdmin;
-    private boolean isUserAdmin;
-
-    private static Logger log = Logger.getLogger( SecurityChecker.class );
 
     SecurityChecker( DocumentMapper docMapper, UserDomainObject accessor, String[] accessorRoles ) {
         this.docMapper = docMapper;
@@ -28,13 +22,6 @@ public class SecurityChecker {
         this.accessorRoles = new HashSet( Arrays.asList( accessorRoles ) );
 
         isSuperAdmin = this.accessorRoles.contains( SUPERADMIN_ROLE );
-        isUserAdmin = this.accessorRoles.contains( USER_ADMIN );
-    }
-
-    void isUserAdmin() throws NoPermissionException {
-        if( !isUserAdmin ) {
-            throw new NoPermissionException( "User is not " + SUPERADMIN_ROLE );
-        }
     }
 
     void isSuperAdmin() throws NoPermissionException {
