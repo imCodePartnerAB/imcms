@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.flow.Page;
+import com.imcode.imcms.servlet.superadmin.AdminManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +18,7 @@ public class SearchDocuments extends HttpServlet {
         } else {
             SearchDocumentsPage searchDocumentsPage = new SearchDocumentsPage() ;
             DocumentFinder documentFinder = new DocumentFinder(searchDocumentsPage);
+            documentFinder.addExtraSearchResultColumn( new AdminManager.DatesSummarySearchResultColumn());
             searchDocumentsPage.updateFromRequest( request );
             documentFinder.forward(request, response);
         }

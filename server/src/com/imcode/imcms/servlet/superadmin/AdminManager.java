@@ -319,7 +319,7 @@ public class AdminManager extends Administrator {
         return documentsUnpublishedWithinOneWeekSubreport;
     }
 
-    private static class DatesSummarySearchResultColumn implements DocumentFinder.SearchResultColumn {
+    public static class DatesSummarySearchResultColumn implements DocumentFinder.SearchResultColumn {
 
         public String render( DocumentDomainObject document, HttpServletRequest request,
                               HttpServletResponse response ) throws IOException, ServletException {
