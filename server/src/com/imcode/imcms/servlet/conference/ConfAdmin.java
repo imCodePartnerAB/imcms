@@ -41,7 +41,7 @@ public class ConfAdmin extends Conference {
         // Lets check that the user is an administrator
         if (super.userHasAdminRights(imcref, Integer.parseInt(params.getProperty("META_ID")), user) == false) {
             String header = "ConfAdmin servlet. ";
-            new ConfError(req, res, header, 6);
+            new ConfError(req, res, header, 6, user );
             return;
         }
 
@@ -50,7 +50,7 @@ public class ConfAdmin extends Conference {
 
             // Lets check if the user is a superadmin
             if (Administrator.checkAdminRights(req) == false) {
-                new ConfError(req, res, "ConfAdmin", 64);
+                new ConfError(req, res, "ConfAdmin", 64, user );
                 return;
             }
 
@@ -58,7 +58,7 @@ public class ConfAdmin extends Conference {
             String selfRegRoleId = req.getParameter("ALL_SELF_REGISTER_ROLES");
             if (selfRegRoleId == null) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError(req, res, header, 86);
+                new ConfError(req, res, header, 86, user );
                 return;
             }
 
@@ -75,7 +75,7 @@ public class ConfAdmin extends Conference {
 
             // Lets check if the user is a superadmin
             if (Administrator.checkAdminRights(req) == false) {
-                new ConfError(req, res, "ConfAdmin", 64);
+                new ConfError(req, res, "ConfAdmin", 64, user );
                 return;
             }
 
@@ -84,7 +84,7 @@ public class ConfAdmin extends Conference {
             String selfRegRoleId = req.getParameter("CURR_SELF_REGISTER_ROLES");
             if (selfRegRoleId == null) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError(req, res, header, 87);
+                new ConfError(req, res, header, 87, user );
                 return;
             }
 
@@ -101,7 +101,7 @@ public class ConfAdmin extends Conference {
             String newLibName = req.getParameter("TEMPLATE_LIB_NAME");
             if (newLibName == null) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError(req, res, header, 80);
+                new ConfError(req, res, header, 80, user );
                 return;
             }
             newLibName = super.verifySqlText(newLibName);
@@ -110,7 +110,7 @@ public class ConfAdmin extends Conference {
             String libNameExists = imcref.sqlProcedureStr("A_FindTemplateLib", new String[]{newLibName});
             if (!libNameExists.equalsIgnoreCase("-1")) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError(req, res, header, 84);
+                new ConfError(req, res, header, 84, user );
                 return;
             }
 
@@ -154,7 +154,7 @@ public class ConfAdmin extends Conference {
             String newLibName = req.getParameter("TEMPLATE_ID");
             if (newLibName == null) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError(req, res, header, 80);
+                new ConfError(req, res, header, 80, user );
                 return;
             }
 
@@ -163,7 +163,7 @@ public class ConfAdmin extends Conference {
             String templateId = imcref.sqlProcedureStr("A_GetTemplateIdFromName", new String[]{newLibName});
             if (templateId.equalsIgnoreCase("-1")) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError(req, res, header, 81);
+                new ConfError(req, res, header, 81, user );
                 return;
             }
             // Ok, lets update the conference with this new templateset.
@@ -279,7 +279,7 @@ public class ConfAdmin extends Conference {
 
             if (!foundIt.equalsIgnoreCase("-1")) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError(req, res, header, 85);
+                new ConfError(req, res, header, 85, user );
                 return;
             }
 
@@ -339,7 +339,7 @@ public class ConfAdmin extends Conference {
         // Lets check that the user is an administrator
         if (super.userHasAdminRights(imcref, Integer.parseInt(params.getProperty("META_ID")), user) == false) {
             String header = "ConfAdmin servlet. ";
-            new ConfError(req, res, header, 6);
+            new ConfError(req, res, header, 6, user );
             return;
         }
 
@@ -355,7 +355,7 @@ public class ConfAdmin extends Conference {
 
             // Lets check if the user is a superadmin
             if (Administrator.checkAdminRights(req) == false) {
-                new ConfError(req, res, "ConfAdmin", 64);
+                new ConfError(req, res, "ConfAdmin", 64, user );
                 return;
             }
 
@@ -394,7 +394,7 @@ public class ConfAdmin extends Conference {
                 String uploadType = req.getParameter("UPLOAD_TYPE");
                 if (uploadType == null) {
                     String header = "ConfAdmin servlet. ";
-                    new ConfError(req, res, header, 83);
+                    new ConfError(req, res, header, 83, user );
                     return;
                 }
 

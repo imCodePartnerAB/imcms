@@ -306,7 +306,7 @@ public class SearchDocuments extends HttpServlet {
      * doGet()
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
 
         //ok lets see what folder to get the search-templates from.

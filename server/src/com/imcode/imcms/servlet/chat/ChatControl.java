@@ -10,6 +10,7 @@ import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 
 import imcode.external.chat.*;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 public class ChatControl extends ChatBase {
@@ -33,7 +34,7 @@ public class ChatControl extends ChatBase {
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         // Lets validate the session, e.g has the user logged in to imCMS?
         HttpSession session = req.getSession(false);
 
@@ -133,28 +134,25 @@ public class ChatControl extends ChatBase {
         tags.add("#CHAT_ADMIN_DISCUSSION#");
         tags.add(adminButtonKickOut);
         tags.add("#SETTINGS#");
-        tags.add(settingsButton(myChat, user));
+        String result;
+        if (myChat.settingsPage()) {
+            IMCServiceInterface imcref1 = ApplicationServer.getIMCServiceInterface();
+
+            int metaId1 = myChat.getChatId();
+            result = imcref1.getTemplateFromSubDirectoryOfDirectory( SETTINGS_BUTTON, user, null, "103", getTemplateSetDirectoryName( metaId1));
+        } else {
+            result = "&nbsp;";
+        }
+        tags.add(result);
 
         this.sendHtml(req, res, tags, HTML_TEMPLATE, null);
         return;
     } //**** end doGet ***** end doGet ***** end doGet ******
 
-
-    private String settingsButton(imcode.external.chat.Chat chat, UserDomainObject user) {
-        if (chat.settingsPage()) {
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-            int metaId = chat.getChatId();
-            return imcref.getTemplateFromSubDirectoryOfDirectory( SETTINGS_BUTTON, user, null, "103", getTemplateLibName( metaId));
-        } else {
-            return "&nbsp;";
-        }
-    }
-
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
 
         HttpSession session = req.getSession(false);
 
@@ -226,7 +224,7 @@ public class ChatControl extends ChatBase {
     static String getParsedChatLeavePage( ChatMember myMember, IMCServiceInterface imcref,
                                           String leaveTemplate ) {
         int chatMetaId = myMember.getParent().getChatId();
-        String templateSetName = getTemplateLibName( chatMetaId);
+        String templateSetName = getTemplateSetDirectoryName( chatMetaId);
         List tags = new ArrayList();
         tags.add("#chat_return_meta_id#");
         tags.add(myMember.getReferrerMetaId() + "");
@@ -335,7 +333,9 @@ public class ChatControl extends ChatBase {
                                                  String metaId, imcode.server.user.UserDomainObject user, ChatMember member)
             throws IOException {
         Vector vect = new Vector();
-        File templetUrl = super.getExternalTemplateFolder(req, user);
+
+        int metaId1 = getMetaId( req );
+        // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String[] arr;
         if (true)//(checkboxText == null)
@@ -347,6 +347,7 @@ public class ChatControl extends ChatBase {
             }
 
             StringBuffer reload = new StringBuffer("");
+            String templateSetDirectoryName = getTemplateSetDirectoryName( metaId1 );
             if (arr[1].equals("3")) {
                 boolean autoRefreshEnabled = member.isAutoRefreshEnabled();
                 Vector tempV = new Vector();
@@ -356,7 +357,7 @@ public class ChatControl extends ChatBase {
                 } else {
                     tempV.add("");
                 }
-                reload.append(imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_reload.html", user, tempV, "103", templetUrl.getName()));
+                reload.append(imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_reload.html", user, tempV, "103", templateSetDirectoryName));
                 reload.append(createOptionCode(member.getRefreshTime() + "", ChatCreator.createUpdateTimeV()));
                 reload.append("</select> sekund <br>");
             }
@@ -371,7 +372,7 @@ public class ChatControl extends ChatBase {
                 } else {
                     tempV.add("");
                 }
-                entrance = imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_entrance.html", user, tempV, "103", templetUrl.getName());
+                entrance = imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_entrance.html", user, tempV, "103", templateSetDirectoryName);
             }
             String privat = "";
             if (arr[3].equals("3")) {
@@ -383,7 +384,7 @@ public class ChatControl extends ChatBase {
                 } else {
                     tempV.add("");
                 }
-                privat = imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_private.html", user, tempV, "103", templetUrl.getName());
+                privat = imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_private.html", user, tempV, "103", templateSetDirectoryName);
             }
             String datetime = "";
             if (arr[5].equals("3")) {
@@ -395,7 +396,7 @@ public class ChatControl extends ChatBase {
                 } else {
                     tempV.add("");
                 }
-                datetime = imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_datetime.html", user, tempV, "103", templetUrl.getName());
+                datetime = imcref.getTemplateFromSubDirectoryOfDirectory( "checkbox_datetime.html", user, tempV, "103", templateSetDirectoryName);
             }
             String font = "";
             if (arr[6].equals("3")) {
@@ -409,7 +410,7 @@ public class ChatControl extends ChatBase {
                         tempV.add("");
                     }
                 }
-                font = imcref.getTemplateFromSubDirectoryOfDirectory( "buttons_font.html", user, tempV, "103", templetUrl.getName());
+                font = imcref.getTemplateFromSubDirectoryOfDirectory( "buttons_font.html", user, tempV, "103", templateSetDirectoryName);
             }
 
             vect.add("#reload#");
@@ -428,16 +429,12 @@ public class ChatControl extends ChatBase {
     }//end createSettingsPage
 
 
-    private synchronized String createAdminButton(HttpServletRequest req, String template, String chatId, String name, UserDomainObject user)
-            throws IOException {
+    private synchronized String createAdminButton(HttpServletRequest req, String template, String chatId, String name, UserDomainObject user) {
         VariableManager vm = new VariableManager();
         vm.addProperty("chatId", chatId);
         vm.addProperty("chatName", name);
 
-        //lets create adminbuttonhtml
-        File templateLib = super.getExternalTemplateFolder(req, user);
-        HtmlGenerator htmlObj = new HtmlGenerator(templateLib, template);
-        return htmlObj.createHtmlString(vm );
+        return getTemplate( template, user, vm.getTagsAndData() );
     }
 
     /**

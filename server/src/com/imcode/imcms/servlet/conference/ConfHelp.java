@@ -52,7 +52,7 @@ public class ConfHelp extends Conference {
                     }
                 } else {
                     String header = "ConfHelp servlet. ";
-                    new ConfError(req, res, header, 6);
+                    new ConfError(req, res, header, 6, user );
                     return;
                 }
             }

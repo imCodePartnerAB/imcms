@@ -121,7 +121,7 @@ public class ChatLogin extends ChatBase {
             Vector tags = new Vector();
             tags.add( "#ALIAS#" );
             tags.add( req.getParameter( "alias" ) );
-            String libName = getTemplateLibName( myChat.getChatId() );
+            String libName = getTemplateSetDirectoryName( myChat.getChatId() );
             error_msg = imcref.getTemplateFromSubDirectoryOfDirectory( "alias_error_msg.html", user, tags, "103", libName );
         }
         //get the users username

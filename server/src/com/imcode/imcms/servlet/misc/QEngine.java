@@ -35,7 +35,7 @@ public class QEngine extends HttpServlet
 		//gets the filecontent
 		List quoteList = imcref.getQuoteList(inFile);
 
-		res.setContentType("text/html");
+		Utility.setDefaultHtmlContentType( res );
 		Writer out = res.getWriter();
 
 		Date   now                = new Date() ;

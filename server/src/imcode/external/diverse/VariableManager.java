@@ -1,55 +1,42 @@
 package imcode.external.diverse ;
+
 import java.util.* ;
 
 public class VariableManager {
 
-    private Vector tags ;
-    private Vector data ;
-    
-    public VariableManager() {
-        tags = new Vector() ;
-        data = new Vector() ;
-    }
-    
+    private List tags = new ArrayList();
+    private List data = new ArrayList();
+
     public void addProperty( Object property, Object value){
-        tags.addElement(property) ;
-        data.addElement(value) ;
+        tags.add(property) ;
+        data.add(value) ;
     }
 
     public String getProperty(String aProp) {
         String tmp = "" ;
         for(int i = 0; i < tags.size(); i++) {
-            tmp = tags.elementAt(i).toString() ;
+            tmp = tags.get(i).toString() ;
             if(tmp.equals(aProp))
-                return data.elementAt(i).toString() ;
+                return data.get(i).toString() ;
         }
         return "" ;
     }
     
-    public Vector getAllProps(){
+    public List getAllProps(){
         return tags ;
     }
     
-    public Vector getAllValues(){
+    public List getAllValues(){
         return data ;
     }
 
-    public void merge(Vector tagVect, Vector datVect ) {
-        
-        // Lets assure that the vectors has the same size
-        if(tagVect.size() != datVect.size()) {
-            log("merge, inVectors differs in size!") ;
-            return ;
+    public List getTagsAndData() {
+        List tagsAndData = new ArrayList(tags.size()*2) ;
+        for ( Iterator tagsIterator = tags.iterator(), dataIterator = data.iterator(); tagsIterator.hasNext(); ) {
+            tagsAndData.add("#"+tagsIterator.next()+"#") ;
+            tagsAndData.add(dataIterator.next()) ;
         }
-        
-        Object tagObj ;
-        Object datObj ;
-        
-        for(int i = 0; i < tagVect.size(); i++) {
-            tagObj = tagVect.elementAt(i) ;
-            datObj = datVect.elementAt(i) ;
-            this.addProperty(tagObj, datObj) ;
-        }
+        return tagsAndData ;
     }
 
     public String toString() {
@@ -58,17 +45,11 @@ public class VariableManager {
         String aProp = "" ;
         String aVal = "" ;
         for(int i = 0; i < tags.size(); i++) {
-            aProp = tags.elementAt(i).toString() ;
-            aVal = data.elementAt(i).toString() ;
+            aProp = tags.get(i).toString() ;
+            aVal = data.get(i).toString() ;
             tmp = tmp + aProp + "=" + aVal + '\n';
         }
         return tmp ;
     }
-    
-    
-    private void log(Object msg) {
-        
-        System.out.println("VariableManager: " + msg);
-    }
-    
+
 } // end of class

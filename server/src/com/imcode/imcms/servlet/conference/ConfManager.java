@@ -35,7 +35,7 @@ public class ConfManager extends Conference {
         //log("ConfManager is in action...") ;
         if ( action == null ) {
             String header = "ConfManager servlet. ";
-            ConfError err = new ConfError( req, res, header, 3 );
+            ConfError err = new ConfError( req, res, header, 3, user );
             log( header + err.getErrorMsg() );
             return;
         }

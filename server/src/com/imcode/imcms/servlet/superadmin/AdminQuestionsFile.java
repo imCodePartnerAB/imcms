@@ -46,7 +46,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
         HttpSession session = req.getSession();
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         String whichFile = (String)session.getAttribute( "file" );

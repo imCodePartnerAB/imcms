@@ -96,7 +96,7 @@ public class PasswordMailReminder extends HttpServlet {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
 
         Vector parsVector = new Vector();
@@ -246,7 +246,7 @@ public class PasswordMailReminder extends HttpServlet {
             returnString = imcref.getAdminTemplate( PasswordMailReminder.RETURNING_DOCUMENT_INPUT, null, errorParsVector );
         }
 
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
 
         out.print(returnString);

@@ -47,7 +47,7 @@ public class TemplateAdd extends HttpServlet {
                 out.write( htmlStr );
                 return;
             } else if ( req.getParameter( "action" ).equals( "return" ) ) {
-                res.setContentType( "text/html" );
+                Utility.setDefaultHtmlContentType( res );
 
                 Vector vec = new Vector();
                 vec.add( "#buttonName#" );
@@ -106,7 +106,7 @@ public class TemplateAdd extends HttpServlet {
                 vec.add( "#language#" );
                 vec.add( lang );
                 String htmlStr = imcref.getAdminTemplate( "templatedemo_upload_template_blank.html", user, vec );
-                res.setContentType( "text/html" );
+                Utility.setDefaultHtmlContentType( res );
                 out.print( htmlStr );
                 return;
                 // ************************* DELETE DEMO
@@ -140,7 +140,7 @@ public class TemplateAdd extends HttpServlet {
                 } else {
                     htmlStr = imcref.getAdminTemplate( "template_no_langtemplates.html", user, vec );
                 }
-                res.setContentType( "text/html" );
+                Utility.setDefaultHtmlContentType( res );
                 out.print( htmlStr );
                 return;
                 // ************************** VIEW DEMO
@@ -148,7 +148,7 @@ public class TemplateAdd extends HttpServlet {
             } else if ( mp.getParameter( "view_demo" ) != null ) {
                 Object[] suffixAndStream = imcref.getDemoTemplate( Integer.parseInt( template ) );
                 String htmlStr;
-                res.setContentType( "text/html" );
+                Utility.setDefaultHtmlContentType( res );
                 if ( suffixAndStream == null ) {
                     htmlStr = imcref.getAdminTemplate( "no_demotemplate.html", user, null );
                     out.print( htmlStr );
@@ -192,7 +192,7 @@ public class TemplateAdd extends HttpServlet {
                 vec.add( "#language#" );
                 vec.add( lang );
                 String htmlStr = imcref.getAdminTemplate( "template_upload_name_blank.html", user, vec );
-                res.setContentType( "text/html" );
+                Utility.setDefaultHtmlContentType( res );
                 out.print( htmlStr );
                 return;
             }
@@ -210,7 +210,7 @@ public class TemplateAdd extends HttpServlet {
                 htmlStr = imcref.getAdminTemplate( "template_upload_file_blank.html", user, vec );
 
             }
-            res.setContentType( "text/html" );
+            Utility.setDefaultHtmlContentType( res );
             out.print( htmlStr );
             return;
         }
@@ -283,7 +283,7 @@ public class TemplateAdd extends HttpServlet {
                 htmlStr = imcref.getAdminTemplate( "template_upload_done.html", user, vec );
             }
         }
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         out.print( htmlStr );
         return;
     }

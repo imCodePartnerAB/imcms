@@ -57,7 +57,7 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
                     }
                 } else {
                     String header = "BillBoardHelp servlet. ";
-                    new BillBoardError( req, res, header, 6, user.getLanguageIso639_2() );
+                    new BillBoardError( req, res, header, 6, user.getLanguageIso639_2(), user );
                     return;
                 }
             }

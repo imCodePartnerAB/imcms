@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.List;
 
 public class BillBoard extends HttpServlet {
 
@@ -99,7 +100,7 @@ public class BillBoard extends HttpServlet {
 
     /**
      * Gives the folder where All the html templates for a language are located.
-     * This method will call its helper method getTemplateLibName to get the
+     * This method will call its helper method getTemplateSetDirectoryName to get the
      * name of the folder which contains the templates for a certain meta id
      */
 
@@ -123,7 +124,7 @@ public class BillBoard extends HttpServlet {
         libName += "/";
         return libName;
 
-    } // End of getTemplateLibName
+    } // End of getTemplateSetDirectoryName
 
 
 
@@ -139,10 +140,6 @@ public class BillBoard extends HttpServlet {
                    VariableManager vm, String htmlFile ) throws IOException {
 
         imcode.server.user.UserDomainObject user = Utility.getLoggedOnUser( req );
-
-        // Lets get serverinformation
-        // Lets get the TemplateFolder  and the foldername used for this certain metaid
-        File templateLib = this.getExternalTemplateFolder( req );
 
         // Lets get the path to the imagefolder.
         String imagePath = this.getExternalImageFolder( req );
@@ -166,12 +163,11 @@ public class BillBoard extends HttpServlet {
         String unAdminBtn = this.getUnAdminButtonLink( req, user, unAdminButtonVM );
         vm.addProperty( "SECTION_UNADMIN_LINK", unAdminBtn );
 
-        HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile );
-        String html = htmlObj.createHtmlString( vm );
+        String html = getTemplate( htmlFile, user, vm.getTagsAndData() );
 
         // Lets send settings to a browser
         PrintWriter out = res.getWriter();
-        res.setContentType("Text/html");
+        Utility.setDefaultHtmlContentType( res );
         out.println(html);
 
     }
@@ -231,7 +227,7 @@ public class BillBoard extends HttpServlet {
 
     /**
      * Gives the folder where All the html templates for a language are located.
-     * This method will call its helper method getTemplateLibName to get the
+     * This method will call its helper method getTemplateSetDirectoryName to get the
      * name of the folder which contains the templates for a certain meta id
      */
 
@@ -261,8 +257,7 @@ public class BillBoard extends HttpServlet {
      */
 
     private String getAdminButtonLink( HttpServletRequest req, imcode.server.user.UserDomainObject user,
-                                       VariableManager adminButtonVM )
-            throws IOException {
+                                       VariableManager adminButtonVM ) {
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -279,15 +274,13 @@ public class BillBoard extends HttpServlet {
             String adminLinkFile = adminButtonVM.getProperty( "ADMIN_LINK_HTML" );
 
             //lets create adminbuttonhtml
-            File templateLib = this.getExternalTemplateFolder( req );
-            HtmlGenerator htmlObj = new HtmlGenerator( templateLib, ADMIN_BUTTON_TEMPLATE );
-            String adminBtn = htmlObj.createHtmlString( adminButtonVM );
+
+            String adminBtn = getTemplate( ADMIN_BUTTON_TEMPLATE, user, adminButtonVM.getTagsAndData() );
 
             //lets create adminlink
             adminLinkVM.addProperty( "ADMIN_BUTTON", adminBtn );
             if ( !adminLinkFile.equals( "" ) ) {
-                HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, adminLinkFile );
-                adminLink = linkHtmlObj.createHtmlString( adminLinkVM );
+                adminLink = getTemplate( adminLinkFile, user, adminLinkVM.getTagsAndData() );
             }
         }
         //log("After getAdminRights") ;
@@ -300,8 +293,7 @@ public class BillBoard extends HttpServlet {
      * to the adminservlet.
      */
     private String getUnAdminButtonLink( HttpServletRequest req, imcode.server.user.UserDomainObject user,
-                                         VariableManager unAdminButtonVM )
-            throws IOException {
+                                         VariableManager unAdminButtonVM ) {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         String unAdminLink = "&nbsp;";
@@ -315,15 +307,13 @@ public class BillBoard extends HttpServlet {
             String unAdminLinkFile = unAdminButtonVM.getProperty( "UNADMIN_LINK_HTML" );
 
             //lets create unadminbuttonhtml
-            File templateLib = this.getExternalTemplateFolder( req );
-            HtmlGenerator htmlObj = new HtmlGenerator( templateLib, UNADMIN_BUTTON_TEMPLATE );
-            String unAdminBtn = htmlObj.createHtmlString( unAdminButtonVM );
+
+            String unAdminBtn = getTemplate( UNADMIN_BUTTON_TEMPLATE, user, unAdminButtonVM.getTagsAndData() );
 
             //lets create unadminlink
             unAdminLinkVM.addProperty( "UNADMIN_BUTTON", unAdminBtn );
             if ( !unAdminLinkFile.equals( "" ) ) {
-                HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, unAdminLinkFile );
-                unAdminLink = linkHtmlObj.createHtmlString( unAdminLinkVM );
+                unAdminLink = getTemplate( unAdminLinkFile, user, unAdminLinkVM.getTagsAndData() );
             }
         }
         return unAdminLink;
@@ -463,6 +453,10 @@ public class BillBoard extends HttpServlet {
 
     void setBillBoardSessionAttributes( HttpSession session, MetaInfo.Parameters params ) {
         session.setAttribute( "BillBoard.meta_id", "" + params.getMetaId() );
+    }
+
+    String getTemplate(String template, UserDomainObject user, List tagsAndData ) {
+        return ApplicationServer.getIMCServiceInterface().getTemplateFromSubDirectoryOfDirectory( template, user, tagsAndData, "104", "original" ) ;
     }
 
 } // End class

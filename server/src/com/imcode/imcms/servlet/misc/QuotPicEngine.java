@@ -6,6 +6,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.util.fortune.DateRange;
 import imcode.util.fortune.Poll;
 import imcode.util.fortune.Quote;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,7 +31,7 @@ public class QuotPicEngine extends HttpServlet {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         //get parameters

@@ -46,7 +46,7 @@ public class GetExistingDoc extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         // Lets get the meta_id for the page were adding stuff to

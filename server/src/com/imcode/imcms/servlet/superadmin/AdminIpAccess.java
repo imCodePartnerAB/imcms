@@ -48,7 +48,9 @@ public class AdminIpAccess extends Administrator {
             VariableManager vmRec = new VariableManager();
             aRecV.setElementAt( Utility.ipLongToString( Long.parseLong( (String)aRecV.elementAt( 3 ) ) ), 3 );
             aRecV.setElementAt( Utility.ipLongToString( Long.parseLong( (String)aRecV.elementAt( 4 ) ) ), 4 );
-            vmRec.merge( tags, aRecV );
+            for(int i = 0; i < tags.size(); i++) {
+                vmRec.addProperty(tags.get(i), aRecV.get(i)) ;
+            }
             vmRec.addProperty( "RECORD_COUNTER", "" + counter );
             recs += this.createHtml( req, vmRec, HTML_IP_SNIPPET );
         }

@@ -37,7 +37,7 @@ public class ConfCreator extends Conference {
         String action = req.getParameter( "action" );
         if ( action == null ) {
             String header = "ConfCreator servlet. ";
-            ConfError err = new ConfError( req, res, header, 3 );
+            ConfError err = new ConfError( req, res, header, 3, user );
             log( header + err.getErrorMsg() );
             return;
         }
@@ -57,7 +57,7 @@ public class ConfCreator extends Conference {
             String foundMetaId = imcref.sqlProcedureStr( "A_FindMetaId", new String[]{metaId} );
             if ( !foundMetaId.equals( "1" ) ) {
                 String header = "ConfCreator servlet. ";
-                ConfError err = new ConfError( req, res, header, 90 );
+                ConfError err = new ConfError( req, res, header, 90, user );
                 log( header + err.getErrorMsg() );
                 return;
             }
@@ -107,7 +107,7 @@ public class ConfCreator extends Conference {
         String action = req.getParameter( "action" );
         if ( action == null ) {
             String header = "ConfCreator servlet. ";
-            ConfError err = new ConfError( req, res, header, 3 );
+            ConfError err = new ConfError( req, res, header, 3, user );
             log( header + err.getErrorMsg() );
             return;
         }

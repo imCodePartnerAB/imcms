@@ -103,7 +103,7 @@ public class ConfLogin extends Conference {
             // Lets check that the user is an administrator
             if ( super.userHasAdminRights( imcref, Integer.parseInt( "" + params.getMetaId() ), user ) == false ) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError( req, res, header, 6 );
+                new ConfError( req, res, header, 6, user );
                 return;
             }
 
@@ -183,7 +183,7 @@ public class ConfLogin extends Conference {
             // Lets check that we the found the user. Otherwise send unvailid username password
             if ( userId == null ) {
                 String header = "ConfLogin servlet.";
-                ConfError err = new ConfError( req, res, header, 50, LOGIN_ERROR_HTML );
+                ConfError err = new ConfError( req, res, header, 50, LOGIN_ERROR_HTML, user );
                 log( header + err.getErrorMsg() );
                 return;
             }
@@ -207,7 +207,7 @@ public class ConfLogin extends Conference {
 
             if ( foundUserInConf == null && okToLogIn == false ) {
                 String header = "ConfLogin servlet.";
-                ConfError err = new ConfError( req, res, header, 50, LOGIN_ERROR_HTML );
+                ConfError err = new ConfError( req, res, header, 50, LOGIN_ERROR_HTML, user );
                 log( header + err.getErrorMsg() + "\n the user exists, but is not a member in this conference" );
                 return;
             } else {
@@ -218,7 +218,7 @@ public class ConfLogin extends Conference {
                 String lastName = imcref.sqlProcedureStr( "GetUserNames", new String[]{userId, "2"} );
                 if ( firstName == null || lastName == null ) {
                     String header = "ConfLogin servlet.";
-                    ConfError err = new ConfError( req, res, header, 62, LOGIN_ERROR_HTML );
+                    ConfError err = new ConfError( req, res, header, 62, LOGIN_ERROR_HTML, user );
                     log( header + err.getErrorMsg() + "\n the user exists, but is not a member in this conference" );
                     return;
                 }
@@ -245,7 +245,7 @@ public class ConfLogin extends Conference {
             // Properties userParams = this.getNewUserParameters2(req) ;
             if ( this.checkUserParameters( userParams ) == false ) {
                 String header = "ConfLogin servlet.";
-                ConfError err = new ConfError( req, res, header, 51, LOGIN_ERROR_HTML );
+                ConfError err = new ConfError( req, res, header, 51, LOGIN_ERROR_HTML, user );
                 log( header + err.getErrorMsg() );
                 return;
             }
@@ -290,7 +290,7 @@ public class ConfLogin extends Conference {
             if ( userNameExists != null ) {
                 if ( userNameExists.length > 0 ) {
                     String header = "ConfLogin servlet.";
-                    new ConfError( req, res, header, 56, LOGIN_ERROR_HTML );
+                    new ConfError( req, res, header, 56, LOGIN_ERROR_HTML, user );
                     return;
                 }
             }
@@ -299,7 +299,7 @@ public class ConfLogin extends Conference {
             String newUserId = imcref.sqlProcedureStr( "GetHighestUserId", new String[0] );
             if ( newUserId == null ) {
                 String header = "ConfLogin servlet.";
-                new ConfError( req, res, header, 61, LOGIN_ERROR_HTML );
+                new ConfError( req, res, header, 61, LOGIN_ERROR_HTML, user );
                 return;
             }
 
@@ -361,7 +361,7 @@ public class ConfLogin extends Conference {
                 }
             } else {  // nothing came back from getUserRoles
                 String header = "ConfLogin servlet.";
-                ConfError err = new ConfError( req, res, header, 58 );
+                ConfError err = new ConfError( req, res, header, 58, user );
                 log( header + err.getErrorMsg() );
                 return;
             }
@@ -375,7 +375,7 @@ public class ConfLogin extends Conference {
             imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{newUserId, "" + metaId, fName, lName} );
 
             String header = "ConfLogin servlet.";
-            new ConfError( req, res, header, 55, ADD_USER_OK_HTML );
+            new ConfError( req, res, header, 55, ADD_USER_OK_HTML, user );
             return;
         }
 
@@ -384,12 +384,12 @@ public class ConfLogin extends Conference {
             // Lets check that the user is an administrator
             if ( super.userHasAdminRights( imcref, Integer.parseInt( "" + params.getMetaId() ), user ) == false ) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError( req, res, header, 6 );
+                new ConfError( req, res, header, 6, user );
                 return;
             }
 
             // Lets get the user which should be changed
-            String userId = this.getCurrentUserId( req, res );
+            String userId = this.getCurrentUserId( req, res, user );
             if ( userId == null ) {
                 return;
             }
@@ -425,7 +425,7 @@ public class ConfLogin extends Conference {
             // Lets check that the user is an administrator
             if ( super.userHasAdminRights( imcref, Integer.parseInt( "" + params.getMetaId() ), user ) == false ) {
                 String header = "ConfAdmin servlet. ";
-                new ConfError( req, res, header, 6 );
+                new ConfError( req, res, header, 6, user );
                 return;
             }
 
@@ -442,7 +442,7 @@ public class ConfLogin extends Conference {
             }
 
             // Lets get the userId were changing properties on from the request Object.
-            String userId = this.getCurrentUserId( req, res );
+            String userId = this.getCurrentUserId( req, res, user );
             if ( userId == null ) {
                 return;
             }
@@ -634,13 +634,13 @@ public class ConfLogin extends Conference {
      * a error page will be generated and null will be returned.
      */
 
-    private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res ) throws IOException {
+    private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res, UserDomainObject user ) throws IOException {
 
         // Lets get the userId from the request Object.
         String userId = req.getParameter( "user_id" );
         if ( userId == null ) {
             String header = "ConfLogin servlet.";
-            ConfError err = new ConfError( req, res, header, 59, LOGIN_ERROR_HTML );
+            ConfError err = new ConfError( req, res, header, 59, LOGIN_ERROR_HTML, user );
             this.log( err.getErrorString() );
             return null;
         } else {

@@ -33,7 +33,7 @@ public class AdminQuestions extends Administrator implements imcode.server.IMCCo
      */
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         // Lets verify that the user who tries to admin a fortune is an admin
@@ -84,7 +84,7 @@ public class AdminQuestions extends Administrator implements imcode.server.IMCCo
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         // Lets get the parameters and validate them, we dont have any own
         // parameters so were just validate the metadata
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         PrintWriter out = res.getWriter();
 
         // Lets get the server this request was aimed for

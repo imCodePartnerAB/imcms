@@ -45,7 +45,7 @@ public class SaveInPage extends HttpServlet {
 
         // Check if user has write rights
         if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) ) {	// Checking to see if user may edit this
-            res.setContentType( "text/html" );
+            Utility.setDefaultHtmlContentType( res );
 
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {
@@ -58,7 +58,7 @@ public class SaveInPage extends HttpServlet {
         if ( req.getParameter( "update" ) != null ) {
             Writer out = res.getWriter();
 
-            res.setContentType( "text/html" );
+            Utility.setDefaultHtmlContentType( res );
             user.put( "flags", new Integer( 0 ) );
 
             if ( template == null ) {
@@ -86,7 +86,7 @@ public class SaveInPage extends HttpServlet {
                 Vector vec = new Vector();
                 vec.add( "#meta_id#" );
                 vec.add( String.valueOf( meta_id ) );
-                res.setContentType( "text/html" );
+                Utility.setDefaultHtmlContentType( res );
                 String htmlStr = imcref.getAdminTemplate( "inPage_admin_no_template.html", user, vec );
                 Writer out = res.getWriter();
                 out.write( htmlStr );
@@ -103,14 +103,14 @@ public class SaveInPage extends HttpServlet {
                 out.write( bytes );
                 return;
             } else {
-                res.setContentType( "text/html" );
+                Utility.setDefaultHtmlContentType( res );
                 String htmlStr = imcref.getAdminTemplate( "no_demotemplate.html", user, null );
                 Writer out = res.getWriter();
                 out.write( htmlStr );
                 return;
             }
         } else if ( req.getParameter( "change_group" ) != null ) {
-            res.setContentType( "text/html" );
+            Utility.setDefaultHtmlContentType( res );
             Writer out = res.getWriter();
 
             user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) );

@@ -1,48 +1,36 @@
 package imcode.external.chat;
 
-import imcode.external.diverse.HtmlGenerator;
 import imcode.external.diverse.SettingsAccessor;
 import imcode.external.diverse.VariableManager;
-import imcode.external.chat.ChatBase;
-import imcode.server.IMCServiceInterface;
-import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 
 public class ChatError extends ChatBase {
 
     private static final String ERROR_FILE = "Chat_Error.htm";
     private String errorMessage;
 
-
     public ChatError( HttpServletRequest req, HttpServletResponse res, String header, int errorCode )
             throws IOException {
 
         VariableManager vm = new VariableManager();
 
-        // Lets get the errormessage from the error file
         String myErrorMessage = this.getErrorMessage( req, errorCode );
 
         vm.addProperty( "ERROR_HEADER", header );
         vm.addProperty( "ERROR_MESSAGE", myErrorMessage );
-        //String fileName = "Chat_Error.htm" ;
 
-        // Lets send a html string to the browser
-        //super.sendHtml(req, res, vm, fileName) ;
         sendErrorHtml( req, res, vm, ERROR_FILE );
-        return;
-
     }
 
-
     /**
-     Returns the errormessage for this object
+     * Returns the errormessage for this object
      */
 
     public String getErrorMsg() {
@@ -50,18 +38,13 @@ public class ChatError extends ChatBase {
     }
 
     /**
-     Retrieves the errormessage corresponding to the errorcode. Reads the
-     information from a file in the template folder called errmsg.ini
+     * Retrieves the errormessage corresponding to the errorcode. Reads the
+     * information from a file in the template folder called errmsg.ini
      */
 
     private String getErrorMessage( HttpServletRequest req, int errCode ) {
         try {
-            // Lets get the path to the template library
-            File folder = super.getExternalTemplateRootFolder( req );
-
-            // Lets get the error code
-
-            SettingsAccessor setObj = new SettingsAccessor( new File( folder, "errmsg.ini" ) );
+            SettingsAccessor setObj = new SettingsAccessor( "errmsg.ini", Utility.getLoggedOnUser( req ), "103" );
             setObj.setDelimiter( "=" );
             setObj.loadSettings();
             errorMessage = setObj.getSetting( "" + errCode );
@@ -73,11 +56,6 @@ public class ChatError extends ChatBase {
             log( "An error occured while reading the errmsg.ini file" );
         }
         return errorMessage;
-    }
-
-    public void log( String msg ) {
-        super.log( "imcode.external.chat.ChatError: " + msg );
-        // System.out.println("imcode.external.chat.ChatError: " + msg) ;
     }
 
     /*
@@ -95,18 +73,14 @@ public class ChatError extends ChatBase {
         vm.addProperty( "ERROR_MESSAGE", errorMessage );
 
         // Lets send a html string to the browser
-        //super.sendHtml(req, res, vm, fileName) ;
         sendErrorHtml( req, res, vm, fileName );
-        return;
-
     }
 
     private void sendErrorHtml( HttpServletRequest req, HttpServletResponse res,
-                                  VariableManager vm, String htmlFile ) throws IOException {
+                                VariableManager vm, String htmlFile ) throws IOException {
 
         // Lets get the TemplateFolder  and the foldername used for this certain metaid
-        UserDomainObject user = this.getUserObj(req ) ;
-        File templateLib = this.getExternalTemplateFolder( req, user );
+        UserDomainObject user = this.getUserObj( req );
 
         // Lets get the path to the imagefolder.
         String imagePath = this.getExternalImageFolder( req );
@@ -114,13 +88,13 @@ public class ChatError extends ChatBase {
         vm.addProperty( "IMAGE_URL", imagePath );
         vm.addProperty( "SERVLET_URL", "" );
 
-        HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile );
-        String html = htmlObj.createHtmlString( vm );
+        List tagsAndData = vm.getTagsAndData();
+
+        String html = getTemplate( htmlFile, user, tagsAndData );
 
         // Lets send settings to a browser
-        PrintWriter out = res.getWriter();
-        res.setContentType("Text/html");
-        out.println(html);
+        Utility.setDefaultHtmlContentType( res );
+        res.getWriter().println( html );
     }
 
 } // End of class

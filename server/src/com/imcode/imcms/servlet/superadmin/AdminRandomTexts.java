@@ -30,7 +30,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
      */
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
 
@@ -80,7 +80,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         // Lets get the parameters and validate them, we dont have any own
         // parameters so were just validate the metadata
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();

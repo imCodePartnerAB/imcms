@@ -35,7 +35,7 @@ public class TemplateAdmin extends HttpServlet {
 
         PrintWriter out = res.getWriter();
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
 
         String htmlStr = imcref.getAdminTemplate( "template_admin.html", user, null );
         out.println( htmlStr );
@@ -51,7 +51,7 @@ public class TemplateAdmin extends HttpServlet {
             return;
         }
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         PrintWriter out = res.getWriter();
 
         String lang = req.getParameter( "language" );

@@ -3,10 +3,10 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
-import imcode.server.user.UserDomainObject;
-import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Vector;
 import java.util.Date;
+import java.util.Vector;
 
 /**
  * Save document sorting (date,name,manual)
@@ -30,7 +30,7 @@ public class SaveSort extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();

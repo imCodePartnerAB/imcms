@@ -21,7 +21,7 @@ public class SavePermissions extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();

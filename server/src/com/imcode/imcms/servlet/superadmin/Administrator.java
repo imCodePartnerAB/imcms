@@ -13,6 +13,7 @@ import java.io.*;
 import java.util.*;
 
 import javax.servlet.http.*;
+import javax.servlet.ServletOutputStream;
 
 import imcode.external.diverse.*;
 import imcode.server.*;
@@ -90,13 +91,13 @@ public class Administrator extends HttpServlet {
         // Lets get the path to the admin templates folder
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        File templateLib = this.getAdminTemplateFolder( imcref, user );
 
         // Lets add the server host
         vm.addProperty( "SERVLET_URL", "" );
         vm.addProperty( "SERVLET_URL2", "" );
-        HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile );
-        String html = htmlObj.createHtmlString( vm );
+        List tagsAndData = vm.getTagsAndData() ;
+
+        String html = imcref.getAdminTemplate( htmlFile, user, tagsAndData );
         return html;
     }
 
@@ -110,7 +111,7 @@ public class Administrator extends HttpServlet {
 
         // Lets send settings to a browser
         PrintWriter out = res.getWriter();
-        res.setContentType("Text/html");
+        Utility.setDefaultHtmlContentType( res );
         out.println(str);
     }
 
@@ -132,10 +133,34 @@ public class Administrator extends HttpServlet {
                           UserDomainObject user, String errorHeader,
                           int errorCode, HttpServletResponse response) throws IOException {
 
-        ErrorMessageGenerator errorMessage = new ErrorMessageGenerator( imcref, eMailServerMaster,
-                user, errorHeader, TEMPLATE_ERROR, errorCode );
+        String errorMessage = "" ;
+        try {
+            // Lets get the error code
+            SettingsAccessor setObj = new SettingsAccessor("errmsg.ini", user, "admin");
+            setObj.setDelimiter("=");
+            setObj.loadSettings();
+            errorMessage = setObj.getSetting("" + errorCode);
+            if (errorMessage == null) {
+                errorMessage = "Missing Errorcode";
+            }
 
-        errorMessage.sendHtml( response );
+        } catch (Exception e) {
+            errorMessage = "An error occured while reading the errorCode file";
+        }
+
+        Utility.setDefaultHtmlContentType( response );;
+        ServletOutputStream out = response.getOutputStream();
+
+        Vector tagParsList = new Vector();
+
+        tagParsList.add("#ERROR_HEADER#");
+        tagParsList.add(errorHeader);
+        tagParsList.add("#ERROR_MESSAGE#");
+        tagParsList.add(errorMessage);
+        tagParsList.add("#EMAIL_SERVER_MASTER#");
+        tagParsList.add(eMailServerMaster);
+
+        out.print(imcref.getAdminTemplate( TEMPLATE_ERROR, user, tagParsList ));
     }
 
 

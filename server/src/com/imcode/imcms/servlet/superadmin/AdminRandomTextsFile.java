@@ -44,7 +44,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 
         UserDomainObject user = Utility.getLoggedOnUser( req);
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         PrintWriter out = res.getWriter();
 
         String whichFile = (String)session.getAttribute( "file" );

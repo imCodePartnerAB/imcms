@@ -112,7 +112,7 @@ public class AdminManager extends Administrator {
             return;
         }
 
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         PrintWriter out = res.getWriter();
         out.println("url" + url);
 

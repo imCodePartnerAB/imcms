@@ -1,16 +1,27 @@
 package com.imcode.imcms.servlet.admin;
 
-import java.io.*;
-import java.util.*;
-import java.net.URLDecoder;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.*;
-import imcode.server.*;
+import imcode.server.ApplicationServer;
+import imcode.server.HTMLConv;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.GetImages;
+import imcode.util.ImageFileMetaData;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * Edit imageref  - upload image to server.
@@ -23,7 +34,7 @@ public class ChangeImage extends HttpServlet {
             return;
         }
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ImageBrowse.getPage( req, res );
         return;
     }
@@ -34,7 +45,7 @@ public class ChangeImage extends HttpServlet {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         PrintWriter out = res.getWriter();
 
         String metaIdStr = req.getParameter( "meta_id" );

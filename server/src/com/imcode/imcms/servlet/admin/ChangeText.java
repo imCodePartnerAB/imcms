@@ -2,10 +2,8 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.server.WebAppGlobalConstants;
-import imcode.server.user.UserDomainObject;
-import imcode.server.document.TextDocumentDomainObject.Text;
 import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
 

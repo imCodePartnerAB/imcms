@@ -1,143 +1,56 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.* ;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.* ;
-import imcode.server.* ;
+import imcode.external.diverse.SettingsAccessor;
+import imcode.external.diverse.VariableManager;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import com.imcode.imcms.servlet.superadmin.Administrator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class AdminError2 extends Administrator {
 
-    private String myErrorMessage ;
+    private String myErrorMessage;
 
-    /**
-       Constructor which is used to read the error strings in the translation file. This
-       one should not be used to generate errormessages
-    */
-    public AdminError2() {
-        myErrorMessage = "" ;
-    }
+    public AdminError2( HttpServletRequest req, HttpServletResponse res, String header, int errorCode )
+            throws IOException {
 
-    public AdminError2(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)
-	throws IOException {
+        VariableManager vm = new VariableManager();
 
-        VariableManager vm = new VariableManager() ;
+        // Lets get the errormessage from the error file
+        try {
+            UserDomainObject user = Utility.getLoggedOnUser( req );
 
-	// Lets get the errormessage from the error file
-	String myErrorMessage = this.getErrorMessage(req, errorCode) ;
+            // Lets get the error code
+            SettingsAccessor setObj = new SettingsAccessor( "ADMINERRMSG.INI", user, "admin" );
+            setObj.setDelimiter( "=" );
+            setObj.loadSettings();
+            myErrorMessage = setObj.getSetting( "" + errorCode );
+            if ( myErrorMessage == null ) {
+                myErrorMessage = "Missing Errorcode";
+            }
 
-	vm.addProperty("ERROR_HEADER", header) ;
-	vm.addProperty("ERROR_MESSAGE", myErrorMessage) ;
-	vm.addProperty("ERROR_CODE", ""+ errorCode) ;
-	String fileName = "Admin_Error2.htm" ;
+        } catch ( Exception e ) {
+            log( "An error occured while reading the ADMINERRMSG.ini file" );
+        }
 
-	// Lets send a html string to the browser
-	super.sendHtml(req, res, vm, fileName) ;
-	return ;
+        vm.addProperty( "ERROR_HEADER", header );
+        vm.addProperty( "ERROR_MESSAGE", myErrorMessage );
+        vm.addProperty( "ERROR_CODE", "" + errorCode );
 
-    }
-
-    public AdminError2(HttpServletRequest req, HttpServletResponse res, String header, String msg, int errorCode)
-	throws IOException {
-
-	VariableManager vm = new VariableManager() ;
-
-	// Lets get the errormessage from the error file
-	String aMessage = this.getErrorMessage(req, errorCode) ;
-	aMessage += " " + msg ;
-
-	vm.addProperty("ERROR_HEADER", header) ;
-	vm.addProperty("ERROR_MESSAGE", aMessage) ;
-	vm.addProperty("ERROR_CODE", ""+ errorCode) ;
-	String fileName = "Admin_Error2.htm" ;
-
-	// Lets send a html string to the browser
-	super.sendHtml(req, res, vm, fileName) ;
-	return ;
+        // Lets send a html string to the browser
+        super.sendHtml( req, res, vm, "Admin_Error2.htm" );
+        return;
 
     }
 
     /**
-       ConfError, takes a message instead of an int
-    */
-    public AdminError2(HttpServletRequest req, HttpServletResponse res, String header, String msg)
-	throws IOException {
-
-	VariableManager vm = new VariableManager() ;
-
-	vm.addProperty("ERROR_HEADER", header) ;
-	vm.addProperty("ERROR_MESSAGE", msg) ;
-	vm.addProperty("ERROR_CODE", " ") ;
-	String fileName = "Admin_Error2.htm" ;
-
-	// Lets send a html string to the browser
-	super.sendHtml(req, res, vm, fileName) ;
-	return ;
-
-    }
-
-
-    /**
-       Returns the errormessage for this object
-    */
+     * Returns the errormessage for this object
+     */
 
     public String getErrorMsg() {
-	return myErrorMessage ;
-    }
-
-    /**
-       Retrieves the errormessage corresponding to the errorcode. Reads the
-       information from a file in the template folder called errmsg.ini
-    */
-
-    private String getErrorMessage(HttpServletRequest req, int errCode) {
-	try {
-	    // Lets get the path to the admin templates folder
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-	    File folder = this.getAdminTemplateFolder(imcref, user) ;
-
-	    // Lets get the error code
-	    SettingsAccessor setObj = new SettingsAccessor( new File(folder, "ADMINERRMSG.INI")) ;
-	    setObj.setDelimiter("=") ;
-	    setObj.loadSettings() ;
-	    myErrorMessage = setObj.getSetting("" + errCode) ;
-	    if (myErrorMessage == null ) myErrorMessage = "Missing Errorcode" ;
-
-	} catch(Exception e) {
-	    log("An error occured while reading the ADMINERRMSG.ini file")	;
-	}
-	return myErrorMessage ;
-
-    }
-
-    public void log(String msg) {
-	//	 super.log(msg) ;
-	System.out.println("AdminError2: " + msg) ;
-    }
-
-    /*
-      For special messages, if we want to pass a special htmlfile
-    */
-    public AdminError2(HttpServletRequest req, HttpServletResponse res, String header, int errorCode, String fileName)
-	throws IOException {
-
-        VariableManager vm = new VariableManager() ;
-
-	// Lets get the errormessage from the error file
-	myErrorMessage = this.getErrorMessage(req, errorCode) ;
-	vm.addProperty("ERROR_CODE", "" + errorCode) ;
-	vm.addProperty("ERROR_HEADER", header) ;
-	vm.addProperty("ERROR_MESSAGE", myErrorMessage) ;
-
-	// Lets send a html string to the browser
-	super.sendHtml(req, res, vm, fileName) ;
-	return ;
-
+        return myErrorMessage;
     }
 
 } // End of class

@@ -215,7 +215,7 @@ public class PostcardServlet extends HttpServlet {
 
         String frameSetHtml = imcref.getTemplateFromDirectory( POSTCARD_SET, user, vm, "105" );
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         PrintWriter out = res.getWriter();
         out.println( frameSetHtml );
 
@@ -272,7 +272,7 @@ public class PostcardServlet extends HttpServlet {
         String stringMailPort = Utility.getDomainPref( "smtp_port" );
         String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         PrintWriter out = res.getWriter();
 
 

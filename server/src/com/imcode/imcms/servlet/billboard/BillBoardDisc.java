@@ -26,10 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Html template in use:
@@ -250,7 +247,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
             // Lets get the part of an html page, wich will be parsed for every a Href reference
             File templateLib = super.getExternalTemplateFolder( req );
-            //	templateLib += getTemplateLibName(params.getProperty("META_ID")) ;
+            //	templateLib += getTemplateSetDirectoryName(params.getProperty("META_ID")) ;
             File aHreHtmlFile = new File( templateLib, A_HREF_HTML );
 
 
@@ -301,8 +298,8 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
                 VariableManager vmButtons = new VariableManager();
                 vmButtons.addProperty( "#SERVLET_URL#", "" );
                 vmButtons.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
-                HtmlGenerator newButtonHtmlObj = new HtmlGenerator( templateLib, NEW_DISC_TEMPLATE );
-                newDiscButton = newButtonHtmlObj.createHtmlString( vmButtons );
+
+                newDiscButton = getTemplate( NEW_DISC_TEMPLATE, user, vmButtons.getTagsAndData() );
             }
 
             vm.addProperty( "CURRENT_SECTION_NAME", currSection );//CURRENT_FORUM_NAME
@@ -393,14 +390,13 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
             //lets show previousbutton if not first set of discussions
             if ( discIndexPos != 0 ) {
-                HtmlGenerator previousButtonHtmlObj = new HtmlGenerator( templateLib, PREVIOUS_DISC_LIST_TEMPLATE );
-                previousButton = previousButtonHtmlObj.createHtmlString( vmButtons );
+
+                previousButton = getTemplate( PREVIOUS_DISC_LIST_TEMPLATE, user, vmButtons.getTagsAndData() );
             }
 
             //lets show nextbutton if not last set of discussions
             if ( ( sqlAnswer.length / 4 - 1 ) > ( discIndexPos + showDiscsCounter ) ) {
-                HtmlGenerator nextButtonHtmlObj = new HtmlGenerator( templateLib, NEXT_DISC_LIST_TEMPLATE );
-                nextButton = nextButtonHtmlObj.createHtmlString( vmButtons );
+                nextButton = getTemplate( NEXT_DISC_LIST_TEMPLATE, user, vmButtons.getTagsAndData() );
             }
 
         }
@@ -417,8 +413,8 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         DocumentDomainObject document = documentMapper.getDocument( metaId );
         if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document )
              && imcref.checkDocAdminRights( metaId, user ) ) {
-            HtmlGenerator newButtonHtmlObj = new HtmlGenerator( templateLib, NEW_DISC_TEMPLATE );
-            newDiscButton = newButtonHtmlObj.createHtmlString( vmButtons );
+
+            newDiscButton = getTemplate( NEW_DISC_TEMPLATE, user, vmButtons.getTagsAndData() );
         }
 
         VariableManager vm = new VariableManager();

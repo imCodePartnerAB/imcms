@@ -34,7 +34,7 @@ public class QuestionEngine extends HttpServlet
 
     UserDomainObject user = Utility.getLoggedOnUser( req );
 
-	res.setContentType("text/html");
+	Utility.setDefaultHtmlContentType( res );
 	PrintWriter out = res.getWriter();
 
 	String inFile = req.getParameter("file");

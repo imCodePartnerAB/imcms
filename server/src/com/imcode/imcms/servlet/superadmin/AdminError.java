@@ -1,46 +1,35 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.http.*;
-
-import imcode.external.diverse.*;
-import imcode.server.*;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import com.imcode.imcms.servlet.superadmin.Administrator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdminError extends Administrator {
 
     public AdminError(HttpServletRequest req, HttpServletResponse res, String header, String msg) throws IOException {
 
-        Vector tags = new Vector();
-        Vector data = new Vector();
-        tags.add("ERROR_HEADER");
-        tags.add("ERROR_MESSAGE");
-        data.add(header);
-        data.add(msg);
+        List tagsAndData = new ArrayList();
+        tagsAndData.add("#ERROR_HEADER#");
+        tagsAndData.add(header);
+        tagsAndData.add("#ERROR_MESSAGE#");
+        tagsAndData.add(msg);
 
         String fileName = "AdminError.htm";
 
         // Lets get the path to the admin templates folder
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        File templateLib = super.getAdminTemplateFolder(imcref, user);
 
-        HtmlGenerator htmlObj = new HtmlGenerator(templateLib, fileName);
-        String html = htmlObj.createHtmlString(tags, data );
-        res.setContentType("text/html");
-
-        // Lets send settings to a browser
-        PrintWriter out = res.getWriter();
-        res.setContentType("Text/html");
-        out.println(html);
-        return;
-    }
-
-    public void log(String str) {
-        System.err.println("AdminError: " + str);
+        String html = imcref.getAdminTemplate( fileName, user, tagsAndData );
+        Utility.setDefaultHtmlContentType( res );
+        res.getWriter().println(html);
     }
 
 }

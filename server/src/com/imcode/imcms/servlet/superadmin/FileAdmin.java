@@ -382,7 +382,7 @@ public class FileAdmin extends HttpServlet {
 
     private void outputFileAdmin( HttpServletResponse res, UserDomainObject user, File dir1, File dir2 )
             throws IOException {
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         res.getOutputStream().print( parseFileAdmin( user, dir1, dir2 ) );
     }
 
@@ -416,7 +416,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir1.getCanonicalPath() );
         vec.add( "#dir2#" );
         vec.add( dir2.getCanonicalPath() );
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminMoveOverwriteWarning.html", user, vec ) );
     }
@@ -437,7 +437,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir1.getCanonicalPath() );
         vec.add( "#dir2#" );
         vec.add( dir2.getCanonicalPath() );
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminCopyOverwriteWarning.html", user, vec ) );
     }
@@ -452,7 +452,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         vec.add( "#filename#" );
         vec.add( newFilename );
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminFileExisted.html", user, vec ) );
     }
@@ -464,7 +464,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir1.getCanonicalPath() );
         vec.add( "#dir2#" );
         vec.add( dir2.getCanonicalPath() );
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminFileBlank.html", user, vec ) );
     }
@@ -492,7 +492,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir1.getCanonicalPath() );
         vec.add( "#dir2#" );
         vec.add( dir2.getCanonicalPath() );
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminDeleteWarning.html", user, vec ) );
         return;
@@ -505,7 +505,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir1.getCanonicalPath() );
         vec.add( "#dir2#" );
         vec.add( dir2.getCanonicalPath() );
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( imcref.getAdminTemplate( "FileAdminNameBlank.html", user, vec ) );
         return;

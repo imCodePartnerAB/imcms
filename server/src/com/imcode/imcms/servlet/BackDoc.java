@@ -23,7 +23,7 @@ public class BackDoc extends HttpServlet {
 
         // Find the start-page
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         Stack history = (Stack)user.get( "history" );

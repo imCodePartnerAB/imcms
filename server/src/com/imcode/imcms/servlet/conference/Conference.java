@@ -11,10 +11,10 @@ import imcode.util.Utility;
 import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.List;
 
 /**
  * superclas for conference servlets.
@@ -112,7 +112,7 @@ public class Conference extends HttpServlet {
 
     /**
      * Gives the folder where All the html templates for a language are located.
-     * This method will call its helper method getTemplateLibName to get the
+     * This method will call its helper method getTemplateSetDirectoryName to get the
      * name of the folder which contains the templates for a certain meta id
      */
 
@@ -138,7 +138,7 @@ public class Conference extends HttpServlet {
         }
         libName += "/";
         return libName;
-    } // End of getTemplateLibName
+    } // End of getTemplateSetDirectoryName
 
     /**
      * SendHtml. Generates the html page to the browser. Uses the templatefolder
@@ -179,17 +179,16 @@ public class Conference extends HttpServlet {
         String unAdminBtn = this.getUnAdminButtonLink( req, user, unAdminButtonVM );
         vm.addProperty( "CONF_UNADMIN_LINK", unAdminBtn );
 
-        // log("Before HTmlgenerator: ") ;
-        HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile );
-        String html = htmlObj.createHtmlString( vm );
-        //log("Before sendToBrowser: ") ;
+        String html = getTemplate( htmlFile, user, vm.getTagsAndData() );
 
         // Lets send settings to a browser
-        PrintWriter out = res.getWriter();
-        res.setContentType("Text/html");
-        out.println(html);
-        //log("after sendToBrowser: ") ;
+        Utility.setDefaultHtmlContentType( res );
+        res.getWriter().println(html);
 
+    }
+
+    protected String getTemplate( String htmlFile, UserDomainObject user, List tagsAndData ) {
+        return ApplicationServer.getIMCServiceInterface().getTemplateFromSubDirectoryOfDirectory( htmlFile, user, tagsAndData, "102", "original") ;
     }
 
     /**
@@ -237,7 +236,7 @@ public class Conference extends HttpServlet {
 
             if ( lastLoginDate == null ) {
                 String header = "ConfManager servlet. ";
-                ConfError err = new ConfError( req, res, header, 30 );
+                ConfError err = new ConfError( req, res, header, 30, user );
                 log( header + err.getErrorMsg() );
                 return false;
             }	// End lastLoginCheck
@@ -290,7 +289,7 @@ public class Conference extends HttpServlet {
 
     /**
      * Gives the folder where All the html templates for a language are located.
-     * This method will call its helper method getTemplateLibName to get the
+     * This method will call its helper method getTemplateSetDirectoryName to get the
      * name of the folder which contains the templates for a certain meta id
      */
 
@@ -344,16 +343,12 @@ public class Conference extends HttpServlet {
             adminLinkVM.addProperty( "SERVLET_URL", adminButtonVM.getProperty( "SERVLET_URL" ) );
             String adminLinkFile = adminButtonVM.getProperty( "ADMIN_LINK_HTML" );
 
-            //lets create adminbuttonhtml
-            File templateLib = this.getExternalTemplateFolder( req );
-            HtmlGenerator htmlObj = new HtmlGenerator( templateLib, ADMIN_BUTTON_TEMPLATE );
-            String adminBtn = htmlObj.createHtmlString( adminButtonVM );
+            String adminBtn = getTemplate( ADMIN_BUTTON_TEMPLATE, user, adminButtonVM.getTagsAndData() );
 
             //lets create adminlink
             adminLinkVM.addProperty( "ADMIN_BUTTON", adminBtn );
             if ( !adminLinkFile.equals( "" ) ) {
-                HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, adminLinkFile );
-                adminLink = linkHtmlObj.createHtmlString( adminLinkVM );
+                adminLink = getTemplate( adminLinkFile, user, adminLinkVM.getTagsAndData() );
             }
         }
         //log("After getAdminRights") ;
@@ -365,8 +360,7 @@ public class Conference extends HttpServlet {
      * Creates the html code, used to view the adminimage and an appropriate link
      * to the adminservlet.
      */
-    private String getUnAdminButtonLink( HttpServletRequest req, imcode.server.user.UserDomainObject user, VariableManager unAdminButtonVM )
-            throws IOException {
+    private String getUnAdminButtonLink( HttpServletRequest req, imcode.server.user.UserDomainObject user, VariableManager unAdminButtonVM ) {
 
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -383,15 +377,12 @@ public class Conference extends HttpServlet {
             String unAdminLinkFile = unAdminButtonVM.getProperty( "UNADMIN_LINK_HTML" );
 
             //lets create unadminbuttonhtml
-            File templateLib = this.getExternalTemplateFolder( req );
-            HtmlGenerator htmlObj = new HtmlGenerator( templateLib, UNADMIN_BUTTON_TEMPLATE );
-            String unAdminBtn = htmlObj.createHtmlString( unAdminButtonVM );
+            String unAdminBtn = getTemplate( UNADMIN_BUTTON_TEMPLATE, user, unAdminButtonVM.getTagsAndData() );
 
             //lets create unadminlink
             unAdminLinkVM.addProperty( "UNADMIN_BUTTON", unAdminBtn );
             if ( !unAdminLinkFile.equals( "" ) ) {
-                HtmlGenerator linkHtmlObj = new HtmlGenerator( templateLib, unAdminLinkFile );
-                unAdminLink = linkHtmlObj.createHtmlString( unAdminLinkVM );
+                unAdminLink = getTemplate( unAdminLinkFile, user, unAdminLinkVM.getTagsAndData() );
             }
         }
         return unAdminLink;

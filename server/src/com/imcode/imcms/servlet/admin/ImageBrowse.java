@@ -146,13 +146,10 @@ public class ImageBrowse extends HttpServlet {
         File templatePath = ImageBrowse.getAdminTemplateFolder(imcref, user);
         //now we have to find out what buttons to show
         if (counter > 0) {
-            HtmlGenerator previousButtonHtmlObj = new HtmlGenerator(templatePath,
-                    ImageBrowse.IMG_PREVIOUS_LIST_TEMPLATE);
-            previousButton = previousButtonHtmlObj.createHtmlString(prevButtonVm );
+            previousButton = imcref.getAdminTemplate( ImageBrowse.IMG_PREVIOUS_LIST_TEMPLATE, user, prevButtonVm.getTagsAndData() );
         }
         if (img_numbers > counter + max) {
-            HtmlGenerator nextButtonHtmlObj = new HtmlGenerator(templatePath, ImageBrowse.IMG_NEXT_LIST_TEMPLATE);
-            nextButton = nextButtonHtmlObj.createHtmlString(nextButtonVm );
+            nextButton = imcref.getAdminTemplate( ImageBrowse.IMG_NEXT_LIST_TEMPLATE, user, nextButtonVm.getTagsAndData() );
         }
 
         //*lets create the image folder option list

@@ -69,7 +69,7 @@ public class ConfAdd extends Conference {
                 // Lets check the data size
                 if (addText.length() > 32000) {
                     String header = SERVLET_NAME + " servlet. ";
-                    new ConfError(req, res, header, 74);
+                    new ConfError(req, res, header, 74, user );
                     return;
                 }
 
@@ -116,7 +116,7 @@ public class ConfAdd extends Conference {
                 // Lets check the data size
                 if (addText.length() > 32000) {
                     String header = SERVLET_NAME + " servlet. ";
-                    new ConfError(req, res, header, 74);
+                    new ConfError(req, res, header, 74, user );
                     return;
                 }
 
@@ -130,7 +130,7 @@ public class ConfAdd extends Conference {
             }
         } else {
             String header = SERVLET_NAME + " servlet. ";
-            new ConfError(req, res, header, 100);
+            new ConfError(req, res, header, 100, user );
             return;
         }
     } // DoPost
@@ -205,7 +205,7 @@ public class ConfAdd extends Conference {
             return;
         } else {
             String header = SERVLET_NAME + " servlet. ";
-            new ConfError(req, res, header, 100);
+            new ConfError(req, res, header, 100, user );
             return;
         }
 

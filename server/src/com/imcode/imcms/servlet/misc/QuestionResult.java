@@ -82,7 +82,7 @@ public class QuestionResult extends HttpServlet {
 
         String parsed = imcref.getTemplateFromDirectory( RESULTTEMPLATE, user, values, "106");
 
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
         out.write(parsed);
 

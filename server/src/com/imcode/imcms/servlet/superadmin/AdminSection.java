@@ -28,7 +28,7 @@ public class AdminSection extends Administrator {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
 
@@ -207,7 +207,7 @@ public class AdminSection extends Administrator {
             return;
         }
         //ok now lets send the page to browser
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print(htmlToSend.toString());
         out.flush();

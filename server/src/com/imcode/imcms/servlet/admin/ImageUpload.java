@@ -1,13 +1,23 @@
 package com.imcode.imcms.servlet.admin;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.*;
-import imcode.server.*;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
+import imcode.util.ImageFileMetaData;
+import imcode.util.MultipartFormdataParser;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Vector;
 
 /**
  * A class that allows Web users to upload local files to a web server's file system.
@@ -18,7 +28,7 @@ public class ImageUpload extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         File file_path = Utility.getDomainPrefPath( "image_path" );
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
 
         int length = req.getContentLength();
 

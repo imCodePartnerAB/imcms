@@ -110,7 +110,7 @@ public class BillBoardAdd extends BillBoard {
                 if ( addHeader.equals( "" ) || addText.equals( "" ) || addEpost.equals( "" ) ) {
                     //BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)
                     log( "some fields was empty" );
-                    new BillBoardError( req, res, 51 );
+                    new BillBoardError( req, res, 51, user );
                     return;
                 }
 
@@ -122,14 +122,14 @@ public class BillBoardAdd extends BillBoard {
                 if ( !validateEmail( addEpost ) ) {
                     log( "invalid epostadress" );
                     String header = SERVLET_NAME + " servlet. ";
-                    new BillBoardError( req, res, header, 76, user.getLanguageIso639_2());
+                    new BillBoardError( req, res, header, 76, user.getLanguageIso639_2(), user );
                     return;
                 }
 
                 // Lets check the data size
                 if ( addText.length() > 32000 ) {
                     String header = SERVLET_NAME + " servlet. ";
-                    new BillBoardError( req, res, header, 75, user.getLanguageIso639_2());
+                    new BillBoardError( req, res, header, 75, user.getLanguageIso639_2(), user );
                     return;
                 }
 
@@ -196,7 +196,7 @@ public class BillBoardAdd extends BillBoard {
                     if ( addHeader.equals( "" ) || addText.equals( "" ) || addEpost.equals( "" ) ) {
                         //BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)
                         log( "some fields was empty" );
-                        new BillBoardError( req, res, 51 );
+                        new BillBoardError( req, res, 51, user );
                         return;
                     }
 
@@ -208,14 +208,14 @@ public class BillBoardAdd extends BillBoard {
                     if ( !validateEmail( addEpost ) ) {
                         log( "invalid epostadress" );
                         String header = SERVLET_NAME + " servlet. ";
-                        new BillBoardError( req, res, header, 76, user.getLanguageIso639_2());
+                        new BillBoardError( req, res, header, 76, user.getLanguageIso639_2(), user );
                         return;
                     }
 
                     // Lets check the data size
                     if ( addText.length() > 32000 ) {
                         String header = SERVLET_NAME + " servlet. ";
-                        new BillBoardError( req, res, header, 75, user.getLanguageIso639_2());
+                        new BillBoardError( req, res, header, 75, user.getLanguageIso639_2(), user );
                         return;
                     }
                 }
@@ -269,7 +269,7 @@ public class BillBoardAdd extends BillBoard {
                     addText = ( params.getProperty( "ADD_TEXT" ) ).trim();
                     addEpost = ( params.getProperty( "ADD_EPOST" ) ).trim();
                     if ( addHeader.equals( "" ) || addText.equals( "" ) || addEpost.equals( "" ) ) {
-                        new BillBoardError( req, res, 51 );
+                        new BillBoardError( req, res, 51, user );
                         return;
                     }
 
@@ -281,7 +281,7 @@ public class BillBoardAdd extends BillBoard {
                     // Lets check the data size
                     if ( addText.length() > 32000 ) {
                         String header = SERVLET_NAME + " servlet. ";
-                        new BillBoardError( req, res, header, 74, user.getLanguageIso639_2());
+                        new BillBoardError( req, res, header, 74, user.getLanguageIso639_2(), user );
                         return;
                     }
                 }
@@ -299,7 +299,7 @@ public class BillBoardAdd extends BillBoard {
                 try {
                     this.sendReplieEmail( toEmail, addEpost, subjectStr, addText, addHeader );
                 } catch ( ProtocolException pe ) {
-                    new BillBoardError( req, res, "BillBoardAdd servlet. ", 76, user.getLanguageIso639_2());
+                    new BillBoardError( req, res, "BillBoardAdd servlet. ", 76, user.getLanguageIso639_2(), user );
                     log( pe.getMessage() );
                     return;
                 }
@@ -312,7 +312,7 @@ public class BillBoardAdd extends BillBoard {
             }
         } else {
             String header = SERVLET_NAME + " servlet. ";
-            new BillBoardError( req, res, header, 100, user.getLanguageIso639_2());
+            new BillBoardError( req, res, header, 100, user.getLanguageIso639_2(), user );
             return;
         }
 
@@ -386,7 +386,7 @@ public class BillBoardAdd extends BillBoard {
             return;
         } else {
             String header = SERVLET_NAME + " servlet. ";
-            new BillBoardError( req, res, header, 100, user.getLanguageIso639_2());
+            new BillBoardError( req, res, header, 100, user.getLanguageIso639_2(), user );
             return;
         }
 

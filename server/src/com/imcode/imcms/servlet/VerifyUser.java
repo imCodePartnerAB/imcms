@@ -32,7 +32,7 @@ public class VerifyUser extends HttpServlet {
      * doPost()
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
 
         String name = req.getParameter( "name" );
         String passwd = req.getParameter( "passwd" );

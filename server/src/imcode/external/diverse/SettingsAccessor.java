@@ -1,151 +1,91 @@
-package imcode.external.diverse ;
-import java.util.*;
-import java.io.*;
+package imcode.external.diverse;
 
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
+
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 public class SettingsAccessor {
 
-    private File FILE_NAME ;
-    private Properties settingsTable ;
-    private String delimiter ;
-    
-    public SettingsAccessor(File fileName) {
-        super() ;
-        // load the data into the table
-        FILE_NAME = fileName ;
+    private String fileName;
+    private Properties settingsTable;
+    private String delimiter;
+    private UserDomainObject user;
+    private String directory;
+
+    public SettingsAccessor( String fileName, UserDomainObject user, String directory ) {
+        this.fileName = fileName;
+        this.user = user;
+        this.directory = directory;
         settingsTable = new Properties();
-        delimiter = "||" ;
-        //	loadSettings();
+        delimiter = "||";
     }
 
     /**
-         *  Sets the delimiter which should be used
-         */
-    
-    public void setDelimiter(String newDelim) {
-        delimiter = newDelim ;
+     * Sets the delimiter which should be used
+     */
+    public void setDelimiter( String newDelim ) {
+        delimiter = newDelim;
     }
-    
-    
-    
-    
-        /**
-         *  Loads the data from a storage device.
-         */
-    public synchronized void loadSettings() {
-        
-        StringTokenizer st = null;
-        try	{
-            // Lets open the settingsfile
-            log("Loading File: " + FILE_NAME + "...");
-            BufferedReader inputFromFile = new BufferedReader(new FileReader(FILE_NAME));
-            
-            // Lets get the settings from file into settingsTable, its a property
-            settingsTable = readSettings(inputFromFile);
-            
-            inputFromFile.close();
-            log(FILE_NAME + " loaded successfully!");
-            
-        }	catch (FileNotFoundException exc) {
-            log("Could not find the file \"" + FILE_NAME + "\".");
-            log("Make sure it is in the current directory.") ;
-            log(exc);
-            
-        }	catch (IOException exc) {
-            log("IO error occurred while reading file: " + FILE_NAME);
-            log(exc);
-        }
-    }
-    
-        /**
-         *  Helper method for reading settings from a file.
-         */
-    
-    private synchronized Properties readSettings(BufferedReader inputFromFile) throws IOException {
-        Properties table = new Properties() ;
-        
-        StringTokenizer st;
-        String aLine;
-        String propName, propVal ;
-        
-        // The new style, should fix if there´s no more tokens
-        while (	(aLine = inputFromFile.readLine()) != null ) {
-            propName = "" ;
-            propVal = "" ;
-            st = new StringTokenizer(aLine, delimiter) ;
-            if(st.hasMoreTokens() )
-                propName = this.convertArgument(st.nextToken().trim()) ;
-            if(st.hasMoreTokens() )
-                propVal = st.nextToken().trim() ;
-            
-            table.put(propName, propVal) ;
-        }
-        
-        
-        // This is the old style, which cant take nothing after the token
-        // it needs an empty backspace if nothing should be there
-        /*
-                while (	(aLine = inputFromFile.readLine()) != null ) {
-                        st = new StringTokenizer(aLine, "||");
-                        propName = st.nextToken().trim() ;
-                        propVal = (st.nextToken().trim()) ;
-                        table.put(propName, propVal) ;
+
+    /**
+     * Loads the data from a storage device.
+     */
+    public synchronized void loadSettings() throws IOException {
+
+        // Lets open the settingsfile
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        BufferedReader inputFromFile = new BufferedReader( new StringReader( imcref.getTemplateFromDirectory( fileName, user, null, directory ) ) );
+
+        // Lets get the settings from file into settingsTable, its a property
+        Properties result;
+        synchronized ( this ) {
+            Properties table = new Properties();
+            StringTokenizer st;
+            String aLine;
+            String propName, propVal;
+            while ( ( aLine = inputFromFile.readLine() ) != null ) {
+                propName = "";
+                propVal = "";
+                st = new StringTokenizer( aLine, delimiter );
+                if ( st.hasMoreTokens() ) {
+                    propName = convertArgument( st.nextToken().trim() );
                 }
-         */
-        return table ;
-    }
-    
-        /**
-         *  Helper method for logging message to the console.
-         */
-        private void log(Object msg) {
-        
-        System.out.println("SettingsDataAccessor: " + msg);
-    }
-    
-        /**
-         *  Saves the data to a storage device.  <p>
-         *
-         *  <b><i> NOTE: This method is left as an exercise for the student.  </i></b><br>
-         */
-
-
-
-/*
-        public boolean fileDelete() {
-                try {
-                        String theDir = System.getProperty("user.dir") ;
-                        String theFile = FILE_NAME ;
-                        File fileObj = new File(theDir, theFile) ;
-                        if(this.fileExist(theDir, theFile))
-                                return fileObj.delete() ;
- 
-                } catch (NullPointerException e) {
-                                        log("The file couldnt be deleted " + e.getMessage()) ;
-                        }
-                catch (Exception e) {
-                                        log("The file couldnt be deleted " + e.getMessage()) ;
+                if ( st.hasMoreTokens() ) {
+                    propVal = st.nextToken().trim();
                 }
-                finally	{ return false ; }
+
+                table.put( propName, propVal );
+            }
+            result = table;
         }
- */
-    
-    public String toString(){
-        return settingsTable.toString()	;
-    }
-    
-/**
- * returns a setting
- */
-    public String getSetting(String wantedProp) {
-        String retStr = null ;
-        String wantedStr = this.convertArgument(wantedProp) ;
-        retStr = (String) settingsTable.get(wantedStr) ;
-        return retStr ;
+        settingsTable = result;
+
+        inputFromFile.close();
+
     }
 
-    private String convertArgument(String theProp) {
-        return theProp.toUpperCase() ;
+    public String toString() {
+        return settingsTable.toString();
     }
 
-} // END SETTINGSACCESSOR
+    /**
+     * returns a setting
+     */
+    public String getSetting( String wantedProp ) {
+        String retStr = null;
+        String wantedStr = this.convertArgument( wantedProp );
+        retStr = (String)settingsTable.get( wantedStr );
+        return retStr;
+    }
+
+    private String convertArgument( String theProp ) {
+        return theProp.toUpperCase();
+    }
+
+}

@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.List;
 
 /**
  * Html template in use:
@@ -181,8 +182,8 @@ public class ConfReply extends Conference {
             VariableManager vmButtons = new VariableManager();
             vmButtons.addProperty( "#SERVLET_URL#", "" );
             vmButtons.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
-            HtmlGenerator commentButtonHtmlObj = new HtmlGenerator( templateLib, NEW_COMMENT_TEMPLATE );
-            commentButton = commentButtonHtmlObj.createHtmlString( vmButtons );
+
+            commentButton = getTemplate( NEW_COMMENT_TEMPLATE, user, vmButtons.getTagsAndData() );
         }
 
         VariableManager vm = new VariableManager();

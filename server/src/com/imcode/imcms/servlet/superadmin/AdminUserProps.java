@@ -176,7 +176,7 @@ public class AdminUserProps extends Administrator {
 
         String phones = Html.createOptionList( selected, phonesV );
 
-        res.setContentType( "text/html" ); // set content type
+        Utility.setDefaultHtmlContentType( res ); // set content type
         Writer out = res.getWriter();
 
         Vector vec = new Vector();
@@ -347,7 +347,7 @@ public class AdminUserProps extends Administrator {
         }
 
         Vector vec = new Vector();		// hold tags and values to parse html page
-        res.setContentType( "text/html" ); // set content type
+        Utility.setDefaultHtmlContentType( res ); // set content type
         Writer out = res.getWriter();	// to write out html page
 
         //	VariableManager vm = new VariableManager() ;

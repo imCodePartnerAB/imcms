@@ -273,7 +273,7 @@ public class ConfDisc extends Conference {
 
             // Lets get the part of an html page, wich will be parsed for every a Href reference
             File templateLib = super.getExternalTemplateFolder( req );
-            //	templateLib += getTemplateLibName(params.getProperty("META_ID")) ;
+            //	templateLib += getTemplateSetDirectoryName(params.getProperty("META_ID")) ;
             File aHreHtmlFile = new File( templateLib, A_HREF_HTML );
 
 
@@ -285,7 +285,7 @@ public class ConfDisc extends Conference {
             //	log("SqlAnswer: " + sqlAnswer) ;
             if ( sqlAnswer != null ) {
                 if ( sqlAnswer.length > 0 ) {
-                    allRecs = preParse( req, sqlAnswer, tagsV, aHreHtmlFile, "" );
+                    allRecs = preParse( req, sqlAnswer, tagsV, aHreHtmlFile, "", user );
                     if ( allRecs == null ) {
                         ConfError msgErr = new ConfError();
                         allRecs = msgErr.getErrorMessage( req, 41 );
@@ -324,8 +324,8 @@ public class ConfDisc extends Conference {
                 VariableManager vmButtons = new VariableManager();
                 vmButtons.addProperty( "#SERVLET_URL#", "" );
                 vmButtons.addProperty( "#IMAGE_URL#", this.getExternalImageFolder( req ) );
-                HtmlGenerator newButtonHtmlObj = new HtmlGenerator( templateLib, NEW_DISC_TEMPLATE );
-                newDiscButton = newButtonHtmlObj.createHtmlString( vmButtons );
+
+                newDiscButton = getTemplate( NEW_DISC_TEMPLATE, user, vmButtons.getTagsAndData() );
             }
 
             vm.addProperty( "CURRENT_FORUM_NAME", currForum );
@@ -404,17 +404,15 @@ public class ConfDisc extends Conference {
             // Lets create an array
             String[][] newArr = sqlAnswer;
 
-            allRecs = preParse( req, newArr, tagsV, aHrefHtmlFile, imagePath );
+            allRecs = preParse( req, newArr, tagsV, aHrefHtmlFile, imagePath, user );
 
             //lets show previousbutton if not first set of discussions
             if ( discIndexPos != 0 ) {
-                HtmlGenerator previousButtonHtmlObj = new HtmlGenerator( templateLib, PREVIOUS_DISC_LIST_TEMPLATE );
-                previousButton = previousButtonHtmlObj.createHtmlString( vmButtons );
+                previousButton = getTemplate( PREVIOUS_DISC_LIST_TEMPLATE, user, vmButtons.getTagsAndData() );
             }
             //lets show nextbutton if not last set of discussions
             if ( ( sqlAnswer.length / 8 - 1 ) > ( discIndexPos + showDiscsCounter ) ) {
-                HtmlGenerator nextButtonHtmlObj = new HtmlGenerator( templateLib, NEXT_DISC_LIST_TEMPLATE );
-                nextButton = nextButtonHtmlObj.createHtmlString( vmButtons );
+                nextButton = getTemplate( NEXT_DISC_LIST_TEMPLATE, user, vmButtons.getTagsAndData() );
             }
 
         }
@@ -426,8 +424,7 @@ public class ConfDisc extends Conference {
         DocumentDomainObject document = documentMapper.getDocument( metaId );
         if ( documentMapper.userHasAtLeastDocumentReadPermission( user, document )
              && imcref.checkDocAdminRights( metaId, user ) ) {
-            HtmlGenerator newButtonHtmlObj = new HtmlGenerator( templateLib, NEW_DISC_TEMPLATE );
-            newDiscButton = newButtonHtmlObj.createHtmlString( vmButtons );
+            newDiscButton = getTemplate( NEW_DISC_TEMPLATE, user, vmButtons.getTagsAndData() );
         }
 
         VariableManager vm = new VariableManager();
@@ -445,7 +442,7 @@ public class ConfDisc extends Conference {
      * for all records in the array
      */
     private String preParse( HttpServletRequest req, String[][] DBArr, Vector tagsV, File htmlCodeFile,
-                             String imagePath ) throws IOException {
+                             String imagePath, UserDomainObject user ) {
         String htmlStr = "";
         for ( int i = 0; i < DBArr.length; i++ ) {
             Vector dataV = new Vector();
@@ -461,11 +458,9 @@ public class ConfDisc extends Conference {
             // Lets first check against the logindate in the sql, then check the
             // list with users clicked ones
             if ( this.discViewStatus( req, dataV ) ) {
-                File templateLib = this.getExternalTemplateFolder( req );
-                HtmlGenerator htmlObj = new HtmlGenerator( templateLib, NEW_DISC_FLAG_TEMPLATE );
                 VariableManager newFlagVM = new VariableManager();
                 newFlagVM.addProperty( "#IMAGE_URL#", imagePath );
-                String newFlag = htmlObj.createHtmlString( newFlagVM );
+                String newFlag = getTemplate( NEW_DISC_FLAG_TEMPLATE, user, newFlagVM.getTagsAndData() );
 
                 dataV.setElementAt( newFlag, 0 );
             } else {

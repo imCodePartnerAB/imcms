@@ -2,13 +2,12 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.ImageFileMetaData;
 import imcode.util.Utility;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -202,7 +201,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         UserDomainObject user = Utility.getLoggedOnUser( req );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         String m_id = req.getParameter( "meta_id" );

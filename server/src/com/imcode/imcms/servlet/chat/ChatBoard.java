@@ -21,7 +21,7 @@ public class ChatBoard extends ChatBase {
     private final static String CHAT_KICKOUT_TEMPLATE = "chat_kickout_message.html";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
-        res.setContentType("text/html");
+        Utility.setDefaultHtmlContentType( res );
 
         Utility.setNoCache(res);
 
@@ -55,7 +55,7 @@ public class ChatBoard extends ChatBase {
 
         Chat myChat = myMember.getParent();
 
-        String libName = getTemplateLibName( myChat.getChatId());
+        String libName = getTemplateSetDirectoryName( myChat.getChatId());
 
         boolean showPrivateMessages = myMember.isShowPrivateMessagesEnabled();
         boolean autoReload = myMember.isAutoRefreshEnabled();
@@ -71,7 +71,7 @@ public class ChatBoard extends ChatBase {
             ChatMessage message = (ChatMessage)msgIter.next();
 
             if ( lastMsgInt == message.getIdNumber() ) {
-                sendMsgString.append( imcref.getTemplateFromSubDirectoryOfDirectory( HTML_HR, user, null, "103", getTemplateLibName( myChat.getChatId() ) ) );
+                sendMsgString.append( imcref.getTemplateFromSubDirectoryOfDirectory( HTML_HR, user, null, "103", getTemplateSetDirectoryName( myChat.getChatId() ) ) );
                 //sendMsgString.append( "<hr>\n" );
 
 		    }

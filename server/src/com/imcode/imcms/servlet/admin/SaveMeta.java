@@ -47,7 +47,7 @@ public class SaveMeta extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         Writer out = res.getWriter();
 
         String metaIdStr = req.getParameter( "meta_id" );

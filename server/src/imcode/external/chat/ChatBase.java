@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.List;
 
 /**
  * superclas for chat servlets.
@@ -247,32 +248,6 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     }
 
     /**
-     * Gives the folder to the root external folder
-     */
-    File getExternalTemplateRootFolder( HttpServletRequest req ) {
-
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-
-        // Lets get serverinformation
-        int metaId = getMetaId( req );
-        return imcref.getExternalTemplateFolder(  metaId, user);
-    }
-
-    /**
-     * Gives the folder where All the html templates for a language are located.
-     * This method will call its helper method getTemplateLibName to get the
-     * name of the folder which contains the templates for a certain meta id
-     */
-    protected File getExternalTemplateFolder(HttpServletRequest req, UserDomainObject user) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-        int metaId = getMetaId( req );
-        // Lets get serverinformation
-        return new File( imcref.getExternalTemplateFolder( metaId, user ), getTemplateLibName( metaId ) );
-    }
-
-    /**
      * Returns the foldername where the templates are situated for a certain metaid.
      * <p/>
      * peter uses this
@@ -280,13 +255,13 @@ public class ChatBase extends HttpServlet implements ChatConstants {
      * peter uses this
      */
     //peter uses this
-    protected static String getTemplateLibName( int meta_id ) {
+    protected static String getTemplateSetDirectoryName( int meta_id ) {
         String libName = ApplicationServer.getIMCServiceInterface().sqlProcedureStr( "C_GetTemplateLib", new String[]{"" + meta_id} );
         if ( libName == null ) {
             libName = "original";
         }
         return libName;
-    } // End of getTemplateLibName
+    } // End of getTemplateSetDirectoryName
 
 
 
@@ -311,9 +286,9 @@ public class ChatBase extends HttpServlet implements ChatConstants {
             metaId = this.getMetaId( req );
         }
         // Lets get the TemplateFolder  and the foldername used for this certain metaid
-        String templateSet = getTemplateLibName( metaId );
+        String templateSet = getTemplateSetDirectoryName( metaId );
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         final String htmlStr = imcref.getTemplateFromSubDirectoryOfDirectory( template, user, vect, "103", templateSet );
         out.print( htmlStr );
@@ -347,7 +322,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
     /**
      * Gives the folder where All the html templates for a language are located.
-     * This method will call its helper method getTemplateLibName to get the
+     * This method will call its helper method getTemplateSetDirectoryName to get the
      * name of the folder which contains the templates for a certain meta id
      */
 
@@ -365,7 +340,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         String extFolder = "/imcms/" + lang_prefix + "/images/"
                         + imcref.getDocType(metaId) + '/';
-        return extFolder += getTemplateLibName( metaId );
+        return extFolder += getTemplateSetDirectoryName( metaId );
     }
 
     /**
@@ -597,7 +572,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         String metaId = "" + theChat.getChatId();
         //lets send the message
         myGroup.addNewMsg( this, systemMessage, imcref );
-        String libName = getTemplateLibName( theChat.getChatId() );
+        String libName = getTemplateSetDirectoryName( theChat.getChatId() );
         chatlog( metaId, systemMessage.getLogMsg( imcref, user, libName ) );
     }
 
@@ -608,7 +583,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         ChatSystemMessage systemMessage = new ChatSystemMessage( myMember, ChatSystemMessage.ENTER_MSG );
         //lets send the message
         myGroup.addNewMsg( this, systemMessage, imcref );
-        String libName = getTemplateLibName( theChat.getChatId() );
+        String libName = getTemplateSetDirectoryName( theChat.getChatId() );
 
         chatlog( metaId, systemMessage.getLogMsg( imcref, user, libName ) );
     }
@@ -619,7 +594,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         ChatSystemMessage systemMessage = new ChatSystemMessage( kickedOutPerson, ChatSystemMessage.KICKOUT_MSG );
         myGroup.addNewMsg( this, systemMessage, imcref );
-        String libName = getTemplateLibName( myChat.getChatId() );
+        String libName = getTemplateSetDirectoryName( myChat.getChatId() );
 
         chatlog( metaId, systemMessage.getLogMsg( imcref, user, libName ) );
     }
@@ -635,6 +610,10 @@ public class ChatBase extends HttpServlet implements ChatConstants {
             }
         }
 
+    }
+
+    protected String getTemplate( String htmlFile, UserDomainObject user, List tagsAndData ) {
+        return ApplicationServer.getIMCServiceInterface().getTemplateFromSubDirectoryOfDirectory( htmlFile, user, tagsAndData, "103", "original") ;
     }
 
 } // End class

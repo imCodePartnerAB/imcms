@@ -25,7 +25,7 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         res.setHeader( "Cache-Control", "no-cache; must-revalidate;" );
         res.setHeader( "Pragma", "no-cache;" );
 

@@ -39,7 +39,7 @@ public class AdminFortuneFile extends Administrator {
     // Get the session
 	HttpSession session = req.getSession();
 
-	res.setContentType("text/html");
+	Utility.setDefaultHtmlContentType( res );
 	PrintWriter out = res.getWriter();
 
 	String whichFile = (String)session.getAttribute("file") ;

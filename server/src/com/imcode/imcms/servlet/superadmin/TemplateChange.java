@@ -32,7 +32,7 @@ public class TemplateChange extends HttpServlet {
             return;
         }
 
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
 
         TemplateMapper templateMapper = imcref.getTemplateMapper();
         ServletOutputStream out = res.getOutputStream();

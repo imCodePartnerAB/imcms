@@ -1,14 +1,22 @@
 package com.imcode.imcms.servlet.billboard;
 
-import java.io.*;
-import javax.servlet.http.*;
+import imcode.external.diverse.HtmlGenerator;
+import imcode.external.diverse.SettingsAccessor;
+import imcode.external.diverse.VariableManager;
+import imcode.server.user.UserDomainObject;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
+import imcode.util.Utility;
 
-import imcode.external.diverse.*;
-import com.imcode.imcms.servlet.billboard.BillBoard;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 
 public class BillBoardError extends BillBoard {
 
-    private static final String ERROR_FILE = "BillBoard_Error.htm";
     private static final String ERROR_FILE_2 = "BillBoard_User_Error.htm";
 
     private String myErrorMessage;
@@ -21,26 +29,7 @@ public class BillBoardError extends BillBoard {
         myErrorMessage = "";
     }
 
-    public BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode) throws IOException {
-
-        VariableManager vm = new VariableManager();
-
-        // Lets get the errormessage from the error file
-        String myErrorMessage = this.getErrorMessage( req, errorCode );
-
-
-        vm.addProperty( "ERROR_HEADER", header );
-        vm.addProperty( "ERROR_MESSAGE", myErrorMessage );
-        //String fileName = "Conf_Error.htm" ;
-
-        // Lets send a html string to the browser
-        //super.sendHtml(req, res, vm, fileName) ;
-        sendErrorHtml( req, res, vm, ERROR_FILE );
-        return;
-
-    }
-
-    public BillBoardError( HttpServletRequest req, HttpServletResponse res, int errorCode ) throws IOException {
+    public BillBoardError( HttpServletRequest req, HttpServletResponse res, int errorCode, UserDomainObject user ) throws IOException {
 
         VariableManager vm = new VariableManager();
 
@@ -52,44 +41,7 @@ public class BillBoardError extends BillBoard {
 
         // Lets send a html string to the browser
         //super.sendHtml(req, res, vm, fileName) ;
-        sendErrorHtml( req, res, vm, ERROR_FILE_2 );
-        return;
-
-    }
-
-    public BillBoardError( HttpServletRequest req, HttpServletResponse res, String header, String msg, int errorCode ) throws IOException {
-
-        VariableManager vm = new VariableManager();
-
-        // Lets get the errormessage from the error file
-        String aMessage = this.getErrorMessage( req, errorCode );
-        aMessage += " " + msg;
-
-        vm.addProperty( "ERROR_HEADER", header );
-        vm.addProperty( "ERROR_MESSAGE", aMessage );
-        //String fileName = "Conf_Error.htm" ;
-
-        // Lets send a html string to the browser
-        //super.sendHtml(req, res, vm, fileName) ;
-        sendErrorHtml( req, res, vm, ERROR_FILE );
-        return;
-
-    }
-
-    /**
-     * ConfError, takes a message instead of an int
-     */
-    public BillBoardError( HttpServletRequest req, HttpServletResponse res, String header, String msg ) throws IOException {
-
-        VariableManager vm = new VariableManager();
-
-        vm.addProperty( "ERROR_HEADER", header );
-        vm.addProperty( "ERROR_MESSAGE", msg );
-        //String fileName = "Conf_Error.htm" ;
-
-        // Lets send a html string to the browser
-        //super.sendHtml(req, res, vm, fileName) ;
-        sendErrorHtml( req, res, vm, ERROR_FILE );
+        sendErrorHtml( req, res, vm, ERROR_FILE_2, user );
         return;
 
     }
@@ -109,10 +61,7 @@ public class BillBoardError extends BillBoard {
 
     public String getErrorMessage( HttpServletRequest req, int errCode ) {
         try {
-            // Lets get the path to the template library
-            File folder = super.getExternalTemplateRootFolder( req );
-
-            SettingsAccessor setObj = new SettingsAccessor( new File( folder, "errmsg.ini" ) );
+            SettingsAccessor setObj = new SettingsAccessor( "errmsg.ini", Utility.getLoggedOnUser( req ), "104" );
             setObj.setDelimiter( "=" );
             setObj.loadSettings();
             myErrorMessage = setObj.getSetting( "" + errCode );
@@ -126,15 +75,11 @@ public class BillBoardError extends BillBoard {
         return myErrorMessage;
     }
 
-    public void log( String msg ) {
-        super.log( "BillBoardError: " + msg );
-
-    }
-
     /*
     For special messages, if we want to pass a special htmlfile
     */
-    public BillBoardError( HttpServletRequest req, HttpServletResponse res, String header, int errorCode, String fileName ) throws IOException {
+    public BillBoardError( HttpServletRequest req, HttpServletResponse res, String header, int errorCode,
+                           String fileName, UserDomainObject user ) throws IOException {
 
         VariableManager vm = new VariableManager();
 
@@ -146,13 +91,13 @@ public class BillBoardError extends BillBoard {
 
         // Lets send a html string to the browser
         //super.sendHtml(req, res, vm, fileName) ;
-        sendErrorHtml( req, res, vm, fileName );
+        sendErrorHtml( req, res, vm, fileName, user );
         return;
 
     }
 
     private void sendErrorHtml( HttpServletRequest req, HttpServletResponse res,
-                                VariableManager vm, String htmlFile ) throws IOException {
+                                VariableManager vm, String htmlFile, UserDomainObject user ) throws IOException {
 
         // Lets get the TemplateFolder  and the foldername used for this certain metaid
         File templateLib = this.getExternalTemplateFolder( req );
@@ -163,13 +108,13 @@ public class BillBoardError extends BillBoard {
         vm.addProperty( "IMAGE_URL", imagePath );
         vm.addProperty( "SERVLET_URL", "" );
 
-        HtmlGenerator htmlObj = new HtmlGenerator( templateLib, htmlFile );
-        String html = htmlObj.createHtmlString( vm );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        String html = imcref.getTemplateFromSubDirectoryOfDirectory( htmlFile, user, vm.getTagsAndData(), "104", "original"  );
 
         // Lets send settings to a browser
         PrintWriter out = res.getWriter();
-        res.setContentType("Text/html");
-        out.println(html);
+        Utility.setDefaultHtmlContentType( res );
+        out.println( html );
     }
 
 } // End of class

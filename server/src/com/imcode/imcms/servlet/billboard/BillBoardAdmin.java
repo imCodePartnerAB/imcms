@@ -104,7 +104,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
         // Lets check that the user is an administrator
         if ( userHasAdminRights( imcref, Integer.parseInt( params.getProperty( "META_ID" ) ), user ) == false ) {
             String header = "BillBoardAdmin servlet. ";
-            new BillBoardError( req, res, header, 6, user.getLanguageIso639_2());
+            new BillBoardError( req, res, header, 6, user.getLanguageIso639_2(), user );
             return;
         }
 
@@ -125,7 +125,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             String newLibName = req.getParameter( "TEMPLATE_LIB_NAME" );
             if ( newLibName == null ) {
                 String header = "BillBoardAdmin servlet. ";
-                new BillBoardError( req, res, header, 80, user.getLanguageIso639_2());
+                new BillBoardError( req, res, header, 80, user.getLanguageIso639_2(), user );
                 return;
             }
             newLibName = super.verifySqlText( newLibName );
@@ -134,7 +134,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             String libNameExists = imcref.sqlProcedureStr( "B_FindTemplateLib", new String[]{newLibName} );
             if ( !libNameExists.equalsIgnoreCase( "-1" ) ) {
                 String header = "BillBoardAdmin servlet. ";
-                new BillBoardError( req, res, header, 84, user.getLanguageIso639_2());
+                new BillBoardError( req, res, header, 84, user.getLanguageIso639_2(), user );
                 return;
             }
 
@@ -177,7 +177,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             String newLibName = req.getParameter( "TEMPLATE_ID" );
             if ( newLibName == null ) {
                 String header = "BillBoardAdmin servlet. ";
-                new BillBoardError( req, res, header, 80, user.getLanguageIso639_2());
+                new BillBoardError( req, res, header, 80, user.getLanguageIso639_2(), user );
                 return;
             }
 
@@ -186,7 +186,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
             String templateId = imcref.sqlProcedureStr( "B_GetTemplateIdFromName", new String[]{newLibName} );
             if ( templateId.equalsIgnoreCase( "-1" ) ) {
                 String header = "BillBoardAdmin servlet. ";
-                new BillBoardError( req, res, header, 81, user.getLanguageIso639_2());
+                new BillBoardError( req, res, header, 81, user.getLanguageIso639_2(), user );
                 return;
             }
             // Ok, lets update the conference with this new templateset.
@@ -381,7 +381,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             if ( !foundIt.equalsIgnoreCase( "-1" ) ) {
                 String header = "BillBoardAdmin servlet. ";
-                new BillBoardError( req, res, header, 85, user.getLanguageIso639_2());
+                new BillBoardError( req, res, header, 85, user.getLanguageIso639_2(), user );
                 return;
             }
 
@@ -408,7 +408,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
             if ( !foundIt.equalsIgnoreCase( "-1" ) ) {
                 String header = "BillBoardAdmin servlet. ";
-                new BillBoardError( req, res, header, 85, user.getLanguageIso639_2());
+                new BillBoardError( req, res, header, 85, user.getLanguageIso639_2(), user );
                 return;
             }
 
@@ -479,7 +479,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
         // Lets check that the user is an administrator
         if ( super.userHasAdminRights( imcref, Integer.parseInt( params.getProperty( "META_ID" ) ), user ) == false ) {
             String header = "BillBoardAdmin servlet. ";
-            new BillBoardError( req, res, header, 6, user.getLanguageIso639_2());
+            new BillBoardError( req, res, header, 6, user.getLanguageIso639_2(), user );
             log( "nu small det i BillBoardAdmin doGet super.getAdminRights" );
             return;
         }
@@ -504,7 +504,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
                 String uploadType = req.getParameter( "UPLOAD_TYPE" );
                 if ( uploadType == null ) {
                     String header = "BillBoardAdmin servlet. ";
-                    new BillBoardError( req, res, header, 83, user.getLanguageIso639_2());
+                    new BillBoardError( req, res, header, 83, user.getLanguageIso639_2(), user );
                     return;
                 }
 
