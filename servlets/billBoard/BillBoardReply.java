@@ -364,15 +364,14 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	public String preParse (HttpServletRequest req, String[] DBArr, Vector tagsV,
 		File htmlCodeFile, String imagePath)  throws ServletException, IOException {
 
-		String htmlStr = "" ;
+		StringBuffer htmlStr = new StringBuffer("") ;
 		try {
 			// Lets get the url to the servlets directory
 			String servletHome = MetaInfo.getServletPath(req) ;
 
 			// Lets get the part of the expert html
 			File templateLib = super.getExternalTemplateFolder(req) ;
-		//	String expertHtmFile = templateLib + "BILLBOARD_EXPERT.HTM" ;//CONF_EXPERT.HTM
-
+	
 			// Lets get the nbr of cols
 			int nbrOfCols = Integer.parseInt(DBArr[0]) ;
 			//log("Number of cols: " + nbrOfCols) ;
@@ -393,31 +392,11 @@ public class BillBoardReply extends BillBoard {//ConfReply
 				String oneParsedRecordStr = "" ;
 				Vector dataV = new Vector() ;
 
-				// Lets do for one record... Get all fields for that record
-				// Lets go through the array and see if we can found an '\n' and
-				// Replace it with a <BR>
 				for(int j=i; j<i+nbrOfCols ; j++) {
-					StringBuffer b = new StringBuffer(DBArr[j]) ;
-					String s = this.replace(b, '\n' , "<BR>" ).toString() ;
-					// String s = Html.replace(b, '\n' , "<BR>" ).toString() ;
-					dataV.add(s) ;
-					// dataV.add(DBArr[j]) ;
-				} // End of one records for
-
-				// Lets check if the user is some kind of "Master" eg. if he's
-				// reply_level is equal to 1 and add the code returned to data.
-				//dataV = this.getReplyLevelCode(req, dataV, imagePath) ;
-
-				// Ok, Lets go through this vector and see if we can found a '\n' and
-				// Replace it with a <BR>
-				//StringBuffer strBuff = new StringBuffer(dataV.toString()) ;
-				//strBuff = Html.replace(strBuff, "'\'", "<BR>") ;
-				//dataV = Html.replace(dataV, '\n', "<BR>") ;
-				//log("RadKoll: " + dataV.toString() ) ;
-
-				// Lets parse one record
-				oneParsedRecordStr = this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
-				htmlStr += oneParsedRecordStr ;
+					dataV.add(DBArr[j]) ;
+				} 
+	
+				htmlStr.append(this.parseOneRecord(tagsV, dataV, htmlCodeFile));
 				//	log("Ett record: " + oneParsedRecordStr);
 			} // end of the big for
 
@@ -425,7 +404,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 			log("Error in Preparse") ;
 			return null ;
 		}
-		return htmlStr ;
+		return htmlStr.toString() ;
 	} // End of
 
 
