@@ -169,9 +169,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         try {
             ctx = loginAndGetInitialDirContext( ldapUrl, ldapAuthenticationType, ldapBindDn, ldapPassword );
         } catch ( AuthenticationException ex ) {
-            throw new LdapInitException( "Authentication failed, using login: '" + ldapBindDn + "', password: '"
-                                         + ldapPassword
-                                         + "'", ex );
+            throw new LdapInitException( "Authentication failed, using login: '" + ldapBindDn + "'", ex );
         } catch ( NameNotFoundException ex ) {
             throw new LdapInitException( "Root not found: " + ldapUrl, ex );
         } catch ( NamingException ex ) {
