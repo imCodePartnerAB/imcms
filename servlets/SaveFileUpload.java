@@ -79,32 +79,46 @@ public class SaveFileUpload extends HttpServlet {
 		filename = "" ;
 	    }
 
-	    int dot = filename.indexOf('.') ;
-	    if (mime == null ||"".equals(mime) ) { // Autodetect?
-		if ( dot != -1 ) { // Were we given a filename containing an extension?
-		    // So... get the extension!
-		    String ext = filename.substring(dot+1).toLowerCase() ;
-		    // The extension may correspond to a mime-type.
-		    String mimetemp = (String)Utility.getMimeTypeFromExtension(ext) ;
-		    if ( mimetemp != null ) { // Did we find a mime-type?
-			mime = mimetemp ; // Yep! Use it.
-		    } else { // No. We have no mime-type. Use standard binary stream mime-type as default.
-			mime = "application/octet-stream" ;
+	    // Check if a mime-type was chosen
+	    if (mime == null || "".equals(mime)) {
+
+		// No mime-type chosen?
+		// Set the mime-type to the value of the 'other'-field.
+		mime = other ;
+
+		if (mime == null || "".equals(mime)) {
+		    // Nothing in the other-field?
+
+		    // Auto-detect mime-type from filename.
+		    if (!"".equals(filename)) {
+			mime = getServletContext().getMimeType(filename) ;
 		    }
-		} else { // Must not forget that there may not be a dot.
+
+		} else if (mime.indexOf('/') == -1) {
+		    // The given mimetype does not contain '/',
+		    // and is thus invalid.
+
+		    // Assume it is a file-extension,
+		    // and autodetect from that.
+		    if (mime.charAt(0) == '.') {
+			mime = getServletContext().getMimeType("_"+mime) ;
+		    } else {
+			mime = getServletContext().getMimeType("_."+mime) ;
+		    }
+		}
+
+		// If we still don't have a mime-type,
+		// use standard unknown binary mime-type.
+		if (mime == null || "".equals(mime)) {
 		    mime = "application/octet-stream" ;
 		}
-	    } else if (mime.equals("other")) { // The user selected "other" in the listbox
-		mime = other ; // FIXME: What if other is the empty string? Well, of course, it _is_ the user's choice...
 	    }
+
 	    File fn = null ;
 	    if (file.length() > 0) {
 		fn = new File(filename) ;
-		log ("Users filename: "+filename) ;
 		filename = fn.getName() ;
-		log ("Servers filename: "+filename) ;
 		fn = new File(file_path, meta_id+"_se") ;
-		log (fn.toString()) ;
 	    }
 
 	    String sqlStr ;
@@ -113,6 +127,7 @@ public class SaveFileUpload extends HttpServlet {
 	    } else {
 		sqlStr = "update fileupload_docs set mime = '"+mime+"' where meta_id = " + meta_id ;
 	    }
+
 	    try {
 		IMCServiceRMI.sqlUpdateQuery( imcserver, sqlStr ) ;
 	    } catch ( RemoteException ex ) {

@@ -50,22 +50,46 @@ public class SaveNewFileUpload extends HttpServlet {
 	String parent = mp.getParameter("meta_id") ;
 	String mime = mp.getParameter("mime") ;
 	String other = mp.getParameter("other") ;
+
 	if ( mp.getParameter("ok")!=null ) {
 	    String file = mp.getParameter("file") ;
 	    String filename = mp.getFilename("file") ;
-	    if (mime == null || "".equals(mime) ) {
-		mime = "application/octet-stream" ;
-		int dot = filename.lastIndexOf(".") ;
-		if ( dot != -1 ) {
-		    String ext = filename.substring(dot+1).toLowerCase() ;
-		    String mimetemp = Utility.getMimeTypeFromExtension(ext) ;
-		    if ( mimetemp != null ) {
-			mime = mimetemp ;
+
+	    // Check if a mime-type was chosen
+	    if (mime == null || "".equals(mime)) {
+
+		// No mime-type chosen?
+		// Set the mime-type to the value of the 'other'-field.
+		mime = other ;
+
+		if (mime == null || "".equals(mime)) {
+		    // Nothing in the other-field?
+
+		    // Auto-detect mime-type from filename.
+		    if (!"".equals(filename)) {
+			mime = getServletContext().getMimeType(filename) ;
+		    }
+
+		} else if (mime.indexOf('/') == -1) {
+		    // The given mimetype does not contain '/',
+		    // and is thus invalid.
+
+		    // Assume it is a file-extension,
+		    // and autodetect from that.
+		    if (mime.charAt(0) == '.') {
+			mime = getServletContext().getMimeType("_"+mime) ;
+		    } else {
+			mime = getServletContext().getMimeType("_."+mime) ;
 		    }
 		}
-	    } else if ( mime.equals("other") ) {
-		mime = other ;
+
+		// If we still don't have a mime-type,
+		// use standard unknown binary mime-type.
+		if (mime == null || "".equals(mime)) {
+		    mime = "application/octet-stream" ;
+		}
 	    }
+
 	    if ( file.length()>0 ) {
 		File fn = new File(filename) ;
 		filename = fn.getName() ;

@@ -258,14 +258,6 @@ public class AdminDoc extends HttpServlet {
 				}
 				optStr += "<option value="+tmp+">"+mime_name[i]+"</option>" ;
 			}
-			sqlStr =	"select mime_name from mime_types where lang_prefix = '"+lang_prefix+"' and mime = 'other'" ;
-			String othername = IMCServiceRMI.sqlQueryStr( imcserver,sqlStr ) ;
-			if ( !"".equals(other) ) {
-				tmp = " selected" ;
-			} else {
-				tmp = "" ;
-			}
-			optStr += "<option value=\"other\""+tmp+">"+othername+"</option>" ;
 			Vector d = new Vector() ;
 			d.add("#file#") ;
 			d.add(filename) ;

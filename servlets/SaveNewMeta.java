@@ -310,10 +310,6 @@ public class SaveNewMeta extends HttpServlet {
 		for (int i = 0; i < temp.length; i+=2) {
 		    temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
 		}
-		sqlStr = "select mime,mime_name from mime_types where lang_prefix = '"+lang_prefix+"' and mime = 'other'" ;
-		temp = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
-		temps += "<option value=\""+temp[0]+"\">"+temp[1]+"</option>" ;
-
 		vec.add("#mime#") ;
 		vec.add(temps) ;
 		vec.add("#new_meta_id#") ;

@@ -164,8 +164,11 @@ public class Utility {
     /**
        Get the mime-type of a file-extension.
        @param ext The extension, without a preceding dot.
+       @deprecated Use ServletContext.getMimeType(String file) instead.
     */
     public static String getMimeTypeFromExtension(String ext) {
 	return (String)mimetypes.get(ext) ;
     }
+
+
 }
