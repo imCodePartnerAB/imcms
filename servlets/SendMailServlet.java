@@ -134,7 +134,8 @@ public class SendMailServlet extends HttpServlet {
 			//ok lets see if we got a subject or not
 			if (mailSubject != null){
 			//its a mail to the system
-				mailTo = webmaster;	
+				String sql = "Select text from texts \n where name = 100 \n and meta_id = "+ metaId;
+				mailTo = IMCServiceRMI.sqlQueryStr( imcserver, sql ) ;
 				mailTextV.add("#mailTo#"); mailTextV.add(mailTo);
 				mailTextV.add("#mailFrom#"); mailTextV.add(mailFrom);
 				mailBody = IMCServiceRMI.parseDoc(imcserver, mailTextV, BODY_TEMPLATE_TO_ADMIN, lang_prefix) ;	
