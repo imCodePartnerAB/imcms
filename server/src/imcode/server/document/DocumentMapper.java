@@ -422,7 +422,10 @@ public class DocumentMapper {
             return; // TODO: More specific check needed. Throw exception ?
         }
 
+        checkMaxDocumentCategoriesOfType( document );
+
         document.setCreatedDatetime( new Date() );
+        document.setModifiedDatetime( document.getCreatedDatetime() );
 
         int newMetaId = sqlInsertIntoMeta( document );
 
@@ -433,9 +436,22 @@ public class DocumentMapper {
 
         document.setId( newMetaId );
 
+        updateDocumentSectionsCategoriesKeywords( document );
+
+        updateDocumentRolePermissions( document, user, null );
+
+        documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document, user, null );
+
         document.accept( new DocumentCreatingVisitor( user ) );
 
-        saveDocument( document, user );
+    }
+
+    private void updateDocumentSectionsCategoriesKeywords( DocumentDomainObject document ) {
+        updateDocumentSections( document.getId(), document.getSections() );
+
+        updateDocumentCategories( document );
+
+        updateDocumentKeywords( document.getId(), document.getKeywords() );
     }
 
     private int sqlInsertIntoMeta( DocumentDomainObject document ) {
@@ -499,11 +515,7 @@ public class DocumentMapper {
 
             sqlUpdateMeta( document );
 
-            updateDocumentSections( document.getId(), document.getSections() );
-
-            updateDocumentCategories( document );
-
-            updateDocumentKeywords( document.getId(), document.getKeywords() );
+            updateDocumentSectionsCategoriesKeywords( document );
 
             if ( user.canEditPermissionsFor( oldDocument ) ) {
                 updateDocumentRolePermissions( document, user, oldDocument );
@@ -529,7 +541,7 @@ public class DocumentMapper {
             RoleDomainObject role = (RoleDomainObject)rolePermissionTuple.getKey();
             int permissionSetId = ( (Integer)rolePermissionTuple.getValue() ).intValue();
 
-            if ( user.canSetPermissionSetIdForRoleOnDocument( permissionSetId, role, oldDocument ) ) {
+            if ( null == oldDocument || user.canSetPermissionSetIdForRoleOnDocument( permissionSetId, role, oldDocument ) ) {
                 setPermissionSetIdForRoleIdOnDocumentId( permissionSetId, role.getId(), document.getId() );
             }
         }

@@ -59,11 +59,12 @@ public class DocumentPermissionSetPage extends OkCancelPage {
                 allowedTemplateGroups[i] = templateMapper.getTemplateGroupById( allowedTemplateGroupIds[i] ) ;
             }
             textDocumentPermissionSet.setAllowedTemplateGroups( allowedTemplateGroups );
+            TemplateDomainObject defaultTemplate = null ;
             try {
                 int defaultTemplateId = Integer.parseInt(request.getParameter( REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID )) ;
-                TemplateDomainObject defaultTemplate = templateMapper.getTemplateById( defaultTemplateId );
-                textDocumentPermissionSet.setDefaultTemplate(defaultTemplate) ;
+                defaultTemplate = templateMapper.getTemplateById( defaultTemplateId );
             } catch( NumberFormatException ignored ) {}
+            textDocumentPermissionSet.setDefaultTemplate( defaultTemplate );
         }
     }
 

@@ -91,11 +91,11 @@ public class DocumentPermissionSetMapper {
 
     public void saveRestrictedDocumentPermissionSets( DocumentDomainObject document, UserDomainObject user,
                                                       DocumentDomainObject oldDocument ) {
-        if ( user.canDefineRestrictedOneFor( oldDocument ) ) {
+        if ( null == oldDocument || user.canDefineRestrictedOneFor( oldDocument ) ) {
             saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOne(), false );
             saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOneForNewDocuments(), true );
         }
-        if ( user.canDefineRestrictedTwoFor( oldDocument ) ) {
+        if ( null == oldDocument || user.canDefineRestrictedTwoFor( oldDocument ) ) {
             saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwo(), false );
             saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwoForNewDocuments(), true );
         }

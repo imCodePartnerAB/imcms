@@ -468,8 +468,7 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean canDefineRestrictedOneFor( DocumentDomainObject document ) {
-        return isSuperAdminOrHasFullPermissionOn( document )
-               || hasAtLeastRestrictedOnePermissionOn( document ) && canEditPermissionsFor( document ) ;
+        return isSuperAdminOrHasFullPermissionOn( document ) ;
     }
 
     public boolean canDefineRestrictedTwoFor( DocumentDomainObject document ) {
@@ -478,17 +477,12 @@ public class UserDomainObject extends Hashtable {
         boolean hasAtLeastRestrictedOne = hasAtLeastRestrictedOnePermissionOn( document );
         boolean hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo = hasAtLeastRestrictedOne
                                                                                         && document.isRestrictedOneMorePrivilegedThanRestrictedTwo();
-        boolean hasAtLeastRestrictedTwo = hasAtLeastRestrictedTwoPermissionOn( document );
         return hasFullPermission
-               || canEditPermissionsForDocument && (hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo || hasAtLeastRestrictedTwo && !hasAtLeastRestrictedOne);
+               || canEditPermissionsForDocument && hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo;
     }
 
     private boolean hasAtLeastRestrictedOnePermissionOn( DocumentDomainObject document ) {
         return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, document );
-    }
-
-    private boolean hasAtLeastRestrictedTwoPermissionOn( DocumentDomainObject document ) {
-        return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, document );
     }
 
     public String toString() {
@@ -520,6 +514,7 @@ public class UserDomainObject extends Hashtable {
         int currentPermissionSetId = document.getPermissionSetIdForRole( role );
         boolean userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( currentPermissionSetId, document );
         boolean userIsSuperAdminOrHasAtLeastTheWantedPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( permissionSetId, document );
+        boolean userHasAtLeastRestrictedOne = hasAtLeastRestrictedOnePermissionOn( document );
         boolean changingRestrictedTwo = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
                                         == permissionSetId
                                         || DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
@@ -528,7 +523,7 @@ public class UserDomainObject extends Hashtable {
 
         boolean canDo = userIsSuperAdminOrHasAtLeastTheWantedPermissionSet
                         && userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet
-                        && ( !changingRestrictedTwo || canDefineRestrictedTwoForDocument );
+                        && ( !changingRestrictedTwo || !userHasAtLeastRestrictedOne || canDefineRestrictedTwoForDocument );
         return canDo;
 
     }

@@ -77,7 +77,6 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
         boolean menusChanged = !textDocument.getMenus().equals( ( (TextDocumentDomainObject)oldDocument ).getMenus() );
         if ( menusChanged ) {
-            log.debug("Menus changed.") ;
             service.getDatabase().executeTransaction( new DatabaseCommand() {
                 public void executeOn( DatabaseConnection connection ) {
                     updateTextDocumentMenus( connection, textDocument );
