@@ -105,9 +105,10 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
                 file.setMimeType( mimeType );
                 if ( isNewFile ) {
                     String newFileId = (String)findUnique( new UniqueFileIdPredicate( fileDocument ), new CounterStringFactory(fileDocument.getFiles().size()+1) );
-                    fileDocument.addFile( newFileId, file );
+                    selectedFileId = newFileId ;
                     unfinishedNewFile = null ;
                 }
+                fileDocument.addFile( selectedFileId, file );
             }
 
             if ( null != errorMessage ) {

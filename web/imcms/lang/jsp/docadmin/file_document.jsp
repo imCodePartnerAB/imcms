@@ -1,5 +1,5 @@
 <%@ page contentType="text/html"
-	
+
 	import="com.imcode.imcms.servlet.admin.DocumentComposer,
           imcode.server.document.DocumentMapper,
           org.apache.commons.lang.StringEscapeUtils,
@@ -14,8 +14,9 @@
           org.apache.commons.collections.Transformer,
           java.util.*,
           com.imcode.imcms.servlet.GetDoc,
-	        java.text.DecimalFormat"
-	
+	        java.text.DecimalFormat,
+            java.text.DecimalFormatSymbols"
+
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
@@ -43,17 +44,17 @@
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="400"><%
 
-EditFileDocumentPageFlow.FileDocumentEditPage editPage = EditFileDocumentPageFlow.FileDocumentEditPage.fromRequest(request) ;
+    EditFileDocumentPageFlow.FileDocumentEditPage editPage = EditFileDocumentPageFlow.FileDocumentEditPage.fromRequest(request) ;
 
-DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
-FileDocumentDomainObject document = (FileDocumentDomainObject)httpFlow.getDocument() ;
-FileDocumentDomainObject.FileDocumentFile selectedFile = editPage.getSelectedFile() ;
-boolean creatingNewDocument = 0==document.getId();
-EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = editPage.getPageMimeTypeRestriction() ;
+    DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
+    FileDocumentDomainObject document = (FileDocumentDomainObject)httpFlow.getDocument() ;
+    FileDocumentDomainObject.FileDocumentFile selectedFile = editPage.getSelectedFile() ;
+    boolean creatingNewDocument = 0==document.getId();
+    EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = editPage.getPageMimeTypeRestriction() ;
 
-String selectedFileId = editPage.getSelectedFileId();
-Map files = document.getFiles();
-boolean allowChoiceOfDefault = files.size() > 1; %>
+    String selectedFileId = editPage.getSelectedFileId();
+    Map files = document.getFiles();
+    boolean allowChoiceOfDefault = files.size() > 1; %>
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>" value="<%=
 	HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>" value="<%=
@@ -87,24 +88,24 @@ if (StringUtils.isNotBlank(selectedFile.getFilename())) {
 			<option value=""<% if (StringUtils.isBlank( selectedFile.getMimeType() ) ) { %> selected<% } %>>
 			<? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?></option><%
 
-final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-String[][] mimeTypes = documentMapper.getAllMimeTypesWithDescriptions(Utility.getLoggedOnUser( request ));
-boolean documentMimeTypeFoundInDropDown = false ;
+    final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+    String[][] mimeTypes = documentMapper.getAllMimeTypesWithDescriptions(Utility.getLoggedOnUser( request ));
+    boolean documentMimeTypeFoundInDropDown = false ;
 
-for ( int i = 0; i < mimeTypes.length; i++ ) {
-	String mimeType = mimeTypes[i][0];
-	if (!mimeTypeRestriction.allows(mimeType)) {
-		continue;
-	}
-	String mimeTypeDescriptionInUsersLanguage = mimeTypes[i][1] ;
-	boolean selected = false ;
-	if (mimeType.equals( selectedFile.getMimeType() )) {
-		selected = true ;
-		documentMimeTypeFoundInDropDown = true ;
-	} %>
-			<option value="<%= mimeType %>"<% if (selected) { %> selected<% } %>><%=
-		StringEscapeUtils.escapeHtml( mimeTypeDescriptionInUsersLanguage ) %> (<%= mimeType %>)</option><%
-} %>
+    for ( int i = 0; i < mimeTypes.length; i++ ) {
+        String mimeType = mimeTypes[i][0];
+        if (!mimeTypeRestriction.allows(mimeType)) {
+            continue;
+        }
+        String mimeTypeDescriptionInUsersLanguage = mimeTypes[i][1] ;
+        boolean selected = false ;
+        if (mimeType.equals( selectedFile.getMimeType() )) {
+            selected = true ;
+            documentMimeTypeFoundInDropDown = true ;
+        } %>
+                <option value="<%= mimeType %>"<% if (selected) { %> selected<% } %>><%=
+            StringEscapeUtils.escapeHtml( mimeTypeDescriptionInUsersLanguage ) %> (<%= mimeType %>)</option><%
+    } %>
 		</select></td>
 	</tr>
 	<tr>
@@ -143,9 +144,9 @@ if (!files.isEmpty()) { %>
 			<td colspan="<%= (allowChoiceOfDefault) ? "7" : "6" %>"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
 		</tr><%
 	Set fileIds = files.keySet();
-	
+
 	for ( Iterator iterator = fileIds.iterator(); iterator.hasNext(); ) {
-		
+
 		String fileId = (String)iterator.next();
 		String escapedFileId = StringEscapeUtils.escapeHtml(fileId) ;
 		boolean isSelectedFileId = fileId.equals(selectedFileId) ;
@@ -162,34 +163,30 @@ if (!files.isEmpty()) { %>
 			<td><%= StringEscapeUtils.escapeHtml(file.getFilename()) %></td><%
 		} %>
 			<td align="right" nowrap><%
-		long lngFileSize = file.getInputStreamSource().getSize() ;
-		
-		double dFileSize = 0 ;
-		String sSize = lngFileSize + "&nbsp;b" ;
-		try {
-			dFileSize = (double) lngFileSize ;
-			DecimalFormat df = new DecimalFormat("#.0") ;
-			if (dFileSize >= (1024 * 1024)) {
-				dFileSize = dFileSize / (1024 * 1024) ;
-				sSize     = df.format(dFileSize) ;
-				sSize     = sSize.replaceAll(",", ".") + "&nbsp;MB" ;
-			} else if (dFileSize >= 1024) {
-				dFileSize = dFileSize / 1024 ;
-				sSize     = df.format(dFileSize) ;
-				sSize     = sSize.replaceAll(",", ".") + "&nbsp;kB" ;
-			}
-		} catch ( NumberFormatException ex ) {
-			// ignore
-		} %><%= sSize %>&nbsp;</td>
+
+            double fileSize = file.getInputStreamSource().getSize() ;
+            DecimalFormat df = new DecimalFormat("#.#") ;
+            DecimalFormatSymbols decimalFormatSymbols = df.getDecimalFormatSymbols();
+            decimalFormatSymbols.setDecimalSeparator('.');
+            df.setDecimalFormatSymbols( decimalFormatSymbols );
+            String sizeSuffix = "B" ;
+            if (fileSize >= (1024 * 1024)) {
+                fileSize /= (1024 * 1024) ;
+                sizeSuffix = "MB" ;
+            } else if (fileSize >= 1024) {
+                fileSize /= 1024 ;
+                sizeSuffix = "kB" ;
+            }
+         %><%= df.format(fileSize) %>&nbsp;<%= sizeSuffix %>&nbsp;</td>
 			<td><%= StringEscapeUtils.escapeHtml(file.getMimeType()) %></td><%
 		if (allowChoiceOfDefault) { %>
 			<td align="center"><input type="radio" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__DEFAULT_FILE %>" value="<%=
 			escapedFileId %>"<% if (isDefaultFileId) { %> checked<% } %>></td><%
 		} %>
 			<td><input type="submit" class="imcmsFormBtnSmall" name="<%=
-			EditFileDocumentPageFlow.REQUEST_PARAMETER__SELECT_FILE_BUTTON_PREFIX +escapedFileId%>" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/select_file_button ?>" style="width:55"></td>
+			EditFileDocumentPageFlow.REQUEST_PARAMETER__SELECT_FILE_BUTTON_PREFIX +escapedFileId%>" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/select_file_button ?>"></td>
 			<td><input type="submit" class="imcmsFormBtnSmall" name="<%=
-			EditFileDocumentPageFlow.REQUEST_PARAMETER__DELETE_FILE_BUTTON_PREFIX +escapedFileId%>" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/delete_file_button ?>" style="width:55"></td>
+			EditFileDocumentPageFlow.REQUEST_PARAMETER__DELETE_FILE_BUTTON_PREFIX +escapedFileId%>" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/delete_file_button ?>"></td>
 		</tr><%
 	} %>
 		</table></td>
