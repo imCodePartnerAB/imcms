@@ -185,7 +185,6 @@ public class UserService {
             return ;
         }
         getSecurityChecker().isSuperAdminOrSameUser(user);
-        getSecurityChecker().isNotDefaultUser();
         try {
             ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getMapper();
             if (0 == user.getId()) {

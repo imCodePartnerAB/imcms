@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
+<changeset version="2.1.1">
+
+    <changes for="API-using developers">
+        <change>
+            <p>
+                There was a mistake made with the
+                <method>ContentManagementSystem.runAsSuperadmin(ContentManagementSystemRunnable)</method>
+                so it actually did not work at all.
+            </p>
+            <bug id="2901"/>
+        </change>
+    </changes>
+
+</changeset>
+
 <changeset version="2.1.0">
 
      <changes importance="high" for="administrators">

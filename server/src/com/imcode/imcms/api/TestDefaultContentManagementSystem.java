@@ -37,7 +37,6 @@ public class TestDefaultContentManagementSystem extends TestCase {
         try {
             contentManagementSystem.runAsSuperadmin(new ContentManagementSystemRunnable() {
                 public void runWith( ContentManagementSystem contentManagementSystem ) {
-
                 }
             } );
             fail() ;

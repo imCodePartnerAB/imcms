@@ -2,10 +2,9 @@ package com.imcode.imcms.api;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.UserDomainObject;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang.UnhandledException;
 
 import java.security.KeyStore;
 
@@ -84,13 +83,9 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
         if (!Utility.classIsSignedByCertificatesInKeyStore( clazz, keyStore )) {
             throw new NoPermissionException("Class "+clazz.getName()+" is not signed by certificates in keystore.") ;
         }
-        try {
-            DefaultContentManagementSystem contentManagementSystemClone = (DefaultContentManagementSystem)clone() ;
-            contentManagementSystemClone.currentUser.addRole( RoleDomainObject.SUPERADMIN );
-            runnable.runWith(contentManagementSystemClone);
-            contentManagementSystemClone.currentUser = null ;
-        } catch ( CloneNotSupportedException e ) {
-            throw new UnhandledException( e );
-        }
+        DefaultContentManagementSystem cms = DefaultContentManagementSystem.create( service, (UserDomainObject)currentUser.clone() );
+        cms.currentUser.addRole( RoleDomainObject.SUPERADMIN );
+        runnable.runWith( cms );
+        cms.currentUser = null;
     }
 }
