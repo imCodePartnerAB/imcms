@@ -4,7 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
-import javax.swing.*; // (Använder ImageIcon)
+//import javax.swing.*; // (Använder ImageIcon)
 /**
   Edit imageref  - upload image to server.
   */
@@ -130,9 +130,9 @@ public class ChangeImage extends HttpServlet {
 		String imagePath = Utility.getDomainPref( "image_path",host ) + imageName;
 		//****************************************************************
 			//String imagePath = image_url + imageName;
-			ImageIcon icon = new ImageIcon(imagePath);
-			int width = icon.getIconWidth();
-			int height = icon.getIconHeight();
+		//ImageIcon icon = new ImageIcon(imagePath);
+		int width = 0 ; //icon.getIconWidth();
+		int height = 0 ; //icon.getIconHeight();
 		//****************************************************************
 		
 		
