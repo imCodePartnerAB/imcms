@@ -1,16 +1,20 @@
 <SCRIPT LANGUAGE="JavaScript">
 <!--
-  function targetNewWindow() {
-    var exampelWindow = window.open("", "Exempelmall", "height=400,width=700,resizable");
-    document.myForm.target="Exempelmall";
-  }
+function targetNewWindow() {
+  var exampelWindow = window.open("", "Exempelmall", "height=400,width=700,resizable");
+  document.myForm.target="Exempelmall";
+}
 
-  function resetTarget() {
-    document.myForm.target="";
-  }
+function resetTarget() {
+  document.myForm.target="";
+}
+
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
 //-->
 </SCRIPT>
-<FORM name="myForm" METHOD=POST ACTION="SaveInPage">
+<FORM name="myForm" METHOD=POST ACTION="#servlet_url#SaveInPage">
   <table BORDER="1" cellspacing="0" cellpadding="2">
     <tr bgcolor="#333366">
       <td valign="top" colspan="3"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Administrera 
@@ -39,7 +43,7 @@
         </div>
       </td>
       <td valign="bottom" bgcolor="#BABABA">
-<input type="submit" name="update" value="Spara" onClick="resetTarget()">
+<input type="submit" name="update" value="Spara" onClick="resetTarget()">&nbsp; <a href="javascript:openHelp('87');"><img src="/imcms/images/se/Helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
       </td>
     </tr>
   </table>
