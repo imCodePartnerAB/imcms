@@ -188,7 +188,7 @@
 
     </target>
 
-    <target name="database-drop" depends="init,sql">
+    <target name="database-drop" depends="init,drop-sql">
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
             userid="${db-user}" password="${db-pass}" delimiter=";" onerror="abort" src="${drop-sql}"/>
@@ -338,7 +338,13 @@
 
     </target>
 
-    <target name="sql" depends="init,check-webappname,tools,ddl.sql,taskdef-cat" description="Concatenates the SQL-scripts into one large script.">
+    <target name="drop-sql">
+
+        <copy file="sql/delete_db.sql" tofile="${drop-sql}" filtering="true"/>
+
+    </target>
+
+    <target name="sql" depends="init,check-webappname,tools,ddl.sql,drop-sql,taskdef-cat" description="Concatenates the SQL-scripts into one large script.">
 
         <mkdir dir="${tmp}"/>
 
@@ -352,8 +358,6 @@
         <replace file="${tmp}/imcms.sql" token="-- ${db-target}"/>
 
         <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="libraries"/>
-
-        <copy file="sql/delete_db.sql" tofile="${drop-sql}" filtering="true"/>
 
         <copy file="sql/create_db.sql" tofile="${create-sql}" filtering="true"/>
 
