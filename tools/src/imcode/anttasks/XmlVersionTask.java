@@ -15,19 +15,10 @@ public class XmlVersionTask extends Task {
 
     private final static String CVS_REV =  "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
-    private final static String CVS_NAME = "$Name$" ;
-    private final static String CVS_TAG ;
-
-    static {
-	if (CVS_NAME.indexOf(' ') != -1) {
-	    CVS_TAG = CVS_NAME.substring(CVS_NAME.indexOf(' ')+1,CVS_NAME.lastIndexOf(' ')) ;
-	} else {
-	    CVS_TAG = "" ;
-	}
-    }
 
     protected File dir ;
     protected File destFile ;
+    protected String version = "" ;
 
     public void setDestFile(File destFile) {
 	this.destFile = destFile ;
@@ -37,13 +28,19 @@ public class XmlVersionTask extends Task {
 	this.dir = dir ;
     }
 
+    public void setVersion(String version) {
+	this.version = version ;
+    }
+
     public void execute() throws BuildException {
 	try {
 	    if (findFileNewerThan(dir,destFile.lastModified())) {
-		XmlVersion v = new XmlVersion(dir,CVS_TAG) ;
+		XmlVersion v = new XmlVersion(dir,version) ;
 		destFile.delete() ;
 		// Ugly kludge that requires Apache Crimson, which is the XML-parser used by Ant.
+		// FIXME: Use xerces instead? This cast is very fragile, to say the least.
 		((org.apache.crimson.tree.XmlDocument)v.getDocument()).write(new FileOutputStream(destFile)) ;
+		log("Created versionfile: "+destFile) ;
 	    }
 	} catch (Exception ex) {
 	    throw new BuildException(ex) ;

@@ -4,6 +4,9 @@
 
 <project name="imCMS" default="dist" basedir=".">
 
+  <!-- The current version of imCMS. -->
+  <property name="version"        value="$$Name$"/>
+
   <!-- Paths. Later ones are built on earlier ones. -->
 
   <!-- The directory to build in. -->
@@ -200,14 +203,16 @@
 
 
   <!-- Create an xml-file representing the release. -->
-  <target name="xmlversion" description="Creates an XML-file representing the release.">
+  <target name="xmlversion"
+          depends="tools"
+          description="Creates an XML-file representing the release.">
     <taskdef name="xmlversion" classname="imcode.anttasks.XmlVersionTask">
 	<classpath>
 	    <pathelement path="build/WEB-INF/classes"/>
 	    <pathelement path="tools/build"/>
 	</classpath>
     </taskdef>
-    <xmlversion dir="build" destfile="build/WEB-INF/version.xml"/>
+    <xmlversion dir="build" destfile="build/WEB-INF/version.xml" version="${version}"/>
   </target>
 
 
@@ -267,7 +272,9 @@
 
 
   <!-- Build extra tools needed for building. -->
-  <target name="tools" description="Builds extra tools needed for building.">
+  <target name="tools"
+          depends="server"
+          description="Builds extra tools needed for building.">
     <ant dir="tools"/>
   </target>
 

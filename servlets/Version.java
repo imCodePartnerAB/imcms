@@ -9,24 +9,14 @@ import org.apache.oro.text.perl.* ;
 
 import imcode.util.version.* ;
 
-import org.apache.xml.serialize.XMLSerializer ;
+import org.w3c.dom.Document ;
+
+import org.apache.xml.serialize.* ;
 
 public class Version extends HttpServlet {
 
     private final static String CVS_REV =  "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
-    private final static String CVS_NAME = "$Name$" ;
-    private final static String CVS_TAG ;
-
-    private final static int BUFFERLENGTH = 32768 ;
-
-    static {
-	if (CVS_NAME.indexOf(' ') != -1) {
-	    CVS_TAG = CVS_NAME.substring(CVS_NAME.indexOf(' ')+1,CVS_NAME.lastIndexOf(' ')) ;
-	} else {
-	    CVS_TAG = "" ;
-	}
-    }
 
     public void init (ServletConfig config) throws ServletException {
 	super.init(config) ;
@@ -53,27 +43,31 @@ public class Version extends HttpServlet {
 
     private void diff(OutputStream out) throws Exception {
 	File webapproot = new File(this.getServletContext().getRealPath("/")) ;
-	File version    = new File(webapproot,"WEB-INF/version.xml") ;
-	XmlVersion v1 = new XmlVersion(version) ;
-	XmlVersion v2 = new XmlVersion(webapproot, CVS_TAG) ;
-	XmlVersionDiff d = new XmlVersionDiff(v1.getDocument(),v2.getDocument()) ;
-	XMLSerializer xmlSerializer = new XMLSerializer() ;
-	xmlSerializer.writeNode(out,d.getDiffDocument()) ;
+	File installedVersionFile    = new File(webapproot,"WEB-INF/version.xml") ;
+	XmlVersion installedVersion = new XmlVersion(installedVersionFile) ;
+	XmlVersion v2 = new XmlVersion(webapproot, installedVersion.getVersion()) ;
+	XmlVersionDiff d = new XmlVersionDiff(installedVersion.getDocument(),v2.getDocument()) ;
+	writeNode(out,d.getDiffDocument()) ;
     }
 
     private void version(OutputStream out) throws Exception {
 	File webapproot = new File(this.getServletContext().getRealPath("/")) ;
 	File version    = new File(webapproot,"WEB-INF/version.xml") ;
 	XmlVersion v = new XmlVersion(version) ;
-	XMLSerializer xmlSerializer = new XMLSerializer() ;
-	xmlSerializer.writeNode(out,v.getDocument()) ;
+	writeNode(out,v.getDocument()) ;
     }
 
     private void now(OutputStream out) throws Exception {
 	File webapproot = new File(this.getServletContext().getRealPath("/")) ;
-	XmlVersion v = new XmlVersion(webapproot) ;
+	File installedVersionFile    = new File(webapproot,"WEB-INF/version.xml") ;
+	XmlVersion installedVersion = new XmlVersion(installedVersionFile) ;
+	XmlVersion v = new XmlVersion(webapproot,installedVersion.getVersion()) ;
+	writeNode(out,v.getDocument()) ;
+    }
+
+    private void writeNode(OutputStream out, Document document) throws Exception {
 	XMLSerializer xmlSerializer = new XMLSerializer() ;
-	xmlSerializer.writeNode(out,v.getDocument()) ;
+	xmlSerializer.writeNode(out,document) ;
     }
 
 }

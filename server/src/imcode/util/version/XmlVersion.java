@@ -26,7 +26,12 @@ public class XmlVersion {
     }
 
     public XmlVersion (File fileOrDir, String version) throws ParserConfigurationException, IOException, SAXException {
+	version = vcNameToVersion(version) ;
 	init(fileOrDir, version) ;
+    }
+
+    public String getVersion() {
+	return document.getDocumentElement().getAttribute("version") ;
     }
 
     private void init(File fileOrDir, String version) throws ParserConfigurationException, IOException, SAXException {
@@ -36,9 +41,20 @@ public class XmlVersion {
 	    document = builder.newDocument() ;
 	    Element root = createRoot(version) ;
 	    createRootContents(root,fileOrDir) ;
+	    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
+	    root.setAttribute("generated-at",dateFormat.format(new Date())) ;
 	} else {
 	    document = builder.parse(fileOrDir) ;
 	}
+    }
+
+    private String vcNameToVersion(String vcName) {
+	if (vcName.startsWith("$Name:") // Line break here to protect us from CVS finding the tag here.
+	    && vcName.endsWith("$")) {
+	    vcName = vcName.substring(6,vcName.length()-1) ;
+	}
+	vcName = vcName.trim() ;
+	return vcName ;
     }
 
     private Element createRoot(String version) {

@@ -11,6 +11,11 @@ import org.w3c.dom.* ;
 import org.w3c.dom.* ;
 import org.xml.sax.* ;
 
+import java.text.DateFormat ;
+import java.text.SimpleDateFormat ;
+
+import java.util.Date ;
+
 import imcode.util.* ;
 import imcode.util.dom.* ;
 
@@ -23,9 +28,13 @@ public class XmlVersionDiff implements NodeList {
 	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance() ;
 	DocumentBuilder builder = factory.newDocumentBuilder() ;
 	diffDocument = builder.newDocument() ;
-	String version = toDocument.getDocumentElement().getAttribute("version") ;
+	String fromVersion = fromDocument.getDocumentElement().getAttribute("version") ;
+	String toVersion = toDocument.getDocumentElement().getAttribute("version") ;
 	Element diffElement = diffDocument.createElement("diff") ;
-	diffElement.setAttribute("version",version) ;
+	diffElement.setAttribute("from-version",fromVersion) ;
+	diffElement.setAttribute("to-version",toVersion) ;
+	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
+	diffElement.setAttribute("generated-at",dateFormat.format(new Date())) ;
 	diffDocument.appendChild(diffElement) ;
 
 	diffTree(fromDocument.getDocumentElement().getChildNodes(),toDocument.getDocumentElement().getChildNodes(),diffElement) ;
