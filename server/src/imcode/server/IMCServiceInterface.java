@@ -35,11 +35,6 @@ public interface IMCServiceInterface extends java.rmi.Remote {
 	imcode.server.User verifyUser(imcode.server.LoginUser login_user,String fieldNames[])
 	throws java.rmi.RemoteException ;
 
-	// Read an Imcode admin template file and output a HTML String object.
-	String interpretAdminTemplate(int meta_id,imcode.server.User user,String template_name,int index,
-		int value1,int value2,int value3)
-	throws java.rmi.RemoteException ;
-
 	// Save a text field
 	void saveText(int meta_id,imcode.server.User user,int txt_no,String text,int toHTML)
 	throws java.rmi.RemoteException ;

@@ -281,16 +281,6 @@ public class IMCServiceRMI {
 		}
 	}
 
-	public static String interpretAdminTemplate( String server, int meta_id, User user, String admin_template_name, int index, int value1, int value2, int value3 ) throws IOException {
-		IMCServiceInterface imc = getInterface( server ) ;
-		try {
-			return imc.interpretAdminTemplate(meta_id,user,admin_template_name,index,value1,value2,value3) ;
-		} catch ( IOException ex ) {
-			imc = renewInterface(server) ;
-			return imc.interpretAdminTemplate(meta_id,user,admin_template_name,index,value1,value2,value3) ;
-		}
-	}
-
 	public static String getCounterDate( String server ) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
 		try {
