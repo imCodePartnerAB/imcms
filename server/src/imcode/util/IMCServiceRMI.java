@@ -51,7 +51,6 @@ public class IMCServiceRMI {
 	return imc;
     }
 
-
  /**
  * GetInterface. Returns an interface to the host db. The JanusDB
  */
@@ -489,6 +488,11 @@ public class IMCServiceRMI {
 	IMCServiceInterface imc = getInterface( server ) ;
 
 	    return imc.checkDocAdminRights(meta_id,user) ;
+    }
+	public static int getUserHighestPermissionSet (String server, int meta_id, int user_id ) throws IOException {
+	IMCServiceInterface imc = getInterface( server ) ;
+
+	    return imc.getUserHighestPermissionSet(meta_id,user_id) ;
     }
     public static int deleteDemoTemplate (String server, int template_id ) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
