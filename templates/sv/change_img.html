@@ -28,14 +28,14 @@
 						</center>
 						<br>
 						</form>
-				<form name="imgbr" action="/servlet/ImageBrowse">
+				<form name="imgbr" action="@servleturl@/ImageBrowse">
 				
           <input type="submit" name="browse_images" value="Bildarkiv">
          		<INPUT TYPE=HIDDEN NAME=meta_id VALUE=#getMetaId#>
         		<INPUT TYPE=HIDDEN NAME=img_no VALUE=#img_no#>
           
         		</form>
-						<form method="POST" action="/servlet/SaveImage">
+						<form method="POST" action="@servleturl@/SaveImage">
 						<center>
 							<table border="1" align="center" width="450" cellpadding="3" cellspacing="0">
 								<tr bgcolor="#333366">

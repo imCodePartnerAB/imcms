@@ -7,7 +7,7 @@
   <property name="images"         value="${webroot}/images"/>
   <property name="login"          value="${webroot}/login"/>
 
-  <property name="adminbuttons"   value="${webroot}"/>
+  <property name="adminbuttons"   value="${webroot}/admin"/>
   <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
 
   <property name="conf"           value="${WEB-INF}/conf"/>
@@ -26,6 +26,11 @@
   <property name="demotemplates"  value="${texttemplates}/demo"/>
 
   <property file="build.properties"/>
+
+  <property name="servleturl"     value="/${webappname}/servlet"/>
+  <property name="loginurl"       value="/${webappname}/login"/>
+  <property name="imageurl"       value="/${webappname}/images"/>
+  <property name="adminbuttonsurl" value="/${webappname}/admin"/>
 
   <property name="wardist" value="${webappname}.war"/>
   <property name="webapproot" value="${deployroot}/${webappname}"/>
@@ -144,7 +149,11 @@
           description="Creates the public web">
     <mkdir dir="${images}"/>
     <mkdir dir="${login}"/>
-    <copy file="templates/index.html" todir="${login}"/>
+    <copy file="templates/index.html" todir="${login}">
+      <filterset>
+        <filter token="servleturl" value="${servleturl}"/>
+      </filterset>
+    </copy>
 
     <copy todir="${adminbuttons}">
       <fileset dir="install/htdocs/imcms">
@@ -176,6 +185,7 @@
       <fileset dir="templates/${srclanguage}/adminbuttons"/>
       <filterset>
 
+        <filter token="adminbuttonsurl" value="${adminbuttonsurl}"/>
         <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
@@ -225,7 +235,7 @@
   </target>
 
   <target name="dir"
-          description="Creates directories necessary for imCMS.">
+          description="Creates some empty directories necessary for imCMS.">
     <mkdir dir="${includes}"/>
     <mkdir dir="${uploads}"/>
     <mkdir dir="${logs}"/>

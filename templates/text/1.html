@@ -11,31 +11,28 @@
 <center>
 #changePage#
 <br>
+<?imcms:include url="http://localhost/imcms/servlet/HelloWorld"?>
 
-#img1#
-#txt1#
+<?imcms:image no="1"?>
+<?imcms:text  no="1"?>
 
 <br>
-#addDoc1#
 <br>
-
-#saveSortStart1#
-<br>
+<?imcms:menu no="1"?>
 <table>
-<!-- Den känsliga biten kommer här -->
-menu no=1 rows=2 table_col=2
-<b>#metaImage#<a href=#getChildRef#>#childMetaHeadline#</a></b>
-<br>#childMetaText#
-<!-- Den känsliga biten är slut -->
+<?imcms:menuloop?>
+<b>#menuitemimage##menuitemlink##menuitemheadline##/menuitemlink#</b>
+<br>#menuitemtext#
+<?/imcms:menuloop?>
 </table>
+<?/imcms:menu?>
 <br>
-#saveSortStop1#
 
 <br>
-#img2#
-#txt2#
+<?imcms:image no="2"?>
+<?imcms:text no="2"?>
 <br>
-#img3#
+<?imcms:image no="3"?>
 <br>
 #adminMode#
 </center>
