@@ -59,7 +59,7 @@ public class UserChangePrefs extends Administrator {
 
 	    userId = (String) session.getAttribute("AdminUser.user_id" ) ;
 	    // Lets get the users information from db
-	    Properties currUserInfo = UserHandler.getUserInfoDB(imcref, userId) ;
+	    Properties currUserInfo = getUserInfoDB(imcref, userId) ;
 
 	    // Lets get the parameters from html page and validate them
 	    Properties params = this.getParameters(req) ;
@@ -93,8 +93,8 @@ public class UserChangePrefs extends Administrator {
 	    currUserInfo.setProperty("company", params.getProperty("company")) ;
 
 	    // Lets build the users information into a string and add it to db
-	    String userStr = "UpdateUser " + UserHandler.createUserInfoString(currUserInfo) ;
-	    imcref.sqlUpdateProcedure(userStr) ;
+	    String[] procParams = UserHandler.createUserInfoString(currUserInfo) ;
+	    imcref.sqlUpdateProcedure( "UpdateUser", procParams ) ;
 
 
 	    // ****** Default option. Ok, Generate a login page to the user
@@ -370,8 +370,59 @@ public class UserChangePrefs extends Administrator {
 	return p2 ;
     } // checkparameters
 
+   /**
+    Collects all userparameters from the users table in the db
+    Returns null if something goes wrong
+    **/
+   private static Properties getUserInfoDB( IMCServiceInterface imcref, String userId ) {
 
+      // Get default props
+      Properties p = doDefaultUser();
+      Hashtable h = imcref.sqlQueryHash( "GetUserInfo " + userId );
+      Enumeration keys = h.keys();
+      while( keys.hasMoreElements() ) {
+         Object key = keys.nextElement();
+         String[] values = (String[])h.get( key );
+         String aValue = values[0];
+         p.setProperty( key.toString(), aValue );
+      }
 
+      return p;
+   }
+
+   /**
+    Creates a properties with all the users properties from the
+    users table. All keys are here, but not the values
+    */
+   private static Properties doDefaultUser() {
+
+      Properties p = new Properties();
+
+      p.setProperty( "user_id", "" );
+      p.setProperty( "login_name", "" );
+      p.setProperty( "login_password", "" );
+      p.setProperty( "first_name", "" );
+      p.setProperty( "last_name", "" );
+      p.setProperty( "title", "" );
+      p.setProperty( "company", "" );
+      p.setProperty( "address", "" );
+      p.setProperty( "city", "" );
+      p.setProperty( "zip", "" );
+      p.setProperty( "country", "" );
+      p.setProperty( "country_council", "" );
+      p.setProperty( "email", "" );
+
+      p.setProperty( "internal", "" );
+      p.setProperty( "last_page", "" );
+      p.setProperty( "archive_mode", "" );
+      p.setProperty( "lang_id", "" );
+
+      p.setProperty( "user_type", "" );
+      p.setProperty( "active", "" );
+      p.setProperty( "create_date", "" );
+      return p;
+
+   }  // End of
 
 
 } // End of class

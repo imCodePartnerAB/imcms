@@ -207,7 +207,24 @@ public class ChatLogin extends ChatBase {
 	    if( UserHandler.verifyPassword(newUserParams,req,res) == false) return ;
 
 	    // Lets validate the phonenbr. Error message will be generated in method
-	    if( UserHandler.verifyPhoneNumber(newUserParams,req,res) == false) return ;
+      boolean result = true;
+      try {
+         String[] arr = {newUserParams.getProperty( "country_code" ), newUserParams.getProperty( "area_code" ), newUserParams.getProperty( "local_code" )};
+
+         for( int i = 0; i < arr.length; i++ ) {
+            Integer.parseInt( arr[i] );
+         }
+
+      } catch( NumberFormatException e ) {
+         // log(e.getMessage()) ;
+         AdminError2 err = new AdminError2( req, res, "", 63 );
+         result =  false;
+      } catch( NullPointerException e ) {
+         // log(e.getMessage()) ;
+         AdminError2 err = new AdminError2( req, res, "", 63 );
+         result =  false;
+      }
+      if( result == false) return ;
 
 	    // Lets validate the userparameters before the sql
 	    newUserParams = super.verifyForSql(newUserParams) ;
@@ -239,11 +256,12 @@ public class ChatLogin extends ChatBase {
 		newUserParams.setProperty("lang_id", "1") ;
 
 	    newUserParams.setProperty("user_id", newUserId) ;
-	    String userStr =  UserHandler.createUserInfoString(newUserParams) ;
+	    String[] procParams =  UserHandler.createUserInfoString(newUserParams) ;
 
-	    UserHandler.addUserInfoDB(imcref, userStr) ;
+      // Lets build the users information into a string and add it to db
+      imcref.sqlUpdateProcedure("AddNewUser",  procParams) ;
 
-	    // Lets add a new phone number
+      // Lets add a new phone number
 	    StringBuffer phoneStr = new StringBuffer() ;
 	    phoneStr.append("phoneNbrAdd " + newUserId) ;
 	    phoneStr.append(", '" + newUserParams.getProperty("country_code") ) ;

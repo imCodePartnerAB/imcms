@@ -64,6 +64,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
          result.setActive( 0 != Integer.parseInt( user_data[16] ) );
          result.setCreateDate( user_data[17] );
          result.setLangPrefix( user_data[14] );
+         result.setImcmsInternal( 0 != Integer.parseInt( user_data[18] ));
 
          String[][] phoneNbr = service.sqlProcedureMulti( "GetUserPhoneNumbers " + user_data[0] );
          String workPhone = "";
@@ -99,41 +100,9 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
     @return An object representing the user with the given id.
     **/
    public User getUser( int userId ) {
-
       String[] user_data = service.sqlProcedure( "GetUserInfo ", new String[]{"" + userId} );
-
-      user_data = service.sqlProcedure( "GetUserByLogin ", new String[]{user_data[1]} );
-
-      // if resultSet > 0 a user is found
-      if( user_data.length > 0 ) {
-
-         User user = new User();
-
-         user.setUserId( Integer.parseInt( user_data[0] ) );
-         user.setLoginName( user_data[1] );
-         user.setPassword( user_data[2].trim() );
-         user.setFirstName( user_data[3] );
-         user.setLastName( user_data[4] );
-         user.setTitle( user_data[5] );
-         user.setCompany( user_data[6] );
-         user.setAddress( user_data[7] );
-         user.setCity( user_data[8] );
-         user.setZip( user_data[9] );
-         user.setCountry( user_data[10] );
-         user.setCountyCouncil( user_data[11] );
-         user.setEmailAddress( user_data[12] );
-         user.setLangId( Integer.parseInt( user_data[13] ) );
-         user.setUserType( Integer.parseInt( user_data[15] ) );
-         user.setActive( 0 != Integer.parseInt( user_data[16] ) );
-         user.setCreateDate( user_data[17] );
-         user.setLangPrefix( user_data[14] );
-
-         return user;
-
-      } else {
-         // No user with that id.
-         return null;
-      }
+      User result = getUser( user_data[1] );
+      return result;
    }
 
 
@@ -165,6 +134,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
          String.valueOf(tempUser.getLangId()),
          String.valueOf( tempUser.getUserType() ),
          tempUser.isActive()?"1":"0" };
+
 
       service.sqlUpdateProcedure( updateUserPRCStr, params );
    }

@@ -383,4 +383,8 @@ public class User extends Hashtable {
    public boolean isImcmsInternal() {
       return this.imcmsInternal;
    }
+
+   public void setImcmsInternal( boolean internal ){
+      this.imcmsInternal = internal;
+   }
 }

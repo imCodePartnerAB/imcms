@@ -16,7 +16,7 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
       return  userExistsInImcms ;
    }
 
-   public imcode.server.user.User getUser( String loginName ) {
+   public User getUser( String loginName ) {
       imcode.server.user.User imcmsUser = imcms.getUser(loginName);
       imcode.server.user.User ldapUser  = ldap.getUser(loginName) ;
       boolean imcmsUserExists = null != imcmsUser ;

@@ -1,11 +1,12 @@
-SET QUOTED_IDENTIFIER OFF
+SET QUOTED_IDENTIFIER OFF 
 GO
-SET ANSI_NULLS ON
+SET ANSI_NULLS ON 
 GO
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserByLogin]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserByLogin]
 GO
+
 
 
 CREATE PROCEDURE GetUserByLogin @login varchar(50) AS
@@ -34,6 +35,7 @@ CREATE PROCEDURE GetUserByLogin @login varchar(50) AS
 	user_type 		int
 	active			INT			Whether the user is allowed to log in.
 	create_date		smalldatetime
+	internal                             int         Whether this user is handled solely within imcms or is synchronized externally
 **/
 
 SELECT  user_id,
@@ -53,16 +55,15 @@ SELECT  user_id,
 		lang_prefix,
 		user_type,
 		active,
-		create_date
+		create_date,
+		internal
 		
 FROM users, lang_prefixes
 WHERE login_name = @login
 AND users.lang_id = lang_prefixes.lang_id
-
-
 GO
-SET QUOTED_IDENTIFIER OFF
+SET QUOTED_IDENTIFIER OFF 
 GO
-SET ANSI_NULLS ON
+SET ANSI_NULLS ON 
 GO
 
