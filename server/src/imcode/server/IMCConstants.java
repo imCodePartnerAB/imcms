@@ -138,7 +138,11 @@ public interface IMCConstants {
     /** Menu sorted by datetime. **/
     public final static int MENU_SORT_BY_DATETIME        = 3 ;
 
-    /* Default-dateTime-format */
+    /** Default-dateTime-format **/
     public final static String DATETIME_FORMAT_STD        = "yyyy-MM-dd HH:mm" ;
+
+
+    /** Properties file for host properties **/
+    public final static String HOST_PROPERTIES           = "host.properties" ;
 
 }

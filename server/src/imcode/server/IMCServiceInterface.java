@@ -21,10 +21,10 @@ public interface IMCServiceInterface {
     imcode.server.User getUserById(int userId)
 	;
 
-	
+
     /** Check if a user has a special admin role **/
-	public boolean checkUserAdminrole ( int userId, int adminRole ) 
-	;	
+    public boolean checkUserAdminrole ( int userId, int adminRole )
+	;
 
     /**
        Save a text field
@@ -353,18 +353,30 @@ public interface IMCServiceInterface {
     public void setReadrunnerUserData(User user, ReadrunnerUserData rrUserData) ;
 
     public ReadrunnerUserData getReadrunnerUserData(User user) ;
-	
-	/**
+
+    /**
        Retrieve the texts for a document
        @param meta_id The id of the document.
        @return A Map (Integer -> IMCText) with all the  texts in the document.
     **/
     public Map getTexts(int meta_id);
-	
-		 
-	public int getSessionCounter();
+
+
+    public int getSessionCounter();
 
     public String getSessionCounterDate();
-	
+
+    /** Get all possible userflags **/
+    public Map getUserFlags() ;
+    /** Get all userflags for a single user **/
+    public Map getUserFlags(User user) ;
+    /** Get all userflags of a single type **/
+    public Map getUserFlags(int type) ;
+    /** Get all userflags for a single user of a single type **/
+    public Map getUserFlags(User user, int type) ;
+
+    public void setUserFlag(User user, String flagName);
+
+    public void unsetUserFlag(User user, String flagName);
 
 }

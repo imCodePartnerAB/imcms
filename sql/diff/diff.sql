@@ -918,10 +918,46 @@ GO
 COMMIT
 -- 2003-01-25
 
+CREATE TABLE [dbo].[user_flags] (
+	[user_flag_id] [int] NOT NULL ,
+	[name] [varchar] (64) NOT NULL ,
+	[type] [int] NOT NULL ,
+	[description] [varchar] (256) NOT NULL ,
+	CONSTRAINT [PK_user_flags] PRIMARY KEY  CLUSTERED 
+	(
+		[user_flag_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [IX_user_flags] UNIQUE  NONCLUSTERED 
+	(
+		[name]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
 
 
+CREATE TABLE [dbo].[user_flags_crossref] (
+	[user_id] [int] NOT NULL ,
+	[user_flag_id] [int] NOT NULL ,
+	CONSTRAINT [PK_user_flags_crossref] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[user_flag_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [FK_user_flags_crossref_user_flags] FOREIGN KEY 
+	(
+		[user_flag_id]
+	) REFERENCES [dbo].[user_flags] (
+		[user_flag_id]
+	),
+	CONSTRAINT [FK_user_flags_crossref_users] FOREIGN KEY 
+	(
+		[user_id]
+	) REFERENCES [dbo].[users] (
+		[user_id]
+	)
+) ON [PRIMARY]
+GO
+
+-- 2003-02-07 kreiger
 
 print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
-
-
-

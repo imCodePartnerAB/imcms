@@ -40,7 +40,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private File m_IncludePath ;
     private File m_FortunePath ;
     private File m_ImagePath ;
-	private File m_FilePath;
+    private File m_FilePath;
     private String m_StartUrl  ;			   // start url
     private String m_ServletUrl  ;			   // servlet url
     private String m_ImageUrl ;            // image folder
@@ -139,11 +139,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     public int getSessionCounter() {
-		return m_SessionCounter ;
+	return m_SessionCounter ;
     }
 
     public String getSessionCounterDate() {
-		return m_SessionCounterDate ;
+	return m_SessionCounterDate ;
     }
 
     /**
@@ -151,166 +151,166 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public imcode.server.User verifyUser(String login, String password) {
 
-		login = login.trim() ;
+	login = login.trim() ;
 
-		User user = null ;
-		String[] user_data = sqlProcedure("GetUserByLogin ", new String[] { login } ) ;
+	User user = null ;
+	String[] user_data = sqlProcedure("GetUserByLogin ", new String[] { login } ) ;
 
-		/*
-		  The columns are:
-		  	0 user_id,
-			1 login_name,
-			2 login_password,
-			3 first_name,
-			4 last_name,
-			5 title,
-			6 company,
-			7 address,
-			8 city,
-			9 zip,
-			10 country,
-			11 county_council,
-			12 email,
-			13 lang_id
-			14 lang_prefix,
-			15 user_type,
-			16 active,
-			17 create_date
-		*/
+	/*
+	  The columns are:
+	  0 user_id,
+	  1 login_name,
+	  2 login_password,
+	  3 first_name,
+	  4 last_name,
+	  5 title,
+	  6 company,
+	  7 address,
+	  8 city,
+	  9 zip,
+	  10 country,
+	  11 county_council,
+	  12 email,
+	  13 lang_id
+	  14 lang_prefix,
+	  15 user_type,
+	  16 active,
+	  17 create_date
+	*/
 
-		// if resultSet > 0 a user is found
-		if ( user_data.length > 0 ) {
+	// if resultSet > 0 a user is found
+	if ( user_data.length > 0 ) {
 
-		    user = new User() ;
+	    user = new User() ;
 			
-				/* user object 
-				private int userId ;			
-		    	private String loginName ;		//varchar 50
-		    	private String password ;		//varchar 15
-		    	private String firstName;		//varchar 25
-			    private String lastName;		//varchar 30
-				private String title;			//varchar 30
-				private String company;			//varchar 30
-				private String address;			//varchar 40
-				private String city;			//varchar 30
-				private String zip;				//varchar 15
-				private String country;			//varchar 30
-				private String county_council;	//varchar 30
-				private String emailAddress;	//varchar 50
-				private int lang_id;			
-				private int user_type;			
-			    private boolean active ;		//int
-				private Date create_date;		//smalldatetime
+	    /* user object 
+	       private int userId ;			
+	       private String loginName ;		//varchar 50
+	       private String password ;		//varchar 15
+	       private String firstName;		//varchar 25
+	       private String lastName;		//varchar 30
+	       private String title;			//varchar 30
+	       private String company;			//varchar 30
+	       private String address;			//varchar 40
+	       private String city;			//varchar 30
+	       private String zip;				//varchar 15
+	       private String country;			//varchar 30
+	       private String county_council;	//varchar 30
+	       private String emailAddress;	//varchar 50
+	       private int lang_id;			
+	       private int user_type;			
+	       private boolean active ;		//int
+	       private Date create_date;		//smalldatetime
 				
-			    private String langPrefix;
+	       private String langPrefix;
 			    
-			    private int template_group = -1 ;
-			    private String loginType ;
+	       private int template_group = -1 ;
+	       private String loginType ;
 				
 				
-			*/
+	    */
 
-		    user.setUserId       	( Integer.parseInt( user_data[0]  ) ) ;
-		    user.setLoginName    	( user_data[1] ) ;
-		    user.setPassword     	( user_data[2].trim() ) ;
-		    user.setFirstName    	( user_data[3] ) ;
-		    user.setLastName     	( user_data[4] ) ;
-			user.setTitle	     	( user_data[5] ) ;
-			user.setCompany		 	( user_data[6] ) ;
-			user.setAddress      	( user_data[7] ) ;
-			user.setCity         	( user_data[8] ) ;
-			user.setZip          	( user_data[9] ) ;
-			user.setCountry      	( user_data[10] ) ;
-			user.setCountryCouncil 	( user_data[11] ) ;
-			user.setEmailAddress 	( user_data[12] ) ;
-			user.setLangId       	( Integer.parseInt( user_data[13] ) ) ;
-			user.setUserType     	( Integer.parseInt( user_data[15] ) ) ;
-		    user.setActive       	( 0 != Integer.parseInt( user_data[16] ) ) ;
-		    user.setCreateDate   	( user_data[17] ) ;
-		    user.setLangPrefix   	( user_data[14] ) ;
+	    user.setUserId       	( Integer.parseInt( user_data[0]  ) ) ;
+	    user.setLoginName    	( user_data[1] ) ;
+	    user.setPassword     	( user_data[2].trim() ) ;
+	    user.setFirstName    	( user_data[3] ) ;
+	    user.setLastName     	( user_data[4] ) ;
+	    user.setTitle	     	( user_data[5] ) ;
+	    user.setCompany		 	( user_data[6] ) ;
+	    user.setAddress      	( user_data[7] ) ;
+	    user.setCity         	( user_data[8] ) ;
+	    user.setZip          	( user_data[9] ) ;
+	    user.setCountry      	( user_data[10] ) ;
+	    user.setCountryCouncil 	( user_data[11] ) ;
+	    user.setEmailAddress 	( user_data[12] ) ;
+	    user.setLangId       	( Integer.parseInt( user_data[13] ) ) ;
+	    user.setUserType     	( Integer.parseInt( user_data[15] ) ) ;
+	    user.setActive       	( 0 != Integer.parseInt( user_data[16] ) ) ;
+	    user.setCreateDate   	( user_data[17] ) ;
+	    user.setLangPrefix   	( user_data[14] ) ;
 			
-		    String login_password_from_db = user.getPassword() ;
-		    String login_password_from_form = password ;
+	    String login_password_from_db = user.getPassword() ;
+	    String login_password_from_form = password ;
 
-		    if ( login_password_from_db.equals(login_password_from_form) && user.isActive()){
-				this.updateLogs("->User " + login + " succesfully logged in.") ;
-		    } else if (!user.isActive() ) {
-				this.updateLogs("->User " + (login) + " tried to logged in: User deleted!") ;
-				return null ;
-		    } else {
-				this.updateLogs("->User " + (login) + " tried to logged in: Wrong password!") ;
-				return null ;
-		    }
+	    if ( login_password_from_db.equals(login_password_from_form) && user.isActive()){
+		this.updateLogs("->User " + login + " succesfully logged in.") ;
+	    } else if (!user.isActive() ) {
+		this.updateLogs("->User " + (login) + " tried to logged in: User deleted!") ;
+		return null ;
+	    } else {
+		this.updateLogs("->User " + (login) + " tried to logged in: Wrong password!") ;
+		return null ;
+	    }
 
-		} else {
-		    this.updateLogs("->User " + (login) + " tried to logged in: User not found!") ;
-		    return null ;
-		}
-
-		return user ;
+	} else {
+	    this.updateLogs("->User " + (login) + " tried to logged in: User not found!") ;
+	    return null ;
 	}
+
+	return user ;
+    }
 
     /**
        @return An object representing the user with the given id.
     **/
     public User getUserById(int userId) {
 	
-		String[] user_data = sqlProcedure("GetUserInfo ", new String[] { ""+userId } ) ;
+	String[] user_data = sqlProcedure("GetUserInfo ", new String[] { ""+userId } ) ;
 		
-		user_data = sqlProcedure("GetUserByLogin ", new String[] { user_data[1] } ) ;	
+	user_data = sqlProcedure("GetUserByLogin ", new String[] { user_data[1] } ) ;	
 		
 
-		// if resultSet > 0 a user is found
-		if ( user_data.length > 0 ) {
+	// if resultSet > 0 a user is found
+	if ( user_data.length > 0 ) {
 		
-			User user = new User() ;
+	    User user = new User() ;
 
-		    user.setUserId       ( Integer.parseInt( user_data[0]  ) ) ;
-		    user.setLoginName    ( user_data[1] ) ;
-		    user.setPassword     ( user_data[2].trim() ) ;
-		    user.setFirstName    ( user_data[3] ) ;
-		    user.setLastName     ( user_data[4] ) ;
-			user.setTitle	     ( user_data[5] ) ;
-			user.setCompany		 ( user_data[6] ) ;
-			user.setAddress      ( user_data[7] ) ;
-			user.setCity         ( user_data[8] ) ;
-			user.setZip          ( user_data[9] ) ;
-			user.setCountry      ( user_data[10] ) ;
-			user.setCountryCouncil( user_data[11] ) ;
-			user.setEmailAddress ( user_data[12] ) ;
-			user.setLangId       ( Integer.parseInt( user_data[13] ) ) ;
-			user.setUserType     ( Integer.parseInt( user_data[15] ) ) ;
-		    user.setActive       ( 0 != Integer.parseInt( user_data[16] ) ) ;
-		    user.setCreateDate   ( user_data[17] ) ;
-		    user.setLangPrefix   ( user_data[14] ) ;
+	    user.setUserId       ( Integer.parseInt( user_data[0]  ) ) ;
+	    user.setLoginName    ( user_data[1] ) ;
+	    user.setPassword     ( user_data[2].trim() ) ;
+	    user.setFirstName    ( user_data[3] ) ;
+	    user.setLastName     ( user_data[4] ) ;
+	    user.setTitle	     ( user_data[5] ) ;
+	    user.setCompany		 ( user_data[6] ) ;
+	    user.setAddress      ( user_data[7] ) ;
+	    user.setCity         ( user_data[8] ) ;
+	    user.setZip          ( user_data[9] ) ;
+	    user.setCountry      ( user_data[10] ) ;
+	    user.setCountryCouncil( user_data[11] ) ;
+	    user.setEmailAddress ( user_data[12] ) ;
+	    user.setLangId       ( Integer.parseInt( user_data[13] ) ) ;
+	    user.setUserType     ( Integer.parseInt( user_data[15] ) ) ;
+	    user.setActive       ( 0 != Integer.parseInt( user_data[16] ) ) ;
+	    user.setCreateDate   ( user_data[17] ) ;
+	    user.setLangPrefix   ( user_data[14] ) ;
 
-		    return user ;
+	    return user ;
 		
-		} else {
-	    	// No user with that id.
-	   		 return null ;
-		}
+	} else {
+	    // No user with that id.
+	    return null ;
+	}
     }
 	
-	// Fixme! public bolean addUser(User user) save a user in db
-	//		  public bolean updateUser(User user) save a user in db
+    // Fixme! public bolean addUser(User user) save a user in db
+    //		  public bolean updateUser(User user) save a user in db
 	
 	
-	//Check if user has a special adminRole
-	public boolean checkUserAdminrole ( int userId, int adminRole ) {
-		String[] adminrole = sqlProcedure("checkUserAdminrole ", new String[] {"" + userId, "" + adminRole });
-		if ( adminrole.length > 0 ){
-			if ( (""+adminRole).equals(adminrole[0]) ){
-				return true;
-			}
-		}
-		return false;
+    //Check if user has a special adminRole
+    public boolean checkUserAdminrole ( int userId, int adminRole ) {
+	String[] adminrole = sqlProcedure("checkUserAdminrole ", new String[] {"" + userId, "" + adminRole });
+	if ( adminrole.length > 0 ){
+	    if ( (""+adminRole).equals(adminrole[0]) ){
+		return true;
+	    }
 	}
+	return false;
+    }
 	
 	
 
     public String parsePage (DocumentRequest documentRequest, int flags,ParserParameters paramsToParse) throws IOException {
-		return textDocParser.parsePage(documentRequest,flags,paramsToParse) ;
+	return textDocParser.parsePage(documentRequest,flags,paramsToParse) ;
     }
 
     /**
@@ -366,7 +366,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	
 	// if user is superadmin or useradmin lets add superadmin button
 	if ( checkAdminRights(user) || 	checkUserAdminrole( user.getUserId(), 2 ) ) {
-		tags.put("superadmin",superadmin.toString()) ;
+	    tags.put("superadmin",superadmin.toString()) ;
 	} else {
 	    tags.put("superadmin","") ;
 	}
@@ -547,7 +547,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Delete a doc and all data related. Delete from db and file system.
      */
-	 /* Fixme:  delete doc from plugin db */
+    /* Fixme:  delete doc from plugin db */
     public void deleteDocAll(int meta_id,imcode.server.User user) {
 	String sqlStr = "DocumentDelete " + meta_id ;
 	
@@ -557,7 +557,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	
 	//If meta_id is a file document we have to delete the file from file system
 	if ( file.exists() ) {
-		file.delete(); 
+	    file.delete(); 
 	}
 
 	// Create a db connection and execte sp DocumentDelete on meta_id
@@ -1353,7 +1353,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        The preferred way of getting data to the db.
        @param procedure The name of the procedure
        @param params    The parameters of the procedure
-	   @return updateCount or -1 if error
+       @return updateCount or -1 if error
     **/
     public int sqlUpdateProcedure(String procedure, String[] params) {
 	DBConnect dbc = new DBConnect(m_conPool) ;
@@ -1472,7 +1472,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
     }
 
-	/**
+    /**
        Parse doc replace variables with data , use template
     */
     public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet) {
@@ -1493,9 +1493,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-	@deprecated Ugly use {@link #parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)}
-	or something else instead.
-     */
+       @deprecated Ugly use {@link #parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)}
+       or something else instead.
+    */
     public File getExternalTemplateFolder(int meta_id) {
 	Vector data = new Vector() ;
 
@@ -1695,8 +1695,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    for ( int j = 0 ; j < data.size() ; j++ )
 		result[j+i+1] =
 		    null != data.elementAt(j)
-			? data.elementAt(j).toString()
-			: null ;
+		    ? data.elementAt(j).toString()
+		    : null ;
 
 	    dbc.clearResultSet() ;
 	    dbc.closeConnection() ;
@@ -1835,9 +1835,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	for(int i = 0 ; i < rows ; i++) {
 	    for(int j = 0 ; j < columns ; j++) {
 		result[i][j] =
-			null != data.elementAt(i * columns +  j)
-			? data.elementAt(i * columns +  j).toString()
-			: null ;
+		    null != data.elementAt(i * columns +  j)
+		    ? data.elementAt(i * columns +  j).toString()
+		    : null ;
 	    }
 
 	}
@@ -2055,47 +2055,47 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
     }
 
-	/**
+    /**
        Gets the users most privileged permission_set for the document.
        @param meta_id	The document-id
        @param user_id		The user_id
-	   @return the most privileged permission_set a user has for the document.
+       @return the most privileged permission_set a user has for the document.
 
     */
     public int getUserHighestPermissionSet (int meta_id, int user_id)
-	{
-		try{
-			DBConnect dbc = new DBConnect(m_conPool) ;
-			dbc.getConnection() ;
-			String sqlStr = "GetUserPermissionSet (?,?)" ;
-			String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user_id)} ;
-			dbc.setProcedure(sqlStr,sqlAry) ;
-			Vector perms = (Vector)dbc.executeProcedure() ;
-			dbc.clearResultSet() ;
-			dbc.closeConnection() ;
+    {
+	try{
+	    DBConnect dbc = new DBConnect(m_conPool) ;
+	    dbc.getConnection() ;
+	    String sqlStr = "GetUserPermissionSet (?,?)" ;
+	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user_id)} ;
+	    dbc.setProcedure(sqlStr,sqlAry) ;
+	    Vector perms = (Vector)dbc.executeProcedure() ;
+	    dbc.clearResultSet() ;
+	    dbc.closeConnection() ;
 
-			if (perms.size() == 0){
-				return IMCConstants.DOC_PERM_SET_NONE ;//nothing was returned so give no rights at all.
-			}
+	    if (perms.size() == 0){
+		return IMCConstants.DOC_PERM_SET_NONE ;//nothing was returned so give no rights at all.
+	    }
 
-			int set_id = Integer.parseInt((String)perms.elementAt(0)) ;
+	    int set_id = Integer.parseInt((String)perms.elementAt(0)) ;
 
-			switch (set_id) {
-			case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this document
-			case IMCConstants.DOC_PERM_SET_RESTRICTED_1: // User has restricted 1 permission for this document
-			case IMCConstants.DOC_PERM_SET_RESTRICTED_2: // User has restricted 2 permission for this document
-			case IMCConstants.DOC_PERM_SET_READ:         // User has only read permission for this document
-			    return set_id ;                          // We have a valid permission-set-id. Return it.
+	    switch (set_id) {
+	    case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this document
+	    case IMCConstants.DOC_PERM_SET_RESTRICTED_1: // User has restricted 1 permission for this document
+	    case IMCConstants.DOC_PERM_SET_RESTRICTED_2: // User has restricted 2 permission for this document
+	    case IMCConstants.DOC_PERM_SET_READ:         // User has only read permission for this document
+		return set_id ;                          // We have a valid permission-set-id. Return it.
 
-			default:                                     // We didn't get a valid permission-set-id.
-			    return DOC_PERM_SET_NONE ;               // User has no permission at all for this document
-			}
+	    default:                                     // We didn't get a valid permission-set-id.
+		return DOC_PERM_SET_NONE ;               // User has no permission at all for this document
+	    }
 
-		} catch (RuntimeException ex){
-			log.error("Exception in getUserHighestPermissionSet(int,int)",ex) ;
-			throw ex ;
-		}
+	} catch (RuntimeException ex){
+	    log.error("Exception in getUserHighestPermissionSet(int,int)",ex) ;
+	    throw ex ;
 	}
+    }
 
     /**
        save template to disk
@@ -2204,7 +2204,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	BufferedReader fr = null;
 	String suffix = null;
 	String[] suffixList =
-	{"jpg","jpeg","gif","png","html","htm"};
+	    {"jpg","jpeg","gif","png","html","htm"};
 
 	for(int i=0;i<suffixList.length;i++)
 	    { // Looking for a template with one of six suffixes
@@ -2753,7 +2753,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
        @deprecated Ugly use something else.
        DOCME: Use what?
-     */
+    */
     public File getInternalTemplateFolder(int meta_id) {
 	Vector data = new Vector() ;
 
@@ -2912,15 +2912,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    : null ;
 	
 	String temp[] = {""+userId,
-			       ""+rrUserData.getUses(),
-			       ""+rrUserData.getMaxUses(),
-			       ""+rrUserData.getMaxUsesWarningThreshold(),
-			       expiryDateString,
-			       ""+rrUserData.getExpiryDateWarningThreshold(),
-				   ""+rrUserData.getExpiryDateWarningSent()
+			 ""+rrUserData.getUses(),
+			 ""+rrUserData.getMaxUses(),
+			 ""+rrUserData.getMaxUsesWarningThreshold(),
+			 expiryDateString,
+			 ""+rrUserData.getExpiryDateWarningThreshold(),
+			 ""+rrUserData.getExpiryDateWarningSent()
 	};
 	for (int i = 0 ; i < temp.length ; i++ ){	
-	System.out.println("temp[]= " + temp[i]);
+	    System.out.println("temp[]= " + temp[i]);
 	}	
 
 	sqlUpdateProcedure("SetReadrunnerUserDataForUser",
@@ -2934,6 +2934,93 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			       rrUserData.getExpiryDateWarningSent() ? "1" : "0"
 			   }
 			   ) ;
+    }
+
+
+    /**
+       Set a user flag
+    **/
+    public void setUserFlag(User user, String flagName) {
+	int userId = user.getUserId() ;
+
+	sqlUpdateProcedure("SetUserFlag",
+			   new String[] {
+			       ""+userId,
+			       flagName
+			   }
+			   ) ;
+    }
+
+    /**
+       Unset a user flag
+    **/
+    public void unsetUserFlag(User user, String flagName) {
+	int userId = user.getUserId() ;
+
+	sqlUpdateProcedure("UnsetUserFlag",
+			   new String[] {
+			       ""+userId,
+			       flagName
+			   }
+			   ) ;
+    }
+
+
+    /**
+       Get all possible userflags
+    **/
+    public Map getUserFlags() {
+	String[] dbData = sqlProcedure("GetUserFlags") ;
+
+	return getUserFlags(dbData) ;
+    }
+
+    /**
+       Get all userflags for a single user
+    **/
+    public Map getUserFlags(User user) {
+	int userId = user.getUserId() ;
+	String[] dbData = sqlProcedure("GetUserFlagsForUser", new String[] {String.valueOf(userId)}) ;
+
+	return getUserFlags(dbData) ;
+    }
+
+    /**
+       Get all userflags of a single type
+    **/
+    public Map getUserFlags(int type) {
+	String[] dbData = sqlProcedure("GetUserFlagsOfType", new String[] {String.valueOf(type)}) ;
+
+	return getUserFlags(dbData) ;
+    }
+
+    /**
+       Get all userflags for a single user of a single type
+    **/
+    public Map getUserFlags(User user, int type) {
+	int userId = user.getUserId() ;
+	String[] dbData = sqlProcedure("GetUserFlagsForUserOfType", new String[] {String.valueOf(userId), String.valueOf(type)}) ;
+
+	return getUserFlags(dbData) ;
+    }
+
+    /** Used by the other getUserFlags*-methods to put the database-data in a Set **/
+    private Map getUserFlags(String dbData[]) {
+	Map theFlags = new HashMap() ;
+
+	for (int i = 0; i < dbData.length; i += 4) {
+	    String flagName        = dbData[i+1] ;
+	    int    flagType        = Integer.parseInt(dbData[i+2]) ;
+	    String flagDescription = dbData[i+3] ;
+
+	    UserFlag flag = new UserFlag() ;
+	    flag.setName(flagName) ;
+	    flag.setType(flagType) ;
+	    flag.setDescription(flagDescription) ;
+
+	    theFlags.put(flagName, flag) ;
+	}
+	return theFlags ;
     }
 
 }

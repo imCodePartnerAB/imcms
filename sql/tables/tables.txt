@@ -42,6 +42,8 @@ text_docs                   - Dokument av typ 'Text-dokument'.
 texts                       - Texter för text-dokument.
 track_log                   - Logg-tabell, ej använd längre.
 url_docs                    - Dokument av typ 'URL-dokument'.
+user_flags                  - Flaggor som går att sätta på användare
+user_flags_crossref         - Vilka flaggor som är satta på vilka användare
 user_rights                 - Rättigheter för användare på dokument, ej använd.
 user_roles_crossref         - Korsreferens mellan användare och roller.
 user_types                  - Användar-typer.

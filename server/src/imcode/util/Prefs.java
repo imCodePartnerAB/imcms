@@ -29,6 +29,21 @@ public class Prefs {
     }
 
     /**
+       Get an integer property from a config file. Reloads the file once and tries again if the property is not found the first time.
+
+       @param key The preference to get.
+       @param file The file in the config directory to load from.
+       @return The value of the preference.
+    */
+    public static int getInt (String key, String file, int defaultValue) throws IOException {
+	try {
+	    return Integer.parseInt(get (key,new File(configPath,file))) ;
+	} catch (NumberFormatException nfe) {
+	    return defaultValue ;
+	}
+    }
+
+    /**
        Get a property from a config file. Reloads the file once and tries again if the property is not found the first time.
 
        @param key The preference to get.
