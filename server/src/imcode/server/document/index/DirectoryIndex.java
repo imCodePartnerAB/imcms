@@ -41,10 +41,8 @@ class DirectoryIndex implements DocumentIndex {
 
     public DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IndexException {
         try {
-            IndexReader indexReader = IndexReader.open( directory );
-            IndexSearcher indexSearcher = null;
+            IndexSearcher indexSearcher = new IndexSearcher( directory.toString() );
             try {
-                indexSearcher = new IndexSearcher( indexReader );
                 StopWatch searchStopWatch = new StopWatch();
                 searchStopWatch.start();
                 Hits hits = indexSearcher.search( query );
@@ -55,10 +53,7 @@ class DirectoryIndex implements DocumentIndex {
                            + "ms." );
                 return (DocumentDomainObject[])documentList.toArray( new DocumentDomainObject[documentList.size()] );
             } finally {
-                if ( null != indexSearcher ) {
-                    indexSearcher.close();
-                }
-                indexReader.close();
+                indexSearcher.close();
             }
         } catch ( IOException e ) {
             throw new IndexException( e ) ;
