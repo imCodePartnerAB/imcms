@@ -7,6 +7,8 @@ import java.util.Enumeration ;
 import java.util.Iterator ;
 
 public class SimpleElement implements Element {
+    private final static String CVS_REV = "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
     protected String name ;
     protected Properties attributes ;

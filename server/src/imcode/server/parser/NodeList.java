@@ -33,7 +33,7 @@ public class NodeList extends LinkedList {
 	    lastEndOffset = matchResult.endOffset(0) ;
 	    add( createElementNode( patternMatcher ) ) ;
 	}
-	if (data.length() > lastEndOffset) { // Add whatever was left after the last element, no matter if there were any elements.
+	if (data.length() > lastEndOffset) { // Add whatever was left after the last element, and the whole piece if there wasn't any elements.
 	    add( new SimpleText( data.substring(lastEndOffset) ) ) ;
 	}
     }
@@ -49,7 +49,10 @@ public class NodeList extends LinkedList {
 	
     }
 
-    Properties createAttributes(String attributes_string, PatternMatcher patternMatcher) {
+    /**
+       Take a String of attributes, as may be found inside a tag, (name="...", and so on...) and transform it into a Properties.
+    **/
+    public static Properties createAttributes(String attributes_string, PatternMatcher patternMatcher) {
 	Properties attributes = new Properties();
 
 	PatternMatcherInput attributes_input = new PatternMatcherInput(attributes_string) ;

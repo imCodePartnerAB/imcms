@@ -82,10 +82,12 @@ public class DBConnect {
 	    while ( rs.next() ) {
 		for ( int i = 1 ; i <= columnCount ; i++ ) {
 		    String s = rs.getString(i) ;
-		    if ( trimStr )
-			results.addElement(s.trim()) ;
-		    else
-			results.addElement(s) ;
+		    if (s == null) {
+			s = "" ;
+		    } else if ( trimStr ) {
+ 			s = s.trim() ;
+		    }		    
+		    results.addElement(s) ;
 		}
 	    }
 

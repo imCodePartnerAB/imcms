@@ -21,7 +21,7 @@ public class MenuParserSubstitution implements Substitution {
 	Perl5Compiler patComp = new Perl5Compiler() ;
 
 	try {
-	    HASHTAG_PATTERN = patComp.compile("#[^#\"<> \\t\\r\\n]+#",Perl5Compiler.READ_ONLY_MASK) ;
+	    HASHTAG_PATTERN = patComp.compile("#[^#\"<>\\s]+#",Perl5Compiler.READ_ONLY_MASK) ;
 	    MENU_NO_PATTERN = patComp.compile("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
@@ -29,6 +29,8 @@ public class MenuParserSubstitution implements Substitution {
 	    log.log(Log.CRITICAL, "Danger, Will Robinson!") ;
 	}
     }
+
+    private Substitution NULLSUBSTITUTION = new StringSubstitution("") ;
 
     Map menus ;
     boolean menumode ;
@@ -41,8 +43,8 @@ public class MenuParserSubstitution implements Substitution {
 	this.tags = tags ;
     }
 
-    private List getMenuById(int id) {
-	return (LinkedList)menus.get(new Integer(id)) ;
+    private Menu getMenuById(int id) {
+	return (Menu)menus.get(new Integer(id)) ;
     }
 
     private String getMenuModePrefix(PatternMatcher patMat, int menu_id) {
@@ -56,28 +58,24 @@ public class MenuParserSubstitution implements Substitution {
 	return tags.getProperty("saveSortStop") ;
     }
 
-    private String nodeMenuParser (int menuId, PatternMatcher patMat) {
-	List currentMenu = getMenuById(menuId) ; 	// Get the LinkedList of Properties that is the menu
-	if (currentMenu == null) {
-	    currentMenu = new LinkedList() ;
-	}
+    private String nodeMenuParser (int menuId, String menutemplate, Properties menuattributes, PatternMatcher patMat) {
+	Menu currentMenu = getMenuById(menuId) ; 	// Get the menu
 	StringBuffer result = new StringBuffer() ; // Allocate a buffer for building our return-value in.
-	String menutemplate = patMat.getMatch().group(2) ;
 	NodeList menuNodes = new NodeList(menutemplate) ; // Build a tree-structure of nodes in memory, which "only" needs to be traversed. (Vood)oo-magic.
-	nodeMenu(new SimpleElement("menu",null,menuNodes),result,currentMenu, patMat) ; // Create an artificial root-node of this tree. An "imcms:menu"-element.
+	nodeMenu(new SimpleElement("menu",menuattributes,menuNodes),result,currentMenu, patMat) ; // Create an artificial root-node of this tree. An "imcms:menu"-element.
 	if (menumode) { // If in menumode, make sure to include all the stuff from the proper admintemplates.
 	    result.append(getMenuModeSuffix()) ;
 	    result.insert(0,getMenuModePrefix(patMat,menuId)) ;
 	}
 	return result.toString() ;
     }
-
     /**
        Handle an imcms:menu element.
     **/
-    private void nodeMenu(Element menuNode, StringBuffer result, List currentMenu, PatternMatcher patMat) {
+    private void nodeMenu(Element menuNode, StringBuffer result, Menu currentMenu, PatternMatcher patMat) {
+	Properties menuAttributes = menuNode.getAttributes() ; // Get the attributes from the imcms:menu-element. This will be passed down, to allow attributes of the imcms:menu-element to affect the menuitems.
 	if (menuNode.getChildElement("menuloop") == null) {
-	    nodeMenuLoop(new SimpleElement("menuloop",null,menuNode.getChildren()), result, currentMenu, patMat) ; // The imcms:menu contained no imcms:menuloop, so let's create one.
+	    nodeMenuLoop(new SimpleElement("menuloop",null,menuNode.getChildren()), result, currentMenu, menuAttributes, patMat) ; // The imcms:menu contained no imcms:menuloop, so let's create one, passing the children from the imcms:menu
 	} else {
 	    // The imcms:menu contained at least one imcms:menuloop.
 	    Iterator menuNodeChildrenIterator = menuNode.getChildren().iterator() ;
@@ -89,9 +87,9 @@ public class MenuParserSubstitution implements Substitution {
 		    break ;
 		case Node.ELEMENT_NODE : // An element-node
 		    if ("menuloop".equals(((Element)menuNodeChild).getName())) { // Is it an imcms:menuloop?
-			nodeMenuLoop((Element)menuNodeChild,result,currentMenu,patMat) ;
+			nodeMenuLoop((Element)menuNodeChild,result,currentMenu,menuAttributes,patMat) ;
 		    } else {
-			result.append(((Element)menuNodeChild).toString()) ;  // No? Just print it verbatim into the source.
+			result.append(((Element)menuNodeChild).toString()) ;  // No? Just append it (almost)verbatim.
 		    }
 		    break ;
 		}
@@ -101,15 +99,22 @@ public class MenuParserSubstitution implements Substitution {
 
     /**
        Handle an imcms:menuloop element.
+       @param menuLoopNode   The imcms:menuloop-element
+       @param result         The StringBuffer to which to append the result
+       @param menuItems      The current menu
+       @param menuAttributes The attributes passed down from the imcms:menu-element.
+       @param patMat         The patternmatcher used for pattern matching.
     **/
-    private void nodeMenuLoop(Element menuLoopNode, StringBuffer result, List menuItems, PatternMatcher patMat) {
-	MapSubstitution tagMapSubstitution = new MapSubstitution() ;
+    private void nodeMenuLoop(Element menuLoopNode, StringBuffer result, Menu menuItems, Properties menuAttributes, PatternMatcher patMat) {
+	if (menuItems == null) {
+	    return ;
+	}
 	Iterator menuItemsIterator = menuItems.iterator() ;
 	if (menuLoopNode.getChildElement("menuitem") == null) {
 	    Element menuItemNode = new SimpleElement("menuitem",null,menuLoopNode.getChildren()) ;  // The imcms:menuloop contained no imcms:menuitem, so let's create one.
 	    while (menuItemsIterator.hasNext()) {
-		Properties menuItem = (Properties)menuItemsIterator.next() ;
-		nodeMenuItem(menuItemNode, result, menuItem, tagMapSubstitution, patMat) ; // Parse one menuitem through the only imcms:menuitem-element.
+		MenuItem menuItem = (MenuItem)menuItemsIterator.next() ;
+		nodeMenuItem(menuItemNode, result, menuItem, menuAttributes, patMat) ; // Parse one menuitem through the only imcms:menuitem-element.
 	    }
 	} else {
 	    // The imcms:menuloop contained at least one imcms:menuitem.
@@ -123,8 +128,8 @@ public class MenuParserSubstitution implements Substitution {
 			break ;
 		    case Node.ELEMENT_NODE : // An element-node
 			if ("menuitem".equals(((Element)menuLoopChild).getName())) { // Is it an imcms:menuitem?
-			    Properties menuItem = (menuItemsIterator.hasNext() ? (Properties)menuItemsIterator.next() : null) ; // If there are more menuitems from the db, put the next in 'menuItem', otherwise put null.
-			    nodeMenuItem((Element)menuLoopChild,result,menuItem,tagMapSubstitution,patMat) ; // Parse one menuitem.
+			    MenuItem menuItem = (menuItemsIterator.hasNext() ? (MenuItem)menuItemsIterator.next() : null) ; // If there are more menuitems from the db, put the next in 'menuItem', otherwise put null.
+			    nodeMenuItem((Element)menuLoopChild,result,menuItem,menuAttributes,patMat) ; // Parse one menuitem.
 			} else {
 			    result.append(menuLoopChild.toString()) ;  // No? Just append the elements verbatim into the result.
 			}
@@ -134,37 +139,58 @@ public class MenuParserSubstitution implements Substitution {
 	    }
 	}
     }
-    
-    /** Parse one menuitem **/
-    private void nodeMenuItem(Element menuItemNode, StringBuffer result, Properties menuItem, MapSubstitution tagMapSubstitution, PatternMatcher patMat) {
+
+    /**
+       Handle one imcms:menuitem
+       @param menuItemNode       The imcms:menuitem-element
+       @param result             The StringBuffer to which to append the result
+       @param menuItem           The current menuitem
+       @param menuItemAttributes The attributes passed down from the imcms:menu-element. Any attributes in the imcms:menuitem-element will override these.
+       @param patMat             The patternmatcher used for pattern matching.
+    **/
+    private void nodeMenuItem(Element menuItemNode, StringBuffer result, MenuItem menuItem, Properties menuAttributes, PatternMatcher patMat) {
+	Substitution menuItemSubstitution = null ;
+	if ( menuItem != null ) {
+	    Properties menuItemAttributes = new Properties(menuAttributes) ; // Make a copy of the menuAttributes, so we don't override them permanently.
+	    menuItemAttributes.putAll(menuItemNode.getAttributes()) ; // Let all attributes of the menuItemNode override the attributes of the menu.
+	    menuItemSubstitution = menuItem.getSubstitution(menuItemAttributes) ;
+	} else {
+	    menuItemSubstitution = NULLSUBSTITUTION ;
+	}
 	Iterator menuItemChildrenIterator = menuItemNode.getChildren().iterator() ;
-	while (menuItemChildrenIterator.hasNext()) {
+	while (menuItemChildrenIterator.hasNext()) { // For each node that is a child of this imcms:menuitem-element
 	    Node menuItemChild = (Node)menuItemChildrenIterator.next() ;
 	    switch(menuItemChild.getNodeType()) { // Check the type of the child-node.
-	    case Node.ELEMENT_NODE : // A element-node
-		if (!"menuitemhide".equals(((Element)menuItemChild).getName()) || menuItem != null ) {
-		    tagMapSubstitution.setMap((menuItem != null ? menuItem : new Properties()), true) ;
-		    result.append(org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,tagMapSubstitution,((Element)menuItemChild).getTextContent(),org.apache.oro.text.regex.Util.SUBSTITUTE_ALL)) ;
+	    case Node.ELEMENT_NODE : // An element-node
+		Element menuItemChildElement = (Element)menuItemChild ;
+		if (!"menuitemhide".equals(menuItemChildElement.getName()) ) { // if the child-element isn't a imcms:menuitemhide-element...
+		    parseMenuItem(result,menuItemChildElement.getTextContent(),menuItemSubstitution,patMat) ; // parse it
 		}
 		break ;
 	    case Node.TEXT_NODE : // A text-node
-		tagMapSubstitution.setMap((menuItem != null ? menuItem : new Properties()), true) ;
-		result.append(org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,tagMapSubstitution,((Text)menuItemChild).getContent(),org.apache.oro.text.regex.Util.SUBSTITUTE_ALL)) ;
+		parseMenuItem(result,((Text)menuItemChild).getContent(),menuItemSubstitution,patMat) ; // parse it
 		break ;
 	    }
 	}
     }
 
+    private void parseMenuItem(StringBuffer result, String template, Substitution substitution, PatternMatcher patMat) {
+	result.append(org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,substitution,template,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL)) ;
+    }
+
     public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
 	MatchResult menuMatres = patMat.getMatch() ;
+	String attributes_string = menuMatres.group(1) ;
+	String menutemplate = menuMatres.group(2) ;
+	Properties menuattributes = NodeList.createAttributes(attributes_string,patMat) ;
 	// Get the id of the menu
 	int menuId = 0 ;
 	try {
-	    menuId = Integer.parseInt(menuMatres.group(1)) ;
+	    menuId = Integer.parseInt(menuattributes.getProperty("no")) ;
 	} catch (NumberFormatException ex) {
 	    menuId = implicitMenus[0]++ ;
 	}
-	sb.append(nodeMenuParser(menuId,patMat)) ;
+	sb.append(nodeMenuParser(menuId,menutemplate, menuattributes,patMat)) ;
     }
 
 }

@@ -14,10 +14,11 @@ public interface Element extends Node {
     public Properties getAttributes() ;
 
     /** @return A List of Nodes below this Node. **/
-    List getChildren() ;
+    public List getChildren() ;
 
     /** @return The first child-element with the given name, or null. **/
-    Element getChildElement(String name) ;
+    public Element getChildElement(String name) ;
 
-    String getTextContent() ;
+    /** @return The plain text-content of this element and all child-elements, without tags. **/
+    public String getTextContent() ;
 }

@@ -5,6 +5,6 @@ public interface Text extends Node {
     final static String CVS_DATE = "$Date$" ;
 
     /** @return A String containing the contents of this element. **/
-    String getContent() ;
+    public String getContent() ;
 
 }

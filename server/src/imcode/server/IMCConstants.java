@@ -78,5 +78,12 @@ public interface IMCConstants {
 
     public final static int DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 = (1 << 0) ; // 1
     
+    /* Menu-sort-orders */
+    
+    public final static int MENU_SORT_BY_HEADLINE        = 1 ;
+
+    public final static int MENU_SORT_BY_MANUAL_ORDER    = 2 ;
+
+    public final static int MENU_SORT_BY_DATETIME        = 3 ;
 
 }

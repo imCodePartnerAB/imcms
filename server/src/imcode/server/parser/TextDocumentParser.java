@@ -21,12 +21,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     private static Pattern HASHTAG_PATTERN  = null ;
     private static Pattern MENU_PATTERN  = null ;
-    private static Pattern OBSOLETE_MENU_PATTERN = null ;
     private static Pattern IMCMS_TAG_PATTERN  = null ;
-    private static Pattern TR_START_PATTERN  = null ;
-    private static Pattern TR_STOP_PATTERN  = null ;
-    private static Pattern TD_START_PATTERN  = null ;
-    private static Pattern TD_STOP_PATTERN  = null ;
     private static Pattern MENU_NO_PATTERN  = null ;
     private static Pattern HTML_TAG_PATTERN  = null ;
 
@@ -38,14 +33,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    HTML_TAG_PATTERN = patComp.compile("<[^>]+?>",Perl5Compiler.READ_ONLY_MASK) ;
 
 	    IMCMS_TAG_PATTERN = patComp.compile("<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.READ_ONLY_MASK) ;
-	    TR_START_PATTERN = patComp.compile("^(\\<tr[^>]*?\\>)",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-	    TR_STOP_PATTERN = patComp.compile("(\\<\\/tr\\>)\\s*$",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-	    TD_START_PATTERN = patComp.compile("^(\\<td[^>]*?\\>)",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-	    TD_STOP_PATTERN = patComp.compile("(\\<\\/td\\>)\\s*$",Perl5Compiler.CASE_INSENSITIVE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	    MENU_NO_PATTERN = patComp.compile("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
 	    HASHTAG_PATTERN = patComp.compile("#[^#\"<> \\t\\r\\n]+#",Perl5Compiler.READ_ONLY_MASK) ;
-	    MENU_PATTERN = patComp.compile("<\\?imcms:menu(?:\\s+no=\"(\\d+)\")?\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
-	    OBSOLETE_MENU_PATTERN = patComp.compile("[\\r\\n]\\s*menu\\s+no=(\\d+)\\s+rows=(\\d+)\\s+table_col=(\\d+)\\s*",Perl5Compiler.READ_ONLY_MASK) ;
+	    MENU_PATTERN = patComp.compile("<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
 	    Log log = Log.getLog("server") ;
@@ -377,9 +367,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	      These Properties will hold the tags, and the corresponding data, that will go in each menuitem.
 	    */
 	    HashMap menus = new HashMap () ;	// Map to contain all the menus on the page.
-	    LinkedList currentMenu = null ;
+	    Menu currentMenu = null ;
 	    int old_menu = -1 ;
 	    java.util.Date now = new java.util.Date() ;
+	    SimpleDateFormat DATETIMEFORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm") ;
 
 	    Iterator childIt = childs.iterator() ;
 	    while ( childIt.hasNext() ) {
@@ -400,155 +391,43 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		// archived_date+archived_time
 		// 0 if admin
 		// filename
-		String child_meta_id             = (String)childIt.next() ; // The meta-id of the child
-		String child_menu_sort           = (String)childIt.next() ; // What menu in the page the child is in.
-		String child_manual_sort_order   = (String)childIt.next() ; // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
-		String child_doc_type            = (String)childIt.next() ; // The doctype of the child.
-		String child_archive             = (String)childIt.next() ; // Child is considered archived?
-		String child_target              = (String)childIt.next() ; // The target for this document.
-		String child_date_created        = (String)childIt.next() ; // The datetime the child was created.
-		String child_date_modified       = (String)childIt.next() ; // The datetime the child was modified.
-		String child_meta_headline       = (String)childIt.next() ; // The headline of the child.
-		String child_meta_text           = (String)childIt.next() ; // The subtext for the child.
-		String child_meta_image          = (String)childIt.next() ; // An optional imageurl for this document.
-		String child_frame_name          = (String)childIt.next() ; // The target fram for this document. Supposed to be replaced by 'target'.
-		String child_activated_date_time = (String)childIt.next() ; // The datetime the document is activated.
-		String child_archived_date_time  = (String)childIt.next() ; // The datetime the document is archived.
-		String child_admin               = (String)childIt.next() ; // "0" if the user may admin it.
-		String child_filename            = (String)childIt.next() ; // The filename, if it is a file-doc.
-
-		// System.out.println((String)childs.get(i*child_cols+0)+" "+(String)childs.get(i*child_cols+1)+" "+(String)childs.get(i*child_cols+7)) ;
-
-		int menuno = Integer.parseInt(child_menu_sort) ;
-		if ( menuno != old_menu ) {	//If we come upon a new menu...
+		int childMetaId = Integer.parseInt((String)childIt.next()) ;
+		int menuno = Integer.parseInt((String)childIt.next()) ;              // What menu in the page the child is in.
+		if ( menuno != old_menu ) {	                                     // If we come upon a new menu...
 		    old_menu = menuno ;
-		    currentMenu = new LinkedList() ;	// We make a new Menu,
-		    menus.put(new Integer(menuno), currentMenu) ;			// and add it to the page.
+		    currentMenu = new Menu(menuno, sort_order, menumode, imageUrl) ;	     // We make a new Menu,
+		    menus.put(new Integer(menuno), currentMenu) ;		     // and add it to the page.
 		}
-
-		java.util.Date archived_date = null ;
-		java.util.Date activate_date = null ;
-
-		SimpleDateFormat DATETIMEFORMAT = new SimpleDateFormat("yyyy-MM-ddHH:mm") ;
-
+		MenuItem menuItem = new MenuItem(currentMenu) ;
+		menuItem.setMetaId(childMetaId) ;                                    // The meta-id of the child
+		menuItem.setSortKey(Integer.parseInt((String)childIt.next())) ;      // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
+		menuItem.setDocumentType(Integer.parseInt((String)childIt.next())) ; // The doctype of the child.
+		menuItem.setArchived(!"0".equals((String)childIt.next())) ;          // Child is considered archived?
+		menuItem.setTarget((String)childIt.next()) ;                         // The target for this document.
 		try {
-		    archived_date = DATETIMEFORMAT.parse(child_archived_date_time) ;
-		} catch ( java.text.ParseException ex ) {
-		}
-
+		    menuItem.setCreatedDatetime(DATETIMEFORMAT.parse((String)childIt.next())) ; // The datetime the child was created.
+		} catch ( java.text.ParseException ignored ) {}
 		try {
-		    activate_date = DATETIMEFORMAT.parse(child_activated_date_time) ;
-		} catch ( java.text.ParseException ex ) {
+		    menuItem.setModifiedDatetime(DATETIMEFORMAT.parse((String)childIt.next())) ; // The datetime the child was modified.
+		} catch ( java.text.ParseException ignored ) {}
+		menuItem.setHeadline((String)childIt.next()) ;                       // The headline of the child.
+		menuItem.setText((String)childIt.next()) ;                           // The subtext for the child.
+		menuItem.setImage((String)childIt.next()) ;                          // An optional imageurl for this document.
+	        childIt.next() ;                                                     // Ignored. The target frame for this document. Replaced by 'target'.
+		try {
+		    menuItem.setActivatedDatetime(DATETIMEFORMAT.parse((String)childIt.next())) ; // The datetime the child will be/was activated
+		} catch ( java.text.ParseException ignored ) {}
+		try {
+		    menuItem.setArchivedDatetime(DATETIMEFORMAT.parse((String)childIt.next())) ; // The datetime the child will be/was archived
+		} catch ( java.text.ParseException ignored ) {}
+		menuItem.setEditable("0".equals((String)childIt.next())) ;           // if the user may admin it.
+		menuItem.setFilename((String)childIt.next()) ;                       // The filename, if it is a file-doc.
+
+		if ( (!menuItem.isActive() || menuItem.isArchived()) && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
+		    continue ;
 		}
 
-		boolean inactive = false ;
-		boolean archived = false ;
-
-		if ( activate_date != null && activate_date.compareTo(now) >= 0 ) {// If activated_date is greater than or equal to now
-		    if ( !menumode ) {														// and we're not in menumode...
-			continue ;																// ...don't include this menuitem
-		    } else {
-			inactive = true ;
-		    }
-		}
-
-		if ( (archived_date != null && archived_date.compareTo(now) <= 0)	// If archived_date is smaller than or equal to now
-		     || "1".equals(child_archive) ) {	// or archive is set
-		    if ( !menumode ) {										// and we're not in menumode...
-			continue ;																// ...don't include this menuitem
-		    } else {
-			archived = true ;
-		    }
-		}
-
-		Properties props = new Properties () ;	// New Properties to hold the tags for this menuitem.
-
-		String admin_start = "" ;
-		String admin_stop = "" ;
-		if ( menumode ) {
-		    String sortBox = "<input type=\"text\" name=\""+child_meta_id+"\" value=\""+child_manual_sort_order+"\" size=\"4\" maxlength=\"4\">" ;
-		    String archiveDelBox = "<input type=\"checkbox\" name=\"archiveDelBox\" value=\""+child_meta_id+"\">" ;
-
-		    //props.setProperty("#sortBox#",sortBox) ;
-		    //props.setProperty("#archiveDelBox#",archiveDelBox) ;
-
-		    if ( "0".equals(child_admin) ) {
-			// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-			admin_stop+="&nbsp;<a href=\"AdminDoc?meta_id="+child_meta_id+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
-		    }
-
-		    if (sort_order == 2) {
-			admin_start += sortBox ;
-		    }
-		    admin_start += archiveDelBox ;
-
-		}
-
-		String archive_start = "" ;
-		String archive_stop = "" ;
-
-		if ( inactive ) {
-		    archive_start+="<em><i>" ;
-		    archive_stop+="</i></em>" ;
-		}
-
-		if ( archived ) {
-		    archive_start="<strike>"+archive_start ;
-		    archive_stop+="</strike>" ;
-		}
-
-		props.setProperty("#adminStart#",admin_start) ;
-		props.setProperty("#adminStop#",admin_stop) ;
-		//props.setProperty("#to_meta_id#",to_meta_id) ;
-		//props.setProperty("#manual_sort_order#",child_manual_sort_order) ;
-		if ( "_other".equals(child_target) ) {
-		    child_target = (String)child_frame_name ;
-		}
-		if ( child_target.length() != 0 ) {
-		    child_target = " target=\""+child_target+"\"" ;
-		}
-
-		// If this doc is a file, we'll want to put in the filename
-		// as an escaped translated path
-		// For example: /servlet/GetDoc/filename.ext?meta_id=1234
-		//                             ^^^^^^^^^^^^^
-
-		if ( child_filename != null && "8".equals(child_doc_type) ) {
-		    child_filename = "/"+java.net.URLEncoder.encode(child_filename) ;
-		} else {
-		    child_filename = "" ;
-		}
-
-		if ( child_meta_headline.length() == 0 ) {
-		    child_meta_headline = "&nbsp;" ;
-		}
-
-		child_meta_headline = archive_start+child_meta_headline+archive_stop ;
-		if ( !"".equals(child_meta_image) ) {
-		    child_meta_image = "<img src=\""+child_meta_image+"\" border=\"0\">" ;
-		}
-
-		String href = "\"GetDoc"+child_filename+"?meta_id="+child_meta_id+"\""+child_target ;
-		props.setProperty("#getChildRef#",href) ;
-		
-		props.setProperty("#childMetaId#",child_meta_id) ;
-		props.setProperty("#childMetaImage#",child_meta_image) ;
-		props.setProperty("#childMetaHeadline#",child_meta_headline) ;
-		props.setProperty("#childMetaText#",child_meta_text) ;
-		props.setProperty("#childCreatedDate#",child_date_created) ;
-
-		// Put the data in the proper tags.
-		props.setProperty("#/menuitemlink#", "</a>"+admin_stop) ;
-		props.setProperty("#menuitemlink#", admin_start+"<a href="+href+">") ;
-		props.setProperty("#menuitemheadline#", child_meta_headline) ;
-		props.setProperty("#menuitemtext#", child_meta_text) ;
-		props.setProperty("#menuitemdatecreated#", child_date_created) ;
-		props.setProperty("#menuitemdatemodified#", child_date_modified) ;
-		props.setProperty("#menuitemimage#", child_meta_image) ;
-	
-		
-		
-		currentMenu.add(props) ;	// Add the Properties for this menuitem to the current menus list.
+		currentMenu.add(menuItem) ;	// Add the Properties for this menuitem to the current menus list.
 	    }
 
 
@@ -585,7 +464,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    tags.setProperty("#saveSortStop*#","") ;
 		
 	    tags.setProperty("#param#", param_value);
-		tags.setProperty("#externalparam#",extparam_value);
+	    tags.setProperty("#externalparam#",extparam_value);
 
 	    // Give the user a row of buttons if he is privileged enough.
 	    if ( serverObject.checkDocAdminRights(meta_id,user) && flags >= 0 ) {
@@ -759,28 +638,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		    result.append(nextbit) ;
 		    continue ;
 		}
-
+		
 		// String nextbit now contains the bit to parse. (Within the imscript-tags.)
-
+		
 		// Parse the new-style menus.
 		// Aah... the magic of OO...
 		nextbit = org.apache.oro.text.regex.Util.substitute(patMat,MENU_PATTERN, menuparsersubstitution,nextbit,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
-
-		// Parse the obsolete menus.
-		// You know... the ones that suck so bad it isn't even funny anymore...
-		// Just look what happens when you have something that isn't properly delimited.
-		// Without this, we could get something similar to efficiency into this so-called parser.
-		PatternMatcherInput pmin = new PatternMatcherInput(nextbit) ;
-		StringBuffer sbtemp = new StringBuffer(nextbit) ;
-		while (patMat.contains(pmin, OBSOLETE_MENU_PATTERN)) {
-		    MatchResult matres = patMat.getMatch() ;
-		    int [] menu_param = { Integer.parseInt(matres.group(1)), Integer.parseInt(matres.group(2)), Integer.parseInt(matres.group(3)) } ;
-		    int endoffset = matres.endOffset(0) ;
-		    obsoleteMenuParser(sbtemp,matres.beginOffset(0), endoffset, menu_param, menus, menumode, sort_order, patMat,tags) ;
-		    String newinput = sbtemp.toString() ;
-		    pmin.setInput(newinput, endoffset, newinput.length()-endoffset ) ;
-		}
-		nextbit = sbtemp.toString() ;
 
 		// Parse the <?imcms:tags?>
 		nextbit = org.apache.oro.text.regex.Util.substitute(patMat,IMCMS_TAG_PATTERN,imcmstagsubstitution,nextbit,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
@@ -867,136 +730,5 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     private LinkedList getMenuById(Map menus, int id) {
 	return (LinkedList)menus.get(new Integer(id)) ;
     }
-
-
-    /**
-       I sincerely apologize for this,
-       but i create this method only to remove the old stupid parser from the main block of the parseloop.
-       This method and way of parsing a template must die, as soon as possible.
-
-       @param sb The stringbuffer to work on
-       @param sbindex The start of the menu in the stringbuffer.
-       @param reindex The end of the first row of the stringbuffer. (Or the start of the next line, i don't remember.) At least i think that's correct...
-       @param menu_param The three ints of the menu. no, rows, and table_col
-       @param menus The HashMap containing all the menus.
-       @param menumode A boolean detailing whether or not we are in menu-admin-mode
-       @param sort_order The magic number that tells us which sort-order we are using.
-       @param tags Don't ask... this contains the other tags to parse in the page. Used for getMenuModePrefix
-    */
-    private void obsoleteMenuParser (StringBuffer sb, int sbindex, int reindex, int[] menu_param, HashMap menus, boolean menumode, int sort_order, PatternMatcher patMat, Properties tags) {
-	int menurowsindex = sbindex ;   // We'll store away the index of the start of the menu.
-	sbindex = reindex ;
-	// Now we'll read each row... so we'll need some storagespace...
-	String[] menu_rows = new String[menu_param[1]] ;	//Allocate an array to hold the menurows
-	StringBuffer tmpsb = new StringBuffer() ;
-	// for each row in the template...
-	for ( int foo=0 ; foo<menu_param[1] ; ++foo ) {
-	    char d ;
-	    while ( Character.isWhitespace(sb.charAt(sbindex)) ) {
-		++sbindex ;	//Skip whitespace...
-	    }
-	    while ( (d = sb.charAt(sbindex++)) != '\n' && d != '\r' ) {	// Read a line
-		tmpsb.append(d) ;
-	    }
-	    menu_rows[foo] = tmpsb.toString()+"\r\n" ;	// Store the line away... Note that "\r\n" is the standard html (as well as http and dos) end-of-line.
-	    tmpsb.setLength(0) ;						// Clear the stringbuffer
-	}
-	//sb.replace(menurowsindex,sbindex,"") ;	// Remove the lines
-	//sbindex = menurowsindex ;
-
-	// Hohum... Now we should finally have the template rows of the menu in an array...
-	// Now to another problem... parsing the individual bastards.
-	// OK... so i have learned that the first two lines are used, seemingly as one string,
-	// and the second two are not used... Sigh...
-	// First thing i would do if i could would be to redesign these damned templates!
-	// And i will one day, so help me Phil, lord of heck!
-	LinkedList currentMenu = getMenuById(menus,menu_param[0]) ;
-	if ( currentMenu == null ) {
-	    String menubuff_str = "" ;
-	    if (menumode) {
-		menubuff_str = "<!-- inserted by imcms --><tr><td>"+getMenuModePrefix(patMat,menu_param[0],tags)+"</td></tr><!-- empty menu --><tr><td>"+getMenuModeSuffix(tags)+"</td></tr><!-- /inserted by imcms -->" ;
-	    }
-	    sb.replace( menurowsindex, sbindex,menubuff_str) ;
-	    return ;
-	}
-	// Get an iterator over the elements in the current menu
-	Iterator menuit = currentMenu.iterator() ;
-	StringBuffer menubuff = new StringBuffer() ;
-	String menurowstr = menu_rows[0] ;
-	// If the "rows"-attribute of this menu is larger than 1, we need the second row too.
-	// Note that if there is only one row, we add the #adminStop# after parsing for <tr><td>
-	if ( menu_rows.length>1 ) {
-	    menurowstr += "<!-- menuitem 2nd row -->#adminStop#"+menu_rows[1]+"<!-- /menuitem 2nd row -->" ;
-	}
-	// OK, menurowstr now contains a row of the menu, with all the tags and stuff.
-	// Now we need to check if it starts with <tr> or <td>
-	// and do something about it.
-	// These patterns are supposed to match <(/)tr whatever> and <(/)td whatever> at end and beginning of the string.
-	String trstart = "\r\n<!-- tr --><tr>" ;   // Html-tag for start of tablerow (menurow)
-	String trstop = "</tr><!-- /tr -->\r\n" ;   // Html-tag for end of tablerow (menurow)
-	String tdstart = "\r\n<!-- td --><td valign=\"top\">" ;    // Html-tag for start of table-cell (menuelement)
-	String tdstop = "</td><!-- /td -->\r\n" ;   // Html-tag for end of table-cell (menuelement)
-	Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
-
-	/** Added 010212 **/
-	if ( patMat.contains(menurowstr,TR_START_PATTERN) ) {
-	    trstart = "\r\n<!-- t tr -->"+patMat.getMatch().group(1) ;
-	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
-	}
-	if ( patMat.contains(menurowstr,TR_STOP_PATTERN) ) {
-	    trstop = patMat.getMatch().group(1) + "<!-- t /tr -->\r\n" ;
-	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TR_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
-	}
-	if ( patMat.contains(menurowstr,TD_START_PATTERN) ) {
-	    tdstart = "\r\n<!-- t td -->"+patMat.getMatch().group(1) ;
-	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_START_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
-	}
-	if ( patMat.contains(menurowstr,TD_STOP_PATTERN) ) {
-	    tdstop = patMat.getMatch().group(1)+"<!-- t /td -->\r\n" ;
-	    menurowstr = org.apache.oro.text.regex.Util.substitute(patMat,TD_STOP_PATTERN,NULL_SUBSTITUTION,menurowstr) ;
-	}
-
-	/** End of added 010212 **/
-	//// Make sure we add tags for the html-tags for inactive and archived documents,
-	//menurowstr = "#adminStart#"+menurowstr ;
-	// Add #adminStop# to the end, if there is only one line.
-	// Note that if there is more than one line, we do it before
-	// all the regexing for <tr><td>
-	if ( menu_rows.length==1 ) {
-	    menurowstr = "#adminStart#"+menurowstr+"#adminStop#" ;
-	} else {
-	    menurowstr = "#adminStart#"+menurowstr ;
-	}
-	// for each element of the menu...
-	imcode.server.parser.MapSubstitution mapsubstitution = new imcode.server.parser.MapSubstitution() ;
-	for ( int rowcount = 0 ; menuit.hasNext() ; ) {
-	    if ( rowcount % menu_param[2]==0 ) {	// If this is a new tablerow... (menu_param[2] contains the number of columns per row)
-		menubuff.append(trstart) ;      // append tag for new row: "<TR>", or whatever was already used in the template.
-	    }
-	    menubuff.append(tdstart) ;	// Begin new cell: "<TD>", or whatever was already used in the template.
-				// Here we are going to output one menuitem.
-				// All data is stored in a Properties, remember?
-	    //StringBuffer menurow = new StringBuffer(menurowstr) ;	// Allocate some workroom
-	    Properties props = (Properties)menuit.next() ;	// Retrieve the tags and data for this menuitem...
-
-	    mapsubstitution.setMap(props, true) ;
-	    String menurow = org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,mapsubstitution,menurowstr,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
-
-	    menubuff.append(menurow+tdstop) ;    // OK... one row done. Append it to the menubuffer and end the cell.
-	    ++rowcount ;    // And, of course... increase the rowcount.
-	    if ( rowcount%menu_param[2]==0 ) {	// If next row is a new tablerow...
-		menubuff.append(trstop) ;   // append </tr>, or the equivalent from the template.
-	    }
-	}
-	String menubuff_str = menubuff.toString() ;
-
-	if (menumode) {
-	    menubuff_str = "<tr><td>"+getMenuModePrefix(patMat,menu_param[0],tags)+"</td></tr><!-- menu -->"+menubuff_str+"<!-- /menu --><tr><td>"+getMenuModeSuffix(tags)+"</td></tr>" ;
-	}
-	// Yay! One menu done. Insert into the pagebuffer...
-	sb.replace( menurowsindex, sbindex,menubuff_str) ;
-	//sb.insert(sbindex,menubuff_str) ;
-    }
-
 
 }

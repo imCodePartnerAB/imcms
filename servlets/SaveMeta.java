@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.text.SimpleDateFormat ;
+import java.text.ParseException ;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.util.* ;
@@ -49,85 +50,6 @@ public class SaveMeta extends HttpServlet {
 			}
 			return ;
 		}
-
-		/*
-			This table keeps track of all the fields we may encounter.
-			The "nullvalue" is there to support checkboxes, which,
-			if not checked, report null.
-			So, if the checkboxes do not appear, we know that we should enter
-			the "nullvalue" found here, into the db.
-		*/
-		String [] metatable = {
-		/*  Nullable			Nullvalue */
-			"shared",			"0",
-			"disable_search",	"0",
-			"archive",			"0",
-			"show_meta",		"0",
-/*			"category_id",		"1",
-			"expand",			"1",
-			"help_text_id",		"1",
-			"status_id",		"1",
-			"lang_prefix",		"se",
-			"sort_position",	"1",
-			"menu_position",	"1",
-*/			"permissions",		"0",
-//			"description",		null,
-			"meta_headline",	null,
-			"meta_text",		null,
-			"meta_image",		null,
-//			"date_created",		null,
-//			"date_modified",	null,
-			"activated_date",	null,
-			"activated_time",	null,
-			"archived_date",	null,
-			"archived_time",	null,
-			"frame_name",		null,
-			"target",			null
-		} ;
-
-		final int metatable_cols = 2 ;
-
-		// I'll make a table to keep track of
-		// what is the highest (least privileged)
-		// set_id you may have, to be able to change
-		// each property. Roles with set_ids 1 and 2
-		// still need explicit permissions, so this is
-		// mainly for fleshing out what only a user with
-		// "full" (0) may do. (Change wether set-id 1 is
-				// more privileged. "permissions")
-		// I use a bitmask here to specify what permissions
-		// are required for each.
-		// 0 == Unreachable
-		// 1 == Something on the "simple docinfo"-page
-		// 2 == Something on the "advanced docinfo"-page
-		// 4 == Something on the "rights/permissions"-page
-		int[] metatable_restrictions = {
-		/*	set_id,	permission_bitmask	*/
-			2,		6,		//"shared",
-			2,      2,		//"disable_search",
-			2,      2,		//"archive",
-			2,		6,		//"show_meta",
-/*			-1,		0,		//"category_id",
-			-1,		0,		//"expand",
-			-1,		0,		//"help_text_id",
-			-1,		0,		//"status_id",
-			-1,		0,		//"lang_prefix",
-			-1,		0,		//"sort_position",
-			-1,		0,		//"menu_position",
-*/			0,		4,		//"permissions",
-//			-1,		0,		//"description",
-			2,		7,		//"meta_headline",
-			2,		3,		//"meta_text",
-			2,		3,		//"meta_image",
-//			2,		2,		//"date_created",
-//			2,		2,		//"date_modified",
-			2,		2,		//"activated_date",
-			2,		2,		//"activated_time",
-			2,		2,		//"archived_date",
-			2,		2,		//"archived_time",
-			2,		2,		//"frame_name",
-			2,		2		//"target"
-		} ;
 
 		Properties metaprops = new Properties () ;
 
@@ -188,11 +110,115 @@ public class SaveMeta extends HttpServlet {
 			     +role_id+" from "+role_set_id+" to "+new_set_id+" on meta_id "+meta_id) ;
 		    }
 		}
+
+		/*
+		  Now we're going to start accepting the input form fields.
+		  This table keeps track of all the fields we may encounter.
+		  The "nullvalue" is there to support checkboxes, which,
+		  if not checked, report null.
+		  So, if the checkboxes do not appear, we know that we should enter
+		  the "nullvalue" found here, into the db.
+		*/
+		// NOTE! This table matches the one below. Don't go changing one without changing the other.
+		// FIXME: They should be merged into one table.
+		String [] metatable = {
+		/*  Nullable			Nullvalue */
+		    "shared",	     "0",
+		    "disable_search","0",
+		    "archive",       "0",
+		    "show_meta",     "0",
+		    "permissions",   "0",
+		    "meta_headline", null,
+		    "meta_text",     null,
+		    "meta_image",    null,
+		    "activated_datetime",null,
+		    "archived_datetime", null,
+		    "frame_name",    null,
+		    "target",	     null
+		} ;
+
+		final int metatable_cols = 2 ;
+
+		// I'll make a table to keep track of
+		// what is the least privileged (highest)
+		// set_id you may have, to be able to change
+		// each property. Roles with set_ids 1 and 2
+		// still need explicit permissions, so this is
+		// mainly for fleshing out what only a user with
+		// "full" (0) may do. (Change whether set-id 1 is
+		// more privileged. "permissions")
+		// I use a bitmask here to specify what permissions
+		// are required for each.
+		// 0 == Unreachable
+		// 1 == Something on the "simple docinfo"-page
+		// 2 == Something on the "advanced docinfo"-page
+		// 3 == 1|2
+		// 4 == Something on the "rights/permissions"-page
+		// 5 == 1|4
+		// 6 == 2|4
+		// 7 == 1|2|4
+
+		// NOTE! This table matches the one above. Don't go changing one without changing the other.
+		// FIXME: They should be merged into one table.
+		int[] metatable_restrictions = {
+		    //	set_id,	permission_bitmask
+			2,	6,		//"shared",
+			2,      2,		//"disable_search",
+			2,      2,		//"archive",
+			2,	6,		//"show_meta",
+			0,	4,		//"permissions",
+			2,	7,		//"meta_headline",
+			2,	3,		//"meta_text",
+			2,	3,		//"meta_image",
+			2,	2,		//"activated_datetime",
+			2,	2,		//"archived_datetime",
+			2,	2,		//"frame_name",
+			2,	2		//"target"
+		} ;
+
+		HashMap inputMap = new HashMap() ;
+		// Loop through all meta-table-properties
+		// Adding them to a HashMap to be used as input
+		// That way i can mutilate the values before all the
+		// permissions are checked.
+		for ( int i=0 ; i<metatable.length ; i+=metatable_cols ) {
+		    inputMap.put(metatable[i],req.getParameter(metatable[i])) ;
+		}
 		
+		// Here's some mutilation!
+		// activated_date and activated_time need to be merged, and likewise with archived_date and archived_time
+
+		SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm") ;
+
+		String activated_date = req.getParameter("activated_date") ;
+		String activated_time = req.getParameter("activated_time") ;
+		String activated_datetime = null ;
+		if ( activated_date != null && activated_time != null ) {
+		    activated_datetime = activated_date + ' ' + activated_time ;
+		    try {
+			dateformat.parse(activated_datetime) ;
+		    } catch (ParseException ex) {
+			activated_datetime = null ;
+		    }
+		}
+
+		String archived_date = req.getParameter("archived_date") ;
+		String archived_time = req.getParameter("archived_time") ;
+		String archived_datetime = null ;
+		if ( archived_date != null && archived_time != null ) {
+		    archived_datetime = archived_date + ' ' + archived_time ;
+		    try {
+			dateformat.parse(archived_datetime) ;
+		    } catch (ParseException ex) {
+			archived_datetime = null ;
+		    }
+		}
+
 		// Loop through all meta-table-properties
 		// Checking permissions as we go.
+		// All alterations of the inputdata must happen before this
 		for ( int i=0 ; i<metatable.length ; i+=metatable_cols ) {
-			String tmp = req.getParameter(metatable[i]) ;
+			String tmp = (String)inputMap.get(metatable[i]) ;
 			if ( 	user_set_id > metatable_restrictions[i]						// Check on set_id if user is allowed to set this particular property.
 				|| 	(user_set_id > 0 										// If user not has full access (0)...
 				&& ((user_perm_set & metatable_restrictions[i+1]) == 0) // check permission-bitvector for the users set_id.
@@ -225,10 +251,8 @@ public class SaveMeta extends HttpServlet {
 		String[] temp_default_templates = {temp_default_template_1, temp_default_template_2};
 		
 		// Set modified-date to now...
-		SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
 		Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
 		metaprops.setProperty("date_modified",dateformat.format(dt)) ;
-
 
 		// It's like this... people make changes on the page, and then they forget to press "save"
 		// before they press one of the "define-permission" buttons, and then their settings are lost.
@@ -285,7 +309,8 @@ public class SaveMeta extends HttpServlet {
 		{
 			template2 = req.getParameter("default_template_set_2").equals("")? "-1":req.getParameter("default_template_set_2");
 		}
-		String sqlStr = "" ;
+		String sqlStr = "activated_datetime = "+(null == activated_datetime ? "NULL" : "'"+activated_datetime+"'")+
+		    ",archived_datetime = "+(null == archived_datetime ? "NULL" : "'"+archived_datetime+"'") + ",";
 
 		Enumeration propkeys = metaprops.propertyNames() ;
 		while ( propkeys.hasMoreElements() ) {
@@ -312,7 +337,6 @@ public class SaveMeta extends HttpServlet {
 		if ( sqlStr.length() > 0 ) {
 
 			sqlStr = "update meta set " +sqlStr+ " where meta_id = "+meta_id ;
-			//log(sqlStr) ;
 			IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
 		}
 

@@ -53,55 +53,31 @@ public class MetaDataParser {
 
 	String imcserver = Utility.getDomainPref("adminserver",host) ;
 
-	final int NORMAL 	= 0 ;
-	final int CHECKBOX 	= 1 ;
-	final int OTHER	= 2 ;
+	final String NORMAL 	= "NORMAL" ;
+	final String CHECKBOX 	= "CHECKBOX" ;
+	final String OTHER	= "OTHER" ;
 
 	String [] metatable = {
-	    /*  Nullable			Nullvalue */
-	    "shared",		"0",
-	    "disable_search",	"0",
-	    "archive",		"0",
-	    "show_meta",	"0",
-	    "description",	null,
-	    "meta_headline",	null,
-	    "meta_text",	null,
-	    "meta_image",	null,
-	    "date_created",	null,
-	    "date_modified",	null,
-	    "activated_date",	null,
-	    "activated_time",	null,
-	    "archived_date",	null,
-	    "archived_time",	null,
-	    "doc_type",		null,
-	    "target",		null,
-	    "frame_name",	null
-	} ;
-
-	// FIXME: Roll these two arrays into one.
-
-	int metatabletype[] = {
-	    CHECKBOX,
-	    CHECKBOX,
-	    CHECKBOX,
-	    CHECKBOX,
-	    NORMAL,
-	    NORMAL,
-	    NORMAL,
-	    NORMAL,
-	    NORMAL,
-	    NORMAL,
-	    NORMAL,
-	    NORMAL,
-	    NORMAL,
-	    NORMAL,
-	    NORMAL,
-	    OTHER,
-	    OTHER
+	  /* Nullable		        Nullvalue   Type */
+	    "shared",		        "0",        CHECKBOX,
+	    "disable_search",	        "0",        CHECKBOX,
+	    "archive",		        "0",        CHECKBOX,
+	    "show_meta",	        "0",        CHECKBOX,
+	    "description",	        null,       NORMAL,
+	    "meta_headline",	        null,       NORMAL,
+	    "meta_text",	        null,       NORMAL,
+	    "meta_image",	        null,       NORMAL,
+	    "date_created",	        null,       NORMAL,
+	    "date_modified",	        null,       NORMAL,
+	    "doc_type",		        null,       NORMAL,
+	    "activated_datetime",	null,       OTHER,
+	    "archived_datetime",	null,       OTHER,
+	    "target",		        null,       OTHER,
+	    "frame_name",	        null,       OTHER
 	} ;
 
 	// Lets get the langprefix
-	String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+	String lang_prefix = ""+user.getLangPrefix() ;
 
 	// Lets get all info for the meta id
 	String sqlStr = "select * from meta where meta_id = "+meta_id ;
@@ -138,30 +114,26 @@ public class MetaDataParser {
 	// Lets fill the info from db into the vector vec
 
 	String checks = "" ;
-	for ( int i = 0 ; i<metatable.length ; i+=2 ) {
+	for ( int i = 0 ; i<metatable.length ; i+=3 ) {
 	    String temp = ((String[])hash.get(metatable[i]))[0] ;
-		if (metatable[i].equals("meta_headline")||metatable[i].equals("meta_text"))
-		{
-			//do nothing its already parsed
-		}else
-		{
-	    String[] pd = {
-		"&",	"&amp;",
-		"<",	"&lt;",
-		">",	"&gt;",
-		"\"",	"&quot;",
-	    } ;
-	    temp = Parser.parseDoc(temp,pd) ;
-		}
+	    if (!(metatable[i].equals("meta_headline")||metatable[i].equals("meta_text"))) {
+		String[] pd = {
+		    "&",	"&amp;",
+		    "<",	"&lt;",
+		    ">",	"&gt;",
+		    "\"",	"&quot;",
+		} ;
+		temp = Parser.parseDoc(temp,pd) ;
+	    }
 	    String tag = "#"+metatable[i]+"#" ;
-	    if ( metatabletype[i/2] == NORMAL ) {			// This is not a checkbox or an optionbox
+	    if ( NORMAL.equals(metatable[i+2]) ) {			// This is not a checkbox or an optionbox
 		if ( htmlStr.indexOf(tag)==-1 ) {
 		    checks += "<input type=\"hidden\" name=\""+metatable[i]+"\" value=\""+temp+"\">" ;
 		} else {
 		    vec.add(tag) ;							// Replace its corresponding tag
 		    vec.add(temp) ;
 		}
-	    } else if ( metatabletype[i/2] == CHECKBOX ) {	// This is a checkbox
+	    } else if ( CHECKBOX.equals(metatable[i+2]) ) {	// This is a checkbox
 		if ( !temp.equals(metatable[i+1]) ) {	// If it is equal to the nullvalue, it must not appear (i.e. equal null)
 		    if ( htmlStr.indexOf(tag)==-1 ) {
 			checks += "<input type=\"hidden\" name=\""+metatable[i]+"\" value=\""+temp+"\">" ;
@@ -210,6 +182,35 @@ public class MetaDataParser {
 		classification += ", "+classifications[i] ;
 	    }
 	}
+
+	String activated_datetime = ((String[])hash.get("activated_datetime"))[0] ;
+	if ( activated_datetime.indexOf(' ') != -1) {
+	    vec.add("#activated_date#") ;
+	    vec.add(activated_datetime.substring(0,activated_datetime.indexOf(' '))) ;
+	    vec.add("#activated_time#") ;
+	    vec.add(activated_datetime.substring(activated_datetime.indexOf(' ')+1)) ;
+	} else {
+	    vec.add("#activated_date#") ;
+	    vec.add("") ;
+	    vec.add("#activated_time#") ;
+	    vec.add("") ;
+
+	} // end of else
+	
+	
+	String archived_datetime  = ((String[])hash.get("archived_datetime"))[0] ;
+	if ( archived_datetime.indexOf(' ') != -1) {
+	    vec.add("#archived_date#") ;
+	    vec.add(archived_datetime.substring(0,archived_datetime.indexOf(' '))) ;
+	    vec.add("#archived_time#") ;
+	    vec.add(archived_datetime.substring(archived_datetime.indexOf(' ')+1)) ;
+	} else {
+	    vec.add("#archived_date#") ;
+	    vec.add("") ;
+	    vec.add("#archived_time#") ;
+	    vec.add("") ;
+	}
+
 	vec.add("#classification#") ;
 	vec.add(classification) ;
 
@@ -243,9 +244,6 @@ public class MetaDataParser {
 	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
 	vec.add(dateformat.format(new Date())) ;
 
-	// This is a nasty one, The PHB wants the parsing on the server. We're just
-	// done with the parsing, but lets parse it on the server anyway
-	// Lets generate the html code
 	return IMCServiceRMI.parseDoc(imcserver, vec, htmlFile, lang_prefix ) ;
 
     } // end of parseMetaData
