@@ -74,6 +74,8 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
                 buildNewIndex();
             }
         };
+        indexBuildingThread.setPriority( Thread.currentThread().getPriority() - 1 );
+        log.debug("Setting the priority on the background indexing thread to " + indexBuildingThread.getPriority() );
         indexBuildingThread.setDaemon(true);
         indexBuildingThread.start();
     }
