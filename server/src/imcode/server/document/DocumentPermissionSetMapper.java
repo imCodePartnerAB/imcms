@@ -32,7 +32,7 @@ public class DocumentPermissionSetMapper {
     private int[] sqlGetDocTypesWithPermissions( int metaId,
                                                  DocumentPermissionSetDomainObject documentPermissionSet,
                                                  boolean forNewDocuments ) {
-        String table = getExtendedPermissionsTable( forNewDocuments ) ;
+        String table = getExtendedPermissionsTable( forNewDocuments );
         String sqlStr = "SELECT permission_data FROM " + table
                         + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
                         + IMCConstants.PERM_CREATE_DOCUMENT;
@@ -176,13 +176,17 @@ public class DocumentPermissionSetMapper {
             }
         }
 
+        if ( documentPermissionSet instanceof TextDocumentPermissionSetDomainObject ) {
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
+            sqlDeleteAllowedTemplateGroups( document, textDocumentPermissionSet, forNewDocuments );
+            sqlDeleteAllowedDocumentTypes( document, textDocumentPermissionSet, forNewDocuments );
+        }
+
         String sproc = forNewDocuments
                        ? SPROC_SET_NEW_DOC_PERMISSION_SET : SPROC_SET_DOC_PERMISSION_SET;
         service.sqlUpdateProcedure( sproc, new String[]{
             "" + document.getId(), "" + documentPermissionSet.getPermissionType(), "" + permissionBits
         } );
-
-
 
         if ( documentPermissionSet instanceof TextDocumentPermissionSetDomainObject ) {
             TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
@@ -195,15 +199,9 @@ public class DocumentPermissionSetMapper {
                                                TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
                                                boolean forNewDocuments ) {
         String table = getExtendedPermissionsTable( forNewDocuments );
-        String sqlDeleteAllowedTemplateGroupIds = "DELETE FROM " + table
-                                                  + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
-                                                  + EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID;
-        service.sqlUpdateQuery( sqlDeleteAllowedTemplateGroupIds, new String[]{
-            "" + document.getId(), "" + textDocumentPermissionSet.getPermissionType()
-        } );
         TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
-        if (null == allowedTemplateGroups) {
-            return ;
+        if ( null == allowedTemplateGroups ) {
+            return;
         }
         String sqlInsertAllowedTemplateGroupId = "INSERT INTO " + table + " VALUES(?,?,"
                                                  + EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID
@@ -217,19 +215,32 @@ public class DocumentPermissionSetMapper {
         }
     }
 
+    private void sqlDeleteAllowedTemplateGroups( DocumentDomainObject document,
+                                                 TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
+                                                 boolean forNewDocuments ) {
+        int extendedPermissionId = EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID;
+        sqlDeleteFromExtendedPermissionsTable( document, textDocumentPermissionSet, forNewDocuments, extendedPermissionId );
+    }
+
+    private void sqlDeleteFromExtendedPermissionsTable( DocumentDomainObject document,
+                                                        TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
+                                                        boolean forNewDocuments, int extendedPermissionId ) {
+        String table = getExtendedPermissionsTable( forNewDocuments );
+        String sqlDelete = "DELETE FROM " + table
+                                                  + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
+                                                  + extendedPermissionId;
+        service.sqlUpdateQuery( sqlDelete, new String[]{
+            "" + document.getId(), "" + textDocumentPermissionSet.getPermissionType()
+        } );
+    }
+
     private void sqlSaveAllowedDocumentTypes( DocumentDomainObject document,
                                               TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
                                               boolean forNewDocuments ) {
         String table = getExtendedPermissionsTable( forNewDocuments );
-        String sqlDeleteAllowedDocumentTypeIds = "DELETE FROM " + table
-                                                 + " WHERE meta_id = ? AND set_id = ? AND permission_id = "
-                                                 + IMCConstants.PERM_CREATE_DOCUMENT;
-        service.sqlUpdateQuery( sqlDeleteAllowedDocumentTypeIds, new String[]{
-            "" + document.getId(), "" + textDocumentPermissionSet.getPermissionType()
-        } );
         int[] allowedDocumentTypeIds = textDocumentPermissionSet.getAllowedDocumentTypeIds();
-        if (null == allowedDocumentTypeIds) {
-            return ;
+        if ( null == allowedDocumentTypeIds ) {
+            return;
         }
         String sqlInsertCreatableDocumentTypeId = "INSERT INTO " + table + " VALUES(?,?,"
                                                   + IMCConstants.PERM_CREATE_DOCUMENT
@@ -237,9 +248,17 @@ public class DocumentPermissionSetMapper {
         for ( int i = 0; i < allowedDocumentTypeIds.length; i++ ) {
             int creatableDocumentTypeId = allowedDocumentTypeIds[i];
             service.sqlUpdateQuery( sqlInsertCreatableDocumentTypeId, new String[]{
-                "" + document.getId(), "" + textDocumentPermissionSet.getPermissionType(), "" + creatableDocumentTypeId
+                "" + document.getId(), "" + textDocumentPermissionSet.getPermissionType(), ""
+                                                                                           + creatableDocumentTypeId
             } );
         }
+    }
+
+    private void sqlDeleteAllowedDocumentTypes( DocumentDomainObject document,
+                                                TextDocumentPermissionSetDomainObject textDocumentPermissionSet,
+                                                boolean forNewDocuments ) {
+        int extendedPermissionId = IMCConstants.PERM_CREATE_DOCUMENT;
+        sqlDeleteFromExtendedPermissionsTable( document, textDocumentPermissionSet, forNewDocuments, extendedPermissionId );
     }
 
     private String getExtendedPermissionsTable( boolean forNewDocuments ) {
@@ -273,7 +292,7 @@ public class DocumentPermissionSetMapper {
             TemplateGroupDomainObject[] allowedTemplateGroups = sqlGetTemplateGroupsWithPermissions( document.getId(), textDocumentPermissionSet, forNewDocuments );
             textDocumentPermissionSet.setAllowedTemplateGroups( allowedTemplateGroups );
         }
-        if ( textDocumentPermissionSet.getEditMenus()) {
+        if ( textDocumentPermissionSet.getEditMenus() ) {
             int[] documentTypeIds = sqlGetDocTypesWithPermissions( document.getId(), textDocumentPermissionSet, forNewDocuments );
             textDocumentPermissionSet.setAllowedDocumentTypeIds( documentTypeIds );
         }
