@@ -2588,7 +2588,7 @@ public abstract class DatabaseService {
 
     public class Table_roles {
         private int role_id;
-        private String role_name;
+        public String role_name;
         private int permissions;
         private int admin_role;
 

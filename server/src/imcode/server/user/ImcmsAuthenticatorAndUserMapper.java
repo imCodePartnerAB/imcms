@@ -16,7 +16,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     private static final String SPROC_GET_ROLE_ID_BY_ROLE_NAME = "GetRoleIdByRoleName";
     private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
-    private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
     private static final String SPROC_DEL_USER_ROLES = "DelUserRoles";
     private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
 
@@ -158,18 +157,14 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     public String[] getAllRoleNames() {
-        String[] roleNamesMinusUsers = service.sqlProcedure( SPROC_GET_ALL_ROLES );
-
-        Set roleNamesSet = new HashSet();
-        for( int i = 0; i < roleNamesMinusUsers.length; i += 2 ) {
-            String roleName = roleNamesMinusUsers[i + 1];
-            roleNamesSet.add( roleName );
+        DatabaseService.Table_roles[] roles = databaseService.sproc_GetAllRoles_but_user();
+        String[] result = new String[ roles.length + 1 ];
+        for (int i = 0; i < roles.length; i++) {
+            DatabaseService.Table_roles role = roles[i];
+            result[i] = role.role_name;
         }
-
-        roleNamesSet.add( RoleConstants.USERS );
-
-        String[] roleNames = (String[])roleNamesSet.toArray( new String[roleNamesSet.size()] );
-        return roleNames;
+        result[roles.length] = RoleConstants.USERS;
+        return result;
     }
 
     public void addRoleNames( String[] externalRoleNames ) {
