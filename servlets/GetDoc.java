@@ -23,6 +23,7 @@ public class GetDoc extends HttpServlet {
     private static Category trackLog = Logger.getInstance(IMCConstants.ACCESS_LOG);
     private static Category log = Logger.getInstance(GetDoc.class.getName());
     private static String noActiveDocUrl = "no_active_document.html";
+    private static final String ENCODING_CP1252 = "cp1252";
 
     /**
      doGet()
@@ -32,8 +33,7 @@ public class GetDoc extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         int meta_id;
-
-        res.setContentType( "text/html" );
+        res.setContentType( "text/html; charset=" + ENCODING_CP1252 );
         ServletOutputStream out = res.getOutputStream();
 
         try {
@@ -45,7 +45,7 @@ public class GetDoc extends HttpServlet {
         }
         String tempstring = getDoc( meta_id, meta_id, req, res );
         if( tempstring != null ) {
-            byte[] tempbytes = tempstring.getBytes( "8859_1" );
+            byte[] tempbytes = tempstring.getBytes( ENCODING_CP1252 );
             res.setContentLength( tempbytes.length );
             out.write( tempbytes );
         }
@@ -190,7 +190,7 @@ public class GetDoc extends HttpServlet {
 
         // check if external doc
         imcode.server.ExternalDocType ex_doc = imcref.isExternalDoc( meta_id, user );
-        String htmlStr = "";
+        String htmlStr;
         if( ex_doc != null ) {
             String paramStr = "?meta_id=" + meta_id + "&";
             paramStr += "parent_meta_id=" + parent_meta_id + "&";
@@ -261,7 +261,7 @@ public class GetDoc extends HttpServlet {
                 String content_disposition = (null != req.getParameter( "download" ) ? "attachment" : "inline") + "; filename=\"" + filename + "\"";
                 res.setHeader( "Content-Disposition", content_disposition );
                 try {
-                    int bytes_read = 0;
+                    int bytes_read;
                     byte buffer[] = new byte[32768];
                     while( -1 != (bytes_read = fr.read( buffer )) ) {
                         out.write( buffer, 0, bytes_read );
