@@ -2812,6 +2812,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		rrUserData.setExpiryDate(null) ;
 	    }
 	    rrUserData.setExpiryDateWarningThreshold ( Integer.parseInt(dbData[4]) ) ;
+	    rrUserData.setExpiryDateWarningSent(Integer.parseInt(dbData[5]) != 0) ;
 	    // Return it
 	    return rrUserData ;
 	} catch (NumberFormatException nfe) {
@@ -2844,17 +2845,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			       ""+rrUserData.getMaxUsesWarningThreshold(),
 			       expiryDateString,
 			       ""+rrUserData.getExpiryDateWarningThreshold(),
+			       rrUserData.getExpiryDateWarningSent() ? "1" : "0"
 			   }
 			   ) ;
-    }
-
-    /**
-       Increment the readrunner-uses for a user
-       @param userId     The user
-    **/
-    public void incrementReadrunnerUsesForUser(User user) {
-	int userId = user.getUserId() ;
-	sqlUpdateProcedure("IncrementReadrunnerUsesForUser", new String[] {""+userId}) ;
     }
 
 }

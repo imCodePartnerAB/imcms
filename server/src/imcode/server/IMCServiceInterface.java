@@ -349,6 +349,4 @@ public interface IMCServiceInterface {
 
     public ReadrunnerUserData getReadrunnerUserData(User user) ;
 
-    public void incrementReadrunnerUsesForUser(User user) ;
-
 }

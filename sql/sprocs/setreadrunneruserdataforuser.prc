@@ -14,7 +14,8 @@ CREATE PROCEDURE SetReadrunnerUserDataForUser
 	@max_uses                      INT,
 	@max_uses_warning_threshold    INT,
 	@expiry_date                   DATETIME,
-	@expiry_date_warning_threshold INT
+	@expiry_date_warning_threshold INT,
+	@expiry_date_warning_sent      INT
 AS
 /**
 	Set readrunner-user-data for one user.
@@ -25,6 +26,7 @@ AS
 		@max_uses_warning_threshold    INT      Percentage threshold at which the user will be warned about expiry.
 		@expiry_date                   DATETIME The last date the user may use readrunner.
 		@expiry_date_warning_threshold INT      Threshold of days before expire_date at which the user will be warned about expiry.
+	        @expiry_date_warning_sent      INT      Whether a expiry-date-warning has been sent or not.
 **/
 DELETE FROM readrunner_user_data WHERE user_id = @user_id
 
@@ -35,7 +37,8 @@ VALUES(
 	@max_uses,
 	@max_uses_warning_threshold,
 	@expiry_date,
-	@expiry_date_warning_threshold
+	@expiry_date_warning_threshold,
+	@expiry_date_warning_sent
 )
 
 

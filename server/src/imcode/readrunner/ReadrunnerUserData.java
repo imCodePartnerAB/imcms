@@ -4,11 +4,30 @@ import java.util.Date ;
 
 public class ReadrunnerUserData {
 
-    private int  uses = 0 ;
-    private int  maxUses = 0 ;
-    private int  maxUsesWarningThreshold = 0 ;
-    private Date expiryDate = null ;
-    private int  expiryDateWarningThreshold = 0 ;
+    private int     uses = 0 ;
+    private int     maxUses = 0 ;
+    private int     maxUsesWarningThreshold = 0 ;
+    private Date    expiryDate = null ;
+    private int     expiryDateWarningThreshold = 0 ;
+    private boolean expiryDateWarningSent = false ;
+
+    /**
+       get-method for expiryDateWarningSent
+
+       @return the value of expiryDateWarningSent
+    **/
+    public boolean getExpiryDateWarningSent()  {
+	return this.expiryDateWarningSent;
+    }
+
+    /**
+       set-method for expiryDateWarningSent
+
+       @param expiryDateWarningSent Value for expiryDateWarningSent
+    **/
+    public void setExpiryDateWarningSent(boolean expiryDateWarningSent) {
+	this.expiryDateWarningSent = expiryDateWarningSent;
+    }
 
     /**
        Get the number of readrunner-uses for this user

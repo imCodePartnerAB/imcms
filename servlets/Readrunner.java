@@ -140,7 +140,6 @@ public class Readrunner extends HttpServlet {
 	    fileOut.write(theReadrunnedPage) ;
 	    fileOut.close() ;
 
-	    imcref.incrementReadrunnerUsesForUser(user) ;
 	    rrUserData.setUses(rrUserData.getUses()+1) ;
 
 	    // and redirect to the temporary file
@@ -148,6 +147,8 @@ public class Readrunner extends HttpServlet {
 	    res.flushBuffer() ;
 
 	    sendWarningMail(imcref, user, host, rrUserData) ;
+	    // Update the readrunneruserdata for the user, including number of uses and whether expiry-date-warning has been sent.
+	    imcref.setReadrunnerUserData(user,rrUserData) ;
 	}
     }
 
@@ -158,19 +159,22 @@ public class Readrunner extends HttpServlet {
 	    ? new Date(rrUserData.getExpiryDate().getTime() - (ONE_DAY * rrUserData.getExpiryDateWarningThreshold()))
 	    : null ;
 	String theMailTemplate = null ;
-	if (0 != max_uses_warning_threshold && rrUserData.getUses() > max_uses_warning_threshold) {
+	if (0 != max_uses_warning_threshold && 0 == rrUserData.getUses() - max_uses_warning_threshold) {
+	    // The max-uses-warning-threshold was set and just passed.
 	    theMailTemplate = EXPIRED_USES_MAIL ;
-	} else if (null != expiry_date_warning_threshold && new Date().after(expiry_date_warning_threshold)) {
-		theMailTemplate = EXPIRED_DATE_MAIL ;
+	} else if (!rrUserData.getExpiryDateWarningSent() && null != expiry_date_warning_threshold && new Date().after(expiry_date_warning_threshold)) {
+	    // Expiry-date-threshold has been set and passed, and no warning has been sent about it yet.
+	    theMailTemplate = EXPIRED_DATE_MAIL ;
+	    rrUserData.setExpiryDateWarningSent(true) ;
 	}
 
 	if (null == theMailTemplate) {
-	    log.info("No need to send warning-mail. Uses: "+rrUserData.getUses()+
-		     " Max-uses: "+rrUserData.getMaxUses()+
-		     " Uses-threshold: "+max_uses_warning_threshold+
-		     " Expiry-date: "+new SimpleDateFormat("yyyy-MM-dd").format(rrUserData.getExpiryDate())+
-		     " Date-threshold: "+new SimpleDateFormat("yyyy-MM-dd").format(expiry_date_warning_threshold)
-		     ) ;
+	    log.debug("No need to send warning-mail. Uses: "+rrUserData.getUses()+
+		      " Max-uses: "+rrUserData.getMaxUses()+
+		      " Uses-threshold: "+max_uses_warning_threshold+
+		      " Expiry-date: "+new SimpleDateFormat("yyyy-MM-dd").format(rrUserData.getExpiryDate())+
+		      " Date-threshold: "+new SimpleDateFormat("yyyy-MM-dd").format(expiry_date_warning_threshold)
+		      ) ;
 	    return ;
 	}
 
@@ -217,7 +221,7 @@ public class Readrunner extends HttpServlet {
 
 	    SMTP smtp = new SMTP(mailserver, mailport, mailtimeout) ;
 	    smtp.sendMailWait( fromAddress, toAddress, "Readrunner", theMail ) ;
-	    log.info("Sent mail to "+toAddress) ;
+	    log.debug("Sent mail to "+toAddress) ;
 	} catch (IOException ioex) {
 	    log.warn("Failed to send mail from '"+fromAddress+"' to '"+toAddress+"' ("+user.getLoginName()+") via " +mailserver+":"+mailport+" - "+ ioex.toString()) ;
 	}

@@ -84,7 +84,7 @@
 	  description="Handy target for everything else to depend on.">
 
     <!-- Record the build to a log-file. -->
-    <record name="build.log"/>
+    <record name="${basedir}/build.log"/>
 
     <tstamp/>
 

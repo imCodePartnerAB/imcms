@@ -68,6 +68,7 @@ public class AdminUserReadrunner extends HttpServlet {
 	    rrUserData.setMaxUsesWarningThreshold    ( Integer.parseInt(req.getParameter("max_uses_warning_threshold")) ) ;
 	    rrUserData.setExpiryDate                 ( expiryDate ) ;
 	    rrUserData.setExpiryDateWarningThreshold ( Integer.parseInt(req.getParameter("expiry_date_warning_threshold")) ) ;
+	    rrUserData.setExpiryDateWarningSent      ( false ) ; // Reset expiry-date-warning-sent-flag
 	    imcref.setReadrunnerUserData(theEditedUser,rrUserData) ;
 	} catch (NumberFormatException nfe) {
 	    throw nfe ;

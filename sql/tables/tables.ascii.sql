@@ -238,6 +238,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phones]') 
 drop table [dbo].[phones]
 GO
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[readrunner_user_data]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[readrunner_user_data]
+GO
+
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
 drop table [dbo].[roles]
 GO
@@ -314,7 +318,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[users]') a
 drop table [dbo].[users]
 GO
 
-if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
 exec sp_fulltext_database N'enable' 
 
 GO
@@ -549,6 +552,17 @@ CREATE TABLE [dbo].[phones] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [dbo].[readrunner_user_data] (
+	[user_id] [int] NOT NULL ,
+	[uses] [int] NULL ,
+	[max_uses] [int] NULL ,
+	[max_uses_warning_threshold] [int] NULL ,
+	[expiry_date] [datetime] NULL ,
+	[expiry_date_warning_threshold] [int] NULL ,
+	[expiry_date_warning_sent] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [dbo].[roles] (
 	[role_id] [int] NOT NULL ,
 	[role_name] [char] (25) NOT NULL ,
@@ -730,6 +744,13 @@ ALTER TABLE [dbo].[meta_section] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
+	 PRIMARY KEY  CLUSTERED 
+	(
+		[user_id]
+	)  ON [PRIMARY] 
+GO
+
 ALTER TABLE [dbo].[sections] WITH NOCHECK ADD 
 	CONSTRAINT [PK_section] PRIMARY KEY  CLUSTERED 
 	(
@@ -756,25 +777,6 @@ ALTER TABLE [dbo].[texts] WITH NOCHECK ADD
 	(
 		[counter]
 	)  ON [PRIMARY] 
-GO
-
-if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
-exec sp_fulltext_database N'enable' 
-
-GO
-
-if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
-exec sp_fulltext_catalog N'full_text_index', N'create' 
-
-GO
-
-exec sp_fulltext_table N'[dbo].[texts]', N'create', N'full_text_index', N'PK_texts'
-GO
-
-exec sp_fulltext_column N'[dbo].[texts]', N'text', N'add', 1033  
-GO
-
-exec sp_fulltext_table N'[dbo].[texts]', N'activate'  
 GO
 
  CREATE  CLUSTERED  INDEX [childs_meta_id] ON [dbo].[childs]([meta_id]) ON [PRIMARY]
@@ -816,6 +818,9 @@ ALTER TABLE [dbo].[browsers] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ CREATE  INDEX [IX_browsers] ON [dbo].[browsers]([value]) ON [PRIMARY]
+GO
+
 ALTER TABLE [dbo].[childs] WITH NOCHECK ADD 
 	CONSTRAINT [PK_childs] PRIMARY KEY  NONCLUSTERED 
 	(
@@ -830,25 +835,6 @@ ALTER TABLE [dbo].[classification] WITH NOCHECK ADD
 	(
 		[class_id]
 	)  ON [PRIMARY] 
-GO
-
-if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
-exec sp_fulltext_database N'enable' 
-
-GO
-
-if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
-exec sp_fulltext_catalog N'full_text_index', N'create' 
-
-GO
-
-exec sp_fulltext_table N'[dbo].[classification]', N'create', N'full_text_index', N'PK_classification'
-GO
-
-exec sp_fulltext_column N'[dbo].[classification]', N'code', N'add', 1033  
-GO
-
-exec sp_fulltext_table N'[dbo].[classification]', N'activate'  
 GO
 
 ALTER TABLE [dbo].[doc_permission_sets] WITH NOCHECK ADD 
@@ -885,6 +871,12 @@ ALTER TABLE [dbo].[doc_types] WITH NOCHECK ADD
 		[doc_type],
 		[lang_prefix]
 	)  ON [PRIMARY] 
+GO
+
+/****** The index created by the following statement is for internal use only. ******/
+/****** It is not a real index but exists as statistics only. ******/
+if (@@microsoftversion > 0x07000000 )
+EXEC ('CREATE STATISTICS [Statistic_type] ON [dbo].[doc_types] ([type]) ')
 GO
 
 ALTER TABLE [dbo].[fileupload_docs] WITH NOCHECK ADD 
@@ -929,28 +921,6 @@ ALTER TABLE [dbo].[meta] WITH NOCHECK ADD
 	(
 		[meta_id]
 	)  ON [PRIMARY] 
-GO
-
-if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
-exec sp_fulltext_database N'enable' 
-
-GO
-
-if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
-exec sp_fulltext_catalog N'full_text_index', N'create' 
-
-GO
-
-exec sp_fulltext_table N'[dbo].[meta]', N'create', N'full_text_index', N'PK_meta'
-GO
-
-exec sp_fulltext_column N'[dbo].[meta]', N'meta_headline', N'add', 1033  
-GO
-
-exec sp_fulltext_column N'[dbo].[meta]', N'meta_text', N'add', 1033  
-GO
-
-exec sp_fulltext_table N'[dbo].[meta]', N'activate'  
 GO
 
 ALTER TABLE [dbo].[meta_classification] WITH NOCHECK ADD 
@@ -1012,6 +982,10 @@ ALTER TABLE [dbo].[phones] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ALTER TABLE [dbo].[readrunner_user_data] WITH NOCHECK ADD 
+	CONSTRAINT [DF_readrunner_user_data_expiry_date_warning_sent] DEFAULT (0) FOR [expiry_date_warning_sent]
+GO
+
 ALTER TABLE [dbo].[roles] WITH NOCHECK ADD 
 	CONSTRAINT [DF_roles_permissions] DEFAULT (0) FOR [permissions],
 	CONSTRAINT [PK_roles] PRIMARY KEY  NONCLUSTERED 
@@ -1034,6 +1008,9 @@ ALTER TABLE [dbo].[roles_rights] WITH NOCHECK ADD
 		[role_id],
 		[meta_id]
 	)  ON [PRIMARY] 
+GO
+
+ CREATE  INDEX [roles_rights_role_id] ON [dbo].[roles_rights]([role_id]) ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[sys_data] WITH NOCHECK ADD 
@@ -1092,6 +1069,9 @@ ALTER TABLE [dbo].[text_docs] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ CREATE  INDEX [IX_texts] ON [dbo].[texts]([meta_id]) ON [PRIMARY]
+GO
+
 ALTER TABLE [dbo].[url_docs] WITH NOCHECK ADD 
 	CONSTRAINT [PK_url_docs] PRIMARY KEY  NONCLUSTERED 
 	(
@@ -1136,19 +1116,61 @@ ALTER TABLE [dbo].[users] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
- CREATE  INDEX [IX_browsers] ON [dbo].[browsers]([value]) ON [PRIMARY]
+exec sp_fulltext_database N'enable' 
+
 GO
 
-/****** The index created by the following statement is for internal use only. ******/
-/****** It is not a real index but exists as statistics only. ******/
-if (@@microsoftversion > 0x07000000 )
-EXEC ('CREATE STATISTICS [Statistic_type] ON [dbo].[doc_types] ([type]) ')
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
 GO
 
- CREATE  INDEX [roles_rights_role_id] ON [dbo].[roles_rights]([role_id]) ON [PRIMARY]
+exec sp_fulltext_table N'[dbo].[classification]', N'create', N'full_text_index', N'PK_classification'
 GO
 
- CREATE  INDEX [IX_texts] ON [dbo].[texts]([meta_id]) ON [PRIMARY]
+exec sp_fulltext_column N'[dbo].[classification]', N'code', N'add', 1053  
+GO
+
+exec sp_fulltext_table N'[dbo].[classification]', N'activate'  
+GO
+
+exec sp_fulltext_database N'enable' 
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
+exec sp_fulltext_table N'[dbo].[meta]', N'create', N'full_text_index', N'PK_meta'
+GO
+
+exec sp_fulltext_column N'[dbo].[meta]', N'meta_headline', N'add', 1053  
+GO
+
+exec sp_fulltext_column N'[dbo].[meta]', N'meta_text', N'add', 1053  
+GO
+
+exec sp_fulltext_table N'[dbo].[meta]', N'activate'  
+GO
+
+exec sp_fulltext_database N'enable' 
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
+exec sp_fulltext_table N'[dbo].[texts]', N'create', N'full_text_index', N'PK_texts'
+GO
+
+exec sp_fulltext_column N'[dbo].[texts]', N'text', N'add', 1053  
+GO
+
+exec sp_fulltext_table N'[dbo].[texts]', N'activate'  
 GO
 
 ALTER TABLE [dbo].[browser_docs] ADD 
