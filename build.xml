@@ -59,7 +59,7 @@
   </target>
 
   <target name="install" depends="dist" description="Copies the WAR-package into the deployroot.">
-    <copy file="${wardist}" todir="${deployroot}"/>
+    <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
   </target>
 
   <target name="clean" description="Deletes everything for a fresh start.">
@@ -212,6 +212,12 @@
 
       </filterset>
     </copy>
+
+    <replace dir="${admintemplates}/adminbuttons"
+             token="&#10;" value=""/>
+
+    <replace dir="${admintemplates}/adminbuttons"
+             token="&#13;" value=""/>
 
     <copy todir="${admintemplates}/permissions">
       <fileset dir="templates/${srclanguage}/permissions"/>
