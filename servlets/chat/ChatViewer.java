@@ -14,13 +14,13 @@ import imcode.external.chat.*;
 
 public class ChatViewer extends ChatBase {
 
-	String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
+	String HTML_TEMPLATE ;
 
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-	//	log("doPost");
+		//	log("doPost");
 		doGet(req,res);
 	}
 
@@ -59,23 +59,23 @@ public class ChatViewer extends ChatBase {
 		{
 			return;
 		}
-		
+
 		// Lets get the url to the servlets directory
 		String servletHome = MetaInfo.getServletPath(req) ;
 
 		// Lets get all parameters in a string which we'll send to every servlet in the frameset
 		MetaInfo metaInfo = new MetaInfo() ;
 		String paramStr = metaInfo.passMeta(params) ;
-		log("params: "+paramStr);
-		
-		
+		//log("params: "+paramStr);
+
+
 		//lets clean up some in the session just incase
 		session.removeValue("checkBoxTextarr");
 		session.removeValue("chatParams");
 		session.removeValue("chatChecked");
-		
-		
-	
+
+
+
 		//ok lets get the chat from the session
 		Chat chat = (Chat) session.getValue("theChat");
 		if (chat == null)
@@ -88,7 +88,13 @@ public class ChatViewer extends ChatBase {
 		if (myMember == null)
 		{
 			myMember = chat.createChatMember();
-			myMember.setName((String)(session.getValue("chatAlias")== null ? "Okänd" : session.getValue("chatAlias")));
+			String memberName = (String)(session.getValue("chatAlias")== null ? "" : session.getValue("chatAlias"));
+			if (memberName.length() == 0)
+			{
+				memberName = user.getString("login_name");
+			}
+			myMember.setName(memberName);
+
 			myMember.setIPNr(req.getRemoteHost());
 			session.putValue("theChatMember", myMember);
 			//obs ska ännu lägga in all data om användaren
@@ -121,7 +127,7 @@ public class ChatViewer extends ChatBase {
 					tempGr.addNewGroupMember(myMember);
 					//lets send a enter msg
 					ChatMsg newEnterMsg = new ChatMsg(ENTER_MSG, "", CHAT_ENTER_LEAVE_INT,
-									 CHAT_ENTER_LEAVE_INT,"", senderName, -1, theDateTime);
+						CHAT_ENTER_LEAVE_INT,"", senderName, -1, theDateTime);
 					myMember.addNewMsg(newEnterMsg);
 					session.putValue("theRoom", tempGr);
 					found = true;
@@ -129,28 +135,27 @@ public class ChatViewer extends ChatBase {
 			}
 		}else
 		{
-			log("ok vi har en i sessionen, kolla om det är rätt");
-			log("gruppid = "+grupId);
+			
 			ChatGroup temp = (ChatGroup)session.getValue("theRoom");
 			if (temp.getGroupId() != grupId)
 			{
-				log("det var inte rätt grupp id");
+				
 				Enumeration enum = chat.getAllChatGroups();
 				boolean found = false;
 				while (enum.hasMoreElements() && !found)
-				{log("då loopar vi igenom alla och kollar");
+				{
 					ChatGroup tempGr = (ChatGroup) enum.nextElement();
 					if (tempGr.getGroupId() == grupId)
-					{log("ok vi har hittat rätt");
+					{
 						ChatMsg newLeaveMsg = new ChatMsg(	LEAVE_MSG, "", CHAT_ENTER_LEAVE_INT,
-									 						CHAT_ENTER_LEAVE_INT,"",
-														 	senderName, -1, theDateTime);
+							CHAT_ENTER_LEAVE_INT,"",
+							senderName, -1, theDateTime);
 						myMember.addNewMsg(newLeaveMsg);	
 						temp.removeGroupMember(myMember);	
 						tempGr.addNewGroupMember(myMember);
 						ChatMsg newEnterMsg = new ChatMsg(	ENTER_MSG, "", CHAT_ENTER_LEAVE_INT,
-									 						CHAT_ENTER_LEAVE_INT,"",
-														 	senderName, -1, theDateTime);
+							CHAT_ENTER_LEAVE_INT,"",
+							senderName, -1, theDateTime);
 						myMember.addNewMsg(newEnterMsg);
 						session.putValue("theRoom", tempGr);
 						found = true;
@@ -158,25 +163,20 @@ public class ChatViewer extends ChatBase {
 				}
 			}
 		}
-		
+
 		//Chat chat, HttpServletRequest req, boolean bool
 		Hashtable hash = super.prepareChatBoardSettings(chat, req, false);
 		session.putValue("ChatBoardHashTable", hash );
-		
+
 		//ok lets see if we have an bindingListener
 		if (session.getValue("chatBinding") == null)
 		{
-	    	session.putValue("chatBinding",new ChatBindingListener());
+			session.putValue("chatBinding",new ChatBindingListener());
 		}
-		log("req.getRequestedSessionId() = "+req.getRequestedSessionId());
+		//log("req.getRequestedSessionId() = "+req.getRequestedSessionId());
+
 		
-	Enumeration enn = ChatBindingListener.getKeys();
-	while (enn.hasMoreElements())
-	{
-		String sesId = (String) enn.nextElement();
-		log("sesId = " + sesId.toString());
-	}
-		
+
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty("CHAT_MESSAGES", servletHome + "ChatBoard?" + paramStr);
@@ -185,16 +185,16 @@ public class ChatViewer extends ChatBase {
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 		log("Nu är ChatViewer klar") ;
 		return ;
-		
+
 	}//end doGet
 
-	
-	
+
+
 	/**
 	Detects paths and filenames.
 	*/
-		
-	public void init(ServletConfig config) throws ServletException
+
+		public void init(ServletConfig config) throws ServletException
 	{
 
 		super.init(config);

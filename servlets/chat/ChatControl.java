@@ -95,7 +95,7 @@ public class ChatControl extends ChatBase
 		String servletHome = MetaInfo.getServletPath(req) ;
 		// Lets get parameters
 		String aMetaId = params.getProperty("META_ID") ;
-		log("aMetaId = "+aMetaId);
+		//log("aMetaId = "+aMetaId);
 		int metaId = Integer.parseInt( aMetaId );
 		//String aChatId = params.getProperty("CHAT_ID") ; funkar ej använd metoden getChatId i Chat.java
 		
@@ -108,7 +108,8 @@ public class ChatControl extends ChatBase
 			log("myChat was null so return");
 			return;
 		}
-		String chatName = myChat.getChatName();
+		String chatName = (String)session.getValue("chat_name");;
+		if(chatName == null)chatName ="";
 		//lets get the chatmember
 		ChatMember myMember = (ChatMember) session.getValue("theChatMember");
 		if (myMember == null)
@@ -172,16 +173,12 @@ public class ChatControl extends ChatBase
 		
 		//let's see if user has adminrights
 		String adminButtonKickOut = "";
-		StringBuffer chatAdminLink = new StringBuffer("");;
+		String chatAdminLink =  "";;
 		if(userHasAdminRights( imcServer, metaId, user ))
 		{
-			log("ok the user has admin rights");
-			//adminButton 
-			chatAdminLink.append("<form action=\""+servletHome+"ChatCreator\" target=\"_parent\" method=\"get\">");
-			chatAdminLink.append("<input type=\"hidden\" name=\"action\" value=\"admin_chat\">"); 
-        	chatAdminLink.append("<input type=\"submit\" name=\"send\" value=\"admin\">");
-			chatAdminLink.append("<input type=\"hidden\" name=\"chatName\" value=\""+chatName+"\">");
-			chatAdminLink.append("</form>");
+			//lets get the kickout button
+			chatAdminLink = this.createChatAdminLink(servletHome, chatName);
+						
 			//lets set up the kick out button
 			adminButtonKickOut ="<INPUT name=kickOut type=submit value=\" Kicka ut chattare \"> ";
 						
@@ -190,6 +187,7 @@ public class ChatControl extends ChatBase
 		//lets set up the page to send
 
 		//lets add all the needed tags 
+		vm.addProperty("chatName",chatName);
 		vm.addProperty("alias", alias ) ;	
 		vm.addProperty("chatRoom", chatRoom ) ;	
 		vm.addProperty("MSG_PREFIX", msgTypes ) ;
@@ -197,7 +195,7 @@ public class ChatControl extends ChatBase
 		vm.addProperty("CHAT_ROOMS", chat_rooms.toString() ) ;
 
 		
-		vm.addProperty("CHAT_ADMIN_LINK", chatAdminLink.toString()  );
+		vm.addProperty("CHAT_ADMIN_LINK", chatAdminLink );
 		vm.addProperty("CHAT_ADMIN_DISCUSSION", adminButtonKickOut  );
 
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
@@ -290,6 +288,7 @@ public class ChatControl extends ChatBase
 		log("sendMsg = "+req.getParameter("sendMsg") );
 		if (req.getParameter("sendMsg") != null)
 		{
+			
 			//the user wants to send a message
 			log("ok lets try and send a message");
 			String senderName = myMember.getName();
@@ -303,12 +302,12 @@ public class ChatControl extends ChatBase
 				log(newMessage);	
 				//lets get the recipient 0 = alla 
 				String recieverNrStr = (req.getParameter("recipient") == null ? "" :  req.getParameter("recipient").trim());
-					log("recieverNrStr = "+recieverNrStr);
+				//	log("recieverNrStr = "+recieverNrStr);
 				if(recieverNrStr.length() == 0) recieverNrStr = "0"; //it was empty, lets send it too all
 
 				//lets get the messageType fore the message 0 = inget
 				String msgTypeNrStr = (req.getParameter("msgTypes") == null ? "" : req.getParameter("msgTypes").trim());
-					log("msgTypeNrStr = "+msgTypeNrStr);
+				//	log("msgTypeNrStr = "+msgTypeNrStr);
 				if(msgTypeNrStr.length() == 0) msgTypeNrStr = "0";
 
 				//ok lets parse those to int
@@ -324,8 +323,8 @@ public class ChatControl extends ChatBase
 					recieverNr = 0;
 					msgTypeNr = 0;
 				}
-				log("recieverNr = "+recieverNr);
-				log("msgTypeNr = "+msgTypeNr);
+				//log("recieverNr = "+recieverNr);
+				//log("msgTypeNr = "+msgTypeNr);
 				
 				String msgTypeStr = ""; //the msgType in text
 				if (msgTypeNr != 0)
@@ -368,30 +367,25 @@ public class ChatControl extends ChatBase
 					String senderStr = myMember.getName();
 					String theDateTime = (super.getDateToday() +" : "+ super.getTimeNow());
 	
-					//ok lets create the message public ChatMsg(String chatMsg, String recieverStr,int reciever,
-					//									 		int msgType, String msgTypeStr, String senderStr,
-					//											int sender, String dateTime)
-				  	
+					
 					ChatMsg newChatMsg = new ChatMsg(newMessage,recieverStr,recieverNr,msgTypeNr,msgTypeStr,senderStr,senderNr,theDateTime );
-					log("ChatMsg = "+newChatMsg.getMessage());
+					//log("ChatMsg = "+newChatMsg.getMessage());
 					//ok now lets send it "boolean addNewMsg(ChatMsg msg)"
 					myMember.addNewMsg(newChatMsg);
-					log("antal msg = "+myGroup.getNoOffMessages());	
-					log("ok msg has been sent");
+					//log("antal msg = "+myGroup.getNoOffMessages());	
+					//log("ok msg has been sent");
+					
+					//ok lets log the message
+					this.logItToDisc(newChatMsg, myMember);
 				}
 			}
 			
+			
 			//ok now lets build the page in doGet but
-			//first we need to se how it should bee setup
-	/*		String[] temporar = (String[]) getCheckedOrNot(req);
-			for(int i=0;i<temporar.length;i++)
-			{
-				log("temporar["+i+"] = "+temporar[i]);
-			}
-			session.putValue("chatChecked", getCheckedOrNot(req));
-	*/		
-			//res.sendRedirect(servletHome+"ChatBoard");
 			doGet(req,res);
+			
+			
+		
 			return;
 		}//end if (req.getParameter("sendMSG") != null)
 
@@ -400,16 +394,13 @@ public class ChatControl extends ChatBase
 
 		//*** the user wants too change chat room *****
 		
-		
-		
-		
-		log("changeRoom = "+req.getParameter("changeRoom"));		
+				
 		if (req.getParameter("changeRoom") != null)
 		{
 			log("ok lets try and change chatRoom");
 			//ok lets get the "new room number"
 			String roomNrStr = (req.getParameter("newRooms") == null ? "" : req.getParameter("newRooms").trim()); 
-	log("roomNrStr = "+roomNrStr);
+	
 			int roomNr;
 			try
 			{
@@ -502,7 +493,12 @@ public class ChatControl extends ChatBase
 			//takes the bindinglistener care of
 			super.cleanUpSessionParams(session);
 			log("lets get rid of the user");
-			res.sendRedirect(servletHome+"GetDoc?meta_id="+user.getString("last_page"));
+			String lastPage = user.getString("last_page");
+			if(lastPage.equals("1001"))
+			{
+				lastPage = RmiConf.getLoginUrl(host);
+			}
+			res.sendRedirect(servletHome+"GetDoc?meta_id="+lastPage);
 		
 		}//end logout
 		
@@ -534,7 +530,7 @@ public class ChatControl extends ChatBase
 			HttpSession kickOut = ChatBindingListener.getASession(idNr);
 			
 			ChatMember memb = (ChatMember)kickOut.getValue("theChatMember");
-			log("=========="+memb.getUserId());
+			//log("=========="+memb.getUserId());
 			super.cleanUpSessionParams(kickOut);
 			
 			doGet(req, res);
@@ -603,13 +599,12 @@ public class ChatControl extends ChatBase
 	
 
 
-//????????????????????????????????????????????????????????????????????????????????????????????????????????????	
-	//skapar hela skiten där användarinställningarna kan göras
-	//Parameter:
-	// chatParams =
-	// checkBoxTextarr =
-	// checked =
-	// servlet_url = 
+	/**
+	Creates the user settings htmlpage
+	not nice but it works
+	*/
+	
+
 	private String createUserSettingsHtml(String[] chatParams, String[] checkBoxTextarr,String[] checked, String servlet_url)
 	{
 		StringBuffer htmlStr = new StringBuffer();
@@ -654,7 +649,23 @@ public class ChatControl extends ChatBase
 		htmlStr.append("</td></tr></form></table>");	
 		return htmlStr.toString();	
 	}//slut createUserSettingsHtml	
-//????????????????????????????????????????????????????????????????????????????????????????????????????????????
+	
+	
+	
+	private String createChatAdminLink(String servletHome, String chatName)
+	{
+		//adminButton 
+			StringBuffer buff = new StringBuffer("");
+			buff.append("<form action=\""+servletHome+"ChatCreator\" target=\"_parent\" method=\"get\">");
+			buff.append("<input type=\"hidden\" name=\"action\" value=\"admin_chat\">"); 
+        	buff.append("<input type=\"submit\" name=\"send\" value=\"admin\">");
+			buff.append("<input type=\"hidden\" name=\"chatName\" value=\""+chatName+"\">");
+			buff.append("</form>");
+			return buff.toString();
+	}
+	
+	
+	
 	/**
 	Detects paths and filenames.
 	*/
@@ -681,9 +692,14 @@ public class ChatControl extends ChatBase
 	This log function is used to log all the discussions in the chatroom
 	if the administrator wants it to be done
 	*/
-	public void systemLog()
+	public void logItToDisc(ChatMsg msg, ChatMember member)
 	{
-
+		/*obs not in use yet
+		StringBuffer logString = new StringBuffer();
+		logString.append(member.getIPNr());
+		logString.append(msg.getDateTime());
+		logString.append(msg.getMessage());
+		*/
 	}
 
 

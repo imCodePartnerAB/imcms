@@ -78,7 +78,7 @@ public class ChatBoard extends ChatBase
 
 		// Lets get parameters
 		String aMetaId = params.getProperty("META_ID") ;
-		//	log("aMetaId = "+aMetaId);
+		//log("aMetaId = "+aMetaId);
 		//		int metaId = Integer.parseInt( aMetaId );
 		String aChatId = params.getProperty("CHAT_ID") ;//=id strängen för chatten ????
 		//	log("aChatId = "+aChatId);
@@ -95,7 +95,7 @@ public class ChatBoard extends ChatBase
 		//ok let's get all the messages and add them into the buffer			
 		if (true)//(req.getParameter("ROOM_ID") != null )
 		{ 
-			log("nu är vi inne");	
+			//log("nu är vi inne");	
 
 			if(session == null)
 			{
@@ -128,7 +128,7 @@ public class ChatBoard extends ChatBase
 			int fontSize = ((Integer)theSettings.get("fontSizeInteger")).intValue();
 			int time = ((Integer)theSettings.get("reloadInteger")).intValue();
 
-			log("autoReload = "+autoReload);
+			//log("autoReload = "+autoReload);
 			//lets set up the autoreload or not
 			if (autoReload)
 			{
@@ -222,7 +222,7 @@ public class ChatBoard extends ChatBase
 
 		
 		//<META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.????.com">
-		log("chatRefresh = "+chatRefresh);
+		//log("chatRefresh = "+chatRefresh);
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty("CHAT_REFRESH", chatRefresh);
 		vm.addProperty("CHAT_MESSAGES", sendMsgString.toString()  );
@@ -316,7 +316,7 @@ public class ChatBoard extends ChatBase
 	public void log( String str)
 	{
 		super.log(str) ;
-	//	System.out.println("ChatBoard: " + str ) ;
+		System.out.println("ChatBoard: " + str ) ;
 	}
 
 
