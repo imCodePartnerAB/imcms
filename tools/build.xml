@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="tools" default="build">
+
+  <target name="build" depends="ant-tasks" description="Builds the project."/>
+
+  <target name="ant-tasks" depends="cat" description="Builds the ant-tasks."/>
+
+  <target name="cat" description="Builds the cat-task for ant.">
+    <javac srcdir="."/>
+  </target>
+
+</project>

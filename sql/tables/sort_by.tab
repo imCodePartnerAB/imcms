@@ -1,0 +1,15 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[sort_by]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[sort_by]
+GO
+
+CREATE TABLE [dbo].[sort_by] (
+	[sort_by_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[sort_by_type] [varchar] (30) NOT NULL ,
+	CONSTRAINT [PK_sort_by] PRIMARY KEY  CLUSTERED 
+	(
+		[sort_by_id]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+

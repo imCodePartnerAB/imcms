@@ -1,0 +1,16 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[roles]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[roles]
+GO
+
+CREATE TABLE [dbo].[roles] (
+	[role_id] [int] NOT NULL ,
+	[role_name] [char] (25) NOT NULL ,
+	[permissions] [int] NOT NULL CONSTRAINT [DF_roles_permissions] DEFAULT (0),
+	CONSTRAINT [PK_roles] PRIMARY KEY  NONCLUSTERED 
+	(
+		[role_id]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+

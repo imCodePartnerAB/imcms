@@ -1,0 +1,12 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[Results]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[Results]
+GO
+
+CREATE TABLE [dbo].[Results] (
+	[user_type] [int] NOT NULL ,
+	[type_name] [char] (30) NULL ,
+	[lang_prefix] [char] (3) NOT NULL 
+) ON [PRIMARY]
+GO
+
+

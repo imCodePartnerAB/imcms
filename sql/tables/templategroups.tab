@@ -1,0 +1,19 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[templategroups]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[templategroups]
+GO
+
+CREATE TABLE [dbo].[templategroups] (
+	[group_id] [int] NOT NULL ,
+	[group_name] [varchar] (50) NOT NULL ,
+	CONSTRAINT [PK_templategroups] PRIMARY KEY  NONCLUSTERED 
+	(
+		[group_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [IX_templategroups] UNIQUE  NONCLUSTERED 
+	(
+		[group_name]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+

@@ -1,0 +1,17 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[languages]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[languages]
+GO
+
+CREATE TABLE [dbo].[languages] (
+	[lang_prefix] [varchar] (3) NOT NULL ,
+	[user_prefix] [varchar] (3) NOT NULL ,
+	[language] [varchar] (30) NULL ,
+	CONSTRAINT [PK_languages] PRIMARY KEY  NONCLUSTERED 
+	(
+		[lang_prefix],
+		[user_prefix]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+

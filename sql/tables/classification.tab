@@ -1,0 +1,15 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[classification]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[classification]
+GO
+
+CREATE TABLE [dbo].[classification] (
+	[class_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[code] [varchar] (30) NOT NULL ,
+	CONSTRAINT [PK_classification] PRIMARY KEY  NONCLUSTERED 
+	(
+		[class_id]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+

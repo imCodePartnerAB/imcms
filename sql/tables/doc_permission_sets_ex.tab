@@ -1,0 +1,34 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[doc_permission_sets_ex]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[doc_permission_sets_ex]
+GO
+
+CREATE TABLE [dbo].[doc_permission_sets_ex] (
+	[meta_id] [int] NOT NULL ,
+	[set_id] [int] NOT NULL ,
+	[permission_id] [int] NOT NULL ,
+	[permission_data] [int] NOT NULL ,
+	CONSTRAINT [PK_permission_sets_ex] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[set_id],
+		[permission_id],
+		[permission_data]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [FK_doc_permission_sets_ex_doc_permission_sets1] FOREIGN KEY 
+	(
+		[meta_id],
+		[set_id]
+	) REFERENCES [dbo].[doc_permission_sets] (
+		[meta_id],
+		[set_id]
+	),
+	CONSTRAINT [FK_doc_permission_sets_ex_permission_sets] FOREIGN KEY 
+	(
+		[set_id]
+	) REFERENCES [dbo].[permission_sets] (
+		[set_id]
+	)
+) ON [PRIMARY]
+GO
+
+

@@ -1,0 +1,19 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[fileupload_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[fileupload_docs]
+GO
+
+CREATE TABLE [dbo].[fileupload_docs] (
+	[meta_id] [int] NOT NULL ,
+	[filename] [varchar] (50) NOT NULL ,
+	[mime] [varchar] (50) NOT NULL ,
+	CONSTRAINT [PK_fileupload_docs] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+ CREATE  CLUSTERED  INDEX [fileupload_docs_meta_id] ON [dbo].[fileupload_docs]([meta_id]) ON [PRIMARY]
+GO
+
+

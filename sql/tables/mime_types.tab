@@ -1,0 +1,17 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[mime_types]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[mime_types]
+GO
+
+CREATE TABLE [dbo].[mime_types] (
+	[mime_id] [int] IDENTITY (0, 1) NOT NULL ,
+	[mime_name] [varchar] (50) NOT NULL ,
+	[mime] [varchar] (50) NOT NULL ,
+	[lang_prefix] [varchar] (3) NOT NULL CONSTRAINT [DF_mime_types_lang_prefix] DEFAULT ('se'),
+	CONSTRAINT [PK_mime_types] PRIMARY KEY  NONCLUSTERED 
+	(
+		[mime_id]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+

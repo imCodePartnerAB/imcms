@@ -51,6 +51,11 @@
   <property name="adminbuttonsurl" value="${rooturl}/admin"/>
 
   <property name="wardist" value="${webappname}.war"/>
+
+  <property name="dist-sql" value="${webappname}.sql"/>
+  <property name="sprocs-sql" value="sprocs.sql"/>
+  <property name="help-sql" value="help.sql"/>
+  
   <property name="webapproot" value="${deployroot}/${webappname}"/>
 
   <target name="init"
@@ -71,6 +76,29 @@
 
     <echo> Done packaging distribution '${wardist}'. </echo>
 
+  </target>
+
+  <target name="build"
+          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help-images,fortune-templates"
+	  description="Builds everything.">
+
+    <copy file="install/web.xml" todir="${WEB-INF}"/>
+
+  </target>
+
+  <target name="install-war" depends="dist" description="Copies the WAR-package into the deployroot.">
+    <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
+  </target>
+
+  <target name="install" depends="build" description="Copies the webapp directly into the webapp-directory in the deployroot.">
+    <copy todir="${webapproot}">
+      <fileset dir="${build}"/>
+    </copy>
+  </target>
+
+  <target name="clean" description="Deletes everything for a fresh start.">
+    <delete dir="${build}"/>
+    <delete file="${wardist}"/>
   </target>
 
   <target name="doc"
@@ -96,28 +124,22 @@
     </javadoc>
   </target>
 
-
-  <target name="install-war" depends="dist" description="Copies the WAR-package into the deployroot.">
-    <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
+  <target name="tools">
+    <ant dir="tools"/>
   </target>
 
-  <target name="install" depends="build" description="Copies the webapp directly into the webapp-directory in the deployroot.">
-    <copy todir="${webapproot}">
-      <fileset dir="${build}"/>
-    </copy>
-  </target>
-
-  <target name="clean" description="Deletes everything for a fresh start.">
-    <delete dir="${build}"/>
-    <delete file="${wardist}"/>
-  </target>
-
-  <target name="build"
-          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help-images,fortune-templates"
-	  description="Builds everything.">
-
-    <copy file="install/web.xml" todir="${WEB-INF}"/>
-
+  <target name="sql" depends="tools" description="Concatenates the SQL-scripts into one large script.">
+    <taskdef name="cat" classname="Cat" classpath="tools"/>
+    <cat destfile="${dist-sql}" orderby="path">
+      <fileset dir="sql/tables"/>
+      <fileset dir="sql/sprocs"/>
+      <fileset dir="sql/data" includes="types.sql"/>
+      <fileset dir="sql/data" includes="newdb.sql"/>
+    </cat>
+    <cat destfile="${sprocs-sql}" orderby="path">
+      <fileset dir="sql/sprocs"/>
+    </cat>
+    <copy file="sql/help/help.sql" tofile="${help-sql}"/>
   </target>
 
   <target name="server"

@@ -1,0 +1,35 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[images]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[images]
+GO
+
+CREATE TABLE [dbo].[images] (
+	[meta_id] [int] NOT NULL ,
+	[width] [int] NOT NULL ,
+	[height] [int] NOT NULL ,
+	[border] [int] NOT NULL ,
+	[v_space] [int] NOT NULL ,
+	[h_space] [int] NOT NULL ,
+	[name] [int] NOT NULL ,
+	[image_name] [varchar] (40) NOT NULL ,
+	[target] [varchar] (15) NOT NULL ,
+	[target_name] [varchar] (80) NOT NULL ,
+	[align] [varchar] (15) NOT NULL ,
+	[alt_text] [varchar] (255) NOT NULL ,
+	[low_scr] [varchar] (255) NOT NULL ,
+	[imgurl] [varchar] (255) NOT NULL ,
+	[linkurl] [varchar] (255) NOT NULL ,
+	CONSTRAINT [PK_images] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[name]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [FK_images_meta] FOREIGN KEY 
+	(
+		[meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
+	)
+) ON [PRIMARY]
+GO
+
+

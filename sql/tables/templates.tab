@@ -1,0 +1,25 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[templates]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[templates]
+GO
+
+CREATE TABLE [dbo].[templates] (
+	[template_id] [int] NOT NULL ,
+	[template_name] [varchar] (80) NOT NULL ,
+	[simple_name] [varchar] (80) NOT NULL ,
+	[lang_prefix] [varchar] (3) NOT NULL ,
+	[no_of_txt] [int] NULL ,
+	[no_of_img] [int] NULL ,
+	[no_of_url] [int] NULL ,
+	CONSTRAINT [PK_templates] PRIMARY KEY  NONCLUSTERED 
+	(
+		[template_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [IX_templates] UNIQUE  NONCLUSTERED 
+	(
+		[simple_name],
+		[lang_prefix]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+

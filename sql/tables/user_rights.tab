@@ -1,0 +1,30 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_rights]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[user_rights]
+GO
+
+CREATE TABLE [dbo].[user_rights] (
+	[user_id] [int] NOT NULL ,
+	[meta_id] [int] NOT NULL ,
+	[permission_id] [tinyint] NOT NULL ,
+	CONSTRAINT [PK_user_rights] PRIMARY KEY  NONCLUSTERED 
+	(
+		[user_id],
+		[meta_id],
+		[permission_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [FK_user_rights_meta] FOREIGN KEY 
+	(
+		[meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
+	),
+	CONSTRAINT [FK_user_rights_users] FOREIGN KEY 
+	(
+		[user_id]
+	) REFERENCES [dbo].[users] (
+		[user_id]
+	)
+) ON [PRIMARY]
+GO
+
+

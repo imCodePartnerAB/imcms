@@ -1,0 +1,15 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[permission_sets]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[permission_sets]
+GO
+
+CREATE TABLE [dbo].[permission_sets] (
+	[set_id] [int] NOT NULL ,
+	[description] [varchar] (30) NOT NULL ,
+	CONSTRAINT [PK_permission_types] PRIMARY KEY  NONCLUSTERED 
+	(
+		[set_id]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+

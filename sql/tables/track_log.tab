@@ -1,0 +1,14 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[track_log]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[track_log]
+GO
+
+CREATE TABLE [dbo].[track_log] (
+	[user_id] [smallint] NULL ,
+	[log_datetime] [datetime] NULL ,
+	[from_meta_id] [int] NULL ,
+	[to_meta_id] [int] NULL ,
+	[cookie_id] [int] NULL 
+) ON [PRIMARY]
+GO
+
+

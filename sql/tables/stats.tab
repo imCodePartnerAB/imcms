@@ -1,0 +1,15 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[stats]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[stats]
+GO
+
+CREATE TABLE [dbo].[stats] (
+	[name] [varchar] (120) NOT NULL ,
+	[num] [int] NOT NULL ,
+	CONSTRAINT [stats_pk] PRIMARY KEY  CLUSTERED 
+	(
+		[name]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+GO
+
+

@@ -1,0 +1,11 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[main_log]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[main_log]
+GO
+
+CREATE TABLE [dbo].[main_log] (
+	[log_datetime] [datetime] NULL ,
+	[event] [varchar] (255) NULL 
+) ON [PRIMARY]
+GO
+
+

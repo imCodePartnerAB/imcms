@@ -1,0 +1,24 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[texts]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[texts]
+GO
+
+CREATE TABLE [dbo].[texts] (
+	[meta_id] [int] NOT NULL ,
+	[name] [int] NOT NULL ,
+	[text] [text] NOT NULL ,
+	[type] [int] NULL ,
+	CONSTRAINT [PK_texts] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[name]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [FK_texts_meta] FOREIGN KEY 
+	(
+		[meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
+	)
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+

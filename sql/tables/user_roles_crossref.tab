@@ -1,0 +1,28 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[user_roles_crossref]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[user_roles_crossref]
+GO
+
+CREATE TABLE [dbo].[user_roles_crossref] (
+	[user_id] [int] NOT NULL ,
+	[role_id] [int] NOT NULL ,
+	CONSTRAINT [PK_user_roles_crossref] PRIMARY KEY  NONCLUSTERED 
+	(
+		[user_id],
+		[role_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [FK_user_roles_crossref_roles] FOREIGN KEY 
+	(
+		[role_id]
+	) REFERENCES [dbo].[roles] (
+		[role_id]
+	),
+	CONSTRAINT [FK_user_roles_crossref_users] FOREIGN KEY 
+	(
+		[user_id]
+	) REFERENCES [dbo].[users] (
+		[user_id]
+	)
+) ON [PRIMARY]
+GO
+
+

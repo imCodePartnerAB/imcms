@@ -1,0 +1,29 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[includes]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[includes]
+GO
+
+CREATE TABLE [dbo].[includes] (
+	[meta_id] [int] NOT NULL ,
+	[include_id] [int] NOT NULL ,
+	[included_meta_id] [int] NOT NULL ,
+	CONSTRAINT [PK_includes] PRIMARY KEY  CLUSTERED 
+	(
+		[meta_id],
+		[include_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [FK_includes_meta] FOREIGN KEY 
+	(
+		[meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
+	),
+	CONSTRAINT [FK_includes_meta1] FOREIGN KEY 
+	(
+		[included_meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
+	)
+) ON [PRIMARY]
+GO
+
+

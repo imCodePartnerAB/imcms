@@ -1,0 +1,24 @@
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetInclude]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SetInclude]
+GO
+
+
+CREATE PROCEDURE SetInclude @meta_id INT, @include_id INT, @included_meta_id INT AS
+DELETE FROM	includes 
+WHERE 	meta_id = @meta_id
+	AND 	include_id = @include_id
+INSERT INTO	includes	 (meta_id, include_id, included_meta_id)
+VALUES	(@meta_id, @include_id, @included_meta_id)
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

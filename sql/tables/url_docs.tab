@@ -1,0 +1,26 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[url_docs]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[url_docs]
+GO
+
+CREATE TABLE [dbo].[url_docs] (
+	[meta_id] [int] NOT NULL ,
+	[frame_name] [varchar] (80) NOT NULL ,
+	[target] [varchar] (15) NOT NULL ,
+	[url_ref] [varchar] (255) NOT NULL ,
+	[url_txt] [varchar] (255) NOT NULL ,
+	[lang_prefix] [varchar] (3) NOT NULL ,
+	CONSTRAINT [PK_url_docs] PRIMARY KEY  NONCLUSTERED 
+	(
+		[meta_id],
+		[lang_prefix]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [FK_url_docs_meta] FOREIGN KEY 
+	(
+		[meta_id]
+	) REFERENCES [dbo].[meta] (
+		[meta_id]
+	)
+) ON [PRIMARY]
+GO
+
+

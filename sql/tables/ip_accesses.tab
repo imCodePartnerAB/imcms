@@ -1,0 +1,13 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ip_accesses]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[ip_accesses]
+GO
+
+CREATE TABLE [dbo].[ip_accesses] (
+	[ip_access_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[user_id] [int] NOT NULL ,
+	[ip_start] [decimal](18, 0) NOT NULL ,
+	[ip_end] [decimal](18, 0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+

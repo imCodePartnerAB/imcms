@@ -1,0 +1,29 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[display_name]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[display_name]
+GO
+
+CREATE TABLE [dbo].[display_name] (
+	[sort_by_id] [int] NOT NULL ,
+	[lang_id] [int] NOT NULL ,
+	[display_name] [varchar] (30) NOT NULL ,
+	CONSTRAINT [PK_display_name] PRIMARY KEY  CLUSTERED 
+	(
+		[sort_by_id],
+		[lang_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [FK_display_name_lang_prefixes] FOREIGN KEY 
+	(
+		[lang_id]
+	) REFERENCES [dbo].[lang_prefixes] (
+		[lang_id]
+	),
+	CONSTRAINT [FK_display_name_sort_by] FOREIGN KEY 
+	(
+		[sort_by_id]
+	) REFERENCES [dbo].[sort_by] (
+		[sort_by_id]
+	)
+) ON [PRIMARY]
+GO
+
+
