@@ -5,12 +5,34 @@ import java.io.* ;
 import java.text.* ;
 import java.util.* ;
 
-import org.apache.oro.text.perl.Perl5Util ;
+import org.apache.oro.text.regex.* ;
+import org.apache.oro.text.perl.* ;
+
 import org.apache.log4j.Logger ;
 
 import imcode.util.shop.* ;
+import imcode.util.* ;
+
+import imcode.server.parser.* ;
+import imcode.server.* ;
 
 public class PutInShoppingCart extends HttpServlet {
+
+    private final static String SHOP_CONFIG = "shop.properties" ;
+
+    private final static String MAIL_ITEM_FORMAT = "shop/mailitemformat.txt" ;
+    private final static String MAIL_FORMAT      = "shop/mailformat.txt" ;
+
+    private static Pattern HASHTAG_PATTERN = null ;
+
+    static {
+	Perl5Compiler patComp = new Perl5Compiler() ;
+	try {
+	    HASHTAG_PATTERN = patComp.compile("#(\\w+?)(\\d*)#",Perl5Compiler.READ_ONLY_MASK) ;
+	} catch (MalformedPatternException ex) {
+	    // ignored
+	}
+    }
 
     private static Logger log = Logger.getLogger( PutInShoppingCart.class.getName() ) ;
 
@@ -132,13 +154,29 @@ public class PutInShoppingCart extends HttpServlet {
 	    }
 	}
 
-	/* Then we go somewhere else, as given by the "next"-parameter */
-	String forwardTo = req.getParameter("next") ;
+	String forwardTo = null ;
+
+	if (null != req.getParameter("send")) {
+	    forwardTo = req.getParameter("send_next") ;
+	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+	    User user = null ;
+	    // Check if user logged on
+	    if ( (user=Check.userLoggedOn(req,res,forwardTo))==null ) {
+		return ;
+	    }
+	    sendMail(req,user) ;
+	    /* Replace the ShoppingCart in the session */
+	    session.setAttribute(ShoppingCart.SESSION_NAME, new ShoppingCart()) ;
+	    forwardTo = req.getParameter("send_next") ;
+	} else {
+	    /* Then we go somewhere else, as given by the "next"-parameter */
+	    forwardTo = req.getParameter("next") ;
+	}
+
 	if (null == forwardTo || "".equals(forwardTo)) {
 	    /* or, if there was no "next", back to where we came from */
 	    forwardTo = req.getHeader("referer") ;
 	}
-
 	/* Forward the request to the given location */
 	res.sendRedirect(forwardTo) ;
     }
@@ -164,6 +202,92 @@ public class PutInShoppingCart extends HttpServlet {
 	theDecimalFormat.setDecimalFormatSymbols(theSymbols) ;
 
 	return theDecimalFormat ;
+    }
+
+    private void sendMail (HttpServletRequest req, User user) throws IOException {
+
+	String host = req.getHeader("Host") ;
+	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
+
+	String mailServer = Utility.getDomainPref( "smtp_server", host );
+	String stringMailPort = Utility.getDomainPref( "smtp_port", host );
+	String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
+
+	// Handling of default-values is another area where java can't hold a candle to perl.
+	int mailport = 25 ;
+	try	{
+	    mailport = Integer.parseInt( stringMailPort );
+	}catch (NumberFormatException ignored){
+	    // Do nothing, let mailport stay at default.
+	}
+
+	int mailtimeout = 10000 ;
+	try {
+	    mailtimeout = Integer.parseInt( stringMailtimeout );
+	}catch (NumberFormatException ignored){
+	    // Do nothing, let mailtimeout stay at default.
+	}
+
+	String mailFromAddress = Prefs.get("mail-from-address", SHOP_CONFIG) ;
+	String mailToAddress   = Prefs.get("mail-to-address",   SHOP_CONFIG) ;
+	String mailSubject     = Prefs.get("mail-subject",      SHOP_CONFIG) ;
+	String mailFormat      = imcref.parseDoc(null, MAIL_FORMAT, imcref.getLanguage()) ;
+	String mailItemFormat  = imcref.parseDoc(null, MAIL_ITEM_FORMAT, imcref.getLanguage()) ;
+
+	Perl5Matcher patternMatcher = new Perl5Matcher() ;
+
+	StringBuffer mailItems = new StringBuffer() ;
+
+	ShoppingCart cart = (ShoppingCart)req.getSession(true).getAttribute(ShoppingCart.SESSION_NAME) ;
+	ShoppingItem[] items = cart.getItems() ;
+
+	for (int i = 0; i < items.length; ++i) {
+	    ShoppingItem item = items[i] ;
+
+	    /* Create a hashmap to use for storing substitutions for a MapSubstitution */
+	    HashMap itemStringMap = new HashMap() ;
+
+	    /* Put the item-descriptions in the map */
+	    Iterator itemDescriptionIterator = item.getDescriptions().entrySet().iterator() ;
+	    while (itemDescriptionIterator.hasNext()) {
+		Map.Entry itemDescriptionEntry = (Map.Entry)itemDescriptionIterator.next() ;
+		itemStringMap.put("#desc"+itemDescriptionEntry.getKey()+"#",
+				  itemDescriptionEntry.getValue()) ;
+	    }
+
+	    /* Put the price in the map */
+	    itemStringMap.put("#price#",""+item.getPrice()) ;
+
+	    /* Put the quantity in the map */
+	    itemStringMap.put("#quantity#",""+cart.countItem(item)) ;
+
+	    /* Replace the tags in the mailitemformat with the appropriate data from the map */
+	    String mailItem = Util.substitute(patternMatcher,
+					      HASHTAG_PATTERN,
+					      new MapSubstitution(itemStringMap,false),
+					      mailItemFormat,
+					      Util.SUBSTITUTE_ALL) ;
+	    mailItems.append(mailItem) ;
+	}
+
+	DateFormat dateFormat = new SimpleDateFormat(IMCConstants.DATETIME_FORMAT_STD) ;
+
+	HashMap mailStringMap = new HashMap() ;
+	mailStringMap.put("#items#", mailItems.toString()) ;
+	mailStringMap.put("#datetime#", dateFormat.format(new Date())) ;
+	mailStringMap.put("#user_login_name#", user.getLoginName()) ;
+
+	/* Put the mailitems in the mail */
+	String mail = Util.substitute(patternMatcher,
+				      HASHTAG_PATTERN,
+				      new MapSubstitution(mailStringMap, false),
+				      mailFormat,
+				      Util.SUBSTITUTE_ALL) ;
+
+	/* Send the mail */
+	SMTP smtp = new SMTP(mailServer,mailport,mailtimeout) ;
+	smtp.sendMailWait(mailFromAddress, mailToAddress, mailSubject,mail) ;
+
     }
 
     /**

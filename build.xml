@@ -592,6 +592,10 @@
 	    <fileset dir="templates/${srclanguage}/readrunner"/>
 	</copy>
 
+	<copy todir="${admintemplates}/shop" filtering="true">
+	    <fileset dir="templates/${srclanguage}/shop"/>
+	</copy>
+
 	<copy todir="${admintemplates}" filtering="true">
 	    <fileset dir="templates/${srclanguage}">
 		<patternset>

@@ -1,0 +1,4 @@
+#datetime#
+User #user_login_name# ordered the following items:
+
+#items#

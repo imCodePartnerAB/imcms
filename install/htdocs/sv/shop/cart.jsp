@@ -9,6 +9,7 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
   <body>
 
   <form action="@servleturl@/PutInShoppingCart" method="POST">
+    <input type="hidden" name="send_next" value="@rooturl@/shop/cart.jsp" />
     <input type="hidden" name="next" value="@rooturl@/shop/cart.jsp" />
     <input type="hidden" name="priceformatgroupingseparator" value="." />
 
@@ -74,6 +75,7 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
       Total price: <%= priceFormat.format(totalPrice) %>
     </p>
     <input type="submit" name="submit" value="Modify shopping cart">
+    <input type="submit" name="send" value="Submit shopping cart">
     </form>
   </body>
 </html>
