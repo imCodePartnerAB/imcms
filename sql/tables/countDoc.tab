@@ -1,0 +1,19 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[countDoc]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[countDoc]
+GO
+
+CREATE TABLE [dbo].[countDoc] (
+	[CountDate] [datetime] NOT NULL ,
+	[Text_doc] [int] NULL ,
+	[File_doc] [int] NULL ,
+	[Conf_doc] [int] NULL ,
+	[Html_doc] [int] NULL ,
+	[Chat_doc] [int] NULL ,
+	[Billb_doc] [int] NULL ,
+	[Url_doc] [int] NULL ,
+	[Brows_doc] [int] NULL ,
+	[Chart_doc] [int] NULL ,
+	[SumA_doc] [int] NULL ,
+	[SumB_doc] [int] NULL 
+) ON [PRIMARY]
+GO
