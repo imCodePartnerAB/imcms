@@ -549,7 +549,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 		String href = "\"GetDoc"+child_filename+"?meta_id="+child_meta_id+"\""+child_target ;
 		props.setProperty("#getChildRef#",href) ;
-
+		
+		props.setProperty("#childMetaId#",child_meta_id) ;
 		props.setProperty("#childMetaImage#",child_meta_image) ;
 		props.setProperty("#childMetaHeadline#",child_meta_headline) ;
 		props.setProperty("#childMetaText#",child_meta_text) ;
