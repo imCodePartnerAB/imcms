@@ -75,7 +75,7 @@ public class AdminRoleBelongings extends Administrator {
 	}
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 
 	if(user == null) {
 
@@ -119,7 +119,7 @@ public class AdminRoleBelongings extends Administrator {
 	if (super.checkSession(req,res) == false) return ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 
 	// lets get ready for errors
 	String languagePrefix = user.getLangPrefix() ;

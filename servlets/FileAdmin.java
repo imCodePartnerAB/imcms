@@ -5,6 +5,7 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 
 import org.apache.log4j.Category;
 

@@ -25,7 +25,7 @@ public class AdminSystemInfo extends Administrator {
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminSystemMessage." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;
@@ -70,7 +70,7 @@ public class AdminSystemInfo extends Administrator {
 	if (super.checkSession(req,res) == false) return ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminCounter." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;

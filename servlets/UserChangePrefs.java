@@ -26,7 +26,7 @@ public class UserChangePrefs extends Administrator {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	String userId = null ;
 
 	// Get the session

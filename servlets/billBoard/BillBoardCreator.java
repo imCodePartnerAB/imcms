@@ -52,7 +52,7 @@ public class BillBoardCreator extends BillBoard
 		if (super.checkParameters(req, res, confParams) == false) return ;
 
 		// Lets get an user object
-		imcode.server.User user = super.getUserObj(req,res) ;
+		imcode.server.user.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 
 		if ( !isUserAuthorized( req, res, user ) )
@@ -145,7 +145,7 @@ public class BillBoardCreator extends BillBoard
 		if (super.checkParameters(req, res, params) == false) return ;
 
 		// Lets get an user object
-		imcode.server.User user = super.getUserObj(req,res) ;
+		imcode.server.user.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 
 		if ( !isUserAuthorized( req, res, user ) )

@@ -2,7 +2,7 @@ package imcode.util.shop ;
 
 import java.util.Date ;
 
-import imcode.server.User ;
+import imcode.server.user.User ;
 
 /**
    Value-class for a shopping order.
@@ -10,7 +10,7 @@ import imcode.server.User ;
 public class ShoppingOrder extends ShoppingCart {
 
     private Integer id ;
-    private User user ;
+    private imcode.server.user.User user ;
     private Date datetime ;
 
     public ShoppingOrder() {
@@ -44,7 +44,7 @@ public class ShoppingOrder extends ShoppingCart {
 
        @return the value of user
     **/
-    public User getUser()  {
+    public imcode.server.user.User getUser()  {
 	return this.user;
     }
 
@@ -53,7 +53,7 @@ public class ShoppingOrder extends ShoppingCart {
 
        @param user Value for user
     **/
-    public void setUser(User user) {
+    public void setUser(imcode.server.user.User user) {
 	this.user = user;
     }
 

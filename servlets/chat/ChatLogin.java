@@ -32,7 +32,7 @@ public class ChatLogin extends ChatBase {
 	if (super.checkParameters(req, res, params) == false) return ;
 
 	// Lets get the user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null) return ;
 
 	String metaId = params.getProperty("META_ID");
@@ -176,7 +176,7 @@ public class ChatLogin extends ChatBase {
 	if (super.checkParameters(req, res, params) == false) return ;
 
 	// Lets get the user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null) return ;
 
 	String metaId =	 params.getProperty("META_ID");
@@ -341,7 +341,7 @@ public class ChatLogin extends ChatBase {
 
 	    //ok lets create a user obj and put it into the session
 
-	    imcode.server.User oldUser = user;
+	    imcode.server.user.User oldUser = user;
 	    user = null;
 	    user = allowUser( userName, password, imcref );
 	    user.put("history",oldUser.get("history"));
@@ -584,7 +584,7 @@ public class ChatLogin extends ChatBase {
     /**
        Test if user exist in the database
     */
-    private imcode.server.User allowUser( String user_name, String passwd, IMCServiceInterface imcref ) throws IOException {
+    private imcode.server.user.User allowUser( String user_name, String passwd, IMCServiceInterface imcref ) throws IOException {
 	return imcref.verifyUser(user_name,passwd);
     }
 

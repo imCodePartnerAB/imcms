@@ -3,6 +3,7 @@ import javax.servlet.* ;
 import javax.servlet.http.* ;
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 
 public class Restart extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;

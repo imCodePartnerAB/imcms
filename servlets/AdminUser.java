@@ -34,7 +34,7 @@ public class AdminUser extends Administrator
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null)
 	    {
 		String header = "Error in AdminCounter." ;
@@ -126,7 +126,7 @@ public class AdminUser extends Administrator
 	}
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null)  {
 		String header = "Error in AdminCounter." ;
 		String msg = "Couldnt create an user object."+ "<BR>" ;
@@ -210,7 +210,7 @@ public class AdminUser extends Administrator
 		
 		
 		// get a user object by userToChangeId
-		imcode.server.User userToChange = imcref.getUserById(Integer.parseInt(userToChangeId));
+		imcode.server.user.User userToChange = imcref.getUserById(Integer.parseInt(userToChangeId));
 		
 		session.setAttribute("userToChange", userToChangeId );
 

@@ -4,6 +4,7 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
+import imcode.server.user.User;
 
 import org.apache.log4j.* ;
 

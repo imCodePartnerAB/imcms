@@ -32,7 +32,7 @@ public class ChangeImage extends HttpServlet {
 	}
 
 	HttpSession session = req.getSession(true);
-	imcode.server.User user = (imcode.server.User)session.getAttribute("logon.isDone");
+	imcode.server.user.User user = (imcode.server.user.User)session.getAttribute("logon.isDone");
 
 	if (user == null) {
 	    // No logon.isDone means he hasn't logged in.
@@ -59,7 +59,7 @@ public class ChangeImage extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 	String image_url                = imcref.getImageUrl() ;
 	File image_path               = Utility.getDomainPrefPath( "image_path",host ) ;
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 	String htmlStr = "" ;
 	int meta_id ;
 	int img_no ;
@@ -88,7 +88,7 @@ public class ChangeImage extends HttpServlet {
 
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute("logon.isDone");  // marker object
-	user = (imcode.server.User)done ;
+	user = (imcode.server.user.User)done ;
 
 	if (done == null) {
 	    // No logon.isDone means he hasn't logged in.

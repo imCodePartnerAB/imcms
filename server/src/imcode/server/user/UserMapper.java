@@ -1,8 +1,9 @@
 package imcode.server.user;
 
-import imcode.server.User;
 
 public interface UserMapper {
    User getUser(String loginName) ;
-   void update( String loginName, User user) ;
+   User getUser( int id );
+   void update( String loginName, imcode.server.user.User user) ;
+
 }

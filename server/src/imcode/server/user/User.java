@@ -1,10 +1,15 @@
-package imcode.server;
+package imcode.server.user;
 
 import java.util.*;
 
 import org.apache.log4j.*;
+import imcode.server.IMCServiceInterface;
 
 public class User extends Hashtable {
+
+   User() {
+   }
+
    private final static String CVS_REV = "$Revision$";
    private final static String CVS_DATE = "$Date$";
 

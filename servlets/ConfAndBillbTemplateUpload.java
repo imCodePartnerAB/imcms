@@ -31,7 +31,7 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
 	}
 
 	HttpSession session = req.getSession(true);
-	imcode.server.User user = (imcode.server.User)session.getAttribute("logon.isDone");
+	imcode.server.user.User user = (imcode.server.user.User)session.getAttribute("logon.isDone");
 	if (user == null) {
 	    return;
 	}

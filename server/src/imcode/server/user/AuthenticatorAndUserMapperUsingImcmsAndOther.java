@@ -1,6 +1,5 @@
 package imcode.server.user;
 
-import imcode.server.User;
 import org.apache.log4j.Logger;
 
 public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper, Authenticator {
@@ -17,9 +16,9 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
       return  userExistsInImcms ;
    }
 
-   public User getUser( String loginName ) {
-      User imcmsUser = imcms.getUser(loginName);
-      User ldapUser  = ldap.getUser(loginName) ;
+   public imcode.server.user.User getUser( String loginName ) {
+      imcode.server.user.User imcmsUser = imcms.getUser(loginName);
+      imcode.server.user.User ldapUser  = ldap.getUser(loginName) ;
       boolean imcmsUserExists = null != imcmsUser ;
       boolean ldapUserExists  = null != ldapUser ;
       boolean imcmsUserIsInternal = (null != imcmsUser) && imcmsUser.isImcmsInternal() ;
@@ -30,7 +29,7 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
          return null;
       } else if (ldapUserExists) {
          imcms.update( loginName, ldapUser );
-         User updated = imcms.getUser( loginName );
+         imcode.server.user.User updated = imcms.getUser( loginName );
          return updated;
       } else if( imcmsUserExists && !ldapUserExists ) {
          imcmsUser.setActive( false );
@@ -43,11 +42,16 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
       return null;
    }
 
+   public User getUser( int id ) {
+      // todo
+      return null;
+   }
+
    private Logger getLogger() {
       return Logger.getLogger( this.getClass().getName() );
    }
 
-   public void update( String loginName, User newUserData ) {
+   public void update( String loginName, imcode.server.user.User newUserData ) {
    }
 
    public class InternalUserCollisionException extends RuntimeException {

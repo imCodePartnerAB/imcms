@@ -30,7 +30,7 @@ public class SaveInPage extends HttpServlet {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String start_url	= imcref.getStartUrl() ;
 
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 	String submit_name = "" ;
 	String search_string = "" ;
 	String text = "" ;

@@ -77,7 +77,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get the user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null) return ;
 
 	if ( !isUserAuthorized( req, res, user ) )
@@ -382,7 +382,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	    }
 
 	// Lets get the user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if (user == null)
 	    {
 		log("user == null so return");

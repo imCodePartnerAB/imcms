@@ -7,6 +7,7 @@ import java.rmi.* ;
 import imcode.util.* ;
 import imcode.util.poll.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 
 /**
    Start servlet in the system.
@@ -25,7 +26,7 @@ public class StartDoc extends HttpServlet {
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
 	long time = System.currentTimeMillis() ;
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 	String htmlStr = "" ;
 	int meta_id ;
 	String test = "" ;
@@ -40,7 +41,7 @@ public class StartDoc extends HttpServlet {
 
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute( "logon.isDone" );  // marker object
-	user = (imcode.server.User)done ;
+	user = (imcode.server.user.User)done ;
 
 	if( done == null ) {
 
@@ -98,7 +99,7 @@ public class StartDoc extends HttpServlet {
     /**
        Check if user exist in database
     */
-    static protected imcode.server.User allowUser( String user_name, String passwd, String host ) throws IOException {
+    static protected imcode.server.user.User allowUser( String user_name, String passwd, String host ) throws IOException {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
 	// user information
@@ -108,9 +109,9 @@ public class StartDoc extends HttpServlet {
     /**
        Ip login  - check if user exist in ip-table
     */
-    static protected imcode.server.User ipAssignUser( String remote_ip , String host) throws IOException {
+    static protected imcode.server.user.User ipAssignUser( String remote_ip , String host) throws IOException {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-	imcode.server.User user = new imcode.server.User( ) ;
+	imcode.server.user.User user = null;
 
 	long ip = Utility.ipStringToLong(remote_ip) ;
 

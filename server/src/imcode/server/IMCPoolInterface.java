@@ -1,7 +1,7 @@
 package imcode.server ;
 
 import java.util.Vector ;
-import imcode.server.User ;
+import imcode.server.user.User ;
 
 
 /******************************************************************************************
@@ -81,7 +81,7 @@ public interface IMCPoolInterface {
 	;
 
 	// check document rights
-	public boolean checkDocAdminRights(int meta_id, User user)
+	public boolean checkDocAdminRights(int meta_id, imcode.server.user.User user)
 	;
 
 	// Send a procedure to the database and return a multistring array

@@ -26,7 +26,7 @@ public class ChatManager extends ChatBase{
 	//if (super.checkParameters(req, res, params) == false) return ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null) return ;
 
 	int testMetaId = Integer.parseInt( params.getProperty("META_ID") );

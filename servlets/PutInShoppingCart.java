@@ -15,6 +15,7 @@ import imcode.util.* ;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 
 public class PutInShoppingCart extends HttpServlet {
 

@@ -33,7 +33,7 @@ public class SaveSort extends HttpServlet {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String start_url	= imcref.getStartUrl() ;
 
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 	String htmlStr = "" ;
 	String child_str = "" ;
 	int meta_id ;

@@ -29,7 +29,7 @@ public class LogOut extends HttpServlet {
 		ServletOutputStream out = res.getOutputStream () ;
 		HttpSession session = req.getSession (true) ;
 		Object done = session.getAttribute("logon.isDone");  // marker object
-		imcode.server.User user = (imcode.server.User)done ;
+		imcode.server.user.User user = (imcode.server.user.User)done ;
 		if ( user == null ) {
 			res.sendRedirect(start_url) ;              
 			return ;

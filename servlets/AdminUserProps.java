@@ -7,6 +7,7 @@ import javax.servlet.http.*;
 import imcode.external.diverse.* ;
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 import imcode.readrunner.* ;
 
 import org.apache.log4j.* ;
@@ -39,7 +40,7 @@ public class AdminUserProps extends Administrator {
 	HttpSession session = req.getSession(false);
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	
 	if(user == null)  {
 		String header = "Error in AdminCounter." ;
@@ -219,7 +220,7 @@ public class AdminUserProps extends Administrator {
 		
 			
 		// get a user object by userToChangeId
-		imcode.server.User userToChange = null;
+		imcode.server.user.User userToChange = null;
 		if( userToChangeId != ""){
 			userToChange = imcref.getUserById(Integer.parseInt(userToChangeId));
 		}	
@@ -409,7 +410,7 @@ public class AdminUserProps extends Administrator {
 	if(session == null) return;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminCounter." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;
@@ -444,7 +445,7 @@ public class AdminUserProps extends Administrator {
 	} 
 			
 	// get a user object by userToChangeId
-	imcode.server.User userToChange = null;
+	imcode.server.user.User userToChange = null;
 	if( userToChangeId != ""){
 		userToChange = imcref.getUserById(Integer.parseInt(userToChangeId));
 	}

@@ -25,7 +25,7 @@ public class ImageUpload extends HttpServlet {
 	File file_path				= Utility.getDomainPrefPath( "image_path", host );
 	String image_url			= imcref.getImageUrl() ;
 
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 
 	// Check if user logged on
 	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {

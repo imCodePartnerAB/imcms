@@ -22,7 +22,7 @@ public class RmiConf implements IMCConstants {
      * Checks whether an user is administrator for a meta id or not, Returns true if the user has
      * rights to administrate the document, and and false if he is not
      */
-    public static boolean checkAdminRights(IMCServiceInterface imcref, String metaId, imcode.server.User user)  {
+    public static boolean checkAdminRights(IMCServiceInterface imcref, String metaId, imcode.server.user.User user)  {
 	boolean admin = false ;
 	int newMetaId = Integer.parseInt(metaId) ;
 

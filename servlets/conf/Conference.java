@@ -93,7 +93,7 @@ public class Conference extends HttpServlet {
        Returns an user object. If an error occurs, an errorpage will be generated.
     */
 
-    protected imcode.server.User getUserObj(HttpServletRequest req,
+    protected imcode.server.user.User getUserObj(HttpServletRequest req,
 					    HttpServletResponse res) throws ServletException, IOException {
 
 	if(checkSession(req,res) == true) {
@@ -102,7 +102,7 @@ public class Conference extends HttpServlet {
 	    HttpSession session = req.getSession(true);
 	    // Does the session indicate this user already logged in?
 	    Object done = session.getAttribute("logon.isDone");  // marker object
-	    imcode.server.User user = (imcode.server.User) done ;
+	    imcode.server.user.User user = (imcode.server.user.User) done ;
 
 	    return user ;
 	}
@@ -180,7 +180,7 @@ public class Conference extends HttpServlet {
 	HttpSession session = req.getSession(true);
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute("logon.isDone");  // marker object
-	imcode.server.User user = (imcode.server.User) done ;
+	imcode.server.user.User user = (imcode.server.user.User) done ;
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
@@ -246,7 +246,7 @@ public class Conference extends HttpServlet {
 
     // *************************** ADMIN RIGHTS FUNCTIONS **************************
 
-    protected boolean getAdminRights(IMCServiceInterface imcref, String metaId, imcode.server.User user) {
+    protected boolean getAdminRights(IMCServiceInterface imcref, String metaId, imcode.server.user.User user) {
 
 	try {
 	    return userHasAdminRights( imcref, Integer.parseInt( metaId ), user );
@@ -265,7 +265,7 @@ public class Conference extends HttpServlet {
        0 = superadministrator
     */
 
-    protected boolean checkAdminRights(IMCServiceInterface imcref, imcode.server.User user) {
+    protected boolean checkAdminRights(IMCServiceInterface imcref, imcode.server.user.User user) {
 
 	// Lets verify that the user who tries to add a new user is an SUPERADMIN
 	int currUser_id = user.getUserId() ;
@@ -292,7 +292,7 @@ public class Conference extends HttpServlet {
 	// Lets get serverinformation
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
-	imcode.server.User user = getUserObj(req,res) ;
+	imcode.server.user.User user = getUserObj(req,res) ;
 	if(user == null) {
 	    this.log("CheckadminRights: an error occured, getUserObj") ;
 	    return false ;
@@ -415,7 +415,7 @@ public class Conference extends HttpServlet {
     public void sendHtml (HttpServletRequest req, HttpServletResponse res,
 			  VariableManager vm, String htmlFile) throws ServletException, IOException {
 
-	imcode.server.User user = getUserObj(req,res) ;
+	imcode.server.user.User user = getUserObj(req,res) ;
 	// RmiConf rmi = new RmiConf(user) ;
 	String metaId = this.getMetaId(req) ;
 	if (metaId == null) {
@@ -581,7 +581,7 @@ public class Conference extends HttpServlet {
 				      Properties params, String loginUserId)  throws ServletException, IOException {
 
 	// Lets get the user object
-	imcode.server.User user = this.getUserObj(req,res) ;
+	imcode.server.user.User user = this.getUserObj(req,res) ;
 	if(user == null) return false ;
 
 	// Lets get userparameters
@@ -721,7 +721,7 @@ public class Conference extends HttpServlet {
      * @return returns string of html code for adminlink
      */
 
-    public String getAdminButtonLink(HttpServletRequest req,imcode.server.User user, VariableManager adminButtonVM )
+    public String getAdminButtonLink(HttpServletRequest req,imcode.server.user.User user, VariableManager adminButtonVM )
 	throws ServletException, IOException {
 
 	// Lets get serverinformation
@@ -761,7 +761,7 @@ public class Conference extends HttpServlet {
        Creates the html code, used to view the adminimage and an appropriate link
        to the adminservlet.
     */
-    public String getUnAdminButtonLink(HttpServletRequest req,imcode.server.User user, VariableManager unAdminButtonVM )
+    public String getUnAdminButtonLink(HttpServletRequest req,imcode.server.user.User user, VariableManager unAdminButtonVM )
 	throws ServletException, IOException {
 
 	// Lets get serverinformation
@@ -861,7 +861,7 @@ public class Conference extends HttpServlet {
      * @param res is used if error (send user to conference_starturl )
      * @param user
      */
-    protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, imcode.server.User user )
+    protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, imcode.server.user.User user )
 	throws ServletException, IOException {
 
 	HttpSession session = req.getSession( true );
@@ -892,7 +892,7 @@ public class Conference extends HttpServlet {
      * @param metaId conference metaId
      * @param user
      */
-    protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, int metaId, imcode.server.User user )
+    protected boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res, int metaId, imcode.server.user.User user )
 	throws ServletException, IOException {
 
 	// Lets get serverinformation
@@ -921,7 +921,7 @@ public class Conference extends HttpServlet {
      * @param user
      */
     protected boolean userHasRightToEdit( IMCServiceInterface imcref, int metaId,
-					  imcode.server.User user ) throws java.io.IOException {
+					  imcode.server.user.User user ) throws java.io.IOException {
 
 	return ( imcref.checkDocRights( metaId, user ) &&
 		 imcref.checkDocAdminRights( metaId, user ) );
@@ -934,7 +934,7 @@ public class Conference extends HttpServlet {
      * @param user
      */
     protected boolean userHasAdminRights( IMCServiceInterface imcref, int metaId,
-					  imcode.server.User user ) throws java.io.IOException {
+					  imcode.server.user.User user ) throws java.io.IOException {
 	return ( imcref.checkDocAdminRights( metaId, user ) &&
 		 imcref.checkDocAdminRights( metaId, user, 65536 ) );
 

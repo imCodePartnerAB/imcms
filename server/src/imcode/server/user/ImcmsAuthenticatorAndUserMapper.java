@@ -1,7 +1,6 @@
 package imcode.server.user;
 
 import org.apache.log4j.Logger;
-import imcode.server.User;
 import imcode.server.IMCServiceInterface;
 
 public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticator {
@@ -16,7 +15,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
 
    public boolean authenticate( String loginName, String password ) {
       boolean userExistsAndPasswordIsCorrect = false ;
-      User user = getUser( loginName );
+      imcode.server.user.User user = getUser( loginName );
       if (null != user) {
          String login_password_from_db = user.getPassword();
          String login_password_from_form = password;
@@ -36,16 +35,16 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
       return userExistsAndPasswordIsCorrect ;
    }
 
-   public User getUser( String loginName) {
+   public imcode.server.user.User getUser( String loginName) {
       loginName = loginName.trim();
 
-      User result = null;
+      imcode.server.user.User result = null;
       String[] user_data = service.sqlProcedure( "GetUserByLogin", new String[]{loginName} );
 
       // if resultSet > 0 a result is found
       if( user_data.length > 0 ) {
 
-         result = new User();
+         result = new imcode.server.user.User();
 
          result.setUserId( Integer.parseInt( user_data[0] ) );
          result.setLoginName( user_data[1] );
@@ -96,10 +95,53 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
       return result;
    }
 
-   public void update( String loginName, User newUserData ) {
-      User imcmsUser = getUser( loginName );
+   /**
+    @return An object representing the user with the given id.
+    **/
+   public User getUser( int userId ) {
 
-      User tempUser = (User)newUserData.clone();
+      String[] user_data = service.sqlProcedure( "GetUserInfo ", new String[]{"" + userId} );
+
+      user_data = service.sqlProcedure( "GetUserByLogin ", new String[]{user_data[1]} );
+
+      // if resultSet > 0 a user is found
+      if( user_data.length > 0 ) {
+
+         User user = new User();
+
+         user.setUserId( Integer.parseInt( user_data[0] ) );
+         user.setLoginName( user_data[1] );
+         user.setPassword( user_data[2].trim() );
+         user.setFirstName( user_data[3] );
+         user.setLastName( user_data[4] );
+         user.setTitle( user_data[5] );
+         user.setCompany( user_data[6] );
+         user.setAddress( user_data[7] );
+         user.setCity( user_data[8] );
+         user.setZip( user_data[9] );
+         user.setCountry( user_data[10] );
+         user.setCountyCouncil( user_data[11] );
+         user.setEmailAddress( user_data[12] );
+         user.setLangId( Integer.parseInt( user_data[13] ) );
+         user.setUserType( Integer.parseInt( user_data[15] ) );
+         user.setActive( 0 != Integer.parseInt( user_data[16] ) );
+         user.setCreateDate( user_data[17] );
+         user.setLangPrefix( user_data[14] );
+
+         return user;
+
+      } else {
+         // No user with that id.
+         return null;
+      }
+   }
+
+
+
+   public void update( String loginName, imcode.server.user.User newUserData ) {
+      imcode.server.user.User imcmsUser = getUser( loginName );
+
+      imcode.server.user.User tempUser = (imcode.server.user.User)newUserData.clone();
       tempUser.setUserId( imcmsUser.getUserId() );
 
       String updateUserPRCStr = "updateuser";

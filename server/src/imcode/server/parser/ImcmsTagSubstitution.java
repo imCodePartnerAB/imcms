@@ -7,6 +7,7 @@ import javax.servlet.http.Cookie ;
 
 import org.apache.oro.text.regex.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 import imcode.util.* ;
 import java.text.DateFormatSymbols;
 

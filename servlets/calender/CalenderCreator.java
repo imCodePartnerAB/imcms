@@ -28,7 +28,7 @@ public class CalenderCreator extends Calender
 	// Get info and check login
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	Properties prop = getSessionParams(req, res);
-	imcode.server.User user = super.checkLogin(req, res, imcref.getStartUrl());
+	imcode.server.user.User user = super.checkLogin(req, res, imcref.getStartUrl());
 
 	if (prop.equals(null) || user.equals(null))
 	    {

@@ -27,7 +27,7 @@ public class SaveNewBrowserDoc extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 	String htmlStr = "" ;
 	String submit_name = "" ;
 	String search_string = "" ;
@@ -49,7 +49,7 @@ public class SaveNewBrowserDoc extends HttpServlet {
 
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute("logon.isDone");  // marker object
-	user = (imcode.server.User)done ;
+	user = (imcode.server.user.User)done ;
 
 	if (done == null) {
 	    // No logon.isDone means he hasn't logged in.

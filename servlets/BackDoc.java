@@ -5,6 +5,7 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 
 public class BackDoc extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;

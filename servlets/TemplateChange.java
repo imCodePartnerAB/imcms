@@ -7,6 +7,7 @@ import java.rmi.registry.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 
 import org.apache.log4j.Category;
 

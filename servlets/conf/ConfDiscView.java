@@ -61,7 +61,7 @@ public class ConfDiscView extends Conference {
 		} 
 
 		// Lets get an user object  
-		imcode.server.User user = super.getUserObj(req,res) ;
+		imcode.server.user.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
 		
 		if ( !isUserAuthorized( req, res, user ) ) {

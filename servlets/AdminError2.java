@@ -120,7 +120,7 @@ public class AdminError2 extends Administrator {
 	    // Lets get the path to the admin templates folder
 	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
-	    imcode.server.User user = getUserObj(req,res) ;
+	    imcode.server.user.User user = getUserObj(req,res) ;
 	    File folder = this.getAdminTemplateFolder(imcref, user) ;
 	    //log("ExternalFolder was: " + folder) ;
 

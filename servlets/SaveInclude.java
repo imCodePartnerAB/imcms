@@ -2,6 +2,7 @@ import javax.servlet.* ;
 import javax.servlet.http.* ;
 
 import imcode.server.* ;
+import imcode.server.user.User;
 
 import imcode.util.Check ;
 import imcode.util.Utility ;
@@ -36,7 +37,7 @@ public class SaveInclude extends HttpServlet {
 
 	Writer out = res.getWriter() ;
 
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 
 	String meta_id_str = req.getParameter("meta_id") ;
 	int meta_id = Integer.parseInt(meta_id_str) ;

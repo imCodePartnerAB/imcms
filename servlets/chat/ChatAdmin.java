@@ -73,7 +73,7 @@ public class ChatAdmin extends Administrator{
 	}
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj( request, response ) ;
+	imcode.server.user.User user = super.getUserObj( request, response ) ;
 	if(user == null) {
 	    sendErrorMessage( imcref, eMailServerMaster, deafultLanguagePrefix , this.ERROR_HEADER, 1, response );
 	    return ;

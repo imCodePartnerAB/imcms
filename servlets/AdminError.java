@@ -26,7 +26,7 @@ public class AdminError extends Administrator {
 	String fileName = "AdminError.htm" ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null) {
 	    String aHeader = "Error in AdminCounter." ;
 	    String aMsg = "Couldnt create an user object."+ "<BR>" ;

@@ -5,6 +5,7 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 import imcode.server.parser.ParserParameters ;
 
 import org.apache.log4j.* ;
@@ -35,7 +36,7 @@ public class AdminDoc extends HttpServlet {
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 	// Find the start-page
 	int start_doc = imcref.getSystemData().getStartDocument() ;
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 	String htmlStr = "" ;
 	int meta_id ;
 	String sqlStr ;

@@ -1,5 +1,6 @@
 import imcode.server.parser.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 import imcode.util.* ;
 import imcode.readrunner.* ;
 import java.io.* ;

@@ -5,6 +5,7 @@ import java.sql.Date ;
 import java.io.*;
 import java.util.*;
 import imcode.server.* ;
+import imcode.server.user.User;
 import imcode.server.db.DBConnect;
 import imcode.server.db.ConnectionPool;
 

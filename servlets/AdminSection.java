@@ -25,7 +25,7 @@ public class AdminSection extends Administrator {
 
 	res.setContentType("text/html") ;
 
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 	// Check if user logged on
 	if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
 	    return ;
@@ -55,7 +55,7 @@ public class AdminSection extends Administrator {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String start_url	= imcref.getStartUrl() ;
 
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 	// Check if user logged on
 	if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
 	    return ;

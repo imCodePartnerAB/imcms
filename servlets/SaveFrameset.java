@@ -30,7 +30,7 @@ public class SaveFrameset extends HttpServlet {
 		String start_url        	= imcref.getStartUrl() ;
 		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
 
-		imcode.server.User user ;
+		imcode.server.user.User user ;
 		String htmlStr = "" ;
 		String submit_name = "" ;
 		String values[] ;

@@ -92,7 +92,7 @@ public class GetDoc extends HttpServlet {
 
 	HttpSession session = req.getSession(true) ;
 	Object done = session.getAttribute("logon.isDone");  // marker object
-	imcode.server.User user = (imcode.server.User)done ;
+	imcode.server.user.User user = (imcode.server.user.User)done ;
 	if (done == null) {
 	    // Check the name and password for validity
 	    String ip = req.getRemoteAddr( ) ;

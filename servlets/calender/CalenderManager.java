@@ -64,7 +64,7 @@ public class CalenderManager extends Calender
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	Properties prop = super.getSessionParams(req, res);
-	imcode.server.User user = super.checkLogin(req, res, imcref.getStartUrl());
+	imcode.server.user.User user = super.checkLogin(req, res, imcref.getStartUrl());
 
 	if (user == null)
 	    return;

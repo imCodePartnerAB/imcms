@@ -8,6 +8,7 @@ import org.apache.oro.text.regex.* ;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 import imcode.server.db.DBConnect;
 import imcode.server.db.ConnectionPool;
 import imcode.util.* ;

@@ -1,14 +1,12 @@
 package imcode.server.user;
 
-import imcode.server.User;
-
 import javax.naming.directory.*;
 import javax.naming.*;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 
-public class LdapUserMapper implements UserMapper {
+public class   LdapUserMapper implements UserMapper {
    private static final String GIVEN_NAME = "GivenName";
 
    private DirContext ctx = null;
@@ -41,8 +39,8 @@ public class LdapUserMapper implements UserMapper {
       return Logger.getLogger( this.getClass().getName() );
    }
 
-   public User getUser( String loginName ) {
-      User result = null;
+   public imcode.server.user.User getUser( String loginName ) {
+      imcode.server.user.User result = null;
 
       final String attributeName = "samaccountname=";
       final String mappingString = attributeName + loginName;
@@ -50,7 +48,7 @@ public class LdapUserMapper implements UserMapper {
       try {
          enum = ctx.search( "", mappingString, null );
          if( enum != null && enum.hasMore() ) {
-            User result11 = null;
+            imcode.server.user.User result11 = null;
             SearchResult searchResult = (SearchResult)enum.nextElement();
             NamingEnumeration attribEnum = searchResult.getAttributes().getAll();
             result11 = mapAllPossibleAttributes( attribEnum );
@@ -64,13 +62,18 @@ public class LdapUserMapper implements UserMapper {
       return result;
    }
 
-   public void update( String loginName, User user ) {
+   public User getUser( int id ) {
+      // todo
+      return null;
+   }
+
+   public void update( String loginName, imcode.server.user.User user ) {
       // read only for now
       throw new UnsupportedOperationException();
    }
 
-   private User mapAllPossibleAttributes( NamingEnumeration attribEnum ) {
-      User user = new User();
+   private imcode.server.user.User mapAllPossibleAttributes( NamingEnumeration attribEnum ) {
+      imcode.server.user.User user = new imcode.server.user.User();
       while( attribEnum.hasMoreElements() ) {
          Attribute attribute = (Attribute)attribEnum.nextElement();
          String attributeName = attribute.getID();
@@ -93,8 +96,8 @@ public class LdapUserMapper implements UserMapper {
       env.put( Context.INITIAL_CONTEXT_FACTORY, ContextFactory );
       env.put( Context.PROVIDER_URL, ldapServerURL );
       env.put( Context.SECURITY_AUTHENTICATION, ldapAuthenticationType );
-      env.put( Context.SECURITY_PRINCIPAL, ldapUserName ); // specify the username
-      env.put( Context.SECURITY_CREDENTIALS, ldapPassword );           // specify the password
+      env.put( Context.SECURITY_PRINCIPAL, ldapUserName );
+      env.put( Context.SECURITY_CREDENTIALS, ldapPassword );
       DirContext ctx = new InitialDirContext( env );
       return ctx;
    }

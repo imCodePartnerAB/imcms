@@ -3,7 +3,6 @@ package imcode.server.user;
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 import imcode.server.IMCServiceInterface;
-import imcode.server.User;
 
 public class TestImcmsAndLdapAuthenticatorAndUserMapper extends Log4JInitTestCase {
    private AuthenticatorAndUserMapperUsingImcmsAndOther imcmsAndLdapAuthAndMapper;
@@ -26,7 +25,7 @@ public class TestImcmsAndLdapAuthenticatorAndUserMapper extends Log4JInitTestCas
       boolean userAuthenticates = imcmsAndLdapAuthAndMapper.authenticate( loginName, "admin" );
       assertTrue( userAuthenticates );
 
-      User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
+      imcode.server.user.User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
       assertNotNull(user) ;
       assertTrue( user.getFirstName().equalsIgnoreCase(loginName));
    }
@@ -36,7 +35,7 @@ public class TestImcmsAndLdapAuthenticatorAndUserMapper extends Log4JInitTestCas
       boolean userAuthenticates = imcmsAndLdapAuthAndMapper.authenticate( loginName, "hasbra" );
       assertTrue( userAuthenticates );
 
-      User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
+      imcode.server.user.User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
       assertTrue( "hasse".equalsIgnoreCase(user.getFirstName()));
    }
 }

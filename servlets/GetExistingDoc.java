@@ -40,7 +40,7 @@ public class GetExistingDoc extends HttpServlet {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String start_url	= imcref.getStartUrl() ;
 
-	imcode.server.User user ;
+	imcode.server.user.User user ;
 	String htmlStr = "" ;
 	String submit_name = "" ;
 	String values[] ;
@@ -66,7 +66,7 @@ public class GetExistingDoc extends HttpServlet {
 
 	// Does the session indicate this user already logged in?
 	Object done = session.getAttribute("logon.isDone");  // marker object
-	user = (imcode.server.User)done ;
+	user = (imcode.server.user.User)done ;
 
 	if (done == null) {
 	    // No logon.isDone means he hasn't logged in.

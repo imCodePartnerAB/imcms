@@ -27,7 +27,7 @@ public class CalenderDbManager
        @param user   user properties
        @throws IOException if detected when handling the request
     */
-    public void newCalender(Properties prop, imcode.server.User user) throws IOException
+    public void newCalender(Properties prop, imcode.server.user.User user) throws IOException
     {
 	String args[] = new String[] {prop.getProperty("calender_meta_id")};
 	String meta[] = sqlMainProc("GetDocumentInfo", args);

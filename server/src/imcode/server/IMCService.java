@@ -9,6 +9,7 @@ import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.Authenticator;
 import imcode.server.user.UserMapper;
+import imcode.server.user.User;
 import imcode.util.FileCache;
 import imcode.util.fortune.*;
 import imcode.util.poll.PollHandlingSystem;
@@ -150,7 +151,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
 
 
-    public imcode.server.User verifyUser(String login, String password) {
+    public imcode.server.user.User verifyUser(String login, String password) {
        User result = null;
        Authenticator auth = new ImcmsAuthenticatorAndUserMapper( this, mainLog );
        boolean userAuthenticates = auth.authenticate( login, password );
@@ -161,45 +162,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        return result ;
     }
 
-   /**
-    @return An object representing the user with the given id.
-    **/
-   public User getUserById( int userId ) {
-
-      String[] user_data = sqlProcedure( "GetUserInfo ", new String[]{"" + userId} );
-
-      user_data = sqlProcedure( "GetUserByLogin ", new String[]{user_data[1]} );
-
-      // if resultSet > 0 a user is found
-      if( user_data.length > 0 ) {
-
-         User user = new User();
-
-         user.setUserId( Integer.parseInt( user_data[0] ) );
-         user.setLoginName( user_data[1] );
-         user.setPassword( user_data[2].trim() );
-         user.setFirstName( user_data[3] );
-         user.setLastName( user_data[4] );
-         user.setTitle( user_data[5] );
-         user.setCompany( user_data[6] );
-         user.setAddress( user_data[7] );
-         user.setCity( user_data[8] );
-         user.setZip( user_data[9] );
-         user.setCountry( user_data[10] );
-         user.setCountyCouncil( user_data[11] );
-         user.setEmailAddress( user_data[12] );
-         user.setLangId( Integer.parseInt( user_data[13] ) );
-         user.setUserType( Integer.parseInt( user_data[15] ) );
-         user.setActive( 0 != Integer.parseInt( user_data[16] ) );
-         user.setCreateDate( user_data[17] );
-         user.setLangPrefix( user_data[14] );
-
-         return user;
-
-      } else {
-         // No user with that id.
-         return null;
-      }
+   public User getUserById( int id ) {
+      UserMapper userMapper = new ImcmsAuthenticatorAndUserMapper(this, mainLog );
+      User result = userMapper.getUser( id );
+      return result;
    }
 
    // Fixme! public bolean addUser(User user) save a user in db
@@ -331,7 +297,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     **/
 
-    public void saveText(imcode.server.User user,int meta_id,int txt_no,IMCText text, String text_type) {
+    public void saveText(imcode.server.user.User user,int meta_id,int txt_no,IMCText text, String text_type) {
 
 	org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util() ;
 
@@ -465,7 +431,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Save template -> text_docs, sort
      */
-    public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc) {
+    public void saveTextDoc(int meta_id,imcode.server.user.User user,imcode.server.Table doc) {
 	String sqlStr = "" ;
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
@@ -497,7 +463,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Delete a doc and all data related. Delete from db and file system.
      */
     /* Fixme:  delete doc from plugin db */
-    public void deleteDocAll(int meta_id,imcode.server.User user) {
+    public void deleteDocAll(int meta_id,imcode.server.user.User user) {
 	String sqlStr = "DocumentDelete " + meta_id ;
 
 	String filename = meta_id + "_se";
@@ -970,7 +936,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Activate child to child-table.
      */
-    public void activateChild(int meta_id,imcode.server.User user) {
+    public void activateChild(int meta_id,imcode.server.user.User user) {
 
 	String sqlStr = "" ;
 
@@ -998,7 +964,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
        Deactivate (sigh) child from child-table.
     **/
-    public void inActiveChild(int meta_id,imcode.server.User user) {
+    public void inActiveChild(int meta_id,imcode.server.user.User user) {
 
 	String sqlStr = "" ;
 
@@ -1820,7 +1786,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        0 = superadministrator
     */
 
-    public boolean checkAdminRights(imcode.server.User user) {
+    public boolean checkAdminRights(imcode.server.user.User user) {
 
 	// Lets verify that the user who tries to add a new user is an SUPERADMIN
 	int currUser_id = user.getUserId() ;

@@ -42,7 +42,7 @@ public class VerifyUser extends HttpServlet {
 		String admin_url       		= Utility.getDomainPref( "admin_url",host ) ;
 		String access_denied_url   	= Utility.getDomainPref( "access_denied_url",host ) ;
 
-		imcode.server.User user ;
+		imcode.server.user.User user ;
 		res.setContentType( "text/html" );
 		PrintWriter out = res.getWriter( );
 		String test = "" ; 

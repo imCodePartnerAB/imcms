@@ -6,6 +6,7 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
+import imcode.server.user.User;
 import imcode.util.* ;
 
 import imcode.readrunner.* ;
@@ -113,7 +114,7 @@ public class AdminUserReadrunner extends HttpServlet {
 	}
 
 
-    private void displayPage(IMCServiceInterface imcref, User user, User userToChange, HttpServletResponse res) 
+    private void displayPage(IMCServiceInterface imcref, User user, User userToChange, HttpServletResponse res)
 	throws IOException {
 
 		// check if user is a Useradmin, adminRole = 2

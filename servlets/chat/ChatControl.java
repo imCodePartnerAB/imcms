@@ -58,7 +58,7 @@ public class ChatControl extends ChatBase
 	    return ;
 	}
 	// Lets get the user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null){
 	    log("RETURN usern is null");
 	    return ;
@@ -204,7 +204,7 @@ public class ChatControl extends ChatBase
 	    return ;
 	}
 	// Lets get the user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if (user == null){
 	    log("user is null return");
 	    return ;
@@ -481,7 +481,7 @@ public class ChatControl extends ChatBase
     //this method will create an usersettings page
     //
     public synchronized void createSettingsPage(HttpServletRequest req, HttpServletResponse res, HttpSession session,
-						String metaId, imcode.server.User user, ChatMember member)
+						String metaId, imcode.server.user.User user, ChatMember member)
 	throws ServletException, IOException
     {
 	Vector vect = new Vector();

@@ -32,7 +32,7 @@ public class UrlDocTest extends HttpServlet {
 		res.setContentType("text/html") ;
 		ServletOutputStream out = res.getOutputStream() ;
 
-		imcode.server.User user ;
+		imcode.server.user.User user ;
 		// Check if user logged on
 		if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
 			return ;

@@ -29,7 +29,7 @@ public class AdminManager extends Administrator {
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get an user object
-	imcode.server.User user = super.getUserObj(req,res) ;
+	imcode.server.user.User user = super.getUserObj(req,res) ;
 	if(user == null) {
 	    String header = "Error in AdminManager." ;
 	    String msg = "Couldnt create an user object."+ "<BR>" ;

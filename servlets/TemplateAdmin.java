@@ -7,6 +7,7 @@ import java.rmi.registry.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.User;
 
 public class TemplateAdmin extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;

@@ -5,6 +5,7 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
+import imcode.server.user.User;
 import imcode.external.diverse.* ;
 import imcode.util.* ;
 
@@ -492,7 +493,7 @@ public class MetaDataParser {
 
     } // End of getRolesFromDb
 
-	private static synchronized String getDefaultTemplateOptionList(IMCServiceInterface imcref, imcode.server.User user, String[] def_templates, String meta_id, String lang_prefix, boolean restr_1 )throws IOException
+	private static synchronized String getDefaultTemplateOptionList(IMCServiceInterface imcref, imcode.server.user.User user, String[] def_templates, String meta_id, String lang_prefix, boolean restr_1 )throws IOException
 	{
 		String returnValue = "";
 		//ok lets setup the default_template-option-lists for restricted 1 & 2
