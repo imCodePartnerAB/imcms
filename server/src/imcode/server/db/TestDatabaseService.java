@@ -7,24 +7,6 @@ import java.io.IOException;
 
 public class TestDatabaseService extends Log4JConfiguredTestCase {
 
-    // You may have to change these for your local installation of the databases
-    private static final String DB_HOST = "localhost";
-
-    private static final int SQLSERVER_PORT = 1433;
-    private static final String SQLSERVER_DATABASE_NAME = "test";
-    private static final String SQLSERVE_DATABASE_USER = "sa";
-    private static final String SQLSERVE_DATABASE_PASSWORD = "sa";
-
-    private static final int MIMER_PORT = 1360;
-    private static final String MIMMER_DATABASE_NAME = "test";
-    private static final String MIMMER_DATABASE_USER = "sysadm";
-    private static final String MIMMER_DATABASE_PASSWORD = "admin";
-
-    private static int MYSQL_PORT = 3306;
-    private static String MYSQL_DATABASE_NAME = "test";
-    private static String MYSQL_DATABASE_USER = "root";
-    private static String MYSQL_DATABASE_PASSWORD = "";
-
     private DatabaseService[] databaseServices = null;
 
     // If you change anything in the scripts that creates the database
@@ -63,9 +45,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     protected void setUp() throws IOException {
         databaseServices = new DatabaseService[]{
-            static_initMySql(),
-            static_initSqlServer(),
-            static_initMimer(),
+	    DatabaseTestInitializer.static_initMySql(),
+	    DatabaseTestInitializer.static_initSqlServer(),
+	    DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -378,26 +360,5 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
                 assertEquals( one, another );
             }
         }
-    }
-
-    private static DatabaseService static_initMimer() throws IOException {
-        DatabaseService dbService = new MimerDatabaseService(TestDatabaseService.DB_HOST, TestDatabaseService.MIMER_PORT, TestDatabaseService.MIMMER_DATABASE_NAME, TestDatabaseService.MIMMER_DATABASE_USER, TestDatabaseService.MIMMER_DATABASE_PASSWORD );
-        dbService.setupDatabaseWithTablesAndData();
-        dbService.createTestData();
-        return dbService;
-    }
-
-    private static DatabaseService static_initSqlServer() throws IOException {
-        DatabaseService dbService = new SQLServerDatabaseService( TestDatabaseService.DB_HOST, TestDatabaseService.SQLSERVER_PORT, TestDatabaseService.SQLSERVER_DATABASE_NAME, TestDatabaseService.SQLSERVE_DATABASE_USER, TestDatabaseService.SQLSERVE_DATABASE_PASSWORD );
-        dbService.setupDatabaseWithTablesAndData();
-        dbService.createTestData();
-        return dbService;
-    }
-
-    private static DatabaseService static_initMySql() throws IOException {
-        DatabaseService dbService = new MySQLDatabaseServer( TestDatabaseService.DB_HOST, TestDatabaseService.MYSQL_PORT, TestDatabaseService.MYSQL_DATABASE_NAME, TestDatabaseService.MYSQL_DATABASE_USER, TestDatabaseService.MYSQL_DATABASE_PASSWORD );
-        dbService.setupDatabaseWithTablesAndData();
-        dbService.createTestData();
-        return dbService;
     }
 }

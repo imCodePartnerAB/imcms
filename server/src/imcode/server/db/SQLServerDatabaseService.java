@@ -1,5 +1,7 @@
 package imcode.server.db;
 
+import java.io.File ;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -10,8 +12,8 @@ class SQLServerDatabaseService extends DatabaseService {
     private String TEXT_TYPE_INTERNATIONAL_SQL_SERVER = "NTEXT";
     private String TEXT_TYPE_SQL_SERVER = "TEXT";
 
-    public SQLServerDatabaseService( String hostName, int port, String databaseName, String user, String password ) {
-        super( Logger.getLogger( SQLServerDatabaseService.class ) );
+    public SQLServerDatabaseService( String hostName, int port, String databaseName, String user, String password, File filePath ) {
+        super( filePath, Logger.getLogger( SQLServerDatabaseService.class ) );
         // log.debug( "Creating a 'SQL Server' database service");
         String jdbcDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
         String jdbcUrl = "jdbc:microsoft:sqlserver://";

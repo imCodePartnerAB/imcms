@@ -1,5 +1,7 @@
 package imcode.server.db;
 
+import java.io.File ;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -11,8 +13,8 @@ class MySQLDatabaseServer extends DatabaseService {
 
     private static final String TEXT_TYPE_MY_SQL = "TEXT";
 
-    public MySQLDatabaseServer( String hostName, int port, String databaseName, String user, String password ) {
-        super( Logger.getLogger( MySQLDatabaseServer.class ) );
+    public MySQLDatabaseServer( String hostName, int port, String databaseName, String user, String password, File filePath ) {
+        super( filePath, Logger.getLogger( MySQLDatabaseServer.class ) );
         // log.debug( "Creating a 'My SQL' database service");
         String jdbcDriver = "com.mysql.jdbc.Driver";
         String jdbcUrl = "jdbc:mysql://";

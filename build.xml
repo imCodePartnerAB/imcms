@@ -279,10 +279,10 @@
 
 	<java classname="junit.swingui.TestRunner" fork="yes">
 	    <classpath>
+		<fileset dir="install/lib">
+		    <include name="*.jar"/>
+		</fileset>
 		<pathelement path="${classes}"/>
-		<pathelement path="install/lib/log4j.jar"/>
-		<pathelement path="install/lib/commons-collections.jar"/>
-		<pathelement path="install/lib/junit.jar"/>
 	    </classpath>
 	</java>
     </target>

@@ -21,7 +21,6 @@ import imcode.server.user.UserDomainObject;
  */
 public abstract class DatabaseService {
     private static final char END_OF_COMMAND = ';';
-    private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/multipledatabases/";
     private static final String DROP_TABLES = "1.droptables.sql";
     private static final String CREATE_TABLES = "2.createtables.sql";
     private static final String INSERT_TYPE_DATA = "3.inserttypedata.sql";
@@ -34,6 +33,7 @@ public abstract class DatabaseService {
 
     SQLProcessor sqlProcessor;
     private Logger log;
+    private File filePath ;
 
     /**
      *  overide this in subclass if needed.
@@ -70,7 +70,8 @@ public abstract class DatabaseService {
         return modifiedCommands;
     }
 
-    DatabaseService( Logger log ) {
+    DatabaseService( File filePath, Logger log ) {
+	this.filePath = filePath ;
         this.log = log;
     }
 
@@ -135,7 +136,7 @@ public abstract class DatabaseService {
     }
 
     private ArrayList readCommandsFromFile( String fileName ) throws IOException {
-        File sqlScriptingFile = new File( FILE_PATH + fileName );
+        File sqlScriptingFile = new File( filePath, fileName );
 
         BufferedReader reader = new BufferedReader( new FileReader( sqlScriptingFile ) );
         StringBuffer commandBuff = new StringBuffer();
@@ -412,7 +413,7 @@ public abstract class DatabaseService {
         String primaryKeyColumnName = "phone_id";
         int newPhoneId = 1 + getMaxIntValue( tableName, primaryKeyColumnName );
 
-        String sql = "INSERT INTO PHONES ( phone_id , number , user_id, phonetype_id ) VALUES ( ? , ?, ?, ? )";
+        String sql = "INSERT INTO phones ( phone_id , number , user_id, phonetype_id ) VALUES ( ? , ?, ?, ? )";
         Object[] paramValues = new Object[]{new Integer( newPhoneId ), number, new Integer( userId ), new Integer( phoneType )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
@@ -523,7 +524,7 @@ public abstract class DatabaseService {
     }
 
     int sproc_PhoneNbrDelete( int phone_id ) {
-        String sql = "DELETE FROM PHONES WHERE phone_id = ? ";
+        String sql = "DELETE FROM phones WHERE phone_id = ? ";
         Object[] paramValues = new Object[]{new Integer( phone_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
