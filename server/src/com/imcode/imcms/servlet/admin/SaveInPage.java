@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Save data from editwindow.
@@ -30,7 +30,7 @@ public class SaveInPage extends HttpServlet {
         DocumentMapper documentMapper = imcref.getDocumentMapper();
 
         int documentId = Integer.parseInt( req.getParameter( "meta_id" ) );
-        DocumentDomainObject document = documentMapper.getDocument( documentId );
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
 
         TemplateMapper templateMapper = imcref.getTemplateMapper();
 
@@ -38,23 +38,25 @@ public class SaveInPage extends HttpServlet {
 
         TemplateGroupDomainObject requestedTemplateGroup = getRequestedTemplateGroup( req, templateMapper );
 
-        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document );
+        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, textDocument );
         TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
 
-        boolean requestedTemplateGroupIsAllowed = null == requestedTemplateGroup ;
-        boolean requestedTemplateIsAllowed = null == requestedTemplate ;
+        boolean requestedTemplateGroupIsAllowed = null == requestedTemplateGroup;
+        boolean requestedTemplateIsAllowed = null == requestedTemplate;
         for ( int i = 0; i < allowedTemplateGroups.length; i++ ) {
             TemplateGroupDomainObject allowedTemplateGroup = allowedTemplateGroups[i];
-            if (allowedTemplateGroup.equals( requestedTemplateGroup )) {
-                requestedTemplateGroupIsAllowed = true ;
+            if ( allowedTemplateGroup.equals( requestedTemplateGroup ) ) {
+                requestedTemplateGroupIsAllowed = true;
             }
-            if (templateMapper.templateGroupContainsTemplate( allowedTemplateGroup, requestedTemplate )) {
-                requestedTemplateIsAllowed = true ;
+            if ( templateMapper.templateGroupContainsTemplate( allowedTemplateGroup, requestedTemplate ) ) {
+                requestedTemplateIsAllowed = true;
             }
         }
 
         // Check if user has write rights
-        if ( !imcref.checkDocAdminRights( documentId, user, imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) || !requestedTemplateIsAllowed || !requestedTemplateGroupIsAllowed ) {	// Checking to see if user may edit this
+        if ( !imcref.checkDocAdminRights( documentId, user, imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE )
+             || !requestedTemplateIsAllowed
+             || !requestedTemplateGroupIsAllowed ) {	// Checking to see if user may edit this
             Utility.setDefaultHtmlContentType( res );
 
             String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
@@ -81,8 +83,17 @@ public class SaveInPage extends HttpServlet {
             }
 
             // save textdoc
-            documentMapper.sqlSaveTextDocumentData( document, user, requestedTemplate, requestedTemplateGroup );
-            documentMapper.touchDocument( documentMapper.getDocument( documentId ) );
+            textDocument.setTemplate( requestedTemplate );
+            if ( null != requestedTemplateGroup ) {
+                textDocument.setTemplateGroupId( requestedTemplateGroup.getId() );
+            }
+            try {
+                documentMapper.saveDocument( textDocument, user );
+                imcref.updateLogs( "Text docs  [" + textDocument.getId() + "] updated by user: [" + user.getFullName()
+                                   + "]" );
+            } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
+                throw new RuntimeException( e );
+            }
 
             // return page
             String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
@@ -141,16 +152,16 @@ public class SaveInPage extends HttpServlet {
     private TemplateGroupDomainObject getRequestedTemplateGroup( HttpServletRequest req, TemplateMapper templateMapper ) {
         try {
             return templateMapper.getTemplateGroupById( Integer.parseInt( req.getParameter( "group" ) ) );
-        } catch (NumberFormatException nfe) {
-            return null ;
+        } catch ( NumberFormatException nfe ) {
+            return null;
         }
     }
 
     private TemplateDomainObject getRequestedTemplate( HttpServletRequest req, TemplateMapper templateMapper ) {
         try {
-            return templateMapper.getTemplateById( Integer.parseInt( req.getParameter( "template" ) )) ;
-        } catch (NumberFormatException nfe) {
-            return null ;
+            return templateMapper.getTemplateById( Integer.parseInt( req.getParameter( "template" ) ) );
+        } catch ( NumberFormatException nfe ) {
+            return null;
         }
     }
 

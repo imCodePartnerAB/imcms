@@ -1073,16 +1073,6 @@ public class DocumentMapper {
         }
     }
 
-    /**
-     * Save template -> text_docs, sort
-     */
-    public void sqlSaveTextDocumentData( DocumentDomainObject document, UserDomainObject user, TemplateDomainObject template, TemplateGroupDomainObject templateGroup ) {
-        String sqlStr = "update text_docs set template_id = ?, group_id = ? where meta_id = ?";
-        service.sqlUpdateQuery( sqlStr, new String[]{""+template.getId(), "" + templateGroup.getId(), "" + document.getId()} );
-
-        service.updateLogs( "Text docs  [" + document + "] updated by user: [" + user.getFullName() + "]" );
-    }
-
     public void setInclude( int includingMetaId, int includeIndex, int includedMetaId ) {
         sprocSetInclude( service, includingMetaId, includeIndex, includedMetaId );
     }
