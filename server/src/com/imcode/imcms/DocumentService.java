@@ -2,6 +2,8 @@ package com.imcode.imcms;
 
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 
 public class DocumentService {
     private SecurityChecker securityChecker;
@@ -25,6 +27,13 @@ public class DocumentService {
         imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument( documentId );
         Document result = new TextDocument( securityChecker, doc, documentMapper, documentPermissionSetMapper );
 
+        return result;
+    }
+
+    public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) {
+        UserDomainObject user = securityChecker.getAccessingUser();
+        DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, parentMenuNumber );
+        TextDocument result = new TextDocument( securityChecker, newDoc, documentMapper, documentPermissionSetMapper );
         return result;
     }
 

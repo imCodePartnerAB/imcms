@@ -84,4 +84,8 @@ public class Document {
         internalDocument.setImage( imageUrl );
         documentMapper.saveImageAttribute( internalDocument );
     }
+
+    public int getId() {
+        return internalDocument.getMetaId();
+    }
 }

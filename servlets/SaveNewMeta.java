@@ -7,6 +7,8 @@ import java.text.ParseException;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.util.DateHelper;
+import imcode.server.document.DocumentMapper;
 
 import org.apache.log4j.Category;
 
@@ -23,6 +25,7 @@ public class SaveNewMeta extends HttpServlet {
         super.init( config );
     }
 
+
     /**
      doPost()
      */
@@ -33,7 +36,6 @@ public class SaveNewMeta extends HttpServlet {
         String start_url = imcref.getStartUrl();
         String servlet_url = Utility.getDomainPref( "servlet_url", host );
 
-        imcode.server.user.UserDomainObject user;
         String htmlStr = "";
 
         res.setContentType( "text/html" );
@@ -48,10 +50,7 @@ public class SaveNewMeta extends HttpServlet {
         /*
           From now on, we get the form data.
         */
-        String[] metatable = {/*  Nullable			Nullvalue */
-            "shared", "0", "disable_search", "0", "archive", "0", "show_meta", "0", "permissions", "0", "expand", "1", "help_text_id", "1", "status_id", "1", "lang_prefix", "se", "sort_position", "1", "menu_position", "1", "description", null, "meta_headline", null, "meta_text", null, "meta_image", null, "frame_name", "", "target", null};
 
-        Properties metaprops = new Properties();
         String parent_meta_id = req.getParameter( "parent_meta_id" );
         String doc_menu_no = req.getParameter( "doc_menu_no" );
         String doc_type = req.getParameter( "doc_type" );
@@ -59,12 +58,31 @@ public class SaveNewMeta extends HttpServlet {
 
         int parent_int = Integer.parseInt( parent_meta_id );
 
-        HashMap inputMap = new HashMap();
+        String[] metatable = {/*  Nullable/Nullvalue */
+            "shared", "0",
+            "disable_search", "0",
+            "archive", "0",
+            "show_meta", "0",
+            "permissions", "0",
+            "expand", "1",
+            "help_text_id", "1",
+            "status_id", "1",
+            "lang_prefix", "se",
+            "sort_position", "1",
+            "menu_position", "1",
+            "description", null,
+            "meta_headline", null,
+            "meta_text", null,
+            "meta_image", null,
+            "frame_name", "",
+            "target", null};
 
+        Properties metaprops = new Properties();
         // Loop through all meta-table-properties
         // Adding them to a HashMap to be used as input
         // That way i can mutilate the values before all the
         // permissions are checked.
+        HashMap inputMap = new HashMap();
         for( int i = 0; i < metatable.length; i += 2 ) {
             inputMap.put( metatable[i], req.getParameter( metatable[i] ) );
         }
@@ -78,20 +96,19 @@ public class SaveNewMeta extends HttpServlet {
         }
         inputMap.remove( "frame_name" );  // we only need to store frame_name in db column "target"
 
-        Date dt = imcref.getCurrentDate();
-
+        Date nowDateTime = imcref.getCurrentDate();
         String activated_date = req.getParameter( "activated_date" );
         String activated_time = req.getParameter( "activated_time" );
         String activated_datetime = null;
         if( activated_date != null && activated_time != null ) {
             activated_datetime = activated_date + ' ' + activated_time;
             try {
-                IMCConstants.DATE_TIME_FORMAT.parse( activated_datetime );
+                DateHelper.DATE_TIME_FORMAT_IN_DATABASE.parse( activated_datetime );
             } catch( ParseException ex ) {
                 activated_datetime = null;
             }
         } else {
-            activated_datetime = IMCConstants.DATE_TIME_FORMAT.format( dt );
+            activated_datetime = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime );
         } // end of else
 
         String archived_date = req.getParameter( "archived_date" );
@@ -100,7 +117,7 @@ public class SaveNewMeta extends HttpServlet {
         if( archived_date != null && archived_time != null ) {
             archived_datetime = archived_date + ' ' + archived_time;
             try {
-                IMCConstants.DATE_TIME_FORMAT.parse( archived_datetime );
+                DateHelper.DATE_TIME_FORMAT_IN_DATABASE.parse( archived_datetime );
             } catch( ParseException ex ) {
                 archived_datetime = null;
             }
@@ -117,22 +134,13 @@ public class SaveNewMeta extends HttpServlet {
 
 
         // Check if user logged on
+        imcode.server.user.UserDomainObject user;
         if( (user = Check.userLoggedOn( req, res, start_url )) == null ) {
             return;
         }
-
         String lang_prefix = user.getLangPrefix();
 
-        // Fetch all doctypes from the db and put them in an option-list
-        // First, get the doc_types the current user may use.
-        String[] user_dt = imcref.sqlProcedure( "GetDocTypesForUser " + parent_meta_id + "," + user.getUserId() + ",'" + lang_prefix + "'" );
-        HashSet user_doc_types = new HashSet();
-
-        // I'll fill a HashSet with all the doc-types the current user may use,
-        // for easy retrieval.
-        for( int i = 0; i < user_dt.length; i += 2 ) {
-            user_doc_types.add( user_dt[i] );
-        }
+        HashSet user_doc_types = DocumentMapper.sprocGetDocTypesForUser( imcref, user, parent_meta_id, lang_prefix );
 
         // So... if the user may not create this particular doc-type... he's outta here!
         if( !user_doc_types.contains( doc_type ) ) {
@@ -146,8 +154,8 @@ public class SaveNewMeta extends HttpServlet {
 
 
         // Lets fix the date information (date_created, modified etc)
-        metaprops.setProperty( "date_modified", IMCConstants.DATE_TIME_FORMAT.format( dt ) );
-        metaprops.setProperty( "date_created", IMCConstants.DATE_TIME_FORMAT.format( dt ) );
+        metaprops.setProperty( "date_modified", DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime ) );
+        metaprops.setProperty( "date_created", DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime ) );
         metaprops.setProperty( "owner_id", String.valueOf( user.getUserId() ) );
 
         if( req.getParameter( "cancel" ) != null ) {
@@ -160,42 +168,28 @@ public class SaveNewMeta extends HttpServlet {
             // Lets add a new meta to the db
         } else if( req.getParameter( "ok" ) != null ) {
 
-            Enumeration propkeys = metaprops.propertyNames();
-
-            // Lets build the sql statement to add a new meta id
-            String sqlStr = "insert into meta (doc_type,activate,classification,activated_datetime,archived_datetime";
-            String sqlStr2 = ")\nvalues (" + doc_type + ",0,''," + (null == activated_datetime ? "NULL" : "'" + activated_datetime + "'") + "," + (null == archived_datetime ? "NULL" : "'" + archived_datetime + "'");
-            while( propkeys.hasMoreElements() ) {
-                String temp = (String)propkeys.nextElement();
-                String val = metaprops.getProperty( temp );
-                String[] vp = {"'", "''"};
-                sqlStr += "," + temp;
-                sqlStr2 += ",'" + Parser.parseDoc( val, vp ) + "'";
-            }
-            sqlStr += sqlStr2 + ")";
-            imcref.sqlUpdateQuery( sqlStr );
-            String meta_id = imcref.sqlQueryStr( "select @@IDENTITY" );
+            String meta_id = DocumentMapper.sqlInsertIntoMeta_allDockTypes( imcref, doc_type, activated_datetime, archived_datetime, metaprops );
 
             // Save the classifications to the db
             if( classification != null ) {
-                imcref.sqlUpdateProcedure( "Classification_Fix " + meta_id + ",'" + classification + "'" );
+                DocumentMapper.sprocSaveClassification_allDockTypes( imcref, meta_id, classification );
             }
 
-            imcref.sqlUpdateProcedure( "InheritPermissions " + meta_id + "," + parent_meta_id + "," + doc_type );
+            DocumentMapper.sprocInheritPermissions( imcref, Integer.parseInt(meta_id), Integer.parseInt(parent_meta_id), Integer.parseInt(doc_type) );
 
             // Lets add the sortorder to the parents childlist
-            sqlStr = "declare @new_sort int\n" + "select @new_sort = max(manual_sort_order)+10 from childs where meta_id = " + parent_meta_id + " and menu_sort = " + doc_menu_no + "\n" + "if @new_sort is null begin set @new_sort = 500 end\n" + "insert into childs (meta_id, to_meta_id, menu_sort, manual_sort_order) values (" + parent_meta_id + "," + meta_id + "," + doc_menu_no + ",@new_sort)\n";
-            imcref.sqlUpdateQuery( sqlStr );
+            DocumentMapper.sqlAddSortorderToParentsChildList_allDocTypes( imcref, parent_meta_id, meta_id, doc_menu_no );
             log( meta_id );
 
             // Lets update the parents created_date
-            sqlStr = "update meta\n";
-            sqlStr += "set date_modified = '" + metaprops.getProperty( "date_modified" ) + "'\n";
-            sqlStr += "where meta_id = " + parent_meta_id;
-            imcref.sqlUpdateQuery( sqlStr );
+
+            String dateModifiedStr = metaprops.getProperty( "date_modified" );
+
+            Date dateModified = DateHelper.createDateObjectFromString( dateModifiedStr );
+            DocumentMapper.sqlUpdateModifiedDate( imcref, Integer.parseInt(parent_meta_id), dateModified );
 
             //lets log to mainLog the stuff done
-            mainLog.info( IMCConstants.LOG_DATE_TIME_FORMAT.format( new java.util.Date() ) + "Document [" + meta_id + "] of type [" + doc_type + "] created on [" + parent_meta_id + "] by user: [" + user.getFullName() + "]" );
+            mainLog.info( DateHelper.LOG_DATE_TIME_FORMAT.format( new java.util.Date() ) + "Document [" + meta_id + "] of type [" + doc_type + "] created on [" + parent_meta_id + "] by user: [" + user.getFullName() + "]" );
 
             //ok lets handle the the section stuff save to db and so on
             //lets start an see if we got any request to change the inherit one
@@ -206,16 +200,15 @@ public class SaveNewMeta extends HttpServlet {
             }
             //ok if we have one lets update the db
             if( section_id != null ) {
-                imcref.sqlUpdateProcedure( "SectionAddCrossref " + meta_id + ", " + section_id );
+                DocumentMapper.sprocSectionAddCrossref_allDocTypes( imcref, meta_id, section_id );
             }
-
 
             // Here is the stuff we have to do for each individual doctype. All general tasks
             // for all documenttypes is done now.
 
             // BROWSER DOCUMENT
             if( doc_type.equals( "6" ) ) {
-                sqlStr = "insert into browser_docs (meta_id, to_meta_id, browser_id) values (" + meta_id + "," + parent_meta_id + ",0)";
+                String sqlStr = "insert into browser_docs (meta_id, to_meta_id, browser_id) values (" + meta_id + "," + parent_meta_id + ",0)";
                 imcref.sqlUpdateQuery( sqlStr );
                 Vector vec = new Vector();
                 sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = " + meta_id + " order by value desc,name asc";
@@ -261,7 +254,7 @@ public class SaveNewMeta extends HttpServlet {
 
                 // FILE UP LOAD
             } else if( doc_type.equals( "8" ) ) {
-                sqlStr = "select mime,mime_name from mime_types where lang_prefix = '" + lang_prefix + "' and mime != 'other'";
+                String sqlStr = "select mime,mime_name from mime_types where lang_prefix = '" + lang_prefix + "' and mime != 'other'";
                 String temp[] = imcref.sqlQuery( sqlStr );
                 Vector vec = new Vector();
                 String temps = null;
@@ -320,57 +313,24 @@ public class SaveNewMeta extends HttpServlet {
 
                 // TEXT DOCUMENT
             } else if( doc_type.equals( "2" ) ) {
-                //lets get the users greatest permission_set for this dokument
-                final int perm_set = imcref.getUserHighestPermissionSet( Integer.parseInt( meta_id ), user.getUserId() );
-                //ok now lets see what to do with the templates
-                sqlStr = "select template_id, sort_order,group_id,default_template_1,default_template_2 from text_docs where meta_id = " + parent_meta_id;
-                String temp[] = imcref.sqlQuery( sqlStr );
-                //ok now we have to setup the template too use
-                if( perm_set == imcode.server.IMCConstants.DOC_PERM_SET_RESTRICTED_1 ) {
-                    //ok restricted_1 permission lets see if we have a default template fore this one
-                    //and if so lets put it as the orinary template instead of the parents
-                    try {
-                        int tempInt = Integer.parseInt( temp[3] );
-                        if( tempInt >= 0 )
-                            temp[0] = String.valueOf( tempInt );
-                    } catch( NumberFormatException nfe ) {
-
-                        //there wasn't a number but we dont care, we just catch the exeption and moves on.
-                    }
-                } else if( perm_set == imcode.server.IMCConstants.DOC_PERM_SET_RESTRICTED_2 ) { //ok we have a restricted_2 permission lets see if we have default template fore this one
-                    //and if soo lets put it as ordinary instead of the parents
-                    try {
-                        int tempInt = Integer.parseInt( temp[4] );
-                        if( tempInt >= 0 )
-                            temp[0] = String.valueOf( tempInt );
-                    } catch( NumberFormatException nfe ) {
-                        //there wasn't a number but we dont care, we just catch the exeption and moves on.
-                    }
-                }
-                //ok were set, lets update db
-                sqlStr = "insert into text_docs (meta_id,template_id,sort_order,group_id,default_template_1,default_template_2) values (" + meta_id + "," + temp[0] + "," + temp[1] + "," + temp[2] + "," + temp[3] + "," + temp[4] + ")";
-                imcref.sqlUpdateQuery( sqlStr );
-
+                DocumentMapper.sqlCopyTemplateData_textDockType( imcref, user, parent_meta_id, meta_id );
 
                 // Lets check if we should copy the metaheader and meta text into text1 and text2.
                 // There are 2 types of texts. 1= html text. 0= plain text. By
                 // default were creating html texts.
-                String copyMetaFlag = (req.getParameter( "copyMetaHeader" ) == null) ? "0" : (req.getParameter( "copyMetaHeader" ));
+                String copyMetaHeader = req.getParameter( "copyMetaHeader" );
+                String copyMetaFlag = (copyMetaHeader == null) ? "0" : (copyMetaHeader);
                 if( copyMetaFlag.equals( "1" ) && doc_type.equals( "2" ) ) {
                     String[] vp = {"'", "''"};
 
                     String mHeadline = Parser.parseDoc( metaprops.getProperty( "meta_headline" ), vp );
                     String mText = Parser.parseDoc( metaprops.getProperty( "meta_text" ), vp );
 
-                    sqlStr = "insert into texts (meta_id,name,text,type) values (" + meta_id + ", 1, '" + mHeadline + "', 1)";
-                    imcref.sqlUpdateQuery( sqlStr );
-                    sqlStr = "insert into texts (meta_id,name,text,type) values (" + meta_id + ", 2, '" + mText + "', 1)";
-                    imcref.sqlUpdateQuery( sqlStr );
+                    DocumentMapper.sqlInsertIntoTexts_textDocType( imcref, meta_id, mHeadline, mText );
                 }
 
                 // Lets activate the textfield
-                sqlStr = "update meta set activate = 1 where meta_id = " + meta_id;
-                imcref.sqlUpdateQuery( sqlStr );
+                DocumentMapper.sqlActivateTheTextField( imcref, Integer.parseInt(meta_id) );
 
                 // Lets build the page
                 String output = AdminDoc.adminDoc( Integer.parseInt( meta_id ), Integer.parseInt( meta_id ), user, req, res );
@@ -379,7 +339,6 @@ public class SaveNewMeta extends HttpServlet {
                 }
                 return;
             } // end text internalDocument
-
         }
         out.write( htmlStr );
     }
