@@ -59,7 +59,6 @@ gettemplategroupswithnewpermissions.prc
 gettemplategroupswithpermissions.prc
 gettemplateid.prc
 gettemplates.prc
-gettext.prc
 gettextdocdata.prc
 gettextnumber.prc
 gettexts.prc

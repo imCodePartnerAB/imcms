@@ -58,28 +58,34 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
      */
     public void testNonModfyingTests() {
         for( int i = 0; i < databaseServices.length; i++ ) {
-            DatabaseService dbService = databaseServices[i];
-            test_sproc_getAllRoles( dbService );
-            test_sproc_getAllUsers( dbService );
-            test_sproc_getTemplatesInGroup( dbService );
-            test_sproc_getHighestUserId( dbService );
-            test_sproc_GetPhonetypeName( dbService );
-            test_sproc_GetPhonetypes_ORDER_BY_phonetype_id( dbService );
-            test_sproc_GetUserPhoneNumbers( dbService );
-            test_sproc_GetUserPhones( dbService );
-            test_sproc_FindUserName( dbService );
-            test_sproc_FindMetaId( dbService );
-            test_sproc_getChilds( dbService );
-            test_sproc_getDocs( dbService );
-            test_sproc_CheckAdminRights( dbService );
-            test_sproc_CheckUserDocSharePermission( dbService );
-            test_sproc_checkUserAdminrole( dbService );
-            test_sproc_GetFileName( dbService );
-            test_sproc_GetDocType( dbService );
-            test_sproc_GetDocTypes( dbService );
-            test_sproc_GetDocTypesForUser( dbService ) ;
-            testIsFileDoc( dbService );
+            DatabaseService databaseService = databaseServices[i];
+            test_sproc_getAllRoles( databaseService );
+            test_sproc_getAllUsers( databaseService );
+            test_sproc_getTemplatesInGroup( databaseService );
+            test_sproc_getHighestUserId( databaseService );
+            test_sproc_GetPhonetypeName( databaseService );
+            test_sproc_GetPhonetypes_ORDER_BY_phonetype_id( databaseService );
+            test_sproc_GetUserPhoneNumbers( databaseService );
+            test_sproc_GetUserPhones( databaseService );
+            test_sproc_FindUserName( databaseService );
+            test_sproc_FindMetaId( databaseService );
+            test_sproc_getChilds( databaseService );
+            test_sproc_getDocs( databaseService );
+            test_sproc_CheckAdminRights( databaseService );
+            test_sproc_CheckUserDocSharePermission( databaseService );
+            test_sproc_checkUserAdminrole( databaseService );
+            test_sproc_GetFileName( databaseService );
+            test_sproc_GetDocType( databaseService );
+            test_sproc_GetDocTypes( databaseService );
+            test_sproc_GetDocTypesForUser( databaseService ) ;
+            test_sproc_GetText( databaseService );
+            testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_GetText( DatabaseService databaseService ) {
+        assertNotNull( databaseService.sproc_GetText( DOC_ID_FIRST_PAGE, 1 ) );
+        assertNull( databaseService.sproc_GetText( DOC_ID_FIRST_PAGE, 2 ) );
     }
 
     private void test_sproc_GetDocTypesForUser( DatabaseService dbService ) {

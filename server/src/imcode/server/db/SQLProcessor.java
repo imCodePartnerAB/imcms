@@ -146,7 +146,7 @@ public class SQLProcessor {
             statment.executeBatch();
         }
         catch( SQLException ex ) {
-            static_logSQLException( "batch update failed", ex );
+            static_logSQLException( "batch update failed, ", ex );
         }
     }
 

@@ -2001,4 +2001,20 @@ public abstract class DatabaseService {
         }
         return rowCount;
     }
+
+    /**
+        Retrieve a text with type
+    */
+    // Todo: Denna returnerade i orginalutförandet endast en del av datan som finns för rad i tabellen texts,
+    // todo: ok att returnera hela på detta sätt?
+    Table_texts sproc_GetText( int meta_id, int name ) {
+        Table_texts[] allTextInDocument = getFromTable_texts( new Integer( meta_id ));
+        for( int i = 0; i < allTextInDocument.length; i++ ) {
+            Table_texts table_texts = allTextInDocument[i];
+            if( table_texts.name == name ) {
+                return table_texts;
+            }
+        }
+        return null;
+    }
 }
