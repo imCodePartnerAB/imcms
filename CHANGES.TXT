@@ -66,6 +66,7 @@ Version 2.0.0
     * Sometimes when using the file administrator, some files would be unremovable.
       Trying to remove them will now give a rather nasty error message instead of failing silently.
       This still needs improvement. (Bug 2442)
+    * The link checker should now be a little more responsive. (Bug 2587) 
 
     Of interest to API-using developers:
 
