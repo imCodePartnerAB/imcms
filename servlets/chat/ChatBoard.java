@@ -18,7 +18,6 @@ import imcode.external.chat.*;
 public class ChatBoard extends ChatBase
 {
 
-	public final int CHATBOARD_ALLA_INT = 1;
 
 	String HTML_TEMPLATE ;
 
@@ -46,13 +45,14 @@ public class ChatBoard extends ChatBase
 
 		if (super.checkParameters(req, res, params) == false)
 		{
-
+		/*
 			String header = "ChatBoard servlet. " ;
 			String msg = params.toString() ;
 			ChatError err = new ChatError(req,res,header,1212) ;
-
+		*/
 			log("return i checkparameters");
 			return ;
+		
 		}
 
 		// Lets get the user object
@@ -78,10 +78,10 @@ public class ChatBoard extends ChatBase
 
 		// Lets get parameters
 		String aMetaId = params.getProperty("META_ID") ;
-		log("aMetaId = "+aMetaId);
+		//	log("aMetaId = "+aMetaId);
 		//		int metaId = Integer.parseInt( aMetaId );
 		String aChatId = params.getProperty("CHAT_ID") ;//=id strängen för chatten ????
-		log("aChatId = "+aChatId);
+		//	log("aChatId = "+aChatId);
 		HttpSession session = req.getSession(false) ;
 
 		//ok lets get the settings
@@ -105,120 +105,34 @@ public class ChatBoard extends ChatBase
 
 			//ok lets get the Chat and stuff
 			Chat myChat = (Chat)session.getValue("theChat");
-			log("myChat = "+myChat);
+			//	log("myChat = "+myChat);
 			ChatMember myMember = (ChatMember)session.getValue("theChatMember");
-			log("myMember = "+myMember);	
+			//	log("myMember = "+myMember);	
 			ChatGroup myGrupp = (ChatGroup)session.getValue("theRoom");		
-			log("myGrupp = "+myGrupp);
+			//	log("myGrupp = "+myGrupp);
 
 
 			//lets get all the settings for this page
-			boolean dateOn = true;
-			boolean publicMsg = true;
-			boolean privateMsg = true;
-			boolean autoscroll = false;
-			boolean inOut = true;
-			int fontSize = 3;
-			String time = "30";
-			Integer fontSizeIn = (Integer)session.getValue("chatFontSize");
-			fontSizeIn = (fontSizeIn == null ? new Integer(3) : fontSizeIn);
-			try
+			Hashtable theSettings = (Hashtable) session.getValue("ChatBoardHashTable");
+			if (theSettings == null)
 			{
-				fontSize = fontSizeIn.intValue();
-			}catch(Exception e)
+				log("chatHashTable was null so return");
+				return;
+			}
+			//lets get it all out from it
+			boolean dateOn = ((Boolean)theSettings.get("dateTimeBoolean")).booleanValue();
+			boolean publicMsg = ((Boolean)theSettings.get("publicMsgBoolean")).booleanValue();
+			boolean privateMsg = ((Boolean)theSettings.get("privateMsgBoolean")).booleanValue();
+			boolean autoReload = ((Boolean)theSettings.get("reloadBoolean")).booleanValue();
+			boolean inOut = ((Boolean)theSettings.get("inOutBoolean")).booleanValue();
+			int fontSize = ((Integer)theSettings.get("fontSizeInteger")).intValue();
+			int time = ((Integer)theSettings.get("reloadInteger")).intValue();
+
+			log("autoReload = "+autoReload);
+			//lets set up the autoreload or not
+			if (autoReload)
 			{
-				fontSize = 3;
-				log(e.getMessage());
-			}
-
-			Properties adminPropps = myChat.getChatParameters();
-			Properties settings = ((Properties)session.getValue("chatUserSettings")) == null ? new Properties() :
-			(Properties)session.getValue("chatUserSettings");
-
-			log("**** settings ****\n"+settings);
-
-			log("*** adminPropps ***\n"+adminPropps +"\n **** end adminpropps ***");
-			
-			//sets up show datTime or not
-			if (adminPropps.getProperty("dateTime").equals("3"))
-			{log("step 4");
-				if (settings.getProperty("dateTime") != null)
-				{log("step 5");
-					if (settings.getProperty("dateTime").equals("off"))
-					{
-						log("dateOn = false");
-						dateOn = false;				
-					}
-				}	
-			}else if(adminPropps.getProperty("dateTime").equals("2"))
-			{log("step 6");
-				dateOn = false;	
-			}
-
-			//sets up show public msg or not
-			if (adminPropps.getProperty("publik").equals("3"))
-			{log("step 7");
-				if (settings.getProperty("publik")!= null)
-				{log("step 8");
-					if (settings.getProperty("publik").equals("off"))
-					{
-						log("publicMsg = false");
-						publicMsg = false;	
-					}
-				}			
-			}else if(adminPropps.getProperty("publik").equals("2"))
-			{log("step 9");
-				publicMsg = false;	
-			}
-
-			//sets up show private msg or not
-			if (adminPropps.getProperty("privat").equals("3"))
-			{log("step 10");
-				if (settings.getProperty("privat")!= null)
-				{log("step 11");
-					if (settings.getProperty("privat").equals("off"))
-						privateMsg = false;		
-				}		
-			}else if(adminPropps.getProperty("privat").equals("2"))
-			{log("step 12");
-				privateMsg = false;	
-			}
-
-			//sets up show entrense and exits, or not
-			if (adminPropps.getProperty("inOut").equals("3"))
-			{log("step 13");
-				if (settings.getProperty("inOut")!= null)
-				{log("step 14");
-					if (settings.getProperty("inOut").equals("off"))
-						inOut = false;
-				}	
-			}else if(adminPropps.getProperty("inOut").equals("2"))
-			{log("step 15");
-				inOut = false;	
-			}
-
-			//sets up autoreload on off
-			if (adminPropps.getProperty("reload").equals("3"))
-			{log("step 16");
-				if (settings.getProperty("autoReload")!= null)
-				{	log("step 17");
-					log("autoReload = "+settings.getProperty("autoReload"));	
-					if (settings.getProperty("autoReload").equals("on"))
-					{log("step 18");				
-						time = (adminPropps.getProperty("updateTime") == null ? "30" :adminPropps.getProperty("updateTime"));
-						chatRefresh = "<META HTTP-EQUIV=\"Refresh\" CONTENT=\""+time+";URL="+servletHome +"\">";
-						log("chatRefresh ="+chatRefresh.toString());			
-					}
-				}else
-				{log("step 19");
-					time = (adminPropps.getProperty("updateTime") == null ? "30" :adminPropps.getProperty("updateTime"));
-					chatRefresh = "<META HTTP-EQUIV=\"Refresh\" CONTENT=\""+time+";URL="+servletHome +"\">";
-				}
-
-			}else if(adminPropps.getProperty("reload").equals("1"))
-			{log("step 20");
-				time = (adminPropps.getProperty("updateTime") == null ? "30" :adminPropps.getProperty("updateTime"));
-				chatRefresh = "<META HTTP-EQUIV=\"Refresh\" CONTENT=\""+time+";URL="+servletHome +"\">";						
+				chatRefresh = "<META HTTP-EQUIV=\"Refresh\" CONTENT=\""+time+";URL="+servletHome +"\">";
 			}
 
 			//lets get the ignore-list
@@ -229,58 +143,89 @@ public class ChatBoard extends ChatBase
 			ListIterator msgIter =  myMember.getMessages();
 
 			//lets fix the html-string containing all messags			
-			sendMsgString.append("<font size=\""+ fontSize+"\">");
 			while(msgIter.hasNext())
 			{
-				log("step 21");
 				ChatMsg tempMsg = (ChatMsg) msgIter.next();
 				//must check if it is a public msg
-				if (tempMsg.getReciever() == CHATBOARD_ALLA_INT )
+				if (tempMsg.getMsgType() == 101)
 				{
-					log("step 22");
-					if (publicMsg)//show public messages
-					{log("step 23");
-						if (dateOn)//show dateTime
-						{log("step 24");
-							sendMsgString.append(tempMsg.getDateTime());	
-						}
-						sendMsgString.append(" "+tempMsg.getSender());
-						sendMsgString.append(" "+tempMsg.getMsgTypeStr());
-						sendMsgString.append(" "+tempMsg.getRecieverStr());
-						sendMsgString.append(" "+tempMsg.getMessage() );
-						//sendMsgString.append("<br>");
-					}
-				}
-				//or if its a private one to this user
-				else if (tempMsg.getReciever() == myMember.getUserId())
-				{log("step 25");
 					if (privateMsg)//show private messages
-					{log("step 26");
-						if (dateOn)//show dateTime
-						{log("step 27");
-							sendMsgString.append(tempMsg.getDateTime());	
+					{
+						if (tempMsg.getReciever() == myMember.getUserId())//ok it's to mee
+						{	
+							sendMsgString.append("<font color=\"Green\" size=\""+ fontSize+"\">");
+							if (dateOn)//show dateTime
+							{
+								sendMsgString.append(tempMsg.getDateTime());	
+							}
+							sendMsgString.append(" "+tempMsg.getSenderStr());
+							sendMsgString.append(" "+tempMsg.getMsgTypeStr());
+							sendMsgString.append(" "+tempMsg.getRecieverStr());
+							sendMsgString.append(" "+tempMsg.getMessage() );
+							sendMsgString.append("<br>");
+							sendMsgString.append("</font>");
+						}else if(tempMsg.getSender()== myMember.getUserId())//it's was I who sent it
+						{
+							sendMsgString.append("<font color=\"Green\" size=\""+ fontSize+"\">");
+							if (dateOn)//show dateTime
+							{
+								sendMsgString.append(tempMsg.getDateTime());	
+							}
+							sendMsgString.append(" "+tempMsg.getSenderStr());
+							sendMsgString.append(" "+tempMsg.getMsgTypeStr());
+							sendMsgString.append(" "+tempMsg.getRecieverStr());
+							sendMsgString.append(" "+tempMsg.getMessage() );
+							sendMsgString.append("<br>");
+							sendMsgString.append("</font>");						
 						}
-						sendMsgString.append(" "+tempMsg.getSender());
-						sendMsgString.append(" "+tempMsg.getMsgTypeStr());
-						sendMsgString.append(" "+tempMsg.getRecieverStr());
-						sendMsgString.append(" "+tempMsg.getMessage() );
-						//sendMsgString.append("<br>");
-					}
-				}
-
-				sendMsgString.append("<br>");
-			}
-			sendMsgString.append("</font>");			
+					}//end privateMsg
+				}else
+					//it was a public message
+				{
+					if (tempMsg.getMsgType() == CHAT_ENTER_LEAVE_INT)//it's a enter/leave msg
+					{
+						if (inOut)//show enter/leave messages
+						{
+							sendMsgString.append("<font color=\"Black\" size=\""+ fontSize+"\">");
+							if (dateOn)//show dateTime
+							{
+								sendMsgString.append(tempMsg.getDateTime());	
+							}
+							sendMsgString.append(" "+tempMsg.getSenderStr());
+							sendMsgString.append(" "+tempMsg.getMsgTypeStr());
+							sendMsgString.append(" "+tempMsg.getRecieverStr());
+							sendMsgString.append(" "+tempMsg.getMessage() );
+							sendMsgString.append("<br>");
+							sendMsgString.append("</font>");
+						}					
+					}else
+					{
+						if (true)//(publicMsg)//show public messages
+						{
+							sendMsgString.append("<font color=\"Black\" size=\""+ fontSize+"\">");
+							if (dateOn)//show dateTime
+							{
+								sendMsgString.append(tempMsg.getDateTime());	
+							}
+							sendMsgString.append(" "+tempMsg.getSenderStr());
+							sendMsgString.append(" "+tempMsg.getMsgTypeStr());
+							sendMsgString.append(" "+tempMsg.getRecieverStr());
+							sendMsgString.append(" "+tempMsg.getMessage() );
+							sendMsgString.append("<br>");
+							sendMsgString.append("</font>");
+						}
+					}				
+				}//end it was a public message
+			}//end while loop
+		
 		}//end if (req.getParameter("ROOM_ID") != null )	
 
-		log("!!!!!! sendMsgString !!!!!!!\n"+sendMsgString);
-		log("!!!!!!  chatRefresh  !!!!!!!!\n "+chatRefresh);	
-
+		
 		//<META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.????.com">
+		log("chatRefresh = "+chatRefresh);
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty("CHAT_REFRESH", chatRefresh);
 		vm.addProperty("CHAT_MESSAGES", sendMsgString.toString()  );
-		//vm.addProperty("CHAT_MESSAGES", "stick"  );
 
 
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
@@ -371,7 +316,7 @@ public class ChatBoard extends ChatBase
 	public void log( String str)
 	{
 		super.log(str) ;
-		System.out.println("ChatBoard: " + str ) ;
+	//	System.out.println("ChatBoard: " + str ) ;
 	}
 
 
