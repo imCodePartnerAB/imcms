@@ -60,7 +60,11 @@ public class ImageUpload extends HttpServlet {
 		String contentType = req.getContentType() ;
 		MultipartFormdataParser mp = new MultipartFormdataParser(new String(buffer,"8859_1"),contentType) ;
 		String file = mp.getParameter("file") ;
-		String filename = mp.getFilename("file") ;		
+		String filename = mp.getFilename("file") ;
+		if (file.equals("")){
+			res.sendRedirect("ChangeImage?meta_id="+mp.getParameter("meta_id")+"&img_no="+mp.getParameter("img_no"));
+			return ;
+		}				
 		String folder = mp.getParameter("folder");//ex: /se
 		if(folder==null)folder="";
 		//submitted with Browse Images button, no ImageUpload (M Wallin)
