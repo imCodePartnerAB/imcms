@@ -1,0 +1,237 @@
+import java.io.*;
+import java.util.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.rmi.* ;
+
+import imcode.util.* ;
+import imcode.server.* ;
+
+/**
+  Start servlet in the system.
+*/
+public class StartDoc extends HttpServlet {
+	/**
+	init()
+	*/
+	public void init( ServletConfig config ) throws ServletException {
+		super.init( config ) ;
+	}
+
+	/**
+	doGet()
+	*/
+	public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+		String host 				= req.getHeader("Host") ;
+		String imcserver 			= Utility.getDomainPref("userserver",host) ;
+		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
+
+		long time = System.currentTimeMillis() ;
+		imcode.server.User user ;
+		String htmlStr = "" ;
+		int meta_id ;
+		String test = "" ;
+		String type = "";
+		String version = "" ;
+		String plattform = "" ;
+		boolean incCounter = false ;
+
+		res.setContentType( "text/html" );
+		ServletOutputStream out = res.getOutputStream( );
+		// Get the session
+		HttpSession session = req.getSession( true );
+
+		// Does the session indicate this user already logged in?
+		Object done = session.getValue( "logon.isDone" );  // marker object
+		user = (imcode.server.User)done ;
+//		String domain = req.getParameter("domain") ;
+
+		if( done == null ) {
+
+			incCounter = true ;
+			// Check the name and password for validity
+			String ip = req.getRemoteAddr( ) ;
+			user = ipAssignUser( ip, host ) ;
+
+			// Valid login.  Make a note in the session object.
+//			session = req.getSession( true );
+			session.putValue( "logon.isDone", user );  // just a marker object
+
+			// get type of browser
+			String value = req.getHeader( "User-Agent" ) ;
+
+			if ( value == null ) {
+				value = "" ;
+			}
+			session.putValue("browser_id",value) ;
+			// add browser info to user
+
+			// IE
+//			if( value.indexOf( "MSIE" ) != -1 ) {
+//				type = "MSIE" ;
+//				version = "-1" ;
+//
+//				if( value.indexOf( "MSIE 3" ) != -1 )
+//					version = "3" ;
+//				if( value.indexOf( "MSIE 4" ) != -1 )
+//					version = "4" ;
+//				if( value.indexOf( "MSIE 5" ) != -1 )
+//					version = "5" ;
+//
+//				if( value.indexOf( "Windows" ) != -1 )
+//					plattform = "PC" ;
+//				else
+//					plattform = "Mac" ;
+//
+//			} else {
+//				type = "NS" ;
+//				version = "-1" ;
+//
+//				if( value.indexOf( "Mozilla/3" ) != -1 )
+//					version = "3";
+//				if( value.indexOf( "Mozilla/4" ) != -1 )
+//					version = "4";
+//				if( value.indexOf( "Mozilla/5" ) != -1 )
+//					version = "5" ;
+//
+//				if( value.indexOf( "Win" ) != -1 )
+//					plattform = "PC" ;
+//				else
+//					plattform = "Mac" ;
+//			}
+
+			// Get the session
+//			session = req.getSession( true );
+
+			// Does the session indicate this user already logged in?
+//			done = session.getValue( "logon.isDone" );  // marker object
+//			user = (imcode.server.User)done ;
+
+			if( user == null ) {
+				// No logon.isDone means he hasn't logged in.
+				// Save the request URL as the true target and redirect to the login page.
+
+				session.putValue( "login.target", HttpUtils.getRequestURL( req ).toString( ) );
+				String scheme = req.getScheme( );
+				String serverName = req.getServerName( );
+				int p = req.getServerPort( );
+				String port = (p == 80 || p == 443) ? "" : ":" + p;
+				res.sendRedirect( scheme + "://" + serverName + port + start_url ) ;
+				return ;
+			}
+//			user.setBrowserInfo( type,version,plattform ) ;
+		}
+
+		if( incCounter ) {
+			IMCServiceRMI.incCounter(imcserver) ;
+			IMCServiceRMI.sqlUpdateProcedure( imcserver, "IncSessionCounter" ) ;
+		}
+
+
+//		String sqlStr = "select start_meta_id from domains where domain_name = '"+domain+"'" ;
+//		String meta_id_str = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
+//		try {
+//			meta_id = Integer.parseInt(meta_id_str) ;
+//		} catch ( NumberFormatException nfe ) {
+//			meta_id = IMCServiceRMI.getDefaultHomePage(imcserver) ;
+//		} catch ( NullPointerException ne ) {
+			meta_id = IMCServiceRMI.getDefaultHomePage(imcserver) ;
+//		}
+		String scheme = req.getScheme( );
+		String serverName = req.getServerName( );
+		int p = req.getServerPort( );
+		String port = (p == 80 || p == 443) ? "" : ":" + p;
+		Utility.redirect(req,res,"GetDoc?meta_id="+meta_id) ;
+//		byte[] tempbytes = GetDoc.getDoc(meta_id,meta_id,host,req,res) ;
+//		if ( tempbytes != null ) {
+//			out.write(tempbytes) ;
+//		}
+
+		return ;
+		/*
+		imcode.server.Table url_doc = IMCServiceRMI.isUrlDoc( imcserver,meta_id,user ) ;
+
+		if( url_doc != null ) {
+			if( user.getBoolean( "admin_mode" ) ) {
+				htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver, meta_id,user,"change_meta.html",5,meta_id,0,0 ) ;
+			} else {
+				String scheme = req.getScheme( );
+				String serverName = url_doc.getString( "url_ref" ) ;
+				res.sendRedirect( serverName ) ;
+			}
+		} else {
+			// check if browser_doc
+			int old_meta_id = meta_id ;
+			meta_id = IMCServiceRMI.isBrowserDoc( imcserver,meta_id,user ) ;
+			if( user.getBoolean( "admin_mode" ) && meta_id != old_meta_id ) {
+				htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver,old_meta_id,user,"change_browser_doc.html",6,meta_id,0,0 ) ;
+			} else {
+				// check if frameset_doc
+				String html_str_temp = IMCServiceRMI.isFramesetDoc( imcserver,meta_id,user ) ;
+				if( html_str_temp != null ) {
+					if( !user.getBoolean( "admin_mode" ) )
+						htmlStr = html_str_temp ;
+					else
+						htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver,meta_id,user,"change_frameset.html",7,meta_id,0,0 ) ;
+				} else {
+					// interpret
+					user.archiveOff( ) ;
+					user.adminModeOff( ) ;
+					htmlStr = IMCServiceRMI.interpretTemplate( imcserver,meta_id,user ) ;
+					user.setLastMetaId( meta_id ) ;
+				}
+			}
+		}
+		out.println( htmlStr ) ;
+		log ("Time: "+(System.currentTimeMillis() - time) ) ;
+		*/
+	}
+
+	/**
+	Check if user exist in database
+	*/
+	static protected imcode.server.User allowUser( String user_name, String passwd, String host ) throws IOException {
+		String imcserver 			= Utility.getDomainPref("userserver",host) ;
+
+		// user information
+		String fieldNames[] = {"user_id","login_name","login_password","first_name",
+						  "last_name","title","user","address","city","zip","country",
+						  "county_council","email","admin_mode","last_page","archive_mode" ,"lang_id" ,"user_type","active", "create_date"} ;
+		return IMCServiceRMI.verifyUser( imcserver, new imcode.server.LoginUser( user_name,passwd ),fieldNames ) ;
+	}
+
+	/**
+	Ip login  - check if user exist in ip-table
+	*/
+	static protected imcode.server.User ipAssignUser( String remote_ip , String host) throws IOException {
+		String imcserver 			= Utility.getDomainPref("userserver",host) ;
+		imcode.server.User user = new imcode.server.User( ) ;
+
+		long ip = Utility.ipStringToLong(remote_ip) ;
+
+		String sqlStr = "" ;
+		sqlStr  = "select distinct login_name,login_password,ip_access_id from users,user_roles_crossref,ip_accesses\n" ;
+		sqlStr += "where user_roles_crossref.user_id = ip_accesses.user_id\n" ;
+		sqlStr += "and users.user_id = user_roles_crossref.user_id\n" ;
+		sqlStr += "and ip_accesses.ip_start <= " + ip + "\n" ;
+		sqlStr += "and ip_accesses.ip_end >= " + ip + "\n" ;
+		sqlStr += "order by ip_access_id desc" ;
+
+		String user_data[] = IMCServiceRMI.sqlQuery( imcserver,sqlStr );
+
+		if( user_data.length > 0 )  {
+			user = allowUser( user_data[0],user_data[1],host ) ;
+			user.setLoginType("ip_access") ;
+		}
+		else {
+			user = allowUser( "User","user", host ) ;
+			user.setLoginType("extern") ;
+		}
+
+		return user ;
+	}
+}
+
+
+

@@ -1,0 +1,88 @@
+<html>
+<head>
+<title>L&auml;gg till IP- Access</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#AdminIpAccess" name="addIP">
+  <table width="40%" border="0" cellspacing="0">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">L&auml;gg 
+		  till ny IP-access</font></b></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp; </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">V&auml;lj 
+		anv&auml;ndare samt IP-nummer eller intervall av IP-nummer f&ouml;r de 
+		som ej ska beh&ouml;va logga in.</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">1. 
+		Ange anv&auml;ndare: 
+		<select name="USER_ID" size="1">
+	#USERS_LIST#
+        </select>
+		</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%" height="23"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">2. 
+		Ange from vilket IP-nr : 
+		<input type="text" name="IP_START" size="12">
+		</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%" height="26"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		3. Ange tom vilket IP-nr : 
+		<input type="text" name="IP_END" size="12">
+		</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Ex: 
+		IP-nr skall anges i formen. 192.168.98.54</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+		<input type="submit" name="ADD_NEW_IP_ACCESS" value="Spara">
+		<input type="submit" name="CANCEL_ADD_IP" value="Avbryt">
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa">
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+  </table>
+</form>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+<html>
+<head>
+<title>Lägg till / Ta bort formatmallar</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="TemplateChange">
+  <table width="40%" border="0" cellspacing="0" cellpadding="0">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="3"> 
+		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">L&auml;gg 
+		  till / Ta bort formatmallar</font></b></font></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="3"> 
+		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Formatgrupper: 
+		  <select name="templategroup">
+			#templategroups#
+             
+          </select>
+		  <input type="submit" name="show_assigned" value="Visa mallar">
+		  </font></p>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="30%" valign="center"> 
+		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Tillg&auml;ngliga 
+		  mallar:<br>
+		  <select name="unassigned" size="7" multiple>
+			#unassigned#
+           
+          </select>
+		  </font></div>
+	  </td>
+	  <td width="30%" valign="center" align="center"> 
+		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Grupp: 
+		  <i><b>#group#</b></i></font></p>
+		<p> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="assign" value="L&auml;gg till--&gt;">
+		  </font></p>
+		<p> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="submit" name="deassign" value="&lt;-- Ta bort">
+		  </font></p>
+	  </td>
+	  <td width="30%" valign="center"> 
+		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Mallar 
+		  i gruppen:<br>
+		  <select name="assigned" size="7" multiple>
+			#assigned#
+           
+          </select>
+		  </font></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="3"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		<input type="submit" name="cancel" value="Tillbaka">
+		<input type="hidden" name="group_id" value="#group_id#">
+		<input type="hidden" name="language" value="#language#">
+		* = Exempelmall finns </font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="3">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+  </table>
+</form>
+</body>
+</html>

@@ -1,0 +1,147 @@
+import java.io.*;
+import java.util.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.rmi.* ;
+
+import imcode.util.* ;
+/**
+  Verify a user.
+*/
+public class VerifyUser extends HttpServlet {
+
+	/**
+	 init()
+	*/
+	public void init( ServletConfig config ) throws ServletException {
+		super.init( config ) ;
+	}
+	
+//	public void doGet( HttpServletRequest req, HttpServletResponse res )	throws ServletException, IOException {
+//		doPost(req,res) ;
+//	}
+
+	/**
+	doPost()
+	*/
+	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+		String host 				= req.getHeader("Host") ;
+		String imcserver 			= Utility.getDomainPref("userserver",host) ;
+		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
+		String admin_url       		= Utility.getDomainPref( "admin_url",host ) ;
+		String access_denied_url   	= Utility.getDomainPref( "access_denied_url",host ) ;
+
+		imcode.server.User user ;                            	
+		res.setContentType( "text/html" );
+		PrintWriter out = res.getWriter( );
+		String test = "" ; 
+		String type = "";
+		String version = "" ;
+		String plattform = "" ;
+
+		String scheme = req.getScheme( );
+		String serverName = req.getServerName( );
+		int p = req.getServerPort( );
+		String port = (p == 80 || p == 443) ? "" : ":" + p;
+
+		// Get the user's name and password
+		String name = req.getParameter( "name" );
+		String passwd = req.getParameter( "passwd" );
+//		String domain = req.getParameter( "domain" ) ;
+//		if ( domain == null ) {
+//			domain = "" ;
+//		}
+
+		String value = req.getHeader( "User-Agent" ) ; 
+
+		// Check the name and password for validity
+		user = allowUser( name, passwd, host ) ; 
+
+		// add browser info to user
+
+		// IE                            	
+//		if( value.indexOf( "MSIE" ) != -1 ) {
+//			type = "MSIE" ;
+//			version = "-1" ;
+//
+//			if( value.indexOf( "MSIE 3" ) != -1 )
+//				version = "3" ; 
+//			if( value.indexOf( "MSIE 4" ) != -1 )
+//				version = "4" ; 
+//			if( value.indexOf( "MSIE 5" ) != -1 )
+//				version = "5" ; 
+//
+//			if( value.indexOf( "Windows" ) != -1 )
+//				plattform = "PC" ;
+//			else
+//				plattform = "Mac" ;
+//
+//		} // NS
+//		else {
+//			type = "NS" ;
+//			version = "-1" ;
+//
+//			if( value.indexOf( "Mozilla/3" ) != -1 )
+//				version = "3"; 
+//			if( value.indexOf( "Mozilla/4" ) != -1 )
+//				version = "4"; 
+//			if( value.indexOf( "Mozilla/5" ) != -1 )
+//				version = "5" ; 
+//
+//			if( value.indexOf( "Win" ) != -1 )
+//				plattform = "PC" ;
+//			else
+//				plattform = "Mac" ;
+//
+//		}
+
+		if( user == null ) {
+			res.sendRedirect(access_denied_url) ;              
+			return ;
+//			out.println( "<HTML><HEAD><TITLE>Access Denied</TITLE></HEAD>" );
+//			out.println( "<BODY>Ditt användarid eller lösenord är felaktigt.<BR>" );
+//			out.println( "Vill du <A HREF=\"" + admin_url + "\">försöka igen?</A>" );
+//			out.println( "</BODY></HTML>" );
+		} else {
+//			user.setBrowserInfo( type,version,plattform ) ;
+
+			// Valid login.  Make a note in the session object.
+			HttpSession session = req.getSession( true );
+			session.putValue( "logon.isDone", user );  // just a marker object
+			session.putValue("browser_id",value) ;
+
+			// Try redirecting the client to the page he first tried to access
+		//	try {
+				String target = (String) session.getValue("login.target");
+				if (target != null) {
+					session.removeValue("login.target") ;
+					res.sendRedirect(target);
+					return ;
+				}
+				//return;
+		//	} catch (Exception ignored) {} */
+
+			user.setLoginType("verify") ;
+
+			// Couldn't redirect to the target.  Redirect to the site's home page.
+			res.sendRedirect( scheme + "://" + serverName + port + servlet_url + "StartDoc" );
+
+		}
+	}
+
+	/**
+	Test if user exist in the database
+	*/
+	protected imcode.server.User allowUser( String user_name, String passwd, String host ) throws IOException { 
+		imcode.server.User user = new imcode.server.User( ) ;
+		String imcserver 			= Utility.getDomainPref("userserver",host) ;
+
+		// user information
+		String fieldNames[] = {"user_id","login_name","login_password","first_name",
+  		             "last_name","title", "company", "address","city","zip","country",
+  		             "county_council","email","admin_mode","last_page","archive_mode","lang_id", "user_type", "active", "create_date" } ;
+		user = IMCServiceRMI.verifyUser(imcserver, new imcode.server.LoginUser( user_name,passwd ),fieldNames );
+		return user ; //  user ;
+	}
+}

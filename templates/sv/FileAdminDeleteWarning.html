@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>Varning!</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="FileAdmin" enctype="multipart/form-data">
+  <table border="0" cellspacing="0" width="40%">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td> 
+		<center>
+		  <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>Varning!</b></font> 
+		</center>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">F&ouml;ljande 
+		filer kommer att raderas:</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td> 
+		<select size="10">
+			#filelist#
+		</select>
+		<input type="hidden" name="dir1" value="#dir1#">
+		<input type="hidden" name="dir2" value="#dir2#">
+		<input type="hidden" name="source" value="#source#">
+		<input type="hidden" name="dest" value="#dest#">
+		<input type="hidden" name="files" value="#files#">
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vill du 
+		forts&auml;tta?</font> </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		<input type="submit" name="deleteok" value="Ja">
+		<input type="submit" name="no" value="Nej">
+		<!--input type="checkbox" name="dontask" value="checkbox">
+		Fr&aring;ga mig inte igen!--></font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#BABABA"> 
+	  <td width="5%">&nbsp;</td>
+	  <td>&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+  </table>
+</form>
+</body>
+</html>

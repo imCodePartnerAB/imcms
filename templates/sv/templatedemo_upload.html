@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>Ladda upp ny exempelmall</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="TemplateAdd" enctype="multipart/form-data">
+  <table width="40%" border="0" cellspacing="0" cellpadding="4">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"><b><font size="2">Ladda 
+		  upp ny exempelmall</font></b></font></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="45%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ange 
+		exempelmall: </font></td>
+	  <td width="45%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		<input type="file" name="file">
+		</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="45%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">V&auml;lj 
+		mall: </font></td>
+	  <td width="45%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		<select name="template">
+			#templates#
+		</select>
+		* = Exempelmall finns </font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Existerande 
+		exempelmall kommer att skrivas &ouml;ver.</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<input type="submit" name="ok" value="Ladda upp">
+		<input type="submit" name="view_demo" value="Visa exempelmall">
+		<input type="submit" name="delete_demo" value="Ta bort exempelmall">
+		<input type="submit" name="cancel" value="Tillbaka">
+		<input type="hidden" name="language" value="#language#">
+		<input type="hidden" name="demo" value="true">
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+  </table>
+</form>
+</body>
+</html>

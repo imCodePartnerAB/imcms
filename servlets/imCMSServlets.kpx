@@ -1,0 +1,657 @@
+<?xml version='1.0'?>
+<kawaproject>
+<versioninfo>
+<documentversion>
+<major>"0"</major>
+<minor>"1"</minor>
+</documentversion>
+<productversion>
+<value>"121"</value>
+</productversion>
+</versioninfo>
+<path>"c:\Java\imCMS1.3\Servlets\"</path>
+<classpaths>
+<classpath enabled="1">
+<value>"C:\Java\JDK\lib\jsdk.jar"</value>
+</classpath>
+<classpath enabled="0">
+<value>" F:\ImcServer\"</value>
+</classpath>
+<classpath enabled="1">
+<value>"C:\Java\JClass40K\lib\jcchart400K.jar"</value>
+</classpath>
+<classpath enabled="0">
+<value>" F:\ImcServer\bhawk4j.jar"</value>
+</classpath>
+<classpath enabled="1">
+<value>"C:\Upload\imcms1_3-ImcServer\"</value>
+</classpath>
+</classpaths>
+<xbootclasspaths>
+</xbootclasspaths>
+<profile>
+<name>"Profile 1"</name>
+</profile>
+<runfile>
+</runfile>
+<items>
+<folder>
+<name>"imCMS 1.3 Servlets"</name>
+<relativepath>"..\..\Java\imCMS1.3\Servlets\imCMSServlets.kpx"</relativepath>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"AddDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"AdminDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"BackDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"ChangeExternalDoc2.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"ChangeImage.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"ChangeText.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"FileAdmin.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"GetDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"GetExistingDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"ImageUpload.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"LogOut.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"MetaAdmin.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"Restart.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="-2" y="24507456" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveBrowserDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveFileUpload.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"1701603654"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveFrameset.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveImage.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveInPage.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveMeta.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveNewBrowserDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveNewFileUpload.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveNewFrameset.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveNewMeta.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveNewUrlDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SavePermissions.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveSort.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveText.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"SaveUrlDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"ShowDiagram.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"StartDoc.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"1598888736"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"TemplateAdd.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"1780511858"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"TemplateAdmin.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"TemplateChange.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"UrlDocTest.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+<file>
+<dirty>"0"</dirty>
+<relativepath>"VerifyUser.java"</relativepath>
+<editor open="0">
+<selection start="0" end="0">
+</selection>
+<window x="0" y="0" width="0" height="0">
+</window>
+</editor>
+<scmstatus id="0">
+<userstring>""</userstring>
+<userinteger>"0"</userinteger>
+</scmstatus>
+</file>
+</folder>
+</items>
+<compileroptions debug="0" nowarning="0" optimize="1" verbose="0" deprecated="1" usefilelist="0">
+<outputdirvalues checked="1">
+<outputdirvalue selected="1">
+<value>"G:\Apache\htdocs\servlets"</value>
+</outputdirvalue>
+<outputdirvalue selected="0">
+<value>"C:\Apache\servlets"</value>
+</outputdirvalue>
+<outputdirvalue selected="0">
+<value>"C:\Upload\imCMS1_3-servlets"</value>
+</outputdirvalue>
+</outputdirvalues>
+<customoptions checked="0">
+</customoptions>
+</compileroptions>
+<interpreteroptions debug="0" nogc="0" verbosegc="0" verbose="0" checksrc="0" verifieroff="0" verifieron="0" verifierremote="0" classic="0">
+<commandlineargs checked="0">
+</commandlineargs>
+<runclassnames checked="0">
+<runclassname selected="0">
+<value>""</value>
+</runclassname>
+</runclassnames>
+<executedirs checked="0">
+<executedir selected="0">
+<value>""</value>
+</executedir>
+</executedirs>
+<customoptions checked="0">
+<customoption selected="0">
+<value>""</value>
+</customoption>
+</customoptions>
+<maxmemory checked="0">
+<value>""</value>
+</maxmemory>
+<startmemory checked="0">
+<value>""</value>
+</startmemory>
+<javacodestack checked="0">
+<value>""</value>
+</javacodestack>
+<ccodestack checked="0">
+<value>""</value>
+</ccodestack>
+<propertyvalues checked="0">
+<propertyvalue selected="0">
+<value>""</value>
+</propertyvalue>
+</propertyvalues>
+<debugger>
+<remote checked="0">
+<host checked="0">
+<value>""</value>
+</host>
+<password checked="0">
+<value>""</value>
+</password>
+<port checked="0">
+<value>""</value>
+</port>
+<connector checked="0">
+<value>""</value>
+</connector>
+</remote>
+<jvmdidebug checked="0">
+</jvmdidebug>
+<multithreading checked="0">
+</multithreading>
+<excludejdkclasses checked="0">
+</excludejdkclasses>
+<breakonuncaughtexceptions checked="0">
+</breakonuncaughtexceptions>
+</debugger>
+</interpreteroptions>
+<javadocoptions version="0" type="1" author="0" noindex="0" notree="0" nodeprecated="0">
+<outputdirvalues checked="0">
+</outputdirvalues>
+<customoptions checked="0">
+<customoption selected="0">
+<value>""</value>
+</customoption>
+</customoptions>
+</javadocoptions>
+<rmioptions useprojectclasspath="0" debugtables="0" depend="0" debug="0" optimize="0" nowarn="0" verbose="0" nowrite="0" keepgenerated="0" show="0">
+<outputdirs checked="0">
+<outputdir selected="0">
+<value>""</value>
+</outputdir>
+</outputdirs>
+<stubdirs checked="0">
+<stubdir selected="0">
+<value>""</value>
+</stubdir>
+</stubdirs>
+<skeldirs checked="0">
+<skeldir selected="0">
+<value>""</value>
+</skeldir>
+</skeldirs>
+<customoptions checked="0">
+<customoption selected="0">
+<value>""</value>
+</customoption>
+</customoptions>
+<files>
+</files>
+</rmioptions>
+<kawajar>
+<value>""</value>
+</kawajar>
+<ejboptions>
+<servername>""</servername>
+</ejboptions>
+<breakpoints>
+</breakpoints>
+<exceptions>
+</exceptions>
+<debuggersourcedirs checked="0">
+</debuggersourcedirs>
+</kawaproject>

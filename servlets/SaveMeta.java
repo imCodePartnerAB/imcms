@@ -1,0 +1,329 @@
+import java.io.*;
+import java.util.*;
+import java.text.SimpleDateFormat ;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import imcode.util.* ;
+
+/**
+  Save meta from metaform.
+  */
+public class SaveMeta extends HttpServlet {
+
+	/**
+	init()
+	*/
+	public void init( ServletConfig config ) throws ServletException {
+		super.init( config ) ;
+	}
+
+	/**
+	doPost()
+	*/
+	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+		String host 				= req.getHeader("Host") ;
+		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
+		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
+
+		imcode.server.User user ;
+
+		// Check if user logged on
+		if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
+			return ;
+		}
+
+		res.setContentType( "text/html" );
+		ServletOutputStream out = res.getOutputStream();
+
+		String meta_id = req.getParameter( "meta_id" ) ;
+		int meta_id_int = Integer.parseInt(meta_id) ;
+
+		if ( !IMCServiceRMI.checkDocAdminRightsAny(imcserver,meta_id_int,user,7 ) ) {	// Checking to see if user may edit this
+			byte[] tempbytes ;
+			tempbytes = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+			if ( tempbytes != null ) {
+				out.write(tempbytes) ;
+			}
+			return ;
+		}
+
+		/*
+			This table keeps track of all the fields we may encounter.
+			The "nullvalue" is there to support checkboxes, which,
+			if not checked, report null.
+			So, if the checkboxes do not appear, we know that we should enter
+			the "nullvalue" found here, into the db.
+		*/
+		String [] metatable = {
+		/*  Nullable			Nullvalue */
+			"shared",			"0",
+			"disable_search",	"0",
+			"archive",			"0",
+			"show_meta",		"0",
+/*			"category_id",		"1",
+			"expand",			"1",
+			"help_text_id",		"1",
+			"status_id",		"1",
+			"lang_prefix",		"se",
+			"sort_position",	"1",
+			"menu_position",	"1",
+*/			"permissions",		"0",
+//			"description",		null,
+			"meta_headline",	null,
+			"meta_text",		null,
+			"meta_image",		null,
+//			"date_created",		null,
+//			"date_modified",	null,
+			"activated_date",	null,
+			"activated_time",	null,
+			"archived_date",	null,
+			"archived_time",	null,
+			"frame_name",		null,
+			"target",			null
+		} ;
+
+		final int metatable_cols = 2 ;
+
+		// I'll make a table to keep track of
+		// what is the highest (least privileged)
+		// set_id you may have, to be able to change
+		// each property. Roles with set_ids 1 and 2
+		// still need explicit permissions, so this is
+		// mainly for fleshing out what only a user with
+		// "full" (0) may do. (Change wether set-id 1 is
+				// more privileged. "permissions")
+		// I use a bitmask here to specify what permissions
+		// are required for each.
+		// 0 == Unreachable
+		// 1 == Something on the "simple docinfo"-page
+		// 2 == Something on the "advanced docinfo"-page
+		// 4 == Something on the "rights/permissions"-page
+		int[] metatable_restrictions = {
+		/*	set_id,	permission_bitmask	*/
+			2,		6,		//"shared",
+			2,      2,		//"disable_search",
+			2,      2,		//"archive",
+			2,		6,		//"show_meta",
+/*			-1,		0,		//"category_id",
+			-1,		0,		//"expand",
+			-1,		0,		//"help_text_id",
+			-1,		0,		//"status_id",
+			-1,		0,		//"lang_prefix",
+			-1,		0,		//"sort_position",
+			-1,		0,		//"menu_position",
+*/			0,		4,		//"permissions",
+//			-1,		0,		//"description",
+			2,		7,		//"meta_headline",
+			2,		3,		//"meta_text",
+			2,		3,		//"meta_image",
+//			2,		2,		//"date_created",
+//			2,		2,		//"date_modified",
+			2,		2,		//"activated_date",
+			2,		2,		//"activated_time",
+			2,		2,		//"archived_date",
+			2,		2,		//"archived_time",
+			2,		2,		//"frame_name",
+			2,		2		//"target"
+		} ;
+
+		Properties metaprops = new Properties () ;
+
+		String classification = req.getParameter("classification") ;
+
+		// Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
+		String[][] role_permissions = IMCServiceRMI.sqlProcedureMulti(imcserver, "GetRolesDocPermissions "+meta_id) ;
+
+		// Now watch as i fetch the permission_set for the user...
+		String[] current_permissions = IMCServiceRMI.sqlProcedure(imcserver, "GetUserPermissionSet "+meta_id+", "+user.getInt("user_id")) ;
+		int user_set_id = Integer.parseInt(current_permissions[0]) ;	// The users set_id
+
+		// Check if the user has any business in here whatsoever.
+		if ( user_set_id > 2 ) {
+			out.write(AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res)) ;
+			return ;
+		}
+		int user_perm_set = Integer.parseInt(current_permissions[1]) ;	// The users permission_set for that id
+		int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;	// The docspecific permissions for this doc.
+
+		// Now i'll loop through the db-results, and read the values
+		// for each roles set_id this user may change from the form.
+		// Then set the new value for each.
+
+		Properties temp_permission_settings = new Properties() ;
+
+		for ( int i = 0 ; i < role_permissions.length ; ++i ) {
+			int role_set_id = Integer.parseInt(role_permissions[i][2]) ;
+			String role_id = role_permissions[i][0] ;
+			String new_set_id_str = req.getParameter("role_"+role_permissions[i][0]) ;
+			if ( new_set_id_str == null ) {				// If a new set_id for this role didn't come from the form,
+				continue ;								// skip to the next role.
+			}
+			int new_set_id = Integer.parseInt(new_set_id_str) ;
+			if 	( (	user_set_id == 0 				// If user has set_id == 0...
+						|| (user_perm_set & 4) != 0)	// ...or the user may edit permissions for this document
+					&& user_set_id <= role_set_id 	// If user potentially has a more privileged set_id than the role...
+					&&	(user_set_id != 1	 		// If user has set_id == 1 (that is , != 0 && != 2)
+						||	(role_set_id != 2 			// ...he may not change set_id for a role with set_id 2..
+							&& new_set_id != 2)			// ...and he may not set set_id to 2 for any role...
+						|| (currentdoc_perms&1) != 0// ...unless set_id 1 is more privileged than set_id 2 for this document.
+					)
+				) {
+				// log("Role "+role_id+": Old: "+role_set_id+" New: "+new_set_id) ;
+				// We used to save to the db immediately. Now we do it a little bit differently to make it possible to store stuff in the session instead of the db.
+				// IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
+				temp_permission_settings.setProperty(String.valueOf(role_id),String.valueOf(new_set_id)) ;
+			} else {
+				log ("User with set_id "+user_set_id+" and permission_set "+user_perm_set+" denied permission to change set_id for role "
+					+role_id+" from "+role_set_id+" to "+new_set_id) ;
+			}
+		}
+
+		// Loop through all meta-table-properties
+		// Checking permissions as we go.
+		for ( int i=0 ; i<metatable.length ; i+=metatable_cols ) {
+			String tmp = req.getParameter(metatable[i]) ;
+			if ( 	user_set_id > metatable_restrictions[i]						// Check on set_id if user is allowed to set this particular property.
+				|| 	(user_set_id > 0 										// If user not has full access (0)...
+				&& ((user_perm_set & metatable_restrictions[i+1]) == 0) // check permission-bitvector for the users set_id.
+				)
+				) {
+				//	log("User with minimum set_id "+user_set_id+" denied access to changing") ;
+				//	log(metatable[i]+": "+tmp) ;
+				continue ;
+			}
+			if ( tmp != null) {
+				metaprops.setProperty(metatable[i],tmp) ;	// If it is found, set it.
+			} else {
+				tmp = metatable[i+1] ;
+								// FIXME: If it is null, that could mean the user
+								// emptied the field. This leads to the property
+								// not being updated, and left unchanged!
+								// _Should_ be ok, since for checkboxes null is valid. (Means false)
+								// For fields other than checkboxes and radiobuttons null would be bad.
+				if ( tmp != null ) {
+					metaprops.setProperty(metatable[i],tmp) ;	// If it is not found, set it to the nullvalue. (For checkboxes, which do not appear if they are not checked.)
+				}
+			}
+		}
+
+
+		// Set modified-date to now...
+		SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
+		Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
+		metaprops.setProperty("date_modified",dateformat.format(dt)) ;
+
+
+		// It's like this... people make changes on the page, and then they forget to press "save"
+		// before they press one of the "define-permission" buttons, and then their settings are lost.
+		// I will fix this by storing the settings in a temporary variable in the user object.
+		// This variable will be an array of three objects. In order:
+		// A String, containing the meta-id of the page.
+		// A Properties, containing the docinfo for the page. (db-column, value)
+		// A Properties, containing the permission_sets for the roles. (role_id, set_id)
+		// We also need a name for this temporary variable... i think i shall call it... (Drumroll, please...) "temp_perm_settings" !
+		
+		if ( req.getParameter("define_set_1") != null ) {	// If user want's to edit permission-set 1
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			out.print(MetaDataParser.parsePermissionSet(meta_id_int,user,host,1,false)) ;
+			return ;
+		} else if ( req.getParameter("define_set_2") != null ) {	// If user want's to edit permission-set 2
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			out.print(MetaDataParser.parsePermissionSet(meta_id_int,user,host,2,false)) ;
+			return ;
+		} else if ( req.getParameter("define_new_set_1") != null ) {
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			out.print(MetaDataParser.parsePermissionSet(meta_id_int,user,host,1,true)) ;
+			return ;
+		} else if ( req.getParameter("define_new_set_2") != null ) {
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			out.print(MetaDataParser.parsePermissionSet(meta_id_int,user,host,2,true)) ;
+			return ;
+		} else if ( req.getParameter("add_roles") != null ) {		// The user wants to give permissions to roles that have none.
+			String[] roles_no_rights = req.getParameterValues("roles_no_rights") ;
+			for ( int i = 0 ; roles_no_rights!=null && i<roles_no_rights.length ; ++i ) {
+				temp_permission_settings.setProperty(roles_no_rights[i],"3") ;
+			}
+			user.put("temp_perm_settings",new Object[] {String.valueOf(meta_id),metaprops,temp_permission_settings}) ;
+			out.print(MetaDataParser.parseMetaPermission(meta_id,meta_id,user,host,"change_meta_rights.html")) ;
+			return ;
+		}
+
+
+		// From now on we enter stuff into the db.
+
+		// Here i'll construct an sql-query that will update all docinfo
+		// the user is allowed to change.
+		String sqlStr = "" ;
+
+		Enumeration propkeys = metaprops.propertyNames() ;
+		while ( propkeys.hasMoreElements() ) {
+			String temp = (String)propkeys.nextElement() ;
+			String val = metaprops.getProperty(temp) ;
+			String [] vp = {
+					"'",	"''"
+				} ;
+			sqlStr += temp +" = '"+Parser.parseDoc(val,vp)+"' " ;
+			if ( propkeys.hasMoreElements() ) {
+				sqlStr += ", " ;
+			}
+		}
+		Enumeration enum_temp_settings = temp_permission_settings.propertyNames() ;
+		while ( enum_temp_settings.hasMoreElements() ) {
+			String role_id = (String)enum_temp_settings.nextElement() ;
+			String new_set_id = temp_permission_settings.getProperty(role_id) ;
+			IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
+		}
+		
+		if ( sqlStr.length() > 0 ) {
+
+			sqlStr = "update meta set " +sqlStr+ " where meta_id = "+meta_id ;
+			//log(sqlStr) ;
+			IMCServiceRMI.sqlUpdateQuery(imcserver,sqlStr) ;
+		}
+
+		// Save the classifications to the db
+		if ( classification != null ) {
+			IMCServiceRMI.sqlUpdateProcedure(imcserver,"Classification_Fix "+meta_id+",'"+classification+"'") ;
+		}
+
+		// Update the date_modified for all parents.
+		IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateParentsDateModified "+meta_id) ;
+
+		// Let's split this joint!
+				byte[] temp = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
+				if (temp != null) {
+				  out.write(temp) ;
+				}
+		return ;
+	}
+
+	public boolean contains (String[] array, String str) {
+		if ( array == null || str == null ) {
+			return false ;
+		}
+		for ( int i=0 ; i<array.length ; i++ ) {
+			if ( str.equals(array[i]) ) {
+				return true ;
+			}
+		}
+		return false ;
+	}
+
+	/**
+	Log function. Logs the message to the log file and console
+	*/
+
+	public void log(String msg) {
+		super.log(msg) ;
+		System.out.println("SaveMeta: " + msg) ;
+	}
+
+
+}
+
+
+
+
+
+

@@ -1,0 +1,61 @@
+<HTML><HEAD><TITLE>Admin</TITLE></HEAD><BODY  bgcolor="#FFFFFF">
+<H3> 
+  <FORM METHOD=POST ENCTYPE="multipart/form-data" ACTION="#servlet_url#SaveFileUpload">
+	<CENTER>
+	  <TABLE BORDER="1" cellpadding="2" cellspacing="0" align="center" width="250">
+		<TR bgcolor="#333366"> 
+		  <TD><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">&nbsp;V&auml;lj 
+			fil</font></b></font></TD>
+		</TR>
+		<TR> 
+		  <TD bgcolor="#BABABA"> 
+			<div align="center"> 
+			  <table width="50%" border="0">
+				<tr> 
+				  <td width="29%">Ny fil:</td>
+				  <td width="71%"> 
+					<input type="file" name="file" value="#file#">
+				  </td>
+				</tr>
+				<tr> 
+				  <td width="29%">Mime-typ:</td>
+				  <td width="71%"> 
+					<select name="mime">
+					    <option></option>
+					    #mime#
+					</select>
+				  </td>
+				</tr>
+				<tr> 
+				  <td width="29%">Annan:</td>
+				  <td width="71%"> 
+					<input type="text" name="other" value="#other#">
+				  </td>
+				</tr>
+				<tr> 
+				  <td width="29%">Befintlig fil:</td>
+				  <td width="71%"> 
+					<center>
+					  &quot;#file#&quot; 
+					</center>
+				  </td>
+				</tr>
+			  </table>
+			</div>
+		  </TD>
+		</TR>
+		<TR> 
+		  <TD bgcolor="#BABABA"> 
+			<CENTER>
+			  <INPUT TYPE=SUBMIT VALUE="Spara" NAME="ok">
+			</center>
+		  </TD>
+		</TR>
+		<INPUT TYPE=HIDDEN NAME=meta_id VALUE=#meta_id#>
+		<INPUT TYPE=HIDDEN NAME="parent_meta_id" VALUE="#parent_meta_id#">
+	  </TABLE>
+	#adminMode#
+	</center>
+  </FORM>
+</h3>
+</BODY></HTML>

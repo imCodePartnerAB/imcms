@@ -1,0 +1,35 @@
+<HTML><HEAD><TITLE>Admin</TITLE></HEAD><BODY  bgcolor="#FFFFFF"><H3>
+  <FORM METHOD=POST ACTION="#servlet_url#SaveText" name="">
+    <TABLE width="430" align="center" cellpadding="2" cellspacing="0" border="1">
+      <CENTER>
+        <TR bgcolor="#333366" > 
+          <TD align="left"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="3" color="#FFFFFF">&nbsp;<font size="2">Ändra 
+            Text</font>&nbsp;</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;&nbsp;</font></B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Txt#txt_no#</font></TD>
+</TR>
+        <TR bgcolor="#333366"> 
+          <TD><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;MetaId&nbsp;&nbsp;&nbsp;&nbsp;#meta_id#</font></TD>
+        </TR>
+        <TR > 
+          <TD bgcolor="#BABABA"> 
+            <textarea name=text cols=70 rows=15 wrap="VIRTUAL">
+#txt#</textarea>
+          </TD>
+        </TR>
+        <TR> 
+          <TD valign="middle" align="left" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Format:&nbsp;&nbsp;&nbsp;&nbsp;</font> 
+            <INPUT TYPE=RADIO NAME=type VALUE="0" #!html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vanlig text</font>&nbsp;&nbsp; 
+            <INPUT TYPE=RADIO NAME=type VALUE="1" #html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font></TD>
+        </TR>
+        <INPUT TYPE=HIDDEN NAME=txt_no VALUE=#txt_no#>
+        <TR> 
+          <TD valign="middle" align="center" bgcolor="#BABABA"> 
+            <INPUT TYPE=SUBMIT VALUE="OK" NAME="ok">
+            <INPUT TYPE=RESET VALUE="Rensa">
+            <INPUT TYPE=SUBMIT VALUE="Avbryt" NAME="cancel">
+          </TD>
+        </TR>
+      </CENTER>
+      <INPUT TYPE=HIDDEN NAME=meta_id VALUE=#meta_id#>
+    </TABLE>
+</FORM>
+</H3></BODY></HTML>

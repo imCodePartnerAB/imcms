@@ -1,0 +1,84 @@
+<html>
+<head>
+<title>Ladda upp ny mall</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="TemplateAdd" enctype="multipart/form-data">
+  <table width="40%" border="0" cellspacing="0">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><b>Ladda 
+		  upp ny mall</b></font></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa">
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ange mallfil: 
+		  </font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="file" name="file">
+		  </font></p>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">V&auml;lj 
+		namn: </font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		<input type="text" name="name">
+		</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> Skriv 
+		  &ouml;ver existerande: </font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		  <input type="checkbox" name="overwrite">
+		  </font></p>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Tilldela 
+		till grupper: <br>
+		<font size="1">(Valfritt, men en mall m&aring;ste tilldelas till en grupp 
+		f&ouml;r att kunna anv&auml;ndas. Du kan &auml;ven tilldela mallen till 
+		en grupp senare.)</font></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		</font></td>
+	  <td valign="baseline"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+		<select name="templategroup" size="5" multiple>
+			#templategroups#
+		
+   		</select>
+		</font></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2"> 
+		<input type="submit" name="ok" value="Ladda upp">
+		<input type="submit" name="cancel" value="Tillbaka">
+		<input type="hidden" name="language" value="#language#">
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="2">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+  </table>
+</form>
+</body>
+</html>

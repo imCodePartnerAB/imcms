@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method=POST action="#servlet_url#SaveNewUrlDoc">
+  <BR><BR><div align="center">
+    <table 0 cellspacing=0 width="450" cellpadding="2" border="1" align="center">
+	  <tr bgcolor="#333366" > 
+		<td valign="TOP"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Ny 
+		  URL</font></B></td>
+	  </tr>
+	  <tr bgcolor="#333366" > 
+		<td valign="TOP"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;MetaId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#new_meta_id#</font></td>
+	  </tr>
+	  <tr> 
+		<td valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Url 
+		  </font>&nbsp;&nbsp;&nbsp; 
+		  <input type="TEXT" name="url_ref" value="" SIZE=60 MAXLENGTH=255>
+		  <!--<INPUT TYPE = SUBMIT VALUE = "Sök" NAME="submit"> --></td>
+	  </tr>
+	  <TR>
+		<TD align="center" valign="middle" bgcolor="#BABABA">&nbsp;<font size="2"> 
+		  <input type="radio" name="target" value="_self" checked>
+		  </font><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Samma 
+		  frame</font><font size="2"> 
+		  <input type="radio" name="target" value="_blank">
+		  <font face="Verdana, Arial, Helvetica, sans-serif">Nytt f&ouml;nster</font> 
+		  <font size="2"> 
+		  <input type="radio" name="target" value="_top">
+		  </font><font face="Verdana, Arial, Helvetica, sans-serif">Ers&auml;tt 
+		  allt</font><font face="Verdana, Arial, Helvetica, sans-serif"><br>
+		  &nbsp;</font><font size="2"> 
+		  <input type="radio" name="target" value="_other">
+		  </font><font face="Verdana, Arial, Helvetica, sans-serif">Annan frame:</font> 
+		  <input type=text name="frame_name" size=20>
+		  </font></TD>
+	  </TR>
+	  <div align="center"> 
+		<TR> 
+		  <TD align="center" valign="middle" bgcolor="#BABABA"> 
+			<input type=SUBMIT value="OK" name="ok">
+			<INPUT TYPE=RESET VALUE="Rensa">
+			<input type=SUBMIT value="Avbryt" name="cancel">
+		  </TD>
+		</TR>
+		<INPUT TYPE=HIDDEN NAME=meta_id VALUE="#getMetaId#">
+		<INPUT TYPE=HIDDEN NAME=url_no VALUE=#url_no#>
+		<INPUT TYPE=HIDDEN NAME="new_meta_id" VALUE="#new_meta_id#">
+	  </div>
+	</table>
+      
+      
+    </div>
+  
+  
+</form>
+</body>
+</html>

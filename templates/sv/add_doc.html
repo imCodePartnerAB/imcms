@@ -1,0 +1,24 @@
+<FORM METHOD=POST ACTION="#servlet_url#AddDoc">
+<HR width=150>
+  <TABLE BORDER = 0>
+	<TR> 
+	  <TD><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> L&auml;gg 
+		till l&auml;nk: </font></TD>
+	  <TD>&nbsp;</TD>
+	</TR>
+	<TR> 
+	  <TD> 
+		<SELECT NAME=edit_menu SIZE=1>
+		  #doc_types#
+		</SELECT>
+	  </TD>
+	  <TD> 
+		<INPUT TYPE=SUBMIT VALUE="OK" NAME="submit">
+	  </TD>
+	</TR>
+	<INPUT TYPE=HIDDEN NAME=meta_id VALUE="#getMetaId#">
+	<INPUT TYPE=HIDDEN NAME=doc_menu_no VALUE="#doc_menu_no#">
+	<INPUT TYPE=HIDDEN NAME=txt_max VALUE="9">
+	<INPUT TYPE=HIDDEN NAME=img_max VALUE="9">
+  </TABLE>
+</FORM>

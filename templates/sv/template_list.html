@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Visa formatmallar</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="TemplateChange">
+  <table width="40%" border="0" cellspacing="0">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td colspan="3"> 
+		<center>
+		  <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif"><b><font size="2">Visa 
+		  Formatmallar </font></b></font> 
+		</center>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="30%"> 
+		<select name="template" size="10">
+			#template_list#
+		   
+		</select>
+	  </td>
+	  <td width="30%"> 
+		<input type="submit" name="list_templates_docs" value="Lista dokument--&gt;">
+	  </td>
+	  <td width="30%"> 
+		<select name="templates_doc" size="10">#templates_docs#
+		</select>
+	  </td>
+	  <td width="5%">&nbsp; </td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="30%"> 
+		<input type="submit" name="cancel" value="Tillbaka">
+		<input type="hidden" name="language" value="#language#">
+	  </td>
+	  <td width="30%">&nbsp;</td>
+	  <td width="30%"> 
+		<input type="submit" name="show_doc" value="Visa dokument">
+	  </td>
+	  <td width="5%">&nbsp; </td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="30%">&nbsp;</td>
+	  <td width="30%">&nbsp;</td>
+	  <td width="30%">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+  </table>
+</form>
+</body>
+</html>

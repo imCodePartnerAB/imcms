@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html40/loose.dtd">
+<html>
+<head>
+<title>Administrera anv&auml;ndar status</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#AdminRoleBelongings" name="UserInfo">
+  <table width="40%" border="0" cellspacing="0">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">
+          Av/aktivera&nbsp;anv&auml;ndare</font></b></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+        &nbspAktuell roll: #CURENT_ROLE_NAME#</font><input type="hidden" name="CURENT_ROLE_ID" value="#CURENT_ROLE_ID#"></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+        <table width="100%" border="0">
+          <tr> 
+            <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Anv&auml;ndare:</font></td>
+          </tr>
+          <tr> 
+            <td width="50%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+              <select name="USER_ID" size="10" multiple>
+          #USER_MENU#
+              </select>
+              </font></td>
+          </tr>
+        </table>
+      </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+        <input type="submit" name="BELONGING_ACTIVATE" value="Aktivera" >
+        <input type="submit" name="BELONGING_DEACTIVATE" value="Avaktivera" >
+        <input type="submit" name="BELONGING_CANCEL" value="Avbryt">
+      </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp; </td>
+	  <td width="90%">&nbsp; </td>
+	  <td width="5%">&nbsp; </td>
+	</tr>
+  </table>
+  </form>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Administrera roller</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#AdminRoles" name="UserInfo">
+  <table width="40%" border="0" cellspacing="0">
+	<tr bgcolor="#333366"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrera 
+		  roller</font></b></div>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp; </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Befintliga 
+		  roller: 
+		  <select name="ROLE_ID" size="3">
+          #ROLES_MENU#
+          </select>
+		  </font>
+	  </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"> 
+		<input type="submit" name="VIEW_ADD_NEW_ROLE" value="L&auml;gg till ny roll" >
+		<input type="submit" name="VIEW_RENAME_ROLE" value="Byt namn" >
+        <input type="submit" name="VIEW_EDIT_ROLE" value="Redigera">
+		<input type="submit" name="VIEW_DELETE_ROLE" value="Ta bort roll">
+        <input type="submit" name="CANCEL_ROLE_ADMIN" value="Tillbaka">
+      </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp; </td>
+	  <td width="90%">&nbsp; </td>
+	  <td width="5%">&nbsp; </td>
+	</tr>
+  </table>
+  </form>
+</body>
+</html>
