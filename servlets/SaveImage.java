@@ -229,9 +229,6 @@ public class SaveImage extends HttpServlet {
 		int p = req.getServerPort( );
 		String port = (p == 80) ? "" : ":" + p;
 
-
-
-
 		// Get the session
 		HttpSession session = req.getSession( true );
 
@@ -256,6 +253,10 @@ public class SaveImage extends HttpServlet {
 			return ;
 		}
 		user.put("flags",new Integer(131072)) ;
+		
+		//the folderlist
+		String dirList = (String) session.getAttribute("imageFolderOptionList");
+		if(dirList == null)dirList="";
 
 		if( req.getParameter( "cancel" )!=null ) {
 //			htmlStr = IMCServiceRMI.interpretTemplate( imcserver,meta_id,user ) ;
@@ -269,7 +270,7 @@ public class SaveImage extends HttpServlet {
 		//****************************************************************
 
 			ImageFileMetaData imagefile = new ImageFileMetaData(new File(image_path,image_ref)) ;
-					
+			
 			int width = imagefile.getWidth() ;
 			int height = imagefile.getHeight() ;
 		//****************************************************************
@@ -352,6 +353,9 @@ public class SaveImage extends HttpServlet {
 			vec.add(m_id) ;
 			vec.add("#img_no#") ;
 			vec.add(i_no) ;
+			
+			vec.add("#folders#");
+			vec.add(dirList);
 			//IMCServiceRMI.saveImage( imcserver,meta_id,user,img_no,image ) ;
 			//res.sendRedirect( scheme + "://" + serverName + port + servlet_url + "ChangeImage?meta_id=" + meta_id + "&img=" + img_no );
 			String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
@@ -392,6 +396,10 @@ public class SaveImage extends HttpServlet {
 			vec.add(String.valueOf(meta_id)) ;
 			vec.add("#img_no#") ;
 			vec.add(String.valueOf(img_no)) ;
+			
+			vec.add("#folders#");
+			vec.add(dirList);
+			
 			String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 			htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"change_img.html", lang_prefix) ;
 			out.print(htmlStr) ;

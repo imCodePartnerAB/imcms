@@ -109,10 +109,13 @@ public class ImageUpload extends HttpServlet {
 		
 		//String htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_img.html",img_no,0,0,0) ;
 		//out.println(htmlStr) ;
-		String image_ref = fn.getName() ;
+		String image_ref = fn.getCanonicalPath() ;
+		image_ref = image_ref.substring(file_path.getCanonicalPath().length()+1);
+		image_ref = image_ref.replace('\\','/');
 		ImageFileMetaData imagefile = new ImageFileMetaData(new File(file_path,image_ref)) ;
 		int width = imagefile.getWidth() ;
 		int height = imagefile.getHeight() ;
+		
 		Vector vec = new Vector() ;
 		vec.add("#keep_aspect#") ;
 		vec.add("checked") ;
