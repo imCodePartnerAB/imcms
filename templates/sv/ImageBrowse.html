@@ -8,12 +8,13 @@
 <select name='imglist' size='25'>
 #options#
 </select>
-<p> 
+  #img_preview# 
+  <p>
 <INPUT TYPE=HIDDEN NAME=meta_id VALUE=#meta_id#>
-<INPUT TYPE=HIDDEN NAME=img VALUE=#img_no#>
+<INPUT TYPE=HIDDEN NAME=img_no VALUE=#img_no#>
 <p>
     <input type='submit' name='OK' value='Anv&auml;nd markerad bild'>
-    <input type='button' name='preview' value='F&ouml;rhandsgranska markerad bild' onClick='window.open(imglist.options[imglist.selectedIndex].value)'>
+    <input type='submit' name='preview' value='F&ouml;rhandsgranska markerad bild' target='_blank'>
 </form>
 </body>
 </html>

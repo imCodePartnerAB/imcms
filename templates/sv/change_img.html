@@ -31,7 +31,14 @@
   <BR>
 </form>
 
-<FORM METHOD=POST ACTION="SaveImage">
+		<form name="imgbr" action="/servlet/ImageBrowse">
+		<input type="submit" name="browse_images" value="Visa befintliga">
+         <INPUT TYPE=HIDDEN NAME=meta_id VALUE=#getMetaId#>
+        <INPUT TYPE=HIDDEN NAME=img_no VALUE=#img_no#>
+          
+        </form>
+
+        <FORM METHOD=POST ACTION="SaveImage">
     <CENTER>
             <TABLE border="1" align="center" width="450" cellpadding="3" cellspacing="0">
               <TR bgcolor="#333366"> 
@@ -58,15 +65,23 @@
                   &nbsp;&nbsp;<INPUT TYPE=TEXT NAME=image_name SIZE=50  maxlength=255 VALUE="#imgName#">
                 </td>
               </TR>
-              <TR> 
-                <td bgcolor="#BABABA" valign="middle">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Format</font></td>
-                <td bgcolor="#BABABA" valign="middle" align="center"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bredd:&nbsp;</font> 
-                  <INPUT TYPE=TEXT NAME=image_width size=4 maxlength=4 VALUE=#imgWidth#>
-                  &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Höjd:</font>&nbsp; 
-                  <INPUT TYPE=TEXT NAME=image_height size=4 maxlength=4 VALUE=#imgHeight#>
-                  &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Border:</font>&nbsp; 
-                  <INPUT TYPE=TEXT NAME=image_border size=4 maxlength=4 VALUE=#imgBorder#>
-                </td>
+              <TR align="left"> 
+                <td bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Format</font></td>
+                <td bgcolor="#BABABA" valign="top"> 
+                  <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Bredd 
+                    (<font size="1">#origW#</font>):&nbsp;</font> 
+                    <INPUT TYPE=TEXT NAME=image_width size=4 maxlength=4 VALUE=#imgWidth#>
+                    &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Höjd 
+                    (<font size="1">#origH#</font>):</font>&nbsp; 
+                    <INPUT TYPE=TEXT NAME=image_height size=4 maxlength=4 VALUE=#imgHeight#>
+                    &nbsp; <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Border:</font>&nbsp; 
+                    <INPUT TYPE=TEXT NAME=image_border size=4 maxlength=4 VALUE=#imgBorder#>
+                  </p>
+                  <p> 
+                    <input type="checkbox" name="keepAspectRatio" value="true" checked>
+                    <font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 
+                    beh&aring;ll bildens proportioner</font></p>
+                  </td>
               </TR>
               <TR> 
                 <td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Align</font></td>
@@ -142,7 +157,9 @@
               <INPUT TYPE=HIDDEN NAME=meta_id VALUE=#getMetaId#>
               <INPUT TYPE=HIDDEN NAME=img_no VALUE=#img_no#>
             </TABLE>
-</center>
+            <input type="hidden" name="origW" value="#origW#">
+            <input type="hidden" name="origH" value="#origH#">
+          </center>
 </FORM>
 </td></tr>
 </table>
