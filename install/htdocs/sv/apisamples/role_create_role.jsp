@@ -1,15 +1,4 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
 
-<H3>Create a new role</H3>
-<%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
-    UserService userService = imcmsSystem.getUserService();
-%>
-Before:<br>
-<%=java.util.Arrays.asList( userService.getAllRolesNames() )%>
-<%
-   String role = "Test role";
-   userService.addNewRole( role );
-%><br>
-After adding a new role named "<%=role%>":<br>
-<%=java.util.Arrays.asList( userService.getAllRolesNames() )%>
+<H3><? sv/apisamples/role_create_role.jsp/1 ?></H3>
+<? sv/apisamples/role_create_role.jsp/2 ?>

@@ -1,145 +1,4 @@
-<%@ page language="java"
-	import="org.apache.oro.util.*, org.apache.oro.text.*, org.apache.oro.text.regex.*, org.apache.oro.text.perl.*, java.io.*, java.util.*, java.text.*, java.net.*, javax.servlet.*, javax.servlet.http.*, imcode.external.diverse.*, imcode.util.*, imcode.server.*"
-%><%
-/* *******************************************************************
- *           SETTINGS                                                *
- ******************************************************************* */
-
-String IMG_PATH   = "@imcmsimageurllang@/" ; // path to buttons (with trailing /)
-String imC_PATH   = "@rooturl@" ;              // "/imcms" if used - "" if not
-
-/* *******************************************************************
- *           INIT                                                    *
- ******************************************************************* */
-
-String file       = request.getParameter("file") ;
-
-String frame      = (request.getParameter("frame") != null) ? request.getParameter("frame") : "FRAME" ;
-String thisPage   = request.getServletPath() ;
-thisPage          = imC_PATH + thisPage ;
-
-String zoom       = "" ;
-String defZoom    = "1.0" ;
-
-boolean isStat    = (request.getParameter("isStat") != null) ? true : false ;
-
-if (request.getParameter("zoom") != null) {
-	zoom            = " style=\"zoom:" + request.getParameter("zoom") + "\"" ;
-	session.setAttribute("zoom", request.getParameter("zoom")) ;
-	defZoom         = request.getParameter("zoom") ;
-} else if (session.getAttribute("zoom") != null) {
-	zoom            = " style=\"zoom:" + session.getAttribute("zoom") + "\"" ;
-	defZoom         = (String) session.getAttribute("zoom") ;
-}
-
-String border     = "" ;
-boolean hasBorder = false ;
-if (request.getParameter("border") != null) {
-	border          = (request.getParameter("border").equals("1")) ? " border=\"1\"" : "" ;
-	hasBorder       = (request.getParameter("border").equals("1")) ? true : false ;
-	session.setAttribute("border", request.getParameter("border")) ;
-} else if (session.getAttribute("border") != null) {
-	border          = (session.getAttribute("border").equals("1")) ? " border=\"1\"" : "" ;
-	hasBorder       = (session.getAttribute("border").equals("1")) ? true : false ;
-}
-
-File webRoot    = imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
-String filePath = file.substring(0, file.lastIndexOf("/")) ;
-String fileName = file.substring(file.lastIndexOf("/") + 1, file.length()) ;
-
-/* Is image? */
-
-String acceptedExt = "JPG|JPEG|GIF|PNG" ;
-Perl5Util re       = new Perl5Util() ;
-boolean isImage    = re.match("/\\.(" + acceptedExt + ")+$/i", file) ;
-
-/* Check browser */
-
-String uAgent = request.getHeader("USER-AGENT") ;
-boolean isIE  = re.match("/(MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
-boolean isNS  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent)) ? true : false ;
-boolean isMoz = re.match("/Gecko/i", uAgent) ;
-boolean isMac = re.match("/Mac/i", uAgent) ;
-
-/* if Stat-Report - Read file and show it */
-
-if (isStat && frame.equalsIgnoreCase("MAIN")) {
-    File sf = new File(fileName) ;
-    sf = new File (new File(webRoot + filePath),sf.getName()) ;
-    //String statSrc = ReadTextFile.getFile(sf);
-
-    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(sf))) ;
-
-    String statSrc = "" ;
-    String fileLine = "" ;
-    StringBuffer strbuf = new StringBuffer();
-    while ((fileLine = br.readLine())!= null) {
-        strbuf.append(fileLine).append( "\n") ;
-    }
-    statSrc = strbuf.toString() ;
-    br.close() ;
-
-    statSrc = statSrc.replaceAll("<head>","<head>\n\n<base target=\"_blank\">");	/* add some buttons in some browsers */
-	
-	String theButtons = "" ;
-	boolean hasInlineButtons = false ;
-	
-	theButtons = "<table border=0 bgcolor=\"#d6d3ce\" align=\"right\">\n<tr>" ;
-	if (isMoz && !isIE && !isMac) {
-		hasInlineButtons = true ;
-		theButtons += "\n	<td><a href=\"javascript: find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td>" ;
-	}
-	if (isMac) {
-		hasInlineButtons = true ;
-		theButtons += "\n	<td><a href=\"javascript: print(); return false\"><img src=\"" + IMG_PATH + "btn_print.gif\" border=\"0\" alt=\"Skriv ut!!\"></a></td>" ;
-	}
-	theButtons += "\n</tr>\n</table>\n" ;
-	
-	if (hasInlineButtons) {
-		statSrc = statSrc.replaceAll("<body>", "<body>\n\n" + theButtons + "\n");
-	}
-	
-	/* print it */
-	
-	out.print(statSrc) ;
-	return ;
-}
-
-/* Get size */
-
-File fn = new File(fileName) ;
-fn = new File (new File(webRoot + filePath),fn.getName()) ;
-
-String image_ref = fn.getCanonicalPath() ;
-
-ImageFileMetaData imagefile = new ImageFileMetaData(new File(image_ref)) ;
-int width = imagefile.getWidth() ;
-int height = imagefile.getHeight() ;
-
-String size  = "" ;
-double iSize = 0 ;
-
-try {
-	iSize = (double) fn.length() ;
-	if (iSize >= 1024) {
-		iSize = iSize / 1024 ;
-		DecimalFormat df = new DecimalFormat("#.#") ;
-		size  = (String) df.format(iSize) ;
-		size  = ", " + size.replaceAll(",", ".") + "kB" ;
-	} else {
-		size  = ", " + fn.length() + " bytes" ;
-	}
-} catch ( NumberFormatException ex ) {
-	// ignore
-}
-
-//out.print("fn.length(): " + fn.length() + "<br><br>iSize: " + iSize + "<br><br>size: " + size) ;
-
-/* *******************************************************************************************
- *         FRAME MAIN                                                                        *
- ******************************************************************************************* */
-
-if (frame.equalsIgnoreCase("MAIN")) { %>
+<? sv/jsp/FileAdmin_preview.jsp/1 ?><head><? sv/jsp/FileAdmin_preview.jsp/2 ?><head><? sv/jsp/FileAdmin_preview.jsp/3 ?><base target=\"_blank\"><? sv/jsp/FileAdmin_preview.jsp/4 ?><table border=0 bgcolor=\"#d6d3ce\" align=\"right\"><? sv/jsp/FileAdmin_preview.jsp/5 ?><tr><? sv/jsp/FileAdmin_preview.jsp/6 ?>	<td><a href=\"javascript: find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td><? sv/jsp/FileAdmin_preview.jsp/7 ?>	<td><a href=\"javascript: print(); return false\"><img src=\"" + IMG_PATH + "btn_print.gif\" border=\"0\" alt=\"Skriv ut!!\"></a></td><? sv/jsp/FileAdmin_preview.jsp/8 ?></tr><? sv/jsp/FileAdmin_preview.jsp/9 ?></table><? sv/jsp/FileAdmin_preview.jsp/10 ?><body><? sv/jsp/FileAdmin_preview.jsp/11 ?><body><? sv/jsp/FileAdmin_preview.jsp/12 ?>
 <html>
 <head>
 <title></title>
@@ -156,19 +15,7 @@ if (isImage) {
 		%>5<% 
 	} else {
 		%>6<% 
-	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;">&quot;<%= imC_PATH + file %>&quot;<%
-	if (width > 0 && height > 0 && !size.equals("")) {
-		%> (<%
-		if (width > 0 && height > 0) {
-			%><%= width + "x" + height %><%
-		}
-		if (!size.equals("")) {
-			%><%= size %><%
-		} %>)<%
-	} %></div><img name="theImg" id="theImg" src="<%= imC_PATH + file %>"<%= border + zoom %>><%
-} else {
-	%><%
-} %></div>
+	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;"><? sv/jsp/FileAdmin_preview.jsp/13 ?></div><img name="theImg" id="theImg" src="<%= imC_PATH + file %>"<%= border + zoom %><? sv/jsp/FileAdmin_preview.jsp/14 ?></div>
 
 </body>
 </html><%
@@ -195,54 +42,7 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 </STYLE>
 
 <script language="JavaScript">
-<!--
-function closeIt() {
-	top.window.close();
-	if (top.parent.opener) top.parent.opener.focus();
-}
-
-var isMoz = (document.getElementById);
-var isIE  = (document.all);
-var isNS  = (document.layers);
-
-var win = parent.main;
-var n   = 0;
-
-function findIt(str) {
-	var txt, i, found;
-	if (isNS && str != "") {
-		if (!win.find(str)) {
-			while(win.find(str, false, true)) {
-				n++;
-			}
-		} else {
-			n++;
-			if (n == 0) alert("Not found.");
-		}
-	} else if ((isIE || isMoz) && str != "") {
-		txt = win.document.body.createTextRange();
-		for (i = 0; i <= n && (found = txt.findText(str)) != false; i++) {
-			txt.moveStart("character", 1);
-			txt.moveEnd("textedit");
-		}
-		if (found) {
-			txt.moveStart("character", -1);
-			txt.findText(str);
-			txt.select();
-			txt.scrollIntoView();
-			n++;
-		} else {
-			if (n > 0) {
-				n = 0;
-				findIt(str);
-			} else {
-				alert("Not found.");
-			}
-		}
-	}
-	if (isIE && isMoz) document.getElementById("btnSearch").setActive();
-}
-//-->
+<? sv/jsp/FileAdmin_preview.jsp/15 ?>
 </script>
 
 </head>
@@ -284,18 +84,18 @@ function findIt(str) {
 	<input type="hidden" name="file" value="<%= file %>">
 	<tr>
 		<td class="norm">| &nbsp; <%
-		if (isIE) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();">Zooma:</span>&nbsp;</td>
+		if (isIE) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
 		<td class="norm">
 		<select name="zoom" onChange="this.form.submit();">
-			<option value="0.25"<% if (defZoom.equals("0.25")) { %> selected<% } %>>25%
-			<option value="0.5"<%  if (defZoom.equals("0.5")) { %> selected<% } %>>50%
-			<option value="0.75"<% if (defZoom.equals("0.75")) { %> selected<% } %>>75%
-			<option value="1.0"<%  if (defZoom.equals("1.0")) { %> selected<% } %>>100%
-			<option value="1.5"<%  if (defZoom.equals("1.5")) { %> selected<% } %>>150%
-			<option value="2.0"<%  if (defZoom.equals("2.0")) { %> selected<% } %>>200%
-			<option value="4.0"<%  if (defZoom.equals("4.0")) { %> selected<% } %>>400%
-			<option value="8.0"<%  if (defZoom.equals("8.0")) { %> selected<% } %>>800%
-			<option value="16.0"<% if (defZoom.equals("16.0")) { %> selected<% } %>>1600%
+			<option value="0.25"<% if (defZoom.equals("0.25")) { %> <? sv/jsp/FileAdmin_preview.jsp/17 ?>
+			<option value="0.5"<%  if (defZoom.equals("0.5")) { %> <? sv/jsp/FileAdmin_preview.jsp/18 ?>
+			<option value="0.75"<% if (defZoom.equals("0.75")) { %> <? sv/jsp/FileAdmin_preview.jsp/19 ?>
+			<option value="1.0"<%  if (defZoom.equals("1.0")) { %> <? sv/jsp/FileAdmin_preview.jsp/20 ?>
+			<option value="1.5"<%  if (defZoom.equals("1.5")) { %> <? sv/jsp/FileAdmin_preview.jsp/21 ?>
+			<option value="2.0"<%  if (defZoom.equals("2.0")) { %> <? sv/jsp/FileAdmin_preview.jsp/22 ?>
+			<option value="4.0"<%  if (defZoom.equals("4.0")) { %> <? sv/jsp/FileAdmin_preview.jsp/23 ?>
+			<option value="8.0"<%  if (defZoom.equals("8.0")) { %> <? sv/jsp/FileAdmin_preview.jsp/24 ?>
+			<option value="16.0"<% if (defZoom.equals("16.0")) { %> <? sv/jsp/FileAdmin_preview.jsp/25 ?>
 		</select></td>
 		<td class="norm"> &nbsp; | &nbsp; <%
 		} %>Kantlinje:
@@ -326,7 +126,7 @@ function findIt(str) {
 	%>
 <html>
 <head>
-<title>:: imCMS ::</title>
+<title><? sv/jsp/FileAdmin_preview.jsp/26 ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 	<%

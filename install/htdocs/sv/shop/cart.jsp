@@ -3,7 +3,7 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
 %>
 <html>
   <head>
-    <title>Shopping cart</title>
+    <title><? sv/shop/cart.jsp/1 ?></title>
   </head>
 
   <body>
@@ -33,14 +33,14 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
 
     <table border="1">
       <tr>
-        <th>Description 1</th>
-        <th>Description 2</th>
-        <th>Description 3</th>
-        <th>Description 4</th>
-        <th>Description 5</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Remove</th>
+        <th><? sv/shop/cart.jsp/2 ?></th>
+        <th><? sv/shop/cart.jsp/3 ?></th>
+        <th><? sv/shop/cart.jsp/4 ?></th>
+        <th><? sv/shop/cart.jsp/5 ?></th>
+        <th><? sv/shop/cart.jsp/6 ?></th>
+        <th><? sv/shop/cart.jsp/7 ?></th>
+        <th><? sv/shop/cart.jsp/8 ?></th>
+        <th><? sv/shop/cart.jsp/9 ?></th>
       </tr>
       <%
          for (int i = 0; i < items.length; ++i) {
@@ -69,10 +69,10 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
       <% } %>
     </table>
     <p>
-      Total items: <%= cart.countItems() %>
+      <? sv/shop/cart.jsp/10 ?>
     </p>
     <p>
-      Total price: <%= priceFormat.format(totalPrice) %>
+      <? sv/shop/cart.jsp/11 ?>
     </p>
     <input type="submit" name="submit" value="Modify shopping cart">
     <input type="submit" name="send" value="Submit shopping cart">

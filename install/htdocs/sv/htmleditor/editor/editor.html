@@ -39,20 +39,7 @@
 <body unselectable="off" bgcolor="#D6D3CE" style="background-color:buttonface; border: 1px solid buttonface;" onLoad="init();">
 
 <script language="JavaScript">
-<!--
-//if (directEditEnabled) {
-		//if (document.frames['changeTextFrame']) document.frames['changeTextFrame'].src = servletPath + 'ChangeText?meta_id=' + getParam('meta_id') + '&txt=' + getParam('txt') + '&label=' + getParam('label');
-
-//str = getParam('meta_id')
-//alert(sLabel);
-//alert(document.location);
-//alert(location.search);
-
-if (directEditEnabled) {
-	document.write('<iframe id="changeTextFrame" src="' + servletPath + 'ChangeText?meta_id=' + metaId + '&txt=' + txtNr + '&label=' + sLabel + '" style="position:absolute; top:1000; left:-1000; width:1; height:1; z-index:2000; visibility:visible"></iframe>');
-	//document.write('<iframe id="changeTextFrame" src="' + servletPath + 'ChangeText?meta_id=' + metaId + '&txt=' + txtNr + '&label=' + sLabel + '" style="position:absolute; top:100; left:100; width:500; height:200; z-index:2000; visibility:visible"></iframe>');
-}
-//-->
+<? sv/htmleditor/editor/editor.html/1 ?>
 </script>
 
 
@@ -64,16 +51,7 @@ if (directEditEnabled) {
 <tr bgcolor="#333366">
 	<td height="20" style="font: 11px Verdana,Geneva,Arial,Helvetica,sans-serif; color:#FFFFFF">
 <script language="JavaScript">
-<!--
-document.write('<img src="images/1x1.gif" width="10" height="1">');
-document.write('Redigera text <b style="font-size:12px">' + txtNr + '</b>');
-if (sLabel != '' && sLabel != undefined) {
-	sLabel = sLabel.replace(/%20/gi, ' ');
-	sLabel = sLabel.replace(/[^\w\xc4\xc5\xd6\xe4\xe5\xf6 _\-\/\(\)#]*/gi, '');// strip all but A-Ö0-9_,-/()# and space
-	document.write(" [" + sLabel.substring(0,60) + ((sLabel.length > 60) ? "..." : "") + "]");
-}
-document.write(' på sida <b style="font-size:12px">' + metaId + '</b>');
-//-->
+<? sv/htmleditor/editor/editor.html/2 ?>
 </script>
 </td>
 	<td align="right">
@@ -81,17 +59,7 @@ document.write(' på sida <b style="font-size:12px">' + metaId + '</b>');
 	<tr>
 		<td height="16">
 <SCRIPT LANGUAGE="JavaScript">
-<!--
-if (showHelpFullBtn) {
-	document.writeln('<a href="javascript:void(0)" onClick="showHelp(\'all\');"><SPAN STYLE="font: bold 10px; color:white; text-decoration:none">Hjälp</SPAN></a>');
-}
-if (showHelpFullBtn && showHelpSubjectBtn) {
-	document.writeln('</td>\n<td><img src="images/1x1.gif" width="10" height="1"></td>\n<td>');
-}
-if (showHelpSubjectBtn) {
-	document.writeln('<a href="javascript:void(0)" onClick="showHelpSubjects();"><img src="images/btn_help_subject.gif" width="16" height="16" alt="" border="0"></a>');
-}
-//-->
+<? sv/htmleditor/editor/editor.html/3 ?>
 </SCRIPT></td>
 		<td><img src="images/1x1.gif" width="10" height="1"></td>
 	</tr>
@@ -118,55 +86,21 @@ Tyv&auml;rr fungerar inte editorn d&aring; JavaScript &auml;r avst&auml;ngd i er
 	<tr>
 		<td><img src="images/1x1.gif" width="3" height="1"></td>
 <script language="JavaScript">
-<!-- /* ***** FIRST ROW BUTTONS ***** */
-for (var i = 0; i < arrButtonsRowOne.length; i++) {
-	document.writeln('	<td>' + arrBtns[arrButtonsRowOne[i]] + '</td>');
-}
-//-->
+<? sv/htmleditor/editor/editor.html/4 ?>
 </script>
 	</tr>
 	</table></td>
 	<td align="right" unselectable="on">
 	
 <SCRIPT LANGUAGE="JavaScript">
-<!--
-if (showHtmlBtn) {
-	document.write('<button unselectable="on" id="btn12" onClick="if(document.forms[0].execState.value == \'2\')\{ showHelpLayer(\'EditCode\'); \} else \{ previewCode()\; \}" title="HTML Av/På" style="position:relative; width:55; height:21">');
-	document.write('		<img name="previewImg" src="images/btn_preview_html.gif"></button>');
-}
-
-if (showAdv && showSimple) {
-	document.write('&nbsp\;<button unselectable="on" id="advBtn" style="width:70" onClick="showAdvanced()\;" title="Enkel/Avancerad" style="height:21"><b id="advBtnText" style="position:relative\; top:0">Avancerad</b></button>');
-} else {
-	document.write('<button unselectable="on" id="advBtn" style="width:70" onClick="showAdvanced()\;" title="Enkel/Avancerad" style="position:relative\; top:-1000\; height:21"><b id="advBtnText" style="position:relative\; top:-1000">Avancerad</b></button>');
-	if (document.getElementById("btn12")) document.getElementById("btn12").style.left = 70;
-}
-//-->
+<? sv/htmleditor/editor/editor.html/5 ?>
 </SCRIPT></td>
 </tr>
 </table>
 
 
 <script language="JavaScript">
-<!--
-if (arrButtonsRowTwo.length > 0) {
-	document.writeln('<img src="images/1x1.gif" width="1" height="3"><br>');
-	document.writeln('<img src="images/1x1_848284.gif" width="681" height="1"><br>');
-	document.writeln('<img src="images/1x1_white.gif" width="681" height="1"><br>');
-	document.writeln('<img src="images/1x1.gif" width="1" height="3"><br>');
-	
-	document.writeln('<table border="0" cellspacing="0" cellpadding="0" align="left">');
-	document.writeln('<tr>');
-	document.writeln('	<td><img src="images/1x1.gif" width="3" height="1"></td>');
-}
-for (var i = 0; i < arrButtonsRowTwo.length; i++) {
-	document.writeln('	<td>' + arrBtns[arrButtonsRowTwo[i]] + '</td>');
-}
-if (arrButtonsRowTwo.length > 0) {
-	document.writeln('</tr>');
-	document.writeln('</table>');
-}
-//-->
+<? sv/htmleditor/editor/editor.html/6 ?>
 </script></div>
 
 
@@ -201,7 +135,7 @@ if (arrButtonsRowTwo.length > 0) {
 <div id="modeSimpleDiv" style="position:absolute; left:535; top:80; z-index:5; visibility:hidden" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0" width="141">
 <tr>
-	<td align="center" bgcolor="#333366" height="22"><b style="color:#ffffff" id="simpleHeadingText">Funktioner</b></td>
+	<td align="center" bgcolor="#333366" height="22"><? sv/htmleditor/editor/editor.html/7 ?></td>
 </tr>
 <tr>
 	<td><img src="images/1x1.gif" width="1" height="5"></td>
@@ -209,48 +143,7 @@ if (arrButtonsRowTwo.length > 0) {
 <tr>
 	<td>
 	<SCRIPT LANGUAGE="JavaScript">
-<!--
-var onCountSimple = 0;
-if(showSimple){
-	if (showSimpleLinkDiv) onCountSimple++;
-	if (showSimpleListDiv) onCountSimple++;
-	if (showSimplePixelDiv) onCountSimple++;
-	
-	if (onCountSimple > 1) {
-		document.write('	<b>Välj funktion:</b></td>\n');
-		document.write('	</tr>\n');
-		document.write('	<tr>\n');
-		document.write('		<td>\n');
-		document.write('	<sel'+'ect name="simpleSelector" unselectable="On" onChange="showSimpleFunction(this.options(this.selectedIndex).value);" style="width:140">\n');
-		if(showSimpleLinkDiv) {
-			document.write('		<option value="modeSimpleLinkDiv">Skapa länk</option>\n');
-		}
-		if(showSimpleListDiv) {
-			document.write('		<option value="modeSimpleListDiv">Skapa lista</option>\n');
-		}	
-		if(showSimplePixelDiv) {
-			document.write('		<option value="modeSimplePixelDiv">Transparent pixel</option>\n');
-		}
-		document.write('	</sel'+'ect>');
-	} else {
-		document.write('	<sel'+'ect name="simpleSelector" style="display:none">\n');
-		document.write('		<option value="modeSimpleLinkDiv">Skapa länk</option>\n');
-		document.write('		<option value="modeSimpleListDiv">Skapa lista</option>\n');
-		document.write('		<option value="modeSimplePixelDiv">Transparent pixel</option>\n');
-		document.write('	</sel'+'ect>');
-		if(showSimpleLinkDiv) {
-			document.write('<b>Skapa länk</b>');
-			document.getElementById("simpleHeadingText").innerText = 'Skapa länk';
-		} else if(showSimpleListDiv) {
-			document.write('<b>Skapa lista</b>');
-			document.getElementById("simpleHeadingText").innerText = 'Skapa lista';
-		} else if(showSimplePixelDiv) {
-			document.write('<b>Transparent pixel</b>');
-			document.getElementById("simpleHeadingText").innerText = 'Transparent pixel';
-		}
-	}
-}
-//-->
+<? sv/htmleditor/editor/editor.html/8 ?>
 </SCRIPT></td>
 </tr>
 <tr>
@@ -275,32 +168,32 @@ if(showSimple){
 <div id="modeSimpleLinkDiv" style="position:absolute; left:535; top:155; width:141; z-index:6; visibility:hidden;" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
-	<td><b>Skapa länk</b></td>
+	<td><? sv/htmleditor/editor/editor.html/9 ?></td>
 </tr>
 <tr>
-	<td><img src="images/1x1.gif" width="1" height="5"><br><b>Länktyp:</b></td>
+	<td><img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/10 ?></td>
 </tr>
 <tr>
 	<td>
 	<select name="createLinkType" unselectable="On" onChange="changeLinkType(this.value)" style="width:140">
-		<option value="GetDoc">Befintligt dokument</option>
-		<option value="http">Annan websida</option>
-		<option value="mailto">Mailadress</option>
-		<option value="ftp">FTP länk</option>
+		<option value="GetDoc"><? sv/htmleditor/editor/editor.html/11 ?></option>
+		<option value="http"><? sv/htmleditor/editor/editor.html/12 ?></option>
+		<option value="mailto"><? sv/htmleditor/editor/editor.html/13 ?></option>
+		<option value="ftp"><? sv/htmleditor/editor/editor.html/14 ?></option>
 	</select></td>
 </tr>
 <tr>
-	<td><img src="images/1x1.gif" width="1" height="5"><br><b>Target:</b></td>
+	<td><img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/15 ?></td>
 </tr>
 <tr>
 	<td>
 	<select name="createLinkTargetTemp" unselectable="On" onChange="document.forms[0].createLinkTarget.value = this.value; document.forms[0].createLinkTarget.focus(); document.forms[0].createLinkTarget.select()" style="width:140">
-		<option value="" selected>- Standard</option>
-		<option value="_top">Samma fönster</option>
-		<option value="_blank">Nytt fönster</option>
-		<option value="_self">Samma frame</option>
-		<option value="_parent">Parent frameset</option>
-		<option value="Skriv namnet!">Annan frame</option>
+		<option value="" selected><? sv/htmleditor/editor/editor.html/16 ?></option>
+		<option value="_top"><? sv/htmleditor/editor/editor.html/17 ?></option>
+		<option value="_blank"><? sv/htmleditor/editor/editor.html/18 ?></option>
+		<option value="_self"><? sv/htmleditor/editor/editor.html/19 ?></option>
+		<option value="_parent"><? sv/htmleditor/editor/editor.html/20 ?></option>
+		<option value="Skriv namnet!"><? sv/htmleditor/editor/editor.html/21 ?></option>
 	</select></td>
 </tr>
 <tr>
@@ -308,27 +201,18 @@ if(showSimple){
 	<img src="images/1x1.gif" width="1" height="5"></td>
 </tr>
 <tr>
-	<td id="createLinkFieldText"><b>Meta_id:</b></td>
+	<td id="createLinkFieldText"><? sv/htmleditor/editor/editor.html/22 ?></td>
 </tr>
 <tr>
 	<td id="createLinkField"><input type="text" name="createLinkValue" value="" size="5" maxlength="6" style="width:42; text-align:right"></td>
 </tr>
 <tr>
-	<td><img src="images/1x1.gif" width="1" height="5"><br><b>CSS class:</b></td>
+	<td><img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/23 ?></td>
 </tr>
 <tr>
 	<td>
 <SCRIPT LANGUAGE="JavaScript1.2">
-<!--
-var iCount = 0;
-var sChecked='';
-document.write('<select name="createLinkCssTemp" unselectable="On" style="width:140" onChange="document.forms[0].createLinkCss.value = this.options[this.selectedIndex].value; this.selectedIndex = 0">');
-document.write('	<option value="">- Välj class</option>');
-for (var i=0; i<arrAllClass.length; i++){
-	document.write('	<option value="' + arrAllClass[i] + '">' + arrAllClass[i] + '</option>');
-}
-document.write('</select>');
-//-->
+<? sv/htmleditor/editor/editor.html/24 ?>
 </SCRIPT></td>
 </tr>
 <tr>
@@ -340,7 +224,7 @@ document.write('</select>');
 </tr>
 <tr>
 	<td><img src="images/1x1.gif" width="1" height="15"><br>
-	<span class="dim">Glöm inte att markera länktexten innan du klickar &quot;Skapa&quot;. Länkar blir inte klickbara i editorn. Välj &quot;Förhandsgranska&quot; för att se den verkliga funktionen.</span></td>
+	<span class="dim"><? sv/htmleditor/editor/editor.html/25 ?></span></td>
 </tr>
 </table>
 </div>
@@ -361,33 +245,33 @@ document.write('</select>');
 <div id="modeSimpleListDiv" style="position:absolute; left:535; top:155; width:141; z-index:6; visibility:hidden;" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
-	<td><b>Skapa tom lista</b></td>
+	<td><? sv/htmleditor/editor/editor.html/26 ?></td>
 </tr>
 <tr>
-	<td><img src="images/1x1.gif" width="1" height="5"><br><b>Listtyp:</b></td>
+	<td><img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/27 ?></td>
 </tr>
 <tr>
 	<td>
 	<select name="createListType" unselectable="On" onChange="changeListType(this.value)" style="width:140">
-		<option value="UL">Punktlista</option>
-		<option value="OL">Numrerad lista</option>
-		<option value="DL">Definitionslista</option>
+		<option value="UL"><? sv/htmleditor/editor/editor.html/28 ?></option>
+		<option value="OL"><? sv/htmleditor/editor/editor.html/29 ?></option>
+		<option value="DL"><? sv/htmleditor/editor/editor.html/30 ?></option>
 	</select></td>
 </tr>
 </table>
 <DIV id="listCountTypeDiv" style="position:relative; visibility:hidden" unselectable="On">
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
-	<td><img src="images/1x1.gif" width="1" height="5"><br><b>Numrering:</b></td>
+	<td><img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/31 ?></td>
 </tr>
 <tr>
 	<td>
 	<select name="createListOLType" unselectable="On" style="width:140">
-		<option value="1" selected>1 2 3 4 5 (Standard)</option>
-		<option value="A">A B C D E</option>
-		<option value="a">a b c d e</option>
-		<option value="I">I II III IV V</option>
-		<option value="i">i ii iii iv v</option>
+		<option value="1" selected><? sv/htmleditor/editor/editor.html/32 ?></option>
+		<option value="A"><? sv/htmleditor/editor/editor.html/33 ?></option>
+		<option value="a"><? sv/htmleditor/editor/editor.html/34 ?></option>
+		<option value="I"><? sv/htmleditor/editor/editor.html/35 ?></option>
+		<option value="i"><? sv/htmleditor/editor/editor.html/36 ?></option>
 	</select></td>
 </tr>
 </table></DIV>
@@ -397,37 +281,22 @@ document.write('</select>');
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<td><b>Antal punkter:</b></td>
+		<td><? sv/htmleditor/editor/editor.html/37 ?></td>
 		<td><img src="images/1x1.gif" width="10" height="1"></td>
 		<td>
 		<SCRIPT LANGUAGE="JavaScript">
-<!--
-document.write('<select name="createListCount" unselectable="On" style="width:47">');
-for(i=1;i<=20;i++){
-	document.write('<option value="' + i + '">' + i + '</option>');
-}
-document.write('</select>');
-//-->
+<? sv/htmleditor/editor/editor.html/38 ?>
 </SCRIPT></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
-	<td><img src="images/1x1.gif" width="1" height="5"><br><b>CSS class:</b></td>
+	<td><img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/39 ?></td>
 </tr>
 <tr>
 	<td>
 <SCRIPT LANGUAGE="JavaScript1.2">
-<!--
-var iCount = 0;
-var sChecked='';
-document.write('<select name="createListCssTemp" unselectable="On" style="width:140" onChange="document.forms[0].createListCss.value = this.options[this.selectedIndex].value; this.selectedIndex = 0">');
-document.write('	<option value="">- Välj class</option>');
-for (var i=0; i<arrAllClass.length; i++){
-	document.write('	<option value="' + arrAllClass[i] + '">' + arrAllClass[i] + '</option>');
-}
-document.write('</select>');
-//-->
+<? sv/htmleditor/editor/editor.html/40 ?>
 </SCRIPT></td>
 </tr>
 <tr>
@@ -439,7 +308,7 @@ document.write('</select>');
 </tr>
 <tr>
 	<td><img src="images/1x1.gif" width="1" height="15"><br>
-	<span class="dim">Glöm inte att ställa markören där du vill ha listan innan du klickar &quot;Skapa&quot;.</span></td>
+	<span class="dim"><? sv/htmleditor/editor/editor.html/41 ?></span></td>
 </tr>
 </table></DIV>
 </div>
@@ -454,47 +323,46 @@ document.write('</select>');
 <div id="modeSimplePixelDiv" style="position:absolute; left:535; top:155; width:141; z-index:6; visibility:hidden;" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
-	<td><b>Lägg in transparent pixel</b><br>
+	<td><? sv/htmleditor/editor/editor.html/42 ?>
 	<img src="images/1x1.gif" width="1" height="5"></td>
 </tr>
 <tr>
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
-		<td><b>Bredd:</b></td>
+		<td><? sv/htmleditor/editor/editor.html/43 ?></td>
 		<td align="right"><input type="text" name="pixelWidth" value="1" size="4" maxlength="4" style="text-align:right; width:35"></td>
 	</tr>
 	<tr>
-		<td><b>Höjd:</b></td>
+		<td><? sv/htmleditor/editor/editor.html/44 ?></td>
 		<td align="right"><input type="text" name="pixelHeight" value="8" size="4" maxlength="4" style="text-align:right; width:35"></td>
 	</tr>
 	<tr>
-		<td><b>Border:</b></td>
+		<td><? sv/htmleditor/editor/editor.html/45 ?></td>
 		<td align="right"><input type="text" name="pixelBorder" value="0" size="4" maxlength="4" style="text-align:right; width:35"></td>
 	</tr>
 	<tr>
-		<td><b>Align:</b></td>
+		<td><? sv/htmleditor/editor/editor.html/46 ?></td>
 		<td align="right">
 		<select name="pixelAlign" unselectable="On" style="width:85">
-			<option value="" selected>- Standard</option>
-			<option value="left">left</option>
-			<option value="right">right</option>
-			<option value="top">top</option>
-			<option value="middle">middle</option>
-			<option value="bottom">bottom</option>
-			<option value="texttop">texttop</option>
-			<option value="absmiddle">absmiddle</option>
-			<option value="baseline">baseline</option>
-			<option value="absbottom">absbottom</option>
+			<option value="" selected><? sv/htmleditor/editor/editor.html/47 ?></option>
+			<option value="left"><? sv/htmleditor/editor/editor.html/48 ?></option>
+			<option value="right"><? sv/htmleditor/editor/editor.html/49 ?></option>
+			<option value="top"><? sv/htmleditor/editor/editor.html/50 ?></option>
+			<option value="middle"><? sv/htmleditor/editor/editor.html/51 ?></option>
+			<option value="bottom"><? sv/htmleditor/editor/editor.html/52 ?></option>
+			<option value="texttop"><? sv/htmleditor/editor/editor.html/53 ?></option>
+			<option value="absmiddle"><? sv/htmleditor/editor/editor.html/54 ?></option>
+			<option value="baseline"><? sv/htmleditor/editor/editor.html/55 ?></option>
+			<option value="absbottom"><? sv/htmleditor/editor/editor.html/56 ?></option>
 		</select></td>
 	</tr>
 	<tr>
-		<td nowrap><img src="images/1x1.gif" width="1" height="5"><br>
-		<b>Radbryt:</b></td>
+		<td nowrap><img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/57 ?></td>
 	</tr>
 	<tr>
-		<td align="center"><b>Före</b></td>
-		<td align="center"><b>Efter</b></td>
+		<td align="center"><? sv/htmleditor/editor/editor.html/58 ?></td>
+		<td align="center"><? sv/htmleditor/editor/editor.html/59 ?></td>
 	</tr>
 	<tr>
 		<td align="center"><input type="checkbox" unselectable="On" name="pixelBreakStart" value="1"></td>
@@ -508,7 +376,7 @@ document.write('</select>');
 </tr>
 <tr>
 	<td><img src="images/1x1.gif" width="1" height="15"><br>
-	<span class="dim"><b>Används till:</b><br>
+	<span class="dim"><? sv/htmleditor/editor/editor.html/60 ?>
 	<img src="images/1x1.gif" width="1" height="5"><br>
 	&nbsp;&nbsp;&#149; Exakta indrag<br>
 	&nbsp;&nbsp;&#149; Exakt radhöjd<br>
@@ -529,7 +397,7 @@ document.write('</select>');
 <div id="modeAdvancedDiv" style="position:absolute; left:535; top:80; width:141; z-index:5; visibility:hidden" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0" width="141">
 <tr>
-	<td align="center" bgcolor="#333366" height="22"><b style="color:#ffffff" id="advHeadingText">Avancerade funktioner</b></td>
+	<td align="center" bgcolor="#333366" height="22"><? sv/htmleditor/editor/editor.html/61 ?></td>
 </tr>
 <tr>
 	<td><img src="images/1x1.gif" width="1" height="5"></td>
@@ -537,64 +405,7 @@ document.write('</select>');
 <tr>
 	<td>
 	<SCRIPT LANGUAGE="JavaScript">
-<!--
-var onCountAdv = 0;
-if(showAdv){
-	if (showAdvStandardDiv) onCountAdv++;
-	if (showAdvFontClassDiv) onCountAdv++;
-	if (showAdvFontStyleDiv) onCountAdv++;
-	if (showAdvCodeStringDiv) onCountAdv++;
-	if (showAdvSettingsDiv) onCountAdv++;
-	
-	if (onCountAdv > 1) {
-		document.write('	<b>Välj funktion:</b></td>\n');
-		document.write('	</tr>\n');
-		document.write('	<tr>\n');
-		document.write('		<td>\n');
-		document.write('	<sel'+'ect name="advSelector" unselectable="On" onChange="showAdvFunction(this.options(this.selectedIndex).value);" style="width:140">\n');
-		if(showAdvStandardDiv){
-			document.write('		<option value="modeAdvStandardDiv">Standard</option>\n');
-		}
-		if(showAdvFontClassDiv){
-			document.write('		<option value="modeAdvFontClassDiv">Font Cl'+'ass=&quot\; X &quot\;</option>\n');
-		}	
-		if(showAdvFontStyleDiv){
-			document.write('		<option value="modeAdvFontStyleDiv">Font Style=&quot\; X &quot\;</option>\n');
-		}	
-		if(showAdvCodeStringDiv){
-			document.write('		<option value="modeAdvCodeStringDiv">Valfri kod</option>\n');
-		}	
-		if(showAdvSettingsDiv){
-			document.write('		<option value="modeAdvSettingsDiv">Inställningar</option>\n');
-		}
-		document.write('	</sel'+'ect>');
-	} else {
-		document.write('	<sel'+'ect name="advSelector" style="display:none">\n');
-		document.write('		<option value="modeAdvStandardDiv">Standard</option>\n');
-		document.write('		<option value="modeAdvFontClassDiv">Font Cl'+'ass=&quot\; X &quot\;</option>\n');
-		document.write('		<option value="modeAdvFontStyleDiv">Font Style=&quot\; X &quot\;</option>\n');
-		document.write('		<option value="modeAdvCodeStringDiv">Valfri kod</option>\n');
-		document.write('		<option value="modeAdvSettingsDiv">Inställningar</option>\n');
-		document.write('	</sel'+'ect>');
-		if(showAdvStandardDiv) {
-			document.write('<b>Standard</b>');
-			document.getElementById("advHeadingText").innerText = 'Standard';
-		} else if(showAdvFontClassDiv) {
-			document.write('<b>Font Cl'+'ass=&quot\; X &quot\;</b>');
-			document.getElementById("advHeadingText").innerText = 'Font Cl'+'ass=&quot\; X &quot\;';
-		} else if(showAdvFontStyleDiv) {
-			document.write('<b>Font Style=&quot\; X &quot\;</b>');
-			document.getElementById("advHeadingText").innerText = 'Font Style=&quot\; X &quot\;';
-		} else if(showAdvCodeStringDiv) {
-			document.write('<b>Valfri kod</b>');
-			document.getElementById("advHeadingText").innerText = 'Valfri kod';
-		} else if(showAdvSettingsDiv) {
-			document.write('<b>Inställningar</b>');
-			document.getElementById("advHeadingText").innerText = 'Inställningar';
-		}
-	}
-}
-//-->
+<? sv/htmleditor/editor/editor.html/62 ?>
 </SCRIPT></td>
 </tr>
 <tr>
@@ -615,7 +426,7 @@ if(showAdv){
 <div id="modeAdvStandardDiv" style="position:absolute; left:535; top:150; width:141; z-index:5; visibility:hidden" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0" width="140">
 <tr>
-	<td nowrap><b>Skapa tabell:</b></td>
+	<td nowrap><? sv/htmleditor/editor/editor.html/63 ?></td>
 	<td align="right"><button id="btn26" class="button" unselectable="on" onClick="collectTableInfo()" title="tabell">
 	<img src="images/btn_table.gif"></button></td>
 </tr>
@@ -626,20 +437,20 @@ if(showAdv){
 </tr>
 <tr>
 	<td colspan="2" nowrap>
-	<b>HTML block:</b><br>
+	<? sv/htmleditor/editor/editor.html/64 ?>
 	<select name="FormatBlockCode" unselectable="On" style="font-size:9px; width:140">
-		<option value="" SELECTED>- Välj format</option>
-		<option value="P">&lt;P&gt; Stycke (Normal)</option>
-		<option value="DIV">&lt;DIV&gt; Block/Layer</option>
-		<option value="H1">&lt;H1&gt; Rubrik (största)</option>
-		<option value="H2">&lt;H2&gt; Rubrik</option>
-		<option value="H3">&lt;H3&gt; Rubrik</option>
-		<option value="H4">&lt;H4&gt; Rubrik</option>
-		<option value="H5">&lt;H5&gt; Rubrik</option>
-		<option value="H6">&lt;H6&gt; Rubrik (minsta)</option>
-		<option value="PRE">&lt;PRE&gt; Förformaterad</option>
-		<option value="ADDRESS">&lt;ADDRESS&gt;</option>
-		<option value="BLOCKQUOTE">&lt;BLOCKQUOTE&gt;</option>
+		<option value="" SELECTED><? sv/htmleditor/editor/editor.html/65 ?></option>
+		<option value="P"><? sv/htmleditor/editor/editor.html/66 ?></option>
+		<option value="DIV"><? sv/htmleditor/editor/editor.html/67 ?></option>
+		<option value="H1"><? sv/htmleditor/editor/editor.html/68 ?></option>
+		<option value="H2"><? sv/htmleditor/editor/editor.html/69 ?></option>
+		<option value="H3"><? sv/htmleditor/editor/editor.html/70 ?></option>
+		<option value="H4"><? sv/htmleditor/editor/editor.html/71 ?></option>
+		<option value="H5"><? sv/htmleditor/editor/editor.html/72 ?></option>
+		<option value="H6"><? sv/htmleditor/editor/editor.html/73 ?></option>
+		<option value="PRE"><? sv/htmleditor/editor/editor.html/74 ?></option>
+		<option value="ADDRESS"><? sv/htmleditor/editor/editor.html/75 ?></option>
+		<option value="BLOCKQUOTE"><? sv/htmleditor/editor/editor.html/76 ?></option>
 	</select><br>
 	<img src="images/1x1.gif" width="1" height="5"><br>
 	<div align="center"><button id="btn27" unselectable="on" onClick="doFormatBlock();" class="fButtonSmall">&laquo;&nbsp;Tilldela</button></div></td>
@@ -650,7 +461,7 @@ if(showAdv){
 	<img src="images/1x1_white.gif" width="141" height="1"></td>
 </tr>
 <tr>
-	<td nowrap><b>Skapa linje:</b></td>
+	<td nowrap><? sv/htmleditor/editor/editor.html/77 ?></td>
 	<td align="right"><button id="btn28" class="button" unselectable="On" onClick="doExecCommand('InsertHorizontalRule',true,null);" title="Insert Rule">
 	<img src="images/btn_hr.gif"></button></td>
 </tr>
@@ -670,7 +481,7 @@ if(showAdv){
 	<img src="images/1x1_white.gif" width="141" height="1"></td>
 </tr>
 <tr>
-	<td nowrap><b>Utfyllnadstext:</b></td>
+	<td nowrap><? sv/htmleditor/editor/editor.html/78 ?></td>
 	<td align="right"><button id="btn30" unselectable="on" class="button" onClick="dummyText();" title="Lorem ipsum... (Latinsk text) - Läggs in sist i dokumentet.">
 	<img src="images/btn_text.gif"></button>
 </td>
@@ -686,39 +497,15 @@ if(showAdv){
 <div id="modeAdvFontClassDiv" style="position:absolute; left:535; top:155; width:141; z-index:5; visibility:hidden" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0" width="140">
 <tr>
-	<td colspan="2"><b>CSS klasser:</b></td>
+	<td colspan="2"><? sv/htmleditor/editor/editor.html/79 ?></td>
 </tr>
 <SCRIPT LANGUAGE="JavaScript1.2">
-<!--
-var iCount = 0;
-var sChecked='';
-for (var i=0; i<arrFavClass.length; i++){
-	if(i==0){
-		sChecked=' checked';
-	} else {
-		sChecked='';
-	}
-	document.write('<tr>\n');
-	document.write('	<td><input type="radio" name="useClass" value="' + (i+1) + '"' + sChecked + '></td>\n');
-	document.write('	<td><input type="text" name="useClass' + (i+1) + '" value="' + arrFavClass[i] + '" size="12" maxlength="50" style="width:119"></td>\n');
-	document.write('</tr>\n');
-	iCount++;
-}
-//-->
+<? sv/htmleditor/editor/editor.html/80 ?>
 </SCRIPT>
 <tr>
-	<td colspan="2"><b>Annan:</b><br>
+	<td colspan="2"><? sv/htmleditor/editor/editor.html/81 ?>
 <SCRIPT LANGUAGE="JavaScript1.2">
-<!--
-var iCount = 0;
-var sChecked='';
-document.write('<select name="useClassTemp" unselectable="On" style="width:140" onChange="document.forms[0].useClass11.value = this.options[this.selectedIndex].value\; document.forms[0].useClass[10].checked = 1\; this.selectedIndex = 0">');
-document.write('	<option value="">- Välj class</option>\n');
-for (var i=0; i<arrAllClass.length; i++){
-	document.write('	<option value="' + arrAllClass[i] + '">' + arrAllClass[i] + '</option>\n');
-}
-document.write('</select>\n');
-//-->
+<? sv/htmleditor/editor/editor.html/82 ?>
 </SCRIPT></td>
 </tr>
 <tr>
@@ -738,41 +525,36 @@ document.write('</select>\n');
 -->
 
 <div id="modeAdvFontStyleDiv" style="position:absolute; left:535; top:155; width:141; z-index:5; visibility:hidden" unselectable="on">
-<b>Format:</b><br>
+<? sv/htmleditor/editor/editor.html/83 ?>
 <select name="FontFamily" style="font-size:9px; width:140">
-	<option value="" SELECTED>- Standard</option>
-	<option value="Verdana">Verdana,sans-serif...</option>
-	<option value="Arial">Arial,sans-serif...</option>
-	<option value="Times">Times New Roman...</option>
-	<option value="Courier">Courier,monospace</option>
-	<option value="Comic">Comic Sans MS...</option>
+	<option value="" SELECTED><? sv/htmleditor/editor/editor.html/84 ?></option>
+	<option value="Verdana"><? sv/htmleditor/editor/editor.html/85 ?></option>
+	<option value="Arial"><? sv/htmleditor/editor/editor.html/86 ?></option>
+	<option value="Times"><? sv/htmleditor/editor/editor.html/87 ?></option>
+	<option value="Courier"><? sv/htmleditor/editor/editor.html/88 ?></option>
+	<option value="Comic"><? sv/htmleditor/editor/editor.html/89 ?></option>
 </select>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
-	<td><b>Stil:</b></td>
+	<td><? sv/htmleditor/editor/editor.html/90 ?></td>
 	<td>
 	<select name="FontFormat" style="font-size:9px">
-		<option value="" SELECTED>- Standard</option>
-		<option value="normal">Normal</option>
-		<option value="bold">Fet</option>
-		<option value="italic">Kursiv</option>
-		<option value="both">Fet/Kursiv</option>
+		<option value="" SELECTED><? sv/htmleditor/editor/editor.html/91 ?></option>
+		<option value="normal"><? sv/htmleditor/editor/editor.html/92 ?></option>
+		<option value="bold"><? sv/htmleditor/editor/editor.html/93 ?></option>
+		<option value="italic"><? sv/htmleditor/editor/editor.html/94 ?></option>
+		<option value="both"><? sv/htmleditor/editor/editor.html/95 ?></option>
 	</select></td>
 </tr>
 <tr>
-	<td><b>Storlek:</b></td>
+	<td><? sv/htmleditor/editor/editor.html/96 ?></td>
 	<td>
 	<select name="FontSize" style="font-size:9px">
-		<option value="" SELECTED>- Standard</option>
-		<option value="9px">9px (IE)</option>
-		<option value="9pt">9pt</option>
+		<option value="" SELECTED><? sv/htmleditor/editor/editor.html/97 ?></option>
+		<option value="9px"><? sv/htmleditor/editor/editor.html/98 ?></option>
+		<option value="9pt"><? sv/htmleditor/editor/editor.html/99 ?></option>
 	<SCRIPT LANGUAGE="JavaScript">
-<!--
-for(i=10;i<=48;i++){
-	document.write('		<option value=\"' + i + 'px\">' + i + 'px</option>\n');
-	document.write('		<option value=\"' + i + 'pt\">' + i + 'pt</option>\n');
-}
-//-->
+<? sv/htmleditor/editor/editor.html/100 ?>
 </SCRIPT>
 	</select></td>
 </tr>
@@ -780,19 +562,14 @@ for(i=10;i<=48;i++){
 	<td><b>Radhöjd:</b>&nbsp;&nbsp;</td>
 	<td>
 	<select name="LineHeight" style="font-size:9px">
-		<option value="" SELECTED>- Standard</option>
+		<option value="" SELECTED><? sv/htmleditor/editor/editor.html/101 ?></option>
 	<SCRIPT LANGUAGE="JavaScript">
-<!--
-for(i=9;i<=48;i++){
-	document.write('		<option value=\"' + i + 'px\">' + i + 'px</option>\n');
-	document.write('		<option value=\"' + i + 'pt\">' + i + 'pt</option>\n');
-}
-//-->
+<? sv/htmleditor/editor/editor.html/102 ?>
 </SCRIPT>
 	</select></td>
 </tr>
 </table>
-<input type="checkbox" name="usecolor" value="1"><b>Använd färg</b><br>
+<input type="checkbox" name="usecolor" value="1"><? sv/htmleditor/editor/editor.html/103 ?>
 <img src="images/1x1.gif" width="1" height="60"><br>
 <div align="center"><button unselectable="on" name="styleBtn" id="styleBtn" class="fButtonSmall">&laquo;&nbsp;Tilldela</button></div></div>
 
@@ -800,10 +577,9 @@ for(i=9;i<=48;i++){
 
 
 <div id="modeAdvCodeStringDiv" style="position:absolute; left:535; top:155; width:141; z-index:5; visibility:hidden" unselectable="on">
-<b>Start-kod</b><br>
+<? sv/htmleditor/editor/editor.html/104 ?>
 <textarea cols="15" rows="7" name="startCode" wrap="soft" class="fFieldSmall" style="width:140"></textarea><br>
-<img src="images/1x1.gif" width="1" height="5"><br>
-<b>Slut-kod</b><br>
+<img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/105 ?>
 <textarea cols="15" rows="3" name="endCode" wrap="soft" class="fFieldSmall" style="width:140"></textarea><br>
 <img src="images/1x1.gif" width="1" height="5"><br>
 <div align="center"><button unselectable="on" name="codeBtn" id="codeBtn" class="fButtonSmall">&laquo;&nbsp;Tilldela</button></div></div>
@@ -813,23 +589,19 @@ for(i=9;i<=48;i++){
 
 <div id="modeAdvSettingsDiv" style="position:absolute; left:535; top:155; width:141; z-index:5; visibility:hidden" unselectable="on">
 <b>Avancerade&nbsp;inställningar</b><br>
-<img src="images/1x1.gif" width="1" height="5"><br>
-<b>Bredd på innehåll:</b> <SPAN STYLE="color:CC0000"><sup>1</sup></SPAN><br>
+<img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/106 ?> <SPAN STYLE="color:CC0000"><sup><? sv/htmleditor/editor/editor.html/107 ?></sup></SPAN><br>
 <input type="text" name="previewWidth" value="100%" size="5" maxlength="5"><br>
-<img src="images/1x1.gif" width="1" height="5"><br>
-<b>Bakgrundsfärg:</b><br>
+<img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/108 ?>
 <input type="text" name="previewBackground" value="rgb(255,255,255)" size="15" maxlength="30" style="width:140"><br>
-<img src="images/1x1.gif" width="1" height="5"><br>
-<b>Standard textfärg:</b><br>
+<img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/109 ?>
 <input type="text" name="previewColor" value="rgb(0,0,0)" size="15" maxlength="30" style="width:140"><br>
 <img src="images/1x1.gif" width="1" height="5"><br>
-<div align="center"><button unselectable="on" class="fButtonSmall" onClick="setDefaultValues('do'); saveSettings('EditorSettings')" style="width:80">&laquo;&nbsp;Genomför</button><button unselectable="on" class="fButtonSmall" onClick="setDefaultValues('reset'); saveSettings('EditorSettings')" style="width:60">Återställ</button></div>
+<div align="center"><button unselectable="on" class="fButtonSmall" onClick="setDefaultValues('do'); saveSettings('EditorSettings')" style="width:80">&laquo;&nbsp;Genomför</button><button unselectable="on" class="fButtonSmall" onClick="setDefaultValues('reset'); saveSettings('EditorSettings')" style="width:60"><? sv/htmleditor/editor/editor.html/110 ?></button></div>
 <img src="images/1x1.gif" width="1" height="5"><br>
-<SPAN CLASS="dim">Om man önskar se innehållet mer realistiskt enligt sidans utformning.<br>
+<SPAN CLASS="dim"><? sv/htmleditor/editor/editor.html/111 ?>
+<img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/112 ?></SPAN><br>
 <img src="images/1x1.gif" width="1" height="5"><br>
-Dessa värden sparas inte, utan används bara vid editering.</SPAN><br>
-<img src="images/1x1.gif" width="1" height="5"><br>
-<SPAN STYLE="color:CC0000"><sup>1</sup></SPAN><SPAN CLASS="dim">&nbsp;Värden större än 525 eller procentvärden visas inte i editorn. Dessa visas endast vid förhandsgranskning.</SPAN>
+<SPAN STYLE="color:CC0000"><sup><? sv/htmleditor/editor/editor.html/113 ?></sup></SPAN><SPAN CLASS="dim">&nbsp;Värden större än 525 eller procentvärden visas inte i editorn. Dessa visas endast vid förhandsgranskning.</SPAN>
 <input type="hidden" name="previewFontSize" value="">
 <input type="hidden" name="previewFontFamily" value="">
 </div>
@@ -849,19 +621,12 @@ Dessa värden sparas inte, utan används bara vid editering.</SPAN><br>
 -->
 
 <script language="JavaScript">
-<!--
-if (showKBshortcuts) {
-	document.write('<div style="position:absolute; left:10; top:454" unselectable="on">');
-} else {
-	document.write('<div style="position:absolute; left:10; top:454; display:none" unselectable="on">');
-}
-//-->
+<? sv/htmleditor/editor/editor.html/114 ?>
 </script>
 <img src="images/1x1.gif" width="1" height="5">
 <table border="0" cellspacing="0" cellpadding="0" align="center" unselectable="on">
 <tr>
-	<td class="dim"><b>OBS!</b> Denna editor är endast en beta-version. Den är sålunda inte varken fullt utvecklad eller<br>
-	fullt testad. Frågor eller funderingar? Kontakta <A HREF="mailto:support@imcode.com">support@imcode.com</A>.</td>
+	<td class="dim"><? sv/htmleditor/editor/editor.html/115 ?></td>
 </tr>
 </table> 
 <!-- 
@@ -896,21 +661,7 @@ if (showKBshortcuts) {
 <DIV style="position:absolute; left:335; top:465; width:346; text-align:right; z-index:6" unselectable="on">
 <img src="images/1x1.gif" width="1" height="5"><br>
 <SCRIPT LANGUAGE="JavaScript">
-<!--
-if (isWordEnabled) {
-	document.write('<button id="btnFixWord" unselectable="on" cl'+'ass="fButtonSmall" style="width:100; visibility:hidden" onClick="doFixWordHTML()\;">Fixa Word-kod</button><img src="images/1x1.gif" width="23" height="1">');
-}
-
-if (showCloseBtn) {
-	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:45" onClick="doClose()\;">Stäng</button><img src="images/1x1.gif" width="3" height="1">');
-}
-if (showResetBtn) {
-	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:45" onClick="if(confirm(\'Vill du ta bort allt innehåll?\'))\{ Clear()\; \}">Rensa</button><img src="images/1x1.gif" width="3" height="1">');
-}
-if (showSaveBtn) {
-	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:47" onClick="doSend()\; return false">Spara</button><img src="images/1x1.gif" width="3" height="1">');
-}
-//-->
+<? sv/htmleditor/editor/editor.html/116 ?>
 </SCRIPT>
 </div>
 
@@ -930,15 +681,14 @@ if (showSaveBtn) {
 <div id="modeHtmlCodeDiv" style="position:absolute; left:535; top:80; z-index:4; visibility:hidden" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0" width="141">
 <tr>
-	<td align="center" bgcolor="#333366" height="22"><b style="color:#ffffff">HTML editering</b></td>
+	<td align="center" bgcolor="#333366" height="22"><? sv/htmleditor/editor/editor.html/117 ?></td>
 </tr>
 <tr>
 	<td><img src="images/1x1.gif" width="1" height="5"></td>
 </tr>
 <tr>
-	<td>Här kan du editera din HTML-kod.<br>
-	<img src="images/1x1.gif" width="1" height="5"><br>
-	Ändringar slår igenom när man byter till &quot;Editor-läge&quot; igen.<br>
+	<td><? sv/htmleditor/editor/editor.html/118 ?>
+	<img src="images/1x1.gif" width="1" height="5"><? sv/htmleditor/editor/editor.html/119 ?>
 	<img src="images/1x1.gif" width="1" height="25"><br>
 	<SPAN CLASS="dim"><b>Obs!</b> &nbsp;Viss HTML-kod ändrar editorn automatiskt till något annat p&nbsp;g&nbsp;a de inbyggda editeringsfunktionerna i Internet Explorer. Detta kan man inte göra något åt<br>
 	&#150; förutom att redigera ev. felaktigheter i efterhand.</SPAN></td>
@@ -950,19 +700,14 @@ if (showSaveBtn) {
 <div id="helpDescRightDiv" style="position:absolute; left:535; top:80; z-index:4; visibility:hidden" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0" width="141">
 <tr>
-	<td align="center" bgcolor="#333366" height="22"><b style="color:#ffffff">Hjälp</b></td>
+	<td align="center" bgcolor="#333366" height="22"><? sv/htmleditor/editor/editor.html/120 ?></td>
 </tr>
 <tr>
 	<td><img src="images/1x1.gif" width="1" height="5"></td>
 </tr>
 <tr>
-	<td>Klicka på den knapp du vill ha hjälp om.<script language="JavaScript">
-<!--
-if (showSimple || showAdv) {
-	document.writeln('<br><img src="images/1x1.gif" width="1" height="5"><br>')
-	document.writeln('Vill du ha hjälp om det högra fältet, öppnar du den vanliga hjälpen.');
-}
-//-->
+	<td><? sv/htmleditor/editor/editor.html/121 ?><script language="JavaScript">
+<? sv/htmleditor/editor/editor.html/122 ?>
 </script></td>
 </tr>
 </table></div>
@@ -971,13 +716,13 @@ if (showSimple || showAdv) {
 <div id="helpAllDescRightDiv" style="position:absolute; left:535; top:80; z-index:4; visibility:hidden" unselectable="on">
 <table border="0" cellpadding="0" cellspacing="0" width="141">
 <tr>
-	<td align="center" bgcolor="#333366" height="22"><b style="color:#ffffff">Hjälp</b></td>
+	<td align="center" bgcolor="#333366" height="22"><? sv/htmleditor/editor/editor.html/123 ?></td>
 </tr>
 <tr>
 	<td><img src="images/1x1.gif" width="1" height="5"></td>
 </tr>
 <tr>
-	<td>Funktionerna är bortkopplade så länge hjälpen är öppen.</td>
+	<td><? sv/htmleditor/editor/editor.html/124 ?></td>
 </tr>
 </table></div>
 
@@ -1032,179 +777,19 @@ if (showSimple || showAdv) {
 </tr>
 <tr>
 	<td colspan="8"><DIV ID="theColorDiv"></DIV>
-	<DIV id="theColorText" unselectable="on">rgb(0,0,0)</DIV></td>
+	<DIV id="theColorText" unselectable="on"><? sv/htmleditor/editor/editor.html/125 ?></DIV></td>
 </tr>
 </table>
 </form></div>
 
 <SCRIPT LANGUAGE="JavaScript">
-<!--
-function showColor(){
-	var iRed = document.forms.colorForm.fRed.value;
-	var iGreen = document.forms.colorForm.fGreen.value;
-	var iBlue = document.forms.colorForm.fBlue.value;
-	iRed = (iRed<0)? 0:iRed
-	iRed = (iRed>255)? 255:iRed
-	iGreen = (iGreen<0)? 0:iGreen
-	iGreen = (iGreen>255)? 255:iGreen
-	iBlue = (iBlue<0)? 0:iBlue
-	iBlue = (iBlue>255)? 255:iBlue
-	var theColor = 'rgb(' + iRed + ',' + iGreen + ',' + iBlue + ')';
-	document.getElementById("theColorDiv").style.background = theColor;
-	document.getElementById("fRed").style.borderColor = 'rgb('+iRed+',0,0)';
-	document.getElementById("fGreen").style.borderColor = 'rgb(0,'+iGreen+',0)';
-	document.getElementById("fBlue").style.borderColor = 'rgb(0,0,'+iBlue+')';
-	document.getElementById("theColorText").innerText = 'rgb(' + iRed + ',' + iGreen + ',' + iBlue + ')';
-	document.forms.editorForm.usecolor.checked = 1;
-}
-
-var mouseActiveUp = 0;
-var mouseActiveDn = 0;
-
-function fRedUp(){
-	clearTimeout('timeDn');
-	mouseActiveDn = 0;
-	if(mouseActiveUp){
-		var iVal = document.forms.colorForm.fRed.value;
-		if(iVal == ''){
-			iVal = 0;
-		} else {
-			iVal = parseInt(iVal);
-		}
-		if(iVal < 205){
-			iVal += 51;
-		} else {
-			iVal = 255;
-		}
-		document.forms.colorForm.fRed.value = iVal;
-		document.forms.colorForm.fRed.focus();
-		showColor();
-		var timeUp = setTimeout("fRedUp()", 300);
-	}
-}
-
-function fRedDn(){
-	clearTimeout('timeUp');
-	mouseActiveUp = 0;
-	if(mouseActiveDn){
-		var iVal = document.forms.colorForm.fRed.value;
-		if(iVal == ''){
-			iVal = 0;
-		} else {
-			iVal = parseInt(iVal);
-		}
-		if(iVal > 50){
-			iVal -= 51;
-		} else {
-			iVal = 0;
-		}
-		document.forms.colorForm.fRed.value = iVal;
-		document.forms.colorForm.fRed.focus();
-		showColor();
-		var timeDn = setTimeout("fRedDn()", 300);
-	}
-}
-//-->
+<? sv/htmleditor/editor/editor.html/126 ?>
 </SCRIPT>
 <SCRIPT LANGUAGE="JavaScript">
-<!--
-var mouseActiveUp = 0;
-var mouseActiveDn = 0;
-
-function fGreenUp(){
-	clearTimeout('timeDn');
-	mouseActiveDn = 0;
-	if(mouseActiveUp){
-		var iVal = document.forms.colorForm.fGreen.value;
-		if(iVal == ''){
-			iVal = 0;
-		} else {
-			iVal = parseInt(iVal);
-		}
-		if(iVal < 205){
-			iVal += 51;
-		} else {
-			iVal = 255;
-		}
-		document.forms.colorForm.fGreen.value = iVal;
-		document.forms.colorForm.fGreen.focus();
-		showColor();
-		var timeUp = setTimeout("fGreenUp()", 300);
-	}
-}
-
-function fGreenDn(){
-	clearTimeout('timeUp');
-	mouseActiveUp = 0;
-	if(mouseActiveDn){
-		var iVal = document.forms.colorForm.fGreen.value;
-		if(iVal == ''){
-			iVal = 0;
-		} else {
-			iVal = parseInt(iVal);
-		}
-		if(iVal > 50){
-			iVal -= 51;
-		} else {
-			iVal = 0;
-		}
-		document.forms.colorForm.fGreen.value = iVal;
-		document.forms.colorForm.fGreen.focus();
-		showColor();
-		var timeDn = setTimeout("fGreenDn()", 300);
-	}
-}
-//-->
+<? sv/htmleditor/editor/editor.html/127 ?>
 </SCRIPT>
 <SCRIPT LANGUAGE="JavaScript">
-<!--
-var mouseActiveUp = 0;
-var mouseActiveDn = 0;
-
-function fBlueUp(){
-	clearTimeout('timeDn');
-	mouseActiveDn = 0;
-	if(mouseActiveUp){
-		var iVal = document.forms.colorForm.fBlue.value;
-		if(iVal == ''){
-			iVal = 0;
-		} else {
-			iVal = parseInt(iVal);
-		}
-		if(iVal < 205){
-			iVal += 51;
-		} else {
-			iVal = 255;
-		}
-		document.forms.colorForm.fBlue.value = iVal;
-		document.forms.colorForm.fBlue.focus();
-		showColor();
-		var timeUp = setTimeout("fBlueUp()", 300);
-	}
-}
-
-function fBlueDn(){
-	clearTimeout('timeUp');
-	mouseActiveUp = 0;
-	if(mouseActiveDn){
-		var iVal = document.forms.colorForm.fBlue.value;
-		if(iVal == ''){
-			iVal = 0;
-		} else {
-			iVal = parseInt(iVal);
-		}
-		if(iVal > 50){
-			iVal -= 51;
-		} else {
-			iVal = 0;
-		}
-		document.forms.colorForm.fBlue.value = iVal;
-		document.forms.colorForm.fBlue.focus();
-		showColor();
-		var timeDn = setTimeout("fBlueDn()", 300);
-	}
-}
-//-->
+<? sv/htmleditor/editor/editor.html/128 ?>
 </SCRIPT>
 
 <map name="fRed">
@@ -1246,8 +831,8 @@ function fBlueDn(){
 <div id="helpDiv" unselectable="off" style="position:absolute; left:5; top:80; width:525; height:380; z-index:200; background-color:#FFFFE0; text-align: left; padding:0; border: 2px inset #D6D3CE; visibility: hidden">
 <table border="0" cellpadding="5" cellspacing="0" width="100%">
 <tr>
-	<td CLASS="imEditHelpHeadingBig">Hjälp - imCMS HTML Editor</td>
-	<td align="right"><button id="hideHelpBtn" class="fButtonSmall" onClick="hideHelp('all');">Stäng</button></td>
+	<td CLASS="imEditHelpHeadingBig"><? sv/htmleditor/editor/editor.html/129 ?></td>
+	<td align="right"><button id="hideHelpBtn" class="fButtonSmall" onClick="hideHelp('all');"><? sv/htmleditor/editor/editor.html/130 ?></button></td>
 </tr>
 </table></div>
 
@@ -1264,64 +849,40 @@ function fBlueDn(){
 <div id="helpTextAllDiv" contenteditable="false" unselectable="off" style="position:absolute; left:5; top:80; width:525; height:380; z-index:201; text-align: left; padding:5; visibility:hidden; background-color:#FFFFE0; border: 2px inset #D6D3CE; overflow=auto">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
-	<td CLASS="imEditHelpHeadingBig">Hjälp - imCMS HTML Editor</td>
-	<td align="right"><button class="fButtonSmall" onClick="hideHelp('all');">Stäng</button></td>
+	<td CLASS="imEditHelpHeadingBig"><? sv/htmleditor/editor/editor.html/131 ?></td>
+	<td align="right"><button class="fButtonSmall" onClick="hideHelp('all');"><? sv/htmleditor/editor/editor.html/132 ?></button></td>
 </tr>
 </table><br>
 
-<b>|&nbsp; <span class="imEditHelpLinkActive">Allmänt</span> &nbsp;|&nbsp; <a href="javascript:showHelp('upperbuttons');" class="imEditHelpLink">Övre verktygsrad</a> &nbsp;|&nbsp; <a href="javascript:showHelp('rightbuttons');" class="imEditHelpLink">Högra funktionsfältet</a> &nbsp;|&nbsp;</b><br><br>
+<b>|&nbsp; <span class="imEditHelpLinkActive"><? sv/htmleditor/editor/editor.html/133 ?></span> &nbsp;|&nbsp; <a href="javascript:showHelp('upperbuttons');" class="imEditHelpLink">Övre verktygsrad</a> &nbsp;|&nbsp; <a href="javascript:showHelp('rightbuttons');" class="imEditHelpLink">Högra funktionsfältet</a> &nbsp;|&nbsp;</b><br><br>
 
-<span class="imEditHelpHeading">Allmänt</span><br><br>
-
-Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
-
-Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</div>
+<span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/134 ?></span><? sv/htmleditor/editor/editor.html/135 ?></div>
 
 
 <div id="helpTextAllUpperDiv" contenteditable="false" unselectable="off" style="position:absolute; left:5; top:80; width:525; height:380; z-index:201; text-align: left; padding:5; visibility:hidden; background-color:#FFFFE0; border: 2px inset #D6D3CE; overflow=auto" class="imEditHelp">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
-	<td CLASS="imEditHelpHeadingBig">Hjälp - imCMS HTML Editor</td>
-	<td align="right"><button class="fButtonSmall" onClick="hideHelp('all');">Stäng</button></td>
+	<td CLASS="imEditHelpHeadingBig"><? sv/htmleditor/editor/editor.html/136 ?></td>
+	<td align="right"><button class="fButtonSmall" onClick="hideHelp('all');"><? sv/htmleditor/editor/editor.html/137 ?></button></td>
 </tr>
 </table><br>
 
-<b>|&nbsp; <a href="javascript:showHelp('all');" class="imEditHelpLink">Allmänt</a> &nbsp;|&nbsp; <span class="imEditHelpLinkActive">Övre verktygsrad</span> &nbsp;|&nbsp; <a href="javascript:showHelp('rightbuttons');" class="imEditHelpLink">Högra funktionsfältet</a> &nbsp;|&nbsp;</b><br><br>
+<b>|&nbsp; <a href="javascript:showHelp('all');" class="imEditHelpLink">Allmänt</a> &nbsp;|&nbsp; <span class="imEditHelpLinkActive"><? sv/htmleditor/editor/editor.html/138 ?></span> &nbsp;|&nbsp; <a href="javascript:showHelp('rightbuttons');" class="imEditHelpLink">Högra funktionsfältet</a> &nbsp;|&nbsp;</b><br><br>
 
-<span class="imEditHelpHeading">Övre verktygsrad</span><br><br>
-
-Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
-
-Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
-
-Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
-
-Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.<br><br>
-
-Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
-
-Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.<br><br>
-
-Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
-
-Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</div>
+<span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/139 ?></span><? sv/htmleditor/editor/editor.html/140 ?></div>
 
 
 <div id="helpTextAllRightDiv" contenteditable="false" unselectable="off" style="position:absolute; left:5; top:80; width:525; height:380; z-index:201; text-align: left; padding:5; visibility:hidden; background-color:#FFFFE0; border: 2px inset #D6D3CE; overflow=auto" class="imEditHelp">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr>
-	<td CLASS="imEditHelpHeadingBig">Hjälp - imCMS HTML Editor</td>
-	<td align="right"><button class="fButtonSmall" onClick="hideHelp('all');">Stäng</button></td>
+	<td CLASS="imEditHelpHeadingBig"><? sv/htmleditor/editor/editor.html/141 ?></td>
+	<td align="right"><button class="fButtonSmall" onClick="hideHelp('all');"><? sv/htmleditor/editor/editor.html/142 ?></button></td>
 </tr>
 </table><br>
 
-<b>|&nbsp; <a href="javascript:showHelp('all');" class="imEditHelpLink">Allmänt</a> &nbsp;|&nbsp; <a href="javascript:showHelp('upperbuttons');" class="imEditHelpLink">Övre verktygsrad</a> &nbsp;|&nbsp; <span class="imEditHelpLinkActive">Högra funktionsfältet</span> &nbsp;|&nbsp;</b><br><br>
+<b>|&nbsp; <a href="javascript:showHelp('all');" class="imEditHelpLink">Allmänt</a> &nbsp;|&nbsp; <a href="javascript:showHelp('upperbuttons');" class="imEditHelpLink">Övre verktygsrad</a> &nbsp;|&nbsp; <span class="imEditHelpLinkActive"><? sv/htmleditor/editor/editor.html/143 ?></span> &nbsp;|&nbsp;</b><br><br>
 
-<span class="imEditHelpHeading">Högra funktionsfältet</span><br><br>
-
-Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
-
-Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</div>
+<span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/144 ?></span><? sv/htmleditor/editor/editor.html/145 ?></div>
 
 <script type="text/javascript">
 <!--
@@ -1335,7 +896,7 @@ document.all.editorDiv.unselectable = "off";
 // -->
 </script>
 
-<div id="waitingDiv" style="position:absolute; left:5; top:463; width:400; height:30; z-index:1000; text-align:left; padding:5; background-color:#D6D3CE; display:none" class="imEditHelpHeadingBig" style="font-size:20px"><b>Vänta...</b></div>
+<div id="waitingDiv" style="position:absolute; left:5; top:463; width:400; height:30; z-index:1000; text-align:left; padding:5; background-color:#D6D3CE; display:none" class="imEditHelpHeadingBig" style="font-size:20px"><? sv/htmleditor/editor/editor.html/146 ?></div>
 
 <div id="theSavedCodeDiv" contenteditable style="position:absolute; left:-5000; top:-5000"></div>
 

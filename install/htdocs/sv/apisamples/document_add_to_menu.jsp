@@ -8,21 +8,6 @@
 
 <html>
 <body>
-<%
-    ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
-    DocumentService documentService = imcmsSystem.getDocumentService() ;
-    TextDocument document = documentService.getTextDocument(documentId) ;
-
-    TextDocument.Menu menu = document.getMenu(menuIndexInDocument) ;
-
-    TextDocument documentToBeAdded = documentService.getTextDocument(documentToBeAddedId) ;
-
-    try {
-        menu.addDocument(documentToBeAdded) ;
-        %>Done. See <a href="../servlet/GetDoc?meta_id=<%= documentId %>">document <%= documentId %></a>.<%
-    } catch (DocumentAlreadyInMenuException daim) {
-        %>Menu <%= menuIndexInDocument %> on document <%= documentId %> already contains document <%= documentToBeAddedId %>.<%
-    }
-%>
+<? sv/apisamples/document_add_to_menu.jsp/1 ?>
 </body>
 </html>

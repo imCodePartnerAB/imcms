@@ -8,7 +8,7 @@
 %>
 <html>
     <head>
-        <title>All categories</title>
+        <title><? sv/apisamples/categories_show_all.jsp/1 ?></title>
     </head>
     <body>
         <ul>
@@ -19,7 +19,7 @@
             Category[] categories = documentService.getAllCategoriesOfType(categoryType);
             for (int j = 0; j < categories.length; j++) {
                 Category category = categories[j];
-                %><li><%= category.getName() %> - <%= category.getDescription() %></li><%
+                %><li><? sv/apisamples/categories_show_all.jsp/2 ?></li><%
             }
             %></ul></li><%
         }

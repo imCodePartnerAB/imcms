@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Länk-editor</title>
+<title><? imcms/html/link_editor.html/1 ?></title>
 
 <link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 <script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
@@ -11,8 +11,7 @@
 <body bgcolor="#FFFFFF" marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" class="imcmsAdmBgCont" style="border:0; margin:0" onLoad="focusField(1,'createLinkDesc')">
 
 <script>
-imcmsGui("outer_start_noshade", "MAX");
-imcmsGui("head_noshade", null);
+<? imcms/html/link_editor.html/2 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
 <form>
@@ -22,7 +21,7 @@ imcmsGui("head_noshade", null);
 </form>
 </table>
 <script>
-imcmsGui("mid_noshade", null);
+<? imcms/html/link_editor.html/3 ?>
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <form name="createLinkForm" onSubmit="createLink(); return false">
@@ -30,24 +29,24 @@ imcmsGui("mid_noshade", null);
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
-		<td colspan="2"><script>imcHeading("Skapa länk",396);</script></td>
+		<td colspan="2"><script><? imcms/html/link_editor.html/4 ?></script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText">Beskrivning:</td>
+		<td class="imcmsAdmText"><? imcms/html/link_editor.html/5 ?></td>
 		<td><script>
-writeFormField("TEXT","createLinkDesc",54,255,"100%","Det som syns på sidan!");
+<? imcms/html/link_editor.html/6 ?>
 </script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText">Länktyp:</td>
+		<td class="imcmsAdmText"><? imcms/html/link_editor.html/7 ?></td>
 		<td class="form">
 		<select class="form" name="createLinkType" onChange="changeLinkType(document.forms.createLinkForm.createLinkType.options[document.forms.createLinkForm.createLinkType.selectedIndex].value)">
-			<option value="GetDoc">Befintligt dokument</option>
-			<option value="http">Annan websida</option>
-			<option value="mailto">Mailadress</option>
-			<option value="ftp">FTP länk</option>
-			<option value="#">Länk till &quot;ankare&quot;</option>
-			<option value="NAME">Skapa &quot;ankare&quot;</option>
+			<option value="GetDoc"><? imcms/html/link_editor.html/8 ?></option>
+			<option value="http"><? imcms/html/link_editor.html/9 ?></option>
+			<option value="mailto"><? imcms/html/link_editor.html/10 ?></option>
+			<option value="ftp"><? imcms/html/link_editor.html/11 ?></option>
+			<option value="#"><? imcms/html/link_editor.html/12 ?></option>
+			<option value="NAME"><? imcms/html/link_editor.html/13 ?></option>
 		</select></td>
 	</tr>
 	<tr>
@@ -57,16 +56,16 @@ writeFormField("TEXT","createLinkDesc",54,255,"100%","Det som syns på sidan!");
 		<tr>
 			<td nowrap>
 			<select name="createLinkTargetTemp" onChange="document.forms.createLinkForm.createLinkTarget.value = document.forms.createLinkForm.createLinkTargetTemp.options[document.forms.createLinkForm.createLinkTargetTemp.selectedIndex].value; document.forms.createLinkForm.createLinkTarget.focus(); document.forms.createLinkForm.createLinkTarget.select()">
-				<option value="" selected>Samma fönster (Standard)</option>
-				<option value="_blank">Nytt fönster</option>
-				<option value="_top">Hela fönstret (utan frames)</option>
-				<option value="_self">Samma frame</option>
-				<option value="_parent">Parent frameset</option>
-				<option value="Skriv namn!">Annan frame</option>
+				<option value="" selected><? imcms/html/link_editor.html/14 ?></option>
+				<option value="_blank"><? imcms/html/link_editor.html/15 ?></option>
+				<option value="_top"><? imcms/html/link_editor.html/16 ?></option>
+				<option value="_self"><? imcms/html/link_editor.html/17 ?></option>
+				<option value="_parent"><? imcms/html/link_editor.html/18 ?></option>
+				<option value="Skriv namn!"><? imcms/html/link_editor.html/19 ?></option>
 			</select></td>
 			<td>&nbsp;</td>
 			<td class="form" align="right"><script>
-writeFormField("TEXT","createLinkTarget",12,50,100,"");
+<? imcms/html/link_editor.html/20 ?>
 </script></td>
 		</tr>
 		</table></td>
@@ -76,17 +75,17 @@ writeFormField("TEXT","createLinkTarget",12,50,100,"");
 		URL, adress<br>
 		eller meta_id: &nbsp;</td>
 		<td><script>
-writeFormField("TEXT","createLinkValue",54,100,"100%","Skriv nummer!");
+<? imcms/html/link_editor.html/21 ?>
 </script></td>
 	</tr>
 	<tr>
-		<td class="imcmsAdmText" nowrap>Ev. CSS-class:</td>
+		<td class="imcmsAdmText" nowrap><? imcms/html/link_editor.html/22 ?></td>
 		<td><script>
-writeFormField("TEXT","createLinkCss",20,50,150,"");
+<? imcms/html/link_editor.html/23 ?>
 </script></td>
 	</tr>
 	<tr>
-		<td colspan="2"><script>hr("100%",396,"blue");</script></td>
+		<td colspan="2"><script><? imcms/html/link_editor.html/24 ?></script></td>
 	</tr>
 	<tr>
 		<td colspan="2" align="right">
@@ -99,11 +98,11 @@ writeFormField("TEXT","createLinkCss",20,50,150,"");
 		</table></td>
 	</tr>
 	<tr>
-		<td colspan="2" nowrap>&nbsp;<br><script>imcHeading("Kod att kopiera och klistra in på rätt plats",396);</script></td>
+		<td colspan="2" nowrap>&nbsp;<br><script><? imcms/html/link_editor.html/25 ?></script></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script>
-writeFormField("TEXT","theLinkCodeField",76,255,"100%","");
+<? imcms/html/link_editor.html/26 ?>
 </script><div id="theLinkCodeFieldDiv"></div></td>
 	</tr>
 	<tr>
@@ -115,8 +114,7 @@ writeFormField("TEXT","theLinkCodeField",76,255,"100%","");
 </form>
 </table>
 <script>
-imcmsGui("bottom_noshade", null);
-imcmsGui("outer_end_noshade", null);
+<? imcms/html/link_editor.html/27 ?>
 </script>
 
 <script language="javascript">

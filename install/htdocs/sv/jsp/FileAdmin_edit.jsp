@@ -183,7 +183,7 @@ if (isReadonly) {
 %>
 <html>
 <head>
-<title>:: imCMS ::</title>
+<title><? sv/jsp/FileAdmin_edit.jsp/1 ?></title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
@@ -199,174 +199,7 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 </STYLE>
 
 <script language="JavaScript">
-<!--
-function closeIt() {
-	window.close();
-	if (parent.opener) parent.opener.focus();
-}
-
-var isMoz = (document.getElementById);
-var isIE  = (document.all);
-var isNS  = (document.layers);
-
-var win = window;
-var n   = 0;
-
-function findIt(str) {
-	var txt, i, found;
-	if (isMoz && str != "") {
-		txt = win.document.getElementById("txtField").createTextRange();
-		for (i = 0; i <= n && (found = txt.findText(str)) != false; i++) {
-			txt.moveStart("character", 1);
-			txt.moveEnd("textedit");
-		}
-		if (found) {
-			txt.moveStart("character", -1);
-			txt.findText(str);
-			txt.select();
-			txt.scrollIntoView();
-			n++;
-		} else {
-			if (n > 0) {
-				n = 0;
-				findIt(str);
-			} else {
-				alert("Not found.");
-			}
-		}
-		document.forms.editForm.searchString.value  = str;
-		document.forms.resetForm.searchString.value = str;
-	}
-	if (isIE && isMoz) document.getElementById("btnSearch").setActive(); // focus btn - for [Enter] support
-}
-
-function doSave() {
-	if (confirm("Vill du spara och skriva över den gamla filen?\nÅtgärden går att ångra så länge du har fönstret\nöppet, genom att återställa filen.")) {
-		return true;
-	}
-	return false;
-}
-
-function doReset() {
-	var f = document.forms.resetForm;
-	var theSel = f.resetFile.options[f.resetFile.selectedIndex].value;
-	if (theSel != "") {
-		var theText = (theSel == "org") ? "originalfilen, så som den såg ut när du öppnade detta fönster?" : "den senast sparade versionen av denna fil?";
-		if (confirm("Vill du läsa in " + theText + "\n\nFilen som laddas om sparas inte på servern\nförrän du klickar på spara-knappen.")) {
-			f.submit();
-		} else {
-			f.resetFile.selectedIndex = 0;
-		}
-	}
-	return false;
-}
-
-/* onLoad-function */
-
-function checkSaved(ch) {
-	if (isMoz) {<%
-		if (!isReadonly) { %>
-		var isSaved = <%= isSaved %>;
-		var el = document.getElementById("btnSave");
-		if (isSaved && !ch) {
-			el.style.cursor = "default";
-			el.style.filter = "progid:DXImageTransform.Microsoft.BasicImage( Rotation=0,Mirror=0,Invert=1,XRay=0,Grayscale=1,Opacity=0.60)";
-			el.disabled = 1;
-		} else {
-			el.style.cursor = (isIE) ? "hand" : "pointer";
-			el.style.filter = "";
-			el.disabled = 0;
-		}<%
-		} %>
-		resizeEditField();
-		loopMess(0);
-	}
-}
-
-function resizeEditField() {
-	if (isMoz) {
-		var elEdit = document.getElementById("txtField");
-		var availW = 0;
-		var availH = 0;
-		if (isIE) {
-			availW = parseInt(document.body.offsetWidth);
-			availH = parseInt(document.body.offsetHeight);
-		} else {
-			availW = parseInt(innerWidth);
-			availH = parseInt(innerHeight);
-		}
-		if (availW > 0) elEdit.style.width = availW - 13;
-		if (availH > 0) elEdit.style.height = availH - 72;
-	}
-}
-
-var errMess = <% if (!sError.equals("")) { %>1<% } else { %>2<% } %>;
-
-function loopMess(stopit) {
-	if (isMoz) {
-		if (stopit) {
-			window.clearTimeout(oTimer);
-			if (errMess) {
-				errMess = 0;
-				return;
-			} else if (isIE) {
-				errMess = 2;
-			}
-		}
-		var el = document.getElementById("messId");
-		var colorRed   = "#cc0000";
-		var colorGreen = "#009900";
-		var oTimer;
-		if (errMess == 2) {
-			el.style.color = colorGreen;
-			el.innerHTML = "<b>Tips!</b> Dubbelklicka på <i><% if (isReadonly) { %>Visa<% } else { %>Redigera<% } %> <% if (isTempl) { %>formatmall<% } else { %>textfil<% } %></i> för att byta textstorlek. Värden mellan 10-17px.<% if (isIE) { %> Håll ner <i>Shift</i> för att växla Courier/Verdana.<% } %>";
-			errMess = 3;<%
-			if (!isReadonly) { %>
-			oTimer = window.setTimeout("loopMess()", 5000);<%
-			} %>
-		} else if (errMess == 3) {
-			el.style.color = colorGreen;
-			el.innerHTML = "<b>Tips!</b> Du kan alltid återställa allt du gjort, så länge du inte stängt fönstret och sessionen är aktiv.";
-			errMess = 4;
-			oTimer = window.setTimeout("loopMess()", 5000);
-		} else if (errMess == 4) {
-			el.style.color = colorGreen;
-			el.innerHTML = "<b>Tips!</b> Sök enkelt efter text i koden m h a sökfunktionen. Klicka [Enter] för att söka nästa.";
-			errMess = <% if (!sError.equals("")) { %>1<% } else { %>2<% } %>;
-			oTimer = window.setTimeout("loopMess()", 5000);
-		} else if (errMess == 1) {
-			el.style.color = colorRed;
-			el.innerHTML = "<%= sError %>";
-			errMess = 2;
-			oTimer = window.setTimeout("loopMess()", 10000);
-		}
-	}
-}
-
-function toggleFontSize() {
-	if (isMoz) {
-		var el = document.getElementById("txtField");
-		if (window.event) {
-			if (window.event.shiftKey) {
-				el.style.fontFamily = (el.style.fontFamily.indexOf("Courier") != -1) ? "Verdana, Geneva, sans-serif" : "'Courier New', Courier, monospace";
-				return;
-			}
-		}
-		var theSize = (el.style.fontSize) ? parseInt(el.style.fontSize) : 11;
-		if (theSize == 11) {
-			el.style.fontSize = "13px";
-		} else if (theSize == 13) {
-			el.style.fontSize = "15px";
-		} else if (theSize == 15) {
-			el.style.fontSize = "17px";
-		} else if (theSize == 17) {
-			el.style.fontSize = "10px";
-		} else if (theSize == 10) {
-			el.style.fontSize = "11px";
-		}
-	}
-}
-//-->
+<? sv/jsp/FileAdmin_edit.jsp/2 ?>
 </script>
 
 </head>
@@ -394,26 +227,7 @@ function toggleFontSize() {
 			} %> &nbsp; </span></td>
 
 			<td nowrap><span class="imFilename">
-&quot;<%
-			if (isTempl) {
-				out.print(templName) ;
-			} else {
-				String fileNameToShow = file ;
-				sTemp = fileNameToShow ;
-				if (fileNameToShow.length() > 80) {
-
-					fileNameToShow = sTemp.substring(0,40) + "<br>\n" ;
-					fileNameToShow += sTemp.substring(40,80) + "<br>\n" ;
-					fileNameToShow += sTemp.substring(80,sTemp.length()) ;
-
-				} else if (fileNameToShow.length() > 40) {
-
-					fileNameToShow = sTemp.substring(0,40) + "<br>\n" ;
-					fileNameToShow += sTemp.substring(40,sTemp.length()) ;
-
-				}
-				out.print(fileNameToShow) ;
-			} %>&quot;</span></td>
+<? sv/jsp/FileAdmin_edit.jsp/3 ?></span></td>
 		</tr>
 		</table></td>
 
@@ -445,12 +259,12 @@ function toggleFontSize() {
 			<input type="hidden" name="templName" value="<%= templName %>"><%
 			} %>
 			<tr>
-				<td class="norm"><a href="javascript://help" onClick="alert('Välj att återställa filen som den såg ut när:\n\n - Du senast sparade den.\n - När du öppnade den i detta fönster.')"><span style="color:black; text-decoration:none; cursor:help;">Återställ:</span></a>&nbsp;</td>
+				<td class="norm"><a href="javascript://help" onClick="alert('Välj att återställa filen som den såg ut när:\n\n - Du senast sparade den.\n - När du öppnade den i detta fönster.')"><span style="color:black; text-decoration:none; cursor:help;"><? sv/jsp/FileAdmin_edit.jsp/4 ?></span></a>&nbsp;</td>
 				<td class="small">
 				<select name="resetFile" onChange="doReset(); return false">
-					<option value="">- Välj -
-					<option value="saved">Senast sparade
-					<option value="org">Original filen
+					<option value=""><? sv/jsp/FileAdmin_edit.jsp/5 ?>
+					<option value="saved"><? sv/jsp/FileAdmin_edit.jsp/6 ?>
+					<option value="org"><? sv/jsp/FileAdmin_edit.jsp/7 ?>
 				</select></td>
 				<td></td>
 			</tr>
@@ -512,22 +326,8 @@ function toggleFontSize() {
 			String taRows = (isTempl && !(isMac && (isNS || isIE))) ? "39" : "40" ;
 			if (isIE || (isMac && isMoz)) { %>
 	<tr>
-		<td colspan="2"<% if (isMac) { %> align="center"<% } %>>
-		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit" style="width:790; height:<% if (isTempl || (isMac && isIE)) { %>505<% } else { %>515<% } %>; overflow:auto" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
-			} else if (isMoz) { %>
-	<tr>
-		<td colspan="2" valign="top">
-		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" wrap="soft" class="edit" style="width:98%; height:<% if (isTempl) { %>500<% } else { %>510<% } %>" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
-			} else if (isMac && isNS) { %>
-	<tr>
-		<td colspan="2" align="center" class="norm">
-		<textarea name="txtField" id="txtField" cols="125" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
-			} else { %>
-	<tr>
-		<td colspan="2" align="center" class="norm">
-		<textarea name="txtField" id="txtField" cols="82" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
-			} %>
-<%= fileSrc %></textarea><%
+		<td colspan="2"<% if (isMac) { %> <? sv/jsp/FileAdmin_edit.jsp/8 ?>
+		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit" style="width:790; height:<% if (isTempl || (isMac && isIE)) { %>505<% } else { %>515<% } %>; overflow:auto" onKeyUp="checkSaved(1);"<%= sReadonly %><? sv/jsp/FileAdmin_edit.jsp/9 ?></textarea><%
 			if (isTempl && !(isMac && (isNS || isIE))) { %>
 		<div align="center"><span style="font: <% if (isNS) { %>10<% } else { %>9<% } %>px Verdana">Visa imCMS-taggar:&nbsp;
 			<a href="javascript: imScriptCount('text');">text</a> |
@@ -546,247 +346,7 @@ function toggleFontSize() {
 <%
 if (isTempl && !(isMac && (isNS || isIE))) { %>
 <script language="JavaScript">
-<!--
-function imScriptCount(imType) {
-	var hits,arr1,arr2;
-	var retStr = "Stäng med [Enter]\n¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨\n";
-	if (isNS) retStr += "(OBS! Denna funktion kan generera felaktiga listor i Netscape 4.X)\n¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨\n";
-	var head_1_a = ":: ";
-	var head_1_b = " ::";
-	var head_2_a = "        - ";
-	var head_2_b = " -";
-	var re1 = /<\?imcms\:text[^\?]*?\?>/gi;
-	var re2 = /<\?imcms\:image[^\?]*?\?>/gi;
-	var re3 = /<\?imcms\:menu\s+[^\?]*?\?>/gi;
-	var re4 = /<\?imcms\:include[^\?]*?\?>/gi;
-	var re5 = /#[A-Z0-9_-]+?#/gi;
-	var re6 = /<\?imcms\:datetime[^\?]*?\?>/gi;
-	var re7 = /(<\?imcms\:[^\?]*?\?>)|(<\!--\/?IMSCRIPT-->)/gi;
-	var re72 = /imcms\:(text|image|menu|include|datetime)/gi; // not used - inline
-
-	var cont = document.forms.editForm.txtField.value;
-	switch (imType) {
-		case 'text':
-			if (re1.test(cont)) {
-				hits = cont.match(re1);
-				//hits = hits.sort();
-				retStr += head_1_a + "imCMS text-taggar i mallen" + head_1_b + "\n\n";
-				if (hits.length > 1) {
-					retStr += head_2_a + "Sorterade enligt ordning i mallen" + head_2_b + "\n\n";
-					hits    = fixImCmsTags(hits, "codeOrder");
-					retStr += hits.join("\n");
-					retStr += "\n\n" + head_2_a + "Sorterade i nummerordning" + head_2_b + "\n\n";
-				}
-				hits    = fixImCmsTags(hits, "numOrder");
-				retStr += hits.join("\n");
-			} else {
-				retStr = head_1_a + "Inga imCMS text taggar i mallen!" + head_1_b;
-			}
-			alert(retStr);
-		break;
-		case 'image':
-			if (re2.test(cont)) {
-				hits = cont.match(re2);
-				//hits = hits.sort();
-				retStr += head_1_a + "imCMS image-taggar i mallen" + head_1_b + "\n\n";
-				if (hits.length > 1) {
-					retStr += head_2_a + "Sorterade enligt ordning i mallen" + head_2_b + "\n\n";
-					hits    = fixImCmsTags(hits, "codeOrder");
-					retStr += hits.join("\n");
-					retStr += "\n\n" + head_2_a + "Sorterade i nummerordning" + head_2_b + "\n\n";
-				}
-				hits    = fixImCmsTags(hits, "numOrder");
-				retStr += hits.join("\n");
-			} else {
-				retStr = head_1_a + "Inga imCMS image taggar i mallen!" + head_1_b;
-			}
-			alert(retStr);
-		break;
-		case 'menu':
-			if (re3.test(cont)) {
-				hits = cont.match(re3);
-				//hits = hits.sort();
-				retStr += head_1_a + "imCMS menu-taggar i mallen" + head_1_b + "\n\n";
-				if (hits.length > 1) {
-					retStr += head_2_a + "Sorterade enligt ordning i mallen:\n\n";
-					hits    = fixImCmsTags(hits, "codeOrder");
-					retStr += hits.join("\n");
-					retStr += "\n\n" + head_2_a + "Sorterade i nummerordning" + head_2_b + "\n\n";
-				}
-				hits    = fixImCmsTags(hits, "numOrder");
-				retStr += hits.join("\n");
-			} else {
-				retStr = head_1_a + "Inga imCMS menu taggar i mallen!" + head_1_b;
-			}
-			alert(retStr);
-		break;
-		case 'include':
-			if (re4.test(cont)) {
-				hits = cont.match(re4);
-				//hits = hits.sort();
-				retStr += head_1_a + "imCMS includes i mallen" + head_1_b + "\n\n";
-				if (hits.length > 1) {
-					retStr += head_2_a + "Sorterade enligt ordning i mallen" + head_2_b + "\n\n";
-				}
-				hits    = fixImCmsTags(hits, "codeOrder");
-				retStr += hits.join("\n");
-			} else {
-				retStr = head_1_a + "Inga imCMS includes i mallen!" + head_1_b;
-			}
-			alert(retStr);
-		break;
-		case 'bradgard':
-			if (re5.test(cont)) {
-				hits = cont.match(re5);
-				retStr += head_1_a + "imCMS #-taggar i mallen" + head_1_b + "\n\n";
-				if (hits.length > 1) {
-					retStr += head_2_a + "Sorterade enligt ordning i mallen" + head_2_b + "\n\n";
-				}
-				hits    = fixImCmsTags(hits, "codeOrder");
-				retStr += hits.join("\n");
-			} else {
-				retStr = head_1_a + "Inga imCMS #-taggar i mallen!" + head_1_b;
-			}
-			alert(retStr);
-		break;
-		case 'date':
-			if (re6.test(cont)) {
-				hits = cont.match(re6);
-				retStr += head_1_a + "imCMS date-taggar i mallen" + head_1_b + "\n\n";
-				if (hits.length > 1) {
-					retStr += head_2_a + "Sorterade enligt ordning i mallen" + head_2_b + "\n\n";
-				}
-				hits    = fixImCmsTags(hits, "codeOrder");
-				retStr += hits.join("\n");
-			} else {
-				retStr = head_1_a + "Inga imCMS date-taggar i mallen!" + head_1_b;
-			}
-			alert(retStr);
-		break;
-		case 'other':
-			if (re7.test(cont)) {
-				hits = cont.match(re7);
-				retStr += head_1_a + "Övriga imCMS-taggar i mallen" + head_1_b + "\n\n";
-				if (hits.length > 1) {
-					retStr += head_2_a + "Sorterade enligt ordning i mallen" + head_2_b + "\n\n";
-				}
-				var arrTemp = new Array();
-				var iCount = 0;
-				for (var i = 0; i < hits.length; i++) {
-					hits[i] = hits[i].replace(/\s+/g, " ");
-					re      = new RegExp(":(text|image|menu|include|datetime)[\\s\\?]", "g");
-					if (!re.test(hits[i])) {
-						arrTemp[iCount] = hits[i];
-						iCount++;
-					}
-				}
-				arrTemp = fixImCmsTags(arrTemp, "codeOrder");
-				retStr += arrTemp.join("\n");
-			} else {
-				retStr = head_1_a + "Inga övriga imCMS-taggar i mallen!" + head_1_b;
-			}
-			alert(retStr);
-		break;
-	}
-}
-
-function fixImCmsTags(theArray, theType) {
-	var theArr = theArray;
-	var sCount = "";
-	var re1_pa = /\s+/g;
-	var re1_to = " ";
-
-	var sTemp;
-
-	/* In original order */
-	if (theType == "codeOrder") {
-		for (var i = 0; i < theArr.length; i++) {
-			/* replace linebreaks */
-			theArr[i] = theArr[i].replace(re1_pa, re1_to);
-			/* replace long parameters in tag */
-			theArr[i] = replaceLongParams(theArr[i]);
-			/* add "counter" to the left */
-			sCount = (i < 9) ? "0" + (i+1) : i+1 ;
-			theArr[i] = sCount + " : " + theArr[i];
-		}
-	}
-
-	/* In numerical order */
-
-	if (theType == "numOrder") {
-		theArr = theArray;
-		/* get highest number */
-		var lenMax  = 0;
-		var lenTemp = 0;
-		var re4_pa1 = new RegExp(".+\\s+no=([\\\"'])([^\\2]*?)\\1.+", "gi");
-		for (var i = 0; i < theArr.length; i++) {
-			sTemp = theArr[i].replace(re4_pa1, "$2");
-			lenTemp = sTemp.length;
-			if (lenTemp > lenMax) lenMax = lenTemp;
-		}
-
-		var re4_pa1 = new RegExp(".+\\s+no=([\\\"'])([^\\2]*?)\\1.+", "gi");
-		for (var i = 0; i < theArr.length; i++) {
-			/* get the number */
-			sTemp = theArr[i].replace(re4_pa1, "$2");
-			//sTemp = (parseInt(sTemp) < 10) ? "0" + sTemp : sTemp ;
-			theArr[i] = getZeros(sTemp, lenMax) + theArr[i];
-		}
-		theArr = theArr.sort();
-		for (var i = 0; i < theArr.length; i++) {
-			theArr[i] = theArr[i].replace(/^[^<]+/g, "");
-		}
-
-	}
-
-	/* return it */
-
-	return theArr;
-}
-
-function getZeros(theString, len) {
-	var zeros = "";
-	var lenStr = theString.length;
-	for (var i = 0; i < (len-lenStr); i++) {
-		zeros += "0";
-	}
-	theString = zeros + theString;
-	return theString;
-}
-
-function replaceLongParams(theString) {
-	var sTemp;
-	var re2_pa1 = new RegExp(".+\\s+pre=([\\\"'])([^\\2]*?)\\1.+", "gi");
-	var re2_pa2 = new RegExp("\\s+(pre=)([\"'])([^\\2]*?)(\\2)", "gi");
-	var re2_to = " $1$2[TOO_LONG]$2";
-	var re3_pa1 = new RegExp(".+\\s+post=([\\\"'])([^\\2]*?)\\1.+", "gi");
-	var re3_pa2 = new RegExp("\\s+(post=)([\\\"'])([^\\2]*?)(\\2)", "gi");
-	var re3_to = " $1$2[TOO_LONG]$2";
-	var re4_pa1 = new RegExp(".+\\s+label=([\\\"'])([^\\2]*?)\\1.+", "gi");
-	var re4_pa2 = new RegExp("\\s+(label=)([\\\"'])([^\\2]*?)(\\2)", "gi");
-	var re4_to = " $1$2[TOO_LONG]$2";
-
-	/* read PRE */
-	sTemp = theString.replace(re2_pa1, "$2");
-	/* replace long PRE's */
-	if (sTemp != null) {
-		if (sTemp.length > 20) theString = theString.replace(re2_pa2, re2_to);
-	}
-	/* read POST */
-	sTemp = theString.replace(re3_pa1, "$2");
-	/* replace long POST's */
-	if (sTemp != null) {
-		if (sTemp.length > 20) theString = theString.replace(re3_pa2, re3_to);
-	}
-	/* read LABEL */
-	sTemp = theString.replace(re4_pa1, "$2");
-	/* replace long LABEL's */
-	if (sTemp != null) {
-		if (sTemp.length > 20) theString = theString.replace(re4_pa2, re4_to);
-	}
-	return theString;
-}
-//-->
+<? sv/jsp/FileAdmin_edit.jsp/10 ?>
 </script><%
 } %>
 

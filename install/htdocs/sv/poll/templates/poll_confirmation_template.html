@@ -16,7 +16,7 @@
 	<td align="center"><?imcms:text no="64" label="Rubrik:" pre='<br><b>'  post='</b><br>&nbsp;</td>
 </tr>
 <tr>
-	<td align="center">'?>
+	<td align="center"><? sv/poll/templates/poll_confirmation_template.html/1 ?>
 	<?imcms:include url="@rooturl@/poll/poll_part_name.jsp"  sendsessionid="true" sendmetaid="true"?></td>
 </tr>
 <tr>
@@ -30,12 +30,10 @@
 	<td><hr></td>
 </tr>
 <tr>
-	<td align="Right"><a href="javascript:window.close()">Stäng fönstret</a></td>
+	<td align="Right"><? sv/poll/templates/poll_confirmation_template.html/2 ?></td>
 </tr>
 </table>
-<br>
-
-#adminMode##changePage#
+<? sv/poll/templates/poll_confirmation_template.html/3 ?>
 
 <!--/IMSCRIPT--> 
 

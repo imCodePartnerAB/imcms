@@ -51,7 +51,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Redigera extern användare</title>
+<title><? sv/adminuser/changeexternaluser.jsp/1 ?></title>
 
 </head>
 <body bgcolor="#ffffff">
@@ -60,7 +60,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 <table width="550" border="0" cellspacing="0" bgcolor="#bababa">
 <tr bgcolor="#333366">
 	<td width="5%">&nbsp;</td>
-	<td colspan="3" align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff" size="2"><b>Redigera extern användare</b></font></td>
+	<td colspan="3" align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff" size="2"><? sv/adminuser/changeexternaluser.jsp/2 ?></font></td>
 	<td width="5%">&nbsp;</td>
 </tr>
 <tr>
@@ -68,9 +68,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </tr>
 <tr>
 	<td>&nbsp;</td>
-	<td colspan="3"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Informationen
-	som ej går att ändra är hämtad från ett system
-	utanför imCMS. Informationen ändras i det systemet.</font></td>
+	<td colspan="3"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/3 ?></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
@@ -78,77 +76,77 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Användarnamn:</b></font></td>
+	<td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/4 ?></font></td>
 	<td width="2%">&nbsp;</td>
 	<td width="65%" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getLoginName()%></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Förnamn:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/5 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> <%=user.getFirstName()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Efternamn:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/6 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> <%=user.getLastName()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Titel:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/7 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getTitle()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Arbetsplats:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/8 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getCompany()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Gatuadress:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/9 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getAddress()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Postnummer:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/10 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getZip()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Postort:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/11 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getCity()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Telefon, arbetet:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/12 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif" ><%=user.getWorkPhone()%></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Telefon, mobil:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/13 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getMobilePhone()%></font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Telefon, hem:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/14 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getHomePhone()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
@@ -158,21 +156,21 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Län:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/15 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getCountyCouncil()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Land:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/16 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getCountry()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Email:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/17 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.getEmailAddress()%>&nbsp;</font></td>
 	<td>&nbsp;</td>
@@ -184,14 +182,14 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Aktiv:</b></font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/18 ?></font></td>
 	<td>&nbsp;</td>
 	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><%=user.isActive()?"Ja":"Nej"%>&nbsp;</font></td>
 	<td>&nbsp;</td>
 </tr>
 <tr valign="top">
 	<td>&nbsp;</td>
-	<td nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Användarens Roller:</b></font></td>
+	<td nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/19 ?></font></td>
 	<td>&nbsp;</td>
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -209,16 +207,13 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 		for( Iterator iterator = setOfAllRoleNames.iterator(); iterator.hasNext(); ) {
 			String roleName = (String)iterator.next();
 			%>
-			<option value="<%= roleName %>"<%= (setOfUserRoleNames.contains(roleName) ? " selected" : "") %>><%= roleName %></option><%
+			<option value="<%= roleName %>"<%= (setOfUserRoleNames.contains(roleName) ? " selected" : "") %><? sv/adminuser/changeexternaluser.jsp/20 ?></option><%
 		} %>
 		</select></font></td>
 		
 		<td>&nbsp;</td>
 		
-		<td><font size="1" face="Verdana, Arial, Helvetica, sans-serif">(Varning!
-		Endast de roller som hanteras internt i Imcms blir varaktigt lagrade
-		på användaren. Roller som hanteras av det externa systemet
-		uppdateras vid inloggning.)</font></td>
+		<td><font size="1" face="Verdana, Arial, Helvetica, sans-serif"><? sv/adminuser/changeexternaluser.jsp/21 ?></font></td>
 	</tr>
 	</table></td>
 	<td>&nbsp;</td>

@@ -424,13 +424,14 @@
 
     <!-- Build extra tools needed for building. -->
     <target name="tools" depends="server" description="Builds extra tools needed for building.">
-	<ant dir="tools"/>
+    	<ant dir="tools"/>
+    	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
+        <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
     </target>
 
 
     <!-- Generates the sql-scripts -->
     <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
-	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
 	<cat destfile="${dist-sql}" orderby="path" filtering="true">
 	    <fileset dir="sql/tables" includes="tables.ascii.sql"/>
 	    <fileset dir="sql/sprocs"/>
@@ -501,94 +502,100 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-            depends="init"
+            depends="init,tools"
             description="Creates the public web">
 
-	<mkdir dir="${images}"/>
-	<mkdir dir="${login}"/>
-	<mkdir dir="${css}"/>
-	<mkdir dir="${user}"/>
-	<mkdir dir="${javascript}"/>
-    <mkdir dir="${jsp}"/>
-	<mkdir dir="${imcmsimages}"/>
+        <mkdir dir="${images}"/>
+        <mkdir dir="${login}"/>
+        <mkdir dir="${css}"/>
+        <mkdir dir="${user}"/>
+        <mkdir dir="${javascript}"/>
+        <mkdir dir="${jsp}"/>
+        <mkdir dir="${imcmsimages}"/>
 
-	<copy file="templates/login/index.html" todir="${login}" filtering="true"/>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${login}" filtering="true">
+            <fileset dir="templates/login"/>
+        </imtranslate>
 
-	<copy todir="${images}">
-	    <fileset dir="install/htdocs/images" />
-	</copy>
+        <copy todir="${images}">
+            <fileset dir="install/htdocs/images" />
+        </copy>
 
-    <copy todir="${css}">
-        <fileset dir="install/htdocs/css"/>
-    </copy>
+        <copy todir="${css}">
+            <fileset dir="install/htdocs/css"/>
+        </copy>
 
-    <copy todir="${imcmshtml}" filtering="true">
-        <fileset dir="install/htdocs/imcms/html"/>
-    </copy>
+        <copy todir="${imcmshtml}" filtering="true">
+            <fileset dir="install/htdocs/imcms/html"/>
+        </copy>
 
-    <copy todir="${imcmsimages}/${defaultlanguage}/admin">
-	    <fileset dir="install/htdocs/imcms/images"/>
-        <fileset dir="install/htdocs/imcmsimages"/>
-    </copy>
+        <copy todir="${imcmsimages}/${defaultlanguage}/admin">
+            <fileset dir="install/htdocs/imcms/images"/>
+            <fileset dir="install/htdocs/imcmsimages"/>
+        </copy>
 
-    <copy todir="${imcmscss}" filtering="true">
-	    <fileset dir="install/htdocs/imcms/css"/>
-    </copy>
+        <copy todir="${imcmscss}" filtering="true">
+            <fileset dir="install/htdocs/imcms/css"/>
+        </copy>
 
-    <copy todir="${imcmsscripts}" filtering="true">
-	    <fileset dir="install/htdocs/imcms/scripts"/>
-    </copy>
+        <copy todir="${imcmsscripts}" filtering="true">
+            <fileset dir="install/htdocs/imcms/scripts"/>
+        </copy>
 
-	<copy todir="${webroot}" filtering="true">
-	    <fileset dir="templates">
-		<patternset>
-		    <include name="*.htm"/>
-		    <include name="*.html"/>
-		    <include name="*.jsp"/>
-		</patternset>
-	    </fileset>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${webroot}" filtering="true">
+            <fileset dir="templates">
+            <patternset>
+                <include name="*.htm"/>
+                <include name="*.html"/>
+                <include name="*.jsp"/>
+            </patternset>
+            </fileset>
 
-	    <!-- Copy swedish text-files -->
-	    <fileset dir="install/htdocs/sv">
-		<include name="adminuser/**"/>
-		<include name="shop/**"/>
-		<include name="poll/**"/>
-        <include name="apisamples/**"/>
-		<exclude name="**/*.gif"/>
-		<exclude name="**/*.jpg"/>
-	    </fileset>
-	</copy>
+            <!-- Copy swedish text-files -->
+            <fileset dir="install/htdocs/sv">
+            <include name="adminuser/**"/>
+            <include name="shop/**"/>
+            <include name="poll/**"/>
+            <include name="apisamples/**"/>
+            <exclude name="**/*.gif"/>
+            <exclude name="**/*.jpg"/>
+            </fileset>
+        </imtranslate>
 
-    <!-- Copy images for poll -->
-	<copy todir="${poll}/images" >
-		<fileset dir="install/htdocs/sv/poll/images">
-		<patternset>
-		    <include name="*.gif"/>
-			<include name="*.jpg"/>
-		</patternset>
-		</fileset>
-	</copy>
+        <!-- Copy images for poll -->
+        <copy todir="${poll}/images" >
+            <fileset dir="install/htdocs/sv/poll/images">
+            <patternset>
+                <include name="*.gif"/>
+                <include name="*.jpg"/>
+            </patternset>
+            </fileset>
+        </copy>
 
-	<copy todir="${adminbuttons}">
-	    <fileset dir="install/htdocs/sv/adminbuttons">
-		<patternset>
-		    <include name="*.gif"/>
-		</patternset>
-	    </fileset>
-	</copy>
+        <copy todir="${adminbuttons}">
+            <fileset dir="install/htdocs/sv/adminbuttons">
+            <patternset>
+                <include name="*.gif"/>
+            </patternset>
+            </fileset>
+        </copy>
 
-	<copy todir="${imcmsimages}/${defaultlanguage}/admin">
-	    <fileset dir="install/htdocs/sv/imagebrowse"/>
-        <fileset dir="install/htdocs/sv/fileadmin"/>
-	</copy>
+        <copy todir="${imcmsimages}/${defaultlanguage}/admin">
+            <fileset dir="install/htdocs/sv/imagebrowse"/>
+            <fileset dir="install/htdocs/sv/fileadmin"/>
+        </copy>
 
-    <copy todir="${imcmsjsp}" filtering="true">
-        <fileset dir="install/htdocs/sv/jsp">
-        <patternset>
-            <include name="*.jsp"/>
-        </patternset>
-        </fileset>
-    </copy>
+        <copy todir="${imcmsjsp}" filtering="true">
+            <fileset dir="install/htdocs/sv/jsp">
+            <patternset>
+                <include name="*.jsp"/>
+            </patternset>
+            </fileset>
+        </copy>
 
     </target>
 
@@ -598,67 +605,50 @@
             description="Copies and filters the templates."/>
 
     <!-- Copies and filters the texttemplates. -->
-    <target name="texttemplates" depends="init" description="Copies and filters the texttemplates">
+    <target name="texttemplates" depends="init,tools" description="Copies and filters the texttemplates">
 
-	<mkdir dir="${demotemplates}"/>
+        <mkdir dir="${demotemplates}"/>
 
-	<copy todir="${texttemplates}" filtering="true">
-	    <fileset dir="templates/text"/>
-	</copy>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${texttemplates}" filtering="true">
+            <fileset dir="templates/text"/>
+        </imtranslate>
 
     </target>
 
 
     <!-- Copies and filters the admintemplates. -->
-    <target name="admintemplates" depends="init" description="Copies and filters the admintemplates.">
+    <target name="admintemplates" depends="init,tools" description="Copies and filters the admintemplates.">
 
-	<mkdir dir="${admintemplates}"/>
-	<mkdir dir="${searchtemplates}"/>
+        <mkdir dir="${admintemplates}"/>
+        <mkdir dir="${searchtemplates}"/>
 
-	<copy todir="${admintemplates}/adminbuttons" filtering="true">
-            <fileset dir="templates/sv/adminbuttons"/>
-	</copy>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${admintemplates}" filtering="true">
+            <fileset dir="templates/sv">
+            <patternset>
+                <include name="adminbuttons/**"/>
+                <include name="docinfo/**"/>
+                <include name="permissions/**"/>
+                <include name="search/**"/>
+                <include name="sections/**"/>
+                <include name="shop/**"/>
+                <include name="textdoc/**"/>
+                <include name="*.htm"/>
+                <include name="*.html"/>
+                <include name="*.ini"/>
+                <include name="*.txt"/>
+            </patternset>
+            </fileset>
+        </imtranslate>
 
         <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
             token="&#10;" value=""/>
 
         <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
             token="&#13;" value=""/>
-
-    <copy todir="${admintemplates}/docinfo" filtering="true">
-        <fileset dir="templates/sv/docinfo"/>
-    </copy>
-
-	<copy todir="${admintemplates}/permissions" filtering="true">
-            <fileset dir="templates/sv/permissions"/>
-	</copy>
-
-	<copy todir="${admintemplates}/sections" filtering="true">
-            <fileset dir="templates/sv/sections"/>
-	</copy>
-
-	<copy todir="${admintemplates}/textdoc" filtering="true">
-            <fileset dir="templates/sv/textdoc"/>
-	</copy>
-
-	<copy todir="${searchtemplates}" filtering="true">
-            <fileset dir="templates/sv/search"/>
-	</copy>
-
-	<copy todir="${admintemplates}/shop" filtering="true">
-            <fileset dir="templates/sv/shop"/>
-	</copy>
-
-	<copy todir="${admintemplates}" filtering="true">
-            <fileset dir="templates/sv">
-		<patternset>
-		    <include name="*.htm"/>
-		    <include name="*.html"/>
-		    <include name="*.ini"/>
-		    <include name="*.txt"/>
-		</patternset>
-	    </fileset>
-	</copy>
 
     </target>
 

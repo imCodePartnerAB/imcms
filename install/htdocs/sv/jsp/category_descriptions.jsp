@@ -10,14 +10,14 @@
 %>
 <html>
   <head>
-    <title>Beskrivningar för kategorier av typen <%= categoryTypeName %></title>
+    <title><? sv/jsp/category_descriptions.jsp/1 ?></title>
   </head>
   <body>
     <ul>
     <%
         for (int i = 0; i < categories.length; i++) {
             Category category = categories[i];
-            %><li><%= category.getName() %> - <%= category.getDescription() %></li><%
+            %><li><? sv/jsp/category_descriptions.jsp/2 ?></li><%
         }
     %>
     </ul>
