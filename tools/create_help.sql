@@ -3,8 +3,11 @@
 --
 -- !!!! SET @metaMax before you run the script !!!! 
 
-declare @metaMax varchar(4)
-set @metaMax = 291  --201 
+declare @metaMax varchar(4), @serverName varchar(35)
+set @metaMax = 401  --201 
+
+select @serverName = srvname
+from master.dbo.sysservers
 
 print '
 -- Script name = "help.sql" 
@@ -14,7 +17,7 @@ print '
 -- This script is autocreated by script "create_help.sql"'
 
 print'-- Soures database = ' + db_name() + ''
-print'-- Server = ' + host_name() + ''
+print'-- Server = ' + @serverName + ''
 print'-- Create date = ' + convert(char(10),getDate(),120)+ ''
 print'-- Included help-page =  meta_id < ' + @metaMax + '' 
 print''

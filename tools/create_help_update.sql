@@ -3,9 +3,13 @@
 --
 -- !!!! SET @metaStart and @metaMax before you run the script !!!! 
 
-declare @metaStart varchar(4), @metaMax varchar(4)
-set @metaStart = 91 --1
-set @metaMax = 290 --200
+declare @metaStart varchar(4), @metaMax varchar(4), @serverName varchar(35)
+set @metaStart = 1 --1
+set @metaMax = 200 --200
+
+select @serverName = srvname
+from master.dbo.sysservers
+
 
 print'-- Script name = help_update.sql'
 print''
@@ -14,7 +18,7 @@ print''
 print'-- This script is autocreated by script "create_update_help.sql"'
 print''
 print'-- Soures database = ' + db_name() + ''
-print'-- Server = ' + host_name() + ''
+print'-- Server = ' + @serverName + ''
 print'-- Create date = ' + convert(char(10),getDate(),120)+ ''
 print'-- Update intervall = meta_id from ' + @metaStart + ' to ' + @metaMax + '' 
 print''
