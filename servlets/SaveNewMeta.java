@@ -73,7 +73,7 @@ public class SaveNewMeta extends HttpServlet {
             "meta_image", null,
             "frame_name", "",
             "target", null,
-            "publisher_id", null,
+            "publisher_id", "",
         };
 
         Properties metaprops = new Properties();
@@ -123,14 +123,15 @@ public class SaveNewMeta extends HttpServlet {
         }
 
         for( int i = 0; i < metatable.length; i += 2 ) {
-            String tmp = (String)inputMap.get( metatable[i] );
+            String metaprop = metatable[i];
+            String metapropNullValue = metatable[i+1] ;
+            String tmp = (String)inputMap.get( metaprop );
             if( tmp != null ) {
-                metaprops.setProperty( metatable[i], tmp );
+                metaprops.setProperty( metaprop, tmp );
             } else {
-                metaprops.setProperty( metatable[i], metatable[i + 1] );
+                metaprops.setProperty( metaprop, metapropNullValue );
             }
         }
-
 
         // Check if user logged on
         imcode.server.user.UserDomainObject user;
@@ -149,8 +150,6 @@ public class SaveNewMeta extends HttpServlet {
             }
             return;
         }
-
-
 
         // Lets fix the date information (date_created, modified etc)
         metaprops.setProperty( "date_modified", DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime ) );
