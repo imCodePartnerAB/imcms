@@ -1,7 +1,5 @@
 package com.imcode.imcms.flow;
 
-import com.imcode.imcms.servlet.admin.DocumentComposer;
-import com.imcode.imcms.flow.EditDocumentPageFlow;
 import imcode.server.ApplicationServer;
 import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -12,13 +10,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import com.imcode.imcms.servlet.WebComponent;
+
 public class EditHtmlDocumentPageFlow extends EditDocumentPageFlow {
 
     private final static String URL_I15D_PAGE__HTMLDOC = "/jsp/docadmin/html_document.jsp";
     public static final String REQUEST_PARAMETER__HTML_DOC__HTML = "html";
 
-    public EditHtmlDocumentPageFlow( HtmlDocumentDomainObject document ) {
-        super( document );
+    public EditHtmlDocumentPageFlow( HtmlDocumentDomainObject document, WebComponent.DispatchCommand returnCommand,
+                                     SaveDocumentCommand saveDocumentCommand ) {
+        super( document, returnCommand, saveDocumentCommand );
     }
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException {

@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import imcode.util.Html;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.IMCConstants;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -19,6 +20,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import com.imcode.imcms.flow.*;
+import com.imcode.imcms.servlet.WebComponent;
 
 /**
  * Adds a new document to a menu.
@@ -45,22 +47,23 @@ public class AddDoc extends HttpServlet {
             createExistingDocPage( parentId, parentMenuIndex, request, response );
         } else {
             HttpPageFlow httpPageFlow = null ;
+            DispatchToMenuEditCommand dispatchToMenuEditCommand = new DispatchToMenuEditCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
+            SaveNewDocumentAndAddToMenuCommand saveNewDocumentAndAddToMenuCommand = new SaveNewDocumentAndAddToMenuCommand((TextDocumentDomainObject)parentDocument, parentMenuIndex );
             if (document instanceof TextDocumentDomainObject) {
-                httpPageFlow = new CreateTextDocumentPageFlow( (TextDocumentDomainObject)parentDocument, parentMenuIndex, (TextDocumentDomainObject)document ) ;
+                httpPageFlow = new CreateTextDocumentPageFlow( (TextDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand ) ;
             } else if (document instanceof UrlDocumentDomainObject) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( (TextDocumentDomainObject)parentDocument, parentMenuIndex, new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document) );
+                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, new AdminDoc.RedirectToDocumentCommand( (UrlDocumentDomainObject)document ), new AdminDoc.SaveEditedDocumentCommand() ), saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
             } else if (document instanceof HtmlDocumentDomainObject) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( (TextDocumentDomainObject)parentDocument, parentMenuIndex, new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document) ) ;
+                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, new AdminDoc.RedirectToDocumentCommand( (HtmlDocumentDomainObject)document ), new AdminDoc.SaveEditedDocumentCommand() ), saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand ) ;
             } else if (document instanceof FileDocumentDomainObject) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( (TextDocumentDomainObject)parentDocument, parentMenuIndex, new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext() ) ) ;
+                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), new AdminDoc.RedirectToDocumentCommand( (FileDocumentDomainObject)document ), new AdminDoc.SaveEditedDocumentCommand() ), saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand ) ;
             } else if (document instanceof BrowserDocumentDomainObject) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( (TextDocumentDomainObject)parentDocument, parentMenuIndex, new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document ) ) ;
+                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, new AdminDoc.RedirectToDocumentCommand( (BrowserDocumentDomainObject)document ), new AdminDoc.SaveEditedDocumentCommand() ), saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand ) ;
             } else if (document instanceof FormerExternalDocumentDomainObject) {
-                httpPageFlow = new CreateFormerExternalDocumentPageFlow( (TextDocumentDomainObject)parentDocument, parentMenuIndex, (FormerExternalDocumentDomainObject)document ) ;
+                httpPageFlow = new CreateFormerExternalDocumentPageFlow( (FormerExternalDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand ) ;
 
             }
-            HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( httpPageFlow, request, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
-            request.getRequestDispatcher( "DocumentComposer" ).forward( request, response );
+            DocumentComposer.forwardToDocumentComposerWithFlow( request, response, httpPageFlow );
         }
     }
 
@@ -128,4 +131,36 @@ public class AddDoc extends HttpServlet {
         return;
     }
 
+    private static class DispatchToMenuEditCommand implements WebComponent.DispatchCommand {
+
+        private TextDocumentDomainObject parentDocument;
+        private int parentMenuIndex;
+
+        DispatchToMenuEditCommand( TextDocumentDomainObject parentDocument, int parentMenuIndex ) {
+            this.parentDocument = parentDocument;
+            this.parentMenuIndex = parentMenuIndex;
+        }
+
+        public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+            response.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
+                                   + IMCConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex );
+        }
+    }
+
+    private static class SaveNewDocumentAndAddToMenuCommand implements CreateDocumentPageFlow.SaveDocumentCommand {
+
+        private TextDocumentDomainObject parentDocument;
+        private int parentMenuIndex;
+
+        SaveNewDocumentAndAddToMenuCommand( TextDocumentDomainObject parentDocument, int parentMenuIndex ) {
+            this.parentDocument = parentDocument;
+            this.parentMenuIndex = parentMenuIndex;
+        }
+
+        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+            final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            documentMapper.saveNewDocument( document, user );
+            documentMapper.addToMenu( parentDocument, parentMenuIndex, document, user );
+        }
+    }
 }

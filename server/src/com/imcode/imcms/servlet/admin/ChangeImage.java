@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.admin;
 
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.ApplicationServer;
@@ -36,7 +36,9 @@ import java.io.InputStream;
 public class ChangeImage extends HttpServlet {
 
     final static String REQUEST_PARAMETER__IMAGE_URL = "imageref";
-    public final static String REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH = "goToImageSearch";
+    public final static String REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON = "goToImageSearch";
+    public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON = "goToImageBrowser";
+    public static final String REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON = "goToAddRestrictedImage";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
     private static final String REQUEST_PARAMETER__IMAGE_HEIGHT = "image_height";
@@ -51,7 +53,6 @@ public class ChangeImage extends HttpServlet {
     private static final String REQUEST_PARAMETER__IMAGE_ALIGN = "image_align";
     private static final String REQUEST_PARAMETER__IMAGE_ALT = "alt_text";
     private static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
-    public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "goToImageBrowser";
     public static final String REQUEST_PARAMETER__DIRECTORY = "directory";
     public static final String REQUEST_PARAMETER__DOCUMENT_ID = "documentId";
     public static final String REQUEST_PARAMETER__LABEL = "label";
@@ -60,7 +61,7 @@ public class ChangeImage extends HttpServlet {
 
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
-        final ImageDomainObject image = getImageFromRequest( request );
+        ImageDomainObject image = getImageFromRequest( request );
         UserDomainObject user = Utility.getLoggedOnUser( request );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
@@ -75,14 +76,16 @@ public class ChangeImage extends HttpServlet {
         if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
             goBack( document, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__DELETE_BUTTON ) ) {
-            image.setUrl( "" );
+            image = new ImageDomainObject();
             goToImageEditPage( document, imageIndex, image, request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__PREVIEW_BUTTON ) ) {
             goToImageEditPage( document, imageIndex, image, request, response );
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER ) ) {
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON ) ) {
             goToImageBrowser( document, imageIndex, image, request, response );
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH ) ) {
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON ) ) {
             goToImageSearch( document, imageIndex, image, request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON ) ) {
+            goToImageAdder( documentMapper, document, user, image, imageIndex, request, response );
         } else {
             document.setImage( imageIndex, image );
             documentMapper.saveDocument( document, user );
@@ -93,12 +96,33 @@ public class ChangeImage extends HttpServlet {
         }
     }
 
+    private void goToImageAdder( final DocumentMapper documentMapper, final TextDocumentDomainObject document,
+                                 UserDomainObject user, final ImageDomainObject image, final int imageIndex,
+                                 HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentDomainObject.DOCTYPE_FILE, document, user) ;
+        DocumentPageFlow.SaveDocumentCommand saveNewImageFileDocument = new CreateDocumentPageFlow.SaveDocumentCommand() {
+            public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+                FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document ;
+                fileDocument.setHeadline( fileDocument.getFilename() );
+                documentMapper.saveNewDocument( document, user );
+                image.setUrl( "../servlet/GetDoc?meta_id="+document.getId() );
+            }
+        };
+        WebComponent.DispatchCommand returnToImageEditPageCommand = new WebComponent.DispatchCommand() {
+            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                goToImageEditPage( document, imageIndex, image, request, response );
+            }
+        };
+        DocumentPageFlow pageFlow = new EditFileDocumentPageFlow( fileDocument, getServletContext(), returnToImageEditPageCommand, saveNewImageFileDocument ) ;
+        pageFlow.dispatch( request, response );
+    }
+
     private void goToImageBrowser( final TextDocumentDomainObject document, final int imageIndex,
                                    final ImageDomainObject image, final HttpServletRequest request,
                                    final HttpServletResponse response ) throws IOException, ServletException {
         ImageBrowser imageBrowser = new ImageBrowser();
-        imageBrowser.setCancelCommand( new WebComponent.CancelCommand() {
-            public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        imageBrowser.setCancelCommand( new WebComponent.DispatchCommand() {
+            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         } );
@@ -115,8 +139,8 @@ public class ChangeImage extends HttpServlet {
                                   final ImageDomainObject image, final HttpServletRequest request,
                                   final HttpServletResponse response ) throws IOException, ServletException {
         DocumentFinder documentFinder = new DocumentFinder();
-        documentFinder.setCancelCommand( new DocumentFinder.CancelCommand() {
-            public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        documentFinder.setCancelCommand( new DocumentFinder.DispatchCommand() {
+            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         } );

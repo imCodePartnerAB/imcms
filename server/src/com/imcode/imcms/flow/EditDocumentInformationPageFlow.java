@@ -1,7 +1,6 @@
 package com.imcode.imcms.flow;
 
 import com.imcode.imcms.servlet.WebComponent;
-import com.imcode.imcms.servlet.admin.DocumentComposer;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
 import com.imcode.imcms.servlet.admin.UserFinder;
 import imcode.server.ApplicationServer;
@@ -57,8 +56,9 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "browseForMenuImage";
     public static final String PAGE__DOCUMENT_INFORMATION = "document_information";
 
-    public EditDocumentInformationPageFlow( DocumentDomainObject document ) {
-        super( document );
+    public EditDocumentInformationPageFlow( DocumentDomainObject document, WebComponent.DispatchCommand returnCommand,
+                                            SaveDocumentCommand saveDocumentCommand ) {
+        super( document, returnCommand, saveDocumentCommand );
     }
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
@@ -80,17 +80,17 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
 
     private void dispatchToImageBrowser( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         ImageBrowser imageBrowser = new ImageBrowser();
-        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
-        imageBrowser.setCancelCommand( new WebComponent.CancelCommand() {
-            public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                request.setAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
+        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        imageBrowser.setCancelCommand( new WebComponent.DispatchCommand() {
+            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
             }
         } );
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
             public void selectImageUrl( String imageUrl, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
                 document.setMenuImage( "../images/" + imageUrl );
-                request.setAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
+                request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
             }
         } );
@@ -98,24 +98,24 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchToPublisherUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
         dispatchToUserBrowser( request, response, true, new UserFinder.SelectUserCommand() {
             public void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
                                     HttpServletResponse response ) throws ServletException, IOException {
                 document.setPublisher( selectedUser );
-                request.setAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
+                request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
             }
         } );
     }
 
     private void dispatchToCreatorUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
         dispatchToUserBrowser( request, response, false, new UserFinder.SelectUserCommand() {
             public void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
                                     HttpServletResponse response ) throws ServletException, IOException {
                 document.setCreator( selectedUser );
-                request.setAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
+                request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
             }
         } );
@@ -128,10 +128,10 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         userFinder.setUsersAddable( false );
         userFinder.setNullSelectable( nullSelectable );
         userFinder.setSelectUserCommand( selectUserCommand );
-        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
-        userFinder.setCancelCommand( new WebComponent.CancelCommand() {
-            public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                request.setAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
+        final String flowSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        userFinder.setCancelCommand( new WebComponent.DispatchCommand() {
+            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                request.setAttribute( REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW, flowSessionAttributeName );
                 dispatchToFirstPage( request, response );
             }
         } );

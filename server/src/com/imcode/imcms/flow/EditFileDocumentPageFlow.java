@@ -4,9 +4,9 @@ import imcode.server.ApplicationServer;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.InputStreamSource;
 import imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
-import imcode.util.InputStreamSource;
 import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.ServletContext;
@@ -15,12 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.imcode.imcms.flow.EditDocumentPageFlow;
+import com.imcode.imcms.servlet.WebComponent;
 
 public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
 
@@ -31,8 +30,10 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__FILE_DOC__MIME_TYPE = "mimetype";
     private static final String URL_I15D_PAGE__FILEDOC = "/jsp/docadmin/file_document.jsp";
 
-    public EditFileDocumentPageFlow( FileDocumentDomainObject document, ServletContext servletContext ) {
-        super( document );
+    public EditFileDocumentPageFlow( FileDocumentDomainObject document, ServletContext servletContext,
+                                     WebComponent.DispatchCommand returnCommand,
+                                     SaveDocumentCommand saveDocumentCommand ) {
+        super( document, returnCommand, saveDocumentCommand );
         this.servletContext = servletContext;
     }
 

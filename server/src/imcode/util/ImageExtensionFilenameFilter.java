@@ -3,7 +3,7 @@ package imcode.util;
 import java.io.File;
 import java.io.FilenameFilter;
 
-public class ImageExtensionFileFilter implements FilenameFilter {
+public class ImageExtensionFilenameFilter implements FilenameFilter {
 
     public boolean accept( File file, String filename ) {
         String name = filename.toLowerCase();

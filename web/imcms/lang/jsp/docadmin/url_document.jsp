@@ -6,7 +6,8 @@
                  imcode.util.*,
                  com.imcode.imcms.flow.EditUrlDocumentPageFlow,
                  com.imcode.imcms.flow.DocumentPageFlow,
-                 com.imcode.imcms.flow.HttpPageFlow" contentType="text/html"%>
+                 com.imcode.imcms.flow.HttpPageFlow,
+                 com.imcode.imcms.flow.EditDocumentPageFlow" contentType="text/html"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
     DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
     UrlDocumentDomainObject document = (UrlDocumentDomainObject)httpFlow.getDocument() ;
@@ -32,10 +33,10 @@
 </table>
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="400">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
-    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
-    value="<%= DocumentPageFlow.PAGE__EDIT %>">
+    value="<%= EditDocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td colspan="2">
         #gui_heading( "<? install/htdocs/sv/jsp/docadmin/url_document.jsp/4/1 ?>" )

@@ -7,22 +7,22 @@ import java.io.IOException;
 
 public class WebComponent {
 
-    private CancelCommand cancelCommand;
+    private DispatchCommand cancelCommand;
 
     public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        cancelCommand.cancel(request,response) ;
+        cancelCommand.dispatch(request,response) ;
     }
 
     public boolean isCancelable() {
         return null != cancelCommand;
     }
 
-    public void setCancelCommand( CancelCommand cancelCommand ) {
+    public void setCancelCommand( DispatchCommand cancelCommand ) {
         this.cancelCommand = cancelCommand;
     }
 
-    public interface CancelCommand {
-        public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
+    public interface DispatchCommand {
+        public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
     }
 
 }

@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.imcode.imcms.flow.EditDocumentPageFlow;
+import com.imcode.imcms.servlet.WebComponent;
+import com.imcode.imcms.servlet.admin.AdminDoc;
 
 public class EditBrowserDocumentPageFlow extends EditDocumentPageFlow {
 
@@ -25,8 +26,10 @@ public class EditBrowserDocumentPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__ADD_BROWSERS_BUTTON = "add_browsers";
     public static final String REQUEST_ATTRIBUTE__ADDED_BROWSERS = "addedBrowsers";
 
-    public EditBrowserDocumentPageFlow( BrowserDocumentDomainObject document ) {
-        super( document );
+    public EditBrowserDocumentPageFlow( BrowserDocumentDomainObject document,
+                                        WebComponent.DispatchCommand returnCommand,
+                                        AdminDoc.SaveEditedDocumentCommand saveDocumentCommand ) {
+        super( document, returnCommand, saveDocumentCommand );
     }
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {

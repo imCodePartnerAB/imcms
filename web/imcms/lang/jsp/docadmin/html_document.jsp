@@ -35,10 +35,10 @@
     DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
     HtmlDocumentDomainObject document = (HtmlDocumentDomainObject)httpFlow.getDocument() ;
 %>
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
-    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
-    value="<%= DocumentPageFlow.PAGE__EDIT %>">
+    value="<%= EditDocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td>
         #gui_heading( "<? install/htdocs/sv/jsp/docadmin/html_document.jsp/6 ?>" )

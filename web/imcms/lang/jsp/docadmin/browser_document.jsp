@@ -36,10 +36,10 @@
 </table>
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="660">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
-    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
-    value="<%= DocumentPageFlow.PAGE__EDIT %>">
+    value="<%= EditDocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td colspan="3">
         #gui_heading( "<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/4/1 ?>" )

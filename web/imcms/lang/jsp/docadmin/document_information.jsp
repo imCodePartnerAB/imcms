@@ -125,8 +125,8 @@ function checkFocus() {
 
 %>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center" onMouseOver="checkFocus();">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
-    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
     value="<%= EditDocumentInformationPageFlow.PAGE__DOCUMENT_INFORMATION %>">
 <% if (creatingNewDocument) { %>

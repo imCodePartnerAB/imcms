@@ -1,21 +1,20 @@
 package com.imcode.imcms.flow;
 
-import imcode.server.document.textdocument.TextDocumentDomainObject;
+import com.imcode.imcms.servlet.WebComponent;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import com.imcode.imcms.flow.EditDocumentPageFlow;
-
 public class CreateDocumentWithEditPageFlow extends CreateDocumentPageFlow {
 
     private EditDocumentPageFlow editDocumentPageFlow;
 
-    public CreateDocumentWithEditPageFlow( TextDocumentDomainObject parentDocument, int parentMenuIndex,
-                                           EditDocumentPageFlow editDocumentPageFlow ) {
-        super( parentDocument, parentMenuIndex, editDocumentPageFlow.getDocument() );
+    public CreateDocumentWithEditPageFlow( EditDocumentPageFlow editDocumentPageFlow,
+                                           SaveDocumentCommand saveDocumentCommand,
+                                           WebComponent.DispatchCommand returnCommand ) {
+        super( editDocumentPageFlow.getDocument(), saveDocumentCommand, returnCommand );
         this.editDocumentPageFlow = editDocumentPageFlow;
     }
 
@@ -27,10 +26,9 @@ public class CreateDocumentWithEditPageFlow extends CreateDocumentPageFlow {
         editDocumentPageFlow.dispatchFromPage( request, response, page );
     }
 
-    protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException {
+    protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         editDocumentPageFlow.dispatchOkFromEditPage( request, response );
-        saveDocument( request );
-        dispatchCancel( request, response );
+        saveDocumentAndReturn( request, response );
     }
 
 }

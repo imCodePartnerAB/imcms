@@ -33,10 +33,6 @@ function setDef() {
 	changeLinkType(1) ;
 }
 
-/* *******************************************************************************************
- *         Image-Link functions                                                              *
- ******************************************************************************************* */
-
 var defValues = new Array("meta_id","http://") ;
 
 function changeLinkType(idx) {
@@ -44,11 +40,10 @@ function changeLinkType(idx) {
 	var rad = f.linkType ;
 	var url = f.imageref_link ;
 	var val = url.value ;
-	var re  = /^GetDoc\?meta_id=(\d+)$/ ;
 	if (val == "" || val == defValues[0] || val == defValues[1]) {
 		url.value = defValues[idx] ;
 		rad[idx].checked = 1 ;
-	} else if (re.test(val)) {
+	} else if (/^GetDoc\?meta_id=(\d+)$/.test(val)) {
 		url.value = val.replace(re, "$1") ;
 		rad[0].checked = 1 ;
 	}
@@ -68,7 +63,7 @@ function checkLinkType() {
 
 function checkLinkOnFocus() {
 	var f   = document.forms[0] ;
-	var url = f.imageref_link ;
+	var url = f.imageref_link
 	var val = url.value ;
 	if (val == defValues[0]) {
 		url.value = "" ;
@@ -94,7 +89,7 @@ function checkLinkOnBlur() {
 
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
-<form method="POST" action="ChangeImage">
+<form method="POST" action="ChangeImage" onsubmit="checkLinkType();">
     <input type="HIDDEN" name="<%= ChangeImage.REQUEST_PARAMETER__DOCUMENT_ID %>" value="<%= document.getId() %>">
     <input type="HIDDEN" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_INDEX %>" value="<%= imageIndex %>">
     <input type="hidden" name="<%= ChangeImage.REQUEST_PARAMETER__LABEL %>" value="<%= StringEscapeUtils.escapeHtml(imageEditPage.getLabel()) %>">
@@ -135,10 +130,13 @@ function checkLinkOnBlur() {
                 <table>
                     <tr>
                         <td>
-                                <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER %>" class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/2004 ?>">
+                            <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON %>" class="imcmsFormBtnSmall" value="<? web/imcms/lang/jsp/change_img.jsp/add_restricted_image ?>" >
                         </td>
                         <td>
-                                <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH %>" class="imcmsFormBtnSmall" value="Hämta från det nya bildarkivet" >
+                            <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON %>" class="imcmsFormBtnSmall" value="<? web/imcms/lang/jsp/change_img.jsp/image_search ?>" >
+                        </td>
+                        <td>
+                            <input type="submit" name="<%= ChangeImage.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON %>" class="imcmsFormBtnSmall" value="<? templates/sv/change_img.html/2004 ?>">
                         </td>
                     </tr>
                 </table>
@@ -149,13 +147,13 @@ function checkLinkOnBlur() {
             <td>
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
             <tr>
-                <td colspan="2"><input type="text" name="imageref" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(image.getUrl()) %>"></td>
+                <td colspan="2"><input type="text" name="imageref" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getUrl())) %>"></td>
             </tr>
             </table></td>
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/14 ?></td>
-            <td><input type="text" name="image_name" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(image.getName()) %>"></td>
+            <td><input type="text" name="image_name" size="50" maxlength="255" style="width: 350" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getName())) %>"></td>
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/16 ?></td>
@@ -219,7 +217,7 @@ function checkLinkOnBlur() {
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/41 ?></td>
-            <td><input type="text" name="alt_text" size="92" maxlength="255" style="width: 100%" value="<%= image.getAlternateText() %>"></td>
+            <td><input type="text" name="alt_text" size="92" maxlength="255" style="width: 100%" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getAlternateText())) %>"></td>
         </tr>
         <tr>
             <td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/change_img.html/43/1 ?>" )</td>
@@ -237,7 +235,7 @@ function checkLinkOnBlur() {
                 <td><label for="linkType1"><? templates/sv/change_img.html/4001 ?></label></td>
             </tr>
             </table></td>
-            <td><input type="text" name="imageref_link" size="92" maxlength="255" style="width: 100%" value="<%= image.getLinkUrl() %>" onFocus="checkLinkOnFocus()" onBlur="checkLinkOnBlur()"></td>
+            <td><input type="text" name="imageref_link" size="92" maxlength="255" style="width: 100%" value="<%= StringEscapeUtils.escapeHtml(StringUtils.defaultString(image.getLinkUrl())) %>" onFocus="checkLinkOnFocus()" onBlur="checkLinkOnBlur()"></td>
         </tr>
         <tr>
             <td nowrap><? templates/sv/change_img.html/46 ?></td>
@@ -246,7 +244,7 @@ function checkLinkOnBlur() {
             <tr>
                 <td>
                 <select name="target" size="1">
-                    <% String target = image.getTarget() ;
+                    <% String target = StringUtils.defaultString( image.getTarget() ) ;
                        boolean targetTop = "_top".equalsIgnoreCase(target);
                        boolean targetBlank = "_blank".equalsIgnoreCase(target);
                        boolean targetParent = "_parent".equalsIgnoreCase(target);

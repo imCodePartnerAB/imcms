@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.servlet.admin.UserFinder;
+import com.imcode.imcms.servlet.WebComponent;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
@@ -35,13 +36,18 @@ public class AdminUser extends Administrator {
             return;
         }
 
-        UserFinder userFinder = UserFinder.getInstance( req );
+        UserFinder userFinder = new UserFinder();
         userFinder.setUsersAddable( true );
         userFinder.setSelectButton( UserFinder.SELECT_BUTTON__EDIT_USER );
         userFinder.setSelectUserCommand( new UserFinder.SelectUserCommand() {
             public void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
                                     HttpServletResponse response ) throws ServletException, IOException {
                 gotoChangeUser( request, response, user, selectedUser );
+            }
+        } );
+        userFinder.setCancelCommand( new WebComponent.DispatchCommand() {
+            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                request.getRequestDispatcher( "AdminManager" ).forward( request, response );
             }
         } );
         userFinder.forward( req, res );

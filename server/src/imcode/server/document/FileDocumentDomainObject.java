@@ -1,9 +1,3 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-feb-28
- * Time: 20:36:57
- */
 package imcode.server.document;
 
 import imcode.server.user.UserDomainObject;

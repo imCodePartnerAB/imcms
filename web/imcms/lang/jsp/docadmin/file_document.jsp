@@ -6,10 +6,7 @@
                                          org.apache.commons.lang.ObjectUtils,
                                          imcode.server.document.HtmlDocumentDomainObject,
                                          imcode.util.*,
-                                         com.imcode.imcms.flow.CreateDocumentPageFlow,
-                                         com.imcode.imcms.flow.DocumentPageFlow,
-                                         com.imcode.imcms.flow.HttpPageFlow,
-                                         com.imcode.imcms.flow.EditFileDocumentPageFlow"%>
+                                         com.imcode.imcms.flow.*"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
@@ -40,10 +37,10 @@
     FileDocumentDomainObject document = (FileDocumentDomainObject)httpFlow.getDocument() ;
     boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
 %>
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
-    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
-    value="<%= DocumentPageFlow.PAGE__EDIT %>">
+    value="<%= EditDocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td>
         #gui_heading( "<? install/htdocs/sv/jsp/docadmin/file_document.jsp/4/1 ?>" )

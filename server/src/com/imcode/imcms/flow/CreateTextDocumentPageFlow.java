@@ -5,25 +5,26 @@ import imcode.server.document.textdocument.TextDomainObject;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
 import java.io.IOException;
 
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
-import com.imcode.imcms.flow.CreateDocumentPageFlow;
+import com.imcode.imcms.servlet.WebComponent;
 
 public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
 
-    public CreateTextDocumentPageFlow(final TextDocumentDomainObject parentDocument,
-                                   final int parentMenuIndex, TextDocumentDomainObject document ) {
-        super(parentDocument, parentMenuIndex, document);
+    public CreateTextDocumentPageFlow( TextDocumentDomainObject document,
+                                       SaveDocumentCommand saveNewDocumentCommand,
+                                       WebComponent.DispatchCommand returnCommand ) {
+        super( document, saveNewDocumentCommand, returnCommand );
     }
 
-    protected void dispatchOkFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) {
+    protected void dispatchOkFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getDocument() ;
         if ( null != request.getParameter( EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS ) ) {
             textDocument.setText( 1, new TextDomainObject( textDocument.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN ) );
             textDocument.setText( 2, new TextDomainObject( textDocument.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN ) );
         }
-        saveDocument(request) ;
+        saveDocumentAndReturn(request, response ) ;
     }
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) {

@@ -1405,10 +1405,9 @@ public class DocumentMapper {
         return mimeTypes;
     }
 
-    public void saveNewDocumentAndAddToMenu( DocumentDomainObject newDocument, UserDomainObject user,
-                                             TextDocumentDomainObject parentDocument, int parentMenuIndex ) {
-        saveNewDocument( newDocument, user );
-        parentDocument.getMenu( parentMenuIndex ).addMenuItem( new MenuItemDomainObject( newDocument ) );
+    public void addToMenu( TextDocumentDomainObject parentDocument, int parentMenuIndex,
+                            DocumentDomainObject documentToAddToMenu, UserDomainObject user ) {
+        parentDocument.getMenu( parentMenuIndex ).addMenuItem( new MenuItemDomainObject( documentToAddToMenu ) );
         saveDocument( parentDocument, user );
     }
 

@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.flow.HttpPageFlow;
 
 public class DocumentComposer extends HttpServlet {
 
@@ -24,10 +25,7 @@ public class DocumentComposer extends HttpServlet {
 
     public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__ACTION = "action";
 
-    private static final String PARAMETER__RETURNING_FROM_IMAGE_BROWSE = "returningFromImageBrowse";
     public static final String PARAMETER__PREVIOUS_ACTION = "previousAction";
-
-    public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW = "flow";
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         doPost( request, response );
@@ -53,7 +51,12 @@ public class DocumentComposer extends HttpServlet {
     }
 
     public static DocumentPageFlow getDocumentPageFlowFromRequest( HttpServletRequest request ) {
-        return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
     }
 
+    public static void forwardToDocumentComposerWithFlow( HttpServletRequest req, HttpServletResponse res,
+                                                             HttpPageFlow httpPageFlow ) throws ServletException, IOException {
+        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( httpPageFlow, req, HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        req.getRequestDispatcher( "DocumentComposer" ).forward( req, res );
+    }
 }

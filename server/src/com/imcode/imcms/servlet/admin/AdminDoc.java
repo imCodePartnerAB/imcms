@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.servlet.GetDoc;
+import com.imcode.imcms.servlet.WebComponent;
 import com.imcode.imcms.flow.*;
 import imcode.server.*;
 import imcode.server.document.*;
@@ -36,25 +37,27 @@ public class AdminDoc extends HttpServlet {
         if (!documentMapper.userHasMoreThanReadPermissionOnDocument( user, document )) {
             flags = 0 ;
         }
+        RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand( document );
+        SaveEditedDocumentCommand saveDocumentCommand = new SaveEditedDocumentCommand();
         if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
-            HttpPageFlow httpPageFlow = new EditDocumentInformationPageFlow(document) ;
-            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
+            HttpPageFlow httpPageFlow = new EditDocumentInformationPageFlow(document, returnCommand, saveDocumentCommand ) ;
+            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else if ( document instanceof BrowserDocumentDomainObject
                     && IMCConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
-            HttpPageFlow httpPageFlow = new EditBrowserDocumentPageFlow((BrowserDocumentDomainObject)document) ;
-            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
+            HttpPageFlow httpPageFlow = new EditBrowserDocumentPageFlow((BrowserDocumentDomainObject)document, returnCommand, saveDocumentCommand ) ;
+            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else if ( document instanceof HtmlDocumentDomainObject
                     && IMCConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags ) {
-            HttpPageFlow httpPageFlow = new EditHtmlDocumentPageFlow((HtmlDocumentDomainObject)document) ;
-            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
+            HttpPageFlow httpPageFlow = new EditHtmlDocumentPageFlow((HtmlDocumentDomainObject)document, returnCommand, saveDocumentCommand ) ;
+            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else if ( document instanceof UrlDocumentDomainObject
                     && IMCConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags ) {
-            HttpPageFlow httpPageFlow = new EditUrlDocumentPageFlow((UrlDocumentDomainObject)document) ;
-            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
+            HttpPageFlow httpPageFlow = new EditUrlDocumentPageFlow((UrlDocumentDomainObject)document, returnCommand, saveDocumentCommand ) ;
+            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else if ( document instanceof FileDocumentDomainObject
                     && IMCConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
-            HttpPageFlow httpPageFlow = new EditFileDocumentPageFlow((FileDocumentDomainObject)document, getServletContext()) ;
-            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
+            HttpPageFlow httpPageFlow = new EditFileDocumentPageFlow((FileDocumentDomainObject)document, getServletContext(), returnCommand, saveDocumentCommand ) ;
+            DocumentComposer.forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -80,12 +83,6 @@ public class AdminDoc extends HttpServlet {
             }
 
         }
-    }
-
-    private void forwardToDocumentComposerWithFlow( HttpServletRequest req, HttpServletResponse res,
-                                                             HttpPageFlow httpPageFlow ) throws ServletException, IOException {
-        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( httpPageFlow, req, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
-        req.getRequestDispatcher( "DocumentComposer" ).forward( req, res );
     }
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req,
@@ -301,4 +298,23 @@ public class AdminDoc extends HttpServlet {
         return htmlStr;
     }
 
+    public static class RedirectToDocumentCommand implements WebComponent.DispatchCommand {
+
+        private final DocumentDomainObject document;
+
+        public RedirectToDocumentCommand( DocumentDomainObject document ) {
+            this.document = document;
+        }
+
+        public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException {
+            response.sendRedirect( "AdminDoc?meta_id=" + document.getId() );
+        }
+    }
+
+    public static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
+
+        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+            ApplicationServer.getIMCServiceInterface().getDocumentMapper().saveDocument( document, user );
+        }
+    }
 }

@@ -3,6 +3,7 @@ package imcode.util;
 import org.apache.commons.lang.ClassUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class HttpSessionUtils {
 
@@ -12,9 +13,12 @@ public class HttpSessionUtils {
     public static void setSessionAttributeAndSetNameInRequestAttribute( final Object objectToAddToSession,
                                                                               HttpServletRequest request,
                                                                               final String sessionAttributeNameRequestAttributeName ) {
-        final String sessionAttributeName = ClassUtils.getShortClassName( objectToAddToSession.getClass() ) + "." + System.currentTimeMillis();
-        request.getSession().setAttribute( sessionAttributeName, objectToAddToSession );
-        request.setAttribute( sessionAttributeNameRequestAttributeName, sessionAttributeName );
+        String sessionAttributeName = getSessionAttributeNameFromRequest( request, sessionAttributeNameRequestAttributeName );
+        if (null == sessionAttributeName || null == request.getSession().getAttribute( sessionAttributeName )) {
+            sessionAttributeName = ClassUtils.getShortClassName( objectToAddToSession.getClass() ) + "." + System.currentTimeMillis();
+            request.getSession().setAttribute( sessionAttributeName, objectToAddToSession );
+            request.setAttribute( sessionAttributeNameRequestAttributeName, sessionAttributeName );
+        }
     }
 
     public static Object getSessionAttributeWithNameInRequest( HttpServletRequest request,
