@@ -18,12 +18,12 @@ public class Document {
 
     private final static Logger log = Logger.getLogger( "com.imcode.imcms.api.Document" );
 
-    public Document( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper, UserAndRoleMapper userAndRoleMapper ) {
+    public Document( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper ) {
         this.securityChecker = securityChecker;
         this.documentService = documentService;
         this.internalDocument = document;
         this.documentMapper = documentMapper;
-        this.documentPermissionSetMapper = permissionSetMapper;
+        this.documentPermissionSetMapper = documentPermissionSetMapper;
         this.userAndRoleMapper = userAndRoleMapper;
     }
 
@@ -213,6 +213,11 @@ public class Document {
         } else {
             return null;
         }
+    }
+
+    public String getTarget()  throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission( this );
+        return internalDocument.getTarget();
     }
 
     public Date getActivatedDatetime() throws NoPermissionException {

@@ -7,8 +7,8 @@ import java.util.Map;
 
 public class TextDocument extends Document {
 
-    TextDocument( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper, UserAndRoleMapper userAndRoleMapper ) {
-        super( document, securityChecker, documentService, documentMapper, permissionSetMapper, userAndRoleMapper );
+    TextDocument( DocumentDomainObject document, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper ) {
+        super( document, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper );
     }
 
     public TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
@@ -159,42 +159,56 @@ public class TextDocument extends Document {
         }
     }
 
-    public static class Menu {
-        private int menuIndex;
-        private TextDocument document;
+    public class MenuItem {
+        MenuItemDomainObject internalMenuItem;
+        Document child;
 
+        public MenuItem( MenuItemDomainObject internalMenuItem ) {
+            this.internalMenuItem = internalMenuItem;
+            child = new Document( internalMenuItem.getDocument(), securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper ) ;
+        }
+
+        public Document getDocument() {
+            return child;
+        }
+
+        public int getManualNumber() {
+            return internalMenuItem.getManualNumber();
+        }
+
+        public String getTreeKey() {
+            return internalMenuItem.getTreeKey();
+        }
+    }
+
+    public class Menu {
         /** Menu sorted by headline. **/
         public final static int SORT_BY_HEADLINE = 1;
         /** Menu sorted by 'manual' order. **/
-        public final static int SORT_BY_MANUAL_ORDER_DESCENDING = 2;
+        public final static int SORT_BY_MANUAL_ORDER = 2;
         /** Menu sorted by datetime. **/
-        public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = 3;
+        public final static int SORT_BY_MODIFIED_DATETIME = 3;
+        /** Menu sorted by tree sort order */
+        public final static int SORT_BY_TREE_ORDER = 4;
+
+        private int menuIndex;
+        private TextDocument document;
 
         private Menu( int menuIndex, TextDocument document ) {
             this.menuIndex = menuIndex;
             this.document = document;
         }
 
-        /**
-         * Get the documents in this menu.
-         *
-         * @return an array of the documents in this menu.
-         */
-        public Document[] getDocuments() throws NoPermissionException {
-            String[] documentIds = document.documentMapper.getMenuLinks( document.getId(), menuIndex );
-            Document[] documents = new Document[documentIds.length];
-
-            for (int i = 0; i < documentIds.length; i++) {
-                String documentId = documentIds[i];
-                DocumentDomainObject documentDO = document.documentMapper.getDocument( Integer.parseInt( documentId ) );
-                if (documentDO.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT) {
-                    documents[i] = new TextDocument( documentDO, document.securityChecker, document.documentService, document.documentMapper, document.documentPermissionSetMapper, document.userAndRoleMapper );
-                } else {
-                    documents[i] = new Document( documentDO, document.securityChecker, document.documentService, document.documentMapper, document.documentPermissionSetMapper, document.userAndRoleMapper );
-                }
-            }
-            return documents;
-        }
+       public MenuItem[] getMenuItems() throws NoPermissionException {
+           // use reverse sort order?
+           MenuItemDomainObject[] menuItemsDomainObjects = document.documentMapper.getDocIdsFromMenu( document.getId(), menuIndex );
+           MenuItem[] menuItems = new MenuItem[menuItemsDomainObjects.length];
+           for (int i = 0; i < menuItemsDomainObjects.length; i++) {
+               MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
+               menuItems[i] = new MenuItem( menuItemDomainObject );
+           }
+           return menuItems;
+       }
 
         /**
          * Add a document to the menu.

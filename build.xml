@@ -457,7 +457,7 @@
 
     <target name="language-property-files" depends="init,junit-task-available,tools">
 
-        <junit haltonerror="yes" haltonfailure="yes">
+        <junit haltonerror="yes" haltonfailure="yes" fork="yes" dir="${basedir}">
             <classpath path="tools/build"/>
 
             <formatter type="brief" usefile="false"/>

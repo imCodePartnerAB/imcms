@@ -696,21 +696,32 @@ public class DocumentMapper {
         imcref.sqlUpdateProcedure( "DeleteInclude", new String[]{"" + including_meta_id, "" + include_id} );
     }
 
-    public String[] getMenuLinks( int documentId, int menuIndex ) {
-        int sortOrder = getSortOrderOfDocument( documentId );
+    public MenuItemDomainObject[] getDocIdsFromMenu( int parentId, int menuIndex ) {
+        DocumentDomainObject parent = getDocument( parentId );
+        int sortOrder = getSortOrderOfDocument( parentId );
         String orderBy = getSortOrderAsSqlOrderBy( sortOrder );
-        String sqlStr = "select to_meta_id from childs,meta where childs.meta_id = meta.meta_id and childs.meta_id = ? and menu_sort = ? order by " + orderBy;
-        return service.sqlQuery( sqlStr, new String[]{"" + documentId, "" + menuIndex} );
+        String sqlStr = "select to_meta_id, menu_sort, manual_sort_order, tree_sort_index from childs,meta where childs.meta_id = meta.meta_id and childs.meta_id = ? and menu_sort = ? order by " + orderBy;
+        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{"" + parentId, "" + menuIndex} );
+        MenuItemDomainObject[] menuItems = new MenuItemDomainObject[sqlResult.length/4];
+        for (int i = 0; i < sqlResult.length; i+=4) {
+            int to_meta_id = Integer.parseInt(sqlResult[i]);
+            int menu_sort = Integer.parseInt(sqlResult[i+1]);
+            int manual_sort_order = Integer.parseInt(sqlResult[i+2]);
+            String tree_sort_index = sqlResult[i+3];
+            DocumentDomainObject child = getDocument( to_meta_id );
+            menuItems[i/4] = new MenuItemDomainObject(parent, child, menu_sort, manual_sort_order, tree_sort_index);
+        }
+        return menuItems;
     }
 
     private String getSortOrderAsSqlOrderBy( int sortOrder ) {
         String orderBy = "meta_headline";
         switch ( sortOrder ) {
-            case TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING:
+            case TextDocument.Menu.SORT_BY_MANUAL_ORDER:
                 orderBy = "manual_sort_order desc";
                 break;
 
-            case TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING:
+            case TextDocument.Menu.SORT_BY_MODIFIED_DATETIME:
                 orderBy = "date_modified desc";
                 break;
 
