@@ -18,6 +18,7 @@ import imcode.server.* ;
 import imcode.server.parser.* ;
 
 import imcode.util.FileCache ;
+import imcode.util.fortune.* ;
 
 import org.apache.log4j.Category;
 
@@ -2850,13 +2851,74 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-       Return a file relative to the include-path.
+       Return a file relative to the fortune-path.
     **/
     public String getFortune(String path) throws IOException {
 	return fileCache.getCachedFileString(new File(m_FortunePath,path)) ;
     }
 
-	/**
+    /**
+       Get a list of quotes
+
+       @param quoteListName The name of the quote-List.
+
+       @return the quote-List.
+    **/
+    public List getQuoteList(String quoteListName) throws IOException {
+	List theList = new LinkedList() ;
+	QuoteReader quoteReader = new QuoteReader(new StringReader(getFortune(quoteListName))) ;
+	for (Quote quote; null != (quote = quoteReader.readQuote()) ; ) {
+	    theList.add(quote) ;
+	}
+	return theList ;
+    }
+
+    /**
+       Set a quote-list
+
+       @param quoteListName The name of the quote-List.
+       @param quoteList     The quote-List
+    **/
+    public void setQuoteList(String quoteListName, List quoteList) {
+	/*
+	QuoteWriter quoteWriter = new QuoteWriter(new FileWriter(new File(m_FortunePath,pollListName))) ;
+	Iterator quotesIterator = theList.iterator() ;
+	while (quotesIterator.hasNext()) {
+	    quoteWriter.write((Quote)quotesIterator.next()) ;
+	}
+	*/
+    }
+
+
+    /**
+       @return a List of Polls
+    **/
+    public List getPollList(String pollListName) throws IOException {
+	List theList = new LinkedList() ;
+	PollReader pollReader = new PollReader(new StringReader(getFortune(pollListName))) ;
+	for (Poll poll; null != (poll = pollReader.readPoll()) ; ) {
+	    theList.add(poll) ;
+	}
+	return theList ;
+    }
+
+    /**
+       Set a poll-list
+
+       @param pollListName The name of the poll-List.
+       @param pollList     The poll-List
+    **/
+    public void setPollList(String pollListName, List pollList) {
+	/*
+	PollWriter pollWriter = new QuoteWriter(new FileWriter(new File(m_FortunePath,pollListName))) ;
+	Iterator pollIterator = theList.iterator() ;
+	while (pollIterator.hasNext()) {
+	    pollWriter.write((Poll)pollIterator.next()) ;
+	}
+	*/
+    }
+
+    /**
        Return a file relative to the search_template-path.
     **/
     public String getSearchTemplate(String path) throws IOException {

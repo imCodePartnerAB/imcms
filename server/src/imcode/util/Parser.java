@@ -34,23 +34,41 @@ public class Parser {
 		Parses a string.
 		@param doc The string.
 		@param data An array of tags and data for each tag. Every even index is a tag, and every odd index is data for the tag before.
+
+		@return The parsed String.
 	*/
 	public static String parseDoc(String doc, String data[]) {
 		if ( doc == null ) {
 			return doc ;
 		}
 		StringBuffer sb = new StringBuffer(doc) ;
-		int length ;
-		for ( int i = 0; i<data.length ; i+=2 ) {
-		    length = data[i].length() ;
-		    if (length > 0) {
-			for (int start = 0; (start = sb.toString().indexOf(data[i],start))!=-1; start+=data[i+1].length()) {
-				sb.replace(start,start+length,data[i+1]) ;
-			}
-		    }
-		}
+		parseDoc(sb,data) ;
 		return sb.toString() ;
 	}
+
+	/**
+		Parses a StringBuffer.
+		@param sb   The StringBuffer.
+		@param data An array of tags and data for each tag. Every even index is a tag, and every odd index is data for the tag before.
+
+		@return The StringBuffer sb.
+	*/
+	public static StringBuffer parseDoc(StringBuffer sb, String data[]) {
+	    if ( sb == null ) {
+		return null ;
+	    }
+	    int length ;
+	    for ( int i = 0; i<data.length ; i+=2 ) {
+		length = data[i].length() ;
+		if (length > 0) {
+		    for (int start = 0; (start = sb.toString().indexOf(data[i],start))!=-1; start+=data[i+1].length()) {
+			sb.replace(start,start+length,data[i+1]) ;
+		    }
+		}
+	    }
+	    return sb ;
+	}
+
 
 	/**
 		Parses a string.

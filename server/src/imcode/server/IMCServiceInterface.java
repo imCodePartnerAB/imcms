@@ -349,4 +349,12 @@ public interface IMCServiceInterface {
 
     public void touchDocument(int meta_id) ;
 
+    public List getQuoteList(String quoteListName) throws IOException ;
+
+    public void setQuoteList(String quoteListName, List quoteList) throws IOException ;
+
+    public List getPollList(String pollListName) throws IOException ;
+
+    public void setPollList(String pollListName, List pollList) throws IOException ;
+
 }
