@@ -55,6 +55,7 @@ public class Readrunner extends HttpServlet {
 	String theHtmlEscapedText = Parser.parseDoc(theText,vp) ;
 
 	Vector vec = new Vector() ;
+	vec.add("#host#") ;           vec.add(host) ;
 	vec.add("#meta_id#") ;        vec.add(""+metaId) ;
 	vec.add("#text#") ;           vec.add(theHtmlEscapedText) ;
 	vec.add("#readrunnertext#") ; vec.add(theFilteredText) ;
