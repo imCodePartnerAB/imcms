@@ -601,7 +601,8 @@ final public class IMCService implements IMCServiceInterface {
                     String key = (String)iterator.next();
                     Object value = iterator.next();
                     context.put( key, value );
-                    if (value instanceof String) {
+                    boolean isNotVelocityVariable = value instanceof String;
+                    if (isNotVelocityVariable) {
                         parseDocVariables.add(key) ;
                         parseDocVariables.add(value) ;
                     }

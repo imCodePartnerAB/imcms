@@ -21,9 +21,9 @@ public class FileAdmin extends HttpServlet {
 
     private final static Logger log = Logger.getLogger( "FileAdmin" );
     private static final int BUFFER_SIZE = 65536;
+    private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.html";
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req ) ;
         if ( !user.isSuperAdmin() ) {
@@ -204,7 +204,7 @@ public class FileAdmin extends HttpServlet {
                 }
             }
             if ( optionList.length() > 0 ) {
-                outputMoveOverwriteWarning( optionList, sourceDir, destDir, fileList, dir1, dir2, res, user, imcref );
+                outputMoveOverwriteWarning( optionList.toString(), sourceDir, destDir, fileList.toString(), dir1, dir2, res, user, imcref );
                 handledOutput = true;
             } else {
                 File[] destFiles = makeAbsoluteFileList( destDir, relativeSourceFileTree );
@@ -248,7 +248,7 @@ public class FileAdmin extends HttpServlet {
                 }
             }
             if ( optionList.length() > 0 ) {
-                ouputCopyOverwriteWarning( optionList, sourceDir, destDir, fileList, dir1, dir2, res, user, imcref );
+                ouputCopyOverwriteWarning( optionList.toString(), sourceDir, destDir, fileList.toString(), dir1, dir2, res, user, imcref );
                 handledOutput = true;
             } else {
                 File[] destFileTree = makeAbsoluteFileList( destDir, relativeSourceFileTree );
@@ -400,8 +400,8 @@ public class FileAdmin extends HttpServlet {
         return file;
     }
 
-    private void outputMoveOverwriteWarning( StringBuffer option_list, File sourceDir, File destDir,
-                                             StringBuffer file_list, File dir1, File dir2, HttpServletResponse res,
+    private void outputMoveOverwriteWarning( String option_list, File sourceDir, File destDir,
+                                             String file_list, File dir1, File dir2, HttpServletResponse res,
                                              UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#filelist#" );
@@ -421,8 +421,8 @@ public class FileAdmin extends HttpServlet {
         out.print( imcref.getAdminTemplate( "FileAdminMoveOverwriteWarning.html", user, vec ) );
     }
 
-    private void ouputCopyOverwriteWarning( StringBuffer option_list, File sourceDir, File destDir,
-                                            StringBuffer file_list, File dir1, File dir2, HttpServletResponse res,
+    private void ouputCopyOverwriteWarning( String option_list, File sourceDir, File destDir,
+                                            String file_list, File dir1, File dir2, HttpServletResponse res,
                                             UserDomainObject user, IMCServiceInterface imcref ) throws IOException {
         List vec = new ArrayList();
         vec.add( "#filelist#" );
@@ -439,7 +439,7 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
-        out.print( imcref.getAdminTemplate( "FileAdminCopyOverwriteWarning.html", user, vec ) );
+        out.print( imcref.getAdminTemplate( ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING, user, vec ) );
     }
 
     private void outputFileExistedAndTheOriginalWasRenamedNotice( File dir1, File dir2, String newFilename,
