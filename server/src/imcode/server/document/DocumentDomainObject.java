@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
+import org.apache.log4j.Logger;
+
 /**
  * Stores info about a document. *
  */
@@ -37,6 +39,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public static final int STATUS_PUBLICATION_APPROVED = 2;
 
     private Attributes attributes;
+    private static Logger log = Logger.getLogger( DocumentDomainObject.class );
 
     protected DocumentDomainObject() {
         attributes = new Attributes();
@@ -79,7 +82,9 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
                 document = new BillboardDocumentDomainObject();
                 break;
             default:
-                throw new RuntimeException( "Unknown document-type-id: " + documentTypeId );
+                String errorMessage = "Unknown document-type-id: " + documentTypeId;
+                log.error(errorMessage);
+                throw new RuntimeException( errorMessage );
         }
 
         return document;

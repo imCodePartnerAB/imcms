@@ -217,7 +217,11 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
             IntervalSchedule indexingLogSchedule = new IntervalSchedule(INDEXING_LOG_PERIOD__MILLISECONDS);
 
             for (int i = 0; i < documentIds.length; i++) {
-                addDocumentToIndex(documentMapper.getDocument(documentIds[i]), indexWriter);
+                try {
+                    addDocumentToIndex(documentMapper.getDocument(documentIds[i]), indexWriter);
+                } catch( Exception ex ) {
+                    log.error("Couln't index document with meta_id " + documentIds[i] + ", trying next document.", ex );
+                }
 
                 if (indexingLogSchedule.isTime()) {
                     logIndexingProgress(i, documentIds.length);

@@ -9,7 +9,6 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.util.DateConstants;
-import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
