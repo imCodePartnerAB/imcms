@@ -26,6 +26,16 @@ public class QuoteWriter {
 	// Get the DateRange of the Quote
 	DateRange dateRange = theQuote.getDateRange() ;
 
+	Date startDate = dateRange.getStartDate() ;
+	Date endDate   = dateRange.getEndDate() ;
+
+	// Remove one day from the end-date
+	// Since DateRange excludes the end-date,
+	// and this representation doesn't.
+	endDate = new Date(endDate.getTime() - 86400000) ;
+
+	dateRange = new DateRange(startDate,endDate) ;
+
 	// Get a (possibly non-thread-safe) DateFormat
 	DateFormat dateFormat = new SimpleDateFormat("yyMMdd") ;
 
@@ -45,7 +55,7 @@ public class QuoteWriter {
 
 	// Get and prepare the text.
 	String text = Parser.parseDoc(theQuote.getText(),replacements) ;
-	
+
 	writer.write(startDateString+"#"+endDateString+"#"+text+"#"+eol) ;
     }
 
