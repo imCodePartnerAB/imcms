@@ -1,10 +1,12 @@
 package imcode.server.parser;
 
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
+import com.imcode.imcms.servlet.admin.ChangeImage;
 import imcode.server.*;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.SectionDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -94,18 +96,21 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         this.textMap = document.getTexts();
 
         this.imageMode = imagemode;
-        this.imageMap = getImageMap( document );
+        this.imageMap = getImageMap( document, documentRequest.getUser(), imageMode );
 
     }
 
-    private Map getImageMap( TextDocumentDomainObject document ) {
+    private Map getImageMap( TextDocumentDomainObject document, UserDomainObject user, boolean imageMode ) {
         Map images = document.getImages();
         Map imageMap = new HashMap();
         for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
             Integer imageIndex = (Integer)iterator.next();
             ImageDomainObject image = (ImageDomainObject)images.get( imageIndex );
-
-            imageMap.put( imageIndex, Html.getImageTag( image ) );
+            Integer documentId = ChangeImage.getDocumentIdFromImageUrl( image.getUrl() ) ;
+            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            if (null == documentId || imageMode || documentMapper.userHasAtLeastDocumentReadPermission( user, documentMapper.getDocument( documentId.intValue() ))) {
+                imageMap.put( imageIndex, Html.getImageTag( image ) );
+            }
         }
         return imageMap;
     }

@@ -91,6 +91,9 @@ public class DocumentMapper {
     }
 
     public int getDocumentPermissionSetIdForUser( DocumentDomainObject document, UserDomainObject user ) {
+        if (null == document) {
+            return DocumentPermissionSetDomainObject.TYPE_ID__NONE ;
+        }
         if ( user.isSuperAdmin() ) {
             return DocumentPermissionSetDomainObject.TYPE_ID__FULL;
         }
