@@ -403,8 +403,10 @@ public class DocumentMapper {
         }
     }
 
-    public void initHtmlDocumentFromDb( HtmlDocumentDomainObject documentDomainObject ) {
-        // TODO
+    public void initHtmlDocumentFromDb( HtmlDocumentDomainObject htmlDocument ) {
+        String sqlStr = "SELECT frame_set FROM frameset_docs WHERE meta_id = ?" ;
+        String html = service.sqlQueryStr( sqlStr, new String[] {""+htmlDocument.getId()} ) ;
+        htmlDocument.setHtmlDocumentHtml( html );
     }
 
     public static String[] sqlGetFromFileDocs( IMCServiceInterface service, int metaId ) {

@@ -67,7 +67,7 @@ public class DocumentComposer extends HttpServlet {
     public static final String ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION = "processEditedDocumentInformation";
     public static final String ACTION__EDIT_BROWSER_DOCUMENT = "editBrowserDocument";
     public static final String ACTION__EDITED_BROWSER_DOCUMENT = "editedBrowserDocument";
-
+    public static final String ACTION__EDIT_HTML_DOCUMENT = "editHtmlDocument";
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
@@ -120,21 +120,23 @@ public class DocumentComposer extends HttpServlet {
             UrlDocumentDomainObject newUrlDocument = (UrlDocumentDomainObject) document;
             newUrlDocument.setUrlDocumentUrl(request.getParameter(PARAMETER__URL_DOC__URL));
             newUrlDocument.setTarget(getTargetFromRequest(request));
-            processNewTextDocumentInformation(newUrlDocument, newDocumentParentInformation, user, request, response);
+            processNewDocumentInformation(newUrlDocument, newDocumentParentInformation, user, request, response);
         } else if (ACTION__CREATE_NEW_HTML_DOCUMENT.equalsIgnoreCase(action)) {
             HtmlDocumentDomainObject newHtmlDocument = (HtmlDocumentDomainObject) document;
             newHtmlDocument.setHtmlDocumentHtml(request.getParameter(PARAMETER__HTML_DOC__HTML));
-            processNewTextDocumentInformation(newHtmlDocument, newDocumentParentInformation, user, request, response);
+            processNewDocumentInformation(newHtmlDocument, newDocumentParentInformation, user, request, response);
         } else if (ACTION__CREATE_NEW_FILE_DOCUMENT.equalsIgnoreCase(action)) {
             FileDocumentDomainObject newFileDocument = (FileDocumentDomainObject) document;
             FileItem fileItem = request.getParameterFileItem(PARAMETER__FILE_DOC__FILE);
             newFileDocument.setFileDocumentFilename(fileItem.getName());
             newFileDocument.setFileDocumentInputStream(fileItem.getInputStream());
             newFileDocument.setFileDocumentMimeType(getMimeTypeFromRequest(request));
-            processNewTextDocumentInformation(newFileDocument, newDocumentParentInformation, user, request, response);
+            processNewDocumentInformation(newFileDocument, newDocumentParentInformation, user, request, response);
         } else if (ACTION__CREATE_NEW_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
             BrowserDocumentDomainObject newBrowserDocument = (BrowserDocumentDomainObject)document;
-            processNewTextDocumentInformation( newBrowserDocument, newDocumentParentInformation, user, request, response );
+            processNewDocumentInformation( newBrowserDocument, newDocumentParentInformation, user, request, response );
+        } else if (ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
+            forwardToBrowserDocumentComposer( request, response );
         } else if (ACTION__EDITED_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
             BrowserDocumentDomainObject browserDocument = (BrowserDocumentDomainObject)document;
             try {
@@ -153,8 +155,6 @@ public class DocumentComposer extends HttpServlet {
                 throw new ServletException(e);
             }
             response.sendRedirect("AdminDoc?meta_id=" + document.getId()) ;
-        } else if (ACTION__EDIT_BROWSER_DOCUMENT.equalsIgnoreCase( action )) {
-            processNewBrowserDocumentInformation( request, response, user);
         }
     }
 
@@ -199,7 +199,7 @@ public class DocumentComposer extends HttpServlet {
         return mimeType;
     }
 
-    public void processNewTextDocumentInformation(DocumentDomainObject newDocument,
+    public void processNewDocumentInformation(DocumentDomainObject newDocument,
                                                                                          NewDocumentParentInformation newDocumentParentInformation,
                                                                                          UserDomainObject user,
                                                                                          HttpServletRequest request,
@@ -261,18 +261,32 @@ public class DocumentComposer extends HttpServlet {
 
     public void processNewBrowserDocumentInformation( HttpServletRequest request, HttpServletResponse response,
                                                        UserDomainObject user ) throws IOException, ServletException {
+        forwardToBrowserDocumentComposer( request, response );
+    }
+
+    private void forwardToBrowserDocumentComposer( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         request.getRequestDispatcher( URL__BROWSER_DOCUMENT_COMPOSER ).forward( request, response );
     }
 
     public void processNewFileDocumentInformation(HttpServletRequest request, HttpServletResponse response,
                                                    UserDomainObject user) throws IOException, ServletException {
+        forwardToFileDocumentPage( request, user, response );
+    }
+
+    private void forwardToFileDocumentPage( HttpServletRequest request, UserDomainObject user,
+                                            HttpServletResponse response ) throws ServletException, IOException {
         request.getRequestDispatcher(URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__FILEDOC).forward(request, response);
     }
 
     public void processNewHtmlDocumentInformation(HttpServletRequest request, HttpServletResponse response,
                                                    UserDomainObject user) throws IOException, ServletException {
-        request.getRequestDispatcher(URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__HTMLDOC).forward(request, response);
+        forwardToHtmlDocumentPage( request, response, user );
 
+    }
+
+    private void forwardToHtmlDocumentPage( HttpServletRequest request, HttpServletResponse response,
+                                            UserDomainObject user ) throws ServletException, IOException {
+        request.getRequestDispatcher(URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__HTMLDOC).forward(request, response);
     }
 
     public void processNewFormerExternalDocument(NewDocumentParentInformation newDocumentParentInformation, UserDomainObject user, HttpServletRequest request, HttpServletResponse response, FormerExternalDocument externalDocument ) throws IOException {
@@ -285,6 +299,11 @@ public class DocumentComposer extends HttpServlet {
 
     public void processNewUrlDocumentInformation(HttpServletRequest request, HttpServletResponse response,
                                                   UserDomainObject user) throws ServletException, IOException {
+        forwardToUrlDocumentPage( request, user, response );
+    }
+
+    private void forwardToUrlDocumentPage( HttpServletRequest request, UserDomainObject user,
+                                           HttpServletResponse response ) throws ServletException, IOException {
         request.getRequestDispatcher(URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__URLDOC).forward(request, response);
     }
 
