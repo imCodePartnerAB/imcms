@@ -1,59 +1,84 @@
 <HTML>
 <HEAD>
-<TITLE>Change text</TITLE>
-<style type="text/css">
-<!--
-.hide {  visibility: HIDDEN; }
-.show {  visibility: visible; }
--->
-</style>
+<TITLE>Edit text</TITLE>
 </HEAD>
-<BODY  bgcolor="#FFFFFF"><H3>
-  <FORM METHOD="POST" ACTION="SaveText" name="">
-    <TABLE width="430" align="center" cellpadding="2" cellspacing="0" border="1">
-      <CENTER>
-        <TR bgcolor="#333366" > 
-          <TD align="left"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="3" color="#FFFFFF">&nbsp;<font size="2">Change 
-            text</font>&nbsp;</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;&nbsp;</font></B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Txt#txt_no#</font></TD>
-</TR>
-        <TR bgcolor="#333366"> 
-          <TD><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Meta ID&nbsp;&nbsp;&nbsp;&nbsp;#meta_id#</font></TD>
-        </TR>
-        <TR > 
-          <TD bgcolor="#BABABA"> 
-            <textarea name="text" cols="70" rows="15" wrap="VIRTUAL">
+<BODY bgcolor="#FFFFFF">
+  <FORM METHOD="POST" ACTION="SaveText">
+    <TABLE align="center" cellpadding="2" cellspacing="0" border="0">
+	<TR bgcolor="#333366">
+	  <td width="5%">&nbsp;</td>
+	  <TD align="left" width="90%">
+	    <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><B>&nbsp;Edit text</B> #txt_no# <B>in page</B> #meta_id#</font>
+	  </TD>
+	  <td width="5%">&nbsp;</td>
+	</TR>
+	<tr bgcolor="#BABABA">
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<TR bgcolor="#BABABA">
+	  <td width="5%">&nbsp;</td>
+	  <TD bgcolor="#BABABA" width="90%">
+	    <textarea name="text" cols="70" rows="25" wrap="VIRTUAL">
 #txt#</textarea>
-          </TD>
-        </TR>
-        <TR> 
-          <TD valign="middle" align="left" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Format:&nbsp;&nbsp;&nbsp;&nbsp;</font> 
-            <INPUT TYPE="RADIO" NAME="type" VALUE="0" #!html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Plain text</font>&nbsp;&nbsp; 
-            <INPUT TYPE="RADIO" NAME="type" VALUE="1" #html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font></TD>
-        </TR>
-        <INPUT TYPE="HIDDEN" NAME="txt_no" VALUE="#txt_no#">
-        <TR> 
-          <TD valign="middle" align="center" bgcolor="#BABABA"> 
-            <INPUT TYPE="SUBMIT" VALUE="OK" NAME="ok">
-			<INPUT TYPE="RESET" VALUE="Reset">
-            <INPUT TYPE="SUBMIT" VALUE="Cancel" NAME="cancel">
-            <span id="three" style="position:absolute; visibility:HIDDEN">
-              <input type="button" name="rensa" value="Delete" onClick="document.forms[0].text.value=''"><a href="javascript:openHelp('36');">&nbsp;<img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-	                </div>
-            
-            </span>
-          </TD>
-        </TR>
-      </CENTER>
-      <INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#meta_id#">
-      <INPUT TYPE="HIDDEN" NAME="txt_no" VALUE="#txt_no#">
+	  </TD>
+	  <td width="5%">&nbsp;</td>
+	</TR>
+	<TR bgcolor="#BABABA">
+	  <td width="5%">&nbsp;</td>
+	  <TD valign="middle" align="left" bgcolor="#BABABA" width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Format:</font>
+	    <table border="0" width="100%">
+	      <tr>
+		<td align="left">
+		  <INPUT type="RADIO" NAME="type"  VALUE="0" #!html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Plain text</font>&nbsp;&nbsp;
+		  <INPUT type="RADIO" NAME="type"  VALUE="1" #html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font>
+		</td>
+		<td align="right">
+		  <INPUT TYPE="RESET" VALUE="&Aring;terst&auml;ll">
+		</td>
+	      </tr>
+	    </table>
+	  </TD>
+	  <td width="5%">&nbsp;</td>
+	</TR>
+	<TR bgcolor="#BABABA">
+	  <td width="5%">&nbsp;</td>
+	  <TD valign="middle" align="left" bgcolor="#BABABA" width="90%">
+	    <table border="0">
+		<tr>
+		    <td>
+			<INPUT TYPE="SUBMIT" VALUE="  OK  " NAME="ok">
+		    </td>
+		    <td>
+			<INPUT TYPE="SUBMIT" VALUE="Cancel" NAME="cancel">
+		    </td>
+		</tr>
+	    </table>
+	  </TD>
+	  <td width="5%">&nbsp;</td>
+	</TR>
+	<tr bgcolor="#BABABA">
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%">&nbsp;</td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
     </TABLE>
+    <INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#meta_id#">
+    <INPUT TYPE="HIDDEN" NAME="txt_no" VALUE="#txt_no#">
 </FORM>
-</H3>
+<SCRIPT language='JavaScript'>
+<!--
+function openHelp(id){
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+}
+//-->
+</SCRIPT>
 <!-- Focuses on textfield if browser supports javascript -->
 <script language="JavaScript">
 <!--
 document.forms[0].text.focus();
-document.all.three.style.visibility = "visible";
+if (document.all) document.all.three.style.visibility = "visible";
 //-->
 </script>
 </BODY></HTML>
