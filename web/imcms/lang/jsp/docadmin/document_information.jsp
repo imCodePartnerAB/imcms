@@ -485,7 +485,7 @@
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
                 <script language="javascript">
-                    document.write('<td><input type="button" id="advanced_button" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?> >>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
+                    document.write('<td><input type="button" id="advanced_button" class="imcmsFormBtn" value="<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
                 </script>
 				<td><input type="SUBMIT" class="imcmsFormBtn" value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> " name="<%= DocumentComposer.PARAMETER_BUTTON__OK %>"></td>
 				<td>&nbsp;</td>
@@ -518,8 +518,9 @@
     }
 %>
 <script language="javascript">
-    if (document.getElementById) {
-        document.getElementById('advanced').style.display = 'none' ;
+    var viewCookieName = 'document_information_view' ;
+    if (document.getElementById && document.cookie.indexOf(viewCookieName+'=advanced') == -1) {
+        toggleAdvanced();
     }
 
     function toggleAdvanced() {
@@ -528,14 +529,17 @@
         }
         var advancedDisplay = document.getElementById('advanced').style.display ;
         var advancedButtonValue = '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?> >>' ;
+        var viewCookie = viewCookieName+'=simple' ;
         if ('none' == advancedDisplay) {
             advancedDisplay = 'table-row-group' ;
             advancedButtonValue = '<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>' ;
+            viewCookie = viewCookieName+'=advanced' ;
         } else {
             advancedDisplay = 'none' ;
         }
         document.getElementById('advanced').style.display = advancedDisplay ;
         document.getElementById('advanced_button').value = advancedButtonValue ;
+        document.cookie = viewCookie ;
     }
 </script>
 </body>
