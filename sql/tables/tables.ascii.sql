@@ -1132,7 +1132,7 @@ ALTER TABLE [dbo].[doc_permissions] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [dbo].[doc_types] WITH NOCHECK ADD
-	CONSTRAINT [DF_doc_types_lang_prefix] DEFAULT ('se') FOR [lang_prefix],
+	CONSTRAINT [DF_doc_types_lang_prefix] DEFAULT ('swe') FOR [lang_prefix],
 	CONSTRAINT [PK_doc_types] PRIMARY KEY  NONCLUSTERED
 	(
 		[doc_type],
@@ -1205,7 +1205,7 @@ ALTER TABLE [dbo].[meta_classification] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [dbo].[mime_types] WITH NOCHECK ADD
-	CONSTRAINT [DF_mime_types_lang_prefix] DEFAULT ('se') FOR [lang_prefix],
+	CONSTRAINT [DF_mime_types_lang_prefix] DEFAULT ('swe') FOR [lang_prefix],
 	CONSTRAINT [PK_mime_types] PRIMARY KEY  NONCLUSTERED
 	(
 		[mime_id],
@@ -1239,7 +1239,7 @@ ALTER TABLE [dbo].[permission_sets] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [dbo].[permissions] WITH NOCHECK ADD
-	CONSTRAINT [DF_permissions_lang_prefix] DEFAULT ('se') FOR [lang_prefix],
+	CONSTRAINT [DF_permissions_lang_prefix] DEFAULT ('swe') FOR [lang_prefix],
 	CONSTRAINT [PK_permissions] PRIMARY KEY  NONCLUSTERED
 	(
 		[permission_id],

@@ -1450,6 +1450,35 @@ where sort_by_id = 3 AND lang_id = 2
 
 -- 2004-01-14 Hasse
 
+update  languages set lang_prefix = 'swe' where lang_prefix = 'se'
+update  languages set user_prefix = 'swe' where lang_prefix = 'se'
+update  languages set lang_prefix = 'eng' where lang_prefix = 'en'
+update  languages set user_prefix = 'eng' where lang_prefix = 'en'
+
+update lang_prefixes set lang_prefix ='swe' where lang_prefix = 'se'
+update lang_prefixes set lang_prefix ='eng' where lang_prefix = 'en'
+
+update doc_types set lang_prefix ='swe' where lang_prefix = 'se'
+update doc_types set lang_prefix ='eng' where lang_prefix = 'en'
+
+update user_types set lang_prefix = 'swe' where lang_prefix = 'se'
+update user_types set lang_prefix = 'eng' where lang_prefix = 'en'
+
+update doc_permissions set lang_prefix = 'swe' where lang_prefix = 'se'
+update doc_permissions set lang_prefix = 'eng' where lang_prefix = 'en'
+
+update permissions set lang_prefix = 'swe' where lang_prefix = 'se'
+update permissions set lang_prefix = 'eng' where lang_prefix = 'en'
+
+update roles_permissions set lang_prefix = 'swe' where lang_prefix = 'se'
+update roles_permissions set lang_prefix = 'eng' where lang_prefix = 'en'
+
+update mime_types set lang_prefix = 'swe' where lang_prefix = 'se'
+update mime_types set lang_prefix = 'eng' where lang_prefix = 'en'
+
+-- 2004-01-20 / Lennart Å
+
+
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '
 print ''

@@ -35,14 +35,14 @@ INSERT INTO meta (meta_id, description, doc_type, meta_headline, meta_text, meta
  VALUES           (1001,    '',          2,        '<? sql/newdb.sql/1 ?>',  '',        '',         1,        0,           0,      1,      0,         1,            0,       1,         '@defaultlanguage@',        '',             convert(char(10),getDate(),120),    convert(char(10),getDate(),120),     1,             1,             0,              convert(char(10),getDate(),120),   null,        '_self',  '',         1)
 SET IDENTITY_INSERT meta OFF
 INSERT INTO templates
- VALUES (1,'demo.html', 'demo', '@defaultlanguage@', 1,1,1)
+ VALUES (1,'demo.html', 'demo', '<? default_lang ?>', 1,1,1)
 INSERT INTO templategroups
  VALUES (0, 'normal')
 INSERT INTO templates_cref
  VALUES(0,1)
 
 INSERT INTO text_docs
- VALUES (1001, 1, 0, 1, -1, -1)
+ VALUES (1001, <? default_lang_id ?>, 0, 1, -1, -1)
 INSERT INTO roles_rights
  VALUES (2,1001,3)
 INSERT INTO texts
