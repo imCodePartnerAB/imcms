@@ -34,7 +34,7 @@ sub output_tag {
 sub is_text {
     my $tagname = shift ;
 
-    return !$tagname || grep { $tagname eq $_ } qw( a b i em strong br ) ; 
+    return !$tagname || grep { $tagname eq $_ } qw( a b i em strong br tt ) ; 
 }
 
 sub wanted {
