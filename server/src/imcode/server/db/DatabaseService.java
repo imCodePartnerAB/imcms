@@ -920,6 +920,46 @@ public abstract class DatabaseService {
         return (Table_doc_types[])queryResult.toArray( new Table_doc_types[queryResult.size()] );
     }
 
+    public class ExtgendedTable_doc_types extends Table_doc_types {
+        int permission_data;
+
+        public ExtgendedTable_doc_types( ResultSet rs ) throws SQLException {
+            super( rs );
+            Object o = rs.getObject("permission_data");
+            if( o == null ) {
+                permission_data = -1;
+            } else {
+                permission_data = rs.getInt("permission_data");
+            }
+        }
+    }
+
+    /**
+     Retrieves a list of all doc-types, with a indicator of wether a particular permission-set may use it.
+     The permission-set must still have the "Create document"-permission set, though. ( Not checked in this proc )
+     Column 1: The doc-type
+     Column 2: The name of the doc-type
+     Column 3: permission_data, > -1 if this set_id may use this.
+    */
+    // todo: "ORDER BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC,doc_type" borttagen, sortering får göras vid behov i den anropande koden.
+    ExtgendedTable_doc_types[] sporc_GetDocTypesWithPermissions( int meta_id, int set_id, String lang_prefix ) {
+        String sql = "SELECT doc_type,type, dpse.permission_data " +
+            "FROM doc_types dt " +
+            "LEFT JOIN doc_permission_sets_ex dpse " +
+                "ON dpse.permission_data = dt.doc_type " +
+                "AND dpse.meta_id = ? " +
+                "AND dpse.set_id = ? " +
+                "AND dpse.permission_id = 8 " +
+            "WHERE dt.lang_prefix = ? ";
+        Object[] paramValues = new Object[]{ new Integer( meta_id ), new Integer( set_id ), lang_prefix };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new ExtgendedTable_doc_types( rs );
+            }
+        } );
+        return (ExtgendedTable_doc_types[])queryResult.toArray( new ExtgendedTable_doc_types[ queryResult.size() ] );
+    }
+
     /**
      *
      * @param parent_meta_id The document to insert into

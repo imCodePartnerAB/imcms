@@ -38,7 +38,7 @@ deleteuseradminpermissibleroles.prc
 existingdocsgetselectedmetaids.prc
 getcategoryusers.prc
 getdoctypeswithnewpermissions.prc
-getdoctypeswithpermissions.prc
+
 getmenudocchilds.prc
 getmetapathinfo.prc
 getpermissionset.prc

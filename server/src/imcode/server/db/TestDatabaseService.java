@@ -135,8 +135,14 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_Poll_GetOne( databaseService );
             test_sproc_Poll_GetQuestion( databaseService );
             test_sproc_Poll_GetAnswer( databaseService );
+            test_sporc_GetDocTypesWithPermissions( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sporc_GetDocTypesWithPermissions( DatabaseService databaseService ) {
+        DatabaseService.ExtgendedTable_doc_types[] extgendedTable_doc_typeses = databaseService.sporc_GetDocTypesWithPermissions( DOC_FIRST_PAGE_ID, 1, LANG_PREFIX_SWEDEN );
+        assertEquals( 9, extgendedTable_doc_typeses.length );
     }
 
     // todo: more test data
