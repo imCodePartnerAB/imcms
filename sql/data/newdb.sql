@@ -18,7 +18,7 @@ INSERT INTO roles VALUES(1, 'Users',1)
 INSERT INTO user_roles_crossref VALUES(1,0)
 INSERT INTO user_roles_crossref VALUES(2,1)
 
-INSERT INTO meta VALUES (1001, '', 2, 'Startsidan', '','', 1, 0, 0, 1, 0, 1, 0, 1, 'se','', GETDATE(), GETDATE(), 1, 1, 0,'20010101','0000','','','_self','', 1)
+INSERT INTO meta VALUES (1001, '', 2, 'Startsidan', '','', 1, 0, 0, 1, 0, 1, 0, 1, 'se','', GETDATE(), GETDATE(), 1, 1, 0,'2001-01-01','00:00','','','_self','', 1)
 
 INSERT INTO templates VALUES (1,'start.html', 'Start', 'se', 1,1,1)
 
