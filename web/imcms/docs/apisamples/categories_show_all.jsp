@@ -8,22 +8,23 @@
 %>
 <html>
     <head>
-        <title>All categories</title>
+        <title>Categories and their types</title>
     </head>
     <body>
-        The categories that exists in the system:<br>
+        All categories that exists in the system:<br>
         <ul>
     <%
         for (int i = 0; i < categoryTypes.length; i++) {
             CategoryType categoryType = categoryTypes[i];
-            %><li><%= categoryType.getName() + "(Category_type ID: " + categoryType.getId() + ")" %><ul><%
+            %><li>Category type name "<%= categoryType.getName() %>", id = <%=categoryType.getId()%><ul><%
             Category[] categories = documentService.getAllCategoriesOfType(categoryType);
             for (int j = 0; j < categories.length; j++) {
                 Category category = categories[j];
-                %><li><%= category.getName() + " - " + category.getDescription() + " (Category ID: " + category.getId() + ")" + "(image: " + category.getImage() + ")" %></li><%
+                %><li>Category name "<%= category.getName() %>", id = <%=category.getId()%><ul><%
             }
             %></ul></li><%
         }
+        %></ul></li><%
     %>
     </ul>
     </body>

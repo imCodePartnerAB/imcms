@@ -174,9 +174,19 @@ public class DocumentService {
         }
     }
 
+    public CategoryType getCategoryType( int categoryTypeId ) {
+        // Allow everyone to get a CategoryType. No security check.
+        final CategoryTypeDomainObject categoryType = documentMapper.getCategoryTypeById( categoryTypeId );
+        return returnCategoryTypeAPIObjectOrNull( categoryType );
+    }
+
     public CategoryType getCategoryType( String categoryTypeName ) {
         // Allow everyone to get a CategoryType. No security check.
         final CategoryTypeDomainObject categoryType = documentMapper.getCategoryType( categoryTypeName );
+        return returnCategoryTypeAPIObjectOrNull( categoryType );
+    }
+
+    private CategoryType returnCategoryTypeAPIObjectOrNull( final CategoryTypeDomainObject categoryType ) {
         if ( null != categoryType ) {
             return new CategoryType( categoryType );
         }

@@ -88,6 +88,10 @@ List all possible document categories, <%= makeLinks("categories_show_all.jsp") 
 Create a new Category type, and a category, <%= makeLinks("category_create.jsp") %><br>
 <br>
 
+<h3>Templates</h3>
+List all possible templates and template groups, <%= makeLinks("templates_show_all.jsp") %><br>
+
+
 <h3>Searching for documents</h3>
 Searching for documents, <%= makeLinks("document_search.jsp") %><br>
 

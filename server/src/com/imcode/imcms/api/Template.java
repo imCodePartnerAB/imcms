@@ -13,6 +13,10 @@ public class Template {
         return internalTemplate.getName();
     }
 
+    public int getId() {
+        return internalTemplate.getId();
+    }
+
     public boolean equals( Object o ) {
         if( this == o )
             return true;
@@ -34,6 +38,7 @@ public class Template {
     TemplateDomainObject getInternal() {
         return internalTemplate;
     }
+
 
     public String toString() {
         return getName();

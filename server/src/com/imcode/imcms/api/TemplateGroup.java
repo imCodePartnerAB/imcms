@@ -14,7 +14,7 @@ public class TemplateGroup {
         return internalTemplateGroup.getName();
     }
 
-    int getId() {
+    public int getId() {
         return internalTemplateGroup.getId();
     }
 

@@ -19,7 +19,7 @@ public class TemplateService {
     }
 
     /**
-     * Get a list of all
+     * Get a list of all template groups the calling user has right to see for this document
      *
      * @param textDocument The textDocument for witch we would like to see the possible groups.
      * @return Only the templategroups that the current logged in user has the permissions to see
@@ -29,6 +29,19 @@ public class TemplateService {
         securityChecker.hasEditPermission( textDocument );
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         TemplateGroupDomainObject[] internalTemplates = templateMapper.getAllTemplateGroupsAvailableForUserOnDocument( user, textDocument.getId() );
+        return createTemplateGroupArray( internalTemplates );
+    }
+
+    /**
+     * Get all the template groups found in the system.
+     * @return
+     */
+    public TemplateGroup[] getAllTemplateGroups() {
+        TemplateGroupDomainObject[] templateGroupDomainObject = templateMapper.getAllTemplateGroups();
+        return createTemplateGroupArray( templateGroupDomainObject );
+    }
+
+    private TemplateGroup[] createTemplateGroupArray( TemplateGroupDomainObject[] internalTemplates ) {
         TemplateGroup[] result = new TemplateGroup[internalTemplates.length];
         for (int i = 0; i < internalTemplates.length; i++) {
             result[i] = new TemplateGroup( internalTemplates[i] );
@@ -85,5 +98,4 @@ public class TemplateService {
         TemplateGroupDomainObject template = templateMapper.getTemplateGroupById( templateGroupId );
         return (null != template) ? new TemplateGroup( template ) : null;
     }
-
 }
