@@ -41,7 +41,8 @@
 					} else { %>
 						<tr>
 							<td width="40">&nbsp;</td>
-							<td width="50" class="imcmsAdmText"><b><? imcms/lang/jsp/search_documents.jsp/document_id ?></b></td>
+							<td class="imcmsAdmText"><b><? imcms/lang/jsp/search_documents.jsp/document_id ?></b></td>
+                            <td class="imcmsAdmText"><b><? imcms/lang/jsp/search_documents.jsp/document_type ?></b></td>
 							<td class="imcmsAdmText"><b><? imcms/lang/jsp/search_documents.jsp/document_headline ?></b></td><%
 						DocumentFinder.SearchResultColumn[] searchResultColumns = documentFinder.getExtraSearchResultColumns() ;
 						for ( int i = 0; i < searchResultColumns.length; i++ ) {
@@ -51,7 +52,7 @@
 							<td>&nbsp;</td>
 						</tr>
 						<tr>
-							<td colspan="<%= 4 + searchResultColumns.length %>"><img src="<%= IMG_PATH %>/1x1_cccccc.gif" width="100%" height="1"></td>
+							<td colspan="<%= 5 + searchResultColumns.length %>"><img src="<%= IMG_PATH %>/1x1_cccccc.gif" width="100%" height="1"></td>
 						</tr><%
 						int firstDocumentIndexOnNextPage = ( firstDocumentIndex + documentsPerPage );
 						for ( int i = firstDocumentIndex ; i < documentsFound.length && i < firstDocumentIndexOnNextPage; i++ ) {
@@ -73,6 +74,7 @@
 							if (user.canEditDocumentInformationFor(document)) {
 								%></a><%
 							} %></td>
+                            <td><%= document.getDocumentType().getName().toLocalizedString(request)%></td>
 							<td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br><%
 							%><a href="GetDoc?meta_id=<%= document.getId() %>"<%
 								%><%= (user.canEditDocumentInformationFor(document)) ? " title=\"GetDoc?meta_id=" + document.getId() + "\"" : "" %>><%

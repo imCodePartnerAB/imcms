@@ -39,7 +39,8 @@
             <table border="0" cellspacing="0" cellpadding="2" width="100%">
                 <tr valign="bottom">
                     <td width="40"><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/16 ?></b>&nbsp;</td>
-                    <td width="50"><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/15 ?></b></td>
+                    <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/15 ?></b></td>
+                    <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/21 ?></b></td>
                     <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/17 ?>/<? web/imcms/lang/jsp/admin/admin_manager.jsp/18 ?></b></td>
                     <td align="right">
                         <table border="0" cellspacing="0" cellpadding="0">
@@ -55,7 +56,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="4"><img src="<%= imagesPath %>/1x1_cccccc.gif" width="100%" height="1"></td>
+                    <td colspan="5"><img src="<%= imagesPath %>/1x1_cccccc.gif" width="100%" height="1"></td>
                 </tr>
 
                <%
