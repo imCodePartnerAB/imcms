@@ -21,20 +21,22 @@
 
 /* adminMode */
 
-#adminPanelDiv      { padding: 15 0 10 0; }
- .adminPanelTable    { border: 2px outset; background-color:#d6d3ce; }
-  .adminPanelTd1      { padding:1px; }
+#adminPanelDiv      { padding: 15px 0px 10px 0px; }
+ .adminPanelTable    { border: 2px outset; background-color:#f5f5f7; }
+  .adminPanelTd1      { padding:2px; background-color:#20568D; }
     #adminPanelTd1_1  { }
-      .adminPanelLogo  { font: bold 11px Verdana,Geneva,sans-serif; color:#a6a3be; letter-spacing:-1px; }
+      .adminPanelLogo  { font: bold 11px Verdana,Geneva,sans-serif; color:#ddddff; letter-spacing:-1px; }
     #adminPanelTd1_2  {  }
-      .adminPanelText  { font: 11px Verdana,Geneva,sans-serif; color:#000000; }
+      .adminPanelText  { font: 11px Verdana,Geneva,sans-serif; color:#ffffff; }
     #adminPanelTd1_3  {  }
   .adminPanelTd2      { padding:3px; height:32; vertical-align:top; }
 
-  /* .adminPanelTd2 A IMG { filter: }
+  .adminPanelTd2 A IMG { filter: }
   .adminPanelTd2 A:hover IMG {
      filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=0, xray=0, mirror=0, invert=0, opacity=0.5, rotation=0);
-     position:relative; top:+1; left:+1; } */
+     /* position:relative; top:+1; left:+1; */
+	}
+B { font-weight: bold; }
 -->
 </style>
 <div id="adminPanelDiv">
@@ -92,8 +94,7 @@
         if ( user.canAccessAdminPages() ) {
             %><a href="$contextPath/servlet/AdminManager" target="_blank" id="admHrefAdmin"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/admin.gif" alt="<? templates/sv/adminbuttons/superadminbutton.html/2001 ?>" id="admBtnAdmin" border="0"></a><%
         }
-        %><a href="javascript:void(0)" onClick="openHelpW(1);return(false)" target="_blank"  id="admHrefHelp"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/help.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>" id="admBtnHelp" border="0"></a>
-	</td>
+        %><a href="javascript:void(0)" onClick="openHelpW(1);return(false)" target="_blank"  id="admHrefHelp"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/help.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>" id="admBtnHelp" border="0"></a></td>
 </tr>
 </table></div>
 <SCRIPT language=JavaScript>
