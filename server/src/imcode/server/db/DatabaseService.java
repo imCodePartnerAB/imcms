@@ -550,4 +550,26 @@ public class DatabaseService {
             }
         } );
     }
+
+    // todo döp om denna till, userExists eller nåt
+    /**
+     * Because different databses treats upper/lower case differently this method makes a
+     * ignoreCases  match.
+     * @param userName
+     * @return
+     */
+    String sproc_FindUserName( String userName ) {
+        String sql = "SELECT login_name FROM users WHERE LOWER(login_name) = ? ";
+        Object[] paramValues = new Object[]{ userName.toLowerCase() };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return rs.getString( "login_name" );
+            }
+        } );
+        if( 0 == queryResult.size() ) {
+            return null;
+        } else {
+            return (String)queryResult.get(0);
+        }
+    }
 }

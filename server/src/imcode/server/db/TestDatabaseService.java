@@ -221,15 +221,28 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
         static_test_sproc_AddUserRole( sqlServer, existing, nonExisting );
         static_test_sproc_AddUserRole( mySql, existing, nonExisting );
-        if( testMimer ) {
-            static_test_sproc_AddUserRole( mimer, existing, nonExisting );
-        }
+        if( testMimer ) static_test_sproc_AddUserRole( mimer, existing, nonExisting );
     }
 
     private static void static_test_sproc_AddUserRole( DatabaseService dbService, DatabaseService.Table_user_roles_crossref existing, DatabaseService.Table_user_roles_crossref nonExisting ) {
         assertEquals( 0, dbService.sproc_AddUserRole( existing ) );
         assertEquals( 1, dbService.sproc_AddUserRole( nonExisting ) );
         assertEquals( 0, dbService.sproc_AddUserRole( nonExisting ) );
+    }
+
+    public void test_sproc_FindUserName() {
+        static_test_sproc_FindUserName( sqlServer );
+        static_test_sproc_FindUserName( mySql );
+        if( testMimer ) static_test_sproc_FindUserName( mimer );
+    }
+
+    private void static_test_sproc_FindUserName( DatabaseService dbService ) {
+        String name = "Admin";
+        String nameResult = dbService.sproc_FindUserName(name);
+        assertTrue( name.equalsIgnoreCase( nameResult ));
+        name = "admin";
+        nameResult = dbService.sproc_FindUserName(name);
+        assertTrue( name.equalsIgnoreCase( nameResult ));
     }
 
     // Below is helper functions to more than one test.
