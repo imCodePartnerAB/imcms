@@ -526,4 +526,8 @@ public class Conference extends HttpServlet {
             }
         }
     }
+
+    void addUserToOneConference(UserDomainObject user, String metaId, IMCServiceInterface imcref){
+        imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{user.getId()+"", metaId, user.getFirstName(), user.getLastName()} );
+    }
 } // End class

@@ -207,6 +207,10 @@ public class ConfLogin extends Conference {
                 //renew the user object
                 user = userMapper.getUser(Integer.parseInt(user.getId()+""));
                 okToLogIn = documentMapper.userHasMoreThanReadPermissionOnDocument( user, document);
+                if (okToLogIn) {
+                    // user has permission to log in to this conferens so lets add him to it.
+                    addUserToOneConference(user, document.getId()+"", imcref);
+                }
                 log( "Ok, let the user in and let him be a member: " + okToLogIn );
             }
 
@@ -235,6 +239,7 @@ public class ConfLogin extends Conference {
         // ************* ADD USER TO CONFERENCE **************
         if ( loginType.equalsIgnoreCase( "ADD_USER" ) ) {
             // log("Now runs add_user") ;
+
 
             // Lets get the parameters from html page and validate them
             Properties userParams = this.getNewUserParameters( req );
@@ -285,32 +290,29 @@ public class ConfLogin extends Conference {
                 }
             }
 
-            // Lets get the new UserId for the new user
-            String newUserId = imcref.sqlProcedureStr( "GetHighestUserId", new String[0] );
-            if ( newUserId == null ) {
-                String header = "ConfLogin servlet.";
-                new ConfError( req, res, header, 61, LOGIN_ERROR_HTML, user );
-                return;
-            }
-
             // Lets build the users information into a string and add it to db
 
-            // Lets get the language id the user will have, or set the lang_id to 1
-            // as default
-            if ( userParams.getProperty( "lang_id" ) == null ) {
-                userParams.setProperty( "lang_id", "1" );
-            }
+            UserDomainObject newUser = new UserDomainObject();
 
-            userParams.setProperty( "user_id", newUserId );
+            newUser.setLoginName(userParams.getProperty("login_name"));
+            newUser.setPassword(userParams.getProperty("password1"));
+            newUser.setFirstName(userParams.getProperty("first_name"));
+            newUser.setLastName(userParams.getProperty("last_name"));
+            newUser.setTitle(userParams.getProperty("title"));
+            newUser.setCompany(userParams.getProperty("company"));
+            newUser.setAddress(userParams.getProperty("address"));
+            newUser.setCity(userParams.getProperty("city"));
+            newUser.setZip(userParams.getProperty("zip"));
+            newUser.setCountry(userParams.getProperty("country"));
+            newUser.setCountyCouncil(userParams.getProperty("country_council"));
+            newUser.setEmailAddress(userParams.getProperty("email"));
+            newUser.setLangId(Integer.parseInt(user.getLangId()+"")); //lang_id for loggdonuser
+            newUser.setActive(true);
+            newUser.setWorkPhone(userParams.getProperty( "phone" ));
 
-            String[] procParams = AdminUserProps.extractUpdateUserSprocParametersFromProperties( userParams );
-
-            // Lets build the users information into a string and add it to db
-            imcref.sqlUpdateProcedure( "AddNewUser", procParams );
-
-            // Ok, lets get the roles the user will get when he is selfregistering  and
-            // add those roles to the user
-            addAllConferenceSelfRegRolesToUser(user, params.getMetaId()+"", imcref );
+            // Add new user to db
+            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+            imcmsAuthenticatorAndUserMapper.addUser( newUser );
 
             // Ok, Lets add the users roles into db, first get the role his in the system with
             String userId = "" + user.getId();
@@ -321,7 +323,7 @@ public class ConfLogin extends Conference {
                 for ( int i = 0; i < usersRoles.length; i += 2 ) {
                     // Late change, fix so the superadminrole wont be copied to the new user
                     if ( !usersRoles[i].toString().equals( "1" ) ) {
-                        imcref.sqlUpdateProcedure( "AddUserRole", new String[]{newUserId, usersRoles[i].toString()} );
+                        imcref.sqlUpdateProcedure( "AddUserRole", new String[]{newUser.getId()+"", usersRoles[i].toString()} );
                     }
                 }
             } else {  // nothing came back from getUserRoles
@@ -331,13 +333,17 @@ public class ConfLogin extends Conference {
                 return;
             }
 
+            // Ok, lets get the roles the user will get when he is selfregistering  and
+            // add those roles to the user
+            addAllConferenceSelfRegRolesToUser(newUser, params.getMetaId()+"", imcref );
+
             // Lets add the new user in the conference db as well
             // ConfUsersAdd	@user_id int,	@conf_id int,	@aFirstName char(25),	@aLastName char(30)
             int metaId = params.getMetaId();
             String fName = userParams.getProperty( "first_name" );
             String lName = userParams.getProperty( "last_name" );
 
-            imcref.sqlUpdateProcedure( "A_ConfUsersAdd", new String[]{newUserId, "" + metaId, fName, lName} );
+            addUserToOneConference(newUser, metaId+"", imcref);
 
             String header = "ConfLogin servlet.";
             new ConfError( req, res, header, 55, ADD_USER_OK_HTML, user );
