@@ -2,3 +2,6 @@ build
 build.log
 build.properties
 dist
+*.iml
+*.ipr
+*.iws

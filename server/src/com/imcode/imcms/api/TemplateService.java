@@ -32,7 +32,7 @@ public class TemplateService {
     public TemplateGroup[] getTemplatesGroups( TextDocument textDocument ) throws NoPermissionException {
         securityChecker.isSuperAdmin();
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        TemplateGroupDomainObject[] internalTemplates = templateMapper.getAllTemplateGroups( user, textDocument.getId() );
+        TemplateGroupDomainObject[] internalTemplates = templateMapper.getAllTemplateGroupsAvailableForUserOnDocument( user, textDocument.getId() );
         TemplateGroup[] result = new TemplateGroup[internalTemplates.length];
         for( int i = 0; i < internalTemplates.length; i++ ) {
             result[i] = new TemplateGroup( internalTemplates[i] );
@@ -49,7 +49,7 @@ public class TemplateService {
      */
     public Template[] getTemplates( TemplateGroup templateGroup ) throws NoPermissionException {
         securityChecker.hasTemplateGroupPermission(templateGroup);
-        TemplateDomainObject[] templates = templateMapper.getTemplates( templateGroup.getId() );
+        TemplateDomainObject[] templates = templateMapper.getTemplatesInGroup( templateGroup.getInternal() );
         Template[] result = new Template[templates.length];
         for( int i = 0; i < templates.length; i++ ) {
             TemplateDomainObject domainObject = templates[i];
@@ -77,7 +77,7 @@ public class TemplateService {
     }
 
     public Template getTemplate( String templateName ) {
-        TemplateDomainObject template = templateMapper.getTemplate(templateName) ;
+        TemplateDomainObject template = templateMapper.getTemplateByName(templateName) ;
         return (null != template) ? new Template(template) : null ;
     }
 

@@ -2,6 +2,7 @@
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -123,7 +124,9 @@ public class SaveInPage extends HttpServlet {
 
             String group = req.getParameter( "group" );
             if ( group != null ) {
-                user.setTemplateGroup( Integer.parseInt( req.getParameter( "group" ) ) );
+                int templateGroupId = Integer.parseInt( req.getParameter( "group" ) );
+                TemplateGroupDomainObject templateGroup = imcref.getTemplateMapper().getTemplateGroupById(templateGroupId);
+                user.setTemplateGroup( templateGroup );
             }
 
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );

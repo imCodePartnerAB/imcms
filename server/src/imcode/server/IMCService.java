@@ -1,9 +1,7 @@
 package imcode.server;
 
 import imcode.server.db.ConnectionPool;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.TextDocumentTextDomainObject;
+import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.parser.AdminButtonParser;
@@ -22,8 +20,6 @@ import imcode.util.fortune.*;
 import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -64,6 +60,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
     private ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAuthAndMapper = null;
     private DocumentMapper documentMapper;
+    private TemplateMapper templateMapper;
 
     static {
         mainLog.info("Main log started.");
@@ -77,6 +74,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         initMemberFields( props );
         initAuthenticatorsAndUserAndRoleMappers( props );
         initDocumentMapper();
+        initTemplateMapper();
     }
 
     private void initMemberFields( Properties props ) {
@@ -162,6 +160,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     private void initDocumentMapper() {
         documentMapper = new DocumentMapper( this, imcmsAuthenticatorAndUserMapper );
+    }
+
+    private void initTemplateMapper() {
+        templateMapper = new TemplateMapper( this ) ;
     }
 
     private void initAuthenticatorsAndUserAndRoleMappers( Properties props ) {
@@ -713,6 +715,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return documentMapper ;
     }
 
+    public TemplateMapper getTemplateMapper() {
+        return templateMapper ;
+    }
+
     public ImcmsAuthenticatorAndUserMapper getUserAndRoleMapper() {
         return imcmsAuthenticatorAndUserMapper;
     }
@@ -1197,25 +1203,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * delete template from db/disk
-     */
-    public void deleteTemplate(int template_id) {
-
-        String sqlStr = "delete from templates_cref where template_id = ?";
-        sqlUpdateQuery(sqlStr, new String[]{""+template_id});
-
-        // delete from database
-        sqlStr = "delete from templates where template_id = ?";
-        sqlUpdateQuery(sqlStr, new String[]{"" + template_id});
-
-        // test if template exists and delete it
-        File f = new File(m_TemplateHome + "/text/" + template_id + ".html");
-        if (f.exists()) {
-            f.delete();
-        }
-    }
-
-    /**
      save demo template
      */
     public void saveDemoTemplate( int template_id, byte[] data, String suffix ) throws IOException {
@@ -1226,24 +1213,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             fw.write(data);
             fw.flush();
             fw.close();
-    }
-
-    /**
-     * delete templategroup
-     */
-    public void deleteTemplateGroup( int group_id ) {
-        String sqlStr = "delete from templategroups where group_id = ?";
-        sqlUpdateQuery( sqlStr, new String[]{"" + group_id} );
-    }
-
-    /**
-     * change templategroupname
-     */
-    public void changeTemplateGroupName( int group_id, String new_name ) {
-        String sqlStr = "update templategroups\n"
-                + "set group_name = ?\n"
-                + "where group_id = ?\n";
-        sqlUpdateQuery( sqlStr, new String[]{new_name, "" + group_id} );
     }
 
     /** get server date
@@ -1259,7 +1228,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     };
 
     // get demotemplates
-    public String[] getDemoTemplateList() {
+    public String[] getDemoTemplateIds() {
         File demoDir = new File( m_TemplateHome + "/text/demo/" );
 
         File[] file_list = demoDir.listFiles( DEMOTEMPLATEFILTER );

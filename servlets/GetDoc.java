@@ -297,7 +297,7 @@ public class GetDoc extends HttpServlet {
                     }
                 }
 
-                user.setTemplateGroup( -1 );
+                user.setTemplateGroup( null );
                 ParserParameters paramsToParser = new ParserParameters();
 
                 paramsToParser.setTemplate( req.getParameter( "template" ) );

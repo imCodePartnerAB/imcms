@@ -127,7 +127,7 @@ public class TemplateAdd extends HttpServlet {
             } else if ( mp.getParameter( "delete_demo" ) != null ) {
                 imcref.deleteDemoTemplate( Integer.parseInt( template ) );
                 String list[];
-                list = imcref.getDemoTemplateList();
+                list = imcref.getDemoTemplateIds();
                 String temp[];
                 temp = imcref.sqlQuery(
                         "select template_id, simple_name from templates where lang_prefix = ? order by simple_name",

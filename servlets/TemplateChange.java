@@ -1,497 +1,299 @@
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import imcode.util.*;
-import imcode.server.*;
-import imcode.server.user.UserDomainObject;
+import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.util.Parser;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TemplateDomainObject;
+import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.TemplateMapper;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.log4j.Category;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TemplateChange extends HttpServlet {
 
-    private static Category log = Category.getInstance( TemplateChange.class.getName() );
-
-    public void init( ServletConfig config ) throws ServletException {
-        super.init( config );
-    }
-
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
         // Check if user logged on
         UserDomainObject user;
 
-        if( (user = Utility.getLoggedOnUserOrRedirect( req, res, start_url )) == null ) {
+        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
             return;
         }
 
-        if (!imcref.checkAdminRights(user)) {
+        if ( !imcref.checkAdminRights( user ) ) {
             Utility.redirect( req, res, start_url );
             return;
         }
 
         res.setContentType( "text/html" );
 
+        TemplateMapper templateMapper = imcref.getTemplateMapper();
         ServletOutputStream out = res.getOutputStream();
         String htmlStr = null;
         String lang = req.getParameter( "language" );
-        if( req.getParameter( "cancel" ) != null ) {
+        if ( req.getParameter( "cancel" ) != null ) {
             Utility.redirect( req, res, "TemplateAdmin" );
-            return;
-        } else if( req.getParameter( "template_get" ) != null ) {
-            int template_id = Integer.parseInt( req.getParameter( "template" ) );
-            String filename = sqlSelectTemplateNameFromTemplates( imcref, template_id );
-            if( filename == null ) {
-                filename = "";
-            }
-            byte[] file = imcref.getTemplateData( template_id );
-            res.setContentType( "application/octet-stream; name=\"" + filename + "\"" );
-            res.setContentLength( file.length );
-            res.setHeader( "Content-Disposition", "attachment; filename=\"" + filename + "\";" );
-            out.write( file );
-            out.flush();
-            return;
-        } else if (req.getParameter("template_delete_cancel") != null) {
-            String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[]{lang});
-            //String temp[] ;
-            htmlStr = "";
-            Vector vec;
-            for( int i = 0; i < temp.length; i++ ) {
-                vec = new Vector();
-                vec.add( "#template_name#" );
-                vec.add( temp[i][0] );
-                vec.add( "#docs#" );
-                vec.add( temp[i][1] );
-                vec.add( "#template_id#" );
-                vec.add( temp[i][2] );
-                htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
-            }
-            vec = new Vector();
-            vec.add( "#language#" );
-            vec.add( lang );
-            if( temp.length > 0 ) {
-                vec.add( "#templates#" );
-                vec.add( htmlStr );
-                htmlStr = imcref.parseDoc( vec, "template_delete.html", user);
-            } else {
-                htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user);
-            }
-        } else if( req.getParameter( "template_delete" ) != null ) {
-            String new_temp_id = req.getParameter( "new_template" );
-            int template_id = Integer.parseInt( req.getParameter( "template" ) );
-            if( new_temp_id != null ) {
-                sqlUpdateTextDocs( imcref, template_id, new_temp_id );
-            }
-            imcref.deleteTemplate( template_id );
-            String[][] temp = sqlSelectSimpleNameMetaIdCountTemplateId( imcref, lang );
-            htmlStr = "";
-            Vector vec;
-            for( int i = 0; i < temp.length; i++ ) {
-                vec = new Vector();
-                vec.add( "#template_name#" );
-                vec.add( temp[i][0] );
-                vec.add( "#docs#" );
-                vec.add( temp[i][1] );
-                vec.add( "#template_id#" );
-                vec.add( temp[i][2] );
-                htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
-            }
-            vec = new Vector();
-            vec.add( "#language#" );
-            vec.add( lang );
-            if( temp.length > 0 ) {
-                vec.add( "#templates#" );
-                vec.add( htmlStr );
-            }
-            /**/
-            htmlStr = imcref.parseDoc( vec, "template_delete.html", user);
-        } else if( req.getParameter( "assign" ) != null ) {
-            String grp_id = req.getParameter( "group_id" );
-            String temp_id[] = req.getParameterValues( "unassigned" );
-            if( temp_id == null ) {
-                htmlStr = parseAssignTemplates( grp_id, lang, user);
-                out.print( htmlStr );
-                return;
-            }
-            for( int i = 0; i < temp_id.length; i++ ) {
-                String tempId = temp_id[i];
-                sqlInsertGroupIdTemplateIdIntoTemplates( imcref, grp_id, tempId );
-            }
-            htmlStr = parseAssignTemplates( grp_id, lang, user);
-        } else if( req.getParameter( "deassign" ) != null ) {
-            String grp_id = req.getParameter( "group_id" );
-            String temp_id[] = req.getParameterValues( "assigned" );
-            if( temp_id == null ) {
-                htmlStr = parseAssignTemplates( grp_id, lang, user);
-                out.print( htmlStr );
-                return;
-            }
-            for( int i = 0; i < temp_id.length; i++ ) {
-                String tempId = temp_id[i];
-                sqlDeleteTemplate( imcref, grp_id, tempId );
-            }
-            htmlStr = parseAssignTemplates( grp_id, lang, user);
-        } else if( req.getParameter( "show_assigned" ) != null ) {
-            String grp_id = req.getParameter( "templategroup" );
-            htmlStr = parseAssignTemplates( grp_id, lang, user);
-        } else if( req.getParameter( "template_rename" ) != null ) {
-            int template_id = Integer.parseInt( req.getParameter( "template" ) );
-            String name = req.getParameter( "name" );
-            if( name == null || "".equals( name ) ) {
-                Vector vec = new Vector();
-                vec.add( "#language#" );
-                vec.add( lang );
-                htmlStr = imcref.parseDoc( vec, "template_rename_name_blank.html", user);
-            } else {
-                sqlUpdateTemplateName( imcref, template_id, name );
-                String temp[];
-                temp = imcref.sqlQuery("select template_id, simple_name from templates where lang_prefix = ? order by simple_name", new String[]{lang});
-                Vector vec = new Vector();
-                vec.add( "#language#" );
-                vec.add( lang );
-                if( temp.length > 0 ) {
-                    String temps = "";
-                    for( int i = 0; i < temp.length; i += 2 ) {
-                        temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
-                    }
-                    vec.add( "#templates#" );
-                    vec.add( temps );
-                    htmlStr = imcref.parseDoc( vec, "template_rename.html", user);
-                } else {
-                    htmlStr = imcref.parseDoc( vec, "template_no_langtemplates.html", user);
-                }
-            }
-        } else if( req.getParameter( "template_delete_check" ) != null ) {
-            int template_id = Integer.parseInt( req.getParameter( "template" ) );
-            String sqlStr = "select top 50 meta_id from text_docs where template_id = ?";
-            String temp[] = imcref.sqlQuery(sqlStr, new String[]{"" + template_id});
-            if( temp.length > 0 ) {
-                Vector vec = new Vector();
-                vec.add( "#language#" );
-                vec.add( lang );
-                String tempstr = "";
-                for( int i = 0; i < temp.length; i++ ) {
-                    tempstr += "<option>" + temp[i] + "</option>";
-                }
-                vec.add( "#template#" );
-                vec.add( String.valueOf( template_id ) );
-                vec.add( "#docs#" );
-                vec.add( tempstr );
-                temp = imcref.sqlQuery( "select t.template_id,t.simple_name from templates t where lang_prefix = ? and template_id != ? order by simple_name", new String[] {lang, ""+template_id} );
-                tempstr = "";
-                for( int i = 0; i < temp.length; i += 2 ) {
-                    tempstr += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
-                }
-                vec.add( "#templates#" );
-                vec.add( tempstr );
-
-                htmlStr = imcref.parseDoc( vec, "template_delete_warning.html", user);
-            } else {
-                imcref.deleteTemplate( template_id );
-                String foo[][] = imcref.sqlQueryMulti( "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[] {lang});
-                htmlStr = "";
-                Vector vec;
-                for( int i = 0; i < foo.length; i++ ) {
-                    vec = new Vector();
-                    vec.add( "#template_name#" );
-                    vec.add( foo[i][0] );
-                    vec.add( "#docs#" );
-                    vec.add( foo[i][1] );
-                    vec.add( "#template_id#" );
-                    vec.add( foo[i][2] );
-                    htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
-                }
-                vec = new Vector();
-                vec.add( "#language#" );
-                vec.add( lang );
-                if( foo.length > 0 ) {
-                    vec.add( "#templates#" );
-                    vec.add( htmlStr );
-                }
-                /**/
-                htmlStr = imcref.parseDoc( vec, "template_delete.html", user);
-            }
-        } else if( req.getParameter( "group_delete_check" ) != null ) {
-            int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
-            String[] temp = sqlSelectTemplatesNames( imcref, grp_id );
-            if( temp.length > 0 ) {
-                String temps = temp[0];
-                for( int i = 1; i < temp.length; i++ ) {
-                    temps += ", " + temp[i];
-                }
-                Vector vec = new Vector();
-                vec.add( "#templates#" );
-                vec.add( temps );
-                vec.add( "#templategroup#" );
-                vec.add( String.valueOf( grp_id ) );
-                htmlStr = imcref.parseDoc( vec, "templategroup_delete_warning.html", user);
-            } else {
-                imcref.deleteTemplateGroup( grp_id );
-                temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
-                String temps = "";
-                for( int i = 0; i < temp.length; i += 2 ) {
-                    temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
-                }
-                Vector vec = new Vector();
-                vec.add( "#templategroups#" );
-                vec.add( temps );
-                htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", user);
-            }
-        } else if( req.getParameter( "group_delete" ) != null ) {
-            int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
-            imcref.sqlUpdateQuery("delete from templates_cref where group_id = ?", new String[]{"" + grp_id});
-            imcref.deleteTemplateGroup( grp_id );
-            String temp[] = imcref.sqlProcedure("GetTemplategroups", new String[0]);
-            String temps = "";
-            for( int i = 0; i < temp.length; i += 2 ) {
-                temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
-            }
-            Vector vec = new Vector();
-            vec.add( "#templategroups#" );
-            vec.add( temps );
-            htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", user);
-        } else if( req.getParameter( "group_delete_cancel" ) != null ) {
-            String temp[];
-            temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
-            String temps = "";
-            for( int i = 0; i < temp.length; i += 2 ) {
-                temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
-            }
-            Vector vec = new Vector();
-            vec.add( "#templategroups#" );
-            vec.add( temps );
-            htmlStr = imcref.parseDoc( vec, "templategroup_delete.html", user);
-        } else if( req.getParameter( "group_add" ) != null ) {
-            String name = req.getParameter( "name" );
-            if( name == null || name.equals( "" ) ) {
-                htmlStr = imcref.parseDoc( null, "templategroup_add_name_blank.html", user);
-            } else {
-                String sqlStr = "select group_id from templategroups where group_name = ?";
-                if (imcref.sqlQueryStr(sqlStr, new String[]{name}) != null) {
-                    htmlStr = imcref.parseDoc( null, "templategroup_add_exists.html", user);
-                } else {
-                    imcref.sqlUpdateQuery("declare @new_id int\n" +
-                            "select @new_id = max(group_id)+1 from templategroups\n" +
-                            "insert into templategroups values(@new_id,?)", new String[]{name});
-                    htmlStr = imcref.parseDoc(null, "templategroup_add.html", user);
-                }
-            }
-        } else if( req.getParameter( "group_rename" ) != null ) {
-            int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
-            String name = req.getParameter( "name" );
-            if( name == null || name.equals( "" ) ) {
-                htmlStr = imcref.parseDoc( null, "templategroup_rename_name_blank.html", user);
-            } else {
-                imcref.changeTemplateGroupName( grp_id, name );
-                String temp[];
-                temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
-                String temps = "";
-                for( int i = 0; i < temp.length; i += 2 ) {
-                    temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
-                }
-                Vector vec = new Vector();
-                vec.add( "#templategroups#" );
-                vec.add( temps );
-                htmlStr = imcref.parseDoc( vec, "templategroup_rename.html", user);
-            }
-        } else if( req.getParameter( "list_templates_docs" ) != null ) {
-            String template_id = req.getParameter( "template" );
-            String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[]{lang});
-            htmlStr = "";
-            for( int i = 0; i < temp.length; i++ ) {
-                Vector vec = new Vector();
-                vec.add( "#template_name#" );
-                vec.add( temp[i][0] );
-                vec.add( "#docs#" );
-                vec.add( temp[i][1] );
-                vec.add( "#template_id#" );
-                vec.add( temp[i][2] );
-                htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
-            }
-            Vector vec2 = new Vector();
-            vec2.add( "#template_list#" );
-            vec2.add( htmlStr );
-            if( template_id != null ) {
-                temp = imcref.sqlQueryMulti("select td.meta_id, meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_id = ? order by td.meta_id", new String[]{template_id});
-                String htmlStr2 = "";
-                for( int i = 0; i < temp.length; i++ ) {
-                    Vector vec = new Vector();
-                    vec.add( "#meta_id#" );
-                    vec.add( temp[i][0] );
-                    vec.add( "#meta_headline#" );
-                    String[] pd = {
-                        "&", "&amp;",
-                        "<", "&lt;",
-                        ">", "&gt;",
-                        "\"", "&quot;"
-                    };
-                    if (temp[i][1].length() > 60) {
-                        temp[i][1] = temp[i][1].substring( 0, 57 ) + "...";
-                    }
-                    temp[i][1] = Parser.parseDoc( temp[i][1], pd );
-                    vec.add( temp[i][1] );
-                    htmlStr2 += imcref.parseDoc( vec, "templates_docs_row.html", user);
-                }
-                vec2.add( "#templates_docs#" );
-                vec2.add( htmlStr2 );
-            }
-            vec2.add( "#language#" );
-            vec2.add( lang );
-            htmlStr = imcref.parseDoc( vec2, "template_list.html", user);
-        } else if( req.getParameter( "show_doc" ) != null ) {
-            String meta_id = req.getParameter( "templates_doc" );
-            if( meta_id != null ) {
-                Utility.redirect( req, res, "AdminDoc?meta_id=" + meta_id );
-                return;
-            }
-            String temp[][] = imcref.sqlQueryMulti("select simple_name,count(meta_id),t.template_id from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name", new String[]{lang});
-            htmlStr = "";
-            for( int i = 0; i < temp.length; i++ ) {
-                Vector vec = new Vector();
-                vec.add( "#template_name#" );
-                vec.add( temp[i][0] );
-                vec.add( "#docs#" );
-                vec.add( temp[i][1] );
-                vec.add( "#template_id#" );
-                vec.add( temp[i][2] );
-                htmlStr += imcref.parseDoc( vec, "template_list_row.html", user);
-            }
-            Vector vec = new Vector();
-            vec.add( "#template_list#" );
-            vec.add( htmlStr );
-            vec.add( "#language#" );
-            vec.add( lang );
-            htmlStr = imcref.parseDoc( vec, "template_list.html", user);
+        } else if ( req.getParameter( "template_get" ) != null ) {
+            downloadTemplate( req, imcref, res, out );
+        } else if ( req.getParameter( "template_delete_cancel" ) != null ) {
+            htmlStr = TemplateAdmin.createDeleteTemplateDialog( templateMapper, user, lang, imcref ) ;
+        } else if ( req.getParameter( "template_delete" ) != null ) {
+            deleteTemplate( req, imcref );
+            htmlStr = TemplateAdmin.createDeleteTemplateDialog( templateMapper, user, lang, imcref ) ;
+        } else if ( req.getParameter( "assign" ) != null ) {
+            htmlStr = addTemplatesToGroup( req, templateMapper, lang, user, imcref );
+        } else if ( req.getParameter( "deassign" ) != null ) {
+            htmlStr = removeTemplatesFromGroup( req, templateMapper, lang, user, imcref );
+        } else if ( req.getParameter( "show_assigned" ) != null ) {
+            int templateGroupId = Integer.parseInt( req.getParameter( "templategroup" ) );
+            TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( templateGroupId );
+            htmlStr =
+                    TemplateAdmin.createAssignTemplatesToGroupDialog( templateMapper, templateGroup, lang, user,
+                                                                      imcref );
+        } else if ( req.getParameter( "template_rename" ) != null ) {
+            htmlStr = renameTemplate( req, templateMapper, lang, imcref, user );
+        } else if ( req.getParameter( "template_delete_check" ) != null ) {
+            htmlStr = deleteTemplateAfterCheckingUsage( req, imcref, lang, user );
+        } else if ( req.getParameter( "group_delete_check" ) != null ) {
+            htmlStr = deleteTemplateGroupAfterCheckingUsage( req, imcref, user );
+        } else if ( req.getParameter( "group_delete" ) != null ) {
+            deleteTemplateGroup( req, imcref );
+            htmlStr = TemplateAdmin.createDeleteTemplateGroupDialog( templateMapper, imcref, user );
+        } else if ( req.getParameter( "group_delete_cancel" ) != null ) {
+            htmlStr = TemplateAdmin.createDeleteTemplateGroupDialog( templateMapper, imcref, user );
+        } else if ( req.getParameter( "group_add" ) != null ) {
+            htmlStr = addTemplateGroup( req, imcref, user );
+        } else if ( req.getParameter( "group_rename" ) != null ) {
+            htmlStr = renameTemplateGroup( req, imcref, user, lang );
+        } else if ( req.getParameter( "list_templates_docs" ) != null ) {
+            htmlStr = listDocumentsUsingTemplate( req, imcref, lang, user );
+        } else if ( req.getParameter( "show_doc" ) != null ) {
+            htmlStr = showDocument( req, res, imcref, lang, htmlStr, user );
         }
 
-        out.print( htmlStr );
+        if ( null != htmlStr ) {
+            out.print( htmlStr );
+        }
     }
 
-    private static String[] sqlSelectTemplatesNames( IMCServiceInterface imcref, int grp_id ) {
-        String sqlStr = "select simple_name from templates t,templates_cref c where c.template_id = t.template_id and group_id = ? order by simple_name";
-        String temp[] = imcref.sqlQuery( sqlStr, new String[] {""+grp_id} );
-        return temp;
-    }
-
-    private void sqlUpdateTemplateName( IMCServiceInterface imcref, int template_id, String name ) {
-        String sqlStr = "update templates set simple_name = ? where template_id = ?";
-        imcref.sqlUpdateQuery( sqlStr, new String[] {name, ""+template_id} );
-    }
-
-    private void sqlDeleteTemplate( IMCServiceInterface imcref, String grp_id, String tempId ) {
-        String sqlStr = "delete from templates_cref where group_id = ? and template_id = ?";
-        imcref.sqlUpdateQuery( sqlStr, new String[] {grp_id, tempId} );
-    }
-
-    private void sqlInsertGroupIdTemplateIdIntoTemplates( IMCServiceInterface imcref, String grp_id, String tempId ) {
-        String sqlStr = "insert into templates_cref (group_id,template_id) values(?,?)";
-        imcref.sqlUpdateQuery( sqlStr, new String[] {grp_id,tempId} );
-    }
-
-    private String[][] sqlSelectSimpleNameMetaIdCountTemplateId( IMCServiceInterface imcref, String lang ) {
-        String sqlStr = "select simple_name,count(meta_id),t.template_id  from templates t left join text_docs td on td.template_id = t.template_id where lang_prefix = ? group by t.template_id,simple_name order by simple_name";
-        String temp[][] = imcref.sqlQueryMulti( sqlStr, new String[] {lang} );
-        return temp;
-    }
-
-    private void sqlUpdateTextDocs( IMCServiceInterface imcref, int template_id, String new_temp_id ) {
-        String sqlStr = "update text_docs set template_id = ? where template_id = ?";
-        imcref.sqlUpdateQuery( sqlStr, new String[] {new_temp_id, ""+template_id} );
-    }
-
-    private static String sqlSelectTemplateNameFromTemplates( IMCServiceInterface imcref, int template_id ) {
-        String sqlStr = "select template_name from templates where template_id = ?";
-        String filename = imcref.sqlQueryStr( sqlStr, new String[] {""+template_id} );
-        return filename;
-    }
-
-    private String parseAssignTemplates(String grp_id, String language, UserDomainObject user) throws IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String temp[];
-        temp = imcref.sqlProcedure("GetTemplategroups", new String[0]);
-        String temps = "";
-        for( int i = 0; i < temp.length; i += 2 ) {
-            if( grp_id.equals( temp[i] ) ) {
-                temps += "<option selected value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
+    private String addTemplateGroup( HttpServletRequest req, IMCServiceInterface imcref, UserDomainObject user ) {
+        String htmlStr;
+        String name = req.getParameter( "name" );
+        if ( name == null || name.equals( "" ) ) {
+            htmlStr = createAddNameEmptyErrorDialog( imcref, user );
+        } else {
+            TemplateGroupDomainObject templateGroup = imcref.getTemplateMapper().getTemplateGroupByName(name) ;
+            if ( null != templateGroup ) {
+                htmlStr = createTemplateGroupExistsErrorDialog( imcref, user );
             } else {
-                temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
+                imcref.getTemplateMapper().createTemplateGroup( name );
+                htmlStr = TemplateAdmin.createAddGroupDialog( imcref, user );
             }
         }
-        Vector vec = new Vector();
-        vec.add( "#templategroups#" );
-        vec.add( temps );
-        temps = "";
-        temp = imcref.sqlQuery("select t.template_id,t.simple_name from templates_cref c join templates t on t.template_id = c.template_id where group_id = ? and lang_prefix = ? order by t.simple_name", new String[]{grp_id, language});
-        String list[];
-        list = imcref.getDemoTemplateList();
-        for( int i = 0; i < temp.length; i += 2 ) {
-            int tmp = Integer.parseInt( temp[i] );
-            for( int j = 0; j < list.length; j++ ) {
-                try {
-                    if( Integer.parseInt( list[j] ) == tmp ) {
-                        temp[i + 1] = "*" + temp[i + 1];
-                        break;
-                    }
-                } catch( NumberFormatException ex ) {
-                    log.debug( "Exception occured" + ex );
-                }
-            }
-            temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
-        }
-        if( grp_id != null ) {
+        return htmlStr;
+    }
 
-            vec.add( "#assigned#" );
-            vec.add( temps );
-            temp = imcref.sqlQuery("select t.template_id,t.simple_name from templates t where lang_prefix = ? and t.template_id not in (select template_id from templates_cref where group_id = ?) order by t.simple_name", new String[]{language, grp_id});
-            temps = "";
-            for( int i = 0; i < temp.length; i += 2 ) {
-                int tmp = Integer.parseInt( temp[i] );
-                for( int j = 0; j < list.length; j++ ) {
-                    try {
-                        if( Integer.parseInt( list[j] ) == tmp ) {
-                            temp[i + 1] = "*" + temp[i + 1];
-                            break;
-                        }
-                    } catch( NumberFormatException ex ) {
-
-                    }
-                }
-                temps += "<option value=\"" + temp[i] + "\">" + temp[i + 1] + "</option>";
-            }
-            vec.add( "#unassigned#" );
-            vec.add( temps );
-            temps = imcref.sqlQueryStr("select group_name from templategroups where group_id = ?", new String[]{grp_id});
-            if( temps == null ) {
-                temps = "";
-            }
-            vec.add( "#group#" );
-            vec.add( temps );
-            vec.add( "#group_id#" );
-            vec.add( String.valueOf( grp_id ) );
+    private String addTemplatesToGroup( HttpServletRequest req, TemplateMapper templateMapper, String lang,
+                                        UserDomainObject user, IMCServiceInterface imcref ) {
+        String htmlStr;
+        int grp_id = Integer.parseInt( req.getParameter( "group_id" ) );
+        String templatesToAssign[] = req.getParameterValues( "unassigned" );
+        TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( grp_id );
+        for ( int i = 0; templatesToAssign != null && i < templatesToAssign.length; i++ ) {
+            int templateId = Integer.parseInt( templatesToAssign[i] );
+            TemplateDomainObject templateToAssign = templateMapper.getTemplateById( templateId );
+            templateMapper.addTemplateToGroup( templateToAssign, templateGroup );
         }
+        htmlStr =
+                TemplateAdmin.createAssignTemplatesToGroupDialog( templateMapper, templateGroup, lang, user, imcref );
+        return htmlStr;
+    }
+
+    private String createAddNameEmptyErrorDialog( IMCServiceInterface imcref, UserDomainObject user ) {
+        String htmlStr;
+        htmlStr = imcref.parseDoc( null, "templategroup_add_name_blank.html", user );
+        return htmlStr;
+    }
+
+    private String createDocumentsUsingTemplateDialog( IMCServiceInterface imcref, UserDomainObject user,
+                                                       TemplateDomainObject template, String lang ) {
+        List vec2 = new ArrayList();
+        vec2.add( "#template_list#" );
+        vec2.add( imcref.getTemplateMapper().createHtmlOptionListOfTemplatesWithDocumentCount( user ) );
+        if ( template != null ) {
+            vec2.add( "#templates_docs#" );
+            vec2.add( TemplateAdmin.createHtmlOptionListOfDocumentsUsingTemplate( imcref, template, user ) );
+        }
+        vec2.add( "#language#" );
+        vec2.add( lang );
+        String htmlStr = imcref.parseDoc( vec2, "template_list.html", user );
+        return htmlStr;
+    }
+
+    private String createRenameNameEmptyErrorDialog( String lang, IMCServiceInterface imcref, UserDomainObject user ) {
+        String htmlStr;
+        List vec = new ArrayList();
         vec.add( "#language#" );
-        vec.add( language );
-        return imcref.parseDoc( vec, "template_assign.html", user);
+        vec.add( lang );
+        htmlStr = imcref.parseDoc( vec, "template_rename_name_blank.html", user );
+        return htmlStr;
     }
 
-    public void log( String str ) {
-        super.log( str );
-        System.out.println( "TemplateChange: " + str );
+    private String createRenameTemplateDialog( String lang, TemplateMapper templateMapper, IMCServiceInterface imcref,
+                                               UserDomainObject user ) {
+        String htmlStr;
+        List vec = new ArrayList();
+        vec.add( "#language#" );
+        vec.add( lang );
+        vec.add( "#templates#" );
+        vec.add( templateMapper.createHtmlOptionListOfTemplates( templateMapper.getAllTemplates(), null ) );
+        htmlStr = imcref.parseDoc( vec, "template_rename.html", user );
+        return htmlStr;
+    }
+
+    private String createTemplateGroupExistsErrorDialog( IMCServiceInterface imcref, UserDomainObject user ) {
+        String htmlStr;
+        htmlStr = imcref.parseDoc( null, "templategroup_add_exists.html", user );
+        return htmlStr;
+    }
+
+    private void deleteTemplate( HttpServletRequest req, IMCServiceInterface imcref ) {
+        TemplateMapper templateMapper = imcref.getTemplateMapper() ;
+        int new_temp_id = Integer.parseInt(req.getParameter( "new_template" ));
+        TemplateDomainObject newTemplate = templateMapper.getTemplateById( new_temp_id ) ;
+        int template_id = Integer.parseInt( req.getParameter( "template" ) );
+        TemplateDomainObject template = templateMapper.getTemplateById( template_id ) ;
+
+        templateMapper.replaceAllUsagesOfTemplate( template, newTemplate, imcref );
+        templateMapper.deleteTemplate( template );
+    }
+
+    private String deleteTemplateAfterCheckingUsage( HttpServletRequest req, IMCServiceInterface imcref, String lang,
+                                                     UserDomainObject user ) {
+        String htmlStr;
+        TemplateMapper templateMapper = imcref.getTemplateMapper() ;
+        int template_id = Integer.parseInt( req.getParameter( "template" ) );
+        TemplateDomainObject template = templateMapper.getTemplateById( template_id ) ;
+        DocumentDomainObject[] documentsUsingTemplate = templateMapper.getDocumentsUsingTemplate(template) ;
+        if ( documentsUsingTemplate.length > 0 ) {
+            htmlStr = TemplateAdmin.createDeleteTemplateInUseWarningDialog( lang, imcref, template, user, templateMapper );
+        } else {
+            templateMapper.deleteTemplate( template );
+            htmlStr = TemplateAdmin.createDeleteTemplateDialog( templateMapper, user, lang, imcref ) ;
+        }
+        return htmlStr;
+    }
+
+    private void deleteTemplateGroup( HttpServletRequest req, IMCServiceInterface imcref ) {
+        int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
+        imcref.getTemplateMapper().deleteTemplateGroup( grp_id );
+    }
+
+    private String deleteTemplateGroupAfterCheckingUsage( HttpServletRequest req, IMCServiceInterface imcref,
+                                                          UserDomainObject user ) {
+        String htmlStr;
+        int templateGroupId = Integer.parseInt( req.getParameter( "templategroup" ) );
+        TemplateMapper templateMapper = imcref.getTemplateMapper();
+        TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( templateGroupId );
+        TemplateDomainObject[] templatesInGroup = templateMapper.getTemplatesInGroup( templateGroup );
+
+        if ( templatesInGroup.length > 0 ) {
+            htmlStr = TemplateAdmin.createDeleteNonEmptyTemplateGroupWarningDialog( templatesInGroup, templateGroupId, imcref, user );
+        } else {
+            templateMapper.deleteTemplateGroup( templateGroupId );
+            htmlStr = TemplateAdmin.createDeleteTemplateGroupDialog(templateMapper, imcref, user ) ;
+        }
+        return htmlStr;
+    }
+
+    private void downloadTemplate( HttpServletRequest req, IMCServiceInterface imcref, HttpServletResponse res,
+                                   ServletOutputStream out ) throws IOException {
+        int template_id = Integer.parseInt( req.getParameter( "template" ) );
+        String filename = imcref.getTemplateMapper().getTemplateById( template_id ).getFileName();
+        if ( filename == null ) {
+            filename = "";
+        }
+        byte[] file = imcref.getTemplateData( template_id );
+        res.setContentType( "application/octet-stream; name=\"" + filename + "\"" );
+        res.setContentLength( file.length );
+        res.setHeader( "Content-Disposition", "attachment; filename=\"" + filename + "\";" );
+        out.write( file );
+        out.flush();
+    }
+
+    private String listDocumentsUsingTemplate( HttpServletRequest req, IMCServiceInterface imcref, String lang,
+                                               UserDomainObject user ) {
+        int templateId = Integer.parseInt( req.getParameter( "template" ) );
+        TemplateDomainObject template = imcref.getTemplateMapper().getTemplateById( templateId );
+        return createDocumentsUsingTemplateDialog( imcref, user, template, lang );
+    }
+
+    private String removeTemplatesFromGroup( HttpServletRequest req, TemplateMapper templateMapper, String lang,
+                                             UserDomainObject user, IMCServiceInterface imcref ) {
+        String htmlStr;
+        int grp_id = Integer.parseInt( req.getParameter( "group_id" ) );
+        String templatesToUnassign[] = req.getParameterValues( "assigned" );
+        TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( grp_id );
+        for ( int i = 0; templatesToUnassign != null && i < templatesToUnassign.length; i++ ) {
+            int templateId = Integer.parseInt( templatesToUnassign[i] );
+            TemplateDomainObject templateToUnassign = templateMapper.getTemplateById( templateId );
+            templateMapper.removeTemplateFromGroup( templateToUnassign, templateGroup );
+        }
+        htmlStr =
+                TemplateAdmin.createAssignTemplatesToGroupDialog( templateMapper, templateGroup, lang, user, imcref );
+        return htmlStr;
+    }
+
+    private String renameTemplate( HttpServletRequest req, TemplateMapper templateMapper, String lang,
+                                   IMCServiceInterface imcref, UserDomainObject user ) {
+        String htmlStr;
+        int template_id = Integer.parseInt( req.getParameter( "template" ) );
+        TemplateDomainObject template = templateMapper.getTemplateById( template_id );
+        String newNameForTemplate = req.getParameter( "name" );
+        if ( newNameForTemplate == null || "".equals( newNameForTemplate ) ) {
+            htmlStr = createRenameNameEmptyErrorDialog( lang, imcref, user );
+        } else {
+            templateMapper.renameTemplate( template, newNameForTemplate );
+            htmlStr = createRenameTemplateDialog( lang, templateMapper, imcref, user );
+        }
+        return htmlStr;
+    }
+
+    private String renameTemplateGroup( HttpServletRequest req, IMCServiceInterface imcref, UserDomainObject user,
+                                        String lang ) {
+        String htmlStr;
+        int grp_id = Integer.parseInt( req.getParameter( "templategroup" ) );
+        String name = req.getParameter( "name" );
+        if ( name == null || name.equals( "" ) ) {
+            htmlStr = createRenameNameEmptyErrorDialog( lang, imcref, user );
+        } else {
+            TemplateMapper templateMapper = imcref.getTemplateMapper();
+            TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( grp_id );
+            templateMapper.renameTemplateGroup( templateGroup, name );
+            htmlStr = TemplateAdmin.createRenameTemplateGroupDialog( templateMapper, imcref, user );
+        }
+        return htmlStr;
+    }
+
+    private String showDocument( HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref,
+                                 String lang, String htmlStr, UserDomainObject user ) throws IOException {
+        String meta_id = req.getParameter( "templates_doc" );
+        if ( meta_id != null ) {
+            Utility.redirect( req, res, "AdminDoc?meta_id=" + meta_id );
+        } else {
+            htmlStr = createDocumentsUsingTemplateDialog( imcref, user, null, lang ) ;
+        }
+        return htmlStr;
     }
 
 }

@@ -7,6 +7,8 @@ import imcode.server.parser.ParserParameters ;
 import imcode.server.user.*;
 import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.TemplateMapper;
+import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.db.ConnectionPool;
 
 /**
@@ -193,28 +195,16 @@ public interface IMCServiceInterface {
     public boolean checkDocAdminRightsAny(int meta_id, UserDomainObject user, int permissions)
 	;
 
-    // delete template from db/disk
-    public void deleteTemplate(int template_id)
-	;
-
     // save demo template
     public void saveDemoTemplate(int template_id,byte [] data, String suffix) throws IOException
     ;
-
-    // delete templategroup
-    public void deleteTemplateGroup(int group_id)
-	;
-
-    // save templategroup
-    public void changeTemplateGroupName(int group_id,String new_name)
-	;
 
     // get server date
     public Date getCurrentDate()
     ;
 
     // get demotemplates
-    public String[] getDemoTemplateList()
+    public String[] getDemoTemplateIds()
     ;
 
     // delete demotemplate
@@ -317,4 +307,6 @@ public interface IMCServiceInterface {
     String[][] sqlQueryMulti(String sqlstr, String[] params);
 
     public String getFilename(int meta_id) ;
+
+    TemplateMapper getTemplateMapper();
 }

@@ -1,5 +1,7 @@
 package imcode.server.user;
 
+import imcode.server.document.TemplateGroupDomainObject;
+
 import java.util.Hashtable;
 
 public class UserDomainObject extends Hashtable {
@@ -31,7 +33,7 @@ public class UserDomainObject extends Hashtable {
 
    private String langPrefix;
 
-   private int template_group = -1;
+   private TemplateGroupDomainObject templateGroup ;
    private String loginType;
 
    private boolean imcmsExternal = false;
@@ -331,15 +333,15 @@ public class UserDomainObject extends Hashtable {
    /**
     set template group
     **/
-   public void setTemplateGroup( int template_group ) {
-      this.template_group = template_group;
+   public void setTemplateGroup( TemplateGroupDomainObject template_group ) {
+      this.templateGroup = template_group;
    }
 
    /**
     get template group
     **/
-   public int getTemplateGroup() {
-      return template_group;
+   public TemplateGroupDomainObject getTemplateGroup() {
+      return templateGroup;
    }
 
 

@@ -18,6 +18,10 @@ public class TemplateGroup {
         return internalTemplateGroup.getId();
     }
 
+    TemplateGroupDomainObject getInternal() {
+        return internalTemplateGroup ;
+    }
+
     public boolean equals( Object o ) {
         if( this == o )
             return true;

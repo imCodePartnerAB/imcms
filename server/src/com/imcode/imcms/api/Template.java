@@ -10,7 +10,7 @@ public class Template {
     }
 
     public String getName() {
-        return internalTemplate.getSimple_name();
+        return internalTemplate.getName();
     }
 
     public boolean equals( Object o ) {

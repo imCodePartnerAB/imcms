@@ -65,7 +65,7 @@ public class FakeRequestRenderer implements ObjectRenderer {
         result.append( lossyUrlEncode( headline ) );
         result.append( '/' );
         if ( null != template ) {
-            result.append( lossyUrlEncode( template.getSimple_name() ) );
+            result.append( lossyUrlEncode( template.getName() ) );
         }
         result.append( '/' );
 

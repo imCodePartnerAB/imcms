@@ -4,10 +4,7 @@ import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
 import imcode.server.*;
 import imcode.server.db.ConnectionPool;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.TemplateDomainObject;
-import imcode.server.document.TextDocumentTextDomainObject;
-import imcode.server.document.DocumentMapper;
+import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
@@ -386,10 +383,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return false;
    }
 
-   // delete template from db/disk
-   public void deleteTemplate( int template_id ) {
-   }
-
    // save demo template
    public void saveDemoTemplate( int template_id, byte[] data, String suffix ) {
       return ;
@@ -397,14 +390,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
 
    // save templategroup
    public void saveTemplateGroup( String group_name, UserDomainObject user ) {
-   }
-
-   // delete templategroup
-   public void deleteTemplateGroup( int group_id ) {
-   }
-
-   // save templategroup
-   public void changeTemplateGroupName( int group_id, String new_name ) {
    }
 
    //  unassign template from templategroups
@@ -432,7 +417,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // get demotemplates
-   public String[] getDemoTemplateList() {
+   public String[] getDemoTemplateIds() {
       return new String[0];
    }
 
@@ -526,7 +511,11 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public TemplateDomainObject getTemplate( int meta_id ) {
+    public TemplateMapper getTemplateMapper() {
+        return null;  // TODO
+    }
+
+    public TemplateDomainObject getTemplate( int meta_id ) {
       return null;
    }
 

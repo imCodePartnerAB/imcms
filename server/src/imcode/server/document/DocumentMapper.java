@@ -675,7 +675,7 @@ public class DocumentMapper {
             //String simple_name = textdoc_data[1];
             int sort_order = Integer.parseInt( textdoc_data[2] );
             int group_id = Integer.parseInt( textdoc_data[3] );
-            TemplateDomainObject template = TemplateMapper.getTemplate( service, template_id );
+            TemplateDomainObject template = service.getTemplateMapper().getTemplateById( template_id );
             inout_document.setTemplate( template );
             inout_document.setMenuSortOrder( sort_order );
             inout_document.setTemplateGroupId( group_id );

@@ -134,7 +134,7 @@ public class DocumentDomainObject implements IMCConstants {
                                                               new String[]{String.valueOf(meta_id)});
 
             if (textdoc_data.length >= 4) {
-                setTemplate( TemplateMapper.getTemplate( serverObject, Integer.parseInt( textdoc_data[0] ) ) );
+                setTemplate( serverObject.getTemplateMapper().getTemplateById( Integer.parseInt( textdoc_data[0] ) ) );
                 setMenuSortOrder(Integer.parseInt(textdoc_data[2]));
                 setTemplateGroupId(Integer.parseInt(textdoc_data[3]));
             }

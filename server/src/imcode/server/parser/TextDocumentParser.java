@@ -3,10 +3,7 @@ package imcode.server.parser;
 import imcode.server.DocumentRequest;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.TemplateDomainObject;
-import imcode.server.document.TemplateMapper;
+import imcode.server.document.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateHelper;
@@ -50,7 +47,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         }
     }
 
-    private IMCServiceInterface serverObject;
+    private IMCServiceInterface service;
     private File templatePath;
     private File includePath;
     private String imageUrl;
@@ -59,14 +56,14 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         this.templatePath = templatepath;
         this.includePath = includepath;
         this.imageUrl = imageurl;
-        this.serverObject = serverobject;
+        this.service = serverobject;
     }
 
     /*
        return a referens to IMCServerInterface used by TextDocumentParser
     */
-    public IMCServiceInterface getServerObject() {
-        return this.serverObject;
+    public IMCServiceInterface getService() {
+        return this.service;
     }
 
     public String parsePage( DocumentRequest documentRequest, int flags, ParserParameters paramsToParse ) throws IOException {
@@ -89,7 +86,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String param_value = paramsToParse.getParameter();
             String extparam_value = paramsToParse.getExternalParameter();
 
-            String[] user_permission_set = ImcmsAuthenticatorAndUserMapper.sprocGetUserPermissionSet( serverObject, meta_id_str, user_id_str );
+            String[] user_permission_set = ImcmsAuthenticatorAndUserMapper.sprocGetUserPermissionSet( service, meta_id_str, user_id_str );
             if ( user_permission_set == null ) {
                 log.error( "parsePage: GetUserPermissionset returned null" );
                 return ( "GetUserPermissionset returned null" );
@@ -113,23 +110,23 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 includemode = ( flags & PERM_DT_TEXT_EDIT_INCLUDES ) != 0 && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_EDIT_INCLUDES ) != 0 );
             }
 
-            String[] included_docs = DocumentMapper.sprocGetIncludes( serverObject, meta_id );
+            String[] included_docs = DocumentMapper.sprocGetIncludes( service, meta_id );
 
             TemplateDomainObject documentTemplate = myDoc.getTemplate();
             int documentTemplateId = documentTemplate.getId();
-            String simple_name = documentTemplate.getSimple_name();
+            String simple_name = documentTemplate.getName();
             int sort_order = myDoc.getMenuSortOrder();
             String group_id = "" + myDoc.getTemplateGroupId();
 
             if ( template_name != null ) {
                 //lets validate that the template exists before we changes the original one
-                String[] vectT = serverObject.sqlProcedure( "GetTemplateId", new String[]{template_name} );
+                String[] vectT = service.sqlProcedure( "GetTemplateId", new String[]{template_name} );
                 if ( vectT.length > 0 ) {
                     try {
                         int temp_template = Integer.parseInt( vectT[0] );
                         if ( temp_template > 0 ) {
                             documentTemplateId = temp_template;
-                            documentRequest.getDocument().setTemplate( TemplateMapper.getTemplate( serverObject, documentTemplateId ) );
+                            documentRequest.getDocument().setTemplate( service.getTemplateMapper().getTemplateById( documentTemplateId ) );
                         }
                     } catch ( NumberFormatException nfe ) {
                         //do nothing, we keep the original template
@@ -145,7 +142,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             // Here we have the most timeconsuming part of parsing the page.
             // Selecting all the documents with permissions from the DB
-            String[] childs = serverObject.sqlProcedure( "getChilds", metaIdUserIdPair );
+            String[] childs = service.sqlProcedure( "getChilds", metaIdUserIdPair );
 
             if ( childs == null ) {
                 log.error( "parsePage: GetChilds returned null" );
@@ -155,7 +152,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             // Get the images from the db
             // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
             //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
-            String[] images = serverObject.sqlProcedure( "GetImgs", new String[]{"" + meta_id} );
+            String[] images = service.sqlProcedure( "GetImgs", new String[]{"" + meta_id} );
             if ( images == null ) {
                 log.error( "parsePage: GetImgs returned null" );
                 return ( "GetImgs returned null" );
@@ -170,7 +167,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Perl5Substitution emphasize_substitution = new Perl5Substitution( emphasize_string );
 
             Properties tags = new Properties();	// A properties object to hold the results from the db...
-            Map textMap = serverObject.getTexts( meta_id );
+            Map textMap = service.getTexts( meta_id );
             HashMap imageMap = new HashMap();
 
             Iterator imit = Arrays.asList( images ).iterator();
@@ -333,8 +330,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             // Put tags and corresponding data in Properties
             tags.setProperty( "#userName#", user.getFullName() );
-            tags.setProperty( "#session_counter#", String.valueOf( serverObject.getSessionCounter() ) );
-            tags.setProperty( "#session_counter_date#", serverObject.getSessionCounterDate() );
+            tags.setProperty( "#session_counter#", String.valueOf( service.getSessionCounter() ) );
+            tags.setProperty( "#session_counter_date#", service.getSessionCounterDate() );
             tags.setProperty( "#lastDate#", DATETIMEFORMAT.format( myDoc.getModifiedDatetime() ) );
             tags.setProperty( "#metaHeadline#", myDoc.getHeadline() );
             tags.setProperty( "#metaText#", myDoc.getText() );
@@ -344,11 +341,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 meta_image = "<img src=\"" + meta_image + "\" border=\"0\">";
             }
             tags.setProperty( "#metaImage#", meta_image );
-            tags.setProperty( "#sys_message#", serverObject.getSystemData().getSystemMessage() );
-            tags.setProperty( "#webMaster#", serverObject.getSystemData().getWebMaster() );
-            tags.setProperty( "#webMasterEmail#", serverObject.getSystemData().getWebMasterAddress() );
-            tags.setProperty( "#serverMaster#", serverObject.getSystemData().getServerMaster() );
-            tags.setProperty( "#serverMasterEmail#", serverObject.getSystemData().getServerMasterAddress() );
+            tags.setProperty( "#sys_message#", service.getSystemData().getSystemMessage() );
+            tags.setProperty( "#webMaster#", service.getSystemData().getWebMaster() );
+            tags.setProperty( "#webMasterEmail#", service.getSystemData().getWebMasterAddress() );
+            tags.setProperty( "#serverMaster#", service.getSystemData().getServerMaster() );
+            tags.setProperty( "#serverMasterEmail#", service.getSystemData().getServerMasterAddress() );
 
             tags.setProperty( "#addDoc*#", "" );
             tags.setProperty( "#saveSortStart*#", "" );
@@ -358,13 +355,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#externalparam#", extparam_value );
 
             // Give the user a row of buttons if he is privileged enough.
-            if ( ( serverObject.checkDocAdminRights( meta_id, user ) || serverObject.checkUserAdminrole( user.getUserId(), 2 ) ) && flags >= 0 ) {
-                tags.setProperty( "#adminMode#", serverObject.getMenuButtons( meta_id, user ) );
+            if ( ( service.checkDocAdminRights( meta_id, user ) || service.checkUserAdminrole( user.getUserId(), 2 ) ) && flags >= 0 ) {
+                tags.setProperty( "#adminMode#", service.getMenuButtons( meta_id, user ) );
             }
 
             if ( templatemode ) {	//Templatemode! :)
 
-                List groupnamevec = TemplateMapper.sqlSelectGroupName( serverObject, group_id );
+                List groupnamevec = TemplateMapper.sqlSelectGroupName( service, group_id );
 
                 String group_name;
                 if ( !groupnamevec.isEmpty() ) {
@@ -373,26 +370,27 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                     group_name = "";
                 }
 
-                List templategroups = new ArrayList( Arrays.asList( TemplateMapper.sprocGetTemplateGroupsForUser( serverObject, user, meta_id ) ) );
+                TemplateMapper templateMapper = service.getTemplateMapper();
+                TemplateGroupDomainObject[] templateGroups = templateMapper.getAllTemplateGroupsAvailableForUserOnDocument( user, meta_id ) ;
 
-                int selected_group = user.getTemplateGroup();
+                TemplateGroupDomainObject selected_group = user.getTemplateGroup();
 
-                if ( selected_group == -1 ) {
-                    selected_group = Integer.parseInt( group_id );
+                if ( null == selected_group ) {
+                    selected_group = templateMapper.getTemplateGroupById( Integer.parseInt( group_id ) );
                 }
 
-                List templates = new ArrayList( Arrays.asList( TemplateMapper.sprocGetTemplatesInGroup( serverObject, selected_group ) ) );
+                TemplateDomainObject[] templates = templateMapper.getTemplatesInGroup( selected_group ) ;
 
-                String templatelist = createTemplatesOptionList( templates, documentTemplateId );
+                String templatelist = templateMapper.createHtmlOptionListOfTemplates( templates, documentTemplate );
 
-                String grouplist = createTemplateGroupsOptionList( templategroups, selected_group );
+                String grouplist = templateMapper.createHtmlOptionListOfTemplateGroups( selected_group );
 
                 temptags.setProperty( "#getDocType#", "" );
                 temptags.setProperty( "#DocMenuNo#", "" );
                 temptags.setProperty( "#group#", group_name );
                 temptags.setProperty( "#getTemplateGroups#", grouplist);
                 temptags.setProperty( "#simple_name#", simple_name );
-                temptags.setProperty( "#getTemplates#", templatelist );
+                temptags.setProperty( "#getTemplatesInGroup#", templatelist );
 
                 // Put templateadmintemplate in list of files to load.
                 toload.setProperty( "#changePage#", ( new File( admintemplate_path, "textdoc/inPage_admin.html" ) ).getPath() );
@@ -400,7 +398,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             if ( menumode ) {
 
-                String[] docTypes = serverObject.sqlProcedure( "GetDocTypesForUser", new String[]{"" + meta_id, "" + user.getUserId(), lang_prefix} );
+                String[] docTypes = service.sqlProcedure( "GetDocTypesForUser", new String[]{"" + meta_id, "" + user.getUserId(), lang_prefix} );
                 List docTypesList = new ArrayList( Arrays.asList( docTypes ) );
 
                 String existing_doc_name = getExistingDocumentName( admintemplate_path );
@@ -584,43 +582,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         }
     }
 
-    private String createTemplateGroupsOptionList( List templategroups, int selected_group ) {
-        StringBuffer grouplist = new StringBuffer();
-
-        for ( Iterator iterator = templategroups.iterator(); iterator.hasNext(); ) {
-            String[] templateGroupIdNamePair = (String[])iterator.next();
-            int templateGroupId = Integer.parseInt(templateGroupIdNamePair[0]) ;
-            String templateGroupName = templateGroupIdNamePair[1] ;
-            grouplist.append( "<option value=\"" + templateGroupId );
-            if ( selected_group == templateGroupId ) {
-                grouplist.append( "\" selected>" + templateGroupName );
-            } else {
-                grouplist.append( "\">" + templateGroupName );
-            }
-            grouplist.append("</option>") ;
-        }
-
-        return grouplist.toString();
-    }
-
-    private String createTemplatesOptionList( List templates, int documentTemplateId ) {
-        StringBuffer templatelist = new StringBuffer();
-        // Make a HTML option-list of them...
-        for ( Iterator iterator = templates.iterator(); iterator.hasNext(); ) {
-            String[] templateIdNamePair = (String[])iterator.next();
-            int templateId = Integer.parseInt(templateIdNamePair[0]) ;
-            String templateName = templateIdNamePair[1] ;
-            templatelist.append( "<option value=\"" + templateId );
-            if ( templateId == documentTemplateId  ) {
-                templatelist.append( "\" selected>" + templateName);
-            } else {
-                templatelist.append( "\">" + templateName);
-            }
-            templatelist.append( "</option>" ) ;
-        }
-        return templatelist.toString();
-    }
-
     private String emphasizeString( String str, String[] emp, Substitution emphasize_substitution, PatternMatcher patMat ) {
 
         Perl5Compiler empCompiler = new Perl5Compiler();
@@ -635,21 +596,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             }
         }
         return str;
-    }
-
-    private String escapeSubstitution( String substitution ) {
-        StringBuffer result = new StringBuffer();
-
-        for ( int i = 0; i < substitution.length(); ++i ) {
-            char c = substitution.charAt( i );
-            switch ( c ) {
-                case '\\':
-                case '$':
-                    result.append( '\\' );
-            }
-            result.append( c );
-        }
-        return result.toString();
     }
 
     class DocumentTypeIdNameTuple {
