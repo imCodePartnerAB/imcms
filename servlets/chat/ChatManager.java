@@ -8,7 +8,7 @@ import imcode.util.* ;
 //första gången vi kommer hit har vi doGet parametern  action=new
 // 
 
-public class ChatManager extends Chat
+public class ChatManager extends ChatBase
 {
 	String HTML_TEMPLATE ;
 

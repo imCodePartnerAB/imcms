@@ -21,7 +21,7 @@ import imcode.util.* ;
  * Date : 2000-06-16
  */
 
-public class ChatLogin extends Chat {
+public class ChatLogin extends ChatBase {
 
 	private final static String USER_UNADMIN_LINK_TEMPLATE = "Conf_User_Unadmin_Link.htm";
 

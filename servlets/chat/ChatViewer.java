@@ -10,7 +10,7 @@ import java.rmi.registry.* ;
 //meningen är att denna ska ladda framesetet och kolla 
 //all nödvändig data innan den gör detta
 
-public class ChatViewer extends Chat {
+public class ChatViewer extends ChatBase {
 
 	String HTML_TEMPLATE ;         // the relative path from web root to where the servlets are
 

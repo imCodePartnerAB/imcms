@@ -5,7 +5,7 @@ import javax.servlet.http.*;
 import imcode.external.diverse.*;
 import imcode.util.* ;
 
-public class ChatCreator extends Chat
+public class ChatCreator extends ChatBase
 {
 	String HTML_TEMPLATE ;
 
