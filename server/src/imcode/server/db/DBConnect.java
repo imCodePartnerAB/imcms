@@ -15,7 +15,6 @@ class DBConnect {
     private String strSQLString = "";		    // SQL query-string
     private String strProcedure = "";		    // Procedure
     private String[] meta_data;       // Meta info
-    private boolean trimStr = true;
     private int columnCount;                       // Column count
 
     private final static Logger log = Logger.getLogger( DBConnect.class );
@@ -50,9 +49,6 @@ class DBConnect {
             while (rs.next()) {
                 for (int i = 1; i <= columnCount; i++) {
                     String s = rs.getString(i);
-                    if (null != s && trimStr) {
-                        s = s.trim();
-                    }
                     results.add(s);
                 }
             }
@@ -109,9 +105,6 @@ class DBConnect {
             while (rs.next()) {
                 for (int i = 1; i <= columnCount; i++) {
                     String s = rs.getString(i);
-                    if (null != s && trimStr) {
-                        s = s.trim();
-                    }
                     results.add(s);
                 }
             }
@@ -204,7 +197,6 @@ class DBConnect {
      * <p>Set trim. true = trim strings, false = do not trim strings.
      */
     void setTrim(boolean status) {
-        trimStr = status;
     }
 
 
