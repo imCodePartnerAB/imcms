@@ -16,19 +16,13 @@ ImcmsServices imcref                = Imcms.getServices() ;
 UserService userService             = imcmsSystem.getUserService() ;
 User user                           = imcmsSystem.getCurrentUser() ;
 
-%><%!
 
 /* *******************************************************************************************
  *         LANGUAGE                                                                          *
  ******************************************************************************************* */
 
-private boolean isLangSwe = true ;
-private boolean isLangEng = !isLangSwe ;
-
-%><%
-
-isLangSwe = user.getLanguage().getIsoCode639_2().equals("swe") ;
-isLangEng = !isLangSwe ;
+boolean isLangSwe = user.getLanguage().getIsoCode639_2().equals("swe") ;
+boolean isLangEng = !isLangSwe ;
 
 /* *******************************************************************************************
  *         BROWSER SNIFFER  @returns "is[BrowtypeName]" (boolean) / dBrowserVer (double)     *

@@ -6,12 +6,14 @@
 	contentType="text/html; charset=windows-1252"
 	
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"
-%><%@ include file="../_editor_settings.jsp" %><%!
+%><%@ include file="../_editor_settings.jsp"
+%><%!
 
 Map langMap = new HashMap() ;
 
-private String lang( String string ) {
+private String lang( String string, User user ) {
 	try {
+		boolean isLangSwe = user.getLanguage().getIsoCode639_2().equals("swe") ;
 		return (isLangSwe && langMap.containsKey(string)) ? (String) langMap.get(string) : string ;
 	} catch (Exception ex) {
 		return string ;
@@ -38,14 +40,12 @@ langMap.put("New window"                , "Nytt fönster") ;
 langMap.put("Replace window (no frames)", "Hela fönstret (utan frames)") ;
 langMap.put("Same frame"                , "Samma frame") ;
 langMap.put("Cancel"                    , "Avbryt") ;
-//langMap.put("" , "") ;
-
 
 %>
 <vel:velocity>
 <html>
 <head>
-<title><%= lang("Create/edit link") %></title>
+<title><%= lang("Create/edit link",user) %></title>
 
 <base href="http://<%= request.getHeader("Host") %>$contextPath/" id="baseUrl">
 
@@ -56,7 +56,7 @@ var ns4 = (document.layers) ? 1 : 0;
 var ns6 = (document.getElementById) ? 1 : 0;
 var moz = (document.getElementById) ? 1 : 0;
 
-var arrTheFieldValues = new Array("<%= lang("Write number") %>!", "http:/\/", "<%= lang("Write the address") %>!", "<%= lang("Write anchor name") %>!", "<%= lang("Write anchor name") %>!", "ftp:/\/");
+var arrTheFieldValues = new Array("<%= lang("Write number",user) %>!", "http:/\/", "<%= lang("Write the address",user) %>!", "<%= lang("Write anchor name",user) %>!", "<%= lang("Write anchor name",user) %>!", "ftp:/\/");
 var defValDesc = "";
 
 function changeLinkType(what) {
@@ -174,10 +174,10 @@ function Init() {
 		}
 		checkLinkType(param["f_href"]) ;
 		if (oldHref != "" && /^\d{4,6}$/.test(oldHref)) {
-			document.getElementById("bottomLeftTd").innerHTML = "<%= lang("The old link") %>:<br>" +
+			document.getElementById("bottomLeftTd").innerHTML = "<%= lang("The old link",user) %>:<br>" +
 			    "<a href=\"http://<%= request.getHeader("Host") + request.getContextPath() + "/" %>" + oldHref + "\" target=\"_blank\">" + oldHref + "</a>" ;
 		} else if (oldHref != "") {
-			document.getElementById("bottomLeftTd").innerHTML = "<%= lang("The old link") %>:<br>" +
+			document.getElementById("bottomLeftTd").innerHTML = "<%= lang("The old link",user) %>:<br>" +
 			    "<a href=\"" + oldHref + "\" target=\"_blank\">" + oldHref + "</a>" ;
 		}
 	}
@@ -239,7 +239,7 @@ function onCancel() {
 <table border="0" cellspacing="0" cellpadding="10" width="100%">
 <tr>
 	<td class="imcmsAdmBgHead">
-	<span class="imcmsAdmHeadingTop"><%= lang("Create/edit link") %></span></td>
+	<span class="imcmsAdmHeadingTop"><%= lang("Create/edit link",user) %></span></td>
 </tr>
 <tr>
 	<td>
@@ -248,36 +248,36 @@ function onCancel() {
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0" width="100%">
 		<tr>
-			<td class="imcmsAdmText"><%= lang("Linktype") %>:</td>
+			<td class="imcmsAdmText"><%= lang("Linktype",user) %>:</td>
 			<td class="form">
 			<select class="form" name="createLinkType" onChange="changeLinkType(document.forms[0].createLinkType.options[document.forms[0].createLinkType.selectedIndex].value)">
-				<option value="GetDoc"><%= lang("Internal link (page-ID)") %></option>
-				<option value="http"><%= lang("External link or a path") %></option>
-				<option value="mailto"><%= lang("Mail address") %></option>
-				<option value="ftp"><%= lang("FTP link") %></option>
+				<option value="GetDoc"><%= lang("Internal link (page-ID)",user) %></option>
+				<option value="http"><%= lang("External link or a path",user) %></option>
+				<option value="mailto"><%= lang("Mail address",user) %></option>
+				<option value="ftp"><%= lang("FTP link",user) %></option>
 			</select></td>
 		</tr>
 		<tr>
 			<td class="imcmsAdmText" nowrap>
-			<%= lang("URL/address/meta_id") %>: &nbsp;</td>
+			<%= lang("URL/address/meta_id",user) %>: &nbsp;</td>
 			<td><input type="text" name="f_href" id="f_href" size="54" maxlength="100" style="width:260px" value="Skriv nummer!"></td>
 		</tr>
 		<tr>
 			<td class="imcmsAdmText" nowrap>
-			<%= lang("Title/tooltip") %>: &nbsp;</td>
+			<%= lang("Title/tooltip",user) %>: &nbsp;</td>
 			<td><input type="text" name="f_title" id="f_title" size="54" maxlength="100" style="width:260px" value=""></td>
 		</tr>
 		<tr>
-			<td class="imcmsAdmText" nowrap><%= lang("Show link in") %>:&nbsp;</td>
+			<td class="imcmsAdmText" nowrap><%= lang("Show link in",user) %>:&nbsp;</td>
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0" width="100%">
 			<tr>
 				<td nowrap>
 				<select name="f_target" id="f_target">
-					<option value="" selected><%= lang("Same window (default)") %></option>
-					<option value="_blank"><%= lang("New window") %></option>
-					<option value="_top"><%= lang("Replace window (no frames)") %></option>
-					<option value="_self"><%= lang("Same frame") %></option>
+					<option value="" selected><%= lang("Same window (default)",user) %></option>
+					<option value="_blank"><%= lang("New window",user) %></option>
+					<option value="_top"><%= lang("Replace window (no frames)",user) %></option>
+					<option value="_self"><%= lang("Same frame",user) %></option>
 					<option value="_parent">Parent frameset</option>
 				</select></td>
 				<td class="form" align="right"><input type="text" name="f_other_target" id="f_other_target" size="12" maxlength="50" style="width:96px; visibility:hidden;" value=""></td>
@@ -294,7 +294,7 @@ function onCancel() {
 				<td id="bottomLeftTd" class="imcmsAdmText">&nbsp;</td>
 				<td align="right">
 				<button type="button" class="imcmsFormBtnSmall" style="width:60px" name="ok" onclick="return onOK();">OK</button> &nbsp;
-				<button type="button" class="imcmsFormBtnSmall" style="width:60px" name="cancel" onclick="return onCancel();"><%= lang("Cancel") %></button></td>
+				<button type="button" class="imcmsFormBtnSmall" style="width:60px" name="cancel" onclick="return onCancel();"><%= lang("Cancel",user) %></button></td>
 			</tr>
 			</table></td>
 		</tr>

@@ -23,8 +23,4 @@ private String getCookie( String name, HttpServletRequest request ) {
 	return retVal ;
 }
 
-%><%
-
-
-
 %>
