@@ -318,12 +318,6 @@ public class ConfLogin extends Conference {
             // Lets build the users information into a string and add it to db
             imcref.sqlUpdateProcedure( "AddNewUser", procParams );
 
-            // Lets add a new phone number
-            imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{
-                newUserId, userParams.getProperty( "country_code" ), userParams.getProperty( "area_code" ),
-                userParams.getProperty( "local_code" )
-            } );
-
             // Ok, lets get the roles the user will get when he is selfregistering  and
             // add those roles to the user
             String[] sqlAnswer = imcref.sqlProcedure( "A_SelfRegRoles_GetAll2", new String[]{"" + params.getMetaId()} );
