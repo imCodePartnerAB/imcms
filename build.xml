@@ -130,15 +130,15 @@
                  replace="."
                  global="true"
                  casesensitive="false" />
-        <propertyregex property="version"
-                 input="${version}"
-                 regexp="(.*)-RELEASE"
-                 override="true"
-                 replace="\1"
-                 casesensitive="false" />
         <propertyregex property="versionnumber"
                  input="${version}"
                  regexp="(.*)-.*"
+                 override="true"
+                 replace="\1"
+                 casesensitive="false" />
+        <propertyregex property="version"
+                 input="${version}"
+                 regexp="(.*)-RELEASE"
                  override="true"
                  replace="\1"
                  casesensitive="false" />
@@ -169,7 +169,7 @@
 
     <!-- Defines global filters. -->
     <target name="global-filters"
-            depends="check-build-properties"
+            depends="check-build-properties,reformatproperties"
             description="Defines global filters.">
 
         <!-- Global filters -->
