@@ -16,11 +16,13 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
+import java.sql.SQLException;
 
 public class GetDoc extends HttpServlet {
 
     private static Category trackLog = Logger.getInstance(IMCConstants.ACCESS_LOG);
     private static Category log = Logger.getInstance(GetDoc.class.getName());
+    private static String noActiveDocUrl = "no_active_document.html";
 
     /**
      doGet()
@@ -162,6 +164,18 @@ public class GetDoc extends HttpServlet {
             res.sendRedirect( redirect );
             return null;
         }
+
+        try { // check for not active document and redirect to info page if user don't have any admin rights on this document.
+            DocumentDomainObject reqDoc = new DocumentDomainObject(imcref, meta_id);
+            Vector params = new Vector();
+            if(!reqDoc.isActive() && !imcref.checkDocAdminRights( meta_id, user )){
+               params.add("#start#");   params.add("StartDoc");
+               params.add("#back#");    params.add("BackDoc");
+               return imcref.parseDoc(params, noActiveDocUrl, user );
+            }
+        }catch(SQLException sqlex ){}
+
+
 
         Stack history = (Stack)user.get( "history" );
         if( history == null ) {
