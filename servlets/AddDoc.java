@@ -7,6 +7,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.MetaDataParser;
 import imcode.util.Parser;
 import imcode.util.Utility;
+import imcode.util.DateHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -89,58 +90,7 @@ public class AddDoc extends HttpServlet {
         } else if (sessionData.item_selected.equals("7")) {
             doc_type = "7";
         } else if (sessionData.item_selected.equals("0")) { // its an existing document
-            Vector vec = new Vector();
-            vec.add("#meta_id#");
-            vec.add(sessionData.meta_id);
-            vec.add("#doc_menu_no#");
-            vec.add(sessionData.doc_menu_no);
-
-            // Lets get todays date
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            Date toDay = new Date();
-            vec.add( "#start_date#" );
-            vec.add( null );
-            vec.add( "#end_date#" );
-            vec.add( formatter.format( toDay ) );
-
-            vec.add("#searchstring#");
-            vec.add("");
-
-            vec.add("#searchResults#");
-            vec.add("");
-
-            // Lets fix the sortby list, first get the displaytexts from the database
-            String[] sortOrder = imcref.sqlProcedure( "SortOrder_GetExistingDocs", new String[] { user.getLangPrefix() } );
-            String sortOrderStr = Html.createHtmlOptionList("", Arrays.asList(sortOrder));
-            vec.add("#sortBy#");
-            vec.add(sortOrderStr);
-
-            // Lets set all the the documenttypes as selected in the html file
-            String[][] allDocTypesArray = imcref.getDocumentTypesInList(lang_prefix);
-            for (int i = 0; i < allDocTypesArray.length; ++i) {
-                vec.add("#checked_" + allDocTypesArray[i][0] + "#");
-                vec.add("checked");
-            }
-
-            // Lets set the create/ change types as selected in the html file
-            String[] allPossibleIncludeDocsValues = {"created", "changed"};
-            for (int i = 0; i < allPossibleIncludeDocsValues.length; i++) {
-                vec.add("#include_check_" + allPossibleIncludeDocsValues[i] + "#");
-                vec.add("checked");
-            }
-
-            // Lets set the and / or search preposition
-            String[] allPossibleSearchPreps = {"and", "or"};
-            for (int i = 0; i < allPossibleSearchPreps.length; i++) {
-                vec.add("#search_prep_check_" + allPossibleSearchPreps[i] + "#");
-                if (i == 0) {
-                    vec.add("checked");
-                } else {
-                    vec.add("");
-                }
-            }
-            // Lets parse the html page which consists of the add an existing doc
-            out.write(imcref.parseDoc(vec, "existing_doc.html", user));
+            createExistingDocPage( sessionData, imcref, user, lang_prefix, out );
             return;
 
         } else if (sessionData.item_selected.equals("5")) {
@@ -284,6 +234,63 @@ public class AddDoc extends HttpServlet {
             out.write(imcref.parseDoc(vec, DOCINFO_TEMPLATE_NAME_PREFIX + advanced + "new_meta.html", user));
         }
 
+    }
+
+    private void createExistingDocPage( SessionData sessionData, IMCServiceInterface imcref,
+                                        UserDomainObject user, String lang_prefix, Writer out ) throws IOException {
+        Vector vec = new Vector();
+        vec.add("#meta_id#");
+        vec.add(sessionData.meta_id);
+        vec.add("#doc_menu_no#");
+        vec.add(sessionData.doc_menu_no);
+
+        // Lets get todays date
+        SimpleDateFormat formatter = new SimpleDateFormat(DateHelper.DATE_FORMAT_STRING);
+        Date toDay = new Date();
+        vec.add( "#start_date#" );
+        vec.add( null );
+        vec.add( "#end_date#" );
+        vec.add( formatter.format( toDay ) );
+
+        vec.add("#searchstring#");
+        vec.add("");
+
+        vec.add("#searchResults#");
+        vec.add("");
+
+        // Lets fix the sortby list, first get the displaytexts from the database
+        String[] sortOrder = imcref.sqlProcedure( "SortOrder_GetExistingDocs", new String[] { user.getLangPrefix() } );
+        String sortOrderStr = Html.createHtmlOptionList("", Arrays.asList(sortOrder));
+        vec.add("#sortBy#");
+        vec.add(sortOrderStr);
+
+        // Lets set all the the documenttypes as selected in the html file
+        String[][] allDocTypesArray = imcref.getDocumentTypesInList(lang_prefix);
+        for (int i = 0; i < allDocTypesArray.length; ++i) {
+            vec.add("#checked_" + allDocTypesArray[i][0] + "#");
+            vec.add("checked");
+        }
+
+        // Lets set the create/ change types as selected in the html file
+        String[] allPossibleIncludeDocsValues = {"created", "changed"};
+        for (int i = 0; i < allPossibleIncludeDocsValues.length; i++) {
+            vec.add("#include_check_" + allPossibleIncludeDocsValues[i] + "#");
+            vec.add("checked");
+        }
+
+        // Lets set the and / or search preposition
+        String[] allPossibleSearchPreps = {"and", "or"};
+        for (int i = 0; i < allPossibleSearchPreps.length; i++) {
+            vec.add("#search_prep_check_" + allPossibleSearchPreps[i] + "#");
+            if (i == 0) {
+                vec.add("checked");
+            } else {
+                vec.add("");
+            }
+        }
+        // Lets parse the html page which consists of the add an existing doc
+        out.write(imcref.parseDoc(vec, "existing_doc.html", user));
+        return;
     }
 
     private static String escapeForHtml(String text) {

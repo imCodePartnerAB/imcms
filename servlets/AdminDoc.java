@@ -21,11 +21,7 @@ import java.util.*;
 
 public class AdminDoc extends HttpServlet {
 
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        doGet(req, res);
-    }
-
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();

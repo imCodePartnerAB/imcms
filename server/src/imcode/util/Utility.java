@@ -120,4 +120,16 @@ public class Utility {
         return false ;
     }
 
+    public static int compareDatesWithNullFirst( Date date1, Date date2 ) {
+        if (null == date1 && null == date2) {
+            return 0 ;
+        } else if (null == date1) {
+            return -1 ;
+        } else if (null == date2) {
+            return +1 ;
+        } else {
+            return date1.compareTo( date2 ) ;
+        }
+    }
+
 }
