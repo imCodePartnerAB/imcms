@@ -1284,18 +1284,20 @@ COMMIT
 -- 2003-06-13 Hasse och Kreiger
 
 CREATE TABLE [dbo].[category_types] (
-	[category_type_id] [int] NOT NULL ,
-	[name] [varchar] (50) NULL
+	[category_type_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[name] [varchar] (50) NOT NULL ,
+	[max_choices] [int] NOT NULL DEFAULT 0
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[categories] (
-	[category_id] [int] NOT NULL ,
-	[category_type_id] [int] NULL ,
-	[name] [varchar] (50) NULL ,
-	[description] [varchar] (500) NULL
+  	[category_id] [int] IDENTITY (1, 1) NOT NULL ,
+  	[category_type_id] [int] NOT NULL ,
+  	[name] [varchar] (50) NOT NULL ,
+  	[description] [varchar] (500) NULL
 ) ON [PRIMARY]
 GO
+
 
 CREATE TABLE [dbo].[document_categories] (
 	[meta_id] [int] NOT NULL ,
@@ -1345,10 +1347,6 @@ GO
 
 -- 2003-10-20 Kreiger
 
-ALTER TABLE [dbo].category_types ADD max_choices INT NOT NULL DEFAULT 0
-GO
-
--- 2003-10-21 Kreiger
 
 ALTER TABLE meta ADD publisher_id INT NULL
 
