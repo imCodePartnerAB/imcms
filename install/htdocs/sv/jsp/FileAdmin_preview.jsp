@@ -1,20 +1,5 @@
 <%@ page language="java"
 	import="org.apache.oro.util.*, org.apache.oro.text.*, org.apache.oro.text.regex.*, org.apache.oro.text.perl.*, java.io.*, java.util.*, java.text.*, java.net.*, javax.servlet.*, javax.servlet.http.*, imcode.external.diverse.*, imcode.util.*, imcode.server.*"
-%><%!
-    public String readTextFile(String theFile) {
-        File file     = new File(theFile);
-        char[] chars  = new char[(int) file.length()];
-        String retStr = "" ;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            br.read(chars);
-            br.close();
-            retStr = new String(chars);
-        } catch (FileNotFoundException ex) {
-        } catch (IOException ex) {
-        }
-        return retStr;
-    }
 %><%
 /* *******************************************************************
  *           SETTINGS                                                *
@@ -79,10 +64,22 @@ boolean isMac = re.match("/Mac/i", uAgent) ;
 /* if Stat-Report - Read file and show it */
 
 if (isStat && frame.equalsIgnoreCase("MAIN")) {
-	String statSrc = readTextFile(webRoot + filePath + "/" + fileName) ;
-	statSrc = statSrc.replaceAll("<head>","<head>\n\n<base target=\"_blank\">");
+    File sf = new File(fileName) ;
+    sf = new File (new File(webRoot + filePath),sf.getName()) ;
+    //String statSrc = ReadTextFile.getFile(sf);
 
-	/* add some buttons in some browsers */
+    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(sf))) ;
+
+    String statSrc = "" ;
+    String fileLine = "" ;
+    StringBuffer strbuf = new StringBuffer();
+    while ((fileLine = br.readLine())!= null) {
+        strbuf.append(fileLine).append( "\n") ;
+    }
+    statSrc = strbuf.toString() ;
+    br.close() ;
+
+    statSrc = statSrc.replaceAll("<head>","<head>\n\n<base target=\"_blank\">");	/* add some buttons in some browsers */
 	
 	String theButtons = "" ;
 	boolean hasInlineButtons = false ;
