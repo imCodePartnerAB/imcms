@@ -505,10 +505,9 @@ public class IMCServiceRMI {
 	    return imc.getDemoTemplateList() ;
     }
 
-    public static byte[] parsePage (String server,int meta_id,User user,int flags) throws IOException {
-	IMCServiceInterface imc = getInterface( server ) ;
-
-	    return imc.parsePage(meta_id,user,flags) ;
+    public static byte[] parsePage (String server,int meta_id,User user,int flags,String template) throws IOException {
+		IMCServiceInterface imc = getInterface( server ) ;
+	    return imc.parsePage(meta_id,user,flags,template) ;
     }
 
     public static String getMenuButtons (String server,int meta_id, User user) throws IOException {
