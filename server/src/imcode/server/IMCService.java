@@ -206,18 +206,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         Authenticator externalAuthenticator = null;
         UserAndRoleMapper externalUserAndRoleMapper = null;
 
-        PrefixRemovedProperties authenticatorPropertiesSubset = new PrefixRemovedProperties( props,
-                                                                                             "ExternalAuthenticator." );
-        PrefixRemovedProperties userAndRoleMapperPropertiesSubset = new PrefixRemovedProperties( props,
-                                                                                                 "ExternalUserAndRoleMapper." );
-
         if ( null != externalAuthenticatorName && null != externalUserAndRoleMapperName ) {
             log.info( "ExternalAuthenticator: " + externalAuthenticatorName );
             log.info( "ExternalUserAndRoleMapper: " + externalUserAndRoleMapperName );
             externalAuthenticator =
-            initExternalAuthenticator( externalAuthenticatorName, authenticatorPropertiesSubset );
+            initExternalAuthenticator( externalAuthenticatorName, props );
             externalUserAndRoleMapper =
-            initExternalUserAndRoleMapper( externalUserAndRoleMapperName, userAndRoleMapperPropertiesSubset );
+            initExternalUserAndRoleMapper( externalUserAndRoleMapperName, props );
             if ( null == externalAuthenticator || null == externalUserAndRoleMapper ) {
                 log.error(
                         "Failed to initialize both authenticator and user-and-role-documentMapper, using default implementations." );
@@ -296,6 +291,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private Authenticator initExternalAuthenticator( String externalAuthenticatorName,
                                                      Properties authenticatorPropertiesSubset ) {
         Authenticator externalAuthenticator = null;
+        try {
         if ( null == externalAuthenticatorName ) {
             externalAuthenticator = null;
         } else if ( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
@@ -309,6 +305,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             }
         } else {
             externalAuthenticator = (Authenticator)createInstanceOfClass( externalAuthenticatorName );
+        }
+        } catch (Exception e) {
+            log.error("Failed to initialize external authenticator.",e) ;
         }
         return externalAuthenticator;
     }
