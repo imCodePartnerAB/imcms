@@ -15,7 +15,8 @@ Version 1.12.0
       and don't spam the access-log. (Bug 2684)
     * Jakarta Velocity can now be used in templates, between "<?imcms:velocity?> ... <?/imcms:velocity?>" tags.
       Right now the httpservletrequest and the httpservletresponse can be accessed,
-      with "$request" and "$response" respectively, almost just like in JSP. 
+      with "$request" and "$response" respectively, almost just like in JSP. (Bug 2668)
+    * Attributes "pre" and "post" can now be used on "<?imcms:menu?>". (Bonus from refactorings in bug 2668.)
 
     Of interest to API-using developers:
 
