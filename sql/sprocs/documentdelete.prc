@@ -19,8 +19,9 @@ Deletes a meta Id in the system. Used by func deleteDocAll in the ImcService cla
 */
 delete from meta_classification where meta_id = @meta_id
 delete from childs where to_meta_id = 	@meta_id   
-delete from childs where meta_id =	@meta_id 
-delete from text_docs where meta_id = 	@meta_id  
+delete from childs where menu_id = (select menu_id from menus where meta_id = @meta_id) 
+delete from menus where meta_id = @meta_id
+delete from text_docs where meta_id = 	@meta_id
 delete from texts where meta_id = @meta_id  
 delete from images where meta_id = @meta_id  
 delete from roles_rights where meta_id = @meta_id  
