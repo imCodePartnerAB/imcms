@@ -303,6 +303,8 @@ function checkFocus() {
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?></td>
 		<td class="imcmsAdmText">
+		<a href="$contextPath/imcms/$language/jsp/section_descriptions.jsp" target="_blank"><? global/view ?> info</a><br>
+		<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
 		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SECTIONS %>" size="5" multiple><%
 		SectionDomainObject[] sections = documentMapper.getAllSections() ;
 		Arrays.sort(sections) ;
