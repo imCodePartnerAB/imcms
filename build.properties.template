@@ -34,20 +34,13 @@ db-url-without-db-name = jdbc:microsoft:sqlserver://${db-host}:${db-port};Select
 db-url = ${db-url-without-db-name};DatabaseName=${db-name}
 
 
-# SMB-authentication-parameters
-
-smb-domain-name =
-smb-domain-server =
-
-
 # LDAP-authentication-parameters
 
-ldap-url =
-ldap-user =
-ldap-pass =
-ldap-user-objectclass = user
-ldap-user-identifying-attribute = sAMAccountName
-ldap-attributes-mapped-to-roles = company, co
+ldap-url = ldap://localhost:389/
+ldap-bind-dn =
+ldap-password =
+ldap-test-user =
+ldap-test-password =
 
 
 # The smtp-server used for sending mails.

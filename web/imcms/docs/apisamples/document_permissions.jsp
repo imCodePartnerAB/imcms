@@ -20,7 +20,7 @@ and can be set differently for different pages (and sub pages).
 <%  int documentId = 1001;
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentService documentService = imcmsSystem.getDocumentService();
-    Document doc = documentService.getTextDocument(documentId);
+    Document document = documentService.getTextDocument(documentId);
 %>
 <p>
 Every document has a mapping of permissions to roles.<br>
@@ -29,7 +29,7 @@ This is a map of the format (RoleName,DocumentPermissionSet)
 <p>
 This is the mapping for document <%= documentId %>:<br>
 <%
-    Map permissionsMap = doc.getAllRolesMappedToPermissions();
+    Map permissionsMap = document.getAllRolesMappedToPermissions();
     Set roles = permissionsMap.keySet();
     Iterator roleIterator = roles.iterator();
     %><ul><%
@@ -42,8 +42,11 @@ This is the mapping for document <%= documentId %>:<br>
 %>
 </p>
 <p>
-You have the following permissions for document <%= documentId %>:
-"<%= doc.getDocumentPermissionSetForUser() %>"
+<% if (imcmsSystem.getCurrentUser().canEdit( document )) { %>
+    You have the following permissions for document <%= documentId %>: "<%= document.getDocumentPermissionSetForUser() %>"
+<% } else { %>
+    You have no permissions for document <%= documentId %>.
+<% } %>
 </p>
 <p>
 Notice: Only the roles that has some permissions is shown above. If a role has permission "None" then

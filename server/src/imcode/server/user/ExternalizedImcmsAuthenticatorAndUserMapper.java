@@ -55,33 +55,32 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
     public UserDomainObject getUser( String loginName ) {
         NDC.push( "getUser" );
         UserDomainObject imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
-        UserDomainObject externalUser = getUserFromOtherUserMapper( loginName );
         boolean imcmsUserExists = null != imcmsUser;
-        boolean externalUserExists = null != externalUser;
-        boolean imcmsUserIsInternal = ( null != imcmsUser ) && !imcmsUser.isImcmsExternal();
+        boolean imcmsUserIsInternal = imcmsUserExists && !imcmsUser.isImcmsExternal();
+        UserDomainObject result ;
 
-        UserDomainObject result = null;
-
-        if ( !imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
-            result = null;
-        } else if ( !imcmsUserIsInternal && !externalUserExists && imcmsUserExists ) {
-            deactivateExternalUserInImcms( loginName, imcmsUser );
-            result = null;
-        } else if ( !imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
-            result = synchExternalUserInImcms( loginName, externalUser, imcmsUserExists );
-        } else if ( !imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
-            result = synchExternalUserInImcms( loginName, externalUser, imcmsUserExists );
-        } else if ( imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
-            throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
-        } else if ( imcmsUserIsInternal && !externalUserExists && imcmsUserExists ) {
+        if ( imcmsUserIsInternal ) {
             result = imcmsUser;
-        } else if ( imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
-            throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
-        } else if ( imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
-            result = imcmsUser;
-            //throw new UserConflictException( "An imcmsAuthenticatorAndUserMapper-internal user was found in external directory.", null );
+        } else {
+            result = getExternalUser( loginName, imcmsUserExists, imcmsUser );
         }
         NDC.pop();
+        return result;
+    }
+
+    private UserDomainObject getExternalUser( String loginName, boolean imcmsUserExists, UserDomainObject imcmsUser ) {
+        UserDomainObject result;
+        UserDomainObject externalUser = getUserFromOtherUserMapper( loginName );
+        boolean externalUserExists = null != externalUser;
+
+        if ( externalUserExists ) {
+            result = synchExternalUserInImcms( loginName, externalUser, imcmsUserExists );
+        } else {
+            if ( imcmsUserExists ) {
+                deactivateExternalUserInImcms( loginName, imcmsUser );
+            }
+            result = null;
+        }
         return result;
     }
 

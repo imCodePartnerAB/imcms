@@ -1,10 +1,8 @@
 package com.imcode.imcms.api;
 
-import imcode.server.IMCServiceInterface;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentPermissionSetMapper;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.server.IMCServiceInterface;
+import imcode.server.ApplicationServer;
 
 public class DefaultContentManagementSystem extends ContentManagementSystem {
 
@@ -13,27 +11,28 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
     private TemplateService templateService;
     private DatabaseService databaseService;
     private User currentUser;
+    protected IMCServiceInterface service;
+    protected SecurityChecker securityChecker;
 
     public DefaultContentManagementSystem( IMCServiceInterface service, UserDomainObject accessor ) {
-        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
-
-        ImcmsAuthenticatorAndUserMapper imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( service );
-        DocumentMapper documentMapper = service.getDocumentMapper();
-        SecurityChecker securityChecker = new SecurityChecker( documentMapper, accessor );
-
-        currentUser = new User( accessor, imcmsAAUM, securityChecker );
-
-        userService = new UserService( securityChecker, imcmsAAUM );
-        documentService = new DocumentService( service, securityChecker, documentMapper, documentPermissionSetMapper, imcmsAAUM );
-        templateService = new TemplateService( service, securityChecker );
-        databaseService = new DatabaseService( service ) ;
+        this.service = service;
+        init( accessor );
     }
 
-    public UserService getUserService(){
+    private void init( UserDomainObject accessor ) {
+        securityChecker = new SecurityChecker( this );
+        currentUser = new User( accessor, this );
+        userService = new UserService( this );
+        documentService = new DocumentService( this );
+        templateService = new TemplateService( this );
+        databaseService = new DatabaseService( ApplicationServer.getApiConnectionPool() );
+    }
+
+    public UserService getUserService() {
         return userService;
     }
 
-    public DocumentService getDocumentService(){
+    public DocumentService getDocumentService() {
         return documentService;
     }
 
@@ -47,6 +46,14 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
 
     public TemplateService getTemplateService() {
         return templateService;
+    }
+
+    IMCServiceInterface getInternal() {
+        return service;
+    }
+
+    SecurityChecker getSecurityChecker() {
+        return securityChecker;
     }
 
 }

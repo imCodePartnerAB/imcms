@@ -44,6 +44,7 @@ public class DocumentMapper {
     private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
 
     private IMCServiceInterface service;
+    private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
 
     private static final String TEMPLATE__STATUS_NEW = "status/new.frag";
@@ -55,6 +56,7 @@ public class DocumentMapper {
 
     public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
+        documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
         this.imcmsAAUM = imcmsAAUM;
         File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         File indexDirectory = new File( webAppPath, "WEB-INF/index" );
@@ -145,6 +147,7 @@ public class DocumentMapper {
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException( e );
         }
+        newDocument.setId(0) ;
         newDocument.setCreator( user );
         newDocument.setStatus( DocumentDomainObject.STATUS_NEW );
         newDocument.setHeadline( "" );
@@ -369,7 +372,6 @@ public class DocumentMapper {
 
         document.setKeywords( getKeywords( document.getId() ) );
 
-        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
         document.setPermissionSetForRestrictedOne( documentPermissionSetMapper.getPermissionSetRestrictedOne( document ) );
         document.setPermissionSetForRestrictedTwo( documentPermissionSetMapper.getPermissionSetRestrictedTwo( document ) );
 
@@ -642,7 +644,6 @@ public class DocumentMapper {
 
             updateDocumentKeywords( document.getId(), document.getKeywords() );
 
-            DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
             documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document );
 
             document.accept(new DocumentSavingVisitor(user)) ;
@@ -1188,6 +1189,10 @@ public class DocumentMapper {
             documentIds[i] = Integer.parseInt( documentIdStrings[i] );
         }
         return documentIds;
+    }
+
+    public DocumentPermissionSetMapper getDocumentPermissionSetMapper() {
+        return documentPermissionSetMapper;
     }
 
     public static class TextDocumentMenuIndexPair {

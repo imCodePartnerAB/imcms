@@ -6,8 +6,7 @@
 </head>
 <body>
 <H1><? install/htdocs/sv/jsp/internalerrorpage.jsp/2 ?></H1>
-<p><? install/htdocs/sv/jsp/internalerrorpage.jsp/3 ?>
-</p>
+<p><? install/htdocs/sv/jsp/internalerrorpage.jsp/3 ?></p>
 <p><? install/htdocs/sv/jsp/internalerrorpage.jsp/4 ?> </p>
 <p><? install/htdocs/sv/jsp/internalerrorpage.jsp/5 ?> </p>
 <h2><? install/htdocs/sv/jsp/internalerrorpage.jsp/6 ?></h2>

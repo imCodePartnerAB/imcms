@@ -567,15 +567,9 @@
         <filter token="db-pass"             value="${db-pass}"/>
         <filter token="db-maxconnections"   value="${db-maxconnections}"/>
 
-        <filter token="smb-domain-server"   value="${smb-domain-server}" />
-        <filter token="smb-domain-name"     value="${smb-domain-name}" />
-
         <filter token="ldap-url"                        value="${ldap-url}" />
-        <filter token="ldap-user"                       value="${ldap-user}" />
-        <filter token="ldap-pass"                       value="${ldap-pass}" />
-        <filter token="ldap-user-objectclass"           value="${ldap-user-objectclass}" />
-        <filter token="ldap-user-identifying-attribute" value="${ldap-user-identifying-attribute}" />
-        <filter token="ldap-attributes-mapped-to-roles" value="${ldap-attributes-mapped-to-roles}"/>
+        <filter token="ldap-bind-dn"                    value="${ldap-bind-dn}" />
+        <filter token="ldap-password"                   value="${ldap-password}" />
 
         <filter token="smtp-server" value="${smtp-server}"/>
 

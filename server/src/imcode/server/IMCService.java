@@ -3,7 +3,6 @@ package imcode.server;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.SqlHelpers;
 import imcode.server.document.*;
-import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
@@ -53,7 +52,6 @@ final public class IMCService implements IMCServiceInterface {
     private final static Logger mainLog = Logger.getLogger( "mainlog" );
 
     private final static Logger log = Logger.getLogger( IMCService.class.getName() );
-    private static final String EXTERNAL_AUTHENTICATOR_SMB = "SMB";
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
     private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
@@ -254,8 +252,6 @@ final public class IMCService implements IMCServiceInterface {
         try {
             if ( null == externalAuthenticatorName ) {
                 externalAuthenticator = null;
-            } else if ( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
-                externalAuthenticator = new SmbAuthenticator( authenticatorPropertiesSubset );
             } else if ( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
                 try {
                     externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );

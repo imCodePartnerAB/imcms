@@ -1,13 +1,14 @@
 package imcode.server.user;
 
 import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.ApplicationServer;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
-import java.io.Serializable;
 
 public class UserDomainObject extends Hashtable {
 
@@ -15,6 +16,7 @@ public class UserDomainObject extends Hashtable {
 
     public UserDomainObject() {
         lazilyLoadedUserAttributes = new LazilyLoadedUserAttributes();
+        lazilyLoadedUserPhoneNumbers = new LazilyLoadedUserPhoneNumbers();
     }
 
     UserDomainObject( int id ) {
@@ -69,8 +71,9 @@ public class UserDomainObject extends Hashtable {
     private LazilyLoadedUserAttributes getLazilyLoadedUserAttributes() {
         if (null == lazilyLoadedUserAttributes) {
             lazilyLoadedUserAttributes = new LazilyLoadedUserAttributes() ;
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper() ;
-            imcmsAuthenticatorAndUserMapper.initUserFromSqlData(this, imcmsAuthenticatorAndUserMapper.sqlSelectUserById(id));
+            if ( 0 != id ) {
+                getUserMapper().initUserFromSqlData(this, getUserMapper().sqlSelectUserById(id));
+            }
         }
         return lazilyLoadedUserAttributes;
     }
@@ -78,8 +81,9 @@ public class UserDomainObject extends Hashtable {
     private LazilyLoadedUserPhoneNumbers getLazilyLoadedUserPhoneNumbers() {
         if (null == lazilyLoadedUserPhoneNumbers) {
             lazilyLoadedUserPhoneNumbers = new LazilyLoadedUserPhoneNumbers() ;
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper() ;
-            imcmsAuthenticatorAndUserMapper.initUserPhoneNumbers(this) ;
+            if ( 0 != id ) {
+                getUserMapper().initUserPhoneNumbers(this) ;
+            }
         }
         return lazilyLoadedUserPhoneNumbers ;
     }
@@ -87,10 +91,16 @@ public class UserDomainObject extends Hashtable {
     private LazilyLoadedUserRoles getLazilyLoadedUserRoles() {
         if (null == lazilyLoadedUserRoles) {
             lazilyLoadedUserRoles = new LazilyLoadedUserRoles() ;
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper() ;
-            imcmsAuthenticatorAndUserMapper.initUserRoles(this) ;
+            if (0 != id) {
+                getUserMapper().initUserRoles(this) ;
+            }
         }
         return lazilyLoadedUserRoles ;
+    }
+
+    private ImcmsAuthenticatorAndUserMapper getUserMapper() {
+        ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
+        return imcmsAuthenticatorAndUserMapper;
     }
 
     /**
@@ -104,6 +114,11 @@ public class UserDomainObject extends Hashtable {
      * set user-id
      */
     public void setId( int id ) {
+        if (0 != this.id) {
+            getLazilyLoadedUserAttributes() ;
+            getLazilyLoadedUserPhoneNumbers() ;
+            getLazilyLoadedUserRoles() ;
+        }
         this.id = id;
     }
 
@@ -492,6 +507,10 @@ public class UserDomainObject extends Hashtable {
 
     public boolean isUserAdmin() {
         return hasRole( RoleDomainObject.USERADMIN );
+    }
+
+    public boolean canEdit( DocumentDomainObject document ) {
+        return ApplicationServer.getIMCServiceInterface().getDocumentMapper().userHasMoreThanReadPermissionOnDocument( this, document );
     }
 
     public String toString() {

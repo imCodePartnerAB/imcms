@@ -1,29 +1,29 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentPermissionSetMapper;
 import imcode.server.document.UrlDocumentDomainObject;
-import imcode.server.user.UserAndRoleMapper;
-import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentDomainObject;
 
 public class UrlDocument extends Document {
-    public UrlDocument(UrlDocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
-        super(document, service, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
+
+    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_URL;
+
+    UrlDocument( UrlDocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
+        super( document, contentManagementSystem );
     }
 
-    public void setUrl(String url ) throws NoPermissionException {
-        securityChecker.hasEditPermission( this );
+    public void setUrl( String url ) throws NoPermissionException {
+        contentManagementSystem.getSecurityChecker().hasEditPermission( this );
         UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
         urlDocumentDomainObject.setUrl( url );
     }
 
     private UrlDocumentDomainObject getInternalUrlDocument() {
-        UrlDocumentDomainObject urlDocumentDomainObject = ((UrlDocumentDomainObject)getInternal());
+        UrlDocumentDomainObject urlDocumentDomainObject = (UrlDocumentDomainObject)getInternal();
         return urlDocumentDomainObject;
     }
 
     public String getUrl() throws NoPermissionException {
-        securityChecker.hasAtLeastDocumentReadPermission( this );
+        contentManagementSystem.getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         return getInternalUrlDocument().getUrl();
     }
 }

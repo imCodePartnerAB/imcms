@@ -9,7 +9,7 @@
     int menuIndex = 1;
     TextDocument parentDocument = documentService.getTextDocument( parentId );
 
-    TextDocument textDocument = documentService.createAndSaveNewTextDocument( parentDocument ) ;
+    TextDocument textDocument = documentService.createNewTextDocument( parentDocument ) ;
     textDocument.setHeadline( "Textdocument created from API" );
     textDocument.setPlainTextField( 1, "Test text field" );
     textDocument.setPublicationStartDatetime( new Date() );
@@ -23,7 +23,7 @@ Created a text document with id "<a href="<%= request.getContextPath() %>/servle
 with link from the document with id "<a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=<%= parentId %>"><%= parentId %></a>".<br>
 
 <%
-    UrlDocument urlDocument = documentService.createAndSaveNewUrlDocument( parentDocument );
+    UrlDocument urlDocument = documentService.createNewUrlDocument( parentDocument );
     urlDocument.setHeadline( "URL-document created from API" );
     urlDocument.setUrl( "www.imcode.com" );
     urlDocument.setPublicationStartDatetime( new Date() );

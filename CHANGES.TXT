@@ -1,3 +1,38 @@
+Version 1.10.3:
+
+    Of interest to API-using developers:
+
+    * Added constants for use in search-strings:
+        - TextDocument.TYPE_ID
+        - UrlDocument.TYPE_ID
+    * Added methods:
+        - boolean User.isSuperAdmin()
+        - boolean User.canEdit(Document) (Bug 2521)
+        - String[] User.getRoleNames() (Bug 2521)
+        - DocumentService.createNewTextDocument(Document)
+        - DocumentService.createNewUrlDocument(Document)
+    * Deprecated methods:
+        - DocumentService.createAndSaveNewTextDocument(Document)
+        - DocumentService.createAndSaveNewUrlDocument(Document)
+
+    Of interest to administrators:
+
+    * The ldap implementation should no longer be dependent on Microsoft Active Directory.
+      Rewrote a big part of the ldap-configuration in "server.properties":
+        - "LdapUserName" is replaced by "LdapBindDn",
+        - "LdapUserObjectClass" is set to "inetOrgPerson" by default.
+        - "LdapUserIdentifyingAttribute" is replaced by "LdapUserAttribute.LoginName" which is only
+          required if not using 'uid' in the "inetOrgPerson" objectclass.
+      Ldap-attributes can now be arbitrarily mapped to user-properties.
+      See the comments in "server.properties" for details.
+      (Bug 1981, bug 2516)
+    * Fixed a bug where removing a single phone number from a user had no effect. (Bug 2471)
+    * Use dos-style line-endings in the text-files in the zip file,
+      and unix-style line-endings in the tarball. (Bug 2485)
+    * Instead of empty strings, use "localhost" for default database-host
+      and "imcms" for default database-name. (Bug 2488)
+
+
 Version 1.10.2:
 
     Of interest to API-using developers:
@@ -21,11 +56,6 @@ Version 1.10.2:
     * Fixed a bug with creating external links in the html-editor. (Bug 2418)
     * Fixed a couple of bugs related to creating new conferences and new conference-users. (Bugs 2461, 2466)
     * Made listing many users somewhat quicker. (Bug 2316)
-
-    Known issues:
-
-    * Removing a single phone number from a user has no effect.
-      Removing all phone numbers from a user still works. (Bug 2471)
 
 
 Version 1.10.1:
