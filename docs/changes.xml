@@ -5,6 +5,12 @@
     <changes importance="high" for="administrators">
         <change>
             <p>
+                Fixed a security hole that could let an attacker overwrite any file in the system.
+            </p>
+            <bug id="2891"/>
+        </change>
+        <change>
+            <p>
                 Added class <class>ContentManagementSystemRunnable</class> and
                 method <method>ContentManagementSystem.runAsSuperadmin(ContentManagementSystemRunnable)</method>
                 to allow code that has been signed by an administrator to run with superadmin-privileges.
