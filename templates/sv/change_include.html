@@ -1,6 +1,28 @@
-<form action="#servlet_url#SaveInclude" method="POST">
-    <input type="hidden" name="meta_id" value="#meta_id#">
-    <input type="text" name="include_meta_id" value="#include_meta_id#" size="6" maxlength="6">
-    <input type="hidden" name="include_id" value="#include_id#">
-    <input type="submit" name="ok" value="OK">
-</form>
+<table border="0" cellspacing="0" width="10%">
+    <tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td align="center">
+	    <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Include</font>
+        </td>
+	<td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#BABABA">
+	<td width="5%">&nbsp;</td>
+	<td align="center">
+	    <form action="#servlet_url#SaveInclude" method="POST">
+	        <input type="hidden" name="meta_id" value="#meta_id#">
+		<input type="text" name="include_meta_id" value="#include_meta_id#" size="6" maxlength="6">
+		<input type="hidden" name="include_id" value="#include_id#">
+		<input type="submit" name="ok" value="OK">
+	    </form>
+	</td>
+	<td width="5%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#BABABA">
+	<td width="5%">&nbsp;</td>
+	<td align="center">
+	    <a href="/imcms/servlet/GetDoc?meta_id=#include_meta_id#" target="_blank">Redigera</a>
+	</td>
+	<td width="5%">&nbsp;</td>
+    </tr>
+</table>
