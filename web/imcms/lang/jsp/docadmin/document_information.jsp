@@ -517,7 +517,6 @@ function checkFocus() {
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/time ?></td>
 			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= formatTime( document.getModifiedDatetime() ) %>"></td>
-			<td class="imcmsAdmDim">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/date_format ?></td>
 		</tr>
 		</table></td>
 	</tr><%
