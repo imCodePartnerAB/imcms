@@ -30,6 +30,14 @@
 
 %><%!
 
+    String formatDatetime(Date datetime) {
+        if (null == datetime) {
+            return "" ;
+        }
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING ) ;
+        return dateFormat.format(datetime) ;
+    }
+
     String formatDate(Date date) {
         if (null == date) {
             return "" ;
@@ -169,15 +177,16 @@ imcmsGui("mid", null);
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <td>
-                                    <%= formatDate( publicationStartDatetime ) %><% if (null != publicationStartDatetime) {%><br><% } %>
                                     <input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_START_DATE %>" size="11" maxlength="10" style="width: 7em;"
                                         value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationStartDatetime) ) %>">
                                 </td>
                                 <td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
                                 <td>
-                                    <%= formatTime( publicationStartDatetime ) %><% if (null != publicationStartDatetime) {%><br><% } %>
                                     <input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
                                         value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>">
+                                </td>
+                                <td>
+                                    <%= formatDatetime( publicationStartDatetime ) %>&nbsp;
                                 </td>
                             </tr>
                         </table>
@@ -197,15 +206,16 @@ imcmsGui("mid", null);
                         <table border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <td>
-                                <%= formatDate( archivedDatetime ) %><% if (null != archivedDatetime) {%><br><% } %>
                                 <input type="text" name="<%= DocumentComposer.PARAMETER__ARCHIVED_DATE %>" size="11" maxlength="10" style="width: 7em;"
                                     value="<%= StringEscapeUtils.escapeHtml( formatDate(archivedDatetime) ) %>">
                             </td>
                             <td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
                             <td>
-                                <%= formatTime( archivedDatetime ) %><% if (null != archivedDatetime) {%><br><% } %>
                                 <input type="text" name="<%= DocumentComposer.PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
                                     value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>">
+                            </td>
+                            <td>
+                                <%= formatDatetime( archivedDatetime ) %>&nbsp;
                             </td>
                         </tr>
                         </table>
@@ -225,15 +235,16 @@ imcmsGui("mid", null);
                         <table border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <td>
-                                <%= formatDate( publicationEndDatetime ) %><% if (null != publicationEndDatetime) {%><br><% } %>
                                 <input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_END_DATE %>" size="11" maxlength="10" style="width: 7em;"
                                     value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationEndDatetime) ) %>">
                             </td>
                             <td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
                             <td>
-                                <%= formatTime( publicationEndDatetime ) %><% if (null != publicationEndDatetime) {%><br><% } %>
                                 <input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
                                     value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>">
+                            </td>
+                            <td>
+                                <%= formatDatetime( publicationEndDatetime ) %>&nbsp;
                             </td>
                         </tr>
                         </table>
