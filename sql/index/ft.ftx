@@ -1,0 +1,16 @@
+if (select DATABASEPROPERTY(DB_NAME(), N'IsFullTextEnabled')) <> 1 
+exec sp_fulltext_database N'enable' 
+
+GO
+
+
+if exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'drop'
+
+GO
+
+if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
+exec sp_fulltext_catalog N'full_text_index', N'create' 
+
+GO
+
