@@ -244,6 +244,9 @@ public class PasswordMailReminder extends HttpServlet {
 	    parsVector.add( postedLoginName );
 	    parsVector.add( "#email#" );
 	    parsVector.add( userEmail );
+	    parsVector.add( "#host#" );
+	    parsVector.add( host );				
+		
 
 	    String serverMasterMessage = imcref.parseDoc( parsVector, serverMasterMailBody,
 							  deafultLanguagePrefix);
