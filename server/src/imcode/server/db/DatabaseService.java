@@ -2755,4 +2755,41 @@ public abstract class DatabaseService {
             return (JoinedTables_permissions)queryResult.get(0);
         }
     }
+
+    public class Table_polls {
+        int id;
+        int name;
+        int description;
+        int meta_id;
+        int popup_freq;
+        int set_cookie;
+        int hide_result;
+        int confirmation_text;
+        int email_recipients;
+        int result_template;
+
+        public Table_polls( ResultSet rs ) throws SQLException {
+            id = rs.getInt("id");
+            name = rs.getInt("name");
+            description = rs.getInt("description");
+            meta_id = rs.getInt("meta_id");
+            popup_freq = rs.getInt("popup_freq");
+            set_cookie = rs.getInt("set_cookie");
+            hide_result = rs.getInt("hide_result");
+            confirmation_text = rs.getInt("confirmation_text");
+            email_recipients = rs.getInt("email_recipients");
+            result_template = rs.getInt("result_template");
+        }
+    }
+
+    Table_polls[] sproc_Poll_GetAll() {
+        String sql = "SELECT id, name, description, meta_id, popup_freq, set_cookie, hide_result, confirmation_text, " +
+            "email_recipients, result_template FROM polls";
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Table_polls( rs );
+            }
+        } );
+        return (Table_polls[])queryResult.toArray( new Table_polls[queryResult.size()] );
+    }
 }
