@@ -77,7 +77,7 @@ debug = on
 deprecation = on
 
 
-# Which log4j-config-file in to use.
+# Which log4j-config-file to use.
 # You might want to change this to log4j-debug.xml to turn on debug-logs.
 
 log4j-config = log4j-nodebug.xml
