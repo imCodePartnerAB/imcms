@@ -107,6 +107,10 @@ updatedefaulttemplates.prc
 updateparentsdatemodified.prc
 updatetemplatetextsandimages.prc
 
+Hämtade polls tabellerna från diff.sql.
+* ändrade bit till SMALLINT
+* släppte default null värden
+
 Nedan är förändringar mot scriptet tables.ascii.sql
 * Splittat i två separata skript. Ett för drop table och ett för create table.
 * Satt in ; i slutet av varje kommando. (Standard SQL).

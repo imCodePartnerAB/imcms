@@ -440,3 +440,35 @@ CREATE TABLE useradmin_role_crossref (
     FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
+CREATE TABLE poll_answers (
+	id INT NOT NULL ,
+	question_id INT NOT NULL ,
+	text_id INT NOT NULL ,
+	option_number INT NOT NULL ,
+	answer_count INT NOT NULL ,
+	option_poINT INT DEFAULT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE poll_questions (
+	id INT NOT NULL ,
+	poll_id INT NOT NULL ,
+	question_number INT NOT NULL ,
+	text_id INT NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE polls (
+	id INT NOT NULL ,
+	name INT,
+	description INT,
+	meta_id INT NOT NULL,
+	popup_freq INT NOT NULL ,
+	set_cookie SMALLINT NOT NULL ,
+	hide_result SMALLINT NOT NULL ,
+	confirmation_text INT,
+	email_recipients INT,
+	result_template INT,
+	PRIMARY KEY (id)
+);
+

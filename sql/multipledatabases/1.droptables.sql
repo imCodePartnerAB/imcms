@@ -1,3 +1,6 @@
+drop table polls;
+drop table poll_questions;
+drop table poll_answers;
 drop table browser_docs;
 drop table browsers;
 drop table childs;
