@@ -117,9 +117,6 @@ setnewdocpermissionset.prc
 setnewdocpermissionsetex.prc
 setreadrunneruserdataforuser.prc
 setroledocpermissionsetid.prc
-setsessioncounterdate.prc
-setsessioncountervalue.prc
-setuserflag.prc
 shop_addshoppingitemdescription.prc
 shop_addshoppingitemtoorder.prc
 shop_addshoppingorder.prc

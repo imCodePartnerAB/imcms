@@ -109,8 +109,19 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetDocumentInfo( databaseService );
             test_sproc_GetLanguageList( databaseService );
             test_sproc_getLanguages( databaseService );
+            test_sproc_SetSessionCounterValue( databaseService );
+            test_sproc_SetSessionCounterDate( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_SetSessionCounterDate( DatabaseService databaseService ) {
+        assertEquals( 1, databaseService.sproc_SetSessionCounterDate( new java.util.Date().toString() ));
+    }
+
+    private void test_sproc_SetSessionCounterValue( DatabaseService databaseService ) {
+        assertEquals(1, databaseService.sproc_SetSessionCounterValue( 666) );
+        assertEquals(666, databaseService.sproc_GetCurrentSessionCounter() );
     }
 
     private void test_sproc_getLanguages( DatabaseService databaseService ) {

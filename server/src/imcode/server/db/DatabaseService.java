@@ -162,11 +162,11 @@ public abstract class DatabaseService {
         private int permissions;
         private int admin_role;
 
-        Table_roles( int role_id, String role_name, int permissions, int admin_role ) {
-            this.role_id = role_id;
-            this.role_name = role_name;
-            this.permissions = permissions;
-            this.admin_role = admin_role;
+        Table_roles( ResultSet rs ) throws SQLException {
+            role_id = rs.getInt( "role_id" );
+            role_name = rs.getString( "role_name" );
+            permissions = rs.getInt( "permissions" );
+            admin_role = rs.getInt( "admin_role" );
         }
     }
 
@@ -176,11 +176,7 @@ public abstract class DatabaseService {
 
         SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int role_id = rs.getInt( "role_id" );
-                String role_name = rs.getString( "role_name" );
-                int permissions = rs.getInt( "permissions" );
-                int admin_role = rs.getInt( "admin_role" );
-                return new Table_roles( role_id, role_name, permissions, admin_role );
+                return new Table_roles( rs );
             }
         };
 
@@ -287,7 +283,10 @@ public abstract class DatabaseService {
     }
 
     int sproc_updateUser( Table_users userData ) {
-        String sql = "Update users set " + "login_name = ?, " + "login_password = ?, " + "first_name = ?, " + "last_name = ?, " + "title = ?, " + "company = ?, " + "address =  ?, " + "city = ?, " + "zip = ?, " + "country = ?, " + "county_council =?, " + "email = ?, " + "user_type = ?, " + "active = ?, " + "lang_id = ? " + "WHERE user_id = ?";
+        String sql = "Update users set " + "login_name = ?, " + "login_password = ?, " + "first_name = ?, " +
+            "last_name = ?, " + "title = ?, " + "company = ?, " + "address =  ?, " + "city = ?, " + "zip = ?, " +
+            "country = ?, " + "county_council =?, " + "email = ?, " + "user_type = ?, " + "active = ?, " +
+            "lang_id = ? " + "WHERE user_id = ?";
         Object[] paramValues = new Object[]{userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.user_type ), new Integer( userData.active ), new Integer( userData.lang_id ), new Integer( userData.user_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
@@ -453,9 +452,9 @@ public abstract class DatabaseService {
         private int phonetype_id;
         private String typename;
 
-        Table_phonetypes( int phonetype_id, String typename ) {
-            this.phonetype_id = phonetype_id;
-            this.typename = typename;
+        Table_phonetypes( ResultSet rs )  throws SQLException {
+            phonetype_id = rs.getInt( "phonetype_id" );
+            typename = rs.getString( "typename" );
         }
     }
 
@@ -464,9 +463,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{new Integer( lang_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int phonetype_id = rs.getInt( "phonetype_id" );
-                String typename = rs.getString( "typename" );
-                return new Table_phonetypes( phonetype_id, typename );
+                return new Table_phonetypes( rs );
             }
         } );
         return (Table_phonetypes[])queryResult.toArray( new Table_phonetypes[queryResult.size()] );
@@ -476,9 +473,9 @@ public abstract class DatabaseService {
         private int phone_id;
         private String phoneNumber;
 
-        Table_phone( int phone_id, String phoneNumber ) {
-            this.phone_id = phone_id;
-            this.phoneNumber = phoneNumber;
+        Table_phone( ResultSet rs )  throws SQLException {
+            phone_id = rs.getInt( "phone_id" );
+            phoneNumber = rs.getString( "number" );
         }
     }
 
@@ -494,9 +491,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{new Integer( user_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int phone_id = rs.getInt( "phone_id" );
-                String phoneNumber = rs.getString( "number" );
-                return new Table_phone( phone_id, phoneNumber );
+                return new Table_phone( rs );
             }
         } );
         return (Table_phone[])queryResult.toArray( new Table_phone[queryResult.size()] );
@@ -509,12 +504,12 @@ public abstract class DatabaseService {
         private int phonetype_id;
         private String typename;
 
-        MoreThanOneTable_phones_phonetypes( int phone_id, String number, int user_id, int phonetype_id, String typename ) {
-            this.phone_id = phone_id;
-            this.number = number;
-            this.user_id = user_id;
-            this.phonetype_id = phonetype_id;
-            this.typename = typename;
+        MoreThanOneTable_phones_phonetypes( ResultSet rs ) throws SQLException {
+            phone_id = rs.getInt( "phone_id" );
+            number = rs.getString( "number" );
+            user_id = rs.getInt( "user_id" );
+            phonetype_id = rs.getInt( "phonetype_id" );
+            typename = rs.getString( "typename" );
         }
     }
 
@@ -529,12 +524,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{new Integer( user_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int phone_id = rs.getInt( "phone_id" );
-                String number = rs.getString( "number" );
-                int user_id = rs.getInt( "user_id" );
-                int phonetype_id = rs.getInt( "phonetype_id" );
-                String typename = rs.getString( "typename" );
-                return new MoreThanOneTable_phones_phonetypes( phone_id, number, user_id, phonetype_id, typename );
+                return new MoreThanOneTable_phones_phonetypes( rs );
             }
         } );
         return (MoreThanOneTable_phones_phonetypes[])queryResult.toArray( new MoreThanOneTable_phones_phonetypes[queryResult.size()] );
@@ -646,11 +636,11 @@ public abstract class DatabaseService {
         private String meta_headline;
         private int doc_type;
 
-        PartOfTable_document( int meta_id, int parentcount, String meta_headline, int doc_type ) {
-            this.meta_id = meta_id;
-            this.parentcount = parentcount;
-            this.meta_headline = meta_headline;
-            this.doc_type = doc_type;
+        PartOfTable_document( ResultSet rs ) throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            parentcount = rs.getInt( "parentcount" );
+            meta_headline = rs.getString( "meta_headline" );
+            doc_type = rs.getInt( "doc_type" );
         }
     }
 
@@ -674,11 +664,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{new Integer( user_id ), new Integer( start ), new Integer( end )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int parentcount = rs.getInt( "parentcount" );
-                String meta_headline = rs.getString( "meta_headline" );
-                int doc_type = rs.getInt( "doc_type" );
-                return new PartOfTable_document( meta_id, parentcount, meta_headline, doc_type );
+                return new PartOfTable_document( rs );
             }
         } );
         return (PartOfTable_document[])queryResult.toArray( new PartOfTable_document[queryResult.size()] );
@@ -701,22 +687,22 @@ public abstract class DatabaseService {
         private Timestamp archived_datetime;
         private String filename;
 
-        MoreThanOneTable_meta_childs( int to_meta_id, int menu_sort, int manual_sort_order, int doc_type, boolean archive, String target, Timestamp date_created, Timestamp date_modified, String meta_headline, String meta_text, String meta_image, String frame_name, Timestamp activated_datetime, Timestamp archived_datetime, String filename ) {
-            this.to_meta_id = to_meta_id;
-            this.menu_sort = menu_sort;
-            this.manual_sort_order = manual_sort_order;
-            this.doc_type = doc_type;
-            this.archive = archive;
-            this.target = target;
-            this.date_created = date_created;
-            this.date_modified = date_modified;
-            this.meta_headline = meta_headline;
-            this.meta_text = meta_text;
-            this.meta_image = meta_image;
-            this.frame_name = frame_name;
-            this.activated_datetime = activated_datetime;
-            this.archived_datetime = archived_datetime;
-            this.filename = filename;
+        MoreThanOneTable_meta_childs( ResultSet rs ) throws SQLException {
+            to_meta_id = rs.getInt( "to_meta_id" );
+            menu_sort = rs.getInt( "menu_sort" );
+            manual_sort_order = rs.getInt( "manual_sort_order" );
+            doc_type = rs.getInt( "doc_type" );
+            archive = (rs.getInt( "archive" ) == 1);
+            target = rs.getString( "target" );
+            date_created = rs.getTimestamp( "date_created" );
+            date_modified = rs.getTimestamp( "date_modified" );
+            meta_headline = rs.getString( "meta_headline" );
+            meta_text = rs.getString( "meta_text" );
+            meta_image = rs.getString( "meta_image" );
+            frame_name = rs.getString( "frame_name" );
+            activated_datetime = rs.getTimestamp( "activated_datetime" );
+            archived_datetime = rs.getTimestamp( "archived_datetime" );
+            filename = rs.getString( "filename" );
         }
     }
     /**
@@ -771,23 +757,7 @@ public abstract class DatabaseService {
 
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int to_meta_id = rs.getInt( "to_meta_id" );
-                int menu_sort = rs.getInt( "menu_sort" );
-                int manual_sort_order = rs.getInt( "manual_sort_order" );
-                int doc_type = rs.getInt( "doc_type" );
-                boolean archive = (rs.getInt( "archive" ) == 1);
-                String target = rs.getString( "target" );
-                Timestamp date_created = rs.getTimestamp( "date_created" );
-                Timestamp date_modified = rs.getTimestamp( "date_modified" );
-                String meta_headline = rs.getString( "meta_headline" );
-                String meta_text = rs.getString( "meta_text" );
-                String meta_image = rs.getString( "meta_image" );
-                String frame_name = rs.getString( "frame_name" );
-                Timestamp activated_datetime = rs.getTimestamp( "activated_datetime" );
-                Timestamp archived_datetime = rs.getTimestamp( "archived_datetime" );
-                String filename = rs.getString( "filename" );
-                return new MoreThanOneTable_meta_childs( to_meta_id, menu_sort, manual_sort_order, doc_type, archive, target, date_created, date_modified, meta_headline,
-                                                           meta_text, meta_image, frame_name, activated_datetime, archived_datetime, filename );
+                return new MoreThanOneTable_meta_childs( rs );
             }
         } );
         return (MoreThanOneTable_meta_childs[])queryResult.toArray( new MoreThanOneTable_meta_childs[queryResult.size()] );
@@ -926,9 +896,9 @@ public abstract class DatabaseService {
         private int doc_type;
         private String type;
 
-        Table_doc_types( int doc_type, String type ) {
-            this.doc_type = doc_type;
-            this.type = type;
+        Table_doc_types( ResultSet rs )  throws SQLException {
+            doc_type = rs.getInt( "doc_type" );
+            type = rs.getString( "type" );
         }
     }
 
@@ -937,9 +907,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{lang_prefix};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int doc_type = rs.getInt( "doc_type" );
-                String type = rs.getString( "type" );
-                return new Table_doc_types( doc_type, type );
+                return new Table_doc_types( rs );
             }
         } );
         return (Table_doc_types[])queryResult.toArray( new Table_doc_types[queryResult.size()] );
@@ -1047,9 +1015,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{new Integer( user_id ), lang_prefix, new Integer( meta_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int doc_type = rs.getInt( "doc_type" );
-                String type = rs.getString( "type" );
-                return new Table_doc_types( doc_type, type );
+                return new Table_doc_types( rs );
             }
         } );
         return (Table_doc_types[])queryResult.toArray( new Table_doc_types[queryResult.size()] );
@@ -1165,13 +1131,13 @@ public abstract class DatabaseService {
         private int default_template_1;
         private int default_template_2;
 
-        Table_text_docs( int meta_id, int template_id, int group_id, int sort_order, int default_template_1, int default_template_2 ) {
-            this.meta_id = meta_id;
-            this.template_id = template_id;
-            this.group_id = group_id;
-            this.sort_order = sort_order;
-            this.default_template_1 = default_template_1;
-            this.default_template_2 = default_template_2;
+        Table_text_docs( ResultSet rs ) throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            template_id = rs.getInt( "template_id" );
+            group_id = rs.getInt( "group_id" );
+            sort_order = rs.getInt( "sort_order" );
+            default_template_1 = rs.getInt( "default_template_1" );
+            default_template_2 = rs.getInt( "default_template_2" );
         }
     }
 
@@ -1181,13 +1147,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int template_id = rs.getInt( "template_id" );
-                int group_id = rs.getInt( "group_id" );
-                int sort_order = rs.getInt( "sort_order" );
-                int default_template_1 = rs.getInt( "default_template_1" );
-                int default_template_2 = rs.getInt( "default_template_2" );
-                return new Table_text_docs( meta_id, template_id, group_id, sort_order, default_template_1, default_template_2 );
+                return new Table_text_docs( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1214,13 +1174,13 @@ public abstract class DatabaseService {
         private String url_txt;
         private String lang_prefix;
 
-        Table_url_docs( int meta_id, String frame_name, String target, String url_ref, String url_txt, String lang_prefix ) {
-            this.meta_id = meta_id;
-            this.frame_name = frame_name;
-            this.target = target;
-            this.url_ref = url_ref;
-            this.url_txt = url_txt;
-            this.lang_prefix = lang_prefix;
+        Table_url_docs( ResultSet rs ) throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            frame_name = rs.getString( "frame_name" );
+            target = rs.getString( "target" );
+            url_ref = rs.getString( "url_ref" );
+            url_txt = rs.getString( "url_txt" );
+            lang_prefix = rs.getString( "lang_prefix" );
         }
     }
 
@@ -1229,13 +1189,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                String frame_name = rs.getString( "frame_name" );
-                String target = rs.getString( "target" );
-                String url_ref = rs.getString( "url_ref" );
-                String url_txt = rs.getString( "url_txt" );
-                String lang_prefix = rs.getString( "lang_prefix" );
-                return new Table_url_docs( meta_id, frame_name, target, url_ref, url_txt, lang_prefix );
+                return new Table_url_docs( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1259,9 +1213,9 @@ public abstract class DatabaseService {
         private int browser_id;
 
         Table_browser_docs( ResultSet rs ) throws SQLException {
-            this.meta_id = rs.getInt("meta_id");
-            this.to_meta_id = rs.getInt("to_meta_id");
-            this.browser_id = rs.getInt("browser_id");
+            meta_id = rs.getInt("meta_id");
+            to_meta_id = rs.getInt("to_meta_id");
+            browser_id = rs.getInt("browser_id");
         }
     }
 
@@ -1285,8 +1239,8 @@ public abstract class DatabaseService {
         String meta_headline;
 
         public MoreThanOneTable_meta_browser_docs( ResultSet rs ) throws SQLException {
-            this.to_meta_id = rs.getInt("to_meta_id");
-            this.meta_headline = rs.getString("meta_headline");
+            to_meta_id = rs.getInt("to_meta_id");
+            meta_headline = rs.getString("meta_headline");
         }
     }
 
@@ -1316,9 +1270,9 @@ public abstract class DatabaseService {
         private int meta_id;
         private String frame_set;
 
-        Table_frameset_docs( int meta_id, String frame_set ) {
-            this.meta_id = meta_id;
-            this.frame_set = frame_set;
+        Table_frameset_docs( ResultSet rs )  throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            frame_set = rs.getString( "frame_set" );
         }
     }
 
@@ -1327,9 +1281,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                String frame_set = rs.getString( "frame_set" );
-                return new Table_frameset_docs( meta_id, frame_set );
+                return new Table_frameset_docs( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1350,10 +1302,10 @@ public abstract class DatabaseService {
         private String filename;
         private String mime;
 
-        Table_fileupload_docs( int meta_id, String filename, String mime ) {
-            this.meta_id = meta_id;
-            this.filename = filename;
-            this.mime = mime;
+        Table_fileupload_docs( ResultSet rs )  throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            filename = rs.getString( "filename" );
+            mime = rs.getString( "mime" );
         }
     }
 
@@ -1362,10 +1314,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                String filename = rs.getString( "filename" );
-                String mime = rs.getString( "mime" );
-                return new Table_fileupload_docs( meta_id, filename, mime );
+                return new Table_fileupload_docs( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1388,12 +1337,12 @@ public abstract class DatabaseService {
         private int type;
         private int counter;
 
-        Table_texts( int meta_id, int name, String text, int type, int counter ) {
-            this.meta_id = meta_id;
-            this.name = name;
-            this.text = text;
-            this.type = type;
-            this.counter = counter;
+        Table_texts( ResultSet rs ) throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            name = rs.getInt( "name" );
+            text = rs.getString( "text" );
+            type = rs.getInt( "type" );
+            counter = rs.getInt( "counter" );
         }
     }
 
@@ -1402,12 +1351,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int name = rs.getInt( "name" );
-                String text = rs.getString( "text" );
-                int type = rs.getInt( "type" );
-                int counter = rs.getInt( "counter" );
-                return new Table_texts( meta_id, name, text, type, counter );
+                return new Table_texts( rs );
             }
         } );
         return (Table_texts[])queryResult.toArray( new Table_texts[queryResult.size()] );
@@ -1437,22 +1381,22 @@ public abstract class DatabaseService {
         private String imgurl;
         private String linkurl;
 
-        Table_images( int meta_id, int width, int height, int border, int v_space, int h_space, int name, String image_name, String target, String target_name, String align, String alt_text, String low_scr, String imgurl, String linkurl ) {
-            this.meta_id = meta_id;
-            this.width = width;
-            this.height = height;
-            this.border = border;
-            this.v_space = v_space;
-            this.h_space = h_space;
-            this.name = name;
-            this.image_name = image_name;
-            this.target = target;
-            this.target_name = target_name;
-            this.align = align;
-            this.alt_text = alt_text;
-            this.low_scr = low_scr;
-            this.imgurl = imgurl;
-            this.linkurl = linkurl;
+        Table_images( ResultSet rs ) throws SQLException{
+            meta_id = rs.getInt( "meta_id" );
+            width = rs.getInt( "width" );
+            height = rs.getInt( "height" );
+            border = rs.getInt( "border" );
+            v_space = rs.getInt( "v_space" );
+            h_space = rs.getInt( "h_space" );
+            name = rs.getInt( "name" );
+            image_name = rs.getString( "image_name" );
+            target = rs.getString( "target" );
+            target_name = rs.getString( "target_name" );
+            align = rs.getString( "align" );
+            alt_text = rs.getString( "alt_text" );
+            low_scr = rs.getString( "low_scr" );
+            imgurl = rs.getString( "imgurl" );
+            linkurl = rs.getString( "linkurl" );
         }
     }
 
@@ -1468,22 +1412,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int width = rs.getInt( "width" );
-                int height = rs.getInt( "height" );
-                int border = rs.getInt( "border" );
-                int v_space = rs.getInt( "v_space" );
-                int h_space = rs.getInt( "h_space" );
-                int name = rs.getInt( "name" );
-                String image_name = rs.getString( "image_name" );
-                String target = rs.getString( "target" );
-                String target_name = rs.getString( "target_name" );
-                String align = rs.getString( "align" );
-                String alt_text = rs.getString( "alt_text" );
-                String low_scr = rs.getString( "low_scr" );
-                String imgurl = rs.getString( "imgurl" );
-                String linkurl = rs.getString( "linkurl" );
-                return new Table_images( meta_id, width, height, border, v_space, h_space, name, image_name, target, target_name, align, alt_text, low_scr, imgurl, linkurl );
+                return new Table_images( rs );
             }
         } );
         return (Table_images[])queryResult.toArray( new Table_images[queryResult.size()] );
@@ -1506,10 +1435,10 @@ public abstract class DatabaseService {
         private int include_id;
         private int included_meta_id;
 
-        Table_includes( int meta_id, int include_id, int included_meta_id ) {
-            this.meta_id = meta_id;
-            this.include_id = include_id;
-            this.included_meta_id = included_meta_id;
+        Table_includes( ResultSet rs )  throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            include_id = rs.getInt( "include_id" );
+            included_meta_id = rs.getInt( "included_meta_id" );
         }
     }
 
@@ -1522,10 +1451,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int include_id = rs.getInt( "include_id" );
-                int included_meta_id = rs.getInt( "included_meta_id" );
-                return new Table_includes( meta_id, include_id, included_meta_id );
+                return new Table_includes( rs );
             }
         } );
         return (Table_includes[])queryResult.toArray( new Table_includes[queryResult.size()] );
@@ -1543,10 +1469,10 @@ public abstract class DatabaseService {
         private int set_id;
         private int permission_id;
 
-        Table_doc_permission_sets( int meta_id, int set_id, int permission_id ) {
-            this.meta_id = meta_id;
-            this.set_id = set_id;
-            this.permission_id = permission_id;
+        Table_doc_permission_sets( ResultSet rs ) throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            set_id = rs.getInt( "set_id" );
+            permission_id = rs.getInt( "permission_id" );
         }
     }
 
@@ -1555,10 +1481,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int set_id = rs.getInt( "set_id" );
-                int permission_id = rs.getInt( "permission_id" );
-                return new Table_doc_permission_sets( meta_id, set_id, permission_id );
+                return new Table_doc_permission_sets( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1579,10 +1502,10 @@ public abstract class DatabaseService {
         private int set_id;
         private int permission_id;
 
-        Table_new_doc_permission_sets( int meta_id, int set_id, int permission_id ) {
-            this.meta_id = meta_id;
-            this.set_id = set_id;
-            this.permission_id = permission_id;
+        Table_new_doc_permission_sets( ResultSet rs )  throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            set_id = rs.getInt( "set_id" );
+            permission_id = rs.getInt( "permission_id" );
         }
     }
 
@@ -1591,10 +1514,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int set_id = rs.getInt( "set_id" );
-                int permission_id = rs.getInt( "permission_id" );
-                return new Table_new_doc_permission_sets( meta_id, set_id, permission_id );
+                return new Table_new_doc_permission_sets( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1616,11 +1536,11 @@ public abstract class DatabaseService {
         private int permission_id;
         private int permission_data;
 
-        Table_doc_permission_sets_ex( int meta_id, int set_id, int permission_id, int permission_data ) {
-            this.meta_id = meta_id;
-            this.set_id = set_id;
-            this.permission_id = permission_id;
-            this.permission_data = permission_data;
+        Table_doc_permission_sets_ex( ResultSet rs )  throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            set_id = rs.getInt( "set_id" );
+            permission_id = rs.getInt( "permission_id" );
+            permission_data = rs.getInt( "permission_data" );
         }
     }
 
@@ -1629,11 +1549,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int set_id = rs.getInt( "set_id" );
-                int permission_id = rs.getInt( "permission_id" );
-                int permission_data = rs.getInt( "permission_data" );
-                return new Table_doc_permission_sets_ex( meta_id, set_id, permission_id, permission_data );
+                return new Table_doc_permission_sets_ex( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1655,11 +1571,11 @@ public abstract class DatabaseService {
         private int permission_id;
         private int permission_data;
 
-        Table_new_doc_permission_sets_ex( int meta_id, int set_id, int permission_id, int permission_data ) {
-            this.meta_id = meta_id;
-            this.set_id = set_id;
-            this.permission_id = permission_id;
-            this.permission_data = permission_data;
+        Table_new_doc_permission_sets_ex( ResultSet rs )  throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            set_id = rs.getInt( "set_id" );
+            permission_id = rs.getInt( "permission_id" );
+            permission_data = rs.getInt( "permission_data" );
         }
     }
 
@@ -1668,11 +1584,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int set_id = rs.getInt( "set_id" );
-                int permission_id = rs.getInt( "permission_id" );
-                int permission_data = rs.getInt( "permission_data" );
-                return new Table_new_doc_permission_sets_ex( meta_id, set_id, permission_id, permission_data );
+                return new Table_new_doc_permission_sets_ex( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1693,10 +1605,10 @@ public abstract class DatabaseService {
         private int meta_id;
         private int set_id;
 
-        Table_roles_rights( int role_id, int meta_id, int set_id ) {
-            this.role_id = role_id;
-            this.meta_id = meta_id;
-            this.set_id = set_id;
+        Table_roles_rights( ResultSet rs ) throws SQLException {
+            role_id = rs.getInt( "role_id" );
+            meta_id = rs.getInt( "meta_id" );
+            set_id = rs.getInt( "set_id" );
         }
     }
 
@@ -1705,10 +1617,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int role_id = rs.getInt( "role_id" );
-                int meta_id = rs.getInt( "meta_id" );
-                int set_id = rs.getInt( "set_id" );
-                return new Table_roles_rights( role_id, meta_id, set_id );
+                return new Table_roles_rights( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1728,9 +1637,9 @@ public abstract class DatabaseService {
         private int meta_id;
         private int class_id;
 
-        public Table_meta_classification( int meta_id, int class_id ) {
-            this.meta_id = meta_id;
-            this.class_id = class_id;
+        public Table_meta_classification( ResultSet rs )  throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            class_id = rs.getInt( "class_id" );
         }
     }
 
@@ -1739,9 +1648,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int class_id = rs.getInt( "class_id" );
-                return new Table_meta_classification( meta_id, class_id );
+                return new Table_meta_classification( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1761,9 +1668,9 @@ public abstract class DatabaseService {
         private int meta_id;
         private int section_id;
 
-        public Table_meta_section( int meta_id, int section_id ) {
-            this.meta_id = meta_id;
-            this.section_id = section_id;
+        public Table_meta_section( ResultSet rs )  throws SQLException {
+            meta_id = rs.getInt( "meta_id" );
+            section_id = rs.getInt( "section_id" );
         }
     }
 
@@ -1772,9 +1679,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{meta_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int meta_id = rs.getInt( "meta_id" );
-                int section_id = rs.getInt( "section_id" );
-                return new Table_meta_section( meta_id, section_id );
+                return new Table_meta_section( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -1967,9 +1872,9 @@ public abstract class DatabaseService {
         private String language;
 
         public Table_languages( ResultSet rs ) throws SQLException {
-            this.lang_prefix = rs.getString("lang_prefix");
-            this.user_prefix = rs.getString("user_prefix");
-            this.language = rs.getString("language");
+            lang_prefix = rs.getString("lang_prefix");
+            user_prefix = rs.getString("user_prefix");
+            language = rs.getString("language");
         }
     }
 
@@ -1994,9 +1899,9 @@ public abstract class DatabaseService {
         private int lang_id;
         String lang_prefix;
 
-        public Table_lang_prefixes( int lang_id, String lang_prefix ) {
-            this.lang_id = lang_id;
-            this.lang_prefix = lang_prefix;
+        public Table_lang_prefixes( ResultSet rs )  throws SQLException {
+            lang_id = rs.getInt( "lang_id" );
+            lang_prefix = rs.getString( "lang_prefix" );
         }
     }
 
@@ -2005,9 +1910,7 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{lang_id};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                int lang_id = rs.getInt( "lang_id" );
-                String lang_prefix = rs.getString( "lang_prefix" );
-                return new Table_lang_prefixes( lang_id, lang_prefix );
+                return new Table_lang_prefixes( rs );
             }
         } );
         if( queryResult.size() == 0 ) {
@@ -2033,8 +1936,8 @@ public abstract class DatabaseService {
         private String language;
 
         public MoreThanOneTable_langprefixes_language( ResultSet rs ) throws SQLException {
-            this.lang_id = rs.getInt("lang_id");
-            this.language = rs.getString("language");
+            lang_id = rs.getInt("lang_id");
+            language = rs.getString("language");
         }
     }
 
@@ -2116,8 +2019,8 @@ public abstract class DatabaseService {
         private String role_name;
 
         public PartOfTable_roles( ResultSet rs ) throws SQLException {
-            this.role_id = rs.getInt( "role_id" );
-            this.role_name = rs.getString( "role_name" );
+            role_id = rs.getInt( "role_id" );
+            role_name = rs.getString( "role_name" );
         }
     }
 
@@ -2138,9 +2041,9 @@ public abstract class DatabaseService {
         private String last_name;
 
         public PartOfTable_users( ResultSet rs ) throws SQLException {
-            this.user_id = rs.getInt( "user_id" );
-            this.first_name = rs.getString( "first_name" );
-            this.last_name = rs.getString( "last_name" );
+            user_id = rs.getInt( "user_id" );
+            first_name = rs.getString( "first_name" );
+            last_name = rs.getString( "last_name" );
         }
     }
 
@@ -2192,5 +2095,20 @@ public abstract class DatabaseService {
             }
         } );
         return (String)queryResult.get(0);
+    }
+
+    int sproc_SetSessionCounterValue( int sysdata_value ) {
+        return updateSysdata( new Integer(1), new Integer( sysdata_value ));
+    }
+
+    int sproc_SetSessionCounterDate( String counterDate ) {
+        return updateSysdata( new Integer(2), counterDate );
+    }
+
+    private int updateSysdata( Integer type_id, Object sysdata_value ) {
+        String sql = " UPDATE sys_data SET sysdata_value = ? WHERE type_id  = ? ";
+        Object[] paramValues = new Object[]{ sysdata_value, type_id };
+        int rowCount = sqlProcessor.executeUpdate( sql, paramValues );
+        return rowCount;
     }
 }
