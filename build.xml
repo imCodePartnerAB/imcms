@@ -681,7 +681,9 @@
 
 
     <!-- Copies and filters the admintemplates. -->
-    <target name="admintemplates" depends="init,tools,language-property-files" description="Copies and filters the admintemplates.">
+    <target name="admintemplates"
+            depends="init,tools,language-property-files"
+            description="Copies and filters the admintemplates.">
 
         <mkdir dir="${admintemplates}"/>
         <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
@@ -732,7 +734,7 @@
 
     <!-- Builds the 'conference'-plugin. -->
     <target name="conference"
-	    depends="init"
+	    depends="init,tools"
 	    description="Builds the conference."
 	    if="build-conference">
 
@@ -763,7 +765,7 @@
 
     <!-- Builds the 'chat'-plugin. -->
     <target name="chat"
-	    depends="init"
+	    depends="init,tools"
 	    description="Builds the chat."
 	    if="build-chat">
 
@@ -790,7 +792,7 @@
 
     <!-- Builds the 'billboard'-plugin. -->
     <target name="billboard"
-	    depends="init"
+	    depends="init,tools"
 	    description="Builds the billboard."
 	    if="build-billboard">
 
@@ -820,7 +822,7 @@
 
 
     <target name="postcard"
-	    depends="init"
+	    depends="init,tools"
 	    description="Builds the postcard."
 	    if="build-postcard">
 
@@ -835,7 +837,7 @@
 
     <!-- Copies the files for the 'fortune'-plugin. -->
     <target name="fortune"
-	    depends="init"
+	    depends="init,tools"
 	    description="Copies the files for the 'fortune'-plugin."
 	    if="build-fortune">
 
@@ -855,9 +857,9 @@
 
 
     <!-- Copies the shop files. -->
-    <target name="shop" depends="init" description="Copies the shop files." if="build-shop">
+    <target name="shop" depends="init,tools" description="Copies the shop files." if="build-shop">
 
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${shop}" filtering="true">
             <fileset dir="install/htdocs/sv/shop" includes="*"/>
@@ -868,11 +870,11 @@
 
     <!-- Copies and filters the html-editor files. -->
     <target name="html-editor"
-	    depends="init"
+	    depends="init,tools"
 	    description="Copies the html-editor files.">
         <mkdir dir="${htmleditor}"/>
 
-        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+        <imtranslate bundle="install/htdocs/imcms" bundlelanguage="${defaultlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${htmleditor}" filtering="true">
             <fileset dir="install/htdocs/sv/htmleditor/editor" excludes="images/*.jpg,images/*.gif"/>
