@@ -1,11 +1,18 @@
 <html>
 <head>
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
 </head>
 <body>
 <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Test av URL-dokument 
   pågår. Detta kan ta ett litet tag, vänligen vänta...</font></p>
 <form method="get" action="AdminManager" >
-  <input type="submit" name="Submit" value="Tillbaka">
+  <input type="submit" name="Submit" value="Tillbaka">&nbsp; <a href="javascript:openHelp('18');"><img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 </form>
 <br><hr>
 <table border="1" cellspacing="0" cellpadding="1" width="800">

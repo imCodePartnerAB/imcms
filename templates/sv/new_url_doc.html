@@ -2,6 +2,15 @@
 <head>
 <title>Untitled Document</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -43,7 +52,7 @@
 		  <TD align="center" valign="middle" bgcolor="#BABABA"> 
 			<input type=SUBMIT value="OK" name="ok">
 			<INPUT TYPE=RESET VALUE="Rensa">
-			<input type=SUBMIT value="Avbryt" name="cancel">
+			<input type=SUBMIT value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp('82');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  </TD>
 		</TR>
 		<INPUT TYPE=HIDDEN NAME=meta_id VALUE="#getMetaId#">

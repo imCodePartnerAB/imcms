@@ -1,4 +1,14 @@
-<HTML><HEAD><TITLE>Admin - l&auml;gg till dokument</TITLE></HEAD>
+<HTML><HEAD><TITLE>Admin - l&auml;gg till dokument</TITLE>
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
+</HEAD>
 <BODY  bgcolor="#FFFFFF">
 <FORM METHOD=POST ACTION="SaveNewBrowserDoc">
   <CENTER>
@@ -36,7 +46,7 @@
 		<td colspan="3" valign="middle" align="center"> 
 		  <input type=submit value="OK" name="ok">
 		  <input type=reset value="Rensa" name="reset">
-		  <input type=submit value="Avbryt" name="cancel">
+		  <input type=submit value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp('46');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		</td>
 	  </tr>
 	  <input type=HIDDEN name=meta_id value="#getMetaId#">

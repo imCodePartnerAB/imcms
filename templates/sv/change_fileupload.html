@@ -1,4 +1,14 @@
-<HTML><HEAD><TITLE>Admin</TITLE></HEAD><BODY  bgcolor="#FFFFFF">
+<HTML><HEAD><TITLE>Admin</TITLE>
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
+</HEAD><BODY  bgcolor="#FFFFFF">
 <H3> 
   <FORM METHOD=POST ENCTYPE="multipart/form-data" ACTION="SaveFileUpload">
 	<CENTER>
@@ -48,7 +58,7 @@
 		<TR> 
 		  <TD bgcolor="#BABABA"> 
 			<CENTER>
-			  <INPUT TYPE=SUBMIT VALUE="Spara" NAME="ok">
+			  <INPUT TYPE=SUBMIT VALUE="Spara" NAME="ok">&nbsp; <a href="javascript:openHelp('74');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 			</center>
 		  </TD>
 		</TR>

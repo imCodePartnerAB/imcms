@@ -2,6 +2,15 @@
 <head>
 <title>Administrera r&auml;knare</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -116,7 +125,7 @@
 		<hr>
 		<form method="post" action="#SERVLET_URL#AdminCounter" name="Counter">
 		  <div align="left"> 
-			<input type="submit" name="CancelCounter" value="Tillbaka">
+			<input type="submit" name="CancelCounter" value="Tillbaka">&nbsp; <a href="javascript:openHelp('17');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  </div>
 		</form>
 	  </div>

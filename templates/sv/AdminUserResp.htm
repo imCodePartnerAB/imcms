@@ -46,6 +46,9 @@ function evalPrepareAdd() {
 	return true
 }
 
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
 //-->
 </SCRIPT>
 </head>
@@ -312,7 +315,7 @@ function evalPrepareAdd() {
 			<p>
 			<input type="submit" name="SAVE_USER" value="Spara" onClick="if(evalPrepareAdd()==false)return false; return true;">
 			<input type="submit" name="RESET_FORM" value="Återställ">
-			<input type="submit" name="GO_BACK" value="Avbryt">
+			<input type="submit" name="GO_BACK" value="Avbryt">&nbsp; <a href="javascript:openHelp('71');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 			</p>
 			</td>
 		<td width="23" height="27">&nbsp;</td>

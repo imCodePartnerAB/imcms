@@ -27,6 +27,9 @@ function evalEditUser() {
 		return true
 }
 
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
 //-->
 </SCRIPT>
 </head>
@@ -90,7 +93,7 @@ function evalEditUser() {
 		<br>
 		<input type="submit" name=ADD_USER value="L&auml;gg till">
 		<input type="submit" name="CHANGE_USER" value="Redigera " onClick="if(evalEditUser()==false)return false; return true;">
-		<input type="submit" name="GO_BACK" value="Tillbaka" >
+		<input type="submit" name="GO_BACK" value="Tillbaka">&nbsp; <a href="javascript:openHelp('38');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	  </form>
 	  &nbsp; <font size="2"> </font> </td>
 	<td width="5%" height="24">&nbsp;</td>

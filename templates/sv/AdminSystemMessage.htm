@@ -2,6 +2,15 @@
 <head>
 <title>imCMS Adminstrat&ouml;rsida</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+}
+//-->
+</SCRIPT>
+
 </head>
 
 <body bgcolor="#FFFFFF">
@@ -207,7 +216,7 @@
 	  <div align="center"> 
 		<form method="get" action="#SERVLET_URL#AdminManager">
 		  <div align="left"> 
-			<input type="submit" name="submit" value="Tillbaka">
+			<input type="submit" name="submit" value="Tillbaka">&nbsp; <a href="javascript:openHelp('35');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  </div>
 		</form>
 	  </div>
