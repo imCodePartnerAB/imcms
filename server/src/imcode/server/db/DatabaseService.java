@@ -2265,8 +2265,8 @@ public abstract class DatabaseService {
         return (PartOfTable_roles[])queryResult.toArray( new PartOfTable_roles[queryResult.size()] );
     }
 
-    static class PartOfTable_users {
-        private int user_id;
+    public static class PartOfTable_users {
+        public int user_id;
         private String first_name;
         private String last_name;
 

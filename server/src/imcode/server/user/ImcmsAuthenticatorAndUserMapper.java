@@ -1,7 +1,6 @@
 package imcode.server.user;
 
 import imcode.server.IMCServiceInterface;
-import imcode.server.db.DBConnect;
 import imcode.server.db.DatabaseService;
 import org.apache.log4j.Logger;
 
@@ -11,35 +10,26 @@ import java.util.*;
 
 public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
 
-    // todo: make sure that these stored procedures are accesed (called) only used within this class
-    // todo: and nowhere else directly to decouple
-    // todo: if not, make the constant public and use it in place?
-    // todo: Remove space in constansts
-    private static final String SPROC_GET_ALL_USERS = "getAllUsers";
     private static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
     private static final String SPROC_ADD_NEW_USER = "AddNewUser";
     private static final String SPROC_UPDATE_USER = "UpdateUser";
-    private static final String SPROC_GET_USER_INFO = "GetUserInfo ";
-    private static final String SPROC_GET_USER_BY_LOGIN = "GetUserByLogin";
 
     private static final String SPROC_GET_ROLE_ID_BY_ROLE_NAME = "GetRoleIdByRoleName";
     private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
-    private static final String SPROC_ROLE_ADD_NEW = "RoleAddNew";
-    private static final String SPROC_ROLE_DELETE = "RoleDelete";
     private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
-    private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
     private static final String SPROC_DEL_USER_ROLES = "DelUserRoles";
     private static final String SPROC_GET_USERS_WHO_BELONGS_TO_ROLE = "GetUsersWhoBelongsToRole";
 
-    private static final String SPROC_GET_USER_PHONE_NUMBERS = "GetUserPhoneNumbers ";
     private static final String SPROC_PHONE_NBR_ADD = "phoneNbrAdd";
     private static final String SPROC_DEL_PHONE_NR = "DelPhoneNr";
 
     private IMCServiceInterface service;
+    private DatabaseService databaseService;
     private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
 
     public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
         this.service = service;
+        databaseService = service.getDatabaseService();
     }
 
     public boolean authenticate( String loginName, String password ) {
@@ -61,63 +51,28 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         return userExistsAndPasswordIsCorrect;
     }
 
-    public UserDomainObject getUser( String loginName ) {
-        loginName = loginName.trim();
-
-        UserDomainObject result = null;
-        DatabaseService.Table_users user_data = service.getDatabaseService().sproc_GetUserByLogin( loginName );
-
-        // if resultSet > 0 a result is found
-        if( null != user_data ) {
-
-            result = new UserDomainObject();
-
-            result.setUserId( user_data.user_id );
-            result.setLoginName( user_data.login_name );
-            result.setPassword( user_data.login_password );
-            result.setFirstName( user_data.first_name );
-            result.setLastName( user_data.last_name );
-            result.setTitle( user_data.title );
-            result.setCompany( user_data.company );
-            result.setAddress( user_data.address );
-            result.setCity( user_data.city );
-            result.setZip( user_data.zip );
-            result.setCountry( user_data.country );
-            result.setCountyCouncil( user_data.county_council );
-            result.setEmailAddress( user_data.email );
-            result.setLangId( user_data.lang_id );
-            result.setUserType( user_data.user_type );
-            result.setActive( user_data.active );
-            result.setCreateDate( new Date( user_data.create_date.getTime() ) );
-            result.setImcmsExternal( user_data.external );
-
-            DatabaseService.Table_lang_prefixes langPrefix = service.getDatabaseService().sproc_GetLangPrefixFromId( user_data.lang_id );
-            if( null == langPrefix ) {
-                result.setLangPrefix( service.getDefaultLanguage() );
-            } else {
-                result.setLangPrefix( langPrefix.lang_prefix );
-            }
-
-            DatabaseService.JoinedTables_phones_phonetypes[] phoneNumbers = service.getDatabaseService().sproc_GetUserPhoneNumbers( user_data.user_id );
-            if( phoneNumbers != null ) {
-                for( int i = 0; i < phoneNumbers.length; i++ ) {
-                    if( 2 == phoneNumbers[i].phonetype_id ) {
-                        result.setWorkPhone( phoneNumbers[i].number );
-                    } else if( 3 == phoneNumbers[i].phonetype_id ) {
-                        result.setMobilePhone( phoneNumbers[i].number );
-                    } else if( 1 == phoneNumbers[i].phonetype_id ) {
-                        result.setHomePhone( phoneNumbers[i].number );
-                    }
-                }
-            }
-        } else {
-            result = null;
-        }
-
+    /**
+     @return An object representing the user with the given id.
+     **/
+    public UserDomainObject getUser( int userId ) {
+        DatabaseService.Table_users userData = databaseService.sproc_GetUserInfo( userId );
+        UserDomainObject result = initUser( userData );
         return result;
     }
 
-    private UserDomainObject staticExtractUserFromUserTableData( DatabaseService.Table_users user_data ) {
+    public UserDomainObject getUser( String loginName ) {
+        loginName = loginName.trim();
+        UserDomainObject result = null;
+        DatabaseService.Table_users user_data = databaseService.sproc_GetUserByLogin( loginName );
+        if( null != user_data ) {
+            result = initUser( user_data );
+        } else {
+            result = null;
+        }
+        return result;
+    }
+
+    private UserDomainObject initUser( DatabaseService.Table_users user_data ) {
         UserDomainObject result;
         result = new UserDomainObject();
 
@@ -140,18 +95,25 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         result.setCreateDate( new Date( user_data.create_date.getTime() ) );
         result.setImcmsExternal( user_data.external );
 
-        DatabaseService.Table_lang_prefixes langPrefix = service.getDatabaseService().sproc_GetLangPrefixFromId( user_data.lang_id );
-        result.setLangPrefix( langPrefix.lang_prefix );
+        DatabaseService.Table_lang_prefixes langPrefix = databaseService.sproc_GetLangPrefixFromId( user_data.lang_id );
+        if( null == langPrefix ) {
+            result.setLangPrefix( service.getDefaultLanguage() );
+        } else {
+            result.setLangPrefix( langPrefix.lang_prefix );
+        }
 
-        return result;
-    }
-
-    /**
-     @return An object representing the user with the given id.
-     **/
-    public UserDomainObject getUser( int userId ) {
-        String[] user_data = service.sqlProcedure( SPROC_GET_USER_INFO, new String[]{"" + userId} );
-        UserDomainObject result = getUser( user_data[1] );
+        DatabaseService.JoinedTables_phones_phonetypes[] phoneNumbers = databaseService.sproc_GetUserPhoneNumbers( user_data.user_id );
+        if( phoneNumbers != null ) {
+            for( int i = 0; i < phoneNumbers.length; i++ ) {
+                if( 2 == phoneNumbers[i].phonetype_id ) {
+                    result.setWorkPhone( phoneNumbers[i].number );
+                } else if( 3 == phoneNumbers[i].phonetype_id ) {
+                    result.setMobilePhone( phoneNumbers[i].number );
+                } else if( 1 == phoneNumbers[i].phonetype_id ) {
+                    result.setHomePhone( phoneNumbers[i].number );
+                }
+            }
+        }
         return result;
     }
 
@@ -191,7 +153,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     public String[] getRoleNames( UserDomainObject user ) {
-        String[] roleNames = service.getDatabaseService().sproc_GetUserRoles(user.getUserId());
+        String[] roleNames = databaseService.sproc_GetUserRoles(user.getUserId());
         return roleNames;
     }
 
@@ -225,16 +187,12 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{userIdStr, rolesIdStr} );
     }
 
-    // todo: make a quicker version that not loops over all of the user_ids and makes a new db searc
-    // todo: change the "getAllUsers" sproc to specify its arguments.
     public UserDomainObject[] getAllUsers() {
-        int noOfColumnsInSearchResult = 20;
-        String[] allUsersSqlResult = service.sqlProcedure( SPROC_GET_ALL_USERS );
-        int noOfUsers = allUsersSqlResult.length / noOfColumnsInSearchResult;
-        UserDomainObject[] result = new UserDomainObject[noOfUsers];
-        for( int i = 0; i < noOfUsers; i++ ) {
-            String userId = allUsersSqlResult[i * noOfColumnsInSearchResult];
-            result[i] = getUser( Integer.parseInt( userId ) );
+        DatabaseService.PartOfTable_users[] users = databaseService.sproc_GetAllUsersInList();
+        UserDomainObject[] result = new UserDomainObject[users.length];
+        for (int i = 0; i < users.length; i++) {
+            DatabaseService.PartOfTable_users user = users[i];
+            result[i] = getUser( user.user_id );
         }
         return result;
     }
@@ -292,7 +250,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         int roleId = callSprocRoleFindName( roleName );
         boolean roleNotExists = (-1 == roleId);
         if( roleNotExists ) {
-            service.getDatabaseService().sproc_RoleAddNew( roleName );
+            databaseService.sproc_RoleAddNew( roleName );
         }
     }
 
@@ -300,7 +258,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         int roleId = callSprocRoleFindName( roleName );
         boolean roleNotExists = (-1 == roleId);
         if( roleNotExists ) {
-            service.getDatabaseService().sproc_RoleDelete( roleId );
+            databaseService.sproc_RoleDelete( roleId );
         }
     }
 
@@ -310,7 +268,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
      * @return roleId
      */
     private int callSprocRoleFindName( String roleName ) {
-        int roleId = service.getDatabaseService().sproc_RoleFindName( roleName );
+        int roleId = databaseService.sproc_RoleFindName( roleName );
         return roleId;
     }
 
