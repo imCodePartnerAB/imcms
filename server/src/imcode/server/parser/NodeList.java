@@ -5,7 +5,9 @@ import java.util.Properties ;
 import org.apache.oro.text.regex.* ;
 
 public class NodeList extends LinkedList {
-    
+    final static String CVS_REV = "$Revision$" ;
+    final static String CVS_DATE = "$Date$" ;
+
     private static Pattern ELEMENT_PATTERN ;
     private static Pattern ATTRIBUTES_PATTERN ;
     static {
