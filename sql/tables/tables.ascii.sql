@@ -1271,6 +1271,10 @@ ALTER TABLE [dbo].[roles] WITH NOCHECK ADD
 	CONSTRAINT [PK_roles] PRIMARY KEY  NONCLUSTERED
 	(
 		[role_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [roles_role_name] UNIQUE  NONCLUSTERED
+	(
+		[role_name]
 	)  ON [PRIMARY]
 GO
 

@@ -57,16 +57,6 @@ public class DocumentService {
         return (UrlDocument)getDocument( documentId );
     }
 
-    /** @deprecated Use {@link #createNewTextDocument(Document)}  followed by {@link #saveChanges(Document)}  */
-    public TextDocument createAndSaveNewTextDocument( Document parent ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
-        return (TextDocument)createAndSaveNewDocument( DocumentDomainObject.DOCTYPE_TEXT, parent );
-    }
-
-    /** @deprecated Use {@link #createNewUrlDocument(Document)}  followed by {@link #saveChanges(Document)} */
-    public UrlDocument createAndSaveNewUrlDocument( Document parent ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
-        return (UrlDocument)createAndSaveNewDocument( DocumentDomainObject.DOCTYPE_URL, parent );
-    }
-
     public TextDocument createNewTextDocument( Document parent ) throws NoPermissionException {
         return (TextDocument)createNewDocument( DocumentDomainObject.DOCTYPE_TEXT, parent );
     }
@@ -77,12 +67,6 @@ public class DocumentService {
 
     public FileDocument createNewFileDocument( Document parent ) throws NoPermissionException {
         return (FileDocument)createNewDocument( DocumentDomainObject.DOCTYPE_FILE, parent );
-    }
-
-    private Document createAndSaveNewDocument( int doctype, Document parent ) throws MaxCategoriesOfTypeExceededException, NoPermissionException {
-        Document newDocument = createNewDocument( doctype, parent );
-        saveChanges( newDocument );
-        return newDocument;
     }
 
     private Document createNewDocument( int doctype, Document parent ) throws NoPermissionException {
@@ -98,7 +82,7 @@ public class DocumentService {
      * @throws MaxCategoriesOfTypeExceededException
      *
      */
-    public synchronized void saveChanges( Document document ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
+    public synchronized void saveChanges( Document document ) throws NoPermissionException, SaveException {
         getSecurityChecker().hasEditPermission( document );
         try {
             if ( 0 == document.getId() ) {

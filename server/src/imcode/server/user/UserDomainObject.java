@@ -1,14 +1,11 @@
 package imcode.server.user;
 
 import imcode.server.Imcms;
-import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TemplateGroupDomainObject;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Set;
+import java.util.*;
 
 public class UserDomainObject extends Hashtable {
 
@@ -461,6 +458,10 @@ public class UserDomainObject extends Hashtable {
 
     public void addRole( RoleDomainObject role ) {
         getLazilyLoadedUserRoles().roles.add( role ) ;
+    }
+
+    public void removeRole( RoleDomainObject role ) {
+        getLazilyLoadedUserRoles().roles.remove( role );
     }
 
     public void setRoles( RoleDomainObject[] rolesForUser ) {

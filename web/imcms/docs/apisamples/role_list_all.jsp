@@ -5,4 +5,4 @@
     UserService userService = imcmsSystem.getUserService();
 %>
 All roles in the system: <br>
-<%=java.util.Arrays.asList( userService.getAllRolesNames() )%>
+<%=java.util.Arrays.asList( userService.getAllRoles() )%>

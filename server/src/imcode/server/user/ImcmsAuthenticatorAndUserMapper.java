@@ -41,6 +41,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     private static final String SQL_SELECT_ALL_ROLES = "SELECT role_id, role_name, admin_role FROM roles";
     private static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
+    private static final String SQL_SELECT_ROLE_BY_ID = SQL_SELECT_ALL_ROLES + " WHERE role_id = ?";
 
     public ImcmsAuthenticatorAndUserMapper( ImcmsServices service ) {
         this.service = service;
@@ -191,6 +192,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         }
     }
 
+    /** @deprecated */
     public String[] getRoleNames( UserDomainObject user ) {
         String[] roleNames = service.sqlProcedure( SPROC_GET_USER_ROLES, new String[]{"" + user.getId()} );
         return roleNames;
@@ -251,8 +253,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         service.sqlUpdateProcedure( SPROC_DEL_USER_ROLES, new String[]{"" + user.getId(), "-1"} );
     }
 
-    public UserDomainObject[] getAllUsersWithRole( String roleName ) {
-        RoleDomainObject role = getRoleByName( roleName );
+    public UserDomainObject[] getAllUsersWithRole( RoleDomainObject role ) {
         if ( null == role ) {
             return new UserDomainObject[]{};
         }
@@ -290,17 +291,24 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         return getRoleByName( roleName );
     }
 
-    public void deleteRole( String roleName ) {
-        RoleDomainObject role = getRoleByName( roleName );
-        final boolean roleExists = null != role;
-        if ( roleExists ) {
-            service.sqlUpdateProcedure( SPROC_ROLE_DELETE, new String[]{"" + role.getId()} );
+    public void deleteRole( RoleDomainObject role ) {
+        if ( null == role ) {
+            return;
         }
+        service.sqlUpdateProcedure( SPROC_ROLE_DELETE, new String[]{"" + role.getId()} );
+    }
+
+    public RoleDomainObject[] getAllRoles() {
+        String[][] sqlRows = service.sqlQueryMulti( SQL_SELECT_ALL_ROLES, new String[0] ) ;
+        RoleDomainObject[] roles = new RoleDomainObject[sqlRows.length];
+        for ( int i = 0; i < sqlRows.length; i++ ) {
+            roles[i] = getRoleFromSqlResult( sqlRows[i] );
+        }
+        return roles ;
     }
 
     public RoleDomainObject getRoleById( int roleId ) {
-        String sqlStr = "SELECT role_id, role_name, admin_role FROM roles WHERE role_id = ?";
-        String[] sqlResult = service.sqlQuery( sqlStr, new String[]{"" + roleId} );
+        String[] sqlResult = service.sqlQuery( SQL_SELECT_ROLE_BY_ID, new String[]{"" + roleId} );
         return getRoleFromSqlResult( sqlResult );
     }
 
@@ -407,5 +415,20 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public void initUserRoles( UserDomainObject user ) {
         user.setRoles( getRolesForUser( user ) );
+    }
+
+    public void saveRole( RoleDomainObject role ) throws MapperException {
+        try {
+            service.sqlUpdateQuery( "UPDATE roles SET role_name = ? WHERE role_id = ?", new String[] { role.getName(), ""+role.getId() } ) ;
+        } catch (RuntimeException re) {
+            throw new ImcmsAuthenticatorAndUserMapper.MapperException(re.getCause());
+        }
+    }
+
+    public class MapperException extends Exception {
+
+        public MapperException( Throwable cause ) {
+            super(cause) ;
+        }
     }
 }

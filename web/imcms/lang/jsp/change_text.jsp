@@ -1,6 +1,7 @@
 <%@ page import="imcode.server.document.textdocument.TextDomainObject,
-                 com.imcode.imcms.servlet.admin.ChangeText"%>
-                 
+                 com.imcode.imcms.servlet.admin.ChangeText,
+                 org.apache.commons.lang.StringEscapeUtils"%>
+
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttribute(ChangeText.TextEditPage.REQUEST_ATTRIBUTE__PAGE);

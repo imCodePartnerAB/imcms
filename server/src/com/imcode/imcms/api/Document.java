@@ -163,7 +163,7 @@ public class Document {
 
     public User getCreator() throws NoPermissionException {
         getSecurityChecker().hasAtLeastDocumentReadPermission( this );
-        return new User( internalDocument.getCreator(), contentManagementSystem );
+        return new User( internalDocument.getCreator() );
     }
 
     public void setCreator( User creator ) throws NoPermissionException {
@@ -236,7 +236,7 @@ public class Document {
         getSecurityChecker().hasAtLeastDocumentReadPermission( this );
         UserDomainObject publisher = internalDocument.getPublisher();
         if ( null != publisher ) {
-            return new User( publisher, contentManagementSystem );
+            return new User( publisher );
         } else {
             return null;
         }

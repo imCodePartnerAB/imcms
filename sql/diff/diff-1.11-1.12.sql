@@ -19,3 +19,7 @@ GO
 COMMIT
 
 -- 2004-11-12 Lennart Å
+
+ALTER TABLE roles ADD CONSTRAINT roles_role_name UNIQUE ( role_name )
+
+-- 2004-11-15 Kreiger

@@ -1,3 +1,44 @@
+Version 1.12.0
+
+    Of interest to API-using developers:
+
+    * Added classes:
+        - Role - Represents a user-role.
+        - SaveException - Thrown when something can't be saved.
+    * Changed classes:
+        - MaxCategoriesOfTypeExceededException - Extends SaveException
+        - CategoryAlreadyExistsException - Extends SaveException
+        - CategoryTypeAlreadyExistsException - Extends SaveException
+    * Added methods:
+        - User.getRoles() - Get the user's roles.
+        - User.setRoles(Role[]) - Set the user's roles.
+        - User.hasRole(Role) - Returns true if the user has the role.
+        - User.addRole(Role) - Add a role to the user.
+        - User.removeRole(Role) - Remove a role from the user.
+        - UserService.deleteRole(Role) - Delete a role, requires superadmin permission.
+        - UserService.getAllRoles() - Returns all roles in the system, requires superadmin permission.
+        - UserService.getAllUsersWithRole(Role) - Get all users with the given permission.
+        - UserService.getRole(int) - Get a role by id, requires superadmin permission.
+        - UserService.getRole(String) - Get a role by name, requires superadmin permission.
+        - UserService.saveRole(Role) - Save changes to the role, requires superadmin permission.
+    * Changed methods:
+        - UserService.addNewRole(String) - Returns the new role.
+        - DocumentService.saveChanges(Document) - Throws SaveException instead of MaxCategoriesOfTypeExceededException.
+    * Deprecated methods:
+        - User.getRoleNames() - Use User.getRoles()
+        - User.hasRole(String) - Use User.hasRole(Role)
+        - UserService.deleteRole(String) - Use UserService.deleteRole(Role)
+        - UserService.getAllUserWithRole(String) - Use UserService.getAllUsersWithRole(Role)
+        - UserService.getRoleNames(User) - Use User.getRoles()
+        - UserService.getAllRolesNames() - Use UserService.getAllRoles()
+        - UserService.setUserRoles(User,String[]) - Use User.setRoles(Role[])
+    * Removed methods:
+        - DocumentService.createAndSaveNewTextDocument(Document) - Use DocumentService.createNewTextDocument() and
+            DocumentService.saveChanges(Document)
+        - DocumentService.createAndSaveNewUrlDocument(Document) - Use DocumentService.createNewUrlDocument() and
+            DocumentService.saveChanges(Document)
+
+
 Version 1.11.1
 
     Of interest to administrators:

@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.Imcms;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
@@ -12,15 +13,13 @@ import java.util.Iterator;
 
 public class User {
     private UserDomainObject internalUser;
-    private ContentManagementSystem contentManagementSystem;
 
     imcode.server.user.UserDomainObject getInternal() {
         return internalUser;
     }
 
-    public User( UserDomainObject internalUser, ContentManagementSystem contentManagementSystem ) {
+    User( UserDomainObject internalUser ) {
         this.internalUser = internalUser;
-        this.contentManagementSystem = contentManagementSystem;
     }
 
     public int getId() {
@@ -91,8 +90,12 @@ public class User {
         return getLoginName();
     }
 
+    public boolean hasRole(Role role) {
+        return internalUser.hasRole( role.getInternal() ) ;
+    }
+
+    /** @deprecated Use {@link #hasRole(Role)} instead. */
     public boolean hasRole(String roleName) throws NoPermissionException {
-        contentManagementSystem.getSecurityChecker().isSuperAdminOrSameUser(this);
         RoleDomainObject role = getMapper().getRoleByName( roleName );
         return internalUser.hasRole(role) ;
     }
@@ -110,7 +113,7 @@ public class User {
     }
 
     private ImcmsAuthenticatorAndUserMapper getMapper() {
-        return contentManagementSystem.getInternal().getImcmsAuthenticatorAndUserAndRoleMapper();
+        return Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
     }
 
     public boolean equals( Object o ) {
@@ -134,6 +137,32 @@ public class User {
         return internalUser != null ? internalUser.hashCode() : 0;
     }
 
+    public Role[] getRoles() {
+        RoleDomainObject[] roleDOs = internalUser.getRoles();
+        Role[] roles = new Role[roleDOs.length];
+        for ( int i = 0; i < roleDOs.length; i++ ) {
+            roles[i] = new Role(roleDOs[i]);
+        }
+        return roles ;
+    }
+
+    public void setRoles(Role[] roles) {
+        RoleDomainObject[] roleDOs = new RoleDomainObject[roles.length];
+        for ( int i = 0; i < roles.length; i++ ) {
+            roleDOs[i] = roles[i].getInternal();
+        }
+        internalUser.setRoles( roleDOs );
+    }
+
+    public void addRole(Role role) {
+        internalUser.addRole( role.getInternal() );
+    }
+
+    public void removeRole(Role role) {
+        internalUser.removeRole( role.getInternal() ) ;
+    }
+
+    /** @deprecated Use {@link #getRoles()} instead. */
     public String[] getRoleNames() {
         Iterator roleNamesIterator = IteratorUtils.arrayIterator( internalUser.getRoles() );
         Collection roleNames = CollectionUtils.collect( roleNamesIterator, new RoleToRoleNameTransformer()) ;

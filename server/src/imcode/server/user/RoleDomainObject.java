@@ -1,18 +1,14 @@
 package imcode.server.user;
 
 import com.imcode.imcms.api.RoleConstants;
-import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 
-/**
- * @author kreiger
- */
 public class RoleDomainObject implements Serializable, Comparable {
 
-    public final static RoleDomainObject SUPERADMIN = new RoleDomainObject( 0, RoleConstants.SUPER_ADMIN, 1 );
-    public final static RoleDomainObject USERADMIN = new RoleDomainObject( 0, RoleConstants.USER_ADMIN, 2 );
-    public static final RoleDomainObject USERS = new RoleDomainObject( 2, RoleConstants.USERS, 0 );
+    public final static RoleDomainObject SUPERADMIN = new ImmutableRoleDomainObject( 0, RoleConstants.SUPER_ADMIN, 1 );
+    public final static RoleDomainObject USERADMIN = new ImmutableRoleDomainObject( 1, RoleConstants.USER_ADMIN, 2 );
+    public final static RoleDomainObject USERS = new ImmutableRoleDomainObject( 2, RoleConstants.USERS, 0 );
 
     private int id;
     private String name;
@@ -32,6 +28,10 @@ public class RoleDomainObject implements Serializable, Comparable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name ;
+    }
+
     public boolean equals( Object o ) {
         if ( this == o ) {
             return true;
@@ -42,7 +42,7 @@ public class RoleDomainObject implements Serializable, Comparable {
 
         final RoleDomainObject roleDomainObject = (RoleDomainObject)o;
 
-        if ( 0 != adminRoleId || 0 != roleDomainObject.adminRoleId ) {
+        if ( isAdminRole() || roleDomainObject.isAdminRole() ) {
             return adminRoleId == roleDomainObject.adminRoleId;
         }
 
@@ -50,7 +50,7 @@ public class RoleDomainObject implements Serializable, Comparable {
     }
 
     public int hashCode() {
-        if ( 0 != adminRoleId ) {
+        if ( isAdminRole() ) {
             return -adminRoleId;
         }
 

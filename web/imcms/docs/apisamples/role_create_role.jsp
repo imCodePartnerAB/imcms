@@ -1,15 +1,19 @@
 <%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
 
+<html>
+<body>
 <H3>Create a new role</H3>
 <%
     ContentManagementSystem imcmsSystem = ContentManagementSystem.fromRequest( request );
     UserService userService = imcmsSystem.getUserService();
 %>
 Before:<br>
-<%=java.util.Arrays.asList( userService.getAllRolesNames() )%>
+<%=java.util.Arrays.asList( userService.getAllRoles() )%>
 <%
-   String role = "Test role";
-   userService.addNewRole( role );
+   String roleName = "Test role";
+   Role role = userService.addNewRole( roleName );
 %><br>
-After adding a new role named "<%=role%>":<br>
-<%=java.util.Arrays.asList( userService.getAllRolesNames() )%>
+After adding a new role named "<%= role.getName() %>":<br>
+<%=java.util.Arrays.asList( userService.getAllRoles() )%>
+</body>
+</html>

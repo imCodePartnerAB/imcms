@@ -49,6 +49,7 @@ To get attributes for one user by login name, <%=makeLinks("user_get_user_by_log
 List all roles, <%= makeLinks("role_list_all.jsp") %><br>
 Add, <%= makeLinks("role_create_role.jsp") %><br>
 Delete, <%= makeLinks("role_delete_role.jsp") %><br>
+Rename, <%= makeLinks("role_rename_role.jsp") %><br>
 <br>
 List users with different roles, <%= makeLinks("role_get_user_with_role.jsp") %><br>
 

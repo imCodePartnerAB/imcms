@@ -22,7 +22,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
 
     private void init( UserDomainObject accessor ) {
         securityChecker = new SecurityChecker( this );
-        currentUser = new User( accessor, this );
+        currentUser = new User( accessor );
         userService = new UserService( this );
         documentService = new DocumentService( this ) ;
         templateService = new TemplateService( this );

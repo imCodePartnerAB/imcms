@@ -198,16 +198,15 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">
 		<select name="<%= FORM_SELECT_ROLES %>" size="5" multiple><%
 
-		String[] allRoleNames = userMapper.getAllRolesNames();
-		Set setOfAllRoleNames = new TreeSet( Arrays.asList(allRoleNames) );
+		Role[] allRoles = userMapper.getAllRoles();
+		Set allRolesSet = new TreeSet( Arrays.asList(allRoles) );
 
-		String[] userRoleNames = userMapper.getRoleNames( user );
-		Set setOfUserRoleNames = new HashSet( Arrays.asList( userRoleNames ));
+		Role[] userRoles = user.getRoles();
+		Set userRolesSet = new HashSet( Arrays.asList( userRoles ));
 
-		for( Iterator iterator = setOfAllRoleNames.iterator(); iterator.hasNext(); ) {
-			String roleName = (String)iterator.next();
-			%>
-			<option value="<%= roleName %>"<%= (setOfUserRoleNames.contains(roleName) ? " selected" : "") %>><%= roleName %></option><%
+		for( Iterator iterator = allRolesSet.iterator(); iterator.hasNext(); ) {
+			Role role = (Role)iterator.next();
+			%><option value="<%= role.getName() %>"<%= (userRolesSet.contains(role) ? " selected" : "") %>><%= role.getName() %></option><%
 		} %>
 		</select></font></td>
 
