@@ -9,7 +9,7 @@
                  com.imcode.imcms.flow.HttpPageFlow,
                  com.imcode.imcms.flow.EditDocumentPageFlow" contentType="text/html"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
-    DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
+    DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
     UrlDocumentDomainObject document = (UrlDocumentDomainObject)httpFlow.getDocument() ;
 %>
 <vel:velocity>

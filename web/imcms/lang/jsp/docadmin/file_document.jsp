@@ -37,7 +37,7 @@
 <%
     EditFileDocumentPageFlow.FileDocumentEditPage editPage = EditFileDocumentPageFlow.FileDocumentEditPage.fromRequest(request) ;
 
-    DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
+    DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
     FileDocumentDomainObject document = (FileDocumentDomainObject)httpFlow.getDocument() ;
     boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
     EditFileDocumentPageFlow.MimeTypeRestriction mimeTypeRestriction = editPage.getMimeTypeRestriction() ;

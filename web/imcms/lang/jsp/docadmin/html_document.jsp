@@ -32,7 +32,7 @@
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="DocumentComposer">
 <%
-    DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
+    DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
     HtmlDocumentDomainObject document = (HtmlDocumentDomainObject)httpFlow.getDocument() ;
 %>
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"

@@ -3,6 +3,7 @@ package com.imcode.imcms.flow;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import imcode.util.HttpSessionUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,10 @@ public abstract class DocumentPageFlow extends HttpPageFlow {
     protected void saveDocumentAndReturn( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         saveDocument( request );
         dispatchReturn( request, response );
+    }
+
+    public static DocumentPageFlow fromRequest( HttpServletRequest request ) {
+        return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
     }
 
     public static interface SaveDocumentCommand {

@@ -13,7 +13,7 @@ public class CreateFormerExternalDocumentPageFlow extends CreateDocumentPageFlow
     public CreateFormerExternalDocumentPageFlow( FormerExternalDocumentDomainObject document,
                                                  SaveDocumentCommand saveNewDocumentCommand,
                                                  DispatchCommand returnCommand ) {
-        super( document, saveNewDocumentCommand, returnCommand );
+        super( document, returnCommand, saveNewDocumentCommand );
     }
 
     protected void dispatchFromEditPage( HttpServletRequest request, HttpServletResponse response, String page ) {

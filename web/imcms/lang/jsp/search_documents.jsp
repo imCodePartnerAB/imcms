@@ -14,11 +14,12 @@
                  imcode.util.HttpSessionUtils,
                  com.imcode.imcms.servlet.DocumentFinder,
                  com.imcode.imcms.servlet.SearchDocumentsPage,
-                 imcode.util.Html"%>
+                 imcode.util.Html,
+                 imcode.server.document.DocumentMapper"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage)request.getAttribute( SearchDocumentsPage.REQUEST_ATTRIBUTE__PAGE ) ;
-    DocumentFinder documentFinder = DocumentFinder.getInstance( request ) ;
+    DocumentFinder documentFinder = searchDocumentsPage.getDocumentFinder() ;
     DocumentDomainObject[] documentsFound = searchDocumentsPage.getDocumentsFound() ;
     int firstDocumentIndex = searchDocumentsPage.getFirstDocumentIndex() ;
     int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;
@@ -51,9 +52,7 @@
 
 #gui_mid()
 
-<% if (null != HttpSessionUtils.getSessionAttributeNameFromRequest(request, DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER)) { %>
-    <input type="hidden" name="<%= DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER %>" value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request, DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER) %>">
-<% } %>
+<%= searchDocumentsPage.getDocumentFinderHiddenInputHtml() %>
     <table width="550" border="0" cellspacing="0">
         <tr>
             <td colspan="2">&nbsp;</td>
@@ -97,7 +96,8 @@
                             <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__SECTION_ID %>">
                                 <option value=""><? templates/sv/search/search_documents.html/3 ?></option>
                                 <%
-                                    SectionDomainObject[] sections = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllSections() ;
+                                    DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+                                    SectionDomainObject[] sections = documentMapper.getAllSections() ;
                                     Arrays.sort(sections) ;
                                     SectionDomainObject selectedSection = searchDocumentsPage.getSection() ; %>
                                     <%= Html.createOptionList(Arrays.asList(sections), selectedSection, new Transformer() {
@@ -166,8 +166,10 @@
                         <tr valign="top" <% if (0 != (i - firstDocumentIndex) % 2) { %> bgcolor="#FFFFFF"<% } %>>
                             <td>
                                     <%
-                                        if (ApplicationServer.getIMCServiceInterface().getDocumentMapper().userHasMoreThanReadPermissionOnDocument(user, document)) {
-                                            %><%= Html.getLinkedStatusIconTemplate(document, user) %><%
+                                        if (documentMapper.userHasMoreThanReadPermissionOnDocument(user, document)) {
+                                            %><a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%= documentMapper.getStatusIconTemplate(document, user ) %></a><%
+                                        } else {
+                                            %>&nbsp;<%
                                         }
                                     %>
                             </td>

@@ -31,15 +31,17 @@
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
-UserDomainObject user = Utility.getLoggedOnUser( request ) ;
-final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-final DocumentMapper documentMapper = service.getDocumentMapper();
+    UserDomainObject user = Utility.getLoggedOnUser( request ) ;
+    final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+    final DocumentMapper documentMapper = service.getDocumentMapper();
 
-DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
+    DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
+    boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
+    boolean editingExistingDocument = !creatingNewDocument ;
 
-DocumentDomainObject document = httpFlow.getDocument() ;
-boolean editingExistingDocument = httpFlow instanceof EditDocumentInformationPageFlow ;
-boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
+    EditDocumentInformationPageFlow.DocumentInformationPage documentInformationPage = EditDocumentInformationPageFlow.DocumentInformationPage.fromRequest(request) ;
+    DocumentDomainObject document = documentInformationPage.getDocument() ;
+    boolean adminButtonsHidden = creatingNewDocument || documentInformationPage.isAdminButtonsHidden() ;
 
 %><%!
 
@@ -385,7 +387,7 @@ function checkFocus() {
 				boolean checked = selectedValuesSet.contains(category);
 				String checkedStr = checked?"checked":"";
 				boolean hasImage = !category.getImageUrl().equals("");
-				String imageStr = hasImage ? "<img src=\"" + category.getImageUrl() + "\"/>" : ""; %>
+				String imageStr = hasImage ? "<img style=\"max-width: 10em; max-height: 10em;\" src=\"" + category.getImageUrl() + "\"/>" : ""; %>
 		<table border="0" cellspacing="2" cellpadding="0" style="float:left;">
 		<tr>
 			<td bgcolor="#000000">
@@ -574,7 +576,7 @@ function checkFocus() {
 #gui_outer_end()
 </vel:velocity>
 <%
-if (editingExistingDocument) {
+if (!adminButtonsHidden) {
 	String adminButtons = service.getAdminButtons( user, document) ;
 	if (!"".equals( adminButtons )) {
 		%><center><%= adminButtons %></center><%

@@ -6,6 +6,7 @@ import imcode.server.document.DocumentMapper;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Html;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
 import org.apache.commons.collections.MapUtils;
@@ -35,6 +36,7 @@ public class SearchDocumentsPage {
     public static final String REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX = "start";
     public static final String REQUEST_ATTRIBUTE__PAGE = "page";
     public static final String REQUEST_PARAMETER__SELECTED_DOCUMENT_ID = "select";
+    public static final String REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID = "toedit";
     public static final String REQUEST_PARAMETER__SEARCH_BUTTON = "search";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
 
@@ -44,12 +46,21 @@ public class SearchDocumentsPage {
     private SectionDomainObject section;
     private DocumentDomainObject[] documentsFound;
     private int firstDocumentIndex;
-    private int documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE ;
+    private int documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
     private String queryString;
     private DocumentDomainObject selectedDocument;
+    private DocumentDomainObject documentSelectedForEditing;
     private Query query;
     private boolean searchButtonPressed;
     private boolean cancelButtonPressed;
+
+    private String documentFinderSessionAttributeName;
+    private DocumentFinder documentFinder = new DocumentFinder();
+
+    private static final String REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER = "finder";
+
+    public SearchDocumentsPage() {
+    }
 
     static SearchDocumentsPage fromRequest( HttpServletRequest request ) {
         SearchDocumentsPage page = new SearchDocumentsPage();
@@ -59,18 +70,23 @@ public class SearchDocumentsPage {
 
     private void setFromRequest( HttpServletRequest request ) {
 
-        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
-
-        DocumentFinder documentFinder = DocumentFinder.getInstance(request);
+        setDocumentFinderFromRequest( request );
 
         if ( documentFinder.isCancelable() ) {
             cancelButtonPressed = null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON );
         }
 
-        if (documentFinder.isDocumentsSelectable()) {
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+
+        try {
+            documentSelectedForEditing = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID ) ) );
+        } catch ( NumberFormatException nfe ) {
+        }
+
+        if ( documentFinder.isDocumentsSelectable() ) {
             try {
-                selectedDocument = documentMapper.getDocument( Integer.parseInt(request.getParameter( REQUEST_PARAMETER__SELECTED_DOCUMENT_ID )));
-            } catch( NumberFormatException nfe ) {
+                selectedDocument = documentMapper.getDocument( Integer.parseInt( request.getParameter( REQUEST_PARAMETER__SELECTED_DOCUMENT_ID ) ) );
+            } catch ( NumberFormatException nfe ) {
             }
         }
 
@@ -79,45 +95,48 @@ public class SearchDocumentsPage {
         } catch ( NumberFormatException nfe ) {
         }
 
-        setDocumentsPerPage(NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE ), DEFAULT_DOCUMENTS_PER_PAGE ));
+        setDocumentsPerPage( NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE ), DEFAULT_DOCUMENTS_PER_PAGE ) );
         firstDocumentIndex = Math.max( 0, NumberUtils.stringToInt( request.getParameter( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX ) ) );
         queryString = StringUtils.defaultString( request.getParameter( REQUEST_PARAMETER__QUERY_STRING ) );
         searchButtonPressed = null != request.getParameter( REQUEST_PARAMETER__SEARCH_BUTTON );
-        query = createQuery(documentFinder);
+        query = createQuery( documentFinder );
+    }
+
+    private void setDocumentFinderFromRequest( HttpServletRequest request ) {
+        documentFinderSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER );
+        DocumentFinder documentFinderFromSession = (DocumentFinder)request.getSession().getAttribute( documentFinderSessionAttributeName );
+        if ( null != documentFinderFromSession ) {
+            documentFinder = documentFinderFromSession;
+        }
     }
 
     public String getParameterString( HttpServletRequest request ) {
-        return Utility.createQueryStringFromMap( getParameterMap(request) ) ;
+        return Utility.createQueryStringFromParameterMap( getParameterMap() );
     }
 
     public String getParameterStringWithParameter( HttpServletRequest request,
-                                                 String parameterName, String parameterValue ) {
-        Map parameters = getParameterMap(request) ;
-        parameters.put( parameterName, parameterValue ) ;
-        return Utility.createQueryStringFromMap( parameters ) ;
+                                                   String parameterName, String parameterValue ) {
+        Map parameters = getParameterMap();
+        parameters.put( parameterName, parameterValue );
+        return Utility.createQueryStringFromParameterMap( parameters );
     }
 
-    private Map getParameterMap( HttpServletRequest request ) {
-        Map parameters = MapUtils.orderedMap( MapUtils.transformedMap( new HashMap(), TransformerUtils.nopTransformer(), new Transformer() {
-            public Object transform( Object input ) {
-                return new String[] { (String)input } ;
-            }
-        }) ) ;
-        if (StringUtils.isNotBlank( queryString )) {
-            parameters.put(REQUEST_PARAMETER__QUERY_STRING, queryString) ;
+    private Map getParameterMap() {
+        Map parameters = MapUtils.orderedMap( MapUtils.transformedMap( new HashMap(), TransformerUtils.nopTransformer(), new ToStringArrayTransformer() ) );
+        if ( StringUtils.isNotBlank( queryString ) ) {
+            parameters.put( REQUEST_PARAMETER__QUERY_STRING, queryString );
         }
-        if (null != section) {
-            parameters.put( REQUEST_PARAMETER__SECTION_ID, ""+section.getId()) ;
+        if ( null != section ) {
+            parameters.put( REQUEST_PARAMETER__SECTION_ID, "" + section.getId() );
         }
-        if (0 != firstDocumentIndex) {
-            parameters.put( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, ""+firstDocumentIndex) ;
+        if ( 0 != firstDocumentIndex ) {
+            parameters.put( REQUEST_PARAMETER__FIRST_DOCUMENT_INDEX, "" + firstDocumentIndex );
         }
-        if (DEFAULT_DOCUMENTS_PER_PAGE != documentsPerPage) {
-            parameters.put( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE, ""+documentsPerPage) ;
+        if ( DEFAULT_DOCUMENTS_PER_PAGE != documentsPerPage ) {
+            parameters.put( REQUEST_PARAMETER__DOCUMENTS_PER_PAGE, "" + documentsPerPage );
         }
-        String documentFinderSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER);
-        if (null != documentFinderSessionAttributeName) {
-            parameters.put(DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER, documentFinderSessionAttributeName) ;
+        if ( null != documentFinderSessionAttributeName ) {
+            parameters.put( REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER, documentFinderSessionAttributeName );
         }
         return parameters;
     }
@@ -139,13 +158,16 @@ public class SearchDocumentsPage {
             query.add( sectionQuery, true, false );
         }
 
-        if (0 == query.getClauses().length) {
-            return null ;
+        if ( 0 == query.getClauses().length ) {
+            return null;
         }
         return query;
     }
 
     void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        if (null != documentFinderSessionAttributeName) {
+            request.getSession().setAttribute( documentFinderSessionAttributeName, documentFinder );
+        }
         request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
         UserDomainObject user = Utility.getLoggedOnUser( request );
         request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/search_documents.jsp" ).forward( request, response );
@@ -179,6 +201,10 @@ public class SearchDocumentsPage {
         return selectedDocument;
     }
 
+    public DocumentDomainObject getDocumentSelectedForEditing() {
+        return documentSelectedForEditing;
+    }
+
     public Query getQuery() {
         return query;
     }
@@ -189,12 +215,35 @@ public class SearchDocumentsPage {
 
     private void setDocumentsPerPage( int documentsPerPage ) {
         if ( documentsPerPage <= 0 ) {
-            documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE ;
+            documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
         }
         this.documentsPerPage = documentsPerPage;
     }
 
     public boolean isCancelButtonPressed() {
         return cancelButtonPressed;
+    }
+
+    public String getDocumentFinderHiddenInputHtml() {
+        if ( null == documentFinderSessionAttributeName ) {
+            return "";
+        }
+        return Html.hidden( REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER, documentFinderSessionAttributeName );
+    }
+
+    public DocumentFinder getDocumentFinder() {
+        return documentFinder;
+    }
+
+    public void setDocumentFinder( DocumentFinder documentFinder ) {
+        documentFinderSessionAttributeName = HttpSessionUtils.createUniqueNameForObject() ;
+        this.documentFinder = documentFinder;
+    }
+
+    private static class ToStringArrayTransformer implements Transformer {
+
+        public Object transform( Object input ) {
+            return new String[]{(String)input};
+        }
     }
 }

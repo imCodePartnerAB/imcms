@@ -13,7 +13,7 @@ public class CreateTextDocumentPageFlow extends CreateDocumentPageFlow {
     public CreateTextDocumentPageFlow( TextDocumentDomainObject document,
                                        SaveDocumentCommand saveNewDocumentCommand,
                                        DispatchCommand returnCommand ) {
-        super( document, saveNewDocumentCommand, returnCommand );
+        super( document, returnCommand, saveNewDocumentCommand );
     }
 
     protected void dispatchOkFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {

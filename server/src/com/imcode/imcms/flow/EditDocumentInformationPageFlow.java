@@ -54,6 +54,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER = "browseForCreator";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "browseForMenuImage";
     public static final String PAGE__DOCUMENT_INFORMATION = "document_information";
+    private boolean adminButtonsHidden;
 
     public EditDocumentInformationPageFlow( DocumentDomainObject document, DispatchCommand returnCommand,
                                             SaveDocumentCommand saveDocumentCommand ) {
@@ -138,8 +139,12 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     protected void dispatchToFirstPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        UserDomainObject user = Utility.getLoggedOnUser( request );
-        request.getRequestDispatcher( URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__DOCINFO ).forward( request, response );
+        dispatchToDocumentInformationPage( request, response );
+    }
+
+    private void dispatchToDocumentInformationPage( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+        DocumentInformationPage documentInformationPage = new DocumentInformationPage(getDocument(), adminButtonsHidden);
+        documentInformationPage.forward( request, response );
     }
 
     protected void dispatchOkFromEditPage( HttpServletRequest request, HttpServletResponse response ) throws IOException {
@@ -150,8 +155,8 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         setDocumentAttributesFromRequestParameters( document, request );
     }
 
-    public static void setDocumentAttributesFromRequestParameters( DocumentDomainObject document,
-                                                                   HttpServletRequest request ) {
+    private static void setDocumentAttributesFromRequestParameters( DocumentDomainObject document,
+                                                                    HttpServletRequest request ) {
 
         final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
         final DocumentMapper documentMapper = service.getDocumentMapper();
@@ -297,5 +302,39 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         calendar.setTime( date );
         calendar.add( Calendar.MILLISECOND, (int)time.getTime() );
         return calendar.getTime();
+    }
+
+    public void setAdminButtonsHidden( boolean adminButtonsHidden ) {
+        this.adminButtonsHidden = adminButtonsHidden;
+    }
+
+    public static class DocumentInformationPage {
+
+        private static final String REQUEST_ATTRIBUTE__DOCUMENT_INFORMATION_PAGE = "documentInformationPage";
+        private DocumentDomainObject document;
+        private boolean adminButtonsHidden;
+
+        public DocumentInformationPage( DocumentDomainObject document, boolean adminButtonsHidden ) {
+            this.document = document;
+            this.adminButtonsHidden = adminButtonsHidden;
+        }
+
+        public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+            request.setAttribute( REQUEST_ATTRIBUTE__DOCUMENT_INFORMATION_PAGE, this );
+            UserDomainObject user = Utility.getLoggedOnUser( request );
+            request.getRequestDispatcher( URL_I15D_PAGE__PREFIX + user.getLanguageIso639_2() + URL_I15D_PAGE__DOCINFO ).forward( request, response );
+        }
+
+        public static DocumentInformationPage fromRequest( HttpServletRequest request ) {
+            return (DocumentInformationPage)request.getAttribute( REQUEST_ATTRIBUTE__DOCUMENT_INFORMATION_PAGE ) ;
+        }
+
+        public DocumentDomainObject getDocument() {
+            return document;
+        }
+
+        public boolean isAdminButtonsHidden() {
+            return adminButtonsHidden;
+        }
     }
 }

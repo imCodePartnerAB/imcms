@@ -34,7 +34,7 @@ public class Html {
             String value = allValues.get( i ).toString();
             String name = allValues.get( i + 1 ).toString();
             boolean valueSelected = selectedValuesSet.contains( value );
-            htmlStr.append( createOption( value, name, valueSelected ) );
+            htmlStr.append( option( value, name, valueSelected ) );
         } // end for
 
         return htmlStr.toString();
@@ -56,7 +56,7 @@ public class Html {
             String value = valueAndNameStringPair[0];
             String name = valueAndNameStringPair[1];
             boolean valueSelected = selectedValuesSet.contains( valueObject );
-            htmlStr.append( createOption( value, name, valueSelected ) );
+            htmlStr.append( option( value, name, valueSelected ) );
         } // end for
 
         return htmlStr.toString();
@@ -78,7 +78,7 @@ public class Html {
      * @param elementValue - option string
      * @param selected     - true or false
      */
-    public static String createOption( String elementValue, String elementName, boolean selected ) {
+    public static String option( String elementValue, String elementName, boolean selected ) {
 
         StringBuffer option = new StringBuffer();
 
@@ -117,7 +117,7 @@ public class Html {
         if ( documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
             statusIconTemplate = "<a href=\"AdminDoc?meta_id=" + document.getId() + "&"
                                  + AdminDoc.PARAMETER__DISPATCH_FLAGS
-                                 + "=1\">" +
+                                 + "=1\" target=\"_blank\">" +
                                  statusIconTemplate +
                                  "</a>";
         }
@@ -153,16 +153,16 @@ public class Html {
             if ( 0 != image.getHorizontalSpace() ) {
                 imageTagBuffer.append( " hspace=\"" + image.getHorizontalSpace() + "\"" );
             }
-            if ( !"".equals( image.getName() ) ) {
+            if ( StringUtils.isNotBlank( image.getName() ) ) {
                 imageTagBuffer.append( " name=\"" + StringEscapeUtils.escapeHtml( image.getName() ) + "\"" );
             }
-            if ( !"".equals( image.getAlternateText() ) ) {
+            if ( StringUtils.isNotBlank( image.getAlternateText() ) ) {
                 imageTagBuffer.append( " alt=\"" + StringEscapeUtils.escapeHtml( image.getAlternateText() ) + "\"" );
             }
-            if ( !"".equals( image.getLowResolutionUrl() ) ) {
-                imageTagBuffer.append( " lowscr=\"" + StringEscapeUtils.escapeHtml( image.getLowResolutionUrl() ) + "\"" );
+            if ( StringUtils.isNotBlank( image.getLowResolutionUrl() ) ) {
+                imageTagBuffer.append( " lowsrc=\"" + StringEscapeUtils.escapeHtml( image.getLowResolutionUrl() ) + "\"" );
             }
-            if ( !"".equals( image.getAlign() ) && !"none".equals( image.getAlign() ) ) {
+            if ( StringUtils.isNotBlank( image.getAlign() ) && !"none".equals( image.getAlign() ) ) {
                 imageTagBuffer.append( " align=\"" + StringEscapeUtils.escapeHtml( image.getAlign() ) + "\"" );
             }
             imageTagBuffer.append( ">" );
@@ -170,7 +170,10 @@ public class Html {
                 imageTagBuffer.append( "</a>" );
             }
         }
-        String imageTag = imageTagBuffer.toString();
-        return imageTag;
+        return imageTagBuffer.toString();
+    }
+
+    public static String hidden( String name, String value ) {
+        return "<input type=\"hidden\" name=\""+StringEscapeUtils.escapeHtml( name )+"\" value=\""+StringEscapeUtils.escapeHtml( value )+"\">";
     }
 }

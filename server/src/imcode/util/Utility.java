@@ -1,17 +1,10 @@
 package imcode.util;
 
-import com.imcode.imcms.servlet.admin.AdminDoc;
 import imcode.server.ApplicationServer;
-import imcode.server.WebAppGlobalConstants;
 import imcode.server.IMCServiceInterface;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.SetUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.io.FileFilter;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -101,10 +93,10 @@ public class Utility {
     public static String getQueryStringExcludingParameter(HttpServletRequest request, String parameterNameToExclude) {
         Map requestParameters = new HashMap(request.getParameterMap()) ;
         requestParameters.remove( parameterNameToExclude ) ;
-        return createQueryStringFromMap( requestParameters );
+        return createQueryStringFromParameterMap( requestParameters );
     }
 
-    public static String createQueryStringFromMap( Map requestParameters ) {
+    public static String createQueryStringFromParameterMap( Map requestParameters ) {
         Set requestParameterStrings = SetUtils.orderedSet(new HashSet()) ;
         for ( Iterator iterator = requestParameters.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();

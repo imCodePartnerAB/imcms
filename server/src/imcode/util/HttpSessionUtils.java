@@ -1,9 +1,9 @@
 package imcode.util;
 
 import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.RandomStringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 public class HttpSessionUtils {
 
@@ -15,10 +15,14 @@ public class HttpSessionUtils {
                                                                               final String sessionAttributeNameRequestAttributeName ) {
         String sessionAttributeName = getSessionAttributeNameFromRequest( request, sessionAttributeNameRequestAttributeName );
         if (null == sessionAttributeName || null == request.getSession().getAttribute( sessionAttributeName )) {
-            sessionAttributeName = ClassUtils.getShortClassName( objectToAddToSession.getClass() ) + "." + System.currentTimeMillis();
+            sessionAttributeName = createUniqueNameForObject();
             request.getSession().setAttribute( sessionAttributeName, objectToAddToSession );
             request.setAttribute( sessionAttributeNameRequestAttributeName, sessionAttributeName );
         }
+    }
+
+    public static String createUniqueNameForObject() {
+        return RandomStringUtils.randomAlphanumeric( 4 ) ;
     }
 
     public static Object getSessionAttributeWithNameInRequest( HttpServletRequest request,

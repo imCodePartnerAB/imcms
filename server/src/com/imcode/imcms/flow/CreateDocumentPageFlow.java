@@ -14,8 +14,7 @@ public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
     public static final String PAGE__EDIT = "edit";
 
     protected CreateDocumentPageFlow( DocumentDomainObject document,
-                                      SaveDocumentCommand saveDocumentCommand,
-                                      DispatchCommand returnCommand ) {
+                                      DispatchCommand returnCommand, SaveDocumentCommand saveDocumentCommand ) {
         super(returnCommand, saveDocumentCommand);
         editDocumentInformationPageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
     }

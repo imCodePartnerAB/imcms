@@ -40,7 +40,7 @@ public class DocumentComposer extends HttpServlet {
         DocumentMapper documentMapper = service.getDocumentMapper();
         UserDomainObject user = Utility.getLoggedOnUser( request );
 
-        DocumentPageFlow pageFlow = getDocumentPageFlowFromRequest( request );
+        DocumentPageFlow pageFlow = DocumentPageFlow.fromRequest( request );
         DocumentDomainObject document = pageFlow.getDocument();
         if ( null != document && documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
             pageFlow.dispatch( request, response );
@@ -49,10 +49,6 @@ public class DocumentComposer extends HttpServlet {
                 throw new NotImplementedException( pageFlow.getClass() );
             }
         }
-    }
-
-    public static DocumentPageFlow getDocumentPageFlowFromRequest( HttpServletRequest request ) {
-        return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
     }
 
 }

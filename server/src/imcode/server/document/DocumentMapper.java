@@ -3,6 +3,7 @@ package imcode.server.document;
 import imcode.server.IMCServiceInterface;
 import imcode.server.LanguageMapper;
 import imcode.server.WebAppGlobalConstants;
+import imcode.server.ApplicationServer;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.*;
@@ -25,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.imcode.imcms.flow.DocumentPageFlow;
 
 public class DocumentMapper {
 
@@ -1651,8 +1654,7 @@ public class DocumentMapper {
         } else {
             statusIconTemplateName = TEMPLATE__STATUS_APPROVED;
         }
-        String statusIconTemplate = service.getAdminTemplate( statusIconTemplateName, user, null );
-        return statusIconTemplate;
+        return service.getAdminTemplate( statusIconTemplateName, user, null );
     }
 
     public IdNamePair[] getCreatableDocumentTypeIdsAndNamesInUsersLanguage( DocumentDomainObject document,
@@ -1775,5 +1777,11 @@ public class DocumentMapper {
         }
     }
 
+    public static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
+
+        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+            ApplicationServer.getIMCServiceInterface().getDocumentMapper().saveDocument( document, user );
+        }
+    }
 }
 

@@ -70,7 +70,7 @@ public class AdminListDocs extends Administrator {
             Map.Entry entry = (Map.Entry)iterator.next();
             Integer documentTypeId = (Integer)entry.getKey();
             String documentTypeName = (String)entry.getValue();
-            optionList.append( Html.createOption( "" + documentTypeId, documentTypeName, false ) );
+            optionList.append( Html.option( "" + documentTypeId, documentTypeName, false ) );
         }
 
         VariableManager vm = new VariableManager();

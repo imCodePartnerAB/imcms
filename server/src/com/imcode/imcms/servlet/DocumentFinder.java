@@ -19,18 +19,9 @@ import java.io.IOException;
 
 public class DocumentFinder extends WebComponent {
 
-    public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER = "finder";
     private SelectDocumentCommand selectDocumentCommand;
     private Query restrictingQuery;
     private QueryParser queryParser = new DefaultQueryParser();
-
-    public static DocumentFinder getInstance( HttpServletRequest request ) {
-        DocumentFinder documentFinder = (DocumentFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER );
-        if ( null == documentFinder ) {
-            documentFinder = new DocumentFinder();
-        }
-        return documentFinder;
-    }
 
     public void selectDocument( DocumentDomainObject selectedDocument, HttpServletRequest request,
                                 HttpServletResponse response ) throws IOException, ServletException {
@@ -38,8 +29,8 @@ public class DocumentFinder extends WebComponent {
     }
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER );
         SearchDocumentsPage page = new SearchDocumentsPage();
+        page.setDocumentFinder(this);
         forwardWithPage( page, request, response );
     }
 
@@ -90,4 +81,7 @@ public class DocumentFinder extends WebComponent {
                              HttpServletResponse response ) throws IOException, ServletException;
     }
 
+    public class SearchResultColumn {
+
+    }
 }

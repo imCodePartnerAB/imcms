@@ -16,8 +16,8 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImageData;
 import imcode.util.ImageParser;
-import imcode.util.Utility;
 import imcode.util.LocalizedMessage;
+import imcode.util.Utility;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
@@ -41,6 +41,8 @@ public class ChangeImage extends HttpServlet {
     public final static String REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH_BUTTON = "goToImageSearch";
     public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER_BUTTON = "goToImageBrowser";
     public static final String REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON = "goToAddRestrictedImage";
+    public static final String REQUEST_PARAMETER__GO_TO_EDIT_DOCUMENT = "toEdit";
+    public static final String REQUEST_PARAMETER__DOCUMENT_ID_TO_EDIT = "documentIdToEdit";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
     public static final String REQUEST_PARAMETER__IMAGE_HEIGHT = "image_height";
@@ -62,7 +64,8 @@ public class ChangeImage extends HttpServlet {
     public static final String REQUEST_PARAMETER__LINK_TARGET = EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET;
 
     private final static String[] IMAGE_MIME_TYPES = new String[]{"image/jpeg", "image/png", "image/gif"};
-    static final LocalizedMessage ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage("error/servlet/images/only_allowed_to_upload_images") ;
+    static final LocalizedMessage ERROR_MESSAGE___ONLY_ALLOWED_TO_UPLOAD_IMAGES = new LocalizedMessage( "error/servlet/images/only_allowed_to_upload_images" );
+    private static final Query QUERY__IMAGE_FILE_DOCUMENTS = createImageFileDocumentsQuery();
 
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
@@ -164,12 +167,11 @@ public class ChangeImage extends HttpServlet {
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
         } );
-        Query imageFileDocumentQuery = createImageFileDocumentQuery();
-        documentFinder.setRestrictingQuery( imageFileDocumentQuery );
+        documentFinder.setRestrictingQuery( QUERY__IMAGE_FILE_DOCUMENTS );
         documentFinder.forward( request, response );
     }
 
-    private Query createImageFileDocumentQuery() {
+    private static Query createImageFileDocumentsQuery() {
         BooleanQuery imageMimeTypeQuery = new BooleanQuery();
         for ( int i = 0; i < IMAGE_MIME_TYPES.length; i++ ) {
             String imageMimeType = IMAGE_MIME_TYPES[i];
@@ -264,16 +266,24 @@ public class ChangeImage extends HttpServlet {
         String imageUrl = image.getUrl();
         if ( StringUtils.isNotBlank( imageUrl ) ) {
             File imageFile = new File( image_path, image.getUrl() );
-            Perl5Util perl5util = new Perl5Util();
-            if ( perl5util.match( "/GetDoc\\?meta_id=(\\d+)/", imageUrl ) ) {
-                int imageFileDocumentId = Integer.parseInt( perl5util.group( 1 ) );
-                FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentMapper.getDocument( imageFileDocumentId );
+            Integer imageFileDocumentId = getDocumentIdFromImageUrl( imageUrl );
+            if ( null != imageFileDocumentId ) {
+                FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentMapper.getDocument( imageFileDocumentId.intValue() );
                 imageData = getImageDataFromFileDocument( imageFileDocument );
             } else if ( imageFile.isFile() ) {
                 imageData = new ImageParser().parseImageFile( imageFile );
             }
         }
         return imageData;
+    }
+
+    public static Integer getDocumentIdFromImageUrl( String imageUrl ) {
+        Integer documentId = null;
+        Perl5Util perl5util = new Perl5Util();
+        if ( perl5util.match( "/GetDoc\\?meta_id=(\\d+)/", imageUrl ) ) {
+            documentId = Integer.valueOf( perl5util.group( 1 ) );
+        }
+        return documentId;
     }
 
     private ImageData getImageDataFromFileDocument( FileDocumentDomainObject imageFileDocument ) {
@@ -347,7 +357,8 @@ public class ChangeImage extends HttpServlet {
             BooleanQuery booleanQuery = new BooleanQuery();
             for ( int i = 0; i < queryStrings.length; i++ ) {
                 String queryTerm = queryStrings[i];
-                booleanQuery.add( new WildcardQuery( new Term( DocumentIndex.FIELD__META_HEADLINE, "*" + queryTerm + "*" ) ), true, false );
+                booleanQuery.add( new WildcardQuery( new Term( DocumentIndex.FIELD__META_HEADLINE, "*" + queryTerm
+                                                                                                   + "*" ) ), true, false );
             }
             return booleanQuery;
         }

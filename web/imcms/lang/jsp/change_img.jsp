@@ -8,7 +8,10 @@
                  org.apache.commons.lang.ObjectUtils,
                  imcode.util.Utility,
                  imcode.util.Html,
-                 org.apache.commons.collections.Transformer"%>
+                 org.apache.commons.collections.Transformer,
+                 imcode.server.document.DocumentMapper,
+                 imcode.server.user.UserDomainObject,
+                 imcode.server.document.DocumentDomainObject"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     ChangeImage.ImageEditPage imageEditPage = (ChangeImage.ImageEditPage)request.getAttribute( ChangeImage.ImageEditPage.REQUEST_ATTRIBUTE__PAGE ) ;
@@ -122,9 +125,23 @@ function checkLinkOnBlur() {
             <td colspan="2" align="center">
                 <%= Html.getImageTag( image ) %>
             </td>
+        </tr>
+        <%
+            Integer imageFileDocumentId = ChangeImage.getDocumentIdFromImageUrl(image.getUrl());
+            if ( null != imageFileDocumentId ) { %>
             <tr>
-                <td colspan="2">#gui_hr( "blue" )</td>
+                <td colspan="2" align="center">
+                    <%
+                        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+                        UserDomainObject user = Utility.getLoggedOnUser(request);
+                        DocumentDomainObject imageFileDocument = documentMapper.getDocument(imageFileDocumentId.intValue());
+                    %>
+                        <%= ApplicationServer.getIMCServiceInterface().getAdminButtons(user, imageFileDocument) %>
+                </td>
             </tr>
+        <% } %>
+        <tr>
+            <td colspan="2">#gui_hr( "blue" )</td>
         </tr>
         <% } %>
         <tr>
@@ -170,6 +187,8 @@ function checkLinkOnBlur() {
                         <td><? templates/sv/change_img.html/18 ?></td>
                         <td>&nbsp;</td>
                         <td><? templates/sv/change_img.html/19 ?></td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
                     </tr>
                     <tr>
                         <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_WIDTH %>" size="4" maxlength="4" value="<% if (image.getWidth() > 0) { %><%= image.getWidth() %><% } %>"></td>
@@ -177,13 +196,15 @@ function checkLinkOnBlur() {
                         <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_HEIGHT %>" size="4" maxlength="4" value="<% if (image.getHeight() > 0) { %><%= image.getHeight() %><% } %>"></td>
                         <td>&nbsp;</td>
                         <td><input type="text" name="<%= ChangeImage.REQUEST_PARAMETER__IMAGE_BORDER %>" size="4" maxlength="4" value="<%= image.getBorder() %>"></td>
+                        <td>&nbsp;</td>
+                        <td><? templates/sv/change_img.html/size_explanation ?></td>
                     </tr>
                     <tr>
                         <td height="20">&nbsp;<%= imageFileData.getWidth() %></td>
                         <td>&nbsp;X&nbsp;</td>
                         <td>&nbsp;<%= imageFileData.getHeight() %></td>
                         <td>&nbsp;</td>
-                        <td><? templates/sv/change_img.html/originalSize ?></td>
+                        <td colspan="3"><? templates/sv/change_img.html/originalSize ?></td>
                     </tr>
                 </table>
             </td>

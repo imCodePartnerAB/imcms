@@ -71,7 +71,7 @@ public class AdminDoc extends HttpServlet {
 
     private HttpPageFlow createFlow( DocumentDomainObject document, int flags ) {
         RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand( document );
-        SaveEditedDocumentCommand saveDocumentCommand = new SaveEditedDocumentCommand();
+        DocumentMapper.SaveEditedDocumentCommand saveDocumentCommand = new DocumentMapper.SaveEditedDocumentCommand();
 
         HttpPageFlow httpPageFlow = null;
         if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
@@ -97,7 +97,7 @@ public class AdminDoc extends HttpServlet {
                                    HttpServletResponse res ) throws IOException, ServletException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        String htmlStr = "";
+        String htmlStr;
         String lang_prefix = user.getLanguageIso639_2();
 
         Stack history = (Stack)user.get( "history" );
@@ -113,7 +113,7 @@ public class AdminDoc extends HttpServlet {
         int doc_type = imcref.getDocType( meta_id );
 
         Integer userflags = (Integer)user.remove( PARAMETER__DISPATCH_FLAGS );		// Get the flags from the user-object
-        int flags = ( userflags == null ) ? 0 : userflags.intValue();	// Are there flags? Set to 0 if not.
+        int flags = userflags == null ? 0 : userflags.intValue();	// Are there flags? Set to 0 if not.
 
         DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
 
@@ -319,10 +319,4 @@ public class AdminDoc extends HttpServlet {
         }
     }
 
-    private static class SaveEditedDocumentCommand implements DocumentPageFlow.SaveDocumentCommand {
-
-        public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
-            ApplicationServer.getIMCServiceInterface().getDocumentMapper().saveDocument( document, user );
-        }
-    }
 }

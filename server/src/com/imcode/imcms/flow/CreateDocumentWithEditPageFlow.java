@@ -10,7 +10,7 @@ public class CreateDocumentWithEditPageFlow extends CreateDocumentPageFlow {
     private EditDocumentPageFlow editDocumentPageFlow;
 
     public CreateDocumentWithEditPageFlow( EditDocumentPageFlow editDocumentPageFlow ) {
-        super( editDocumentPageFlow.getDocument(), editDocumentPageFlow.saveDocumentCommand, editDocumentPageFlow.returnCommand );
+        super( editDocumentPageFlow.getDocument(), editDocumentPageFlow.returnCommand, editDocumentPageFlow.saveDocumentCommand );
         this.editDocumentPageFlow = editDocumentPageFlow;
     }
 
