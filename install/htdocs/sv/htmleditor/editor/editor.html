@@ -944,7 +944,12 @@ if (show<? sv/htmleditor/editor/editor.html/116/5 ?>Btn) {
 </tr>
 <tr>
 	<td><? sv/htmleditor/editor/editor.html/121 ?><script language="JavaScript">
-<? sv/htmleditor/editor/editor.html/122 ?>
+<!--
+if (showSimple || showAdv) {
+	document.writeln('<br><img src="images/1x1.gif" width="1" height="5"><br>')
+	document.writeln('<? sv/htmleditor/editor/editor.html/122/1 ?>');
+}
+//-->
 </script></td>
 </tr>
 </table></div>
@@ -1291,7 +1296,9 @@ Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie c
 	<td CLASS="imEditHelpHeadingBig"><? sv/htmleditor/editor/editor.html/141 ?></td>
 	<td align="right"><button class="fButtonSmall" onClick="hideHelp('all');"><? sv/htmleditor/editor/editor.html/142 ?></button></td>
 </tr>
-</table><? sv/htmleditor/editor/editor.html/1021 ?>&nbsp; <span class="imEditHelpLinkActive"><? sv/htmleditor/editor/editor.html/143 ?></span> &nbsp;<? sv/htmleditor/editor/editor.html/1022 ?>
+</table><br>
+
+<b>|&nbsp; <a href="javascript:showHelp('all');" class="imEditHelpLink"><? sv/htmleditor/editor/editor.html/1021/1 ?></a> &nbsp;|&nbsp; <a href="javascript:showHelp('upperbuttons');" class="imEditHelpLink"><? sv/htmleditor/editor/editor.html/1021/2 ?></a> &nbsp;|&nbsp; <span class="imEditHelpLinkActive"><? sv/htmleditor/editor/editor.html/143 ?></span> &nbsp;<? sv/htmleditor/editor/editor.html/1022 ?>
 
 <span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/144 ?></span><br><br>
 
