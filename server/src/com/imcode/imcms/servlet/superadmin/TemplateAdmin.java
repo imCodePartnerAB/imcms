@@ -32,6 +32,7 @@ public class TemplateAdmin extends HttpServlet {
     private static final String TEMPLATE_DOCS_ROW = "templates_docs_row.html";
     private static final String TEMPLATE_DELETE_WARNING = "template_delete_warning.html";
     private static final String TEMPLATE_GROUP_DELETE_WARNING = "templategroup_delete_warning.html";
+    private static final String TEMPLATE_GROUP_DELETE_DOCUMENTS_ASSIGNED_WARNING = "templategroup_delete_documents_assigned_warning.html";
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -321,4 +322,22 @@ public class TemplateAdmin extends HttpServlet {
         return htmlStr;
     }
 
+    static String createDocumentsAssignedToTemplateInTemplateGroupWarningDialog( TemplateDomainObject[] templatesInGroup,
+                                                                   int templateGroupId, ImcmsServices imcref,
+                                                                   UserDomainObject user) {
+
+        String htmlStr;
+        String commaSeparatedTemplateNames = StringUtils.join( new ArrayIterator( templatesInGroup ) {
+            public Object next() {
+                return ((TemplateDomainObject)super.next()).getName() ;
+            }
+        }, ", " );
+        List vec = new ArrayList();
+        vec.add( "#templates#" );
+        vec.add( commaSeparatedTemplateNames );
+        vec.add( "#templategroup#" );
+        vec.add( String.valueOf( templateGroupId ) );
+        htmlStr = imcref.getAdminTemplate( TEMPLATE_GROUP_DELETE_DOCUMENTS_ASSIGNED_WARNING, user, vec );
+        return htmlStr;
+    }
 }

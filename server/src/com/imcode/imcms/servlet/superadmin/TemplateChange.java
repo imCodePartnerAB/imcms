@@ -203,9 +203,18 @@ public class TemplateChange extends HttpServlet {
         TemplateMapper templateMapper = imcref.getTemplateMapper();
         TemplateGroupDomainObject templateGroup = templateMapper.getTemplateGroupById( templateGroupId );
         TemplateDomainObject[] templatesInGroup = templateMapper.getTemplatesInGroup( templateGroup );
+        boolean existsDocumentUsingTemplateInTemplateGroup = false;
+        for (int i=0; i< templatesInGroup.length; i++ ){
+            if ( templateMapper.getDocumentsUsingTemplate(templatesInGroup[i]).length > 0 ) {
+                existsDocumentUsingTemplateInTemplateGroup = true;
+            }
+        }
 
         if ( templatesInGroup.length > 0 ) {
             htmlStr = TemplateAdmin.createDeleteNonEmptyTemplateGroupWarningDialog( templatesInGroup, templateGroupId, imcref, user );
+            if ( existsDocumentUsingTemplateInTemplateGroup ){
+                htmlStr = TemplateAdmin.createDocumentsAssignedToTemplateInTemplateGroupWarningDialog( templatesInGroup, templateGroupId, imcref, user );
+            }
         } else {
             templateMapper.deleteTemplateGroup( templateGroupId );
             htmlStr = TemplateAdmin.createDeleteTemplateGroupDialog(templateMapper, imcref, user ) ;
