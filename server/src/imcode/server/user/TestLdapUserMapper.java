@@ -47,7 +47,7 @@ public class TestLdapUserMapper extends UserBaseTestCase {
       assertEquals( "0708 60 89 68", user.getMobilePhone() );
       assertEquals( "0498 200 300", user.getWorkPhone() );
       assertEquals( "621 57", user.getZip() );
-      assertTrue(user.isActive()) ;
+      assertTrue( user.isActive() );
       assertNull( user.getLangPrefix() );
    }
 
@@ -70,7 +70,7 @@ public class TestLdapUserMapper extends UserBaseTestCase {
       assertEquals( "", user.getMobilePhone() );
       assertEquals( "", user.getWorkPhone() );
       assertEquals( "", user.getZip() );
-      assertTrue(user.isActive()) ;
+      assertTrue( user.isActive() );
       assertNull( user.getLangPrefix() );
    }
 

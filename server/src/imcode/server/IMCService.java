@@ -186,7 +186,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
          log.error( "Failed to initialize external ldap system", e );
       }
 
-      imcmsAndLdapAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( new ImcmsAuthenticatorAndUserMapper( this, log ),
+      imcmsAndLdapAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( new ImcmsAuthenticatorAndUserMapper( this ),
                                                                                    new SmbAuthenticator(),
                                                                                    ldapUserMapper,
                                                                                    this.getLanguage() );
@@ -194,7 +194,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
    }
 
    public User getUserById( int id ) {
-      UserMapper userMapper = new ImcmsAuthenticatorAndUserMapper( this, mainLog );
+      ImcmsAuthenticatorAndUserMapper userMapper = new ImcmsAuthenticatorAndUserMapper( this );
       User result = userMapper.getUser( id );
       return result;
    }

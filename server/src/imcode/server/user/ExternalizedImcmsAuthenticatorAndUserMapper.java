@@ -11,12 +11,9 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
    private UserMapper externalUserMapper;
    private String defaultLanguage;
 
-   Logger log = Logger.getLogger( ExternalizedImcmsAuthenticatorAndUserMapper.class ) ;
+   private Logger log = Logger.getLogger( ExternalizedImcmsAuthenticatorAndUserMapper.class );
 
-   public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms,
-                                                       Authenticator externalAuthenticator,
-                                                       UserMapper externalUserMapper,
-                                                       String defaultLanguage ) {
+   public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms, Authenticator externalAuthenticator, UserMapper externalUserMapper, String defaultLanguage ) {
       this.imcmsAuthenticatorAndUserMapper = imcms;
       this.externalAuthenticator = externalAuthenticator;
       this.externalUserMapper = externalUserMapper;
@@ -88,7 +85,7 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
 
       User synchedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
       updateRoleAssignments( synchedUser );
-      return synchedUser ;
+      return synchedUser;
    }
 
 
@@ -107,27 +104,12 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
       imcmsAuthenticatorAndUserMapper.updateUser( loginName, imcmsUser );
    }
 
-   public User getUser( int id ) {
-      // todo
-      return null;
-   }
-
-   public void updateUser( String loginName, User newUserData ) {
-      // todo
-      throw new UnsupportedOperationException( "Not implemented yet" );
-   }
-
-   public void addUser( User newUser ) {
-      // todo
-      throw new UnsupportedOperationException( "Not implemented yet" );
-   }
-
    public String[] getRoleNames( User user ) {
       String[] imcmsRoleNames = imcmsAuthenticatorAndUserMapper.getRoleNames( user );
       String[] externalRoleNames = externalUserMapper.getRoleNames( user );
 
       String[] result = mergeAndDeleteDuplicates( imcmsRoleNames, externalRoleNames );
-      log.debug("Roles from imcms and external: "+Arrays.asList(result)) ;
+      log.debug( "Roles from imcms and external: " + Arrays.asList( result ) );
       return result;
    }
 

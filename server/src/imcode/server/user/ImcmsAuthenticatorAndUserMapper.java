@@ -6,15 +6,13 @@ import org.apache.log4j.Logger;
 public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticator {
 
    private IMCServiceInterface service;
-   private final Logger mainLog;
-   protected final static String ALWAYS_EXISTING_USERS_ROLE = "Users";
-   protected final static String ALWAYS_EXISTING_ADMIN_ROLE = "Superadmin";
+   final static String ALWAYS_EXISTING_USERS_ROLE = "Users";
+   final static String ALWAYS_EXISTING_ADMIN_ROLE = "Superadmin";
 
-   Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class ) ;
+   private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
 
-   public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service, Logger mainLog ) {
+   public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
       this.service = service;
-      this.mainLog = mainLog;
    }
 
    public boolean authenticate( String loginName, String password ) {
@@ -155,9 +153,9 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
    }
 
    public synchronized void addRole( String roleName ) {
-      String[] userId = service.sqlProcedure("RoleFindName", new String[] {roleName}) ;
-      boolean roleExists = -1 != Integer.parseInt(userId[0]) ;
-      if (!roleExists) {
+      String[] userId = service.sqlProcedure( "RoleFindName", new String[]{roleName} );
+      boolean roleExists = -1 != Integer.parseInt( userId[0] );
+      if( !roleExists ) {
          service.sqlUpdateProcedure( "RoleAddNew", new String[]{roleName} );
       }
    }
@@ -170,10 +168,10 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
    }
 
    public void assignRoleToUser( User user, String roleName ) {
-      String userIdStr = String.valueOf(user.getUserId()) ;
+      String userIdStr = String.valueOf( user.getUserId() );
       addRole( roleName );
-      log.debug("Trying to assign role "+roleName+" to user "+user.getLoginName()) ;
-      String rolesIdStr = service.sqlProcedureStr("GetRoleIdByRoleName", new String[]{roleName});
-      service.sqlUpdateProcedure( "AddUserRole", new String[]{ userIdStr, rolesIdStr } ) ;
+      log.debug( "Trying to assign role " + roleName + " to user " + user.getLoginName() );
+      String rolesIdStr = service.sqlProcedureStr( "GetRoleIdByRoleName", new String[]{roleName} );
+      service.sqlUpdateProcedure( "AddUserRole", new String[]{userIdStr, rolesIdStr} );
    }
 }

@@ -11,7 +11,7 @@ public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
    protected void setUp() throws Exception {
       Logger logger = Logger.getLogger( this.getClass() );
       mockImcmsService = new MockIMCServiceInterface();
-      imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( mockImcmsService, logger );
+      imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( mockImcmsService );
    }
 
    public void testFalseUser() {

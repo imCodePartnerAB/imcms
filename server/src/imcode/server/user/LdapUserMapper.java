@@ -4,7 +4,10 @@ import org.apache.log4j.Logger;
 
 import javax.naming.*;
 import javax.naming.directory.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
 
 /*
 The use of LDAP simple auth for secret data or update is NOT recommended.
@@ -27,31 +30,31 @@ public class LdapUserMapper implements UserMapper {
     /* and the password is ignored */
 
    /** From person oid=2.5.6.7 */
-   static final String PERSON_SURNAME = "sn";
-   static final String PERSON_TELEPHONE_NUMBER = "telephoneNumber";
+   private static final String PERSON_SURNAME = "sn";
+   private static final String PERSON_TELEPHONE_NUMBER = "telephoneNumber";
 
    /** From organizationalPerson oid=2.5.6.7 */
-   static final String ORGANIZATIONALPERSON_TITLE = "title";
-   static final String ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME = "st";
-   static final String ORGANIZATIONALPERSON_POSTAL_CODE = "postalCode";
-   static final String ORGANIZATIONALPERSON_STREET_ADRESS = "streetAddress";
+   private static final String ORGANIZATIONALPERSON_TITLE = "title";
+   private static final String ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME = "st";
+   private static final String ORGANIZATIONALPERSON_POSTAL_CODE = "postalCode";
+   private static final String ORGANIZATIONALPERSON_STREET_ADRESS = "streetAddress";
    //   static final String ORGANIZATIONALPERSON_ORGANIZATIONAL_UNIT_NAME = "ou";
 
    /** From inetOrgPerson oid=2.16.840.1.113730.3.2.2 */
-   static final String INETORGPERSON_GIVEN_NAME = "givenName";
-   static final String INETORGPERSON_MAIL = "mail";
-   static final String INETORGPERSON_HOME_PHONE = "homePhone";
-   static final String INETORGPERSON_MOBILE = "mobile";
-   static final String INETORGPERSON_LOCALITY_NAME = "l";
+   private static final String INETORGPERSON_GIVEN_NAME = "givenName";
+   private static final String INETORGPERSON_MAIL = "mail";
+   private static final String INETORGPERSON_HOME_PHONE = "homePhone";
+   private static final String INETORGPERSON_MOBILE = "mobile";
+   private static final String INETORGPERSON_LOCALITY_NAME = "l";
    //   static final String INETORGPERSON_PREFERED_LANGUAGE = "preferredLanguage";
    //   static final String INETORGPERSON_USER_IDENTITY = "uid";
 
    /** Non standard */
-   static final String NONSTANDARD_USERID = "sAMAccountName";
+   private static final String NONSTANDARD_USERID = "sAMAccountName";
    static final String NONSTANDARD_COMPANY = "company";
-   static final String NONSTANDARD_COUNTRY = "co";
+   private static final String NONSTANDARD_COUNTRY = "co";
 
-   protected static final String DEFAULT_LDAP_ROLE = "LDAP";
+   static final String DEFAULT_LDAP_ROLE = "LDAP";
 
    private DirContext ctx = null;
    private String userIdentifier = null;
@@ -83,9 +86,9 @@ public class LdapUserMapper implements UserMapper {
    public User getUser( String loginName ) {
       User result = null;
 
-      Map attributeMap = searchForUserAttributes(loginName,null) ;
+      Map attributeMap = searchForUserAttributes( loginName, null );
 
-      if (null != attributeMap) {
+      if( null != attributeMap ) {
          result = createUserFromLdapAttributes( attributeMap );
 
          result.setLoginName( loginName );
@@ -160,11 +163,6 @@ public class LdapUserMapper implements UserMapper {
       return newlyFoundLdapUser;
    }
 
-   public User getUser( int id ) {
-      // todo
-      return null;
-   }
-
    private HashMap createLdapMappings() {
       HashMap result = new HashMap();
       result.put( "loginName", NONSTANDARD_USERID );
@@ -183,17 +181,15 @@ public class LdapUserMapper implements UserMapper {
       result.put( "homePhone", INETORGPERSON_HOME_PHONE );
       // todo:
       //      result.put("lang_id",);
-      //      result.put("user_type",);
-      //      result.put("active",);
-      //      result.put("create_date",);
+
       return result;
    }
 
    private String getValueForUserField( String userFieldName, Map ldapAttributeValues ) {
       String ldapAttribute = (String)userFieldLdapMappings.get( userFieldName );
       String value = (String)ldapAttributeValues.get( ldapAttribute );
-      if (null == value) {
-         value = "" ;
+      if( null == value ) {
+         value = "";
       }
       return value;
    }
@@ -210,16 +206,6 @@ public class LdapUserMapper implements UserMapper {
       return ctx;
    }
 
-   public void updateUser( String loginName, User user ) {
-      // read only for now
-      throw new UnsupportedOperationException();
-   }
-
-   public void addUser( User newUser ) {
-      // read only for now
-      throw new UnsupportedOperationException();
-   }
-
    private Logger getLogger() {
       return Logger.getLogger( this.getClass() );
    }
@@ -229,12 +215,12 @@ public class LdapUserMapper implements UserMapper {
       String[] attributesToReturn = ldapAttributesAutoMappedToRoles;
 
       Map attributeMappedRoles = searchForUserAttributes( loginName, attributesToReturn );
-      HashSet roles = new HashSet(attributeMappedRoles.values()) ;
+      HashSet roles = new HashSet( attributeMappedRoles.values() );
 
-      String[] rolesArray = new String[roles.size()+1] ;
-      roles.toArray(rolesArray) ;
+      String[] rolesArray = new String[roles.size() + 1];
+      roles.toArray( rolesArray );
 
-      rolesArray[rolesArray.length-1] = DEFAULT_LDAP_ROLE ;
+      rolesArray[rolesArray.length - 1] = DEFAULT_LDAP_ROLE;
 
       return rolesArray;
    }

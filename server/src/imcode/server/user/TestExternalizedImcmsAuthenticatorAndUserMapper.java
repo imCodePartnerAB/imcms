@@ -21,8 +21,8 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       String ldapAuthenticationType = "simple";
       String ldapUserName = "imcode\\hasbra";
       String ldapPassword = "hasbra";
-      ldapUserMapper = new LdapUserMapper( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword, new String[] { LdapUserMapper.NONSTANDARD_COMPANY } );
-      imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( mockImcmsService, logger );
+      ldapUserMapper = new LdapUserMapper( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword, new String[]{LdapUserMapper.NONSTANDARD_COMPANY} );
+      imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( mockImcmsService );
       externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, new SmbAuthenticator(), ldapUserMapper, "se" );
    }
 
@@ -89,7 +89,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
 
       assertTrue( Arrays.asList( userRoles ).contains( ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE ) );
       assertTrue( Arrays.asList( userRoles ).contains( LdapUserMapper.DEFAULT_LDAP_ROLE ) );
-      assertTrue( Arrays.asList( userRoles ).contains("Crisp")) ;
+      assertTrue( Arrays.asList( userRoles ).contains( "Crisp" ) );
 
       assertFalse( Arrays.asList( userRoles ).contains( null ) );
       mockImcmsService.verify();

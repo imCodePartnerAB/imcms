@@ -1,8 +1,5 @@
 package imcode.server.user;
 
-import imcode.server.IMCServiceInterface;
-import org.apache.log4j.Logger;
-
 import java.util.Hashtable;
 
 public class User extends Hashtable {
