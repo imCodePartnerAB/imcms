@@ -1,26 +1,19 @@
 package imcode.server.document;
 
-import junit.framework.TestCase;
 import imcode.server.user.RoleDomainObject;
-import imcode.util.LocalizedMessage;
+import junit.framework.TestCase;
 
 public class TestDocumentDomainObject extends TestCase {
 
     DocumentDomainObject document ;
 
     protected void setUp() throws Exception {
-        super.setUp();    // TODO
+        super.setUp();
         document = new DocumentDomainObject() {
-            public int getDocumentTypeId() {
-                return 0;  // TODO
+            public DocumentTypeDomainObject getDocumentType() {
+                return null;
             }
-
             public void accept( DocumentVisitor documentVisitor ) {
-                // TODO
-            }
-
-            public LocalizedMessage getDocumentTypeName() {
-                return null;  // TODO
             }
         };
     }

@@ -1,9 +1,6 @@
 package imcode.server.document.textdocument;
 
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentVisitor;
-import imcode.server.document.TemplateDomainObject;
+import imcode.server.document.*;
 import imcode.util.LocalizedMessage;
 
 import java.util.*;
@@ -25,6 +22,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         clone.includes = (TreeMap)includes.clone();
         clone.menus = deepCloneMenus() ;
         return clone;
+    }
+
+    public DocumentTypeDomainObject getDocumentType() {
+        return DOCTYPE_TEXT ;
     }
 
     private TreeMap deepCloneMenus() throws CloneNotSupportedException {
@@ -84,10 +85,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         documentVisitor.visitTextDocument(this) ;
     }
 
-    public LocalizedMessage getDocumentTypeName() {
-        return new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX + "text" );
-    }
-
     public void removeAllImages() {
         images.clear();
     }
@@ -114,10 +111,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void setText( int textIndex, TextDomainObject text ) {
         texts.put( new Integer( textIndex ), text );
-    }
-
-    public int getDocumentTypeId() {
-        return DOCTYPE_TEXT;
     }
 
     /**

@@ -13,68 +13,71 @@
 %>
 
 <table border="0" cellspacing="0" cellpadding="2" width="656" align="center">
-<tr>
-    <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
-</tr>
-<tr>
-    <td nowrap><span class="imcmsAdmHeading" ><%= StringEscapeUtils.escapeHtml( subreportHeading.toLocalizedString( request ) ) %> (<%= documents.size() %> <? web/imcms/lang/jsp/admin/admin_manager.jsp/10 ?>)</span></td>
-    <td align="right">
-    <table border="0" cellspacing="0" cellpadding="0">
     <tr>
-        <% if ( subreport.isExpanded() ) { %>
-            <input type="hidden" name="<%= subreport.getName() %>_expand" value="1">
-            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_unexpand" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/12 ?> &raquo;"></td>
-        <%}else{ %>
-            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_expand" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/11 ?> &raquo;"></td>
-        <%}%>
+        <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
     </tr>
-    </table></td>
-</tr>
-<tr>
-    <td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
-</tr>
-<tr>
-    <td colspan="2">
-    <table border="0" cellspacing="0" cellpadding="2" width="100%">
-    <tr valign="bottom">
-        <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/15 ?></b></td>
-        <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/16 ?></b>&nbsp;</td>
-        <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/17 ?>/<? web/imcms/lang/jsp/admin/admin_manager.jsp/18 ?></b></td>
+    <tr>
+        <td nowrap><span class="imcmsAdmHeading" ><%= StringEscapeUtils.escapeHtml( subreportHeading.toLocalizedString( request ) ) %> (<%= documents.size() %> <? web/imcms/lang/jsp/admin/admin_manager.jsp/10 ?>)</span></td>
         <td align="right">
             <table border="0" cellspacing="0" cellpadding="0">
-            <tr>
-                <td nowrap><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/7 ?>:&nbsp;</td>
-                <td>
-                <select name="<%= subreport.getName() %>_sortorder" onChange="this.form.submit();">
-                    <% request.setAttribute( "SORT", subreport.getSortorder() ); %>
-                    <jsp:include page="admin_manager_inc_sortorder_select_option.jsp" />
-                </select></td>
-            </tr>
-            </table></td>
+                <tr>
+                    <% if ( subreport.isExpanded() ) { %>
+                        <input type="hidden" name="<%= subreport.getName() %>_expand" value="1">
+                        <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_unexpand" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/12 ?> &raquo;"></td>
+                    <%}else{ %>
+                        <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_expand" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/11 ?> &raquo;"></td>
+                    <%}%>
+                </tr>
+            </table>
+        </td>
     </tr>
     <tr>
-        <td colspan="4"><img src="<%= imagesPath %>/1x1_cccccc.gif" width="100%" height="1"></td>
+        <td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
     </tr>
+    <tr>
+        <td colspan="2">
+            <table border="0" cellspacing="0" cellpadding="2" width="100%">
+                <tr valign="bottom">
+                    <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/15 ?></b></td>
+                    <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/16 ?></b>&nbsp;</td>
+                    <td><b><? web/imcms/lang/jsp/admin/admin_manager.jsp/17 ?>/<? web/imcms/lang/jsp/admin/admin_manager.jsp/18 ?></b></td>
+                    <td align="right">
+                        <table border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td nowrap><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/7 ?>:&nbsp;</td>
+                                <td>
+                                <select name="<%= subreport.getName() %>_sortorder" onChange="this.form.submit();">
+                                    <% request.setAttribute( "SORT", subreport.getSortorder() ); %>
+                                    <jsp:include page="admin_manager_inc_sortorder_select_option.jsp" />
+                                </select></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4"><img src="<%= imagesPath %>/1x1_cccccc.gif" width="100%" height="1"></td>
+                </tr>
 
-   <% for (int i = 0; i < documents.size() && subreport.isBelowMaxDocumentCount(i); i++) {
-        boolean expand = i < 2 || subreport.isExpanded() ;
-        DocumentDomainObject document = (DocumentDomainObject) documents.get(i);
-    %>
-    <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
-    <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
-    <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
-    <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
+               <%
+                    for (int i = 0; i < documents.size() && subreport.isBelowMaxDocumentCount(i); i++) {
+                        boolean expand = i < 2 || subreport.isExpanded() ;
+                        DocumentDomainObject document = (DocumentDomainObject) documents.get(i); %>
+                <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
+                <jsp:setProperty name="listItemBean" property="expanded" value="<%= expand %>"/>
+                <jsp:setProperty name="listItemBean" property="index" value="<%= i %>"/>
+                <jsp:setProperty name="listItemBean" property="document" value="<%= document %>"/>
 
-    <jsp:include page="admin_manager_inc_list_item.jsp"/>
+                <jsp:include page="admin_manager_inc_list_item.jsp"/>
 
-  <% } %>
+                <% } %>
+            </table>
+        </td>
+    </tr>
+    <% if ( !subreport.isBelowMaxDocumentCount( documents.size() ) ) { %>
+        <tr>
+            <td colspan="4" align="center"><img src="<%= imagesPath %>/1x1.gif" height="20" width="1"><br>
+                <a href="javascript: document.forms.seachForm99.submit();"><? web/imcms/lang/jsp/admin/admin_manager.jsp/19 ?></a></td>
+        </tr>
+        <form name="seachForm99"></form>
+    <%}%>
 </table>
-</td>
-</tr>
-<% if ( !subreport.isBelowMaxDocumentCount( documents.size() ) ) { %>
-<tr>
-    <td colspan="4" align="center"><img src="<%= imagesPath %>/1x1.gif" height="20" width="1"><br>
-        <a href="javascript: document.forms.seachForm99.submit();"><? web/imcms/lang/jsp/admin/admin_manager.jsp/19 ?></a></td>
-</tr>
-<form name="seachForm99"></form>
-<%}%>

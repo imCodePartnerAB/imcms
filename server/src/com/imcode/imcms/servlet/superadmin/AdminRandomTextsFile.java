@@ -62,8 +62,8 @@ public class AdminRandomTextsFile extends Administrator {
         String date2 = "";
         String text = "";
 
-        String errMsgDate = imcref.getTemplateFromDirectory( DATE_ERROR, user, null, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
-        String errMsgTxt = imcref.getTemplateFromDirectory( TEXT_ERROR, user, null, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
+        String errMsgDate = imcref.getTemplateFromDirectory( DATE_ERROR, user, null, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "" );
+        String errMsgTxt = imcref.getTemplateFromDirectory( TEXT_ERROR, user, null, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "" );
 
         if ( req.getParameter( "save" ) != null ) {
             addLineToList( req, lines );
@@ -175,7 +175,7 @@ public class AdminRandomTextsFile extends Administrator {
         values.add( "#options#" );
         values.add( buff.toString() );
 
-        String parsed = imcref.getTemplateFromDirectory( HTML_TEMPLATE, user, values, DocumentDomainObject.DOCTYPE_FORTUNES + "" );
+        String parsed = imcref.getTemplateFromDirectory( HTML_TEMPLATE, user, values, DocumentDomainObject.PSEUDO_DOCTYPE_ID_FORTUNES + "" );
         out.print( parsed );
         return;
     }

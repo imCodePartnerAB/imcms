@@ -94,15 +94,15 @@ class MenuParser {
         docTypesMap.put( new Integer( EXISTING_DOCTYPE_ID ), new IdNamePair( EXISTING_DOCTYPE_ID, existing_doc_name ) );
 
         final int[] docTypeIdsOrder = {
-            DocumentDomainObject.DOCTYPE_TEXT,
+            DocumentDomainObject.DOCTYPE_ID_TEXT,
             EXISTING_DOCTYPE_ID,
-            DocumentDomainObject.DOCTYPE_URL,
-            DocumentDomainObject.DOCTYPE_FILE,
-            DocumentDomainObject.DOCTYPE_BROWSER,
-            DocumentDomainObject.DOCTYPE_HTML,
-            DocumentDomainObject.DOCTYPE_CHAT,
-            DocumentDomainObject.DOCTYPE_BILLBOARD,
-            DocumentDomainObject.DOCTYPE_CONFERENCE,
+            DocumentDomainObject.DOCTYPE_ID_URL,
+            DocumentDomainObject.DOCTYPE_ID_FILE,
+            DocumentDomainObject.DOCTYPE_ID_BROWSER,
+            DocumentDomainObject.DOCTYPE_ID_HTML,
+            DocumentDomainObject.DOCTYPE_ID_CHAT,
+            DocumentDomainObject.DOCTYPE_ID_BILLBOARD,
+            DocumentDomainObject.DOCTYPE_ID_CONFERENCE,
         };
 
         StringBuffer documentTypesHtmlOptionList = new StringBuffer();

@@ -6,15 +6,9 @@
  */
 package imcode.server.document;
 
-import imcode.util.LocalizedMessage;
-
 public class ChatDocumentDomainObject extends FormerExternalDocumentDomainObject {
 
-    public int getDocumentTypeId() {
+    public DocumentTypeDomainObject getDocumentType() {
         return DOCTYPE_CHAT;
-    }
-
-    public LocalizedMessage getDocumentTypeName() {
-        return new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX+"/chat" );
     }
 }

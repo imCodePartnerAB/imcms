@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class FileDocument extends Document {
 
-    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_FILE ;
+    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_ID_FILE ;
 
     FileDocument( FileDocumentDomainObject document, ContentManagementSystem contentManagementSystem ) {
         super( document, contentManagementSystem );

@@ -58,15 +58,15 @@ public class DocumentService {
     }
 
     public TextDocument createNewTextDocument( Document parent ) throws NoPermissionException {
-        return (TextDocument)createNewDocument( DocumentDomainObject.DOCTYPE_TEXT, parent );
+        return (TextDocument)createNewDocument( DocumentDomainObject.DOCTYPE_ID_TEXT, parent );
     }
 
     public UrlDocument createNewUrlDocument( Document parent ) throws NoPermissionException {
-        return (UrlDocument)createNewDocument( DocumentDomainObject.DOCTYPE_URL, parent );
+        return (UrlDocument)createNewDocument( DocumentDomainObject.DOCTYPE_ID_URL, parent );
     }
 
     public FileDocument createNewFileDocument( Document parent ) throws NoPermissionException {
-        return (FileDocument)createNewDocument( DocumentDomainObject.DOCTYPE_FILE, parent );
+        return (FileDocument)createNewDocument( DocumentDomainObject.DOCTYPE_ID_FILE, parent );
     }
 
     private Document createNewDocument( int doctype, Document parent ) throws NoPermissionException {

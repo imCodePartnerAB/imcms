@@ -6,15 +6,10 @@
  */
 package imcode.server.document;
 
-import imcode.util.LocalizedMessage;
-
 public class ConferenceDocumentDomainObject extends FormerExternalDocumentDomainObject {
 
-    public int getDocumentTypeId() {
+    public DocumentTypeDomainObject getDocumentType() {
         return DOCTYPE_CONFERENCE;
     }
 
-    public LocalizedMessage getDocumentTypeName() {
-        return new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX + "conference" ) ;
-    }
 }

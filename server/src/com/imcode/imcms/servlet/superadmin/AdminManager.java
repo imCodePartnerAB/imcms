@@ -3,12 +3,16 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
+import com.imcode.imcms.servlet.admin.AddDoc;
 import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
 import com.imcode.imcms.servlet.beans.AdminManagerSubreport;
+import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.flow.DispatchCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentComparator;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
@@ -33,10 +37,10 @@ public class AdminManager extends Administrator {
     private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm";
     private final static String HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";
     public final static String REQUEST_PARAMETER__SHOW = "show";
-    private final static String PARAMETER_VALUE__SHOW_NEW = "new";
-    private final static String PARAMETER_VALUE__SHOW_REMINDERS = "reminders";
-    private final static String PARAMETER_VALUE__SHOW_SUMMARY = "summary";
-    private final static String PARAMETER_VALUE__SHOW_SEARCH = "search";
+    public final static String PARAMETER_VALUE__SHOW_NEW = "new";
+    public final static String PARAMETER_VALUE__SHOW_REMINDERS = "reminders";
+    public final static String PARAMETER_VALUE__SHOW_SUMMARY = "summary";
+    public final static String PARAMETER_VALUE__SHOW_SEARCH = "search";
     public final static String LIST_TYPE__list_new_not_approved = "list_new_not_approved";
     public final static String LIST_TYPE__list_documents_archived_less_then_one_week = "list_documents_archived_less_then_one_week";
     public final static String LIST_TYPE__list_documents_publication_end_less_then_one_week = "list_documents_publication_end_less_then_one_week";
@@ -67,19 +71,23 @@ public class AdminManager extends Administrator {
     public static final String REQUEST_PARAMETER__DATE_END = "date_end";
     public static final String REQUEST_PARAMETER__HITS_PER_PAGE = "hits_per_page";
     public static final String REQUEST_PARAMETER__FROMPAGE = "frompage";
+    public static final String REQUEST_PARAMETER__CREATE_NEW_DOCUMENT = "create_new_document";
+    public static final String REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID = "parent_id";
+    public static final String REQUEST_PARAMETER__NEW_DOCUMENT_TYPE_ID = "new_document_type_id";
+
     public static final String PAGE_SEARCH = "search";
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         this.doPost( req, res );
     }
 
-    public void doPost( HttpServletRequest req, HttpServletResponse res )
+    public void doPost( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
 
         ImcmsServices service = Imcms.getServices();
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser( req );
+        UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
 
-        String whichButton = req.getParameter( "AdminTask" );
+        String whichButton = request.getParameter( "AdminTask" );
         if ( null != whichButton ) {
 
             if ( !loggedOnUser.isSuperAdmin() && !loggedOnUser.isUserAdmin() ) {
@@ -88,19 +96,45 @@ public class AdminManager extends Administrator {
                 String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
                 log.debug( header + "- user is not an administrator" );
 
-                new AdminError( req, res, header, msg );
+                new AdminError( request, response, header, msg );
                 return;
             }
 
             String url = getAdminTaskUrl( whichButton );
             if ( StringUtils.isNotBlank( url ) ) {
-                res.sendRedirect( url );
+                response.sendRedirect( url );
                 return;
             }
         }
 
-        String tabToShow = null != req.getParameter( REQUEST_PARAMETER__SHOW )
-                           ? req.getParameter( REQUEST_PARAMETER__SHOW ) : PARAMETER_VALUE__SHOW_NEW;
+        final DocumentMapper documentMapper = service.getDocumentMapper();
+        if (Utility.parameterIsSet( request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT )) {
+            int parentId = Integer.parseInt(request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID )) ;
+            int documentTypeId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_TYPE_ID )) ;
+            DocumentDomainObject parentDocument = documentMapper.getDocument( parentId ) ;
+
+            DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new DocumentPageFlow.SaveDocumentCommand() {
+                public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+                    documentMapper.saveNewDocument( document, user );
+                }
+            };
+            DispatchCommand returnCommand = new DispatchCommand() {
+                public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                    createAndShowAdminManagerPage( request, response );
+                }
+            };
+            AddDoc.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument,request,response,saveNewDocumentCommand, returnCommand, null, getServletContext() );
+        } else {
+            createAndShowAdminManagerPage( request, response );
+        }
+    }
+
+    private void createAndShowAdminManagerPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
+        ImcmsServices service = Imcms.getServices();
+        final DocumentMapper documentMapper = service.getDocumentMapper();
+        String tabToShow = null != request.getParameter( REQUEST_PARAMETER__SHOW )
+                           ? request.getParameter( REQUEST_PARAMETER__SHOW ) : PARAMETER_VALUE__SHOW_NEW;
 
         String html_admin_part = "";
 
@@ -116,7 +150,7 @@ public class AdminManager extends Administrator {
         List documents_publication_end_less_then_one_week = new LinkedList();  //PUBLICATION_END_DATETIME < 7 days
         List documents_not_changed_in_six_month = new LinkedList();
 
-        DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
+        DocumentIndex index = documentMapper.getDocumentIndex();
         BooleanQuery booleanQuery = new BooleanQuery();
         Query restrictingQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + "" ) );
         booleanQuery.add( restrictingQuery, true, false );
@@ -141,13 +175,13 @@ public class AdminManager extends Administrator {
         } ;
         for ( int i = 0; i < subreports.length; i++ ) {
             AdminManagerSubreport subreport = subreports[i];
-            String newSortOrder = req.getParameter( subreport.getName()+"_sortorder" ) ;
+            String newSortOrder = request.getParameter( subreport.getName()+"_sortorder" ) ;
             if (null != newSortOrder) {
                 subreport.setSortorder( newSortOrder );
             }
             Collections.sort( subreport.getDocuments(), getComparator( subreport.getSortorder() ) ) ;
-            boolean expanded = Utility.parameterIsSet( req, subreport.getName() + "_expand" )
-                           && !Utility.parameterIsSet( req, subreport.getName() + "_unexpand" ) ;
+            boolean expanded = Utility.parameterIsSet( request, subreport.getName() + "_expand" )
+                           && !Utility.parameterIsSet( request, subreport.getName() + "_unexpand" ) ;
             subreport.setExpanded( expanded );
         }
 
@@ -157,7 +191,6 @@ public class AdminManager extends Administrator {
             newDocumentsSubreport.setMaxDocumentCount( 0 );
 
             AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
-            newDocumentsAdminManagerPage.setName( "admin_manager_new.jsp");
             newDocumentsAdminManagerPage.setTabName( "new" );
             newDocumentsAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0" ) );
 
@@ -168,7 +201,6 @@ public class AdminManager extends Administrator {
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_REMINDERS ) ) {
 
             AdminManagerPage reminderAdminManagerPage = new AdminManagerPage();
-            reminderAdminManagerPage.setName( "admin_manager_reminders.jsp" );
             reminderAdminManagerPage.setTabName( "reminders" );
             reminderAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1" ) );
 
@@ -189,7 +221,6 @@ public class AdminManager extends Administrator {
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SUMMARY ) ) {
 
             AdminManagerPage summaryAdminManagerPage = new AdminManagerPage();
-            summaryAdminManagerPage.setName( "admin_manager_summary.jsp" );
             summaryAdminManagerPage.setTabName( "summary" );
             summaryAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2" ) );
 
@@ -213,14 +244,13 @@ public class AdminManager extends Administrator {
                     documentFinder.forward( request, response );
                 }
             };
-            searchAdminManagerPage.setName( "search" );
             searchAdminManagerPage.setTabName( "search" );
             searchAdminManagerPage.setHeading( new LocalizedMessage( "<? global/Search ?>" ) );
             adminManagerPage = searchAdminManagerPage ;
         }
 
         adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
-        adminManagerPage.forward( req, res, loggedOnUser );
+        adminManagerPage.forward( request, response, loggedOnUser );
     }
 
     private AdminManagerSubreport createModifiedDocumentsSubreport( List documents_modified ) {
@@ -288,7 +318,7 @@ public class AdminManager extends Administrator {
     }
 
     public static class AdminManagerPage {
-        String name ;
+
         LocalizedMessage heading ;
         String tabName ;
         List subreports = new ArrayList() ;
@@ -301,10 +331,6 @@ public class AdminManager extends Administrator {
 
         public void setHeading( LocalizedMessage heading ) {
             this.heading = heading;
-        }
-
-        public void setName( String name ) {
-            this.name = name;
         }
 
         public List getSubreports() {

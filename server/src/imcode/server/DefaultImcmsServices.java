@@ -296,7 +296,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      */
     public String isUrlDoc( int meta_id ) {
         String url_ref = null;
-        if ( DocumentDomainObject.DOCTYPE_URL == getDocType( meta_id ) ) {
+        if ( DocumentDomainObject.DOCTYPE_ID_URL == getDocType( meta_id ) ) {
             String sqlStr = "select url_ref from url_docs where meta_id = ?";
             url_ref = sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
         }
@@ -311,7 +311,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public String isFramesetDoc( int meta_id ) {
 
         String htmlStr = null;
-        if ( DocumentDomainObject.DOCTYPE_HTML == getDocType( meta_id ) ) {
+        if ( DocumentDomainObject.DOCTYPE_ID_HTML == getDocType( meta_id ) ) {
             String sqlStr = "select frame_set from frameset_docs where meta_id = ?";
             htmlStr = sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
         }

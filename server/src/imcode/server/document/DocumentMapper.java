@@ -70,7 +70,7 @@ public class DocumentMapper {
         }
         DocumentDomainObject newDocument;
         try {
-            if ( DocumentDomainObject.DOCTYPE_TEXT == documentTypeId ) {
+            if ( DocumentDomainObject.DOCTYPE_ID_TEXT == documentTypeId ) {
                 newDocument = (DocumentDomainObject)parent.clone();
                 TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject)newDocument;
                 newTextDocument.removeAllTexts();

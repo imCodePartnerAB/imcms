@@ -1,7 +1,5 @@
 package imcode.server.document;
 
-import imcode.server.user.UserDomainObject;
-import imcode.util.LocalizedMessage;
 import org.apache.commons.collections.MapUtils;
 
 import java.io.Serializable;
@@ -17,16 +15,12 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
         return Collections.unmodifiableMap( browserDocumentIdMap );
     }
 
-    public int getDocumentTypeId() {
+    public DocumentTypeDomainObject getDocumentType() {
         return DOCTYPE_BROWSER;
     }
 
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitBrowserDocument(this) ;
-    }
-
-    public LocalizedMessage getDocumentTypeName() {
-        return new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX+"browser" ) ;
     }
 
     public void setBrowserDocumentId( Browser browser, int documentId ) {

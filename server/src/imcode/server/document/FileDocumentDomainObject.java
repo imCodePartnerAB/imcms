@@ -19,16 +19,12 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     public static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
     public static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
 
-    public int getDocumentTypeId() {
+    public DocumentTypeDomainObject getDocumentType() {
         return DOCTYPE_FILE;
     }
 
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitFileDocument( this );
-    }
-
-    public LocalizedMessage getDocumentTypeName() {
-        return new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX + "file" );
     }
 
     public void addFile( String fileId, FileDocumentFile file ) {

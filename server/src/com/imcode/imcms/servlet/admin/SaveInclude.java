@@ -59,7 +59,7 @@ public class SaveInclude extends HttpServlet {
                     String[] docTypeStrArr = imcref.sqlProcedure( "GetDocType", new String[]{included_meta_id} );
                     int docType = Integer.parseInt( docTypeStrArr[0] );
                     if ( null == docTypeStrArr || 0 == docTypeStrArr.length
-                         || DocumentDomainObject.DOCTYPE_TEXT != docType ) {
+                         || DocumentDomainObject.DOCTYPE_ID_TEXT != docType ) {
                         sendBadId( imcref, out, meta_id, user );
                         return;
                     }

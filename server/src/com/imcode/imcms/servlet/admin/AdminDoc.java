@@ -128,9 +128,9 @@ public class AdminDoc extends HttpServlet {
         // Lets detect which view the admin wants
         switch ( doc_type ) {
 
-            case DocumentDomainObject.DOCTYPE_CONFERENCE:
-            case DocumentDomainObject.DOCTYPE_BILLBOARD:
-            case DocumentDomainObject.DOCTYPE_CHAT:
+            case DocumentDomainObject.DOCTYPE_ID_CONFERENCE:
+            case DocumentDomainObject.DOCTYPE_ID_BILLBOARD:
+            case DocumentDomainObject.DOCTYPE_ID_CHAT:
                 GetDoc.redirectToExternalDocumentTypeWithAction( document, res, "change" );
                 return null;
 

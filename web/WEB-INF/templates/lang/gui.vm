@@ -1,4 +1,6 @@
-#macro( gui_bottom )</td>
+#macro( gui_bottom )
+            <!-- gui_bottom -->
+            </td>
 			<td><img
 			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 			<td class="imcmsAdmBorder"><img
@@ -25,9 +27,12 @@
 			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 		</tr>
 		</table>
+        <!-- /gui_bottom -->
 #end
 
-#macro( gui_bottom_noshade )</td>
+#macro( gui_bottom_noshade )
+            <!-- gui_bottom_noshade -->
+            </td>
 			<td><img
 			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 			<td><img
@@ -54,9 +59,11 @@
 			src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 		</tr>
 		</table>
+        <!-- /gui_bottom_noshade -->
 #end
 
 #macro( gui_head_help_and_back_buttons $help_id $formAction $formName $cancelButtonName )
+<!-- gui_head_help_and_back_buttons -->
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="$formAction">
 <tr>
@@ -66,9 +73,11 @@
 </tr>
 </form>
 </table>
+<!-- /gui_head_help_and_back_buttons -->
 #end
 
 #macro( gui_head $heading )
+        <!-- gui_head -->
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
 			<td class="imcmsAdmBgHead" colspan="6"><img
@@ -91,9 +100,11 @@
 		<tr class="imcmsAdmBgHead">
 			<td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 			<td colspan="2">
+        <!-- /gui_head -->
 #end
 
 #macro( gui_head_noshade $heading )
+        <!-- gui_head_noshade -->
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
     <tr>
         <td class="imcmsAdmBgHead" colspan="6"><img
@@ -118,9 +129,12 @@
         <td colspan="2"><img
 				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
         <td colspan="2">
+        <!-- /gui_head_noshade -->
 #end
 
-#macro( gui_mid )</td>
+#macro( gui_mid )
+        <!-- gui_mid -->
+        </td>
         <td colspan="2"><img
 				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
     </tr>
@@ -142,19 +156,25 @@
         <td><img
 				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
         <td colspan="2">
+        <!-- /gui_mid -->
 #end
 
-#macro( gui_mid_tabs1 )</td>
+#macro( gui_mid_tabs1 )
+        <!-- gui_mid_tabs1 -->
+        </td>
         <td colspan="2"><img
 				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
     </tr>
     <tr>
         <td class="imcmsAdmBgHead" colspan="6"><img
 				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="20">
+        <!-- /gui_mid_tabs1 -->
 #end
 
 
-#macro( gui_mid_tabs2 )</td>
+#macro( gui_mid_tabs2 )
+        <!-- gui_mid_tabs2 -->
+        </td>
     </tr>
     <tr>
         <td height="10" class="imcmsAdmBorder"><img
@@ -170,9 +190,12 @@
         <td><img
 				src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
         <td colspan="2">
+        <!-- gui_mid_tabs2 -->
 #end
 
-#macro( gui_mid_noshade )</td>
+#macro( gui_mid_noshade )
+            <!-- gui_mid_noshade -->
+            </td>
 			<td colspan="2"><img src="$contextPath/imcms/$language/images/admin/1x1.gif"
 			width="1" height="1"></td>
 		</tr>
@@ -190,9 +213,11 @@
 			<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 			<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 			<td colspan="2">
+            <!-- /gui_mid_noshade -->
 #end
 
 #macro( gui_outer_end )</td>
+    <!-- gui_outer_end -->
 	<td align="right" valign="top" background="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_right.gif">
 	<img src="$contextPath/imcms/$language/images/admin/imcms_admin_shadow_right_top.gif"
 	width="12" height="12" alt="" border="0"></td>
@@ -211,40 +236,53 @@
 	</table></td>
 </tr>
 </table>
+    <!-- /gui_outer_end -->
 #end
 
-#macro( gui_outer_end_noshade )</td>
+#macro( gui_outer_end_noshade )
+    <!-- gui_outer_end_noshade -->
+    </td>
 </tr>
 </table>
+    <!-- /gui_outer_end_noshade -->
 #end
 
 #macro( gui_outer_start )
+    <!-- gui_outer_start -->
 <table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" align="center">
 <tr>
 	<td class="imcmsAdmTable">
+    <!-- /gui_outer_start -->
 #end
 
 #macro( gui_outer_start_noshade )
+    <!-- gui_outer_start_noshade -->
 <table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" align="center" width="100%">
 <tr>
 	<td class="imcmsAdmTable">
+    <!-- /gui_outer_start_noshade -->
 #end
 
 #macro( gui_hr $wantedcolor )
+    <!-- gui_hr $wantedcolor -->
 #if( 'blue' == $wantedcolor )
     #set( $color = '20568d' )
 #else
     #set( $color = $wantedcolor )
 #end
 <img src="$contextPath/imcms/$language/images/admin/1x1_${color}.gif" width="100%" height="1" vspace="8">
+    <!-- /gui_hr $wantedcolor -->
 #end
 
 #macro( gui_heading $heading )
+    <!-- gui_heading -->
 <span class="imcmsAdmHeading">$heading</span><br>
 #gui_hr( 'blue' )
+    <!-- /gui_heading -->
 #end
 
 #macro( gui_start_of_page $titleAndHeading $backServlet $action $helpPageNo $bodyOnLoad )
+<!-- gui_start_of_page -->
 <html>
 <head>
 <title>$titleAndHeading</title>
@@ -258,11 +296,14 @@
 	#gui_head( "$titleAndHeading" )
 	#gui_head_help_and_back_buttons( $helpPageNo  "$backServlet" "" "$action" )
 	#gui_mid()
+    <!-- /gui_start_of_page -->
 #end
 
 #macro( gui_end_of_page )
+    <!-- gui_end_of_page -->
 	#gui_bottom()
 	#gui_outer_end()
 </body>
 </html>
+    <!-- /gui_end_of_page -->
 #end

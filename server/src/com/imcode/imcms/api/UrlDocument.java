@@ -5,7 +5,7 @@ import imcode.server.document.DocumentDomainObject;
 
 public class UrlDocument extends Document {
 
-    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_URL;
+    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_ID_URL;
 
     UrlDocument(UrlDocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
         super(document, contentManagementSystem);

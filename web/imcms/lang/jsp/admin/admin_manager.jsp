@@ -1,13 +1,12 @@
 <%@ page import="com.imcode.imcms.servlet.superadmin.AdminManager,
-                 imcode.server.document.DocumentDomainObject,
                  imcode.util.Utility,
                  java.text.DateFormat,
                  java.text.SimpleDateFormat,
                  imcode.util.DateConstants,
-                 imcode.server.document.DocumentMapper,
                  imcode.server.Imcms,
                  com.imcode.imcms.servlet.beans.AdminManagerSubreport,
-                 java.util.*"%>
+                 java.util.*,
+                 imcode.server.document.*"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
@@ -70,9 +69,30 @@
 #gui_mid_tabs1()
 <%= tabString %>
 #gui_mid_tabs2()
-<% if (!"search".equals(adminManagerPage.getTabName())) { %>
+<% if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabName())) { %>
     <form method="GET" name="subreport" action="AdminManager">
     <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>">
+    <% if (AdminManager.PARAMETER_VALUE__SHOW_NEW.equals( adminManagerPage.getTabName() ) ) { %>
+        <input type="text" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="5">
+        <%
+            DocumentTypeDomainObject[] documentTypes = {
+                DocumentDomainObject.DOCTYPE_TEXT,
+                DocumentDomainObject.DOCTYPE_URL,
+                DocumentDomainObject.DOCTYPE_FILE,
+                DocumentDomainObject.DOCTYPE_HTML,
+            } ;
+        %>
+        <select name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_TYPE_ID %>">
+            <%
+                for ( int i = 0; i < documentTypes.length; i++ ) {
+                    DocumentTypeDomainObject documentType = documentTypes[i];
+                    %><option value="<%= documentType.getId() %>"><%= documentType.getName().toLocalizedString( request ) %></option><%
+                }
+            %>
+        </select>
+        <input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="Create new document">
+    <% } %>
+
         <%
           List subreports = adminManagerPage.getSubreports() ;
           for ( Iterator iterator = subreports.iterator(); iterator.hasNext(); ) {
@@ -82,35 +102,32 @@
           }
         %>
     </form>
-<% } else { %>
+    <% } else { %>
 
-<table border="0" cellspacing="0" cellpadding="2" width="656" align="center">
+    <table border="0" cellspacing="0" cellpadding="2" width="656" align="center">
+        <tr>
+            <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
+        </tr>
+        <tr>
+            <td colspan="2" height="22"><span class="imcmsAdmHeading"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/1 ?></span></td>
+        </tr>
+        <tr>
+            <td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
+        </tr>
+        <tr>
+            <td colspan="2">
 
-<tr>
-    <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
-</tr>
-<tr>
-    <td colspan="2" height="22"><span class="imcmsAdmHeading"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/1 ?></span></td>
-</tr>
-<tr>
-    <td colspan="2"><img src="<%= imagesPath %>/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
-</tr>
-<tr>
-<td colspan="2">
+                <form method="GET" action="SearchDocuments">
+                    <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__FROMPAGE %>" value="<%= AdminManager.PAGE_SEARCH %>">
+                    <jsp:include page="../search_documents_form.jsp" />
+                    <jsp:include page="../search_documents_results.jsp" />
+                </form>
 
-<form method="GET" action="SearchDocuments">
-<input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__FROMPAGE %>" value="<%= AdminManager.PAGE_SEARCH %>">
-<jsp:include page="../search_documents_form.jsp" />
+            </td>
 
-<jsp:include page="../search_documents_results.jsp" />
-</form>
-
-</td>
-
-</tr>
+        </tr>
+    </table>
 <% } %>
-
-</table>
 
 #gui_end_of_page()
 

@@ -13,16 +13,46 @@ import java.util.*;
 
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
-    public final static int DOCTYPE_TEXT = 2;
-    public final static int DOCTYPE_URL = 5;
-    public final static int DOCTYPE_BROWSER = 6;
-    public final static int DOCTYPE_HTML = 7;
-    public final static int DOCTYPE_FILE = 8;
-    public final static int DOCTYPE_DIAGRAM = 101;
-    public final static int DOCTYPE_CONFERENCE = 102;
-    public final static int DOCTYPE_CHAT = 103;
-    public final static int DOCTYPE_BILLBOARD = 104;
-    public static final int DOCTYPE_FORTUNES = 106;
+    public static final String DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX = "document_type/name/";
+
+    public static final int DOCTYPE_ID_TEXT = 2;
+    public static final int DOCTYPE_ID_URL = 5;
+    public static final int DOCTYPE_ID_BROWSER = 6;
+    public static final int DOCTYPE_ID_HTML = 7;
+    public static final int DOCTYPE_ID_FILE = 8;
+    public static final int DOCTYPE_ID_CONFERENCE = 102;
+    public static final int DOCTYPE_ID_CHAT = 103;
+    public static final int DOCTYPE_ID_BILLBOARD = 104;
+
+    public final static DocumentTypeDomainObject DOCTYPE_TEXT = new DocumentTypeDomainObject( DOCTYPE_ID_TEXT, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
+                                                                                                                       + "text" ) );
+    public final static DocumentTypeDomainObject DOCTYPE_URL = new DocumentTypeDomainObject( DOCTYPE_ID_URL, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
+                                                                                                                      + "url" ) );
+    public final static DocumentTypeDomainObject DOCTYPE_BROWSER = new DocumentTypeDomainObject( DOCTYPE_ID_BROWSER, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
+                                                                                                                          + "browser" ) );
+    public final static DocumentTypeDomainObject DOCTYPE_HTML = new DocumentTypeDomainObject( DOCTYPE_ID_HTML, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
+                                                                                                                       + "html" ) );
+    public final static DocumentTypeDomainObject DOCTYPE_FILE = new DocumentTypeDomainObject( DOCTYPE_ID_FILE, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
+                                                                                                                       + "file" ) );
+    public final static DocumentTypeDomainObject DOCTYPE_CONFERENCE = new DocumentTypeDomainObject( DOCTYPE_ID_CONFERENCE, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
+                                                                                                                               + "conference" ) );
+    public final static DocumentTypeDomainObject DOCTYPE_CHAT = new DocumentTypeDomainObject( DOCTYPE_ID_CHAT, new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
+                                                                                                                         + "/chat" ) );
+    public final static DocumentTypeDomainObject DOCTYPE_BILLBOARD = new DocumentTypeDomainObject( DOCTYPE_ID_BILLBOARD,
+                                                                                                   new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX
+                                                                                                                         + "billboard" ) );
+    final static DocumentTypeDomainObject[] ALL_DOCUMENT_TYPES = {
+       DOCTYPE_BILLBOARD,
+       DOCTYPE_BROWSER,
+       DOCTYPE_CHAT,
+       DOCTYPE_CONFERENCE,
+       DOCTYPE_FILE,
+       DOCTYPE_HTML,
+       DOCTYPE_TEXT,
+       DOCTYPE_URL,
+    } ;
+
+    public static final int PSEUDO_DOCTYPE_ID_FORTUNES = 106;
 
     public static final int STATUS_NEW = 0;
     public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
@@ -32,7 +62,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private Attributes attributes;
     private static Logger log = Logger.getLogger( DocumentDomainObject.class );
-    public static final String DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX = "document_type/name/";
 
     protected DocumentDomainObject() {
         attributes = new Attributes();
@@ -47,36 +76,36 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public static DocumentDomainObject fromDocumentTypeId( int documentTypeId ) {
-        DocumentDomainObject document ;
+        DocumentDomainObject document;
 
         switch ( documentTypeId ) {
-            case DOCTYPE_TEXT:
+            case DOCTYPE_ID_TEXT :
                 document = new TextDocumentDomainObject();
                 break;
-            case DOCTYPE_URL:
+            case DOCTYPE_ID_URL:
                 document = new UrlDocumentDomainObject();
                 break;
-            case DOCTYPE_BROWSER:
+            case DOCTYPE_ID_BROWSER:
                 document = new BrowserDocumentDomainObject();
                 break;
-            case DOCTYPE_FILE:
+            case DOCTYPE_ID_FILE:
                 document = new FileDocumentDomainObject();
                 break;
-            case DOCTYPE_HTML:
+            case DOCTYPE_ID_HTML:
                 document = new HtmlDocumentDomainObject();
                 break;
-            case DOCTYPE_CHAT:
+            case DOCTYPE_ID_CHAT:
                 document = new ChatDocumentDomainObject();
                 break;
-            case DOCTYPE_CONFERENCE:
+            case DOCTYPE_ID_CONFERENCE:
                 document = new ConferenceDocumentDomainObject();
                 break;
-            case DOCTYPE_BILLBOARD:
+            case DOCTYPE_ID_BILLBOARD:
                 document = new BillboardDocumentDomainObject();
                 break;
             default:
                 String errorMessage = "Unknown document-type-id: " + documentTypeId;
-                log.error(errorMessage);
+                log.error( errorMessage );
                 throw new IllegalArgumentException( errorMessage );
         }
 
@@ -208,7 +237,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public void setRolesMappedToPermissionSetIds( Map rolesMappedToPermissionSetIds ) {
-        attributes.rolesMappedToDocumentPermissionSetIds = TypedMap.decorate( new HashMap(), RoleDomainObject.class, Integer.class ) ;
+        attributes.rolesMappedToDocumentPermissionSetIds = TypedMap.decorate( new HashMap(), RoleDomainObject.class, Integer.class );
         attributes.rolesMappedToDocumentPermissionSetIds.putAll( rolesMappedToPermissionSetIds );
     }
 
@@ -335,10 +364,18 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return (CategoryDomainObject[])categoriesOfType.toArray( arrayOfCategoriesOfType );
     }
 
-    public abstract int getDocumentTypeId();
+    public abstract DocumentTypeDomainObject getDocumentType();
+
+    public final int getDocumentTypeId() {
+        return getDocumentType().getId();
+    }
+
+    public final LocalizedMessage getDocumentTypeName() {
+        return getDocumentType().getName();
+    }
 
     public int hashCode() {
-        return attributes.id ;
+        return attributes.id;
     }
 
     private boolean isArchivedAtTime( Date time ) {
@@ -421,13 +458,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return attributes;
     }
 
-    public abstract void accept( DocumentVisitor documentVisitor ) ;
+    public abstract void accept( DocumentVisitor documentVisitor );
 
     public String getUrl( HttpServletRequest request ) {
-        return request.getContextPath()+"/servlet/GetDoc?meta_id="+getId() ;
+        return request.getContextPath() + "/servlet/GetDoc?meta_id=" + getId();
     }
-
-    public abstract LocalizedMessage getDocumentTypeName() ;
 
     public static class Attributes implements Cloneable, Serializable {
 
@@ -441,7 +476,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private String menuText;
         private int id;
         private Date modifiedDatetime;
-        private Date lastModifiedDatetime ;
+        private Date lastModifiedDatetime;
         private boolean restrictedOneMorePrivilegedThanRestrictedTwo;
         private Date publicationStartDatetime;
         private Date publicationEndDatetime;

@@ -13,7 +13,7 @@ import java.util.*;
 
 public class TextDocument extends Document {
 
-    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_TEXT;
+    public final static int TYPE_ID = DocumentDomainObject.DOCTYPE_ID_TEXT;
 
     TextDocument( TextDocumentDomainObject textDocument,
                          ContentManagementSystem contentManagementSystem ) {

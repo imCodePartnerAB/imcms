@@ -14,16 +14,12 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
         this.url = url;
     }
 
-    public int getDocumentTypeId() {
-        return DOCTYPE_URL;
+    public DocumentTypeDomainObject getDocumentType() {
+        return DOCTYPE_URL ;
     }
 
     public void accept( DocumentVisitor documentVisitor ) {
         documentVisitor.visitUrlDocument( this );
-    }
-
-    public LocalizedMessage getDocumentTypeName() {
-        return new LocalizedMessage( DOCUMENT_TYPE_NAME_LOCALIZED_MESSAGE_PREFIX + "url" );
     }
 
 }
