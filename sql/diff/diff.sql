@@ -37,6 +37,26 @@ add default_template_1 INT DEFAULT -1 NOT NULL
 alter table text_docs 
 add default_template_2 INT DEFAULT -1 NOT NULL
 
+-- The procedure to suport the default_templates
+
+CREATE PROCEDURE [UpdateDefaultTemplates] 
+ @meta_id INT,
+ @template1 int,
+ @template2 int
+ AS
+UPDATE text_docs
+SET default_template_1= @template1,
+default_template_2=@template2 
+WHERE meta_id = @meta_id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
 
 -- 2001-09-26
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'se','Ändra include')
