@@ -377,6 +377,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertFalse( mimer.sproc_CheckAdminRights( USER_ID ));
     }
 
+    public void test_sproc_checkUserAdminrole() {
+        test_sproc_checkUserAdminrole( sqlServer );
+        test_sproc_checkUserAdminrole( mySql );
+        test_sproc_checkUserAdminrole( mimer );
+    }
+
+    private void test_sproc_checkUserAdminrole( DatabaseService dbService ) {
+        assertFalse( dbService.sproc_checkUserAdminrole(2,2) );
+        assertTrue( dbService.sproc_checkUserAdminrole(1,1) );
+        assertFalse( dbService.sproc_checkUserAdminrole(2452345,2) );
+    }
+
     // Below is helper functions to more than one test.
 
     private static DatabaseService.Table_users static_createDummyUser( int nextFreeUserId ) {
