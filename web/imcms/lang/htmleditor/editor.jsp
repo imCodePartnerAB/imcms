@@ -7,7 +7,8 @@
           com.imcode.imcms.api.TextDocument,
           java.io.File,
           java.io.FilenameFilter,
-          java.util.*"
+          java.util.*,
+          imcode.util.net.SMTP"
   contentType="text/html; charset=windows-1252"
 
 %><%

@@ -512,11 +512,11 @@ public class Conference extends HttpServlet {
     /**
      * Parses one record.
      */
-    String parseOneRecord( Vector tagsV, Vector dataV, File htmlCodeFile ) {
+    String parseOneRecord( Vector tagsV, Vector dataV, File htmlCodeFile ) throws IOException {
 
         // Lets parse one aHref reference
-        ParseServlet parser = new ParseServlet( htmlCodeFile, tagsV, dataV );
-        String oneRecordsHtmlCode = parser.getHtmlDoc();
+        ParsedTextFile parser = new ParsedTextFile( htmlCodeFile, tagsV, dataV );
+        String oneRecordsHtmlCode = parser.toString();
         return oneRecordsHtmlCode;
     } // End of parseOneRecord
 

@@ -1132,11 +1132,6 @@ final public class IMCService implements IMCServiceInterface {
         return new ShoppingOrderSystemImpl( this );
     }
 
-    public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime ) {
-        documentMapper.touchDocument( documentMapper.getDocument( metaId ) );
-        documentMapper.sqlUpdateModifiedDatesOnDocumentAndItsParent( metaId, dateTime );
-    }
-
     public Properties getLanguageProperties( UserDomainObject user ) {
         String languageIso639_2 = user.getLanguageIso639_2();
         Properties languageProperties = (Properties)languagePropertiesMap.get( languageIso639_2 ) ;

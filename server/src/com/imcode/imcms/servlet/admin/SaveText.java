@@ -4,7 +4,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -58,7 +58,7 @@ public final class SaveText extends HttpServlet {
 
         if ( req.getParameter( "ok" ) != null ) {
             DocumentMapper documentMapper = imcref.getDocumentMapper();
-            DocumentDomainObject document = documentMapper.getDocument(meta_id);
+            TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument(meta_id);
 
             saveText( documentMapper, text, document, txt_no, text_type, imcref, meta_id, user );
         }
@@ -69,13 +69,12 @@ public final class SaveText extends HttpServlet {
         }
     }
 
-    private void saveText( DocumentMapper documentMapper, TextDomainObject text, DocumentDomainObject document,
+    private void saveText( DocumentMapper documentMapper, TextDomainObject text, TextDocumentDomainObject document,
                            int txt_no, String text_type, IMCServiceInterface imcref, int meta_id,
                            UserDomainObject user ) {
-        documentMapper.sqlSaveText( text, document, txt_no );
+        document.setText( txt_no, text );
 
-        // update the date
-        documentMapper.touchDocument( document );
+        documentMapper.saveDocument( document, user );
 
         if ( !"".equals( text_type ) ) {
 

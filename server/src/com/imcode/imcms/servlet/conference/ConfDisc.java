@@ -11,7 +11,7 @@ package com.imcode.imcms.servlet.conference;
 */
 
 import imcode.external.diverse.MetaInfo;
-import imcode.external.diverse.ParseServlet;
+import imcode.external.diverse.ParsedTextFile;
 import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
@@ -442,7 +442,7 @@ public class ConfDisc extends Conference {
      * for all records in the array
      */
     private String preParse( HttpServletRequest req, String[][] DBArr, Vector tagsV, File htmlCodeFile,
-                             String imagePath, UserDomainObject user ) {
+                             String imagePath, UserDomainObject user ) throws IOException {
         String htmlStr = "";
         for ( int i = 0; i < DBArr.length; i++ ) {
             Vector dataV = new Vector();
@@ -630,11 +630,11 @@ public class ConfDisc extends Conference {
     /**
      * Parses one record.
      */
-    String parseOneRecord( Vector tagsV, Vector dataV, File htmlCodeFile ) {
+    String parseOneRecord( Vector tagsV, Vector dataV, File htmlCodeFile ) throws IOException {
 
         // Lets parse one aHref reference
-        ParseServlet parser = new ParseServlet( htmlCodeFile, tagsV, dataV );
-        String oneRecordsHtmlCode = parser.getHtmlDoc();
+        ParsedTextFile parser = new ParsedTextFile( htmlCodeFile, tagsV, dataV );
+        String oneRecordsHtmlCode = parser.toString();
         return oneRecordsHtmlCode;
     } // End of parseOneRecord
 

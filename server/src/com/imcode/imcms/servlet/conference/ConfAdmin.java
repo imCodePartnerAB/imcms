@@ -569,7 +569,7 @@ public class ConfAdmin extends Conference {
      * for all records in the array
      */
     private String replyPreParse(String[][] DBArr, Vector tagsV,
-                                 File htmlCodeFile, String imagePath) {
+                                 File htmlCodeFile, String imagePath) throws IOException {
 
         String htmlStr = "";
         // Lets do for all records...
@@ -624,7 +624,7 @@ public class ConfAdmin extends Conference {
      * for all records in the array
      */
     private String discPreParse(String[][] DBArr, Vector tagsV,
-                                File htmlCodeFile) {
+                                File htmlCodeFile) throws IOException {
 
         String htmlStr = "";
         // Lets do for all records...

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.*;
+import java.text.DateFormat;
 
 /**
  * Stores info about a document. *
@@ -176,6 +177,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setModifiedDatetime( Date v ) {
         attributes.modifiedDatetime = v;
+    }
+
+    void setLastModifiedDatetime( Date modifiedDatetime ) {
+        this.attributes.lastModifiedDatetime = modifiedDatetime;
+    }
+
+    Date getLastModifiedDatetime() {
+        return attributes.lastModifiedDatetime;
     }
 
     public Date getPublicationEndDatetime() {
@@ -449,6 +458,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private String menuText;
         private int id;
         private Date modifiedDatetime;
+        private Date lastModifiedDatetime ;
         private boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
         private Date publicationStartDatetime;
         private Date publicationEndDatetime;

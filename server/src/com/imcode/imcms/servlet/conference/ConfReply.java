@@ -11,7 +11,7 @@ package com.imcode.imcms.servlet.conference;
  */
 
 import imcode.external.diverse.MetaInfo;
-import imcode.external.diverse.ParseServlet;
+import imcode.external.diverse.ParsedTextFile;
 import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;
 import imcode.server.HTMLConv;
@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.List;
 
 /**
  * Html template in use:
@@ -238,7 +237,7 @@ public class ConfReply extends Conference {
      * Parses the Extended array with the htmlcode, which will be parsed
      * for all records in the array
      */
-    private String preParse( String[][] DBArr, Vector tagsV, File htmlCodeFile, String imagePath ) {
+    private String preParse( String[][] DBArr, Vector tagsV, File htmlCodeFile, String imagePath ) throws IOException {
 
         String htmlStr = "";
 
@@ -269,11 +268,11 @@ public class ConfReply extends Conference {
     /**
      * Parses one record.
      */
-    String parseOneRecord( Vector tagsV, Vector dataV, File htmlCodeFile ) {
+    String parseOneRecord( Vector tagsV, Vector dataV, File htmlCodeFile ) throws IOException {
 
         // Lets parse one aHref reference
-        ParseServlet parser = new ParseServlet( htmlCodeFile, tagsV, dataV );
-        String oneRecordsHtmlCode = parser.getHtmlDoc();
+        ParsedTextFile parser = new ParsedTextFile( htmlCodeFile, tagsV, dataV );
+        String oneRecordsHtmlCode = parser.toString();
 
         return oneRecordsHtmlCode;
     } // End of parseOneRecord

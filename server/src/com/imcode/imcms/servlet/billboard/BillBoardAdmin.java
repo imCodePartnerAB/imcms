@@ -1,11 +1,10 @@
 package com.imcode.imcms.servlet.billboard;
 
 import imcode.external.diverse.*;
-import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
-import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
+import imcode.server.IMCServiceInterface;
 import imcode.util.Html;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -727,7 +726,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
      * for all records in the array
      */
     private String replyPreParse( String[][] DBArr, Vector tagsV,
-                                  File htmlCodeFile ) {
+                                  File htmlCodeFile ) throws IOException {
 
         return discPreParse( DBArr, tagsV, htmlCodeFile );
     }
@@ -754,7 +753,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
      */
     //(HttpServletRequest req, String[] DBArr, Vector tagsV,String htmlCodeFile)
     private String discPreParse( String[][] DBArr, Vector tagsV,
-                                 File htmlCodeFile ) {
+                                 File htmlCodeFile ) throws IOException {
 
         String htmlStr = "";
 
@@ -778,11 +777,11 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
     /**
      * Parses one record.
      */
-    String parseOneRecord( Vector tagsV, Vector dataV, File htmlCodeFile ) {
+    String parseOneRecord( Vector tagsV, Vector dataV, File htmlCodeFile ) throws IOException {
 
         // Lets parse one aHref reference
-        ParseServlet parser = new ParseServlet( htmlCodeFile, tagsV, dataV );
-        String oneRecordsHtmlCode = parser.getHtmlDoc();
+        ParsedTextFile parser = new ParsedTextFile( htmlCodeFile, tagsV, dataV );
+        String oneRecordsHtmlCode = parser.toString();
         return oneRecordsHtmlCode;
     } // End of parseOneRecord
 

@@ -37,7 +37,6 @@ public class DocumentMapper {
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
     private static final String SPROC_GET_TEXT = "GetText";
-    private static final String SPROC_INSERT_TEXT = "InsertText";
     private static final String SPROC_UPDATE_PARENTS_DATE_MODIFIED = "UpdateParentsDateModified";
     private static final String SPROC_SECTION_GET_ALL = "SectionGetAll";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
@@ -625,6 +624,11 @@ public class DocumentMapper {
         try {
             checkMaxDocumentCategoriesOfType( document );
 
+            boolean modifiedDatetimeChanged = !document.getLastModifiedDatetime().equals( document.getModifiedDatetime() );
+            if ( !modifiedDatetimeChanged ) {
+                document.setModifiedDatetime( service.getCurrentDate() );
+            }
+
             sqlUpdateMeta( document );
 
             updateDocumentSections( document.getId(), document.getSections() );
@@ -640,7 +644,7 @@ public class DocumentMapper {
 
             document.accept(new DocumentSavingVisitor(user)) ;
         } finally {
-            touchDocument( document );
+            documentIndex.indexDocument( document );
         }
     }
 
@@ -746,11 +750,6 @@ public class DocumentMapper {
                                 (String[])sqlUpdateValues.toArray( new String[sqlUpdateValues.size()] ) );
     }
 
-    public void sqlSaveText( TextDomainObject text, DocumentDomainObject document, int txt_no ) {
-        String[] params = new String[]{"" + document.getId(), "" + txt_no, "" + text.getType(), text.getText()};
-        service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
-    }
-
     public void setInclude( int includingMetaId, int includeIndex, int includedMetaId ) {
         sprocSetInclude( service, includingMetaId, includeIndex, includedMetaId );
     }
@@ -812,23 +811,6 @@ public class DocumentMapper {
 
     public static void sprocUpdateParentsDateModified( IMCServiceInterface imcref, int meta_id ) {
         imcref.sqlUpdateProcedure( SPROC_UPDATE_PARENTS_DATE_MODIFIED, new String[]{"" + meta_id} );
-    }
-
-    public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date dateTime ) {
-        String modifiedDateTimeStr = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING ).format( dateTime );
-        service.sqlUpdateQuery( "update meta set date_modified = ? where meta_id = ?",
-                                new String[]{modifiedDateTimeStr, "" + meta_id} );
-        // Update the date_modified for all parents.
-        sprocUpdateParentsDateModified( service, meta_id );
-    }
-
-    /**
-     * Set the modified datetime of a document to now
-     *
-     * @param document The id of the document
-     */
-    public void touchDocument( DocumentDomainObject document ) {
-        touchDocument( document, service.getCurrentDate() );
     }
 
     private void addCategoriesFromDatabaseToDocument( DocumentDomainObject document ) {
@@ -949,7 +931,9 @@ public class DocumentMapper {
         document.setLanguageIso639_2( LanguageMapper.getAsIso639_2OrDefaultLanguage( result[9], service ) );
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
         document.setCreatedDatetime( parseDateFormat( dateFormat, result[10] ) );
-        document.setModifiedDatetime( parseDateFormat( dateFormat, result[11] ) );
+        Date modifiedDatetime = parseDateFormat( dateFormat, result[11] );
+        document.setModifiedDatetime( modifiedDatetime );
+        document.setLastModifiedDatetime( modifiedDatetime ) ;
         document.setSearchDisabled( getBooleanFromSqlResultString( result[12] ) );
         document.setTarget( result[13] );
         document.setArchivedDatetime( parseDateFormat( dateFormat, result[14] ) );
@@ -990,19 +974,6 @@ public class DocumentMapper {
         "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
         String[] keywords = service.sqlQuery( sqlStr, new String[]{"" + meta_id} );
         return keywords;
-    }
-
-    /**
-     * Set the modified datetime of a document to the given date
-     *
-     * @param document The id of the document
-     * @param date     The datetime to set
-     */
-    private void touchDocument( DocumentDomainObject document, java.util.Date date ) {
-        SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-        String sqlStr = "update meta set date_modified = ? where meta_id = ?";
-        service.sqlUpdateQuery( sqlStr, new String[]{dateformat.format( date ), "" + document.getId()} );
-        documentIndex.indexDocument( document );
     }
 
     private boolean userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,

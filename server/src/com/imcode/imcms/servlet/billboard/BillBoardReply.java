@@ -238,7 +238,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
      * for all records in the array
      */
     private String preParse( String[][] DBArr, Vector tagsV,
-                             File htmlCodeFile ) {
+                             File htmlCodeFile ) throws IOException {
 
         StringBuffer htmlStr = new StringBuffer( "" );
         // Lets do for all records...

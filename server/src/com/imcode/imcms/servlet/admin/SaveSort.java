@@ -51,7 +51,6 @@ public class SaveSort extends HttpServlet {
         String[] selectedChildrenIds;
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
-        documentMapper.touchDocument( document );
 
         String[] children = imcref.sqlQuery( "select to_meta_id from childs, menus where childs.menu_id = menus.menu_id AND meta_id = ?", new String[]{
             "" + documentId

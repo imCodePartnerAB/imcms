@@ -182,8 +182,6 @@ public interface IMCServiceInterface {
     /** Get an interface to the shopping order system **/
     public imcode.util.shop.ShoppingOrderSystem getShoppingOrderSystem() ;
 
-    void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime );
-
     void updateMainLog( String logMessage );
 
     ConnectionPool getConnectionPool();

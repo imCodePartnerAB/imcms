@@ -14,7 +14,6 @@ import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
@@ -25,7 +24,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * Html template in use:
@@ -92,15 +94,13 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
             // Lets get the forum_id and set our session object before updating
             Properties reqParams = this.getRequestParameters( req );
             String aSectionId = reqParams.getProperty( "SECTION_ID" );//
-            String discIndex = params.getProperty( "DISC_INDEX" );
 
             HttpSession session = req.getSession( false );
             if ( session != null ) {
                 String latestDiscId = "-1";
-                discIndex = "0";
                 session.setAttribute( "BillBoard.disc_id", latestDiscId );//
                 session.setAttribute( "BillBoard.section_id", aSectionId );//
-                session.setAttribute( "BillBoard.disc_index", discIndex );//
+                session.setAttribute( "BillBoard.disc_index", "0" );//
             }
 
             // Lets redirect to the servlet which holds in us.
@@ -432,7 +432,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
      * Parses the Extended array with the htmlcode, which will be parsed
      * for all records in the array
      */
-    private String preParse( String[][] DBArr, Vector tagsV, File htmlCodeFile ) {
+    private String preParse( String[][] DBArr, Vector tagsV, File htmlCodeFile ) throws IOException {
         String htmlStr = "";
  
         // Lets do for all records...

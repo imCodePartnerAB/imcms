@@ -22,3 +22,7 @@ ALTER TABLE fileupload_docs ALTER COLUMN filename VARCHAR(255)
 ALTER TABLE fileupload_docs ADD created_as_image INT NOT NULL DEFAULT 0
 
 -- 2004-07-01 Kreiger
+
+DROP PROCEDURE InsertText
+
+-- 2004-07-05 Kreiger

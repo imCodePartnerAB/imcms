@@ -49,8 +49,8 @@ public class BillBoard extends HttpServlet {
 
         // Get the session
         HttpSession session = req.getSession( true );
-        String metaIdStr = ( (String)session.getAttribute( "BillBoard.meta_id" ) == null )
-                           ? "" : ( (String)session.getAttribute( "BillBoard.meta_id" ) );//Conference.meta_id
+        String metaIdStr = (String)session.getAttribute( "BillBoard.meta_id" ) == null
+                           ? "" : (String)session.getAttribute( "BillBoard.meta_id" );//Conference.meta_id
 
         int metaId = Integer.parseInt( metaIdStr );
 
@@ -71,10 +71,10 @@ public class BillBoard extends HttpServlet {
 
         // Get the session
         HttpSession session = req.getSession( true );
-        String sectionId = ( (String)session.getAttribute( "BillBoard.section_id" ) == null )
-                           ? "" : ( (String)session.getAttribute( "BillBoard.section_id" ) );//"Conference.forum_id"
-        String discId = ( (String)session.getAttribute( "BillBoard.disc_id" ) == null )
-                        ? "" : ( (String)session.getAttribute( "BillBoard.disc_id" ) );//"Conference.disc_id"
+        String sectionId = (String)session.getAttribute( "BillBoard.section_id" ) == null
+                           ? "" : (String)session.getAttribute( "BillBoard.section_id" );//"Conference.forum_id"
+        String discId = (String)session.getAttribute( "BillBoard.disc_id" ) == null
+                        ? "" : (String)session.getAttribute( "BillBoard.disc_id" );//"Conference.disc_id"
 
         if ( params == null ) {
             params = new Properties();
@@ -346,9 +346,9 @@ public class BillBoard extends HttpServlet {
         // Ok, Lets find all apostrofes and if any,add another one
         Enumeration enumValues = aPropObj.elements();
         Enumeration enumKeys = aPropObj.keys();
-        while ( ( enumValues.hasMoreElements() && enumKeys.hasMoreElements() ) ) {
-            Object oKeys = ( enumKeys.nextElement() );
-            Object oValue = ( enumValues.nextElement() );
+        while ( enumValues.hasMoreElements() && enumKeys.hasMoreElements() ) {
+            Object oKeys = enumKeys.nextElement();
+            Object oValue = enumValues.nextElement();
             String theVal = oValue.toString();
             String theKey = oKeys.toString();
             aPropObj.setProperty( theKey, verifySqlText( theVal ) );
@@ -367,8 +367,6 @@ public class BillBoard extends HttpServlet {
     boolean isUserAuthorized( HttpServletRequest req, HttpServletResponse res,
                               imcode.server.user.UserDomainObject user )
             throws IOException {
-
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         HttpSession session = req.getSession( true );
 
@@ -424,8 +422,8 @@ public class BillBoard extends HttpServlet {
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
-        return ( documentMapper.userHasAtLeastDocumentReadPermission( user, document ) &&
-                 imcref.checkDocAdminRights( metaId, user ) );
+        return documentMapper.userHasAtLeastDocumentReadPermission( user, document )
+               && imcref.checkDocAdminRights( metaId, user );
     }
 
     /**
@@ -437,17 +435,16 @@ public class BillBoard extends HttpServlet {
      */
     boolean userHasAdminRights( IMCServiceInterface imcref, int metaId,
                                 imcode.server.user.UserDomainObject user ) {
-        return ( imcref.checkDocAdminRights( metaId, user ) &&
-                 imcref.checkDocAdminRights( metaId, user, 65536 ) );
+        return imcref.checkDocAdminRights( metaId, user ) && imcref.checkDocAdminRights( metaId, user, 65536 );
     }
 
     /**
      * Parses one record.
      */
-    String parseOneRecord( Vector tagsV, Vector dataV, File htmlCodeFile ) {
+    String parseOneRecord( List tagsV, List dataV, File htmlCodeFile ) throws IOException {
         // Lets parse one aHref reference
-        ParseServlet parser = new ParseServlet( htmlCodeFile, tagsV, dataV );
-        String oneRecordsHtmlCode = parser.getHtmlDoc();
+        ParsedTextFile parser = new ParsedTextFile( htmlCodeFile, tagsV, dataV );
+        String oneRecordsHtmlCode = parser.toString();
         return oneRecordsHtmlCode;
     } // End of parseOneRecord
 
