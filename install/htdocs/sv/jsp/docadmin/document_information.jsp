@@ -146,11 +146,11 @@ imcmsGui("mid", null);
                 <option value="<%= DocumentDomainObject.STATUS_NEW %>"<% if (DocumentDomainObject.STATUS_NEW == document.getStatus()) { %> selected<% } %>>
                     <? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_new ?>
                 </option>
-                <option value="<%= DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED %>"<% if (DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus()) { %> selected<% } %>>
-                    <? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_publication_disapproved ?>
-                </option>
                 <option value="<%= DocumentDomainObject.STATUS_PUBLICATION_APPROVED %>"<% if (DocumentDomainObject.STATUS_PUBLICATION_APPROVED == document.getStatus()) { %> selected<% } %>>
                     <? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_publication_approved ?>
+                </option>
+                <option value="<%= DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED %>"<% if (DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus()) { %> selected<% } %>>
+                    <? install/htdocs/sv/jsp/docadmin/document_information.jsp/status_publication_disapproved ?>
                 </option>
             </select>
             <table border="0">
@@ -159,7 +159,7 @@ imcmsGui("mid", null);
                         <%
                             Date now = new Date();
                             Date publicationStartDatetime = document.getPublicationStartDatetime();
-                            if (null == publicationStartDatetime || publicationStartDatetime.after(now)) { %>
+                            if (document.getStatus() != DocumentDomainObject.STATUS_PUBLICATION_APPROVED || null == publicationStartDatetime || publicationStartDatetime.after(now)) { %>
                                 <? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_will_be_published_at ?>
                             <% } else { %>
                                 <? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_was_published_at ?>
