@@ -14,17 +14,22 @@ CREATE PROCEDURE GetCategoryUsers
 Used from servlet AdminUser 
 Get all user in selected category and have ( fistname || lastname || loginname ) like searchString 
 but for a Useradmin we only get those users with roles that the Useradmin has permission to administrate.
-and not user with role Superadmin or Useradmin
+and not user with role Superadmin or Useradmin.
+show only aktive users when @show= 1,  if show=0 show also not active users (active=0) 
 */
  @category int,
  @searchString varchar(20),
- @userId int
+ @userId int,
+ @show int
   
 AS
 
-DECLARE @isSuperadmin int  
+DECLARE @isSuperadmin int 
+
 SELECT @isSuperadmin = count(*) FROM user_roles_crossref 
 WHERE role_id =0 AND user_id = @userId
+
+SELECT @searchString = replace(@searchString, '*', '%' ) 
 
 IF @category = -1 BEGIN  -- if all category
 
@@ -32,6 +37,7 @@ IF @category = -1 BEGIN  -- if all category
 	SELECT user_id, last_name + ', ' + first_name + ' ['+LTRIM(RTRIM(login_name))+']'
 	FROM users
 	WHERE ( first_name like @searchString+'%' OR last_name like @searchString+'%' OR login_name like @searchString+'%' ) 
+	       AND ( active=1 or active=@show )
 	ORDER BY last_name
      END
      
@@ -39,7 +45,8 @@ IF @category = -1 BEGIN  -- if all category
 	SELECT user_id, last_name + ', ' + first_name + ' ['+LTRIM(RTRIM(login_name))+']'
 	FROM users
 	WHERE ( first_name like @searchString+'%' OR last_name like @searchString+'%' OR login_name like @searchString+'%' ) 
-	      AND user_id in (
+	      AND ( active=1 or active=@show )
+		  AND user_id in (
 			select user_id from user_roles_crossref 
 			WHERE role_id IN (
 					select role_id from useradmin_role_crossref 
@@ -61,6 +68,7 @@ ELSE BEGIN  -- select only user with selected category
 	FROM users
 	WHERE user_type = @category
 	     AND ( first_name like @searchString+'%' OR last_name like @searchString+'%' OR login_name like @searchString+'%' )
+		 AND ( active=1 or active=@show )	
 	ORDER BY last_name
     END
 
@@ -68,6 +76,8 @@ ELSE BEGIN  -- select only user with selected category
 	SELECT user_id, last_name + ', ' + first_name + ' ['+LTRIM(RTRIM(login_name))+']'
 	FROM users
 	WHERE user_type = @category
+		 AND ( first_name like @searchString+'%' OR last_name like @searchString+'%' OR login_name like @searchString+'%' )
+		 AND ( active=1 or active=@show )
 	     AND user_id in (
 			select user_id from user_roles_crossref 
 			WHERE role_id IN (

@@ -82,9 +82,11 @@ public class AdminUser extends Administrator
 	Vector userTypesV  = new Vector(java.util.Arrays.asList(userTypes)) ;
 	String user_type = ht.createHtmlCode("ID_OPTION", category, userTypesV ) ;
 	vm.addProperty("USER_TYPES", user_type  ) ;
+	String show = ( "null".equals(req.getParameter("showall"))) ? "1" : "0" ;
+
 
 	// Lets get all USERS from DB with firstname or lastname or login name like the searchString
-	String param = category + ", " + searchString + ", " + user.getUserId();
+	String param = category + ", " + searchString + ", " + user.getUserId() + ", " + show ;
 	String[] usersArr = imcref.sqlProcedure("GetCategoryUsers " + param) ;
 	Vector usersV  = new Vector(java.util.Arrays.asList(usersArr)) ;
 	String usersOption = ht.createHtmlCode("ID_OPTION", "", usersV ) ;
@@ -150,7 +152,7 @@ public class AdminUser extends Administrator
 
 
 	if ( req.getParameter("searchstring") != null ){
-		res.sendRedirect("AdminUser?search=" + req.getParameter("searchstring") + "&category=" +  req.getParameter("user_categories"));
+		res.sendRedirect("AdminUser?search=" + req.getParameter("searchstring") + "&category=" +  req.getParameter("user_categories") + "&showall=" + req.getParameter("showall"));
 		return;
 	}
 
