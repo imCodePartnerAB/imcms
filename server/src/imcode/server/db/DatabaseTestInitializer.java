@@ -8,7 +8,7 @@ class DatabaseTestInitializer {
     private static final Integer MIMER_PORT = new Integer(1360);
     private static final Integer MYSQL_PORT = new Integer(3306);
 
-    static final File FILE_PATH = new File("E:/backuppas/projekt/imcode2003/MAIN/imCMS/1.3/sql/multipledatabases/") ;
+    static final File FILE_PATH = new File("E:/backuppas/projekt/imcode2003/MAIN/imCMS/1.3/dist/") ;
     //public static final File FILE_PATH = new File("/home/kreiger/work/imCMS-MAIN/1.3/sql/multipledatabases") ;
 
     static DatabaseService static_initMimer() {

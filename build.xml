@@ -76,7 +76,6 @@
     <property name="dist-sql"             value="${dist}/imcms.sql"/>
     <property name="help-sql"             value="${dist}/help.sql"/>
 
-
     <!-- Where to install imCMS -->
     <property name="webapproot"           value="${deployroot}/${webappname}"/>
 
@@ -272,7 +271,6 @@
 	<delete file="${deployroot}/${warfile}"/>
     </target>
 
-
     <!-- Run JUnit-tests -->
     <target name="test" depends="server" description="Runs JUnit-tests.">
 
@@ -322,18 +320,25 @@
     </target>
 
 
+
     <!-- Generates the sql-scripts -->
-    <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
-	<taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
-	<cat destfile="${dist-sql}" orderby="path" filtering="true">
-	    <fileset dir="sql/tables" includes="tables.ascii.sql"/>
-	    <fileset dir="sql/index"/>
-	    <fileset dir="sql/help" includes="help.sql"/>
-	</cat>
-	<cat destfile="${sprocs-sql}" orderby="path" filtering="true">
-	    <fileset dir="sql/sprocs"/>
-	</cat>
-	<copy file="sql/help/help.sql" tofile="${help-sql}" filtering="true"/>
+    <target name="sql" depends="init,check-webappname,tools,global-filters" description="Concatenates the SQL-scripts into one large script.">
+        <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
+        <cat destfile="${dist-sql}" orderby="path" filtering="true">
+            <fileset dir="sql/tables" includes="tables.ascii.sql"/>
+            <fileset dir="sql/index"/>
+            <fileset dir="sql/help" includes="help.sql"/>
+        </cat>
+
+        <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
+            <fileset dir="sql/sprocs"/>
+        </cat>
+
+        <copy file="sql/help/help.sql" tofile="${help-sql}" filtering="true"/>
+
+        <copy toDir="${basedir}/dist" filtering="true" overwrite="true">
+            <fileset dir="${basedir}/sql/multipledatabases"/>
+        </copy>
     </target>
 
 

@@ -275,10 +275,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private void test_sproc_systemdata( DatabaseService databaseService ) {
         assertEquals( DOC_FIRST_PAGE_ID, databaseService.sproc_StartDocGet() );
-        assertEquals( "@webmaster-name@", databaseService.sproc_WebMasterGet_name() );
-        assertEquals( "@webmaster-email@", databaseService.sproc_WebMasterGet_address() );
-        assertEquals( "@servermaster-name@", databaseService.sproc_ServerMasterGet_name() );
-        assertEquals( "@servermaster-email@", databaseService.sproc_ServerMasterGet_address() );
+        assertEquals( "undefined", databaseService.sproc_WebMasterGet_name() );
+        assertEquals( "undefined", databaseService.sproc_WebMasterGet_address() );
+        assertEquals( "undefined", databaseService.sproc_ServerMasterGet_name() );
+        assertEquals( "undefined", databaseService.sproc_ServerMasterGet_address() );
         assertEquals( "", databaseService.sproc_SystemMessageGet() );
     }
 
