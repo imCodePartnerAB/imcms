@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
 import java.util.*;
+import java.security.KeyStore;
 
 public interface ImcmsServices extends Database, Clock {
 
@@ -188,4 +189,6 @@ public interface ImcmsServices extends Database, Clock {
     Clock getClock();
 
     File getRealContextPath();
+
+    KeyStore getKeyStore();
 }

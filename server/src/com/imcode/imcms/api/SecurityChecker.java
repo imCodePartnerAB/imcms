@@ -1,9 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
-import imcode.server.user.UserDomainObject;
 
 class SecurityChecker {
 
@@ -15,10 +12,6 @@ class SecurityChecker {
 
     private User getCurrentUser() {
         return contentManagementSystem.getCurrentUser();
-    }
-
-    private DocumentMapper getDocumentMapper() {
-        return contentManagementSystem.getInternal().getDocumentMapper();
     }
 
     void isSuperAdmin() throws NoPermissionException {

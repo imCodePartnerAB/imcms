@@ -19,6 +19,7 @@ public class Config {
     private int indexingSchedulePeriodInMinutes = 1440 ;
     private String documentPathPrefix;
     private int documentCacheMaxSize = 100 ;
+    private String keyStoreUrl;
 
     public void setTemplatePath( File templatePath ) {
         this.templatePath = templatePath;
@@ -145,5 +146,13 @@ public class Config {
 
     public void setDocumentCacheMaxSize( int documentCacheMaxSize ) {
         this.documentCacheMaxSize = documentCacheMaxSize;
+    }
+
+    public String getKeyStoreUrl() {
+        return keyStoreUrl;
+    }
+
+    public void setKeyStoreUrl( String keyStoreUrl ) {
+        this.keyStoreUrl = keyStoreUrl;
     }
 }

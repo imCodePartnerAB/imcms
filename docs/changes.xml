@@ -1,5 +1,32 @@
 <changesets>
 
+<changeset version="2.1.0">
+
+    <changes importance="high" for="administrators">
+        <change>
+            <p>
+                Added class <class>ContentManagementSystemRunnable</class> and
+                method <method>ContentManagementSystem.runAsSuperadmin(ContentManagementSystemRunnable)</method>
+                to allow code that has been signed by an administrator to run with superadmin-privileges.
+            </p>
+            <p>
+                The following things are required to run code with superadmin-privileges:
+            </p>
+            <ul>
+                <li><config>KeyStoreUrl</config> in <path>server.properties</path> must be the url of a keystore.</li>
+                <li>The class implementing <class>ContentManagementSystemRunnable</class> must be signed (e.g. inside a signed jar-file).</li>
+                <li>All certificates used for signing the class must be found in the keystore.</li>
+            </ul>
+            <p>
+                See <url>http://java.sun.com/docs/books/tutorial/jar/sign/</url>
+                for more information about signing jar files.
+            </p>
+            <bug id="2875"/>
+        </change>
+    </changes>
+
+</changeset>
+
 <changeset version="2.0.0">
 
     <changes importance="high" for="users">
@@ -683,7 +710,7 @@
         <change>
             <p>
                 The changelog (previously <path>CHANGES.TXT</path>, now <path>CHANGES.HTML</path>)
-                is now generated from an xml-file using an xsl-stylesheet. 
+                is now generated from an xml-file using an xsl-stylesheet.
             </p>
             <bug id="2765"/>
         </change>

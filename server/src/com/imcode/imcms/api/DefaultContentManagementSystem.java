@@ -3,15 +3,20 @@ package com.imcode.imcms.api;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.RoleDomainObject;
+import imcode.util.Utility;
+import org.apache.commons.lang.UnhandledException;
 
-public class DefaultContentManagementSystem extends ContentManagementSystem {
+import java.security.KeyStore;
+
+public class DefaultContentManagementSystem extends ContentManagementSystem implements Cloneable {
 
     private UserService userService;
     private DocumentService documentService;
     private TemplateService templateService;
     private DatabaseService databaseService;
     private MailService mailService;
-    private UserDomainObject currentUser;
+    UserDomainObject currentUser;
     protected ImcmsServices service;
     protected SecurityChecker securityChecker;
 
@@ -33,6 +38,12 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
         templateService = new TemplateService( this );
         databaseService = new DatabaseService( Imcms.getApiConnectionPool() );
         mailService = new MailService(this.service.getSMTP()) ;
+    }
+
+    protected Object clone() throws CloneNotSupportedException {
+        DefaultContentManagementSystem clone = (DefaultContentManagementSystem)super.clone() ;
+        clone.currentUser = (UserDomainObject)currentUser.clone() ;
+        return clone ;
     }
 
     public UserService getUserService(){
@@ -67,4 +78,19 @@ public class DefaultContentManagementSystem extends ContentManagementSystem {
         return securityChecker ;
     }
 
+    public void runAsSuperadmin( ContentManagementSystemRunnable runnable ) throws NoPermissionException {
+        KeyStore keyStore = service.getKeyStore();
+        Class clazz = runnable.getClass();
+        if (!Utility.classIsSignedByCertificatesInKeyStore( clazz, keyStore )) {
+            throw new NoPermissionException("Class "+clazz.getName()+" is not signed by certificates in keystore.") ;
+        }
+        try {
+            DefaultContentManagementSystem contentManagementSystemClone = (DefaultContentManagementSystem)clone() ;
+            contentManagementSystemClone.currentUser.addRole( RoleDomainObject.SUPERADMIN );
+            runnable.runWith(contentManagementSystemClone);
+            contentManagementSystemClone.currentUser = null ;
+        } catch ( CloneNotSupportedException e ) {
+            throw new UnhandledException( e );
+        }
+    }
 }

@@ -20,7 +20,7 @@ class MockContentManagementSystem extends ContentManagementSystem {
     }
 
     public User getCurrentUser() {
-        return currentUser ;
+        return currentUser;
     }
 
     public DatabaseService getDatabaseService() {
@@ -35,15 +35,18 @@ class MockContentManagementSystem extends ContentManagementSystem {
         return null;  // TODO
     }
 
-    ImcmsServices getInternal() {
-        return imcmsServices ;
+    public void runAsSuperadmin( ContentManagementSystemRunnable runnable ) throws NoPermissionException {
     }
 
-    public void setInternal(ImcmsServices imcmsServices) {
-        this.imcmsServices = imcmsServices ;
+    ImcmsServices getInternal() {
+        return imcmsServices;
+    }
+
+    public void setInternal( ImcmsServices imcmsServices ) {
+        this.imcmsServices = imcmsServices;
     }
 
     public void setCurrentUser( User user ) {
-        currentUser = user ;
+        currentUser = user;
     }
 }

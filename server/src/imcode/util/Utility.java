@@ -10,6 +10,7 @@ import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -21,6 +22,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.cert.Certificate;
 
 public class Utility {
 
@@ -226,5 +230,27 @@ public class Utility {
             throwable = throwable.getCause() ;
         }
         return false ;
+    }
+
+    public static boolean classIsSignedByCertificatesInKeyStore( Class clazz, KeyStore keyStore ) {
+        Object[] signers = clazz.getSigners();
+        if ( null == signers ) {
+            return false;
+        }
+        for ( int i = 0; i < signers.length; i++ ) {
+            Object signer = signers[i];
+            if ( !( signer instanceof Certificate ) ) {
+                return false;
+            }
+            Certificate certificate = (Certificate)signer;
+            try {
+                if ( null == keyStore.getCertificateAlias( certificate ) ) {
+                    return false;
+                }
+            } catch ( KeyStoreException e ) {
+                throw new UnhandledException( e );
+            }
+        }
+        return true ;
     }
 }

@@ -20,6 +20,8 @@ public abstract class ContentManagementSystem {
 
     public abstract MailService getMailService() ;
 
+    public abstract void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException;
+
     public static ContentManagementSystem getContentManagementSystem( String userName, String password ) {
         ImcmsServices imcref;
         imcref = Imcms.getServices();
@@ -31,7 +33,7 @@ public abstract class ContentManagementSystem {
     /**
      * @return The ContentManagementSystem for the request
      * @since 2.0
-     */ 
+     */
     public static ContentManagementSystem fromRequest(ServletRequest request) {
         return (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     }

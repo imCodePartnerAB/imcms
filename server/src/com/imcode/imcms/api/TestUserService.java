@@ -13,14 +13,17 @@ public class TestUserService extends TestCase {
     private MockContentManagementSystem contentManagementSystem;
     private MockImcmsServices mockImcmsServices;
     private MockDatabase database;
+    private UserDomainObject internalUser;
+
+    private static int HIGHEST_USER_ID = 3 ;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         contentManagementSystem = new MockContentManagementSystem();
 
-        UserDomainObject internalUser = new UserDomainObject();
-        internalUser.addRole( RoleDomainObject.SUPERADMIN );
+        internalUser = new UserDomainObject();
+        internalUser.setId( HIGHEST_USER_ID );
         contentManagementSystem.setCurrentUser( new User( internalUser ) );
 
         mockImcmsServices = new MockImcmsServices();
@@ -35,7 +38,8 @@ public class TestUserService extends TestCase {
 
     public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
 
-        database.addExpectedSqlCall(new MockDatabase.EqualsSqlCallPredicate(ImcmsAuthenticatorAndUserAndRoleMapper.SPROC_GET_HIGHEST_USER_ID), "3") ;
+        internalUser.addRole( RoleDomainObject.SUPERADMIN );
+        database.addExpectedSqlCall(new MockDatabase.EqualsSqlCallPredicate(ImcmsAuthenticatorAndUserAndRoleMapper.SPROC_GET_HIGHEST_USER_ID), ""+HIGHEST_USER_ID+1) ;
 
         User user = userService.createNewUser( "test", "test" );
         user.addRole( new Role( RoleDomainObject.SUPERADMIN ) );
@@ -45,16 +49,34 @@ public class TestUserService extends TestCase {
         database.assertCalled( new MockDatabase.MatchesRegexSqlCallPredicate( "role" ) ) ;
     }
 
+    public void testNonAdminCantCreateUser() throws SaveException, NoPermissionException {
+        User user = userService.createNewUser( "test", "test" ) ;
+        user.addRole( new Role( RoleDomainObject.SUPERADMIN ));
+        database.addExpectedSqlCall( new MockDatabase.ProcedureSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SPROC_GET_HIGHEST_USER_ID ), ""+HIGHEST_USER_ID+1 );
+        try {
+            userService.saveUser( user );
+            fail() ;
+        } catch( NoPermissionException ex ) {}
+    }
+
+    public void testNonAdminCantEditOtherUsers() throws NoPermissionException, SaveException {
+        UserDomainObject otherInternalUser = new UserDomainObject();
+        otherInternalUser.setId( HIGHEST_USER_ID + 1 );
+        User otherUser = new User( otherInternalUser );
+        try {
+            userService.saveUser( otherUser );
+            fail() ;
+        } catch( NoPermissionException ex ) {}
+    }
+
     public void testUserCanEditSelf() throws SaveException, NoPermissionException {
+        internalUser.addRole( RoleDomainObject.SUPERADMIN );
         String loginName = "loginName";
         String firstName = "firstName";
 
-        UserDomainObject internalUser = new UserDomainObject();
-        internalUser.setId( 3 );
         internalUser.setLoginName( loginName );
         internalUser.setFirstName( firstName );
         internalUser.setLastName( "lastName" );
-        contentManagementSystem.setCurrentUser( new User( internalUser ) );
 
         User user = contentManagementSystem.getCurrentUser() ;
 
@@ -66,7 +88,7 @@ public class TestUserService extends TestCase {
         user.setFirstName( newFirstName );
         userService.saveUser( user );
 
-        database.assertCalled( "User can update contents of users table.", new MockDatabase.UpdateTableSqlCallPredicate( "users", "3" ) ) ;
+        database.assertCalled( "User can update contents of users table.", new MockDatabase.UpdateTableSqlCallPredicate( "users", ""+HIGHEST_USER_ID ) ) ;
         database.assertNotCalled( "Old login name set.", new MockDatabase.UpdateTableSqlCallPredicate( "users", loginName ) );
         database.assertCalled( "New login name not set.", new MockDatabase.UpdateTableSqlCallPredicate( "users", newLoginName ) );
         database.assertNotCalled( "Old first name set.", new MockDatabase.UpdateTableSqlCallPredicate( "users", firstName ) );
@@ -75,6 +97,7 @@ public class TestUserService extends TestCase {
     }
 
     public void testCreateNewRole() throws SaveException, NoPermissionException {
+        internalUser.addRole( RoleDomainObject.SUPERADMIN );
         database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SQL_INSERT_INTO_ROLES ), "3" );
         String roleName = "test role";
         Role newRole = userService.createNewRole( roleName ) ;

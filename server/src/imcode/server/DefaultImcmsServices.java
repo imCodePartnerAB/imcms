@@ -1,6 +1,7 @@
 package imcode.server;
 
-import imcode.server.db.*;
+import imcode.server.db.Database;
+import imcode.server.db.DatabaseCommand;
 import imcode.server.document.*;
 import imcode.server.document.index.AutorebuildingDirectoryIndex;
 import imcode.server.document.index.DocumentIndex;
@@ -26,6 +27,10 @@ import org.apache.velocity.app.VelocityEngine;
 
 import java.beans.PropertyDescriptor;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.text.*;
 import java.util.*;
 
@@ -55,6 +60,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private DocumentMapper documentMapper;
     private TemplateMapper templateMapper;
     private Map languagePropertiesMap = new HashMap();
+    private KeyStore keyStore;
 
     private Map velocityEngines = new TreeMap();
 
@@ -68,12 +74,35 @@ final public class DefaultImcmsServices implements ImcmsServices {
     public DefaultImcmsServices( Database database, Properties props ) {
         this.database = database;
         initConfig( props );
+        initKeyStore();
         initSysData();
         initSessionCounter();
         initAuthenticatorsAndUserAndRoleMappers( props );
         initDocumentMapper();
         initTemplateMapper();
         initTextDocParser();
+    }
+
+    private void initKeyStore() {
+        try {
+            keyStore = KeyStore.getInstance( KeyStore.getDefaultType() ) ;
+            keyStore.load( null, null );
+        } catch ( GeneralSecurityException e ) {
+            throw new UnhandledException( e );
+        } catch ( IOException e ) {
+            throw new UnhandledException( e );
+        }
+        String keyStoreUrlString = config.getKeyStoreUrl();
+        if ( null != keyStoreUrlString ) {
+            try {
+                URL keyStoreUrl = new URL( keyStoreUrlString );
+                keyStore.load( keyStoreUrl.openStream(), null );
+            } catch ( MalformedURLException e ) {
+                log.error( "Malformed KeyStoreUrl: " + keyStoreUrlString );
+            } catch ( Exception e ) {
+                log.error( "Failed to load keystore from url " + keyStoreUrlString );
+            }
+        }
     }
 
     private void initTextDocParser() {
@@ -166,8 +195,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         Authenticator externalAuthenticator = null;
         UserAndRoleRegistry externalUserAndRoleRegistry = null;
 
-        boolean externalAuthenticatorIsSet = StringUtils.isNotBlank( externalAuthenticatorName ) ;
-        boolean externalUserAndRoleRegistryIsSet = StringUtils.isNotBlank( externalUserAndRoleMapperName ) ;
+        boolean externalAuthenticatorIsSet = StringUtils.isNotBlank( externalAuthenticatorName );
+        boolean externalUserAndRoleRegistryIsSet = StringUtils.isNotBlank( externalUserAndRoleMapperName );
         if ( externalAuthenticatorIsSet && externalUserAndRoleRegistryIsSet ) {
             log.info( "ExternalAuthenticator: " + externalAuthenticatorName );
             log.info( "ExternalUserAndRoleMapper: " + externalUserAndRoleMapperName );
@@ -477,11 +506,15 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     public Clock getClock() {
-        return this ;
+        return this;
     }
 
     public File getRealContextPath() {
         return WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
+    }
+
+    public KeyStore getKeyStore() {
+        return keyStore;
     }
 
     /**
@@ -591,9 +624,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * get doctype
      */
     public int getDocType( int meta_id ) {
-        DocumentDomainObject document = documentMapper.getDocument( meta_id ) ;
+        DocumentDomainObject document = documentMapper.getDocument( meta_id );
         if ( null != document ) {
-            return document.getDocumentTypeId() ;
+            return document.getDocumentTypeId();
         } else {
             return 0;
         }

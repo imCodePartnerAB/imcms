@@ -155,7 +155,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,jar,test,apidocs,libraries,web,conf,sql,versionfile,checksumsfile,changes,addon"
+       depends="init,jar,test,apidocs,libraries,web,conf,sql,versionfile,checksumsfile,addon"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -396,7 +396,7 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-       depends="init,tools,check-language-property-files-in-sync,addon-web"
+       depends="init,tools,check-language-property-files-in-sync,changes,addon-web"
        description="Translates and copies the webfiles.">
 
         <dependset>

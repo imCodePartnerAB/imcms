@@ -19,12 +19,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
 import java.util.*;
+import java.security.KeyStore;
 
 public class MockImcmsServices implements ImcmsServices {
 
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
 
     private Database database ;
+    private KeyStore keyStore;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -328,6 +330,10 @@ public class MockImcmsServices implements ImcmsServices {
         return null;
     }
 
+    public KeyStore getKeyStore() {
+        return keyStore;
+    }
+
     public void setImcmsAuthenticatorAndUserAndRoleMapper(
             ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper ) {
         this.imcmsAuthenticatorAndUserAndRoleMapper = imcmsAuthenticatorAndUserAndRoleMapper;
@@ -337,4 +343,7 @@ public class MockImcmsServices implements ImcmsServices {
         this.database = database;
     }
 
+    public void setKeyStore( KeyStore keyStore ) {
+        this.keyStore = keyStore;
+    }
 }

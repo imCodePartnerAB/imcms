@@ -78,7 +78,7 @@ public class ImcmsSetupFilter implements Filter {
         }
     }
 
-    private void setDomainSessionCookie( ServletResponse response, HttpSession session ) throws IOException {
+    private void setDomainSessionCookie( ServletResponse response, HttpSession session ) {
 
         String domain = Imcms.getServices().getConfig().getSessionCookieDomain();
         if (StringUtils.isNotBlank(domain)) {
