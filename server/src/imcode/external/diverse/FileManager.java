@@ -100,14 +100,14 @@ public class FileManager{
  * the errorcode.
  **/
     
-    public int copyDirectory(String srcPath, String targPath) {
+    public int copyDirectory(File srcPath, File targPath) {
         boolean okFlag = false ;
         boolean fileNotFoundFlag = false ;
         String tmpFile = "" ;
         
         try {
-            File fileObj = new File(srcPath) ;
-            File targetObj = new File(targPath) ;
+            File fileObj = srcPath ;
+            File targetObj = targPath ;
             
             // Lets check if the directory exists, if not, then create the target directory
             

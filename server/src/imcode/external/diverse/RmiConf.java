@@ -12,6 +12,8 @@ public class RmiConf {
 	private final static String CVS_DATE = "$Date$" ;
     static Hashtable interfaces = new Hashtable() ;	// Keeps track of servers. "ip:port"=interface
     static Hashtable paths = new Hashtable() ;	    // Keeps track of paths. "server"=interface
+    private final static String LOGIN_PAGE = "conf_login.htm" ;
+
     imcode.server.User user ;
 
 	/**
@@ -322,7 +324,7 @@ public class RmiConf {
  * path to its own template catalogue
  */
 
-    public static String getExternalTemplateFolder(String imcServer, int meta_id)  {
+    public static File getExternalTemplateFolder(String imcServer, int meta_id)  {
 	imcode.server.IMCServiceInterface imc = getInterface( imcServer ) ;
 
 	    return imc.getExternalTemplateFolder(meta_id) ;
@@ -335,7 +337,7 @@ public class RmiConf {
  * The function takes the meta id as argument, or use -1 if no metaid is known
  */
 
-    public static String getInternalTemplateFolder(String imcServer, int meta_id)  {
+    public static File getInternalTemplateFolder(String imcServer, int meta_id)  {
 	imcode.server.IMCServiceInterface imc = getInterface( imcServer ) ;
 
 	    return imc.getInternalTemplateFolder(meta_id) ;
@@ -347,7 +349,7 @@ public class RmiConf {
  * Returns the physical path to the folder where the internal templates are located.
  */
 
-    public static String getInternalTemplateFolder(HttpServletRequest req) throws IOException, NumberFormatException {
+    public static File getInternalTemplateFolder(HttpServletRequest req) throws IOException, NumberFormatException {
 	String host = req.getHeader("Host") ;
 	String imcServer = imcode.util.Utility.getDomainPref("userserver",host) ;
 	imcode.server.IMCServiceInterface imc = getInterface( imcServer ) ;
@@ -355,12 +357,14 @@ public class RmiConf {
 
 	// Lets get the metaid
 	String meta_id = req.getParameter("meta_id") ;
-	if(meta_id == null )	return "" ;
-
+	try {
 	    aMeta_id = Integer.parseInt("meta_id") ;
-
-	    // Lets get the templatefolder from Janus,
-	    return imc.getInternalTemplateFolder(aMeta_id) ;
+	} catch (NumberFormatException ex) {
+	    throw new IllegalArgumentException() ;
+	}
+	
+	// Lets get the templatefolder from Janus,
+	return imc.getInternalTemplateFolder(aMeta_id) ;
 
     }
 
@@ -470,7 +474,7 @@ public class RmiConf {
 	// Lets get the path to the diagramfiles
 	// String host = req.getHeader("Host") ;
 
-	    return imcode.util.Utility.getDomainPref("login_page",host) ;
+	    return LOGIN_PAGE ;
 
     } // end getLoginPage
 

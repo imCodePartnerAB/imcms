@@ -8,7 +8,7 @@ import imcode.util.* ;
 public class ConfCreator extends Conference {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-	String HTML_TEMPLATE ;
+	String HTML_TEMPLATE = "Conf_Creator.htm" ;
 
 	/**
 	The POST method creates the html page when this side has been
@@ -187,7 +187,6 @@ public class ConfCreator extends Conference {
 
 		public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		HTML_TEMPLATE = "CONF_CREATOR.HTM" ;
 
 		// log("Nu init vi") ;
 		/*

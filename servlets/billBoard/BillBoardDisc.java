@@ -327,9 +327,9 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			
 
 			// Lets get the part of an html page, wich will be parsed for every a Href reference
-			String templateLib = super.getExternalTemplateFolder(req) ;
+			File templateLib = super.getExternalTemplateFolder(req) ;
 			//	templateLib += getTemplateLibName(params.getProperty("META_ID")) ;
-			String aHreHtmlFile = templateLib + A_HREF_HTML ;
+			File aHreHtmlFile = new File(templateLib, A_HREF_HTML) ;
 
 
 			// Lets build our tags vector.
@@ -352,11 +352,6 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 						allRecs = msgErr.getErrorMessage(req, 41) ;
 						msgErr = null ;
 					}
-					else{
-					}
-				}
-				else
-				{
 				}
 			}
 			else
@@ -465,7 +460,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		
 	
 		// Lets get the part of an html page, wich will be parsed for every a Href reference
-		String aHrefHtmlFile = super.getExternalTemplateFolder(req) + A_HREF_HTML ;
+		File aHrefHtmlFile = new File(super.getExternalTemplateFolder(req), A_HREF_HTML) ;
 
 		// Lets get all Discussions
 		String sqlStoredProcOld = "B_GetAllBillsToShow " + aMetaId + ", " + aSectionId ;//GetAllDiscussions
@@ -488,7 +483,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		
 		
 		//lets generate the buttons that should appear
-		String templateLib = this.getExternalTemplateFolder( req );
+		File templateLib = this.getExternalTemplateFolder( req );
 		String previousButton = "&nbsp;";
 		String nextButton = "&nbsp;";
 		String newDiscButton = "&nbsp;";
@@ -576,7 +571,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	for all records in the array
 	*/
 	public String preParse (HttpServletRequest req, String[] DBArr, Vector tagsV,
-		String htmlCodeFile)  throws ServletException, IOException
+		File htmlCodeFile)  throws ServletException, IOException
 	{
 		String htmlStr = "" ;
 		try
@@ -934,31 +929,6 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
 
 
-
-	/**
-	Parses one record.
-	*/
-	public String parseOneRecord (String[] tags, String[] data, String htmlCodeFile)
-	{
-
-		Vector tagsV = super.convert2Vector(tags) ;
-		Vector dataV = super.convert2Vector(data) ;
-		return this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
-	}
-
-
-	/**
-	Parses one record.
-	*/
-	public String parseOneRecord (Vector tagsV, Vector dataV, String htmlCodeFile)
-	{
-
-		String htmlStr = "" ;
-		// Lets parse one aHref reference
-		ParseServlet parser = new ParseServlet(htmlCodeFile, tagsV, dataV) ;
-		String oneRecordsHtmlCode = parser.getHtmlDoc() ;
-		return oneRecordsHtmlCode ;
-	} // End of parseOneRecord
 
 
 	/**

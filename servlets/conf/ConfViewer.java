@@ -65,7 +65,7 @@ public class ConfViewer extends Conference {
 		public void init(ServletConfig config) throws ServletException {
 
 		super.init(config);
-		HTML_TEMPLATE = "Conf_set.htm" ;
+		HTML_TEMPLATE = "Conf_Set.htm" ;
 
 		/*
 				HTML_TEMPLATE = getInitParameter("html_template") ;

@@ -1561,9 +1561,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * <p>Return the external doctypes templates folder.
      */
-    public String getExternalTemplateFolder(int meta_id) {
+    public File getExternalTemplateFolder(int meta_id) {
 	Vector data = new Vector() ;
-	String folder = "" ;
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id ;
@@ -1576,14 +1575,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc.closeConnection() ;
 	dbc = null ;
 
-	if ( Integer.parseInt(data.elementAt(0).toString()) > 100 )
-	    folder = m_TemplateHome + data.elementAt(1).toString() +
-		"/" + data.elementAt(0).toString() + "/" ;
-	else
-	    folder = m_TemplateHome + data.elementAt(1).toString() + "/" ;
-
-
-	return folder ;
+	if ( Integer.parseInt(data.elementAt(0).toString()) > 100 ) {
+	    return new File(m_TemplateHome, (data.elementAt(1).toString() + "/" + data.elementAt(0).toString() + "/")) ;
+	} else {
+	    return new File(m_TemplateHome, (data.elementAt(1).toString() + "/")) ;
+	}
     }
 
 
@@ -2731,7 +2727,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * <p>Get internal template folder.
      */
-    public String getInternalTemplateFolder(int meta_id) {
+    public File getInternalTemplateFolder(int meta_id) {
 	Vector data = new Vector() ;
 
 	if ( meta_id != -1 ) {
@@ -2745,10 +2741,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    dbc.clearResultSet() ;
 	    dbc.closeConnection() ;
 	    dbc = null ;
-	    return (new File(m_TemplateHome, data.elementAt(1).toString() + "/")).toString() ;
+	    return new File(m_TemplateHome, data.elementAt(1).toString() + "/") ;
 
 	} else {
-	    return m_TemplateHome.toString() ;
+	    return m_TemplateHome ;
 	}
     }
 

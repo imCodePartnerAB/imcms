@@ -11,22 +11,6 @@ public class AdminManager extends Administrator {
     String HTML_TEMPLATE ;
 
     /**
-       Get the domaininformation
-    */
-    public void getDomainInfo(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException {
-	String host 				= req.getHeader("Host") ;
-	String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-	String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-	String no_permission_url 	= Utility.getDomainPref( "no_permission_url",host ) ;
-	int start_doc         		= Integer.parseInt( Utility.getDomainPref( "start_doc", host ) ) ;
-	String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
-	File file_path 			= Utility.getDomainPrefPath( "file_path", host ) ;
-    }
-
-
-	
-    /**
        The GET method creates the html page when this side has been
        redirected from somewhere else.
     **/
@@ -62,7 +46,7 @@ public class AdminManager extends Administrator {
 	 		
 	    // Lets get the path to the admin templates folder
 	    String server 			= Utility.getDomainPref("adminserver",host) ;  
-	    String templateLib = super.getAdminTemplateFolder(server, user) ;
+	    File templateLib = getAdminTemplateFolder(server, user) ;
 	    //this.log("Host: " + host) ;
 	    //this.log("Server: " + server) ;
 	    //this.log("TemplateLib: " +  templateLib) ;

@@ -27,7 +27,7 @@ public class BillBoardCreator extends BillBoard
 {//BillBoardCreator
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-	String HTML_TEMPLATE ;
+	String HTML_TEMPLATE = "BillBoard_Creator.htm" ;
 
 	/**
 	The POST method creates the html page when this side has been
@@ -205,7 +205,6 @@ public class BillBoardCreator extends BillBoard
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
-		HTML_TEMPLATE = "BILLBOARD_CREATOR.HTM" ;//CONF_CREATOR.HTM
 
 	} // End of INIT
 

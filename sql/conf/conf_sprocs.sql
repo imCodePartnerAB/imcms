@@ -390,7 +390,7 @@ AddNewConf
 AS
 DECLARE @thisTemplateId int
 DECLARE @template_lib varchar(50)
-SET @template_lib = 'Original'
+SET @template_lib = 'original'
 INSERT INTO A_templates ( template_lib )
 VALUES  ( @template_lib )
 /* Lets get the template_id id for the just created template */ 
@@ -1968,7 +1968,7 @@ GO
 CREATE PROCEDURE A_GetTemplateLib
 /*
  Lets get the folder library where all the templates are situated. if nothing is found for that
-meta id , 'Original' is returned instead
+meta id , 'original' is returned instead
 */
 	@meta_id int
 AS
@@ -1978,7 +1978,7 @@ FROM A_conference c , A_conf_templates ct , A_templates t
 WHERE t.template_id = ct.template_id
 AND ct.conf_id = c.meta_id
 AND c.meta_id = @meta_id
-SELECT @returnVal =  ISNULL(@returnVal, 'Original') 
+SELECT @returnVal =  ISNULL(@returnVal, 'original') 
 SELECT @returnVal AS 'TemplateLib'
 GO
 SET QUOTED_IDENTIFIER OFF 

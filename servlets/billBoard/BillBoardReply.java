@@ -175,8 +175,8 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 		
 		// Lets get the part of an html page, wich will be parsed for every a Href reference
-		String templateLib = super.getExternalTemplateFolder(req) ;
-		String aSnippetFile = templateLib + RECS_PREV_HTML ;
+		File templateLib = super.getExternalTemplateFolder(req) ;
+		File aSnippetFile = new File(templateLib, RECS_PREV_HTML) ;
 		RmiConf rmi = new RmiConf(user) ;
 		
 		//ok here we se if we have a prevue to handle
@@ -260,7 +260,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 		//this.updateDiscFlagList(req,discId,sqlTimeStr) ;
 
 		// Lets preparse all records
-		aSnippetFile = templateLib + RECS_HTML ;
+		aSnippetFile = new File(templateLib, RECS_HTML) ;
 		String currentRec = " " ;
 		if (sqlAnswer != null) currentRec = preParse(req, sqlAnswer, buildTagsV(), aSnippetFile, imagePath) ;
 
@@ -362,7 +362,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	for all records in the array
 	*/
 	public String preParse (HttpServletRequest req, String[] DBArr, Vector tagsV,
-		String htmlCodeFile, String imagePath)  throws ServletException, IOException {
+		File htmlCodeFile, String imagePath)  throws ServletException, IOException {
 
 		String htmlStr = "" ;
 		try {
@@ -370,7 +370,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 			String servletHome = MetaInfo.getServletPath(req) ;
 
 			// Lets get the part of the expert html
-			String templateLib = super.getExternalTemplateFolder(req) ;
+			File templateLib = super.getExternalTemplateFolder(req) ;
 		//	String expertHtmFile = templateLib + "BILLBOARD_EXPERT.HTM" ;//CONF_EXPERT.HTM
 
 			// Lets get the nbr of cols
@@ -444,31 +444,6 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 		return strBuff ;
 	} // End of replace
-
-
-	/**
-	Parses one record.
-	*/
-	public String parseOneRecord (String[] tags, String[] data, String htmlCodeFile) {
-
-		Vector tagsV = super.convert2Vector(tags) ;
-		Vector dataV = super.convert2Vector(data) ;
-		return this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
-	}
-
-
-	/**
-	Parses one record.
-	*/
-	public String parseOneRecord (Vector tagsV, Vector dataV, String htmlCodeFile) {
-
-		// Lets parse one aHref reference
-		ParseServlet parser = new ParseServlet(htmlCodeFile, tagsV, dataV) ;
-		String oneRecordsHtmlCode = parser.getHtmlDoc() ;
-		//	log("OneRecords html: " + oneRecordsHtmlCode) ;
-
-		return oneRecordsHtmlCode ;
-	} // End of parseOneRecord
 
 	/**
 	Returns the users Replylevel htmlcode. If the user is marked with something

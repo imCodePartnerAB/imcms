@@ -71,7 +71,7 @@ public class MetaInfo extends HttpServlet {
      * Returns the templateFolder.
      **/
     
-    public static String getExternalTemplateFolder(String  server, int metaId) throws ServletException, IOException {
+    public static File getExternalTemplateFolder(String  server, int metaId) throws ServletException, IOException {
 	return getExternalTemplateFolder(server, "" + metaId) ;
     }
     
@@ -79,7 +79,7 @@ public class MetaInfo extends HttpServlet {
      * Returns the templateFolder.
      **/
     
-    public static String getExternalTemplateFolder( HttpServletRequest req)	throws ServletException, IOException {
+    public static File getExternalTemplateFolder( HttpServletRequest req)	throws ServletException, IOException {
 	
 	String metaId =(req.getParameter("meta_id")==null)?"-1":(req.getParameter("meta_id")) ;
 	String host				= req.getHeader("Host") ;
@@ -91,7 +91,7 @@ public class MetaInfo extends HttpServlet {
      * Returns the templateFolder.
      **/
     
-    public static String getExternalTemplateFolder(String server, String meta_id)
+    public static File getExternalTemplateFolder(String server, String meta_id)
 	throws ServletException, IOException  {
 	int metaId = -1 ;
 	// Lets get the metaId, if no meta_id is found, use -1 instead. Janus System
@@ -111,15 +111,11 @@ public class MetaInfo extends HttpServlet {
      * Returns the templateFolder.
      **/
     
-    public static String getInternalTemplateFolder(String server) {
+    public static File getInternalTemplateFolder(String server) {
 	
 	// Lets get the metaId, if no meta_id is found, use -1 instead. Janus System
 	// will return the path to the default folder (where Janus templates are located)
-	try {
-	    return RmiLayer.getInternalTemplateFolder(server, -1) ;
-	} catch (Exception e) {
-	    return "Error in RmiLayer call" ;
-	}
+	return RmiLayer.getInternalTemplateFolder(server, -1) ;
     } // GetInternalTemplateFolder
     
     

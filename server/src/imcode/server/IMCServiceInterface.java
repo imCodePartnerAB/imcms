@@ -23,6 +23,7 @@
 ******************************************************************************************/
 package imcode.server ;
 
+import java.io.* ;
 import java.util.* ;
 import imcode.server.parser.ParserParameters ;
 
@@ -42,7 +43,7 @@ public interface IMCServiceInterface {
 	void saveText(int meta_id,imcode.server.User user,int txt_no,String text,int toHTML)
 	 ;
 
-	byte[] parsePage(int meta_id, imcode.server.User user, int flags,ParserParameters paramsToParse) throws java.io.IOException ;
+	byte[] parsePage(int meta_id, imcode.server.User user, int flags,ParserParameters paramsToParse) throws IOException ;
 
 
 /*	// Save a doc
@@ -201,7 +202,7 @@ public interface IMCServiceInterface {
 	 ;
 
 	// get external template folder
-	String getExternalTemplateFolder(int meta_id)
+	File getExternalTemplateFolder(int meta_id)
 	 ;
 
 	// increment session counter
@@ -259,10 +260,10 @@ public interface IMCServiceInterface {
 
 	// get templatehome
 	public byte[] getTemplate(int template_id)
-	throws java.io.IOException ;
+	throws IOException ;
 
 	// get templatehome
-	public java.io.File getTemplateHome()
+	public File getTemplateHome()
 	 ;
 
 	// get imagehome
@@ -291,7 +292,7 @@ public interface IMCServiceInterface {
 
 	// get demo template data
 	public Object[] getDemoTemplate(int template_id)
-	throws java.io.IOException ;
+	throws IOException ;
 
 	// check if user can view document
 	public boolean checkDocRights(int meta_id, User user)
@@ -380,8 +381,8 @@ public interface IMCServiceInterface {
     
     public boolean checkUserDocSharePermission(User user, int meta_id)  ;
 
-    public String getInclude(String path) throws java.io.IOException ;
+    public String getInclude(String path) throws IOException ;
     
-    public String getInternalTemplateFolder(int meta_id) ;
+    public File getInternalTemplateFolder(int meta_id) ;
 
 }

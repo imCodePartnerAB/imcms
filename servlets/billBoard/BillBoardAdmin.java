@@ -169,12 +169,11 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			// Lets copy the original folders to the new foldernames
 			String metaId = super.getMetaId(req) ;
 			FileManager fileObj = new FileManager() ;
-			String templateSrc = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + "original/" ;
-			String imageSrc = rmi.getExternalImageHomeFolder(host,imcServer, metaId) + "original/" ;
-			String templateTarget = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + newLibName + "/" ;
-			String imageTarget = rmi.getExternalImageHomeFolder(host,imcServer, metaId) + newLibName + "/" ;
+			File templateSrc = new File(MetaInfo.getExternalTemplateFolder(imcServer, metaId), "original") ;
+			File imageSrc = new File(rmi.getExternalImageHomeFolder(host,imcServer, metaId), "original") ;
+			File templateTarget = new File(MetaInfo.getExternalTemplateFolder(imcServer, metaId), newLibName) ;
+			File imageTarget = new File(rmi.getExternalImageHomeFolder(host,imcServer, metaId), newLibName) ;
 
-			
 			fileObj.copyDirectory(templateSrc, templateTarget) ;
 			fileObj.copyDirectory(imageSrc, imageTarget) ;
 
@@ -852,7 +851,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			String imagePath = super.getExternalImageFolder(req) + "BillBoardDiscNew.gif" ;//ConfDiscNew.gif
 
 			// Lets get the part of an html page, wich will be parsed for every a Href reference
-			String aHrefHtmlFile = super.getExternalTemplateFolder(req) + adminDiscList ;
+			File aHrefHtmlFile = new File(super.getExternalTemplateFolder(req), adminDiscList) ;
 			// log("aHrefHtmlFile: " + aHrefHtmlFile ) ;
 
 			// Lets get all New Discussions
@@ -911,7 +910,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			//String imagePath = super.getExternalImageFolder(req) + "BillBoardDiscNew.gif" ;//ConfDiscNew.gif
 
 			// Lets get the part of an html page, wich will be parsed for every a Href reference
-			String aHrefHtmlFile = super.getExternalTemplateFolder(req) + adminDiscList ;
+			File aHrefHtmlFile = new File(super.getExternalTemplateFolder(req), adminDiscList) ;
 			// log("aHrefHtmlFile: " + aHrefHtmlFile ) ;
 
 			// Lets get all New Discussions
@@ -988,8 +987,8 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 						
 			
 			// Lets get the part of an html page, wich will be parsed for every a Href reference
-			String templateLib = super.getExternalTemplateFolder(req) ;
-			String aSnippetFile = templateLib + adminReplyList ;
+			File templateLib = super.getExternalTemplateFolder(req) ;
+			File aSnippetFile = new File(templateLib, adminReplyList) ;
 			
 			//lets get all the sections and the code for the selectlist
 			String sqlStoredProc = "B_GetAllSection "+params.getProperty("META_ID");
@@ -1027,7 +1026,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	for all records in the array
 	*/
 	public String replyPreParse (HttpServletRequest req, String[] DBArr, Vector tagsV,
-		String htmlCodeFile)  throws ServletException, IOException {
+		File htmlCodeFile)  throws ServletException, IOException {
 			
 		String htmlStr = "" ;
 		try {
@@ -1084,7 +1083,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	for all records in the array
 	*///(HttpServletRequest req, String[] DBArr, Vector tagsV,String htmlCodeFile)
 	public String discPreParse (HttpServletRequest req, String[] DBArr, Vector tagsV,
-		String htmlCodeFile)  throws ServletException, IOException {
+		File htmlCodeFile)  throws ServletException, IOException {
 
 		String htmlStr = "" ;
 		try {
@@ -1141,7 +1140,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	/**
 	Parses one record.
 	*/
-	public String parseOneRecord (String[] tags, String[] data, String htmlCodeFile) {
+	public String parseOneRecord (String[] tags, String[] data, File htmlCodeFile) {
 
 		Vector tagsV = super.convert2Vector(tags) ;
 		Vector dataV = super.convert2Vector(data) ;
@@ -1152,7 +1151,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	/**
 	Parses one record.
 	*/
-	public String parseOneRecord (Vector tagsV, Vector dataV, String htmlCodeFile) {
+	public String parseOneRecord (Vector tagsV, Vector dataV, File htmlCodeFile) {
 
 		String htmlStr = "" ;
 		// Lets parse one aHref reference

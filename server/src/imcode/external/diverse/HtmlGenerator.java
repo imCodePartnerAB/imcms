@@ -15,7 +15,7 @@ public class HtmlGenerator {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 
-    String HTML_TEMPLATE;
+    File HTML_TEMPLATE;
 
 
     /**
@@ -24,8 +24,8 @@ public class HtmlGenerator {
      *@param  path  Description of Parameter
      *@param  file  Description of Parameter
      */
-    public HtmlGenerator(String path, String file) {
-        this(path + file);
+    public HtmlGenerator(File path, String file) {
+        this(new File(path, file));
     }
 
 
@@ -34,10 +34,9 @@ public class HtmlGenerator {
      *
      *@param  templateFile  Description of Parameter
      */
-    public HtmlGenerator(String templateFile) {
+    public HtmlGenerator(File templateFile) {
         HTML_TEMPLATE = templateFile;
     }
-
 
     /**
      *  Constructor for the HtmlGenerator object

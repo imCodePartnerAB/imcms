@@ -159,7 +159,7 @@ public class ImageBrowse extends HttpServlet {
 		prevButtonVm.addProperty( "img_curr_max", Integer.toString(counter+max));
 		prevButtonVm.addProperty( "SERVLET_URL", MetaInfo.getServletPath( req ) );
 		//lets get the teplatePath to the buttons
-		String templatePath = ImageBrowse.getAdminTemplateFolder (imcserver, user);
+		File templatePath = ImageBrowse.getAdminTemplateFolder (imcserver, user);
 		//now we have to find out what buttons to show
 		boolean incButton = false;
 		boolean decButton = false;
@@ -378,21 +378,17 @@ public class ImageBrowse extends HttpServlet {
 
 	  Example : D:\apache\htdocs\templates\se\admin\
 	*/
-	public static String getAdminTemplateFolder (String server, imcode.server.User user) throws ServletException, IOException {
+	public static File getAdminTemplateFolder (String server, imcode.server.User user) throws ServletException, IOException {
 
-		RmiLayer rmi = new RmiLayer(user) ;
+	    RmiLayer rmi = new RmiLayer(user) ;
 
-		// Since our templates are located into the admin folder, we'll have to hang on admin
-	    String templateLib = rmi.getInternalTemplateFolder(server) ;
-
-		// Lets get the users language id. Use the langid to get the lang prefix from db.
+	    // Since our templates are located into the admin folder, we'll have to hang on admin
+	    File templateLib = rmi.getInternalTemplateFolder(server) ;
+	    	    // Lets get the users language id. Use the langid to get the lang prefix from db.
 	    String langId = user.getString("lang_id") ;
-		String langPrefix = rmi.execSqlProcedureStr(server, "GetLangPrefixFromId " + langId) ;
-		templateLib += langPrefix + "/admin/" ;
-		 //this.log("lang_id:" + langId) ;
-	    //this.log("langPrefix:" + langPrefix) ;
-	    //this.log("InternalTemplatePath:" + templateLib) ;
-		return templateLib ;
+	    String langPrefix = rmi.execSqlProcedureStr(server, "GetLangPrefixFromId " + langId) ;
+	    templateLib = new File(templateLib, langPrefix + "/admin") ;
+	    return templateLib ;
 	}
 
 }

@@ -39,7 +39,7 @@ public class AdminError extends Administrator {
 	// Lets get the path to the admin templates folder
 	String host 				= req.getHeader("Host") ;
 	String server 			= Utility.getDomainPref("adminserver",host) ;  
-	String templateLib = super.getAdminTemplateFolder(server, user) ;
+	File templateLib = super.getAdminTemplateFolder(server, user) ;
     
 	this.log("host: " + host) ;
 	this.log("server: " + server) ;

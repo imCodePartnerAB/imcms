@@ -135,8 +135,7 @@ public class RmiLayer {
  * path to its own template catalogue
  */
 
-    public static String getExternalTemplateFolder(String server, int meta_id)  {
-        String theFolder = "" ;
+    public static File getExternalTemplateFolder(String server, int meta_id)  {
         imcode.server.IMCServiceInterface imc = getInterface( server ) ;
         
             return imc.getExternalTemplateFolder(meta_id) ;
@@ -147,14 +146,11 @@ public class RmiLayer {
  * Returns the physical path to the folder where the internal templates are located.
  */
 
-    public static String getInternalTemplateFolder(String server)  {
-        String theFolder = "" ;
+    public static File getInternalTemplateFolder(String server)  {
         imcode.server.IMCServiceInterface imc = getInterface( server ) ;
         
-            // Lets get the templatefolder from Janus,
-            theFolder = imc.getInternalTemplateFolder(-1) ;
-
-        return theFolder ;
+	// Lets get the templatefolder.
+	return imc.getInternalTemplateFolder(-1) ;
     }
 
 
@@ -163,15 +159,11 @@ public class RmiLayer {
  * The function takes the meta id as argument, or use -1 if no metaid is known
  */
 
-    public static String getInternalTemplateFolder(String server, int meta_id)  {
-        String theFolder = "" ;
+    public static File getInternalTemplateFolder(String server, int meta_id)  {
         imcode.server.IMCServiceInterface imc = getInterface( server ) ;
         
-
-            // Lets get the templatefolder from Janus,
-            theFolder = imc.getInternalTemplateFolder(meta_id) ;
-
-        return theFolder ;
+	// Lets get the templatefolder.
+	return imc.getInternalTemplateFolder(meta_id) ;
     }
 
 
@@ -179,7 +171,7 @@ public class RmiLayer {
  * Returns the physical path to the folder where the internal templates are located.
  */
 
-    public static String getInternalTemplateFolder(HttpServletRequest req) throws IOException {
+    public static File getInternalTemplateFolder(HttpServletRequest req) throws IOException {
 
         String theFolder = "" ;
         // Lets get the server information from request object
@@ -188,24 +180,19 @@ public class RmiLayer {
 
         // Lets get the metaid and convert it to an int
         String meta_id = req.getParameter("meta_id") ;
-        if(meta_id == null ) return "" ;
         int aMeta_id ;
         try {
             aMeta_id = Integer.parseInt("meta_id") ;
         } catch(NumberFormatException ex) {
 	        imcode.util.log.Log log = imcode.util.log.Log.getLog( "RmiLayer" );
 	        log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
-            return "" ;
+		throw new IllegalArgumentException() ;
         }
 
         imcode.server.IMCServiceInterface imc = getInterface( server ) ;
 
-        
-            // Lets get the templatefolder from Janus,
-            theFolder = imc.getInternalTemplateFolder(aMeta_id) ;
-
-
-        return theFolder ;
+	// Lets get the templatefolder from Janus,
+	return imc.getInternalTemplateFolder(aMeta_id) ;
     }
 
 

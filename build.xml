@@ -18,10 +18,17 @@
   <property name="uploads"        value="${WEB-INF}/uploads"/>
   <property name="logs"           value="${WEB-INF}/logs"/>
 
+
   <property name="language"	  value="se"/>
   <property name="srclanguage"	  value="sv"/>
   
-  <property name="admintemplates" value="${templates}/${language}/admin"/>
+  <property name="languagetemplates" value="${templates}/${language}"/>
+
+  <property name="conference-templates" value="${languagetemplates}/102"/>
+  <property name="chat-templates"       value="${languagetemplates}/103"/>
+  <property name="billboard-templates"  value="${languagetemplates}/104"/>
+
+  <property name="admintemplates" value="${languagetemplates}/admin"/>
   <property name="texttemplates"  value="${templates}/text"/>
   <property name="demotemplates"  value="${texttemplates}/demo"/>
 
@@ -30,11 +37,13 @@
   <property file="build.properties"/>
 
   <property name="webappname"     value="imcms"/>
+    
+  <property name="rooturl"	  value="/${webappname}"/>
 
-  <property name="servleturl"     value="/${webappname}/servlet"/>
-  <property name="loginurl"       value="/${webappname}/login"/>
-  <property name="imageurl"       value="/${webappname}/images"/>
-  <property name="adminbuttonsurl" value="/${webappname}/admin"/>
+  <property name="servleturl"     value="${rooturl}/servlet"/>
+  <property name="loginurl"       value="${rooturl}/login"/>
+  <property name="imageurl"       value="${rooturl}/images"/>
+  <property name="adminbuttonsurl" value="${rooturl}/admin"/>
 
   <property name="wardist" value="${webappname}.war"/>
   <property name="webapproot" value="${deployroot}/${webappname}"/>
@@ -75,7 +84,7 @@
   </target>
 
   <target name="build"
-          depends="server,servlets,templates,libraries,web,conf,dir"
+          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard"
 	  description="Builds everything.">
 
     <copy file="install/web.xml" todir="${WEB-INF}"/>
@@ -139,6 +148,7 @@
       </fileset>
       <filterset>
 
+        <filter token="rooturl" value="${rooturl}"/>
         <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
@@ -148,8 +158,14 @@
 	<filter token="db-name" value="${db-name}"/>
 	<filter token="db-user" value="${db-user}"/>
 	<filter token="db-pass" value="${db-pass}"/>
-	<filter token="db-timeout" value="${db-timeout}"/>
-	<filter token="db-maxconnections" value="${db-maxconnections}"/>
+
+	<filter token="plugin-db-host" value="${plugin-db-host}"/>
+	<filter token="plugin-db-port" value="${plugin-db-port}"/>
+	<filter token="plugin-db-name" value="${plugin-db-name}"/>
+	<filter token="plugin-db-user" value="${plugin-db-user}"/>
+	<filter token="plugin-db-pass" value="${plugin-db-pass}"/>
+	
+	<filter token="smtp-server" value="${smtp-server}"/>
 
       </filterset>
     </copy>
@@ -265,6 +281,125 @@
     <mkdir dir="${includes}"/>
     <mkdir dir="${uploads}"/>
     <mkdir dir="${logs}"/>
+  </target>
+
+  <target name="conference"
+          depends="init,conference-servlets,conference-templates,conference-images"
+	  description="Builds the conference."/>
+
+  <target name="conference-servlets" 
+          depends="init,server"
+          description="Builds the conference-servlets.">
+
+    <mkdir dir="${classes}"/>
+    <javac srcdir="servlets/conf"
+           destdir="${classes}"
+           includes="*.java"
+           classpath="${classes}"
+	   debug="${debug}">
+
+      <classpath>
+        <pathelement path="${classes}"/>
+	  <fileset dir="install/lib">
+	    <include name="**/*.jar"/>
+	  </fileset>
+      </classpath>
+    </javac>
+
+  </target>
+
+  <target name="conference-templates"
+          depends="init"
+	  description="Copies the conference-templates">
+    <copy todir="${conference-templates}">
+      <fileset dir="templates/${srclanguage}/conf"/>
+    </copy>
+  </target>
+
+  <target name="conference-images"
+          depends="init,conference-templates"
+	  description="Copies the conference-images">
+    <move todir="${images}/${language}/102/original">
+      <fileset dir="${conference-templates}/original/images"/>
+    </move>
+  </target>
+
+  <target name="chat"
+          depends="init,chat-servlets,chat-templates"
+	  description="Builds the chat."/>
+
+  <target name="chat-servlets" 
+          depends="init,server"
+          description="Builds the chat-servlets.">
+
+    <mkdir dir="${classes}"/>
+    <javac srcdir="servlets/chat"
+           destdir="${classes}"
+           includes="*.java"
+           classpath="${classes}"
+	   debug="${debug}">
+
+      <classpath>
+        <pathelement path="${classes}"/>
+	  <fileset dir="install/lib">
+	    <include name="**/*.jar"/>
+	  </fileset>
+      </classpath>
+    </javac>
+
+  </target>
+
+  <target name="chat-templates"
+          depends="init"
+	  description="Copies the chat-templates">
+    <copy todir="${chat-templates}">
+      <fileset dir="templates/${srclanguage}/chat"/>
+    </copy>
+
+    <move todir="${chat-templates}/original">
+      <fileset dir="${chat-templates}/orginal"/>
+    </move>
+  </target>
+
+  <target name="billboard"
+          depends="init,billboard-servlets,billboard-templates,billboard-images"
+	  description="Builds the billboard."/>
+
+  <target name="billboard-servlets" 
+          depends="init,server"
+          description="Builds the billboard-servlets.">
+
+    <mkdir dir="${classes}"/>
+    <javac srcdir="servlets/billBoard"
+           destdir="${classes}"
+           includes="*.java"
+           classpath="${classes}"
+	   debug="${debug}">
+
+      <classpath>
+        <pathelement path="${classes}"/>
+	  <fileset dir="install/lib">
+	    <include name="**/*.jar"/>
+	  </fileset>
+      </classpath>
+    </javac>
+
+  </target>
+
+  <target name="billboard-templates"
+          depends="init"
+	  description="Copies the billboard-templates">
+    <copy todir="${billboard-templates}">
+      <fileset dir="templates/${srclanguage}/conf"/>
+    </copy>
+  </target>
+
+  <target name="billboard-images"
+          depends="init,billboard-templates"
+	  description="Copies the billboard-images">
+    <move todir="${images}/${language}/104/original">
+      <fileset dir="${billboard-templates}/original/images"/>
+    </move>
   </target>
 
 </project>

@@ -213,8 +213,8 @@ public class ConfReply extends Conference {
 		//		String expertHtm = templateLib + "CONF_EXPERT.HTM" ;
 
 		// Lets get the part of an html page, wich will be parsed for every a Href reference
-		String templateLib = super.getExternalTemplateFolder(req) ;
-		String aSnippetFile = templateLib + RECS_HTML ;
+		File templateLib = super.getExternalTemplateFolder(req) ;
+		File aSnippetFile = new File(templateLib, RECS_HTML) ;
 		//	log("SnippetFile: " + aSnippetFile) ;
 
 
@@ -310,7 +310,7 @@ public class ConfReply extends Conference {
 	for all records in the array
 	*/
 	public String preParse (HttpServletRequest req, String[] DBArr, Vector tagsV,
-		String htmlCodeFile, String imagePath)  throws ServletException, IOException {
+		File htmlCodeFile, String imagePath)  throws ServletException, IOException {
 
 		String htmlStr = "" ;
 		try {
@@ -318,8 +318,8 @@ public class ConfReply extends Conference {
 			String servletHome = MetaInfo.getServletPath(req) ;
 
 			// Lets get the part of the expert html
-			String templateLib = super.getExternalTemplateFolder(req) ;
-			String expertHtmFile = templateLib + "CONF_EXPERT.HTM" ;
+			File templateLib = super.getExternalTemplateFolder(req) ;
+			File expertHtmFile = new File(templateLib, "CONF_EXPERT.HTM") ;
 
 			// Lets get the nbr of cols
 			int nbrOfCols = Integer.parseInt(DBArr[0]) ;
@@ -397,7 +397,7 @@ public class ConfReply extends Conference {
 	/**
 	Parses one record.
 	*/
-	public String parseOneRecord (String[] tags, String[] data, String htmlCodeFile) {
+	public String parseOneRecord (String[] tags, String[] data, File htmlCodeFile) {
 
 		Vector tagsV = super.convert2Vector(tags) ;
 		Vector dataV = super.convert2Vector(data) ;
@@ -408,7 +408,7 @@ public class ConfReply extends Conference {
 	/**
 	Parses one record.
 	*/
-	public String parseOneRecord (Vector tagsV, Vector dataV, String htmlCodeFile) {
+	public String parseOneRecord (Vector tagsV, Vector dataV, File htmlCodeFile) {
 
 		// Lets parse one aHref reference
 		ParseServlet parser = new ParseServlet(htmlCodeFile, tagsV, dataV) ;

@@ -164,7 +164,7 @@ public class ChatControl extends ChatBase
 		//let's see if user has adminrights
 		String adminButtonKickOut = "";
 		String chatAdminLink =  "";
-		String templateLib = super.getExternalTemplateFolder(req) ;
+		File templateLib = super.getExternalTemplateFolder(req) ;
 		
 		if(userHasAdminRights( imcServer, meta_Id, user ))
 		{
@@ -528,7 +528,7 @@ public class ChatControl extends ChatBase
 		log("*** start createSettingsPage ***");
 		VariableManager vm = new VariableManager() ;
 
-		String templetUrl =	super.getExternalTemplateFolder(req);
+	        File templetUrl =	super.getExternalTemplateFolder(req);
 		//HtmlGenerator generator = new HtmlGenerator(templetUrl,HTML_LINE);
 		
 		Html htm = new Html() ;
@@ -611,7 +611,7 @@ public class ChatControl extends ChatBase
 			vm.addProperty( "chatName", name );
 			
 			//lets create adminbuttonhtml
-			String templateLib = super.getExternalTemplateFolder( req );
+			File templateLib = super.getExternalTemplateFolder( req );
 			HtmlGenerator htmlObj = new HtmlGenerator( templateLib, template );
 			return htmlObj.createHtmlString( vm, req );
 	}

@@ -8,7 +8,7 @@ public class ReadTextFile {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
     
-    public synchronized static String getFile(String theFile) {
+    public synchronized static String getFile(File theFile) {
         String retStr = "" ;
         try {
             String fileLine ;

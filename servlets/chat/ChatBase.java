@@ -465,7 +465,7 @@ public class ChatBase extends HttpServlet {
 	Gives the folder to the root external folder,Example /templates/se/102/
 	*/
 
-	public String getExternalTemplateRootFolder (HttpServletRequest req)
+	public File getExternalTemplateRootFolder (HttpServletRequest req)
 	throws ServletException, IOException
 	{
 
@@ -474,15 +474,14 @@ public class ChatBase extends HttpServlet {
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String ChatPoolServer = Utility.getDomainPref("chat_server",host) ;
 
-		String externalTemplateLib = "" ;
 		String metaId = this.getMetaId(req) ;
 		if( metaId == null)
 		{
 			log("No meta_id could be found! Error in Chat.class") ;
-			return "No meta_id could be found!" ;
+			throw new IllegalArgumentException() ;
 		}
-		externalTemplateLib = MetaInfo.getExternalTemplateFolder(imcServer, metaId) ;
-		return externalTemplateLib ;
+		return MetaInfo.getExternalTemplateFolder(imcServer, metaId) ;
+
 	}
 
 
@@ -492,7 +491,7 @@ public class ChatBase extends HttpServlet {
 	name of the folder which contains the templates for a certain meta id
 	*/
 
-	public String getExternalTemplateFolder (HttpServletRequest req)
+	public File getExternalTemplateFolder (HttpServletRequest req)
 	throws ServletException, IOException
 	{
 		String externalTemplateLib = "" ;
@@ -500,14 +499,13 @@ public class ChatBase extends HttpServlet {
 		if( metaId == null)
 		{
 			log("No meta_id could be found! Error in Chat.class") ;
-			return "No meta_id could be found!" ;
+			throw new IllegalArgumentException() ;
 		}
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("chat_server",host) ;
-		String extFolder = this.getExternalTemplateFolder(imcServer, metaId) ;
-		return extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
+		return new File( this.getExternalTemplateFolder(imcServer, metaId), this.getTemplateLibName(confPoolServer, metaId)) ;
 		// return this.getExternalTemplateFolder(imcServer, metaId) ;
 	}
 
@@ -517,22 +515,15 @@ public class ChatBase extends HttpServlet {
 	name of the folder which contains the templates for a certain meta id
 	*/
 
-	public String getExternalTemplateFolder (String server, String metaId )
+	public File getExternalTemplateFolder (String server, String metaId )
 	throws ServletException, IOException
 	{
-		String externalTemplateLib = "" ;
 		if( metaId == null)
 		{
 			log("No meta_id could be found! Error in Chat.class") ;
-			return "No meta_id could be found!" ;
+			throw new IllegalArgumentException() ;
 		}
-		externalTemplateLib = MetaInfo.getExternalTemplateFolder(server, metaId) ;
-		if(externalTemplateLib == null)
-			log("Error!: getExternalTemplateFolder: " + externalTemplateLib) ;
-		//externalTemplateLib += this.getTemplateLibName(server, metaId) ;
-		// log("ExternalTemplateLib: " + externalTemplateLib) ;
-		//log("*** GetExternalTemplateFolder WAS CALLED" ) ;
-		return externalTemplateLib ;
+		return MetaInfo.getExternalTemplateFolder(server, metaId) ;
 	}
 
 
@@ -613,7 +604,7 @@ public class ChatBase extends HttpServlet {
 		}
 
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid
-		String templateLib = this.getExternalTemplateFolder(req) ;
+		File templateLib = this.getExternalTemplateFolder(req) ;
 		//String templateLib = this.getExternalTemplateFolder(imcServer, metaId) ;
 		
 		// Lets add 3 server hostadresses

@@ -28,10 +28,10 @@ public class ConfLogin extends Conference {
 	private final static String USER_UNADMIN_LINK_TEMPLATE = "Conf_User_Unadmin_Link.htm";
 
 	String LOGIN_HTML = "Conf_Login.htm" ;	   // The login page
-	String CREATE_HTML = "Conf_Add_User.htm" ;   // The create new user page
+	String CREATE_HTML = "Conf_Add_user.htm" ;   // The create new user page
 	String LOGIN_ERROR_HTML = "Conf_Login_Error.htm" ;  // The error
 	// page used for specialized messages to user
-	String ADMIN1_HTML = "Conf_admin_user.htm" ;
+	String ADMIN1_HTML = "Conf_Admin_user.htm" ;
 	String ADMIN2_HTML = "Conf_admin_user_resp.htm" ;
 	String ADD_USER_OK_HTML = "Conf_Login_add_ok.htm" ;
 
@@ -836,21 +836,6 @@ public class ConfLogin extends Conference {
 
 
 
-
-	/**
-	Detects paths and filenames.
-
-
-	public void init(ServletConfig config) throws ServletException {
-	super.init(config);
-	ADMIN1_HTML = "Conf_admin_user.htm" ;
-	ADMIN2_HTML = "Conf_admin_user_resp.htm" ;
-	LOGIN_HTML = "Conf_Login.htm" ;
-	CREATE_HTML = "Conf_Add_User.htm" ;
-	LOGIN_ERROR_HTML = "Conf_Login_Error.htm" ;
-	ADD_USER_OK_HTML = "Conf_Login_add_ok.htm" ;
-	}
-	*/
 	/**
 	Returns a String, containing the userID in the request object.If something failes,
 	a error page will be generated and null will be returned.

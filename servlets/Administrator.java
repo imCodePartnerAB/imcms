@@ -153,17 +153,17 @@ public class Administrator extends HttpServlet {
 
 	  Example : D:\apache\htdocs\templates\se\admin\
 	*/
-	public String getAdminTemplateFolder (String server, imcode.server.User user) throws ServletException, IOException {
+	public File getAdminTemplateFolder (String server, imcode.server.User user) throws ServletException, IOException {
 
 		RmiLayer rmi = new RmiLayer(user) ;
 
 		// Since our templates are located into the admin folder, we'll have to hang on admin
-	    String templateLib = rmi.getInternalTemplateFolder(server) ;
+	    File templateLib = rmi.getInternalTemplateFolder(server) ;
 
 		// Lets get the users language id. Use the langid to get the lang prefix from db.
 	    String langId = user.getString("lang_id") ;
 		String langPrefix = rmi.execSqlProcedureStr(server, "GetLangPrefixFromId " + langId) ;
-		templateLib += "/" + langPrefix + "/admin/" ;
+		templateLib = new File(templateLib, langPrefix + "/admin") ;
 		 //this.log("lang_id:" + langId) ;
 	    //this.log("langPrefix:" + langPrefix) ;
 	    //this.log("InternalTemplatePath:" + templateLib) ;
@@ -183,7 +183,7 @@ public class Administrator extends HttpServlet {
 		String host				= req.getHeader("Host") ;
 		String server			= Utility.getDomainPref("adminserver",host) ;
 		imcode.server.User user = getUserObj(req,res) ;
-		String templateLib = this.getAdminTemplateFolder(server, user) ;
+		File templateLib = this.getAdminTemplateFolder(server, user) ;
 
     /*
     RmiLayer rmi = new RmiLayer(user) ;

@@ -123,7 +123,7 @@ public class ChatBoard extends ChatBase
 				log("myGrupp was null so return");
 				return;
 			}
-			String templetUrl =	super.getExternalTemplateFolder(req);
+			File templetUrl =	super.getExternalTemplateFolder(req);
 			HtmlGenerator generator = new HtmlGenerator(templetUrl,HTML_LINE);
 			
 			//lets get all the settings for this page

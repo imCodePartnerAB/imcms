@@ -127,7 +127,7 @@ public class IMCServiceRMI {
 	    imc.saveFrameset(meta_id,user,doc) ;
     }
 
-    public static String getExternalTemplateFolder( String server, int meta_id ) throws IOException {
+    public static File getExternalTemplateFolder( String server, int meta_id ) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
 
 	    return imc.getExternalTemplateFolder(meta_id) ;

@@ -22,7 +22,6 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
 		String host 				= req.getHeader("Host") ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 		String maxUooLoadStr		= Utility.getDomainPref( "max_uploadsize",host );
-		int uploadsize 				= Integer.parseInt(maxUooLoadStr) ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		// Check if user logged on
 		if ( (Check.userLoggedOn(req,res,start_url))==null ) {
@@ -43,11 +42,6 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
 		
 		int length = req.getContentLength();
 
-		if (length<1||length>uploadsize) {
-			doGet(req,res);
-			return ;
-		}
-		
 		ServletInputStream in = req.getInputStream() ;
 		byte buffer[] = new byte[ length ] ;
 		int bytes_read = 0;

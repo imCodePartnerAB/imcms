@@ -150,13 +150,9 @@ public class BillBoardError extends BillBoard
 		try
 		{
 			// Lets get the path to the template library
-			String folder = "" ;
-			folder = super.getExternalTemplateRootFolder(req) ;
-			//log("ExternalFolder was: " + folder) ;
+			File folder  = super.getExternalTemplateRootFolder(req) ;
 
-			// Lets get the error code
-
-			SettingsAccessor setObj = new SettingsAccessor(folder + "errmsg.ini") ;
+			SettingsAccessor setObj = new SettingsAccessor(new File(folder, "errmsg.ini")) ;
 			setObj.setDelimiter("=") ;
 			setObj.loadSettings() ;
 			myErrorMessage = setObj.getSetting("" + errCode) ;
@@ -210,7 +206,7 @@ public class BillBoardError extends BillBoard
 		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
 
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid
-		String templateLib = this.getExternalTemplateFolder( req ) ;
+		File templateLib = this.getExternalTemplateFolder( req ) ;
 
 		// Lets add 3 server hostadresses
 		String servletPath = MetaInfo.getServletPath(req) ;

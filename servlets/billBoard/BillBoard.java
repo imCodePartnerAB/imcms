@@ -403,7 +403,7 @@ public class BillBoard extends HttpServlet { //Conference
 	Gives the folder to the root external folder,Example /templates/se/102/
 	*/
 
-	public String getExternalTemplateRootFolder (HttpServletRequest req)//p ok
+	public File getExternalTemplateRootFolder (HttpServletRequest req)//p ok
 	throws ServletException, IOException
 	{
 		// Lets get serverinformation
@@ -411,15 +411,13 @@ public class BillBoard extends HttpServlet { //Conference
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String ConfPoolServer = Utility.getDomainPref("billboard_server",host) ;//"conference_server"
 
-		String externalTemplateLib = "" ;
 		String metaId = this.getMetaId(req) ;
 		if( metaId == null)
 		{
 			log("No meta_id could be found! Error in BillBoard.class") ;
-			return "No meta_id could be found!" ;
+			throw new IllegalArgumentException();
 		}
-		externalTemplateLib = MetaInfo.getExternalTemplateFolder(imcServer, metaId) ;
-		return externalTemplateLib ;
+		return MetaInfo.getExternalTemplateFolder(imcServer, metaId) ;
 	}
 
 	 
@@ -429,26 +427,21 @@ public class BillBoard extends HttpServlet { //Conference
 	name of the folder which contains the templates for a certain meta id
 	*/
 
-	public String getExternalTemplateFolder (HttpServletRequest req)//p ok
+	public File getExternalTemplateFolder (HttpServletRequest req)//p ok
 	throws ServletException, IOException
 	{
-		String externalTemplateLib = "" ;
 		String metaId = this.getMetaId(req) ;
 		if( metaId == null)
 		{
 			log("No meta_id could be found! Error in BillBoard.class") ;
-			return "No meta_id could be found!" ;
+			throw new IllegalArgumentException();
 		}
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;//"conference_server"
-		//log(confPoolServer);
-		String extFolder = this.getExternalTemplateFolder(imcServer, metaId) ;
-		extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
-		
-		return extFolder;
-		// return this.getExternalTemplateFolder(imcServer, metaId) ;
+
+		return new File( this.getExternalTemplateFolder(imcServer, metaId), this.getTemplateLibName(confPoolServer, metaId)) ;
 	}
 
 	/**
@@ -457,21 +450,16 @@ public class BillBoard extends HttpServlet { //Conference
 	name of the folder which contains the templates for a certain meta id
 	*/
 
-	public String getExternalTemplateFolder (String server, String metaId )
+	public File getExternalTemplateFolder (String server, String metaId )
 	throws ServletException, IOException
 	{
 		
-		String externalTemplateLib = "" ;
 		if( metaId == null)
 		{
 			log("No meta_id could be found! Error in BillBoard.class") ;
-			return "No meta_id could be found!" ;
+			throw new IllegalArgumentException() ;
 		}
-		externalTemplateLib = MetaInfo.getExternalTemplateFolder(server, metaId) ;
-		if(externalTemplateLib == null)
-			log("Error!: getExternalTemplateFolder: " + externalTemplateLib) ;
-				
-		return externalTemplateLib ;
+		return MetaInfo.getExternalTemplateFolder(server, metaId) ;
 	}
 
 
@@ -558,7 +546,7 @@ public class BillBoard extends HttpServlet { //Conference
 		String confPoolServer = Utility.getDomainPref("billboard_server",host) ;//"conference_server"
 
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid
-		String templateLib = this.getExternalTemplateFolder(req) ;
+		File templateLib = this.getExternalTemplateFolder(req) ;
 		//log("TemplateLib: " + templateLib) ;
 
 		// Lets add 3 server hostadresses
@@ -865,7 +853,7 @@ public class BillBoard extends HttpServlet { //Conference
 			String adminLinkFile = adminButtonVM.getProperty( "ADMIN_LINK_HTML" );
 				
 			//lets create adminbuttonhtml
-			String templateLib = this.getExternalTemplateFolder( req );
+			File templateLib = this.getExternalTemplateFolder( req );
 			HtmlGenerator htmlObj = new HtmlGenerator( templateLib, this.ADMIN_BUTTON_TEMPLATE );
 			String adminBtn = htmlObj.createHtmlString( adminButtonVM, req );
 			
@@ -907,7 +895,7 @@ public class BillBoard extends HttpServlet { //Conference
 			String unAdminLinkFile = unAdminButtonVM.getProperty( "UNADMIN_LINK_HTML" );
 			
 			//lets create unadminbuttonhtml
-			String templateLib = this.getExternalTemplateFolder( req );
+			File templateLib = this.getExternalTemplateFolder( req );
 			HtmlGenerator htmlObj = new HtmlGenerator( templateLib, this.UNADMIN_BUTTON_TEMPLATE );
 			String unAdminBtn = htmlObj.createHtmlString( unAdminButtonVM, req );
 	
@@ -1082,4 +1070,29 @@ public class BillBoard extends HttpServlet { //Conference
 			IMCServiceRMI.checkDocAdminRights( imcServer, metaId, user, 65536 ) );
 
 	}
+
+	/**
+	Parses one record.
+	*/
+	public String parseOneRecord (String[] tags, String[] data, File htmlCodeFile)
+	{
+
+		Vector tagsV = convert2Vector(tags) ;
+		Vector dataV = convert2Vector(data) ;
+		return this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
+	}
+
+
+	/**
+	Parses one record.
+	*/
+	public String parseOneRecord (Vector tagsV, Vector dataV, File htmlCodeFile)
+	{
+		// Lets parse one aHref reference
+		ParseServlet parser = new ParseServlet(htmlCodeFile, tagsV, dataV) ;
+		String oneRecordsHtmlCode = parser.getHtmlDoc() ;
+		return oneRecordsHtmlCode ;
+	} // End of parseOneRecord
+
+
 } // End class

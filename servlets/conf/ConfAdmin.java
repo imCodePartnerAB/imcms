@@ -167,10 +167,10 @@ public class ConfAdmin extends Conference {
 			// Lets copy the original folders to the new foldernames
 			String metaId = super.getMetaId(req) ;
 			FileManager fileObj = new FileManager() ;
-			String templateSrc = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + "original/" ;
-			String imageSrc = rmi.getExternalImageHomeFolder(host,imcServer, metaId) + "original/" ;
-			String templateTarget = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + newLibName + "/" ;
-			String imageTarget = rmi.getExternalImageHomeFolder(host,imcServer, metaId) + newLibName + "/" ;
+			File templateSrc = new File(MetaInfo.getExternalTemplateFolder(imcServer, metaId), "original") ;
+			File imageSrc = new File(rmi.getExternalImageHomeFolder(host,imcServer, metaId), "original") ;
+			File templateTarget = new File(MetaInfo.getExternalTemplateFolder(imcServer, metaId), newLibName) ;
+			File imageTarget = new File(rmi.getExternalImageHomeFolder(host,imcServer, metaId), newLibName) ;
 
 			//this.log("TemplateSrc: " + templateSrc ) ;
 			//this.log("templateTarget: " + templateTarget) ;
@@ -559,7 +559,7 @@ public class ConfAdmin extends Conference {
 			//vm.addProperty("A_META_ID", params.getProperty("META_ID") ) ;
 			//vm.addProperty("CURRENT_TEMPLATE_SET", currTemplateSet ) ;
 			//this.sendHtml(req,res,vm, "CONF_ADMIN_TEMPLATE3.HTM") ;
-			htmlFile = "CONF_ADMIN_TEMPLATE3.HTM";
+			htmlFile = "Conf_Admin_Template3.htm";
 			//return ;
 		}
 
@@ -572,7 +572,7 @@ public class ConfAdmin extends Conference {
 			String setName = req.getParameter("setname") ;
 			if(	setName != null ) {
 				log("OK, Lets show our upload templates/images page") ;
-				HTML_TEMPLATE ="Conf_admin_template2.htm" ;
+				HTML_TEMPLATE ="Conf_Admin_Template2.htm" ;
 
 					String uploadType = req.getParameter("UPLOAD_TYPE") ;
 				if( uploadType == null ) {
@@ -597,7 +597,7 @@ public class ConfAdmin extends Conference {
 				// Ok, were gonna show our standard meta page
 			}
 			else {
-				HTML_TEMPLATE ="Conf_admin_template1.htm" ;
+				HTML_TEMPLATE ="Conf_Admin_Template1.htm" ;
 				log("OK, Administrera metainformation") ;
 
 				// Lets get the current template set for this metaid
@@ -627,7 +627,7 @@ public class ConfAdmin extends Conference {
 
 		// *********** ADMIN FORUM *************
 		if (adminWhat.equalsIgnoreCase("FORUM") ) {
-			HTML_TEMPLATE ="Conf_admin_forum.htm" ;
+			HTML_TEMPLATE ="Conf_Admin_Forum.htm" ;
 			log("OK, Administrera FORUM") ;
 
 			// Lets get the information from DB
@@ -668,8 +668,8 @@ public class ConfAdmin extends Conference {
 
 		// *********** ADMIN DISCUSSION *************
 		if (adminWhat.equalsIgnoreCase("DISCUSSION") ) {
-			HTML_TEMPLATE ="Conf_admin_disc.htm" ;
-			String adminDiscList = "Conf_admin_disc_list.htm" ;
+			HTML_TEMPLATE ="Conf_Admin_Disc.htm" ;
+			String adminDiscList = "Conf_Admin_Disc_List.htm" ;
 			log("OK, Administrera Discussions") ;
 
 			// Lets get the url to the servlets directory
@@ -684,7 +684,7 @@ public class ConfAdmin extends Conference {
 			String imagePath = super.getExternalImageFolder(req) + "ConfDiscNew.gif" ;
 
 			// Lets get the part of an html page, wich will be parsed for every a Href reference
-			String aHrefHtmlFile = super.getExternalTemplateFolder(req) + adminDiscList ;
+			File aHrefHtmlFile = new File(super.getExternalTemplateFolder(req), adminDiscList) ;
 			// log("aHrefHtmlFile: " + aHrefHtmlFile ) ;
 
 			// Lets get all New Discussions
@@ -728,8 +728,8 @@ public class ConfAdmin extends Conference {
 
 		// *********** ADMIN REPLIES *************
 		if (adminWhat.equalsIgnoreCase("REPLY") ) {
-			HTML_TEMPLATE ="Conf_admin_reply.htm" ;
-			String adminReplyList = "Conf_admin_reply_list.htm" ;
+			HTML_TEMPLATE ="Conf_Admin_Reply.htm" ;
+			String adminReplyList = "Conf_Admin_Reply_List.htm" ;
 			log("OK, Administrera replies") ;
 
 			// Lets get the users userId
@@ -772,8 +772,8 @@ public class ConfAdmin extends Conference {
 			// log("ImagePath: " + imagePath) ;
 
 			// Lets get the part of an html page, wich will be parsed for every a Href reference
-			String templateLib = super.getExternalTemplateFolder(req) ;
-			String aSnippetFile = templateLib + adminReplyList ;
+			File templateLib = super.getExternalTemplateFolder(req) ;
+			File aSnippetFile = new File(templateLib, adminReplyList) ;
 
 			// Lets preparse all records
 			String allRecs = " " ;
@@ -804,7 +804,7 @@ public class ConfAdmin extends Conference {
 	for all records in the array
 	*/
 	public String replyPreParse (HttpServletRequest req, String[] DBArr, Vector tagsV,
-		String htmlCodeFile, String imagePath)  throws ServletException, IOException {
+		File htmlCodeFile, String imagePath)  throws ServletException, IOException {
 
 		String htmlStr = "" ;
 		try {
@@ -892,7 +892,7 @@ public class ConfAdmin extends Conference {
 	for all records in the array
 	*/
 	public String discPreParse (HttpServletRequest req, String[] DBArr, Vector tagsV,
-		String htmlCodeFile, String imagePath, int newDiscFlag)  throws ServletException, IOException {
+		File htmlCodeFile, String imagePath, int newDiscFlag)  throws ServletException, IOException {
 
 		String htmlStr = "" ;
 		try {
@@ -951,30 +951,6 @@ public class ConfAdmin extends Conference {
 	// ****************** END OF PARSE REPLIES FUNCTIONS ****************
 
 	/**
-	Parses one record.
-	*/
-	public String parseOneRecord (String[] tags, String[] data, String htmlCodeFile) {
-
-		Vector tagsV = super.convert2Vector(tags) ;
-		Vector dataV = super.convert2Vector(data) ;
-		return this.parseOneRecord(tagsV, dataV, htmlCodeFile) ;
-	}
-
-
-	/**
-	Parses one record.
-	*/
-	public String parseOneRecord (Vector tagsV, Vector dataV, String htmlCodeFile) {
-
-		String htmlStr = "" ;
-		// Lets parse one aHref reference
-		ParseServlet parser = new ParseServlet(htmlCodeFile, tagsV, dataV) ;
-		String oneRecordsHtmlCode = parser.getHtmlDoc() ;
-		return oneRecordsHtmlCode ;
-	} // End of parseOneRecord
-
-
-	/**
 	Returns the users NewDiscussionFlag htmlcode. If something has happened in a discussion
 	or a new discussion has took place, a bitmap will be shown in front of the discussion,
 	otherwise nothing will occur.
@@ -995,11 +971,6 @@ public class ConfAdmin extends Conference {
 
 
 	// ****************** GET PARAMETER FUNCTIONS ************************
-
-
-
-
-
 
 	/**
 	Collects the parameters used for setting the number of discussions to show in a forum
@@ -1143,7 +1114,7 @@ public class ConfAdmin extends Conference {
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		HTML_TEMPLATE ="Conf_admin_forum.htm" ;
+		HTML_TEMPLATE ="Conf_Fdmin_Forum.htm" ;
 	}
 
 	/**
