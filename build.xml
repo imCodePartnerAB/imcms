@@ -242,6 +242,15 @@
 
     </target>
 
+
+    <!-- Install the webapp, bypassing the war-file -->
+    <target name="install" depends="init,build,check-deployroot,doc" description="Copies the webapp directly into the webapp-directory in the deployroot.">
+	<copy todir="${webapproot}">
+	    <fileset dir="${build}"/>
+	</copy>
+    </target>
+
+
     <!-- Delete everything built by the 'build'-target. -->
     <target name="clean" description="Deletes everything for a fresh start.">
 	<delete dir="${build}"/>
@@ -250,26 +259,19 @@
     </target>
 
 
+    <target name="clean-build" description="Runs the targets 'clean' and 'build'"
+        depends="clean,build"
+        />
+
+
+    <target name="clean-install" description="Runs the targets 'clean' and 'install'"
+        depends="clean,install"
+        />
+
+
     <!-- Install the war-file -->
     <target name="install-war" depends="init,dist,check-deployroot,check-webappname" description="Copies the WAR-package into the deployroot.">
 	<copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
-    </target>
-
-        <!-- Generate documentation for the api -->
-    <target name="apiDoc" depends="build" description="Generates javadoc.">
-        <javadoc packagenames="imcode.imcms.api.*" sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API">
-            <packageset dir="server/src/" defaultexcludes="yes">
-                <include name="com/imcode/imcms/api/**"/>
-            </packageset>
-        </javadoc>
-    </target>
-
-
-    <!-- Install the webapp, bypassing the war-file -->
-    <target name="install" depends="init,build,check-deployroot,apiDoc" description="Copies the webapp directly into the webapp-directory in the deployroot.">
-	<copy todir="${webapproot}">
-	    <fileset dir="${build}"/>
-	</copy>
     </target>
 
 
@@ -293,26 +295,14 @@
 	</java>
     </target>
 
+
     <!-- Generate documentation -->
-    <target name="doc" depends="init" description="Generates javadoc.">
-	<javadoc destdir="${doc}">
-	    <package name="imcode.util"/>
-	    <package name="imcode.util.log"/>
-	    <package name="imcode.server"/>
-	    <package name="imcode.server.parser"/>
-	    <package name="imcode.external.diverse"/>
-	    <package name="imcode.external.chat"/>
-	    <package name=""/>
-	    <classpath>
-		<fileset dir="install/lib">
-		    <include name="**/*.jar"/>
-		</fileset>
-	    </classpath>
-	    <sourcepath>
-		<pathelement path="server/src/"/>
-		<pathelement path="servlets/"/>
-	    </sourcepath>
-	</javadoc>
+    <target name="doc" depends="build" description="Generates javadoc.">
+        <javadoc packagenames="imcode.imcms.api.*" sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API">
+            <packageset dir="server/src/" defaultexcludes="yes">
+                <include name="com/imcode/imcms/api/**"/>
+            </packageset>
+        </javadoc>
     </target>
 
 

@@ -119,6 +119,9 @@ public class AdminDoc extends HttpServlet {
                 DocumentRequest documentRequest = new DocumentRequest( imcref, req.getRemoteAddr(), req.getSession( true ).getId(), user, meta_id, null );
                 documentRequest.setUserAgent( req.getHeader( "User-agent" ) );
                 documentRequest.setContextPath( req.getContextPath() );
+                documentRequest.setCookies( req.getCookies() );
+                documentRequest.setHostName( req.getHeader( "Host" ) );
+                
                 String result = imcref.parsePage( documentRequest, flags, new ParserParameters() );
                 return result;
 
