@@ -121,7 +121,7 @@ into @meta_id, @name, @type
 while @@fetch_status = 0
    begin
        set @ink =1001
-       select @text = substring(text,@start,1000), @length = len(substring(text,@start,2000))
+       select @text = replace( substring(text,@start,1000), '''', '"' ), @length = len(substring(text,@start,2000)) 
        from texts 
        where meta_id = @meta_id and name = @name
 
@@ -132,7 +132,7 @@ while @@fetch_status = 0
        begin		
           while (@length > 0 )
           begin
-            	select @text = substring(text,@ink,1000), @length = len(substring(text,@ink,1000))
+            	select @text = replace( substring(text,@ink,1000), '''', '"' ), @length = len(substring(text,@ink,1000))
             	from texts 
             	where meta_id = @meta_id and name = @name
             	print @text

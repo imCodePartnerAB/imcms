@@ -4,8 +4,14 @@
 -- !!!! SET @metaStart and @metaMax before you run the script !!!! 
 
 declare @metaStart varchar(4), @metaMax varchar(4), @serverName varchar(35)
-set @metaStart = 1 --1
-set @metaMax = 200 --200
+set @metaStart = 0  --( 1 )
+set @metaMax = 0    --( 400 )
+
+if (select @metaStart) < 1 or (select @metaMax) < 1 or (select @metaStart) > (select @metaMax)
+  begin
+    print'OBS!! Du måste ställa in rätt värden för @metaStart och @metaMax '
+    return
+  end
 
 select @serverName = srvname
 from master.dbo.sysservers
@@ -414,7 +420,7 @@ into @meta_id, @name, @type
 while @@fetch_status = 0
 begin 
      set @ink =1001
-     select @text = substring(text,@start,1000), @length = len(substring(text,@start,2000))
+     select @text = replace( substring(text,@start,1000), '''', '"' ), @length = len(substring(text,@start,2000))
      from texts 
      where meta_id = @meta_id and name = @name
 
@@ -425,7 +431,7 @@ begin
      begin		
            while (@length > 0 )
            begin
-                select @text = substring(text,@ink,1000), @length = len(substring(text,@ink,1000))
+                select @text = replace( substring(text,@ink,1000), '''', '"' ), @length = len(substring(text,@ink,1000))
                 from texts 
                 where meta_id = @meta_id and name = @name
                 print @text
@@ -625,6 +631,7 @@ If @@error = 0
 	BEGIN
            Commit Tran
            Print ''Commit Tran''
+           Print ''OBS!! Glöm inte att uppdatera bilder i katalogerna för helpimages''
 	END    
 Else
 	BEGIN
@@ -632,6 +639,7 @@ Else
 	    Print ''Rollback Tran''
 	END
 '
+
 print'END'
 
 print'-- End off script'
