@@ -204,9 +204,6 @@
     <mkdir dir="${images}"/>
     <mkdir dir="${login}"/>
     <copy file="templates/index.html" todir="${login}">
-      <filterset>
-        <filter token="servleturl" value="${servleturl}"/>
-      </filterset>
     </copy>
     <copy todir="${images}">
       <fileset dir="install/htdocs/images">
@@ -231,7 +228,6 @@
 	</patternset>
       </fileset>
       <filterset>
-        <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
       </filterset>
@@ -251,7 +247,6 @@
       <filterset>
 
         <filter token="adminbuttonsurl" value="${adminbuttonsurl}"/>
-        <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
 
@@ -267,11 +262,8 @@
     <copy todir="${admintemplates}/permissions">
       <fileset dir="templates/${srclanguage}/permissions"/>
       <filterset>
-
-        <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
-
       </filterset>
     </copy>
 
@@ -285,7 +277,6 @@
 	</patternset>
       </fileset>
       <filterset>
-        <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
       </filterset>
@@ -294,7 +285,6 @@
     <copy todir="${texttemplates}">
       <fileset dir="templates/text"/>
       <filterset>
-        <filter token="servleturl" value="${servleturl}"/>
         <filter token="loginurl" value="${loginurl}"/>
         <filter token="imageurl" value="${imageurl}"/>
       </filterset>
