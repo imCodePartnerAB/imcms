@@ -1,9 +1,5 @@
 package imcode.server ;
 
-import java.util.Vector ;
-import imcode.server.user.UserDomainObject ;
-
-
 /******************************************************************************************
 * INTERFACE: IMCPoolInterface                                                             *
 *-----------------------------------------------------------------------------------------*
@@ -80,7 +76,6 @@ public interface IMCPoolInterface {
 	public java.util.Hashtable sqlProcedureHash(String procedure)
 	;
 
-	// check internalDocument rights
 	public boolean checkDocAdminRights(int meta_id, imcode.server.user.UserDomainObject user)
 	;
 

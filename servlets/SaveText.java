@@ -5,7 +5,7 @@ import imcode.util.* ;
 import imcode.server.* ;
 
 /**
-   Save text in a internalDocument.
+   Save text in a document.
 */
 public class SaveText extends HttpServlet {
     /**

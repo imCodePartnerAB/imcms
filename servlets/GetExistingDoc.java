@@ -150,7 +150,7 @@ public class GetExistingDoc extends HttpServlet {
 
 	    // Lets check that the sortby option is valid by run the method
 	    // "SortOrder_GetExistingDocs 'lang_prefix' wich will return
-	    // an array with all the internalDocument types. By adding the key-value pair
+	    // an array with all the document types. By adding the key-value pair
 	    // array into an hashtable and check if the sortorder exists in the hashtable.
 	    // we are able to determine if the sortorder is okay.
 
@@ -181,7 +181,7 @@ public class GetExistingDoc extends HttpServlet {
 	    // Lets get the resultpage fragment used for an result
 	    String oneRecHtmlSrc = imcref.parseDoc( null, "existing_doc_hit.html", langPrefix) ;
 
-	    // Lets get all internalDocument types and put them in a hashTable
+	    // Lets get all document types and put them in a hashTable
 	    String[] allDocTypesArray = imcref.getDocumentTypesInList( langPrefix) ;
 	    Hashtable allDocTypesHash = this.convert2Hashtable(allDocTypesArray) ;
 
@@ -229,7 +229,7 @@ public class GetExistingDoc extends HttpServlet {
 
 
 	    if (docTypes != null) {
-		// Lets take care of the internalDocument types. Get those who were selected
+		// Lets take care of the document types. Get those who were selected
 		// and select those again in the page to send back to the user.
 		// First, put them in an hashtable for easy access.
 		Hashtable selectedDocTypes = new Hashtable(docTypes.length) ;
@@ -309,7 +309,7 @@ public class GetExistingDoc extends HttpServlet {
 	    out.write(htmlOut);
 	    return ;
 	} else {
-	    // ************** Lets add a internalDocument ***********************
+	    // ************** Lets add a document ***********************
 	    user.put("flags",new Integer(262144)) ;
 
 	    // get the seleced existing docs
@@ -336,7 +336,7 @@ public class GetExistingDoc extends HttpServlet {
 		    String sqlStr = "select doc_type from meta where meta_id = "+existing_meta_id ;
 		    String doc_type = imcref.sqlQueryStr(sqlStr) ;
 
-		    // Add the internalDocument in menu if user is admin for the internalDocument OR the internalDocument is shared.
+		    // Add the document in menu if user is admin for the document OR the document is shared.
 		    boolean sharePermission = imcref.checkUserDocSharePermission(user,existing_meta_id) ;
 		    if (user_doc_types.contains(doc_type)
 			&& sharePermission) {

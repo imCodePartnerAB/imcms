@@ -51,7 +51,7 @@ class SecurityChecker {
 
     void hasEditPermission( DocumentDomainObject document ) throws NoPermissionException  {
         if( !docMapper.hasAdminPermissions( document, accessingUser ) ) {
-            throw new NoPermissionException("The logged in user does not have permission to edit internalDocument: " + document.getMetaId() );
+            throw new NoPermissionException("The logged in user does not have permission to edit document: " + document.getMetaId() );
         };
     }
 

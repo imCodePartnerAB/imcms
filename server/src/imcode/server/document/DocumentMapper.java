@@ -30,11 +30,11 @@ public class DocumentMapper {
 
             //lets start and do some controlls of the resulted data
             if( result == null || result.length < 25 ) {
-                throw new IndexOutOfBoundsException( "No such internalDocument: " + metaId );
+                throw new IndexOutOfBoundsException( "No such document: " + metaId );
             }
 
             DateFormat dateform = new SimpleDateFormat( DateHelper.DATE_TIME_SECONDS_FORMAT_STRING );
-            //ok lets set all the internalDocument stuff
+            //ok lets set all the document stuff
             try {
                 document = new DocumentDomainObject();
                 document.setMetaId( Integer.parseInt( result[0] ) );

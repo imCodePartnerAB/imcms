@@ -29,7 +29,7 @@ public class NewDiagramCoordinator extends HttpServlet {
   	  	VariableManager vm = new VariableManager() ;
   	  	
   	  	// Ok Lets build the string where the NewDiagrams Editstuff will
-  	  	// be showed in the new Window this html internalDocument will open for us.
+  	  	// be showed in the new Window this html document will open for us.
   		
   			String serverUrl = metaInf.getServletPath(req) ;
   	    String url = serverUrl + "NewDiagram?" ;

@@ -37,7 +37,7 @@ public class CalenderDbManager
 	plArgs[2] = meta[4];
 	sqlUpdatePluginProc("D_newCalender", plArgs);
 
-	// Activate the link between the internalDocument and the calender
+	// Activate the link between the document and the calender
 	imcref.activateChild(Integer.parseInt(plArgs[0]), user) ;
     }
 

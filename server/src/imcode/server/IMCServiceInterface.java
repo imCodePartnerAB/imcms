@@ -47,7 +47,7 @@ public interface IMCServiceInterface {
 	;
 
     /**
-       Delete a internalDocument
+       Delete a document
     **/
     void deleteDocAll(int meta_id,UserDomainObject user)
 	;
@@ -229,7 +229,7 @@ public interface IMCServiceInterface {
     public Object[] getDemoTemplate(int template_id)
 	throws IOException ;
 
-    // check if user can view internalDocument
+    // check if user can view document
     public boolean checkDocRights(int meta_id, UserDomainObject user)
 	;
 
@@ -315,9 +315,9 @@ public interface IMCServiceInterface {
     public ReadrunnerUserData getReadrunnerUserData(UserDomainObject user) ;
 
     /**
-       Retrieve the texts for a internalDocument
-       @param meta_id The id of the internalDocument.
-       @return A Map (Integer -> IMCText) with all the  texts in the internalDocument.
+       Retrieve the texts for a document
+       @param meta_id The id of the document.
+       @return A Map (Integer -> IMCText) with all the  texts in the document.
     **/
     public Map getTexts(int meta_id);
 

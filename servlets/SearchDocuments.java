@@ -93,7 +93,7 @@ public class SearchDocuments extends HttpServlet {
 		String activated_stop	= "";
 		String archived_start	= "";//formatter.format(date);
 		String archived_stop	= "";
-		String activate			= "1"; // only activated internalDocument
+		String activate			= "1"; // only activated document
 
 		// lets set up the search string
 		searchString = buildSearchString(searchString)  ;

@@ -115,7 +115,7 @@ public class AdminSection extends Administrator {
 	//This is a bit ugly so I think I need to explain it a bit!
 	//Ok the delete procedure works like this
 	//first time we need to get the delete-page
-	//second time we need to se if there is any internalDocument connected to the one we intend to delete
+	//second time we need to se if there is any document connected to the one we intend to delete
 	//if not we just delete it and then get the delete-page again
 	//but if ther is any connections we need to ask the admin what to do (move or get rid of connections)
 	//before we can delete it and get the delate page again

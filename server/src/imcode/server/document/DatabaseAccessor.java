@@ -77,7 +77,7 @@ public class DatabaseAccessor {
         return sqlResult;
     }
 
-    /** @return the filename for a fileupload-internalDocument, or null if the internalDocument isn't a fileupload-docuemnt. **/
+    /** @return the filename for a fileupload-document, or null if the document isn't a fileupload-docuemnt. **/
     static String sprocGetFilename( IMCService service, int meta_id ) {
         String[] params = new String[]{String.valueOf( meta_id )};
         return service.sqlProcedureStr( SPROC_GET_FILE_NAME, params );
@@ -312,8 +312,8 @@ public class DatabaseAccessor {
     }
 
     /**
-     Set the modified datetime of a internalDocument to now
-     @param meta_id The id of the internalDocument
+     Set the modified datetime of a document to now
+     @param meta_id The id of the document
      **/
     static void sqlUpdateTouchDocument( IMCService service, int meta_id ) {
         Date date = new Date();

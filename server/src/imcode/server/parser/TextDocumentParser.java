@@ -326,10 +326,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
                 MenuItem menuItem = new MenuItem( currentMenu );
                 menuItem.setMetaId( childMetaId );                                    // The meta-id of the child
-                menuItem.setSortKey( Integer.parseInt( (String)childIt.next() ) );      // What order the internalDocument is sorted in in the menu, using sort-order 2 (manual sort)
+                menuItem.setSortKey( Integer.parseInt( (String)childIt.next() ) );      // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
                 menuItem.setDocumentType( Integer.parseInt( (String)childIt.next() ) ); // The doctype of the child.
                 menuItem.setArchived( !"0".equals( childIt.next() ) );          // Child is considered archived?
-                menuItem.setTarget( (String)childIt.next() );                         // The target for this internalDocument.
+                menuItem.setTarget( (String)childIt.next() );                         // The target for this document.
                 try {
                     menuItem.setCreatedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child was created.
                 } catch( java.text.ParseException ignored ) {
@@ -340,8 +340,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
                 menuItem.setHeadline( (String)childIt.next() );                       // The headline of the child.
                 menuItem.setText( (String)childIt.next() );                           // The subtext for the child.
-                menuItem.setImage( (String)childIt.next() );                          // An optional imageurl for this internalDocument.
-                childIt.next();                                                     // Ignored. The target frame for this internalDocument. Replaced by 'target'.
+                menuItem.setImage( (String)childIt.next() );                          // An optional imageurl for this document.
+                childIt.next();                                                     // Ignored. The target frame for this document. Replaced by 'target'.
                 try {
                     menuItem.setActivatedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child will be/was activated
                 } catch( NullPointerException ignored ) {
@@ -355,7 +355,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 menuItem.setEditable( "0".equals( childIt.next() ) );           // if the user may admin it.
                 menuItem.setFilename( (String)childIt.next() );                       // The filename, if it is a file-doc.
 
-                if( (!menuItem.isActive() || menuItem.isArchived()) && !menumode ) { // if not menumode, and internalDocument is inactive or archived, don't include it.
+                if( (!menuItem.isActive() || menuItem.isArchived()) && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
                     continue;
                 }
 
@@ -486,7 +486,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
                 // Some tags to parse in the files we'll load.
                 temptags.setProperty( "#doc_types#", doc_types_sb.toString() );	// The doc-types.
-                temptags.setProperty( "#sortOrder" + sort_order + "#", "checked" );	// The sortorder for this internalDocument.
+                temptags.setProperty( "#sortOrder" + sort_order + "#", "checked" );	// The sortorder for this document.
             } // if (menumode)
 
             temptags.setProperty( "#getMetaId#", String.valueOf( meta_id ) );
@@ -540,7 +540,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             // Check file for tags
             String template = templatebuffer.toString();
-            StringBuffer result = new StringBuffer( template.length() + 16384 ); // This value is the amount i expect the internalDocument to increase in size.
+            StringBuffer result = new StringBuffer( template.length() + 16384 ); // This value is the amount i expect the document to increase in size.
 
             ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter();
             MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( documentRequest, menus, menumode, tags );

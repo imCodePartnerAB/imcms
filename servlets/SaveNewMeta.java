@@ -14,7 +14,7 @@ import imcode.server.document.DatabaseAccessor;
 import org.apache.log4j.Category;
 
 /**
- Save new meta for a internalDocument.
+ Save new meta for a document.
  */
 public class SaveNewMeta extends HttpServlet {
     private final static Category mainLog = Category.getInstance( IMCConstants.MAIN_LOG );
@@ -340,7 +340,7 @@ public class SaveNewMeta extends HttpServlet {
                     out.write( output );
                 }
                 return;
-            } // end text internalDocument
+            } // end text document
         }
         out.write( htmlStr );
     }

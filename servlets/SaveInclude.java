@@ -47,7 +47,7 @@ public class SaveInclude extends HttpServlet {
 	    return ;
 	}
 
-	// Check if user has permission to edit includes for this internalDocument
+	// Check if user has permission to edit includes for this document
 	if ( !imcref.checkDocAdminRights(meta_id,user,imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_INCLUDES ) ) {	// Checking to see if user may edit this
 	    sendPermissionDenied(imcref,out,meta_id,user) ;
 	    return ;
@@ -65,7 +65,7 @@ public class SaveInclude extends HttpServlet {
 		try {
 		    int included_meta_id_int = Integer.parseInt(included_meta_id) ;
 
-		    // Make sure the user has permission to share the included internalDocument
+		    // Make sure the user has permission to share the included document
 		    if (imcref.checkUserDocSharePermission(user,included_meta_id_int)) {
 			imcref.sqlUpdateProcedure("SetInclude "+meta_id_str+","+include_id+","+included_meta_id) ;
 		    mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" +include_id  +	"] on ["+meta_id_str+"] changed to ["+ included_meta_id+ "]  by user: [" +user.getFullName() + "]");

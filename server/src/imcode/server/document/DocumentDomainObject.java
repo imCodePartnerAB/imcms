@@ -4,7 +4,7 @@ import imcode.server.IMCConstants;
 
 import java.util.Date;
 
-/** Stores all info about a text-internalDocument. **/
+/** Stores all info about a text-document. **/
 
 public class DocumentDomainObject implements IMCConstants {
 
@@ -78,8 +78,8 @@ public class DocumentDomainObject implements IMCConstants {
     }
 
     /**
-     * Check whether this internalDocument is active.
-     * A internalDocument is active if it isn't archived, and if activatedDatetime is in the past.
+     * Check whether this document is active.
+     * A document is active if it isn't archived, and if activatedDatetime is in the past.
      * @return value of archived.
      */
     public boolean isActive() {
@@ -88,8 +88,8 @@ public class DocumentDomainObject implements IMCConstants {
     }
 
     /**
-     * Check whether this internalDocument is archived.
-     * A internalDocument is archived if either 'archived' is true, or archiveDatetime is in the past.
+     * Check whether this document is archived.
+     * A document is archived if either 'archived' is true, or archiveDatetime is in the past.
      * @return value of archived.
      */
     public boolean isArchived() {
