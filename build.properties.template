@@ -10,6 +10,16 @@
 deployroot =
 
 
+# The name of the webapp. Used for filenames and URIs.
+
+webappname = imcms
+
+
+# The deployed web application diretory
+
+webapproot = ${deployroot}/${webappname}
+
+
 # Database parameters for the main database.
 
 db-driver = com.microsoft.jdbc.sqlserver.SQLServerDriver
@@ -60,11 +70,6 @@ webmaster-name  = ${servermaster-name}
 webmaster-email = ${servermaster-email}
 
 
-# The name of the webapp. Used for filenames and URIs.
-
-webappname = imcms
-
-
 # The default language to use when build the webapp ( swe | eng )
 
 defaultlanguage = eng
@@ -108,6 +113,13 @@ deprecation = on
 # You might want to change this to log4j-debug.xml to turn on debug-logs.
 
 log4j-config = log4j-nodebug.xml
+
+
+# Tomcat settings for quick deployment during development
+
+tomcat.admin.username = admin
+tomcat.admin.password =
+webapp.manager.url = http://localhost:8080/manager
 
 
 # Which components to build.
