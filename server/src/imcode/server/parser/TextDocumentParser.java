@@ -67,12 +67,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	this.serverObject = serverobject ;
     }
 
-    public byte[] parsePage (int meta_id, User user, int flags) throws IOException {
-	return parsePage(meta_id,user,flags,1) ;
-    }
+    public byte[] parsePage (int meta_id, User user, int flags, String template_name) throws IOException{
+		return parsePage(meta_id,user,flags,1,template_name) ;
+	}
 
-    public byte[] parsePage (int meta_id, User user, int flags, int includelevel) throws IOException {
-
+	public byte[] parsePage (int meta_id, User user, int flags, int includelevel,String template_name) throws IOException{
 	try {
 	    long totaltime = System.currentTimeMillis() ;
 	    String meta_id_str = String.valueOf(meta_id) ;
@@ -143,7 +142,22 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		return "parsePage: GetTextDocData returned nothing".getBytes("8859_1") ;
 	    }
 
-	    String template_id = (String)text_docs.remove(0) ;
+		String template_id = (String)text_docs.remove(0) ;			
+		if (template_name != null){
+			//lets validate that the template exists before we changes the original one
+			dbc.setProcedure("GetTemplateId "+template_name);
+			Vector vectT = (Vector)dbc.executeProcedure();
+			if (vectT.size() > 0){
+				try	{
+					int temp_template = Integer.parseInt( (String)vectT.get(0) );
+					if(temp_template > 0)
+						template_id = temp_template+"";	
+				}catch(NumberFormatException nfe){
+						//do nothing, we keep the original template 
+				}
+			}
+		}
+		
 	    String simple_name = (String)text_docs.remove(0) ;
 	    int sort_order = Integer.parseInt((String)text_docs.remove(0)) ;
 	    String group_id = (String)text_docs.remove(0) ;
