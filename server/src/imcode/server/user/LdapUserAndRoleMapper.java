@@ -54,6 +54,17 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
    private HashMap userFieldLdapMappings = null;
    private String[] ldapAttributesAutoMappedToRoles;
 
+   public LdapUserAndRoleMapper (Properties ldapConfig) throws LdapInitException {
+      String ldapUrl = ldapConfig.getProperty("LdapUrl") ;
+      String ldapAuthenticationType = LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE ;
+      String ldapUserName = ldapConfig.getProperty("LdapUserName") ;
+      String ldapPassword = ldapConfig.getProperty("LdapPassword") ;
+      String ldapStringOfAttributesMappedToRoles = ldapConfig.getProperty("LdapAttributesMappedToRoles") ;
+      String[] ldapAttributesMappedToRoles = splitStringOnCommasAndSpaces(ldapStringOfAttributesMappedToRoles) ;
+
+      init( ldapUrl, ldapAuthenticationType, ldapUserName, ldapPassword, ldapAttributesMappedToRoles );
+   }
+
    /**
     * @param ldapURL The full path to where the ldap-service is located _and_ the node where to start the searches, e.g.  "ldap://computername:389/CN=Users,DC=companyName,DC=com"
     * @param ldapAuthenticationType Curently only AUTHENTICATION_TYPE_SIMPLE is suported
@@ -62,6 +73,10 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
     */
 
    public LdapUserAndRoleMapper( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
+      init( ldapURL, ldapAuthenticationType, ldapUserName, ldapPassword, ldapAttributesAutoMappedToRoles );
+   }
+
+   private void init( String ldapURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
       this.ldapAttributesAutoMappedToRoles = ldapAttributesAutoMappedToRoles;
       this.userIdentifier = NONSTANDARD_USERID;
       this.userFieldLdapMappings = createLdapMappings();
@@ -238,16 +253,25 @@ public class LdapUserAndRoleMapper implements UserAndRoleMapper {
             SearchResult searchResult = (SearchResult)enum.nextElement();
             attributeMap = createMapFromSearchResult( searchResult );
          } else {
-            getLogger().warn( "Could not find user " + enum );
+            getLogger().debug( "Could not find user " + loginName );
          }
       } catch( NamingException e ) {
-         getLogger().warn( "Could not find user", e );
+         getLogger().warn( "Could not find user" + loginName, e );
       }
       return attributeMap;
    }
 
    public String[] getAllRoleNames() {
       return new String[] {DEFAULT_LDAP_ROLE };
+   }
+
+   private static String[] splitStringOnCommasAndSpaces( String stringToSplit ) {
+      StringTokenizer attributesTokenizer = new StringTokenizer( stringToSplit, ", " );
+      String[] tokens = new String[attributesTokenizer.countTokens()];
+      for( int i = 0; i < tokens.length; ++i ) {
+         tokens[i] = attributesTokenizer.nextToken();
+      }
+      return tokens;
    }
 
 }

@@ -7,10 +7,7 @@ import imcode.server.parser.Document;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
-import imcode.util.FileCache;
-import imcode.util.Prefs;
-import imcode.util.Parser;
-import imcode.util.AdminButtonParser;
+import imcode.util.*;
 import imcode.util.fortune.*;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.poll.PollHandlingSystemImpl;
@@ -104,22 +101,38 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       m_Language = props.getProperty( "DefaultLanguage" ).trim(); //FIXME: Get from DB
       log.info( "DefaultLanguage: " + m_Language );
 
-      String externalAuthenticator = props.getProperty( "ExternalAuthenticator" );
-      String externalUserAndRoleMapper = props.getProperty( "ExternalUserAndRoleMapper" );
+      String externalAuthenticatorName = props.getProperty( "ExternalAuthenticator" );
+      String externalUserAndRoleMapperName = props.getProperty( "ExternalUserAndRoleMapper" );
 
-      if( (null == externalAuthenticator) != (null == externalUserAndRoleMapper) ) {
-         log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
-         externalAuthenticator = null;
-         externalUserAndRoleMapper = null;
-      } else {
-         if( null == externalAuthenticator && null == externalUserAndRoleMapper ) {
-            log.info( "ExternalAuthenticator not set." );
-            log.info( "ExternalUserAndRoleMapper not set." );
-         } else {
-            log.info( "ExternalAuthenticator: " + externalAuthenticator );
-            log.info( "ExternalUserAndRoleMapper: " + externalUserAndRoleMapper );
+      Authenticator externalAuthenticator = null ;
+      UserAndRoleMapper externalUserAndRoleMapper = null ;
+
+      PrefixRemovedProperties authenticatorPropertiesSubset = new PrefixRemovedProperties(props, "ExternalAuthenticator.") ;
+      PrefixRemovedProperties userAndRoleMapperPropertiesSubset = new PrefixRemovedProperties(props, "ExternalUserAndRoleMapper.") ;
+
+      if (null != externalAuthenticatorName && null != externalUserAndRoleMapperName) {
+         log.info( "ExternalAuthenticator: " + externalAuthenticatorName );
+         log.info( "ExternalUserAndRoleMapper: " + externalUserAndRoleMapperName );
+         externalAuthenticator = initExternalAuthenticator( externalAuthenticatorName, authenticatorPropertiesSubset );
+         externalUserAndRoleMapper = initExternalUserAndRoleMapper( externalUserAndRoleMapperName, userAndRoleMapperPropertiesSubset );
+         if (null == externalAuthenticator || null == externalUserAndRoleMapper) {
+            log.error("Failed to initialize both authenticator and user-and-role-mapper, using default implementations.") ;
+            externalAuthenticator = null ;
+            externalUserAndRoleMapper = null ;
          }
+      } else if (null == externalAuthenticatorName && null == externalUserAndRoleMapperName) {
+         log.info( "ExternalAuthenticator not set." );
+         log.info( "ExternalUserAndRoleMapper not set." );
+      } else {
+         log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
+         externalAuthenticatorName = null;
+         externalUserAndRoleMapperName = null;
       }
+      externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( new ImcmsAuthenticatorAndUserMapper( this ),
+                                                                                        externalAuthenticator,
+                                                                                        externalUserAndRoleMapper,
+                                                                                        getLanguage() );
+      externalizedImcmsAuthAndMapper.synchRolesWithExternal();
 
       StringTokenizer doc_types = new StringTokenizer( externalDocTypes, ";", false );
       m_ExDoc = new ExternalDocType[doc_types.countTokens()];
@@ -149,14 +162,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       log.info( "SessionCounterDate: " + m_SessionCounterDate );
 
       textDocParser = new TextDocumentParser( this, m_conPool, m_TemplateHome, m_IncludePath, m_ImageUrl, m_ServletUrl );
-
-      Authenticator auth = initExternalAuthenticator( externalAuthenticator );
-      UserAndRoleMapper userAndRoleMapper = initExternalUserAndRoleMapper( externalUserAndRoleMapper );
-      externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( new ImcmsAuthenticatorAndUserMapper( this ),
-                                                                                        auth,
-                                                                                        userAndRoleMapper,
-                                                                                        getLanguage() );
-      externalizedImcmsAuthAndMapper.synchRolesWithExternal();
    }
 
    public int getSessionCounter() {
@@ -192,61 +197,44 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       return result;
    }
 
-   private UserAndRoleMapper initExternalUserAndRoleMapper( String externalUserAndRoleMapper ) {
-      UserAndRoleMapper userAndRoleMapper = null;
-      if( null == externalUserAndRoleMapper ) {
-         userAndRoleMapper = null;
-      } else if( EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase( externalUserAndRoleMapper ) ) {
+   private UserAndRoleMapper initExternalUserAndRoleMapper( String externalUserAndRoleMapperName,
+                                                            Properties userAndRoleMapperPropertiesSubset ) {
+      UserAndRoleMapper externalUserAndRoleMapper = null;
+      if( null == externalUserAndRoleMapperName ) {
+         externalUserAndRoleMapper = null;
+      } else if( EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase( externalUserAndRoleMapperName ) ) {
          try {
-            String ldapUrl = Prefs.get( "URL", LDAP_PROPERTIES_FILE );
-            String ldapUserName = Prefs.get( "UserName", LDAP_PROPERTIES_FILE );
-            String ldapPassword = Prefs.get( "Password", LDAP_PROPERTIES_FILE );
-            String ldapAttributesMappedToRoles = Prefs.get( "AttributesMappedToRoles", LDAP_PROPERTIES_FILE );
-            StringTokenizer attributesTokenizer = new StringTokenizer( ldapAttributesMappedToRoles, ", " );
-            String[] ldapAttributes = new String[attributesTokenizer.countTokens()];
-            for( int i = 0; i < ldapAttributes.length; ++i ) {
-               ldapAttributes[i] = attributesTokenizer.nextToken();
-            }
-            userAndRoleMapper = new LdapUserAndRoleMapper( ldapUrl, LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE, ldapUserName, ldapPassword, ldapAttributes );
-
-         } catch( IOException e ) {
-            log.error( "Could not read file " + LDAP_PROPERTIES_FILE + ", using default user and role mapper." );
+            externalUserAndRoleMapper = new LdapUserAndRoleMapper( userAndRoleMapperPropertiesSubset );
          } catch( LdapUserAndRoleMapper.LdapInitException e ) {
             log.error( "LdapUserAndRoleMapper could not be created, using default user and role mapper.", e );
          }
-
       } else {
-         try {
-            userAndRoleMapper = (UserAndRoleMapper)Class.forName( externalUserAndRoleMapper ).newInstance();
-         } catch( Exception e ) {
-            log.error( "UserAndRoleMapper " + externalUserAndRoleMapper + " could not be created, using default.", e );
-            userAndRoleMapper = new ImcmsAuthenticatorAndUserMapper( this );
-         }
+         externalUserAndRoleMapper = (UserAndRoleMapper)createInstanceOfClass( externalUserAndRoleMapperName ) ;
       }
-      return userAndRoleMapper;
+      return externalUserAndRoleMapper;
    }
 
-   private Authenticator initExternalAuthenticator( String externalAuthenticator ) {
-      Authenticator auth = null;
-      if( null == externalAuthenticator ) {
-         auth = null;
-      } else if( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticator ) ) {
-         String smbDomainServer = null;
-         try {
-            smbDomainServer = Prefs.get( "DomainServer", SMB_PROPERTIES_FILE );
-            String smbDomainName = Prefs.get( "DomainName", SMB_PROPERTIES_FILE );
-            auth = new SmbAuthenticator( smbDomainServer, smbDomainName );
-         } catch( IOException e ) {
-            log.error( "Could not read file " + SMB_PROPERTIES_FILE + ", using default authenticator." );
-         }
+   private Authenticator initExternalAuthenticator( String externalAuthenticatorName,
+                                                    Properties authenticatorPropertiesSubset ) {
+      Authenticator externalAuthenticator = null;
+      if( null == externalAuthenticatorName ) {
+         externalAuthenticator = null;
+      } else if( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
+         externalAuthenticator = new SmbAuthenticator( authenticatorPropertiesSubset );
       } else {
-         try {
-            auth = (Authenticator)Class.forName( externalAuthenticator ).newInstance();
-         } catch( Exception e ) {
-            log.error( "Authenticator " + externalAuthenticator + " could not be created, using default authenticator.", e );
-         }
+         externalAuthenticator = (Authenticator)createInstanceOfClass( externalAuthenticatorName );
       }
-      return auth;
+      return externalAuthenticator;
+   }
+
+   private static Object createInstanceOfClass( String className ) {
+      Object instance = null ;
+      try {
+         instance = Class.forName( className ).newInstance();
+      } catch( Exception e ) {
+         log.error( "Could not create instance of class '" + className + "'.", e );
+      }
+      return instance;
    }
 
    public User getUserById( int id ) {

@@ -8,12 +8,24 @@ import jcifs.smb.SmbSession;
 import org.apache.log4j.Logger;
 
 import java.net.UnknownHostException;
+import java.util.Properties;
 
 public class SmbAuthenticator implements Authenticator {
    private UniAddress domainServerAddress;
    private String domainName;
 
+   public SmbAuthenticator( Properties smbConfig ) {
+      String domainServer = smbConfig.getProperty("DomainServer") ;
+      String domainName = smbConfig.getProperty("DomainName") ;
+
+      init( domainServer, domainName );
+   }
+
    public SmbAuthenticator( String domainServer, String domainName ) {
+      init( domainServer, domainName );
+   }
+
+   private void init( String domainServer, String domainName ) {
       this.domainName = domainName;
       try {
          this.domainServerAddress = UniAddress.getByName( domainServer );
