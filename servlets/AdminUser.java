@@ -131,7 +131,7 @@ public class AdminUser extends Administrator {
 		vm.addProperty("USER_CREATE_DATE", " " ) ;
 
   // Lets get the the users language id
-		String[] langList = rmi.execSqlProcedure(server, "GetLanguageList") ;
+		String[] langList = rmi.execSqlProcedure(server, "GetLanguageList 'se'") ; // FIXME: Get the correct language for the user.
 		Vector selectedLangV = new Vector() ;
 		selectedLangV.add("1") ;  // Lets set swedish as default
 		vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, super.convert2Vector(langList))) ;
@@ -192,7 +192,7 @@ public class AdminUser extends Administrator {
 	  vm.addProperty("PHONES_MENU", phones  ) ;
 
   // Lets get the the users language id
-	  String[] langList = imc.execSqlProcedure(server, "GetLanguageList") ;
+	  String[] langList = imc.execSqlProcedure(server, "GetLanguageList 'se'") ; // FIXME: Get the correct language for the user
 	  Vector selectedLangV = new Vector() ;
 	  selectedLangV.add(userV.get(16).toString()) ;
 	  vm.addProperty("LANG_TYPES", htm.createHtmlCode("ID_OPTION",selectedLangV, super.convert2Vector(langList))) ;
