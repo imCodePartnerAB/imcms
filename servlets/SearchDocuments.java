@@ -55,8 +55,9 @@ public class SearchDocuments extends HttpServlet {
 		StringBuffer sqlBuff = new StringBuffer("SearchDocsIndex ");
 
 		//this is the params we can get from the browser
-		String searchString	= req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
+		String searchString		= req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
 		String fromDoc			= req.getParameter("fromDoc") == null? "1":req.getParameter("fromDoc");
+		String toDoc			= req.getParameter("toDoc")== null? "-1":req.getParameter("toDoc");;
 		String maxHits			= req.getParameter("maxHits") == null? "1000":req.getParameter("maxHits");
 		String searchPrep		= req.getParameter("search_prep") == null? "and":req.getParameter("search_prep");
 		String sortBy			= req.getParameter("sortBy") == null? "meta_headline":req.getParameter("sortBy");
@@ -86,13 +87,14 @@ public class SearchDocuments extends HttpServlet {
 		//ok the rest of params we need to set up search sql
 		String doctypes		= "2,5,6,7,8";
 		String created_start	= "";
-		String create_stop		= "";//formatter.format(date);
+		String create_stop		= formatter.format(date);
 		String changed_start	= "";
-		String changed_stop	= "";//formatter.format(date);
-		String activated_start	= "";
-		String activated_stop	= formatter.format(date);
-		String archived_start	= "";
-		String archived_stop	= formatter.format(date);
+		String changed_stop		= "";//formatter.format(date);
+		String activated_start	= "";//formatter.format(date);
+		String activated_stop	= "";
+		String archived_start	= "";//formatter.format(date);
+		String archived_stop	= "";
+		String activate			= "1"; // only activated document
 
 		// lets set up the search string
 		StringTokenizer token = new StringTokenizer(searchString," \"+-",true);
@@ -103,7 +105,7 @@ public class SearchDocuments extends HttpServlet {
 		sqlBuff.append(",'"+searchString+"'");		//@keyword_string VARCHAR(128)
 		sqlBuff.append(",'"+doctypes+"'");			//@doc_types_string VARCHAR(30)
 		sqlBuff.append(","+fromDoc);				//@fromdoc INT
-		sqlBuff.append(","+maxHits);				//@num_docs INT
+		sqlBuff.append(","+toDoc);					//@todoc INT
 		sqlBuff.append(",'"+sortBy+"'");			//@sortorder VARCHAR(256)
 		sqlBuff.append(",'"+created_start+"'");		//@created_startdate DATETIME
 		sqlBuff.append(",'"+create_stop+"'");		//@created_enddate DATETIME,
@@ -111,10 +113,11 @@ public class SearchDocuments extends HttpServlet {
 		sqlBuff.append(",'"+changed_stop+"'");		//@modified_enddate DATETIME,
 		sqlBuff.append(",'"+activated_start+"'");	//@activated_startdate DATETIME,
 		sqlBuff.append(",'"+activated_stop+"'");	//@activated_enddate DATETIME,
-		sqlBuff.append(",'"+created_start+"'");		//@archived_startdate DATETIME,
+		sqlBuff.append(",'"+archived_start+"'");	//@archived_startdate DATETIME,
 		sqlBuff.append(",'"+archived_stop+"'");		//@archived_enddate DATETIME,
 		sqlBuff.append(",'0'");						//@only_addable TINYINT
 		sqlBuff.append(","+section_id);				//@section_id INT
+		sqlBuff.append(","+activate);				//@activated doc(1) not activated(0)
 
 		//System.out.println("sql: "+sqlBuff.toString())	;
 

@@ -3,18 +3,12 @@ GO
 SET ANSI_NULLS OFF 
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SearchDocsIndex]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[SearchDocsIndex]
-GO
-
-
-
-CREATE PROCEDURE SearchDocsIndex
+ALTER   PROCEDURE SearchDocsIndex
   @user_id INT,
   @serchString varchar (180),  -- Must be large enough to encompass an entire searchstring.
   @doc_types_string VARCHAR(30), -- Must be large enough to encompass all possible doc_types, commaseparated and expressed in decimal notation.
-  @fromdoc INT,
-  @num_docs INT,
+  @fromdoc INT,  -- begin search from meta_id
+  @todoc INT, -- search to meta_id
   @sortorder VARCHAR(256),  -- doc_type, date_modified, date_created, archived_datetime, activated_datetime, meta_id, meta_headline
   @created_startdate DATETIME,
   @created_enddate DATETIME,
@@ -25,8 +19,9 @@ CREATE PROCEDURE SearchDocsIndex
   @archived_startdate DATETIME,
   @archived_enddate DATETIME,
   @only_addable TINYINT,  -- 1 to show only documents the user may add.
-  @section_id INT -- (-1) means search on all otherwise only the section_id
-  
+  @section_id INT, -- (-1) means search on all otherwise only the section_id
+  @activate TINYINT  -- (1)means search only in activated document  	  
+
 AS 
 
 SET nocount on
@@ -39,64 +34,95 @@ DECLARE @created_sd DATETIME,
   @modified_ed DATETIME,
   @activated_ed DATETIME,
   @archived_ed DATETIME,
-  @search_start VARCHAR(5)
+  @search_start VARCHAR(5),
+  @superadmin SMALLINT 
+
+
+set @superadmin = 0
+select @superadmin = 1 from user_roles_crossref 
+where user_id = @user_id and role_id = 0 --user is superadmin if @superadmin=1
+
+IF @todoc = -1 BEGIN
+	select @todoc = max(meta_id) from meta 
+END
+
 
 IF (@created_startdate = '') BEGIN
- SET @created_sd = '1753-01-01'
-END ELSE BEGIN
- SET @created_sd = @created_startdate
-END
-IF (@modified_startdate = '') BEGIN
- SET @modified_sd = '1753-01-01'
-END ELSE BEGIN
- SET @modified_sd = @modified_startdate
-END
-IF (@activated_startdate = '') BEGIN
- SET @activated_sd = '1753-01-01'
-END ELSE BEGIN
- SET @activated_sd = @activated_startdate
-END
-IF (@archived_startdate = '') BEGIN
- SET @archived_sd = '1753-01-01'
-END ELSE BEGIN
- SET @archived_sd = @archived_startdate
-END
-IF (@created_enddate = '') BEGIN
- IF (@created_startdate = '') BEGIN
-  SET @created_ed = '1753-01-01'
- END ELSE BEGIN
-  SET @created_ed = '9999-12-31'
- END
-END ELSE BEGIN
- SET @created_ed = @created_enddate
-END
-IF (@modified_enddate = '') BEGIN
- IF (@modified_startdate = '') BEGIN
-  SET @modified_ed = '1753-01-01'
- END ELSE BEGIN
-  SET @modified_ed = '9999-12-31'
- END
-END ELSE BEGIN
- SET @modified_ed = @modified_enddate
-END
-IF (@activated_enddate = '') BEGIN
- IF (@activated_startdate = '') BEGIN
-  SET @activated_ed = '1753-01-01'
- END ELSE BEGIN
-  SET @activated_ed = '9999-12-31'
- END
-END ELSE BEGIN
- SET @activated_ed = @activated_enddate
-END
-IF (@archived_enddate = '') BEGIN
-     IF (@archived_startdate = '') BEGIN
-          SET @archived_sd = '1753-01-01'
-         END
-       SET @archived_ed = '9999-12-31'
-    END 
+	SET @created_sd = '1753-01-01'
+END 
 ELSE BEGIN
-   SET @archived_ed = @archived_enddate
+	SET @created_sd = @created_startdate
 END
+
+IF (@modified_startdate = '') BEGIN
+	SET @modified_sd = '1753-01-01'
+END 
+ELSE BEGIN
+	SET @modified_sd = @modified_startdate
+END
+
+IF (@activated_startdate = '') BEGIN
+	SET @activated_sd = '1753-01-01'
+END 
+ELSE BEGIN
+	SET @activated_sd = @activated_startdate
+END
+
+IF (@archived_startdate = '') BEGIN
+	SET @archived_sd = '1753-01-01'
+END 
+ELSE BEGIN
+	SET @archived_sd = @archived_startdate
+END
+
+IF (@created_enddate = '') BEGIN
+	IF (@created_startdate = '') BEGIN
+  		SET @created_ed = '1753-01-01'
+ 	END 
+	ELSE BEGIN
+  		SET @created_ed = '9999-12-31'
+ 	END
+END 
+ELSE BEGIN
+	SET @created_ed = @created_enddate
+END
+
+IF (@modified_enddate = '') BEGIN
+	IF (@modified_startdate = '') BEGIN
+  		SET @modified_ed = '1753-01-01'
+ 	END 
+	ELSE BEGIN
+		SET @modified_ed = '9999-12-31'
+	END
+END 
+ELSE BEGIN
+	SET @modified_ed = @modified_enddate
+END
+
+IF (@activated_enddate = '') BEGIN
+	IF (@activated_startdate = '') BEGIN
+  		SET @activated_ed = '1753-01-01'
+ 	END 
+	ELSE BEGIN
+  		SET @activated_ed = '9999-12-31'
+ 	END
+END 
+ELSE BEGIN
+	SET @activated_ed = @activated_enddate
+END
+
+IF (@archived_enddate = '') BEGIN
+	IF (@archived_startdate = '') BEGIN
+      		SET @archived_ed = '1753-01-01'
+   	END 
+   	ELSE BEGIN
+       		SET @archived_ed = '9999-12-31'
+   	END 
+END 
+ELSE BEGIN
+	SET @archived_ed = @archived_enddate
+END
+
 
 /* start setup table that contains the docctypes to search on */
 CREATE TABLE #doc_types ( doc_type INT )
@@ -150,7 +176,8 @@ END -- IF
 			set @stop = charindex(',' , @serchString , @start + 1 )
 			if @stop = 0 begin
 				set @stop =  len( @serchString ) +1
-			end 
+			end 
+
 			if   @start <= LEN( @serchString ) BEGIN
 				
 				
@@ -219,15 +246,91 @@ end
 --select  * from #or
 /* end of the search engine*/
 
-/*lets get the pages to return*/
 
+/*lets get the pages to return*/
+CREATE TABLE #meta_hits (meta_id int)
+
+/* select all meta possible to return */
+INSERT INTO #meta_hits
 SELECT  distinct
+  m.meta_id
+FROM
+  meta m
+ JOIN
+ #doc_types dt  ON m.doc_type = dt.doc_type
+     AND m.meta_id > @fromdoc 
+     AND m.meta_id <= @todoc
+              
+     AND ( 	(date_created >= @created_sd AND date_created <= @created_ed  ) 
+	        --(date_created >= @created_sd AND date_created <= @created_ed AND ( activated_datetime <= @created_ed OR activated_datetime = NULL) ) 
+	      	--OR 
+		--(date_created >= @created_sd AND date_created <= @created_ed AND (@superadmin = 1 OR m.owner_id = @user_id) AND ( activated_datetime > @created_ed OR activated_datetime = NULL) )	
+	 	OR 
+                  (date_modified >= @modified_sd AND date_modified <= @modified_ed ) 
+		--(date_modified >= @modified_sd AND date_modified <= @modified_ed AND ( activated_datetime <= @modified_ed OR activated_datetime = NULL) ) 
+		--OR
+		--(date_modified >= @modified_sd AND date_modified <= @modified_ed AND (@superadmin = 1 OR m.owner_id = @user_id) AND (activated_datetime > @modified_ed  OR activated_datetime = NULL) )
+		--OR 
+		--(activated_datetime is null OR activated_datetime is null)
+		OR
+		(activated_datetime >= @activated_sd AND activated_datetime <= @activated_ed) 
+		OR 
+		(archived_datetime >= @archived_sd AND archived_datetime <= @archived_ed)
+		/*OR 
+		(@created_startdate = '' AND @created_enddate = '' AND @modified_startdate = '' AND @modified_enddate = '' AND
+		 @activated_startdate = '' AND @activated_enddate = '' AND @archived_startdate = '' AND @archived_enddate = '')
+     		*/
+	)
+
+left  JOIN
+roles_rights rr  ON rr.meta_id = m.meta_id and m.meta_id != null
+
+JOIN
+user_roles_crossref urc ON urc.user_id = @user_id
+AND (  (
+        urc.role_id = 0   -- Superadmin may always see everything
+        AND m.activate = @activate -- choose between activated or not activated document	
+       ) 
+     OR (
+          rr.role_id = urc.role_id  -- As does a user...
+          AND m.activate = 1 -- only activated documents for user
+	  AND (
+	        rr.set_id < 3  -- ... with a privileged role (Document-admin)
+                	       
+	        OR(
+                   ( rr.set_id = 3   -- ... or a user with Read-permission
+                    AND m.disable_search = 0   -- if searching is not turned off for this document
+                    AND (activated_datetime <= @created_ed OR activated_datetime = NULL)
+		    --AND (archived_datetime <= @created_ed OR archived_datetime = NULL) --only if not archived
+                    --AND m.archive != 1
+                    --OR show_meta != 0   -- ... or if the document lets anyone see
+                   )   
+
+         	  --AND (
+           	  --    m.shared != 0   -- ... and the document is shared
+                  --    OR @only_addable = 0  -- ... unless we've selected to only see addable (shared) documents.
+                  --    )
+                 )
+              )
+         ) 
+    )
+JOIN 
+#or on #or.meta_id=m.meta_id and m.meta_id != null
+
+GROUP BY
+  m.meta_id
+
+
+DECLARE @eval VARCHAR(2000)
+SET @eval = ('
+
+SELECT  
   m.meta_id,
-  m.doc_type,
-  m.meta_headline,
-  m.meta_text,
-  m.date_created,
-  m.date_modified,
+  doc_type,
+  meta_headline,
+  meta_text,
+  date_created,
+  date_modified,
   activated_datetime,
   archived_datetime,
   archive,
@@ -237,58 +340,16 @@ SELECT  distinct
   meta_image
 FROM
   meta m
- JOIN
-  #doc_types dt  ON m.doc_type = dt.doc_type
-     AND meta_id > 1000
-     AND m.disable_search = 0   -- ... that is, if searching is not turned off for this document
-     AND activate = 1
-     AND ( 	(date_created >= @created_sd AND date_created <= @created_ed) 
-	 		OR 
-			(date_modified >= @modified_sd AND date_modified <= @modified_ed) 
-			OR 
-			(activated_datetime is null OR activated_datetime is null)
-			OR
-			(activated_datetime >= @activated_sd AND activated_datetime <= @activated_ed) 
-			OR 
-			(archived_datetime >= @archived_sd AND archived_datetime <= @archived_ed)
-			OR 
-			(@created_startdate = '' AND @created_enddate = '' AND @modified_startdate = '' AND @modified_enddate = '' AND
-			 @activated_startdate = '' AND @activated_enddate = '' AND @archived_startdate = '' AND @archived_enddate = '')
-     	)
+join #meta_hits ON #meta_hits.meta_id = m.meta_id
 
-left  JOIN
-  roles_rights rr  ON rr.meta_id = m.meta_id and m.meta_id != null
-JOIN
-  user_roles_crossref urc ON urc.user_id = @user_id
-     AND (
-       urc.role_id = 0   -- Superadmin may always see everything
-      OR (
-        rr.role_id = urc.role_id  -- As does a user...
-       AND (
-         rr.set_id < 3   -- ... with a privileged role
-        OR (
-          (
-           rr.set_id = 3   -- ... or a user with read-rights
-          OR show_meta != 0   -- ... or if the document lets anyone see
-         )
-         AND (
-           m.shared != 0   -- ... and the document is shared
-          OR @only_addable = 0  -- ... unless we've selected to only see addable (shared) documents.
-         )
-        )
-       )
-      )
-     )
-JOIN 
-#or on #or.meta_id=m.meta_id and m.meta_id != null
 
 GROUP BY
   m.meta_id,
-  m.doc_type,
-  m.meta_headline,
-  m.meta_text,
-  m.date_created,
-  m.date_modified,
+  doc_type,
+  meta_headline,
+  meta_text,
+  date_created,
+  date_modified,
   activated_datetime,
   archived_datetime,
   archive,
@@ -296,14 +357,28 @@ GROUP BY
   show_meta,
   disable_search,
   meta_image
-order by m.meta_headline
+order by m.' + @sortorder )
 
+EXEC (@eval)
 
 DROP TABLE #doc_types
 drop table #temp
 drop table #and
 drop table #or
 drop table #not
+drop table #meta_hits
+
+/*
+-- only for test 
+select @created_sd as 'cr-start' , @created_ed as 'cr-end', 
+	@modified_sd as 'mod-start' , @modified_ed as 'mod-end',
+	@activated_sd as 'act-start' , @activated_ed as 'act-end', 
+        @archived_sd as 'arch-start' , @archived_ed as 'arch-end' 
+
+*/
+
+
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
