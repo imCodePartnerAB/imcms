@@ -394,18 +394,21 @@ public class DocumentMapper {
 
         String[] categorySqlResult = service.sqlQuery( sqlQuery, new String[]{"" + categoryId} );
 
-        String categoryName = categorySqlResult[0];
-        String categoryDescription = categorySqlResult[1];
-        String categoryImage = categorySqlResult[2];
-        int categoryTypeId = Integer.parseInt( categorySqlResult[3] );
-        String categoryTypeName = categorySqlResult[4];
-        int categoryTypeMaxChoices = Integer.parseInt( categorySqlResult[5] );
+        if( 0 != categorySqlResult.length ) {
+            String categoryName = categorySqlResult[0];
+            String categoryDescription = categorySqlResult[1];
+            String categoryImage = categorySqlResult[2];
+            int categoryTypeId = Integer.parseInt( categorySqlResult[3] );
+            String categoryTypeName = categorySqlResult[4];
+            int categoryTypeMaxChoices = Integer.parseInt( categorySqlResult[5] );
 
-        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject( categoryTypeId, categoryTypeName,
-                                                                              categoryTypeMaxChoices );
+            CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject( categoryTypeId, categoryTypeName,
+                                                                                  categoryTypeMaxChoices );
 
-        return new CategoryDomainObject( categoryId, categoryName, categoryDescription, categoryImage, categoryType );
-
+            return new CategoryDomainObject( categoryId, categoryName, categoryDescription, categoryImage, categoryType );
+        } else {
+            return null;
+        }
     }
 
     public CategoryTypeDomainObject getCategoryType( String categoryTypeName ) {
