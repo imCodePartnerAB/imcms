@@ -35,8 +35,9 @@ public class AdminManager extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (imcref.checkAdminRights(user) == false && imcref.checkUserAdminrole(user.getUserId(), 2) == false) {
             String header = "Error in AdminManager.";
-            String msg = "The user is not an administrator." + "<BR>";
-            this.log(header + msg);
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            this.log(header + "- user is not an administrator");
 
             new AdminError(req, res, header, msg);
             return;

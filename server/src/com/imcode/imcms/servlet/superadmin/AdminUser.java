@@ -33,9 +33,10 @@ public class AdminUser extends Administrator {
 
         // Lets verify that the user is an admin, otherwise throw him out.
         if ( !isSuperadmin && !isUseradmin ) {
-            String header = "Error in AdminCounter.";
-            String msg = "The user is not an administrator." + "<BR>";
-            this.log( header + msg );
+            String header = "Error in AdminUser.";
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
             return;
         }
@@ -119,9 +120,10 @@ public class AdminUser extends Administrator {
 
         // Lets check if the user is an admin, otherwise throw him out.
         if ( !isSuperadmin && !isUseradmin ) {
-            String header = "Error in AdminCounter.";
-            String msg = "The user is not an administrator." + "<BR>";
-            this.log( header + msg );
+            String header = "Error in AdminUser.";
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
             return;
         }
@@ -136,7 +138,7 @@ public class AdminUser extends Administrator {
             redirectAddUser( res );
         } else if ( req.getParameter( "CHANGE_USER" ) != null ) {
 
-            String userToChangeId = getCurrentUserId( req, res );
+            String userToChangeId = getCurrentUserId( req, res, imcref, user);
             UserDomainObject userToChange = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUser( Integer.parseInt( userToChangeId ) );
 
             if ( !userToChange.isImcmsExternal() ) {
@@ -164,9 +166,10 @@ public class AdminUser extends Administrator {
             // only if he is an superadmin, useradmin or if he try to change his own values
             // otherwise throw him out.
             if ( imcref.checkAdminRights( user ) == false && !useradmin && !userToChangeId.equals( "" + user.getUserId() ) ) {
-                String header = "Error in AdminCounter.";
-                String msg = "The user has no rights to change user values." + "<BR>";
-                this.log( header + msg );
+                String header = "Error in AdminUser, change user.";
+                Properties langproperties = imcref.getLangProperties( user );
+                String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";
+                this.log( header + "- user have no permission to edit user values" );
                 new AdminError( req, res, header, msg );
             } else {
                 // get a user object by userToChangeId
@@ -189,7 +192,7 @@ public class AdminUser extends Administrator {
      * a error page will be generated and null will be returned.
      */
 
-    private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res ) throws IOException {
+    private String getCurrentUserId(HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref, UserDomainObject user) throws IOException {
 
         String userId = req.getParameter( "user_Id" );
 
@@ -203,13 +206,14 @@ public class AdminUser extends Administrator {
         }
 
         if ( userId == null ) {
-            String header = "ChangeUser error. ";
-            String msg = "No user_id was available." + "<BR>";
-            this.log( header + msg );
+            String header = "Error in AdminUser. ";
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/AdminUser/user_to_change_id_missing") + "<br>";
+            this.log( header + "- user to change id is missing " );
             new AdminError( req, res, header, msg );
             return null;
         } else {
-            this.log( "AnvändarId=" + userId );
+            this.log( "UserId=" + userId );
         }
 
         return userId;

@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import com.imcode.imcms.servlet.superadmin.AdminError;
@@ -106,9 +107,10 @@ public class AdminListDocs extends Administrator {
         // Lets check if the user is an admin, otherwise throw him out.
         UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( !imcref.checkAdminRights( user ) ) {
-            String header = "Error in AdminRoleBelongings.";
-            String msg = "The user is not an administrator." + "<BR>";
-            this.log( header + msg );
+            String header = "Error in AdminListDocs. ";
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            this.log( header + "- user is not an administrator" );
             new AdminError( request, response, header, msg );
 
             return;

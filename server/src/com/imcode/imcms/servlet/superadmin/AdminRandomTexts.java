@@ -40,9 +40,9 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
         // Lets verify that the user who tries to admin a fortune is an admin
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (imcref.checkAdminRights(user) == false) {
-            String header = "Error in AdminRandomTexts.";
-            String msg = "The user is not an administrator." + "<BR>";
-
+            String header = "Error in AdminRandomTexts. ";
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
             new AdminError(req, res, header, msg);
             return;
         }

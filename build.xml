@@ -529,6 +529,8 @@
         <copy todir="${conf}" filtering="true">
             <fileset dir="install/conf"/>
         </copy>
+        <copy file="imcms_swe.properties" tofile="${conf}/swe.properties"/>
+        <copy file="imcms_eng.properties" tofile="${conf}/eng.properties"/>
 
         <copy file="${conf}/${log4j-config}" tofile="${conf}/log4j.xml"/>
 

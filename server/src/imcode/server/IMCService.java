@@ -7,10 +7,7 @@ import imcode.server.parser.AdminButtonParser;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
-import imcode.util.FileCache;
-import imcode.util.Parser;
-import imcode.util.PrefixRemovedProperties;
-import imcode.util.Utility;
+import imcode.util.*;
 import imcode.util.fortune.*;
 import imcode.util.net.SMTP;
 import imcode.util.poll.PollHandlingSystem;
@@ -23,6 +20,8 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.*;
 import java.util.*;
+
+import com.imcode.imcms.api.User;
 
 final public class IMCService implements IMCServiceInterface, IMCConstants {
 
@@ -63,6 +62,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAuthAndMapper = null;
     private DocumentMapper documentMapper;
     private TemplateMapper templateMapper;
+    private Properties langproperties_swe;
+    private Properties langproperties_eng;
 
     static {
         mainLog.info( "Main log started." );
@@ -139,6 +140,26 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             }
             externalDocumentTypes[doc_count] = new ExternalDocType( Integer.parseInt( items[0] ), items[1] );
         }
+    }
+
+    private void initLangProperties( String LanguageIso639_2 ){
+
+        if ( "swe".equals(LanguageIso639_2)){
+            try {
+                langproperties_swe = Prefs.getProperties("swe.properties");;
+            } catch ( IOException e ) {
+                log.fatal( "Failed to initialize swe.properties", e);
+            }
+        }
+        if( "eng".equals(LanguageIso639_2)){
+            try {
+                langproperties_eng = Prefs.getProperties("eng.properties");;
+            } catch ( IOException e ) {
+                log.fatal( "Failed to initialize eng.properties", e);
+            }
+        }
+
+
     }
 
     private int getIntPropertyAndLogIt( Properties props, final String property, int defaultValue ) {
@@ -1505,4 +1526,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         documentMapper.sqlUpdateModifiedDatesOnDocumentAndItsParent( metaId, dateTime );
     }
 
+    public Properties getLangProperties(UserDomainObject user){
+
+        if( langproperties_eng == null){
+            initLangProperties("eng");
+        }
+        if( langproperties_swe == null){
+            initLangProperties("swe");
+        }
+        if( "swe".equals( user.getLanguageIso639_2()) ){
+            return langproperties_swe;
+        }
+         return langproperties_eng;
+    }
 }

@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import java.io.*;
+import java.util.Properties;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -61,8 +62,10 @@ public class AdminSystemInfo extends Administrator {
         // Lets check if the user is an admin, otherwise throw him out.
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (imcref.checkAdminRights(user) == false) {
-            String header = "Error in AdminCounter.";
-            String msg = "The user is not an administrator." + "<BR>";
+            String header = "Error in AdminSystemInfo. ";
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            this.log( header + "- user is not an administrator" );
             new AdminError(req, res, header, msg);
             return;
         }
@@ -107,8 +110,9 @@ public class AdminSystemInfo extends Administrator {
 
             // Lets validate the parameters
             if (serverMaster.equalsIgnoreCase("") || serverMasterEmail.equalsIgnoreCase("")) {
-                String header = "Error in AdminSystemInfo.";
-                String msg = "Alla parameterar fanns inte tillgängliga!" + "<BR>";
+                String header = "Error in AdminSystemInfo, servermaster info.";
+                Properties langproperties = imcref.getLangProperties( user );
+                String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
                 new AdminError(req, res, header, msg);
                 return;
             }
@@ -133,8 +137,9 @@ public class AdminSystemInfo extends Administrator {
 
             // Lets validate the parameters
             if (webMaster.equalsIgnoreCase("") || webMasterEmail.equalsIgnoreCase("")) {
-                String header = "Error in AdminSystemInfo.";
-                String msg = "Alla parameterar fanns inte tillgängliga!" + "<BR>";
+                String header = "Error in AdminSystemInfo, webmaster info.";
+                Properties langproperties = imcref.getLangProperties( user );
+                String msg = langproperties.getProperty("error/servlet/AdminSystemInfo/validate_form_parameters") + "<br>";
                 new AdminError(req, res, header, msg);
                 return;
             }

@@ -12,6 +12,7 @@ package com.imcode.imcms.servlet.superadmin;
  */
 
 import java.io.IOException;
+import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -104,10 +105,10 @@ public class AdminRoleBelongings extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminRoleBelongings.";
-            String msg = "The user is not an administrator." + "<BR>";
-            this.log( header + msg );
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
-
             return;
         }
 

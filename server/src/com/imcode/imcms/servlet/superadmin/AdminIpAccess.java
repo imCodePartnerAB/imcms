@@ -72,8 +72,9 @@ public class AdminIpAccess extends Administrator {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminCounter.";
-            String msg = "The user is not an administrator." + "<BR>";
-            this.log( header + msg );
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator")+"<br>";
+            this.log( header + "- user is not an administrator" );
             new AdminError( req, res, header, msg );
             return;
         }
@@ -119,7 +120,7 @@ public class AdminIpAccess extends Administrator {
             // Lets get the parameters from html page and validate them
             Properties params = this.getAddParameters( req );
             //log("PARAMS: " + params.toString()) ;
-            params = this.validateParameters( params, req, res );
+            params = this.validateParameters( params, req, res, imcref, user);
             if ( params == null ) return;
 
             imcref.sqlUpdateProcedure( "IPAccessAdd",
@@ -172,9 +173,10 @@ public class AdminIpAccess extends Administrator {
                     session.setAttribute( "IP." + paramName, arr );
                 }
             } else {
-                String header = "Delete IP-Access error";
-                String msg = "A session could not be created. Please try again + " + "<BR>";
-                this.log( "Error in IP-access delete" );
+                String header = "Error in AdminIpAccess, delete. ";
+                Properties langproperties = imcref.getLangProperties( user );
+                String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
+                this.log( header + "- session could not be created");
                 new AdminError( req, res, header, msg );
                 return;
             }
@@ -204,9 +206,10 @@ public class AdminIpAccess extends Administrator {
                     }
                 }
             } else {
-                String header = "Delete IP-Access error";
-                String msg = "A session could not be accessed. Please try again + " + "<BR>";
-                this.log( "Error in IP-access delete" );
+                String header = "Error in AdminIpAccess, delete.";
+                Properties langproperties = imcref.getLangProperties( user );
+                String msg = langproperties.getProperty("error/servlet/AdminIpAccess/no_session") + "<br>";
+                this.log( header + "- session could not be created" );
                 new AdminError( req, res, header, msg );
                 return;
             }
@@ -253,12 +256,13 @@ public class AdminIpAccess extends Administrator {
      * failes, a error page will be generated and null will be returned.
      */
 
-    private Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res ) throws IOException {
+    private Properties validateParameters(Properties aPropObj, HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref, UserDomainObject user) throws IOException {
 
         if ( checkParameters( aPropObj ) == false ) {
-            String header = "Checkparameters error";
-            String msg = "Samtliga fält var inte korrekt ifyllda." + "<BR>";
-            this.log( "Error in checkingparameters" );
+            String header = "Error in AdminIpAccess, checkParameters.";
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/AdminIpAccess/vaidate_form_parameters") + "<br>";
+            this.log( header + "- values is missing for some parameters" );
             new AdminError( req, res, header, msg );
             return null;
         }

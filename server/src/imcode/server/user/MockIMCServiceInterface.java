@@ -512,6 +512,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;  // TODO
     }
 
+    public Properties getLangProperties(UserDomainObject user) {
+        return null;
+    }
+
     public TemplateDomainObject getTemplate( int meta_id ) {
       return null;
    }

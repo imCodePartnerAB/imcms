@@ -289,4 +289,6 @@ public interface IMCServiceInterface {
     TemplateMapper getTemplateMapper();
 
     SMTP getSMTP();
+
+    public Properties getLangProperties(UserDomainObject user);
 }

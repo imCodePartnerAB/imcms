@@ -41,8 +41,9 @@ public class AdminQuestions extends Administrator implements imcode.server.IMCCo
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if (imcref.checkAdminRights(user) == false) {
             String header = "Error in AdminQuestions.";
-            String msg = "The user is not an administrator." + "<BR>";
-            this.log(header + msg);
+            Properties langproperties = imcref.getLangProperties( user );
+            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
+            this.log(header + "- user is not an administrator");
 
             new AdminError(req, res, header, msg);
             return;
