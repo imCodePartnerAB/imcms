@@ -51,41 +51,10 @@ public class AddDoc extends HttpServlet {
                 template = services.getTemplateMapper().getTemplateByName( templateName );
             }
 
-            createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand, template, getServletContext() );
+            DocumentCreator documentCreator = new DocumentCreator(saveNewDocumentAndAddToMenuCommand,dispatchToMenuEditCommand,getServletContext());
+            documentCreator.setTemplate(template) ;
+            documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
         }
-    }
-
-    public static void createDocumentAndDispatchToCreatePageFlow( int documentTypeId,
-                                                                  DocumentDomainObject parentDocument,
-                                                                  HttpServletRequest request,
-                                                                  HttpServletResponse response,
-                                                                  DocumentPageFlow.SaveDocumentCommand saveNewDocumentAndAddToMenuCommand,
-                                                                  DispatchCommand dispatchToMenuEditCommand,
-                                                                  TemplateDomainObject template,
-                                                                  ServletContext servletContext ) throws IOException, ServletException {
-        UserDomainObject user = Utility.getLoggedOnUser( request );
-        ImcmsServices services = Imcms.getServices();
-        DocumentMapper documentMapper = services.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( documentTypeId, parentDocument, user );
-        PageFlow pageFlow = null ;
-        if ( document instanceof TextDocumentDomainObject ) {
-            TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
-            if (null != template) {
-                textDocument.setTemplate( template );
-            }
-            pageFlow = new CreateTextDocumentPageFlow( textDocument, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
-        } else if ( document instanceof UrlDocumentDomainObject ) {
-            pageFlow = new CreateDocumentWithEditPageFlow( new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
-        } else if ( document instanceof HtmlDocumentDomainObject ) {
-            pageFlow = new CreateDocumentWithEditPageFlow( new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
-        } else if ( document instanceof FileDocumentDomainObject ) {
-            pageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, servletContext, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand, null ) );
-        } else if ( document instanceof BrowserDocumentDomainObject ) {
-            pageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
-        } else if ( document instanceof FormerExternalDocumentDomainObject ) {
-            pageFlow = new CreateFormerExternalDocumentPageFlow( (FormerExternalDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
-        }
-        pageFlow.dispatch( request, response );
     }
 
     private void addExistingDocPage( int meta_id, int doc_menu_no,
@@ -188,4 +157,53 @@ public class AddDoc extends HttpServlet {
             }
         }
     }
+
+    public static class DocumentCreator {
+
+        ServletContext servletContext ;
+        private DocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
+        private DispatchCommand returnCommand;
+        TemplateDomainObject template ;
+
+        public DocumentCreator( DocumentPageFlow.SaveDocumentCommand saveDocumentCommand,
+                                DispatchCommand returnCommand, ServletContext servletContext ) {
+            this.servletContext = servletContext ;
+            this.saveDocumentCommand = saveDocumentCommand;
+            this.returnCommand = returnCommand;
+        }
+
+        public void createDocumentAndDispatchToCreatePageFlow( int documentTypeId,
+                                                               DocumentDomainObject parentDocument,
+                                                               HttpServletRequest request,
+                                                               HttpServletResponse response ) throws IOException, ServletException {
+            UserDomainObject user = Utility.getLoggedOnUser( request );
+            ImcmsServices services = Imcms.getServices();
+            DocumentMapper documentMapper = services.getDocumentMapper();
+            DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( documentTypeId, parentDocument, user );
+            PageFlow pageFlow = null;
+            if ( document instanceof TextDocumentDomainObject ) {
+                TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
+                if ( null != template ) {
+                    textDocument.setTemplate( template );
+                }
+                pageFlow = new CreateTextDocumentPageFlow( textDocument, saveDocumentCommand, returnCommand );
+            } else if ( document instanceof UrlDocumentDomainObject ) {
+                pageFlow = new CreateDocumentWithEditPageFlow( new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, returnCommand, saveDocumentCommand ) );
+            } else if ( document instanceof HtmlDocumentDomainObject ) {
+                pageFlow = new CreateDocumentWithEditPageFlow( new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, returnCommand, saveDocumentCommand ) );
+            } else if ( document instanceof FileDocumentDomainObject ) {
+                pageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, servletContext, returnCommand, saveDocumentCommand, null ) );
+            } else if ( document instanceof BrowserDocumentDomainObject ) {
+                pageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, returnCommand, saveDocumentCommand ) );
+            } else if ( document instanceof FormerExternalDocumentDomainObject ) {
+                pageFlow = new CreateFormerExternalDocumentPageFlow( (FormerExternalDocumentDomainObject)document, saveDocumentCommand, returnCommand );
+            }
+            pageFlow.dispatch( request, response );
+        }
+
+        public void setTemplate( TemplateDomainObject template ) {
+            this.template = template;
+        }
+    }
+
 }

@@ -1015,6 +1015,10 @@ public class DocumentMapper {
         documentCache.clear();
     }
 
+    public DocumentTypeDomainObject[] getAllDocumentTypes() {
+        return DocumentDomainObject.ALL_DOCUMENT_TYPES ;
+    }
+
     public static class TextDocumentMenuIndexPair {
 
         private TextDocumentDomainObject document;

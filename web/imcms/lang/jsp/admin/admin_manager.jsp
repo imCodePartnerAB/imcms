@@ -70,27 +70,30 @@
 <%= tabString %>
 #gui_mid_tabs2()
 <% if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabName())) { %>
-    <form method="GET" name="subreport" action="AdminManager">
+    <form method="POST" action="AdminManager">
     <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>">
     <% if (AdminManager.PARAMETER_VALUE__SHOW_NEW.equals( adminManagerPage.getTabName() ) ) { %>
-        <input type="text" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="5">
+       #gui_heading( "<? web/imcms/lang/jsp/admin/admin_manager.jsp/heading_create_new ?>" )
         <%
             DocumentTypeDomainObject[] documentTypes = {
                 DocumentDomainObject.DOCTYPE_TEXT,
                 DocumentDomainObject.DOCTYPE_URL,
                 DocumentDomainObject.DOCTYPE_FILE,
-                DocumentDomainObject.DOCTYPE_HTML,
             } ;
         %>
-        <select name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_TYPE_ID %>">
+        <? web/imcms/lang/jsp/admin/admin_manager.jsp/create_new ?>
+        <select name="<%= AdminManager.REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION %>">
             <%
                 for ( int i = 0; i < documentTypes.length; i++ ) {
                     DocumentTypeDomainObject documentType = documentTypes[i];
                     %><option value="<%= documentType.getId() %>"><%= documentType.getName().toLocalizedString( request ) %></option><%
                 }
             %>
+            <option value="<%= AdminManager.REQUEST_PARAMETER__ACTION__COPY %>"><? global/Copy ?></option>
         </select>
-        <input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="Create new document">
+        <? web/imcms/lang/jsp/admin/admin_manager.jsp/based_on ?>
+        <input type="text" name="<%= AdminManager.REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID %>" value="" size="5">
+        <input type="submit" name="<%= AdminManager.REQUEST_PARAMETER__CREATE_NEW_DOCUMENT %>" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/create_button ?>">
     <% } %>
 
         <%

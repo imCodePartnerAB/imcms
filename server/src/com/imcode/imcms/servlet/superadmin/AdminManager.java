@@ -1,13 +1,14 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
+import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.admin.AddDoc;
+import com.imcode.imcms.servlet.admin.SaveSort;
 import com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean;
 import com.imcode.imcms.servlet.beans.AdminManagerSubreport;
-import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.flow.DispatchCommand;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentComparator;
@@ -41,39 +42,13 @@ public class AdminManager extends Administrator {
     public final static String PARAMETER_VALUE__SHOW_REMINDERS = "reminders";
     public final static String PARAMETER_VALUE__SHOW_SUMMARY = "summary";
     public final static String PARAMETER_VALUE__SHOW_SEARCH = "search";
-    public final static String LIST_TYPE__list_new_not_approved = "list_new_not_approved";
-    public final static String LIST_TYPE__list_documents_archived_less_then_one_week = "list_documents_archived_less_then_one_week";
-    public final static String LIST_TYPE__list_documents_publication_end_less_then_one_week = "list_documents_publication_end_less_then_one_week";
-    public final static String LIST_TYPE__list_documents_not_changed_in_six_month = "list_documents_not_changed_in_six_month";
-    public final static String LIST_TYPE__list_documents_changed = "list_documents_changed";
-    public final static String LIST_TYPE__SEARCH_LIST = "search_list";
 
     public static final int DEFAULT_DOCUMENTS_PER_LIST = 5;
-    public static final String REQUEST_PARAMETER__list_new_not_approved_current_sortorder = "list_new_not_approved_current_sortorder";
-    public static final String REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_sortorder = "list_documents_archived_less_then_one_week_current_sortorder";
-    public static final String REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder = "list_documents_publication_end_less_then_one_week_current_sortorder";
-    public static final String REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder = "list_documents_not_changed_in_six_month_current_sortorder";
-    public static final String REQUEST_PARAMETER__list_documents_changed_current_sortorder = "list_documents_changed_current_sortorder";
-    public static final String REQUEST_PARAMETER__SEARCH_LIST_CURRENT_SORTORDER = "search_list_current_sortorder";
-    public static final String REQUEST_PARAMETER__list_new_not_approved_current_expand = "list_new_not_approved_current_expand";
-    public static final String REQUEST_PARAMETER__list_documents_changed_current_expand = "list_documents_changed_current_expand";
-    public static final String REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand = "list_documents_archived_less_then_one_week_current_expand";
-    public static final String REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_expand = "list_documents_publication_end_less_then_one_week_current_expand";
-    public static final String REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_expand = "list_documents_not_changed_in_six_month_current_expand";
-    public static final String REQUEST_PARAMETER__showAll = "showAll";
-    public static final String REQUEST_PARAMETER__hideAll = "hideAll";
-    public static final String REQUEST_PARAMETER__SEARCH_BTN = "search_btn";
-    public static final String REQUEST_PARAMETER__SEARCH_STRING = "search_string";
-    public static final String REQUEST_PARAMETER__RESET_BTN = "reset_btn";
-    public static final String REQUEST_PARAMETER__PERMISSION = "permission";
-    public static final String REQUEST_PARAMETER__DATE_TYPE = "date_type";
-    public static final String REQUEST_PARAMETER__DATE_START = "date_start";
-    public static final String REQUEST_PARAMETER__DATE_END = "date_end";
-    public static final String REQUEST_PARAMETER__HITS_PER_PAGE = "hits_per_page";
     public static final String REQUEST_PARAMETER__FROMPAGE = "frompage";
     public static final String REQUEST_PARAMETER__CREATE_NEW_DOCUMENT = "create_new_document";
     public static final String REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID = "parent_id";
-    public static final String REQUEST_PARAMETER__NEW_DOCUMENT_TYPE_ID = "new_document_type_id";
+    public static final String REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION = "new_document_type_id";
+    public static final String REQUEST_PARAMETER__ACTION__COPY = "copy";
 
     public static final String PAGE_SEARCH = "search";
 
@@ -108,22 +83,30 @@ public class AdminManager extends Administrator {
         }
 
         final DocumentMapper documentMapper = service.getDocumentMapper();
-        if (Utility.parameterIsSet( request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT )) {
-            int parentId = Integer.parseInt(request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID )) ;
-            int documentTypeId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_TYPE_ID )) ;
-            DocumentDomainObject parentDocument = documentMapper.getDocument( parentId ) ;
+        if ( Utility.parameterIsSet( request, REQUEST_PARAMETER__CREATE_NEW_DOCUMENT ) ) {
+            int parentId = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__NEW_DOCUMENT_PARENT_ID ) );
+            DocumentDomainObject parentDocument = documentMapper.getDocument( parentId );
+            String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
+            if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) ) {
+                SaveSort.copyDocument( parentDocument, loggedOnUser );
+                createAndShowAdminManagerPage( request, response );
+            } else {
+                int documentTypeId = Integer.parseInt( createDocumentAction );
 
-            DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new DocumentPageFlow.SaveDocumentCommand() {
-                public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
-                    documentMapper.saveNewDocument( document, user );
-                }
-            };
-            DispatchCommand returnCommand = new DispatchCommand() {
-                public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                    createAndShowAdminManagerPage( request, response );
-                }
-            };
-            AddDoc.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument,request,response,saveNewDocumentCommand, returnCommand, null, getServletContext() );
+                DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new DocumentPageFlow.SaveDocumentCommand() {
+                    public void saveDocument( DocumentDomainObject document, UserDomainObject user ) {
+                        documentMapper.saveNewDocument( document, user );
+                    }
+                };
+                DispatchCommand returnCommand = new DispatchCommand() {
+                    public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                        createAndShowAdminManagerPage( request, response );
+                    }
+                };
+
+                AddDoc.DocumentCreator documentCreator = new AddDoc.DocumentCreator( saveNewDocumentCommand, returnCommand, getServletContext() );
+                documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
+            }
         } else {
             createAndShowAdminManagerPage( request, response );
         }
@@ -167,25 +150,25 @@ public class AdminManager extends Administrator {
         AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documents_not_changed_in_six_month );
 
         AdminManagerSubreport[] subreports = {
-           newDocumentsSubreport,
-           modifiedDocumentsSubreport,
-           documentsArchivedWithinOneWeekSubreport,
-           documentsUnpublishedWithinOneWeekSubreport,
-           documentsUnmodifiedForSixMonthsSubreport,
-        } ;
+            newDocumentsSubreport,
+            modifiedDocumentsSubreport,
+            documentsArchivedWithinOneWeekSubreport,
+            documentsUnpublishedWithinOneWeekSubreport,
+            documentsUnmodifiedForSixMonthsSubreport,
+        };
         for ( int i = 0; i < subreports.length; i++ ) {
             AdminManagerSubreport subreport = subreports[i];
-            String newSortOrder = request.getParameter( subreport.getName()+"_sortorder" ) ;
-            if (null != newSortOrder) {
+            String newSortOrder = request.getParameter( subreport.getName() + "_sortorder" );
+            if ( null != newSortOrder ) {
                 subreport.setSortorder( newSortOrder );
             }
-            Collections.sort( subreport.getDocuments(), getComparator( subreport.getSortorder() ) ) ;
+            Collections.sort( subreport.getDocuments(), getComparator( subreport.getSortorder() ) );
             boolean expanded = Utility.parameterIsSet( request, subreport.getName() + "_expand" )
-                           && !Utility.parameterIsSet( request, subreport.getName() + "_unexpand" ) ;
+                               && !Utility.parameterIsSet( request, subreport.getName() + "_unexpand" );
             subreport.setExpanded( expanded );
         }
 
-        AdminManagerPage adminManagerPage = null ;
+        AdminManagerPage adminManagerPage = null;
         if ( tabToShow.equals( PARAMETER_VALUE__SHOW_NEW ) ) {
 
             newDocumentsSubreport.setMaxDocumentCount( 0 );
@@ -205,7 +188,7 @@ public class AdminManager extends Administrator {
             reminderAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1" ) );
 
             documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
-            reminderAdminManagerPage.addSubreport(documentsArchivedWithinOneWeekSubreport);
+            reminderAdminManagerPage.addSubreport( documentsArchivedWithinOneWeekSubreport );
 
             modifiedDocumentsSubreport.setMaxDocumentCount( 0 );
             reminderAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
@@ -239,14 +222,14 @@ public class AdminManager extends Administrator {
 
             AdminManagerPage searchAdminManagerPage = new AdminManagerPage() {
                 public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
-                    DocumentFinder documentFinder = new DocumentFinder( new AdminManagerSearchPage(this) );
+                    DocumentFinder documentFinder = new DocumentFinder( new AdminManagerSearchPage( this ) );
                     documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
                     documentFinder.forward( request, response );
                 }
             };
             searchAdminManagerPage.setTabName( "search" );
             searchAdminManagerPage.setHeading( new LocalizedMessage( "<? global/Search ?>" ) );
-            adminManagerPage = searchAdminManagerPage ;
+            adminManagerPage = searchAdminManagerPage;
         }
 
         adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
@@ -257,7 +240,7 @@ public class AdminManager extends Administrator {
         AdminManagerSubreport modifiedDocumentsSubreport = new AdminManagerSubreport();
         modifiedDocumentsSubreport.setName( "modified" );
         modifiedDocumentsSubreport.setDocuments( documents_modified );
-        modifiedDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5" ));
+        modifiedDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5" ) );
         return modifiedDocumentsSubreport;
     }
 
@@ -272,7 +255,7 @@ public class AdminManager extends Administrator {
     private AdminManagerSubreport createDocumentsUnmodifiedForSixMonthsSubreport(
             List documents_not_changed_in_six_month ) {
         AdminManagerSubreport documentsUnchangedForSixMonthsSubreport = new AdminManagerSubreport();
-        documentsUnchangedForSixMonthsSubreport.setName("unchangedForSixMonths") ;
+        documentsUnchangedForSixMonthsSubreport.setName( "unchangedForSixMonths" );
         documentsUnchangedForSixMonthsSubreport.setDocuments( documents_not_changed_in_six_month );
         documentsUnchangedForSixMonthsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4" ) );
         documentsUnchangedForSixMonthsSubreport.setSortorder( "MODR" );
@@ -284,7 +267,7 @@ public class AdminManager extends Administrator {
         AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = new AdminManagerSubreport();
         documentsArchivedWithinOneWeekSubreport.setName( "archivedWithinOneWeek" );
         documentsArchivedWithinOneWeekSubreport.setDocuments( documents_archived_less_then_one_week );
-        documentsArchivedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2" ));
+        documentsArchivedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2" ) );
         documentsArchivedWithinOneWeekSubreport.setSortorder( "ARCR" );
         return documentsArchivedWithinOneWeekSubreport;
     }
@@ -319,10 +302,10 @@ public class AdminManager extends Administrator {
 
     public static class AdminManagerPage {
 
-        LocalizedMessage heading ;
-        String tabName ;
-        List subreports = new ArrayList() ;
-        String htmlAdminPart ;
+        LocalizedMessage heading;
+        String tabName;
+        List subreports = new ArrayList();
+        String htmlAdminPart;
         public static final String REQUEST_ATTRIBUTE__PAGE = "ampage";
 
         public LocalizedMessage getHeading() {
@@ -349,7 +332,6 @@ public class AdminManager extends Administrator {
             subreports.add( newDocumentsSubreport );
         }
 
-
         public String getHtmlAdminPart() {
             return htmlAdminPart;
         }
@@ -357,7 +339,6 @@ public class AdminManager extends Administrator {
         public void setHtmlAdminPart( String htmlAdminPart ) {
             this.htmlAdminPart = htmlAdminPart;
         }
-
 
         public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
             putInRequest( request );

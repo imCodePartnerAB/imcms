@@ -100,16 +100,12 @@ public class SaveSort extends HttpServlet {
             }
         } else if ( req.getParameter( "copy" ) != null ) {
             if ( selectedChildrenIds != null ) {
-                String copyHeadlineSuffix = imcref.getAdminTemplate( COPY_HEADLINE_SUFFIX_TEMPLATE, user, null );
 
                 for ( int i = 0; i < selectedChildrenIds.length; i++ ) {
                     String selectedChildIdStr = selectedChildrenIds[i];
                     int selectedChildId = Integer.parseInt( selectedChildIdStr );
                     DocumentDomainObject selectedChild = documentMapper.getDocument( selectedChildId );
-                    selectedChild.setHeadline( selectedChild.getHeadline() + copyHeadlineSuffix );
-                    selectedChild.setStatus( DocumentDomainObject.STATUS_NEW );
-                    selectedChild.setPublicationStartDatetime( new Date() );
-                    documentMapper.saveNewDocument( selectedChild, user );
+                    copyDocument( selectedChild, user );
                     menu.addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( selectedChild ) ) );
                 }
             }
@@ -124,5 +120,15 @@ public class SaveSort extends HttpServlet {
         res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU
                           + "&editmenu="
                           + menuIndex );
+    }
+
+    public static void copyDocument( DocumentDomainObject selectedChild,
+                                     UserDomainObject user ) {
+        ImcmsServices services = Imcms.getServices();
+        String copyHeadlineSuffix = services.getAdminTemplate( COPY_HEADLINE_SUFFIX_TEMPLATE, user, null );
+        selectedChild.setHeadline( selectedChild.getHeadline() + copyHeadlineSuffix );
+        selectedChild.setStatus( DocumentDomainObject.STATUS_NEW );
+        selectedChild.setPublicationStartDatetime( new Date() );
+        services.getDocumentMapper().saveNewDocument( selectedChild, user );
     }
 }
