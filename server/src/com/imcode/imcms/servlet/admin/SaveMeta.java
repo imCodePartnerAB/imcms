@@ -368,8 +368,7 @@ public class SaveMeta extends HttpServlet {
         // Let's split this joint!
         res.sendRedirect( "AdminDoc?meta_id="+metaId);
 
-        //lets log to mainlog that the user done stuff
-        imcref.updateMainLog( "Metadata on [" + metaIdStr + "] updated by user: [" + user.getFullName() + "]" );
+        imcref.updateMainLog( "Document [" + metaIdStr + "] updated by user: [" + user.getFullName() + "]" );
     }
 
     private static void putTemporaryPermissionSettingsInUser( UserDomainObject user, String meta_id,
