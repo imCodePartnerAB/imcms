@@ -3,6 +3,8 @@ package imcode.server.parser ;
 import java.util.* ;
 import org.apache.oro.text.regex.* ;
 import imcode.util.* ;
+import imcode.server.* ;
+import java.text.SimpleDateFormat ;
 
 import org.apache.log4j.Category;
 
@@ -32,12 +34,14 @@ public class MenuParserSubstitution implements Substitution {
 
     private Substitution NULLSUBSTITUTION = new StringSubstitution("") ;
 
-    Map menus ;
-    boolean menumode ;
-    Properties tags ;
-    int[] implicitMenus = {1} ;
+    private Map menus ;
+    private boolean menumode ;
+    private Properties tags ;
+    private int[] implicitMenus = {1} ;
+    private DocumentRequest documentRequest ;
 
-    public MenuParserSubstitution (Map menus,boolean menumode, Properties tags ) {
+    public MenuParserSubstitution (DocumentRequest documentRequest, Map menus,boolean menumode, Properties tags ) {
+	this.documentRequest = documentRequest ;
 	this.menumode = menumode ;
 	this.menus = menus ;
 	this.tags = tags ;
@@ -156,7 +160,7 @@ public class MenuParserSubstitution implements Substitution {
 	if ( menuItem != null ) {
 	    Properties menuItemAttributes = new Properties(menuAttributes) ; // Make a copy of the menuAttributes, so we don't override them permanently.
 	    menuItemAttributes.putAll(menuItemNode.getAttributes()) ; // Let all attributes of the menuItemNode override the attributes of the menu.
-	    menuItemSubstitution = menuItem.getSubstitution(menuItemAttributes) ;
+	    menuItemSubstitution = getMenuItemSubstitution(menuItem, menuItemAttributes) ;
 	} else {
 	    menuItemSubstitution = NULLSUBSTITUTION ;
 	}
@@ -195,5 +199,72 @@ public class MenuParserSubstitution implements Substitution {
 	}
 	sb.append(nodeMenuParser(menuId,menutemplate, menuattributes,patMat)) ;
     }
+
+    /**
+       Create a substitution for parsing this menuitem into a template with the correct tags.
+    **/
+    private Substitution getMenuItemSubstitution(MenuItem menuItem, Properties parameters) {
+
+	String image = menuItem.getImage() ;
+	image = (image != null && image.length() > 0) ? ("<img src=\""+image+"\" border=\"0\">") : "" ;
+	String headline = menuItem.getHeadline() ;
+	if ( headline.length() == 0 ) {
+	    headline = "&nbsp;" ;
+	} else {
+	    if ( !menuItem.isActive() ) {
+		headline = "<em><i>" + headline ;
+		headline += "</i></em>" ;
+	    }
+	    if ( menuItem.isArchived() ) {
+		headline = "<strike>"+headline ;
+		headline += "</strike>" ;
+	    }
+	}
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") ;
+	String createdDate = dateFormat.format(menuItem.getCreatedDatetime()) ;
+	String modifiedDate = dateFormat.format(menuItem.getModifiedDatetime()) ;
+
+	Properties tags = new Properties() ;
+	tags.setProperty("#childMetaId#",""+menuItem.getMetaId()) ;
+	tags.setProperty("#childMetaHeadline#",headline) ;
+	tags.setProperty("#childMetaText#",menuItem.getText()) ;
+	tags.setProperty("#childMetaImage#",image) ;
+	tags.setProperty("#childCreatedDate#",createdDate) ;
+	tags.setProperty("#childModifiedDate#",modifiedDate) ;
+	tags.setProperty("#menuitemmetaid#",""+menuItem.getMetaId()) ;
+	tags.setProperty("#menuitemheadline#",headline) ;
+	tags.setProperty("#menuitemtext#",menuItem.getText()) ;
+	tags.setProperty("#menuitemimage#",image) ;
+	tags.setProperty("#menuitemtarget#",menuItem.getTarget()) ;
+	tags.setProperty("#menuitemdatecreated#",createdDate) ;
+	tags.setProperty("#menuitemdatemodified#",modifiedDate) ;
+
+	// If this doc is a file, we'll want to put in the filename
+	// as an escaped translated path
+	// For example: /servlet/GetDoc/filename.ext?meta_id=1234
+	//                             ^^^^^^^^^^^^^
+	String template = parameters.getProperty("template") ;
+	String href = "GetDoc"+(menuItem.getFilename() == null || menuItem.getFilename().length() == 0 ? "" : "/"+java.net.URLEncoder.encode(menuItem.getFilename()))+"?meta_id="+menuItem.getMetaId()+(template!=null ? "&template="+java.net.URLEncoder.encode(template) : "");
+	String a_href = "<a href=\""+href+(!"_self".equals(menuItem.getTarget()) ? "\" target=\""+menuItem.getTarget() : "")+"\">" ;
+
+	tags.setProperty("#menuitemlinkonly#", a_href ) ;
+	tags.setProperty("#/menuitemlinkonly#", "</a>") ;
+
+	if ( menuItem.getParentMenu().isMenuMode() ) {
+	    if (menuItem.getParentMenu().getSortOrder() == IMCConstants.MENU_SORT_BY_MANUAL_ORDER) {
+		a_href = "<input type=\"text\" name=\""+menuItem.getMetaId()+"\" value=\""+menuItem.getSortKey()+"\" size=\"4\" maxlength=\"4\">" + a_href ;
+	    }
+	    a_href = "<input type=\"checkbox\" name=\"archiveDelBox\" value=\""+menuItem.getMetaId()+"\">" + a_href ;
+	}
+
+	tags.setProperty("#menuitemlink#", a_href ) ;
+	tags.setProperty("#/menuitemlink#",
+			 menuItem.getParentMenu().isMenuMode() && menuItem.isEditable()
+			 ? "</a>"+documentRequest.getServerObject().parseDoc(Arrays.asList(new String[]{"#meta_id#",""+menuItem.getMetaId()}), "textdoc/admin_menuitem.frag",documentRequest.getUser().getLangPrefix())
+			 : "</a>") ;
+
+	return new MapSubstitution(tags,true) ;
+    }
+
 
 }

@@ -229,82 +229,65 @@ function activateUseradmin_roles(){
       <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
         <select size="1" name="user_phones">
 	#PHONES_MENU#
-	    </select>
-        </font></td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr> 
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
-        <input type="submit" name="edit_phones" value="Ändra">
-        <input type="submit" value="Ta bort" name="delete_phones">
-        </font></td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr> 
-      <td>&nbsp;</td>
-      <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Län:</font></td>
-      <td><font size="2">&nbsp;</font></td>
-      <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
-        <input name="country_council" size="25" value="#COUNTRY_COUNCIL#" maxlength="30">
-        </font></td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr> 
-      <td>&nbsp;</td>
-      <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Land:</font></td>
-      <td><font size="2">&nbsp;</font></td>
-      <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
-        <input name="country" size="25" value="#COUNTRY#" maxlength="30">
-        </font></td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr> 
-      <td>&nbsp;</td>
-      <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Email:</font></td>
-      <td><font size="2">&nbsp;</font></td>
-      <td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
-        <input name="email" size="25" value="#EMAIL#" maxlength="50">
-        </font></td>
-      <td>&nbsp;</td>
-    </tr>
-    #ADMIN_PART# 
-    <tr> 
-      <td>&nbsp;</td>
-      <td width="449" colspan="3"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
-        &nbsp;* Innebär att fältet är obligatoriskt</font></td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr> 
-      <td>&nbsp;</td>
-      <td colspan="3"><hr></td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td colspan="3">Aktiverad:</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr> 
-      <td>&nbsp;</td>
-      <td colspan="3">&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr> 
-      <td>&nbsp;</td>
-      <td colspan="3"> <input type="submit" name="SAVE_USER" value="Spara" onClick="if( !evalPrepareAdd() ) return false;"> 
-        <input type="submit" name="RESET_FORM" value="Återställ"> <input type="submit" name="CANCEL" value="Avbryt"> 
-        &nbsp; <a href="GetDoc?meta_id=71" target="_blank" onClick="openHelp('71'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr> 
-      <td colspan="5">&nbsp;</td>
-    </tr>
-  </table>
+	</select></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td>&nbsp;</td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><input type="submit" name="edit_phones" value="Ändra">
+	<input type="submit" value="Ta bort" name="delete_phones"></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Län:</font></td>
+	<td><font size="2">&nbsp;</font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><input name="country_council" size="25" value="#COUNTRY_COUNCIL#" maxlength="30"></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Land:</font></td>
+	<td><font size="2">&nbsp;</font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><input name="country" size="25" value="#COUNTRY#" maxlength="30"></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Email:</font></td>
+	<td><font size="2">&nbsp;</font></td>
+	<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><input name="email" size="25" value="#EMAIL#" maxlength="50"></font></td>
+	<td>&nbsp;</td>
+</tr>
+
+	#ADMIN_PART#
+
+<tr>
+	<td>&nbsp;</td>
+	<td width="449" colspan="3"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+	&nbsp;* Innebär att fältet är obligatoriskt</font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="3"><hr></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td>&nbsp;</td>
+	<td colspan="3">
+	<input type="submit" name="SAVE_USER" value="Spara" onClick="if( !evalPrepareAdd() ) return false;">
+	<input type="submit" name="RESET_FORM" value="Återställ">
+	<input type="submit" name="CANCEL" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=71" target="_blank" onClick="openHelp('71'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="5">&nbsp;</td>
+</tr>
+</table>
 </form>
-<p></p>
 </body>
 </html>
 

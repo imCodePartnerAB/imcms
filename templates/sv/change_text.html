@@ -121,7 +121,7 @@ function openHelp(id) {
 		<td><input type="SUBMIT" value="  OK  " name="ok"></td>
 		<td><input type="SUBMIT" value="Avbryt" name="cancel"></td>
 		<td>&nbsp;</td>
-		<td><a href="GetDoc?meta_id=36" target="_blank" onClick="openHelp('36'); return false;"><img src="@imcmsimages@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+		<td><a href="GetDoc?meta_id=36" target="_blank" onClick="openHelp('36'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
 	</tr>
 	</table></td>
 	<td>&nbsp;</td>
@@ -150,6 +150,12 @@ strLabel = strLabel.replace(/<[^>]*?>/gi, '');
 document.write('<input type="button" value="HTML-Editor" name="editorBtn" onClick="openEditor(\'#meta_id#\',\'#txt_no#\',strLabel)">');
 //-->
 </SCRIPT></td>
+		    <td>
+			<INPUT TYPE="SUBMIT" VALUE="  OK  " NAME="ok">
+		    </td>
+		    <td>
+			<INPUT TYPE="SUBMIT" VALUE="Avbryt" NAME="cancel">&nbsp;<a href="GetDoc?meta_id=36" target="_blank" onClick="openHelp('36'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		    </td>
 		</tr>
 		</table></td>
 	</tr>
