@@ -14,6 +14,7 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
 	
     private final static Category log = Category.getInstance( "server" );
 	
+	private boolean editable ;
     private int sortKey ;
     private Menu parentMenu;
     private static Pattern HASHTAG_PATTERN  = null ;
@@ -117,6 +118,22 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
 			 : "</a>") ;
 
 	return new MapSubstitution(tags,true) ;
+    }
+	
+	 /**
+     * Get the value of editable.
+     * @return value of editable.
+     */
+    public boolean isEditable() {
+	return editable;
+    }
+    
+    /**
+     * Set the value of editable.
+     * @param v  Value to assign to editable.
+     */
+    public void setEditable(boolean  v) {
+	this.editable = v;
     }
 
 }

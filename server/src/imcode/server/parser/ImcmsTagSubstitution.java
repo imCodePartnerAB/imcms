@@ -58,7 +58,8 @@ public class ImcmsTagSubstitution implements Substitution {
     boolean imageMode ;
     String imageUrl ;
     int implicitImageNumber = 1 ;
-
+	
+	Document document;
 
     private final Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
@@ -75,7 +76,7 @@ public class ImcmsTagSubstitution implements Substitution {
 				 File templatepath, String servleturl,
 				 List included_list, boolean includemode, int includelevel, File includepath,
 				 Map textmap, boolean textmode,
-				 Map imagemap, boolean imagemode, String imageurl) {
+				 Map imagemap, boolean imagemode, String imageurl,Document theDoc) {
 	this.textDocParser = textdocparser ;
 	this.user = user ;
 	this.meta_id = meta_id ;
@@ -96,6 +97,7 @@ public class ImcmsTagSubstitution implements Substitution {
 	this.imageMap = imagemap ;
 	this.imageMode = imagemode ;
 	this.imageUrl  = imageurl ;
+	this.document = theDoc;
     }
 
     /**
@@ -287,13 +289,38 @@ public class ImcmsTagSubstitution implements Substitution {
 	/**
        Handle a <?imcms:datetime ...?> tag
 
-       @param attributes The attributes of the datetime tag
+       @param attributes The attributes of the datetime tag.
+	   format attribute defines a user pattern to use when geting the date.
+	   type attribute defines what date to get they can bee 
+	   	now, created, modified, activated, archived
+
     **/
     public String tagDatetime (Properties attributes) {
 		String format =  attributes.getProperty("format") ;
-		Date date = new Date();
+		String type	  =  attributes.getProperty("type")	;
+		Date date = null;
+		
+		if (type != null) {
+			type = type.toLowerCase();
+			if ("now".startsWith(type)) {
+				date = new Date();
+			}else if("created".startsWith(type)) {
+				date = document.getCreatedDatetime();
+			}else if("modified".startsWith(type)) {
+				date = document.getModifiedDatetime();
+			}else if("arcived".startsWith(type)) {
+				date = document.getActivatedDatetime();
+			}else if("activated".startsWith(type)) {
+				date = document.getArchivedDatetime();
+			}
+			if (date==null) {
+				return "<!-- <?imcms:datetime ... type=\""+type+"\" is empty, wrong or doesnt exists! -->";
+			}
+		}else {
+			date = new Date();
+		}
+				
 		java.text.SimpleDateFormat formatter;
-
 		if (format == null){
 			formatter = new java.text.SimpleDateFormat();
 		}else{

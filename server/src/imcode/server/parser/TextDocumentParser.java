@@ -70,6 +70,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    int user_id = user.getInt("user_id") ;
 	    String user_id_str = String.valueOf(user_id) ;
 		
+		Document myDoc = serverObject.getDocument(meta_id);	
+		
 		//handles the extra parameters
 		ParserParameters parse_params = paramsToParse;
 		String template_name = parse_params.getTemplate();
@@ -190,8 +192,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		templategroups = (Vector)dbc.executeProcedure() ;
 		dbc.clearResultSet() ;
 		// do templatemode queries
-
-
+		
 		if ( selected_group == -1 ) {
 		    selected_group = Integer.parseInt(group_id) ;
 		}
@@ -589,7 +590,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 															   templatePath,servletUrl,
 															   included_docs,includemode,includelevel,includePath,
 															   textMap,textmode,
-															   imageMap,imagemode,imageUrl) ;
+															   imageMap,imagemode,imageUrl,myDoc) ;
 
 	    LinkedList parse = new LinkedList() ;
 	    perl5util.split(parse,"/(<!--\\/?IMSCRIPT-->)/i",template) ;

@@ -3032,120 +3032,86 @@ GO
 -- 2002-02-08
 --
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[InsertText]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[InsertText]
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-CREATE PROCEDURE InsertText
- @meta_id int,
- @name char(15),
- @type int,
- @text ntext
-
-AS
-
-declare  @number int 
-
- select @number=counter from texts
- where meta_id = @meta_id
- and name = @name
-
-if(@number is null) begin
-     insert into texts (meta_id,name,type,text)
-     values(@meta_id,@name,@type,@text)
-  end
-else begin
-  update texts
-  set text = @text
-  where counter=@number
-  update texts
-  set type=@type
-  where counter=@number
-end
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
---
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[InsertText]') and OBJECTPROPERTY(id, N'IsProcedure') = 1) drop procedure [dbo].[InsertText] GO  SET QUOTED_IDENTIFIER OFF  GO SET ANSI_NULLS ON  GO  CREATE PROCEDURE InsertText  @meta_id int,  @name char(15),  @type int,  @text ntext  AS  declare  @number int    select @number=counter from texts  where meta_id = @meta_id  and name = @name  if(@number is null) begin      insert into texts (meta_id,name,type,text)      values(@meta_id,@name,@type,@text)   end else begin   update texts   set text = @text   where counter=@number   update texts   set type=@type   where counter=@number end GO SET QUOTED_IDENTIFIER OFF  GO SET ANSI_NULLS ON  GO  --
 -- The following changes the column 'text' in the table 'texts' from type 'text' to type 'ntext'.
 -- 2002-02-08
 --
 
-
-BEGIN TRANSACTION
-SET QUOTED_IDENTIFIER ON
-SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
-SET ARITHABORT ON
-SET NUMERIC_ROUNDABORT OFF
-SET CONCAT_NULL_YIELDS_NULL ON
-SET ANSI_NULLS ON
-SET ANSI_PADDING ON
-SET ANSI_WARNINGS ON
-COMMIT
-BEGIN TRANSACTION
-ALTER TABLE dbo.texts
-	DROP CONSTRAINT FK_texts_meta
-GO
-COMMIT
-BEGIN TRANSACTION
-CREATE TABLE dbo.Tmp_texts
-	(
-	meta_id int NOT NULL,
-	name int NOT NULL,
-	text ntext NOT NULL,
-	type int NULL,
-	counter int NOT NULL IDENTITY (1, 1)
-	)  ON [PRIMARY]
-	 TEXTIMAGE_ON [PRIMARY]
-GO
-SET IDENTITY_INSERT dbo.Tmp_texts ON
-GO
-IF EXISTS(SELECT * FROM dbo.texts)
-	 EXEC('INSERT INTO dbo.Tmp_texts (meta_id, name, text, type, counter)
-		SELECT meta_id, name, text, type, counter FROM dbo.texts TABLOCKX')
-GO
-SET IDENTITY_INSERT dbo.Tmp_texts OFF
-GO
-DROP TABLE dbo.texts
-GO
-EXECUTE sp_rename N'dbo.Tmp_texts', N'texts', 'OBJECT'
-GO
-ALTER TABLE dbo.texts ADD CONSTRAINT
-	PK_texts PRIMARY KEY CLUSTERED 
-	(
-	counter
-	) ON [PRIMARY]
-
-GO
-CREATE NONCLUSTERED INDEX IX_texts ON dbo.texts
-	(
-	meta_id
-	) ON [PRIMARY]
-GO
-ALTER TABLE dbo.texts WITH NOCHECK ADD CONSTRAINT
-	FK_texts_meta FOREIGN KEY
-	(
-	meta_id
-	) REFERENCES dbo.meta
-	(
-	meta_id
-	)
-GO
-COMMIT
-EXECUTE sp_fulltext_table N'dbo.texts', N'create', N'full_text_index', N'PK_texts'
-GO
-EXECUTE sp_fulltext_column N'dbo.texts', N'text', N'add', 0x0409
-GO
-EXECUTE sp_fulltext_table N'dbo.texts', N'activate'
-GO
-
+ BEGIN TRANSACTION SET QUOTED_IDENTIFIER ON SET TRANSACTION ISOLATION LEVEL SERIALIZABLE SET ARITHABORT ON SET NUMERIC_ROUNDABORT OFF SET CONCAT_NULL_YIELDS_NULL ON SET ANSI_NULLS ON SET ANSI_PADDING ON SET ANSI_WARNINGS ON COMMIT BEGIN TRANSACTION ALTER TABLE dbo.texts 	DROP CONSTRAINT FK_texts_meta GO COMMIT BEGIN TRANSACTION CREATE TABLE dbo.Tmp_texts 	( 	meta_id int NOT NULL, 	name int NOT NULL, 	text ntext NOT NULL, 	type int NULL, 	counter int NOT NULL IDENTITY (1, 1) 	)  ON [PRIMARY] 	 TEXTIMAGE_ON [PRIMARY] GO SET IDENTITY_INSERT dbo.Tmp_texts ON GO IF EXISTS(SELECT * FROM dbo.texts) 	 EXEC('INSERT INTO dbo.Tmp_texts (meta_id, name, text, type, counter) 		SELECT meta_id, name, text, type, counter FROM dbo.texts TABLOCKX') GO SET IDENTITY_INSERT dbo.Tmp_texts OFF GO DROP TABLE dbo.texts GO EXECUTE sp_rename N'dbo.Tmp_texts', N'texts', 'OBJECT' GO ALTER TABLE dbo.texts ADD CONSTRAINT 	PK_texts PRIMARY KEY CLUSTERED  	( 	counter 	) ON [PRIMARY]  GO CREATE NONCLUSTERED INDEX IX_texts ON dbo.texts 	( 	meta_id 	) ON [PRIMARY] GO ALTER TABLE dbo.texts WITH NOCHECK ADD CONSTRAINT 	FK_texts_meta FOREIGN KEY 	( 	meta_id 	) REFERENCES dbo.meta 	( 	meta_id 	) GO COMMIT EXECUTE sp_fulltext_table N'dbo.texts', N'create', N'full_text_index', N'PK_texts' GO EXECUTE sp_fulltext_column N'dbo.texts', N'text', N'add', 0x0409 GO EXECUTE sp_fulltext_table N'dbo.texts', N'activate' GO 
 --
 -- 2002-02-08
 --
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetDocumentInfo]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[GetDocumentInfo]
+GO
+
+
+
+CREATE PROCEDURE GetDocumentInfo
+ @meta_id int
+AS
+ SELECT meta_id,
+	 description,
+	doc_type,
+	meta_headline,
+	meta_text,
+	meta_image,
+	owner_id,
+	permissions,
+	shared,
+	expand,
+	show_meta,
+	help_text_id,
+	archive,
+	status_id,
+	lang_prefix,
+	classification,
+	date_created,
+	date_modified,
+	sort_position,
+	menu_position,
+	disable_search,
+	target,
+	frame_name,
+	activated_datetime,
+	archived_datetime
+ FROM meta 
+ WHERE meta_id=@meta_id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetFileName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[GetFileName]
+GO
+
+
+CREATE PROCEDURE GetFileName 
+ @meta_id int
+AS
+
+select filename
+from fileupload_docs
+where meta_id=@meta_id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+--2002-02-11

@@ -518,7 +518,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String sqlStr = "" ;
 	int newSortNo ;
 
-
+	
 
 	// create a db connection an get meta data
 	DBConnect dbc = new DBConnect(m_conPool) ;
@@ -549,6 +549,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	sqlStr  = "insert into childs(meta_id,to_meta_id,menu_sort,manual_sort_order)\n" ;
 	sqlStr += "values(" + meta_id + "," + existing_meta_id + "," + doc_menu_no + "," + newSortNo + ")" ;
+	System.out.println("Lennart: "+sqlStr);
 	dbc.setSQLString(sqlStr) ;
 	dbc.createStatement() ;
 	dbc.executeUpdateQuery() ;
@@ -2962,5 +2963,66 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
 	return textMap ;
     }
+	
+	/**
+		Gets the data fore one document
+		@param meta_id The id fore the wanted document
+		@return a imcode.server.parser.Document representation of the document
+	**/	
+	public imcode.server.parser.Document getDocument(int meta_id){
+		imcode.server.parser.Document document = new imcode.server.parser.Document();		
+		String[] result = 	sqlProcedure("GetDocumentInfo "+meta_id);
+		int columns = 0;
+		
+		//lets start and do some controlls of the resulted data	
+		if (result == null) {
+			log.error("SQL: GetDocumentInfo "+meta_id+" returned nothing!");
+			return null;
+		}
+		if (result.length < 25) {
+			log.error("SQL: GetDocumentInfo "+meta_id+" returned less than 25 columns!");
+			return null;
+		}
+		
+		DateFormat dateform = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
+		//ok lets set all the document stuff
+		try {
+			document.setMetaId( Integer.parseInt(result[0]));
+			document.setDocumentType(Integer.parseInt(result[2]));
+		}catch(NumberFormatException nfe) {
+			log.error("SQL: GetDocumentInfo "+meta_id+" returned corrupt data!", nfe );
+			return null;
+		}		
+		document.setHeadline(result[3]);
+		document.setText(result[4]);
+		document.setImage(result[5]);
+		document.setTarget(result[21]);
+		
+		document.setArchived(result[12]=="0"?false:true);
+		try {
+			document.setCreatedDatetime(dateform.parse(result[16]));	
+		}catch(java.text.ParseException pe) {
+			document.setCreatedDatetime(null);	
+		}
+		try {
+			document.setModifiedDatetime(dateform.parse(result[17]));
+		}catch(java.text.ParseException pe) {
+			document.setModifiedDatetime(null);
+		}		
+		try {
+			document.setActivatedDatetime(dateform.parse(result[23]));
+		}catch(java.text.ParseException pe) {
+			document.setActivatedDatetime(null);
+		}
+		try {
+			document.setArchivedDatetime(dateform.parse(result[24]));
+		}catch(java.text.ParseException pe) {
+			document.setArchivedDatetime(null);
+		}
+		if (document.getDocumentType()==DOCTYPE_FILE) {
+			document.setFilename(sqlProcedureStr("GetFileName "+document.getMetaId()));
+		}
+		return document;
+	}
 
 }

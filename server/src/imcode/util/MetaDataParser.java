@@ -189,7 +189,7 @@ public class MetaDataParser {
 	    vec.add("#activated_date#") ;
 	    vec.add(activated_datetime.substring(0,activated_datetime.indexOf(' '))) ;
 	    vec.add("#activated_time#") ;
-	    vec.add(activated_datetime.substring(activated_datetime.indexOf(' ')+1)) ;
+	    vec.add(activated_datetime.substring(activated_datetime.indexOf(' ')+1,activated_datetime.length()-5)) ;
 	} else {
 	    vec.add("#activated_date#") ;
 	    vec.add("") ;
@@ -204,7 +204,7 @@ public class MetaDataParser {
 	    vec.add("#archived_date#") ;
 	    vec.add(archived_datetime.substring(0,archived_datetime.indexOf(' '))) ;
 	    vec.add("#archived_time#") ;
-	    vec.add(archived_datetime.substring(archived_datetime.indexOf(' ')+1)) ;
+	    vec.add(archived_datetime.substring(archived_datetime.indexOf(' ')+1,archived_datetime.length()-5)) ;
 	} else {
 	    vec.add("#archived_date#") ;
 	    vec.add("") ;
@@ -217,7 +217,7 @@ public class MetaDataParser {
 	    vec.add("#date_created#") ;
 	    vec.add(date_created.substring(0,date_created.indexOf(' '))) ;
 	    vec.add("#created_time#") ;
-	    vec.add(date_created.substring(date_created.indexOf(' ')+1)) ;
+	    vec.add(date_created.substring(date_created.indexOf(' ')+1,date_created.length()-5)) ;
 	} else {
 	    vec.add("#date_created#") ;
 	    vec.add("") ;
@@ -231,7 +231,7 @@ public class MetaDataParser {
 	    vec.add("#date_modified#") ;
 	    vec.add(date_modified.substring(0,date_modified.indexOf(' '))) ;
 	    vec.add("#modified_time#") ;
-	    vec.add(date_modified.substring(date_modified.indexOf(' ')+1)) ;
+	    vec.add(date_modified.substring(date_modified.indexOf(' ')+1,date_modified.length()-5)) ;
 	} else {
 	    vec.add("#date_modified#") ;
 	    vec.add("") ;

@@ -20,7 +20,7 @@ public class Document {
     private String image ;
     private String target ;
     private String filename ;
-    private boolean editable ;
+   
 
     /**
      * Get the value of metaId.
@@ -230,20 +230,6 @@ public class Document {
 	this.filename = v;
     }
     
-    /**
-     * Get the value of editable.
-     * @return value of editable.
-     */
-    public boolean isEditable() {
-	return editable;
-    }
-    
-    /**
-     * Set the value of editable.
-     * @param v  Value to assign to editable.
-     */
-    public void setEditable(boolean  v) {
-	this.editable = v;
-    }
+   
 
 }
