@@ -39,7 +39,7 @@ public class QuestionEngine extends HttpServlet
 		
 		//check if files exists
 		File currentFile = new File(fortune_path , inFile + "enkatcurrent.txt");
-		if (currentFile.createNewFile())
+		if (currentFile.createNewFile() || (IMCServiceRMI.getFortune(imcServer,inFile + "enkatcurrent.txt") ).length() <= 12)
 		{
 			//om filen inte fanns, skapa den och skriv in aktuell text
 			question = this.getNewQuestion(host,imcServer,inFile);
