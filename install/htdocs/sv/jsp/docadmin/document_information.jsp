@@ -230,13 +230,45 @@ imcmsGui("mid", null);
                 Arrays.sort(categoryTypes) ;
                 for ( int i = 0; i < categoryTypes.length; i++ ) {
                     CategoryTypeDomainObject categoryType = categoryTypes[i] ;
+                    if( !categoryType.hasImages() ) {%>
+                        <div style="float: left; margin: auto 1em 1ex auto;">
+                        <a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>"
+                            target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
+                        <select name="categories"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
+                            <%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
+                        </select>
+                    <%
+                    }
                     %>
-                    <div style="float: left; margin: auto 1em 1ex auto;">
-                    <a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>"
-                        target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
-                    <select name="categories"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
-                        <%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
-                    </select>
+                    </div>
+                    <%
+                }
+                for ( int i = 0; i < categoryTypes.length; i++ ) {
+                    CategoryTypeDomainObject categoryType = categoryTypes[i] ;
+                    if( categoryType.hasImages() ) {
+                        %>
+                        <div style="float: left; margin: auto 1em 1ex auto;">
+                        <a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>"
+                            target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br>
+                        <%
+
+                        boolean radioButton = categoryType.getMaxChoices() == 1;
+                        String typeStr = radioButton?"radio":"checkbox";
+                        CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType(categoryType);
+                        Set selectedValuesSet = new HashSet( Arrays.asList(documentSelectedCategories) );
+                        CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType(categoryType);
+                        for (int k = 0; k < categories.length; k++) {
+                            CategoryDomainObject category = categories[k];
+                            boolean checked = selectedValuesSet.contains(category);
+                            String checkedStr = checked?"checked":"";
+                            boolean hasImage = !category.getImage().equals("");
+                            String imageStr = hasImage?"<img src=\"" + category.getImage() + "\"/>":"";
+                            %>
+                                <input name="categories" type="<%=typeStr%>" value="<%=category.getId()%>" <%=checkedStr%> > <%=imageStr%> <%=category.getName()%><br>
+                            <%
+                        }
+                    }
+                    %>
                     </div>
                     <%
                 }

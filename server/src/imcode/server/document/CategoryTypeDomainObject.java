@@ -1,5 +1,7 @@
 package imcode.server.document;
 
+import imcode.server.ApplicationServer;
+
 /**
  * @author kreiger
  */
@@ -54,5 +56,18 @@ public class CategoryTypeDomainObject implements Comparable {
 
     public int compareTo( Object o ) {
         return name.compareToIgnoreCase( ((CategoryTypeDomainObject)o).name) ;
+    }
+
+    public boolean hasImages() {
+        CategoryDomainObject[] categories = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllCategoriesOfType(this);
+        boolean hasImages = false;
+        for (int i = 0; i < categories.length; i++) {
+            CategoryDomainObject category = categories[i];
+            if( !"".equals(category.getImage()) ) {
+                hasImages = true;
+                break;
+            }
+        }
+        return hasImages;
     }
 }
