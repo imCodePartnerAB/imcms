@@ -45,7 +45,7 @@ if (inDefaultMode) {
 <head>
 <title><? templates/sv/AdminManager_adminTask_element.htm/17 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/css/imcms_admin.css.jsp">
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>

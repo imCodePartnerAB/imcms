@@ -168,7 +168,7 @@ public class AdminCategories extends HttpServlet {
         } else if ( null != req.getParameter( PARAMETER__ADD_CATEGORY_BUTTON ) && StringUtils.isNotBlank( newCategory.getName() ) ) {
             if ( !categoryTypeToAddTo.hasCategoryWithName( newCategory.getName() ) ) {
                 documentMapper.addCategoryToDb( newCategory.getType().getId(), newCategory.getName(), newCategory.getDescription(), newCategory.getImageUrl() );
-                adminCategoriesPage.setCategoryToEdit( new CategoryDomainObject( 0, "", "", "", null ) );
+                adminCategoriesPage.setCategoryToEdit( new CategoryDomainObject( 0, null, "", "", null ) );
                 adminCategoriesPage.setUniqueCategoryName( true );
             }
         }
