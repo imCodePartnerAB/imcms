@@ -60,6 +60,7 @@ public class ChatBase extends HttpServlet {
 		Properties chatP = new Properties();
 		
 		String chatName = (req.getParameter("chatName")==null) ? "" : (req.getParameter("chatName"));
+		String permission = (req.getParameter("permission")==null) ? "3" : (req.getParameter("permission"));
 		String updateTime = ( req.getParameter("updateTime")==null ) ? "30" : (req.getParameter("updateTime"));		
 		String reload = (req.getParameter("reload")==null ) ? "2" :(req.getParameter("reload"));
 		String inOut = (req.getParameter("inOut")==null ) ? "2" :(req.getParameter("inOut"));
@@ -69,6 +70,7 @@ public class ChatBase extends HttpServlet {
 		String font = (req.getParameter("font")==null ) ? "2" :(req.getParameter("font"));
 
 		chatP.setProperty("chatName", chatName.trim());
+		chatP.setProperty("permission",permission.trim());
 		chatP.setProperty("updateTime",updateTime);
 		chatP.setProperty("reload",reload.trim());
 		chatP.setProperty("inOut",inOut.trim());
@@ -1258,6 +1260,14 @@ if(lastLoginDate == null)
 	{
 		String id = Integer.toString(chatId);
 		return ChatHolder.getAChat(id);
+		
+		
+	}
+	
+	public Enumeration getAllChats()
+	{
+		Enumeration chatE = ChatHolder.getAllTheChats();
+		return chatE;
 	}
 	
 } // End class
