@@ -1451,9 +1451,9 @@ where sort_by_id = 3 AND lang_id = 2
 -- 2004-01-14 Hasse
 
 update  languages set lang_prefix = 'swe' where lang_prefix = 'se'
-update  languages set user_prefix = 'swe' where lang_prefix = 'se'
+update  languages set user_prefix = 'swe' where user_prefix = 'se'
 update  languages set lang_prefix = 'eng' where lang_prefix = 'en'
-update  languages set user_prefix = 'eng' where lang_prefix = 'en'
+update  languages set user_prefix = 'eng' where user_prefix = 'en'
 
 update lang_prefixes set lang_prefix ='swe' where lang_prefix = 'se'
 update lang_prefixes set lang_prefix ='eng' where lang_prefix = 'en'
