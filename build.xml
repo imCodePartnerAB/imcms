@@ -1,18 +1,28 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+
+<!-- The Ant 'build.xml'-file for imCMS -->
+
 <project name="imCMS" default="dist" basedir=".">
 
-  <property name="build"          value="./build"/>
-  <property name="doc"            value="./doc"/>  
+  <!-- Paths. Later ones are built on earlier ones. -->
+  
+  <!-- The directory to build in. -->
+  <property name="build"          value="${basedir}/build"/>
 
+  <!-- Where to put generated documentation -->
+  <property name="doc"            value="${basedir}/doc"/>  
+
+  <!-- The webroot. Everything put here can be seen by any visitor. -->
   <property name="webroot"        value="${build}"/>
 
   <property name="images"         value="${webroot}/images"/>
   <property name="login"          value="${webroot}/login"/>
   <property name="css"            value="${webroot}/css"/>
   <property name="user"           value="${webroot}/user"/>
-
-
-
   <property name="adminbuttons"   value="${webroot}/admin"/>
+
+
+  <!-- 'WEB-INF' - Everything put here is private to the webapp -->
   <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
 
   <property name="conf"           value="${WEB-INF}/conf"/>
@@ -24,82 +34,127 @@
   <property name="uploads"        value="${WEB-INF}/uploads"/>
   <property name="logs"           value="${WEB-INF}/logs"/>
 
-
+  <!-- The language to install for, and where to install from and to. -->
   <property name="language"	  value="se"/>
   <property name="srclanguage"	  value="sv"/>
-  
   <property name="languagetemplates" value="${templates}/${language}"/>
 
+  <!-- Paths for templates for the plugins -->
   <property name="conference-templates" value="${languagetemplates}/102"/>
   <property name="chat-templates"       value="${languagetemplates}/103"/>
   <property name="billboard-templates"  value="${languagetemplates}/104"/>
   <property name="postcard-templates"   value="${languagetemplates}/105"/>
   <property name="fortune-templates"    value="${languagetemplates}/106"/>
 
-
+  <!-- Paths for other templates -->
   <property name="admintemplates" value="${languagetemplates}/admin"/>
   <property name="texttemplates"  value="${templates}/text"/>
   <property name="demotemplates"  value="${texttemplates}/demo"/>
 
-  <property name="debug" value="on"/>
+  <!--
+    Read in 'build.properties' and set the properties therein.
+    Those properties are used as bases for later properties in this file.
+  -->
+  <property name="build.properties"     value="build.properties"/>
+  <property file="${build.properties}"/>
 
-  <property file="build.properties"/>
-
-  <property name="webappname"     value="imcms"/>
-    
-  <property name="rooturl"	  value="/${webappname}"/>
-
+  <!-- URIs -->
   <property name="servleturl"     value="${rooturl}/servlet"/>
   <property name="loginurl"       value="${rooturl}/login"/>
   <property name="imageurl"       value="${rooturl}/images"/>
   <property name="adminbuttonsurl" value="${rooturl}/admin"/>
 
+
+  <!-- Filenames -->
   <property name="wardist" value="${webappname}.war"/>
 
   <property name="dist-sql" value="${webappname}.sql"/>
   <property name="sprocs-sql" value="sprocs.sql"/>
   <property name="help-sql" value="help.sql"/>
   
+  <!-- Where to install imCMS -->
   <property name="webapproot" value="${deployroot}/${webappname}"/>
 
+
+  <!-- A handy target to have everything else depend on, just in case. -->
   <target name="init"
-          description="Handy target for anything to depend on."
-	  if="fail">
+          depends="check-build-properties,fail-build-properties"
+          description="Handy target for everything else to depend on.">
+
+    <tstamp/>
+
+  </target>
+
+
+  <!-- Checks that build.properties exists. -->
+  <target name="check-build-properties"
+          description="Checks that ${build.properties} exists.">
+
+    <available file="${build.properties}" property="build-properties-exists"/>
+
+  </target>
+
+
+  <!-- Fail unless build.properties exists. -->
+  <target name="fail-build-properties"
+          description="Checks that ${build.properties} exists."
+	  unless="build-properties-exists">
+
     <fail>
-      Edit build.properties!
+      Copy '${build.properties}.template' to '${build.properties}' and edit it!
+      (See INSTALL.TXT for details.)
     </fail>
 
   </target>
 
+  <!-- Checks that 'deployroot' is set. -->
+  <target name="check-deployroot"
+          description="Checks that deployroot is set."
+          unless="deployroot">
+
+    <fail message="Set 'deployroot' in '${build.properties}'!"/>
+
+  </target>
+
+
+  <!-- Checks that 'webappname' is set. -->
+  <target name="check-webappname"
+          description="Checks that webappname is set."
+          unless="webappname">
+
+    <fail>
+      Set "webappname" in "${build.properties}"!
+    </fail>
+	  
+  </target>
+
+
+  <!-- Build the war-file -->
   <target name="dist"
-          depends="build"
+          depends="init,build,check-webappname"
           description="Packages a complete distribution.">
 
-    <jar jarfile="${wardist}"
-         basedir="build"/>
+    <war warfile="${wardist}"
+         basedir="build"
+	 excludes="${WEB-INF}/web.xml"
+	 webxml="install/web.xml"/>
 
-    <echo> Done packaging distribution '${wardist}'. </echo>
+    <echo>Done packaging distribution '${wardist}'.</echo>
+
+    <echo>Using ${ant.version} with JVM ${ant.java.version}.</echo>
 
   </target>
 
+
+  <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
   <target name="build"
-          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help-images,fortune-templates"
+          depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,sql"
 	  description="Builds everything.">
 
-    <copy file="install/web.xml" todir="${WEB-INF}"/>
-
   </target>
 
-  <target name="install-war" depends="dist" description="Copies the WAR-package into the deployroot.">
-    <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
-  </target>
 
-  <target name="install" depends="build" description="Copies the webapp directly into the webapp-directory in the deployroot.">
-    <copy todir="${webapproot}">
-      <fileset dir="${build}"/>
-    </copy>
-  </target>
-
+  <!-- Delete everything built by the 'build'-target. -->
   <target name="clean" description="Deletes everything for a fresh start.">
     <delete dir="${build}"/>
     <delete>
@@ -107,6 +162,29 @@
     </delete>
   </target>
 
+
+  <!-- Install the war-file -->
+  <target name="install-war" depends="init,dist,check-deployroot,check-webappname" description="Copies the WAR-package into the deployroot.">
+    <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
+  </target>
+
+
+  <!-- Install the webapp, bypassing the war-file -->
+  <target name="install" depends="init,build,check-deployroot" description="Copies the webapp directly into the webapp-directory in the deployroot.">
+    <copy todir="${webapproot}">
+      <fileset dir="${build}"/>
+    </copy>
+  </target>
+
+
+  <!-- Delete an installed webapp -->
+  <target name="uninstall" depends="check-deployroot,check-webappname" description="Removes the installed files from the deployroot, including the war-file.">
+    <delete dir="${webapproot}"/>
+    <delete file="${deployroot}/${wardist}"/>
+  </target>
+
+
+  <!-- Generate documentation -->
   <target name="doc"
           depends="init"
 	  description="Generates javadoc.">
@@ -130,14 +208,18 @@
     </javadoc>
   </target>
 
+
+  <!-- Build extra tools (like ant-tasks) needed for building. -->
   <target name="tools">
     <ant dir="tools"/>
   </target>
 
-  <target name="sql" depends="tools" description="Concatenates the SQL-scripts into one large script.">
+
+  <!-- Generates the sql-scripts -->
+  <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
     <taskdef name="cat" classname="Cat" classpath="tools"/>
     <cat destfile="${dist-sql}" orderby="path">
-	<fileset dir="sql/index"/>
+      <fileset dir="sql/index"/>
       <fileset dir="sql/tables" includes="tables.ascii.sql"/>
       <fileset dir="sql/sprocs"/>
       <fileset dir="sql/data" includes="types.sql"/>
@@ -149,12 +231,18 @@
     <copy file="sql/help/help.sql" tofile="${help-sql}"/>
   </target>
 
+
+  <!-- Builds the 'non-servlets'. -->
   <target name="server"
 	  depends="init,dir"
           description="Builds the server and utility classes.">
 
     <mkdir dir="${classes}"/>
-    <javac srcdir="server/src" destdir="${classes}" debug="${debug}">
+    <javac srcdir="server/src"
+           destdir="${classes}"
+	   debug="${debug}"
+	   optimize="${optimize}"
+	   deprecation="${deprecation}">
       <classpath>
         <pathelement path="${classes}"/>
 	  <fileset dir="install/lib">
@@ -165,6 +253,8 @@
 
   </target>
 
+
+  <!-- Builds the servlets. -->
   <target name="servlets" 
           depends="init,server"
           description="Builds the servlets.">
@@ -174,7 +264,9 @@
            destdir="${classes}"
            includes="*.java"
            classpath="${classes}"
-	   debug="${debug}">
+	   debug="${debug}"
+	   optimize="${optimize}"
+	   deprecation="${deprecation}">
 
       <classpath>
         <pathelement path="${classes}"/>
@@ -187,6 +279,8 @@
 
   </target>
 
+
+  <!-- Copies the libraries (jar-files) needed for building. -->
   <target name="libraries"
           depends="init,dir"
 	  description="Copies the jar-files.">
@@ -197,6 +291,8 @@
 
   </target>
 
+
+  <!-- Copies and filters the config-files with the correct properties. -->
   <target name="conf"
           depends="init"
           description="Builds the config-directory.">
@@ -229,6 +325,8 @@
     </copy>
   </target>
 
+
+  <!-- Creates the directories and copies the files that are to be public. -->
   <target name="web"
           depends="init"
           description="Creates the public web">
@@ -272,6 +370,8 @@
 
   </target>
 
+
+  <!-- Copies and filters all non-plugin templates. -->
   <target name="templates"
           depends="init,dir"
 	  description="Copies the templates.">
@@ -329,6 +429,8 @@
 
   </target>
 
+
+  <!-- Create some empty directories that will be used by imCMS. -->
   <target name="dir"
           depends="init"
           description="Creates some empty directories necessary for imCMS.">
@@ -338,11 +440,16 @@
     <mkdir dir="${logs}"/>
   </target>
 
+
+  <!-- Builds the 'conference'-plugin. -->
   <target name="conference"
           depends="init,conference-servlets,conference-templates,conference-images"
 	  description="Builds the conference."/>
 
+
+  <!-- The conference-servlets. -->
   <target name="conference-servlets" 
+
           depends="init,server"
           description="Builds the conference-servlets.">
 
@@ -351,7 +458,9 @@
            destdir="${classes}"
            includes="*.java"
            classpath="${classes}"
-	   debug="${debug}">
+	   debug="${debug}"
+	   optimize="${optimize}"
+	   deprecation="${deprecation}">
 
       <classpath>
         <pathelement path="${classes}"/>
@@ -363,6 +472,8 @@
 
   </target>
 
+
+  <!-- The conference-templates. -->
   <target name="conference-templates"
           depends="init"
 	  description="Copies the conference-templates.">
@@ -371,6 +482,8 @@
     </copy>
   </target>
 
+
+  <!-- The conference-images. -->
   <target name="conference-images"
           depends="init,conference-templates"
 	  description="Copies the conference-images.">
@@ -379,10 +492,14 @@
     </copy>
   </target>
 
+
+  <!-- Builds the 'chat'-plugin. -->
   <target name="chat"
           depends="init,chat-servlets,chat-templates"
 	  description="Builds the chat."/>
 
+
+  <!-- The chat-servlets -->
   <target name="chat-servlets" 
           depends="init,server"
           description="Builds the chat-servlets.">
@@ -392,7 +509,9 @@
            destdir="${classes}"
            includes="*.java"
            classpath="${classes}"
-	   debug="${debug}">
+	   debug="${debug}"
+	   optimize="${optimize}"
+	   deprecation="${deprecation}">
 
       <classpath>
         <pathelement path="${classes}"/>
@@ -404,6 +523,8 @@
 
   </target>
 
+
+  <!-- The chat-templates. -->
   <target name="chat-templates"
           depends="init"
 	  description="Copies the chat-templates.">
@@ -415,10 +536,14 @@
     </copy>
   </target>
 
+
+  <!-- Builds the 'billboard'-plugin. -->
   <target name="billboard"
           depends="init,billboard-servlets,billboard-templates,billboard-images"
 	  description="Builds the billboard."/>
 
+
+  <!-- The billboard-servlets. -->
   <target name="billboard-servlets" 
           depends="init,server"
           description="Builds the billboard-servlets.">
@@ -428,7 +553,9 @@
            destdir="${classes}"
            includes="*.java"
            classpath="${classes}"
-	   debug="${debug}">
+	   debug="${debug}"
+	   optimize="${optimize}"
+	   deprecation="${deprecation}">
 
       <classpath>
         <pathelement path="${classes}"/>
@@ -440,6 +567,8 @@
 
   </target>
 
+
+  <!-- The billboard-templates. -->
   <target name="billboard-templates"
           depends="init"
 	  description="Copies the billboard-templates.">
@@ -451,6 +580,8 @@
     </copy>
   </target>
 
+
+  <!-- The billboard-images. -->
   <target name="billboard-images"
           depends="init,billboard-templates"
 	  description="Copies the billboard-images.">
@@ -459,10 +590,14 @@
     </copy>
   </target>
 
+
+  <!-- Builds the 'postcard'-plugin. -->
   <target name="postcard"
           depends="init,postcard-templates"
 	  description="Builds the postcard."/>
 
+
+  <!-- The postcard-templates. -->
   <target name="postcard-templates"
           depends="init"
 	  description="Copies the postcard-templates.">
@@ -470,6 +605,13 @@
       <fileset dir="templates/${srclanguage}/postcard"/>
     </copy>
   </target>
+
+
+  <!-- Copies the files for the online-help. -->
+  <target name="help" depends="init,help-images"/>
+
+
+  <!-- The images for the online-help. -->
   <target name="help-images"
 	depends="init,web"
 	description="Copies the help-images.">
@@ -477,12 +619,19 @@
        	<fileset dir="install/htdocs/imcms/helpimages" includes="*"/>
     </copy>
   </target>
+
+
+  <!-- Copies the files for the 'fortune'-plugin. -->
+  <target name="fortune" depends="init,fortune-templates"/>
+
+
+  <!-- The fortune-templates.-->
   <target name="fortune-templates"
 	depends="init,web"
  	description="Copies the fortune-templates.">
 	<copy todir="${fortune-templates}">
 	  <fileset dir="templates/${srclanguage}/fortunes"/>
 	</copy>
-	</target>	
+  </target>	
 
 </project>

@@ -1,0 +1,64 @@
+# This is the properties-file for building imCMS with ant.
+# You just have to fill in the blanks.
+# You shouldn't change any defaults unless you know what you are doing.
+
+
+# The deployment directory (parent of the webapp directory).
+# Do *not* use back-slashes ('\'). Use forward-slashes ('/').
+# You only need this if you want to use "ant install" and "ant install-war".
+
+deployroot = 
+
+
+# Database parameters for the main database.
+
+db-host = 
+db-port = 1433
+db-name = 
+db-user = 
+db-pass = 
+db-timeout = 30
+db-maxconnections = 20
+
+
+# The parameters for the database used by the plugins.
+
+plugin-db-host = 
+plugin-db-port = 1433
+plugin-db-name = 
+plugin-db-user = 
+plugin-db-pass = 
+plugin-db-timeout = 30
+plugin-db-maxconnections = 20
+
+
+# The smtp-server used for sending mails.
+
+smtp-server = 
+
+
+# The name of the webapp. Used for filenames and URIs.
+
+webappname = imcms
+
+
+# The root-URI of the webapp, relative to the server root-URI (/).
+
+rooturl = /${webappname}
+
+
+# Whether the build should be optimized or not.
+# Warning: Turning this on may remove the version control constants from the class-files.
+
+optimize = off
+
+
+# Whether to leave debug info in or not.
+# Warning: Turning this off may remove the version control constants from the class-files.
+
+debug = on
+
+
+# Whether to compile with deprecation warnings on or not.
+
+deprecation = on

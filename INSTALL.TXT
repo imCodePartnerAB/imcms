@@ -1,0 +1,55 @@
+Building and install imCMS:
+
+
+Prerequisites:
+    1. Install Java Development Kit 1.3 or later.
+
+    2. Install Apache Tomcat,
+       or another servlet-api 2.2 (or later) compatible servlet engine.
+
+    3. Install Apache Ant.
+
+    4. Create an empty database.
+
+
+Building:
+    5. Copy "build.properties.template" to "build.properties".
+       Edit "build.properties" and insert the proper values 
+       for your deployroot, your database connection,
+       your imCMS-preferences, and your build-preferences.
+
+    6. Run "ant dist" (or just "ant", since "dist" is the default) in this directory.
+       This will build imCMS in the "build"-directory
+       and generate a file named "imcms.war" in this directory.
+
+       This will also generate a file named "imcms.sql" in this directory.
+       Run "imcms.sql" on the empty database to create an imCMS-database.
+
+    (For more possible ant-targets, run "ant -projecthelp".)
+
+
+Installing:
+    7. If you inserted a value for "deployroot" in "build.properties", do A, otherwise do B.
+
+	A. Run "ant install-war" to have ant install the war-file for you.
+
+	B. Copy the war-file manually to the webapp-deployment directory
+	   for your servlet engine. (For Tomcat, "webapps".)
+
+
+        (Advanced: If you inserted a value for "deployroot"
+	  you may also use "ant install".
+          This will skip the war-file
+	  and copy the "build"-directory directly.
+          This way no unpacking of the war-file is needed.)
+
+
+Running:
+    8. Start your servlet engine.
+       The servlet engine will find the war-file you installed, and unpack it.
+       Try logging in at " http://localhost:8080/imcms/login/ ".
+       (Replace "localhost:8080" with whatever hostname and port your servlet engine is running on.)
+
+
+You're done!
+
