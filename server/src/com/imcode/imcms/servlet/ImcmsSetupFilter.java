@@ -63,7 +63,7 @@ public class ImcmsSetupFilter implements Filter {
 
         long ip = Utility.ipStringToLong( remote_ip );
 
-        // FIXME: Remove this sql-abomination!
+        // Todo: Remove this sql-abomination!
         String sqlStr;
         sqlStr = "select distinct login_name,login_password,ip_access_id from users,user_roles_crossref,ip_accesses\n";
         sqlStr += "where user_roles_crossref.user_id = ip_accesses.user_id\n";

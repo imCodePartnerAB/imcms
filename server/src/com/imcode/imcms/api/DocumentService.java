@@ -19,10 +19,10 @@ public class DocumentService {
         Document result ;
 
         if (document instanceof TextDocumentDomainObject) {
-                result = new TextDocument( document, service, securityChecker, this, documentMapper,
+                result = new TextDocument( (TextDocumentDomainObject)document, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
         } else if (document instanceof UrlDocumentDomainObject) {
-                result = new UrlDocument( document, service, securityChecker, this, documentMapper,
+                result = new UrlDocument( (UrlDocumentDomainObject)document, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
         } else {
                 result = new Document( document, service, securityChecker, this, documentMapper,
@@ -31,7 +31,7 @@ public class DocumentService {
         return result;
     }
 
-  
+
     public DocumentService(IMCServiceInterface service, SecurityChecker securityChecker, DocumentMapper documentMapper,
                            DocumentPermissionSetMapper documentPermissionSetMapper,
                            UserAndRoleMapper userAndRoleMapper) {
@@ -83,7 +83,7 @@ public class DocumentService {
     public UrlDocument createNewUrlDocument( int parentId, int parentMenuNumber )  throws NoPermissionException {
         securityChecker.hasEditPermission( parentId );
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        DocumentDomainObject newDoc = documentMapper.createNewUrlDocument( user, parentId, parentMenuNumber, DocumentDomainObject.DOCTYPE_URL, "", "" );
+        UrlDocumentDomainObject newDoc = documentMapper.createNewUrlDocument( user, parentId, parentMenuNumber, DocumentDomainObject.DOCTYPE_URL, "", "" );
         UrlDocument result = new UrlDocument( newDoc, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
         return result;
@@ -92,7 +92,7 @@ public class DocumentService {
     public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) throws NoPermissionException {
         securityChecker.hasEditPermission( parentId );
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, DocumentDomainObject.DOCTYPE_TEXT, parentMenuNumber );
+        TextDocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, DocumentDomainObject.DOCTYPE_TEXT, parentMenuNumber );
         TextDocument result = new TextDocument( newDoc, service, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
         return result;

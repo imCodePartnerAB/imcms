@@ -131,7 +131,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
          * Create a text for a text-page.
          *
          * @param text The text
-         * @param type The type of the text. Either
+         * @param type The type of the text.
          */
         public Text( String text, int type ) {
             setText( text );

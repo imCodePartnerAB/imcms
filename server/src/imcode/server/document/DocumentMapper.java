@@ -156,7 +156,7 @@ public class DocumentMapper {
         return newMetaId;
     }
 
-    public synchronized DocumentDomainObject createNewTextDocument( UserDomainObject user, int parentId,
+    public synchronized TextDocumentDomainObject createNewTextDocument( UserDomainObject user, int parentId,
                                                                     int documentType, int parentMenuNumber ) {
         int newMetaId = createNewMeta( parentId, parentMenuNumber, documentType, user );
 
@@ -164,17 +164,17 @@ public class DocumentMapper {
         DocumentMapper.copyTemplateData( service, user, String.valueOf( parentId ), String.valueOf( newMetaId ) );
         DocumentMapper.sqlUpdateDocumentActivated( service, newMetaId, true );
 
-        return getDocument( newMetaId );
+        return (TextDocumentDomainObject) getDocument( newMetaId );
     }
 
-    public DocumentDomainObject createNewUrlDocument( UserDomainObject user, int parentId, int parentMenuNumber,
+    public UrlDocumentDomainObject createNewUrlDocument( UserDomainObject user, int parentId, int parentMenuNumber,
                                                       int documentType, String urlRef, String target ) {
         int newMetaId = createNewMeta( parentId, parentMenuNumber, documentType, user );
 
         DocumentDomainObject document = getDocument( newMetaId );
         touchDocument( document );
         insertIntoUrlDocs( service, newMetaId, urlRef, target );
-        return document;
+        return (UrlDocumentDomainObject)document;
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
 import imcode.server.document.UrlDocumentDomainObject;
@@ -15,7 +14,7 @@ import imcode.server.IMCServiceInterface;
  * To change this template use File | Settings | File Templates.
  */
 public class UrlDocument extends Document {
-    public UrlDocument(DocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
+    public UrlDocument(UrlDocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
         super(document, service, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
     }
 

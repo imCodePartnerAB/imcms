@@ -8,14 +8,14 @@ import java.util.*;
 
 public class TextDocument extends Document {
 
-    TextDocument(DocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
+    TextDocument(TextDocumentDomainObject document, IMCServiceInterface service, SecurityChecker securityChecker, DocumentService documentService, DocumentMapper documentMapper, DocumentPermissionSetMapper documentPermissionSetMapper, UserAndRoleMapper userAndRoleMapper) {
         super(document, service, securityChecker, documentService, documentMapper, documentPermissionSetMapper, userAndRoleMapper);
     }
 
     public TextField getTextField(int textFieldIndexInDocument) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
         TextDocumentDomainObject.Text imcmsText = documentMapper.getTextField(internalDocument, textFieldIndexInDocument);
-        TextField textField = new TextField(imcmsText, this);
+        TextField textField = new TextField(imcmsText);
         return textField;
     }
 
@@ -30,10 +30,7 @@ public class TextDocument extends Document {
     private void setTextField(int textFieldIndexInDocument, String newText, int textType) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
         TextDocumentDomainObject.Text imcmsText = new TextDocumentDomainObject.Text(newText, textType);
-        this.documentMapper.saveText(imcmsText,
-                internalDocument, textFieldIndexInDocument,
-                super.securityChecker.getCurrentLoggedInUser(),
-                String.valueOf(textType));
+        ((TextDocumentDomainObject)internalDocument).setText( textFieldIndexInDocument, imcmsText);
     }
 
     public void setImage(int imageIndexInDocument, String image_src, String image_name,
@@ -160,26 +157,22 @@ public class TextDocument extends Document {
 
     public static class TextField {
         TextDocumentDomainObject.Text imcmsText;
-        private TextDocument document;
 
-        private TextField(TextDocumentDomainObject.Text imcmsText, TextDocument document) {
+        private TextField(TextDocumentDomainObject.Text imcmsText) {
             this.imcmsText = imcmsText;
-            this.document = document;
         }
 
         /**
          * Set the format of the text in this textfield to HTML. (Should not be html-formatted.)
          */
-        public void setHtmlFormat() throws NoPermissionException {
-            document.securityChecker.hasEditPermission(document.getId());
+        public void setHtmlFormat() {
             this.imcmsText.setType(TextDocumentDomainObject.Text.TEXT_TYPE_HTML);
         }
 
         /**
          * Set the format of the text in this textfield to plain text. (Should be html-formatted.)
          */
-        public void setPlainFormat() throws NoPermissionException {
-            document.securityChecker.hasEditPermission(document.getId());
+        public void setPlainFormat() {
             this.imcmsText.setType(TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN);
         }
 
@@ -188,8 +181,7 @@ public class TextDocument extends Document {
          *
          * @return the text of this textfield.
          */
-        public String getText() throws NoPermissionException {
-            document.securityChecker.hasAtLeastDocumentReadPermission(document);
+        public String getText() {
             if (null != imcmsText) {
                 return imcmsText.getText();
             } else {
@@ -203,8 +195,7 @@ public class TextDocument extends Document {
          *
          * @return the text of this textfield as a html-formatted string, suitable for displaying in a html-page.
          */
-        public String getHtmlFormattedText() throws NoPermissionException {
-            document.securityChecker.hasAtLeastDocumentReadPermission(document);
+        public String getHtmlFormattedText() {
             if (null != imcmsText) {
                 return imcmsText.toHtmlString();
             } else {
