@@ -57,7 +57,7 @@ public class DocumentIndex {
         for ( int i = 0; i < hits.length(); ++i ) {
             int metaId = Integer.parseInt( hits.doc( i ).get( "meta_id" ) );
             DocumentDomainObject document = getDocument( getDocumentStopWatch, documentMapper, metaId );
-            if ( documentMapper.hasPermissionToSearchDocument( searchingUser, document ) ) {
+            if ( documentMapper.userHasPermissionToSearchDocument( searchingUser, document ) ) {
                 result.add( document );
             }
         }

@@ -171,7 +171,7 @@ public class DocumentComposer extends HttpServlet {
                 forwardToDocinfoPage( request, response, user );
             } else if ( null != document
                         && documentMapper.userHasMoreThanReadPermissionOnDocument( user, document )
-                    // FIXME: Needs more specific check for "edit"-permission.
+            // FIXME: Bug 2001: Needs more specific check for "edit"-permission.
             ) {
                 if ( ACTION__PROCESS_NEW_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
                     if ( null != request.getParameter( PARAMETER_BUTTON__OK ) ) {
@@ -350,7 +350,19 @@ public class DocumentComposer extends HttpServlet {
         try {
             if ( DocumentDomainObject.DOCTYPE_TEXT == documentTypeId ) {
                 newDocument = (DocumentDomainObject)parent.clone();
-                ( (TextDocumentDomainObject)newDocument ).removeAllTexts();
+                TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject)newDocument;
+                newTextDocument.removeAllTexts();
+                int permissionSetId = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
+                TemplateMapper templateMapper = service.getTemplateMapper() ;
+                TemplateDomainObject template = null ;
+                if ( IMCConstants.DOC_PERM_SET_RESTRICTED_1 == permissionSetId ) {
+                    template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetOne() );
+                } else if ( IMCConstants.DOC_PERM_SET_RESTRICTED_2 == permissionSetId ) {
+                    template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo() );
+                }
+                if (null != template) {
+                    newTextDocument.setTemplate( template ) ;
+                }
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
                 newDocument.setDocumentProperties( (DocumentDomainObject.DocumentProperties)parent.getDocumentProperties().clone() );

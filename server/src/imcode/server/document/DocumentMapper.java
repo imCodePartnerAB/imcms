@@ -151,7 +151,7 @@ public class DocumentMapper {
         return documentTypeIds;
     }
 
-    private int getUsersMostPrivilegedPermissionSetIdOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
+    public int getUsersMostPrivilegedPermissionSetIdOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
         Map rolesMappedToPermissionSetIds = parent.getRolesMappedToPermissionSetIds();
         RoleDomainObject[] usersRoles = user.getRoles();
         int mostPrivilegedPermissionSetIdFoundYet = IMCConstants.DOC_PERM_SET_NONE;
@@ -581,7 +581,7 @@ public class DocumentMapper {
         return getText( document.getId(), textFieldIndexInDocument );
     }
 
-    public boolean hasPermissionToSearchDocument( UserDomainObject searchingUser, DocumentDomainObject document ) {
+    public boolean userHasPermissionToSearchDocument( UserDomainObject searchingUser, DocumentDomainObject document ) {
         boolean searchingUserHasPermissionToFindDocument = false;
         if ( document.isSearchDisabled() ) {
             if ( searchingUser.isSuperAdmin() ) {
@@ -1562,11 +1562,14 @@ public class DocumentMapper {
     }
 
     void saveTextDocument( TextDocumentDomainObject textDocument ) {
-        String sqlStr = "UPDATE text_docs SET template_id = ?, sort_order = ?, group_id = ? WHERE meta_id = ?";
+        String sqlStr = "UPDATE text_docs SET template_id = ?, sort_order = ?, group_id = ?,\n"
+                        + "default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
             "" + textDocument.getTemplate().getId(),
             "" + textDocument.getMenuSortOrder(),
             "" + textDocument.getTemplateGroupId(),
+            "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
+            "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo(),
             "" + textDocument.getId()
         } );
 
