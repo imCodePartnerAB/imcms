@@ -160,7 +160,7 @@ public class GetExistingDoc extends HttpServlet {
                 sortBy = "meta_id";
              }
 
-             log("sortBy+ " + sortBy) ;
+             // log("sortBy+ " + sortBy) ;
 
              /*
 
