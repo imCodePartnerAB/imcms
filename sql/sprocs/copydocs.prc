@@ -354,9 +354,7 @@ DROP TABLE #documents
 
 update meta
    set 	date_created=getDate(),
-	date_modified=getDate(),
-	activated_datetime=null,
-	archived_datetime=null
+	date_modified=getDate()
    where meta_id=@copy_id
 GO
 SET QUOTED_IDENTIFIER OFF 
