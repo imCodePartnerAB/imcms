@@ -16,7 +16,9 @@ Image <%= imageIndex %> in document <%= documentId %> has content:<br>
     TextDocument document = documentService.getTextDocument(documentId) ;
     Image image = document.getImage(imageIndex) ;
 %>
-<% if( null != image ) { %>
+<% if( image.isEmpty() ) { %>
+    <%= "No image found at index " + imageIndex + " in document with id " + documentId %>
+<%} else { %>
     imageSrc = <%=image.getSrc()%><br>
     imageHeigth = <%=image.getHeight()%><br>
     imageWidth = <%=image.getWidth()%><br>
@@ -24,8 +26,6 @@ Image <%= imageIndex %> in document <%= documentId %> has content:<br>
     imageLinkTarget = <%=image.getLinkTarget()%><br>
     imageLinkHref = <%=image.getLinkHref()%><br>
     imageSrcUrl = <%=image.getSrcUrl()%><br>
-<%} else { %>
-    <%= "No image found at index " + imageIndex + " in document with id " + documentId %>
 <%}%>
 
 <br><br>

@@ -11,6 +11,7 @@ import java.util.*;
 import org.apache.commons.collections.*;
 import org.apache.commons.collections.functors.CloneTransformer;
 import org.apache.commons.collections.map.TransformedSortedMap;
+import org.apache.commons.lang.StringUtils;
 
 public class TextDocument extends Document {
 
@@ -27,7 +28,7 @@ public class TextDocument extends Document {
             public boolean evaluate(Object o) {
                 Map.Entry entry = (Map.Entry) o;
                 TextDomainObject tempTextField = (TextDomainObject) entry.getValue();
-                return !"".equals(tempTextField.getText());
+                return StringUtils.isNotEmpty(tempTextField.getText());
             }
         };
 
@@ -52,7 +53,7 @@ public class TextDocument extends Document {
             public boolean evaluate(Object o) {
                 Map.Entry entry = (Map.Entry) o;
                 ImageDomainObject tempImage = (ImageDomainObject) entry.getValue();
-                return !"".equals(tempImage.getUrl());
+                return StringUtils.isNotBlank(tempImage.getUrl());
             }
         };
 
@@ -169,9 +170,9 @@ public class TextDocument extends Document {
 
     public Image getImage(int imageIndexInDocument) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        ImageDomainObject imageDomainObject = getInternalTextDocument().getImage(imageIndexInDocument);
-        if (null != imageDomainObject) {
-            return new Image(imageDomainObject);
+        ImageDomainObject internalImage = getInternalTextDocument().getImage(imageIndexInDocument);
+        if (null != internalImage) {
+            return new Image(internalImage);
         } else {
             return null;
         }

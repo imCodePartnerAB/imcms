@@ -1,9 +1,3 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-maj-03
- * Time: 17:35:24
- */
 package imcode.server.document.textdocument;
 
 import imcode.util.ImcmsImageUtils;
@@ -22,23 +16,21 @@ import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 
 public class ImageDomainObject implements Serializable {
-    final static int NON_FILE_DOCUMENT_IMAGE_TYPE_ID = 0;
-    public final static int FILE_DOCUMENT_IMAGE_TYPE_ID = 1;
 
-    private int type; // se above, the url is a meta_id if FILE_DOCUMENT_IMAGE_TYPE is the type
-    private String url;
+    private int type;
+    private String url = "" ;
 
-    private String name;
+    private String name = "";
     private int width;
     private int height;
     private int border;
-    private String align;
-    private String alternateText;
-    private String lowResolutionUrl;
+    private String align = "" ;
+    private String alternateText = "";
+    private String lowResolutionUrl = "";
     private int verticalSpace;
     private int horizontalSpace;
-    private String target;
-    private String linkUrl;
+    private String target = "";
+    private String linkUrl = "";
 
     public String getUrl() {
         return url;

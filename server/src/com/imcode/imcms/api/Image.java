@@ -3,6 +3,7 @@ package com.imcode.imcms.api;
 import imcode.server.ApplicationServer;
 import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.ImageDomainObject;
+import org.apache.commons.lang.StringUtils;
 
 public class Image {
 
@@ -119,5 +120,9 @@ public class Image {
 
     public void setLinkHref( String link_href ) {
         internalImage.setLinkUrl( link_href );
+    }
+
+    public boolean isEmpty() {
+        return StringUtils.isBlank( internalImage.getUrl() ) ;
     }
 }
