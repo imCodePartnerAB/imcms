@@ -5,6 +5,8 @@ import javax.servlet.http.* ;
 
 public class Version extends HttpServlet implements FilenameFilter {
 
+    private final static String CVS_REV =  "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
     private final static String CVS_NAME = "$Name$" ;
     private final static String CVS_TAG = CVS_NAME.substring(CVS_NAME.indexOf(' ')+1,CVS_NAME.lastIndexOf(' ')) ;
 
