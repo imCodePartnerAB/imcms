@@ -989,7 +989,7 @@ public class DatabaseService {
      * @param meta_ids
      * @return meta_id's that is files
      */
-    public int[] sproc_CheckForFileDocs( int[] meta_ids ) {
+    int[] sproc_CheckForFileDocs( int[] meta_ids ) {
         String sql = "SELECT meta_id FROM meta WHERE doc_type = 8";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
@@ -1020,7 +1020,7 @@ public class DatabaseService {
      */
     // todo, se till att denna inte anropas direkt utan att man anropar metoder isUserAdmin och isSuperAdmin istället.
     // med admin_role satt till 1 resp 2.
-    public boolean sproc_checkUserAdminrole( int user_id, int admin_role ) {
+    boolean sproc_checkUserAdminrole( int user_id, int admin_role ) {
         String sql = "SELECT admin_role FROM user_roles_crossref " +
             "INNER JOIN roles ON user_roles_crossref.role_id = roles.role_id " +
             "WHERE (user_roles_crossref.user_id = ? ) AND (roles.admin_role = ? )";
@@ -1028,6 +1028,21 @@ public class DatabaseService {
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 return new Integer( rs.getInt("admin_role"));
+            }
+        } );
+        return queryResult.size() == 1;
+    }
+
+    // todo: Döp om till hasUserSharePemissionForDocument
+    boolean sproc_CheckUserDocSharePermission( int user_id, int meta_id ) {
+        String sql = "SELECT m.meta_id FROM meta m " +
+            "JOIN user_roles_crossref urc ON urc.user_id = ? AND m.meta_id = ? " +
+            "LEFT join roles_rights rr ON rr.meta_id = m.meta_id AND rr.role_id = urc.role_id " +
+            "WHERE ( shared = 1 OR	rr.set_id < 3 OR urc.role_id = 0 ) ";
+        Object[] parameterValues = new Object[]{ new Integer( user_id ), new Integer( meta_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, parameterValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer(rs.getInt("meta_id"));
             }
         } );
         return queryResult.size() == 1;

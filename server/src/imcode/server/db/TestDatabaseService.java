@@ -377,6 +377,17 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertFalse( mimer.sproc_CheckAdminRights( USER_ID ));
     }
 
+    public void test_sproc_CheckUserDocSharePermission() {
+        assertTrue( sqlServer.sproc_CheckUserDocSharePermission( 1, TEST_DOC_ID_FIRST ));
+        assertFalse( sqlServer.sproc_CheckUserDocSharePermission( 2, TEST_DOC_ID_FIRST ));
+
+        assertTrue( mySql.sproc_CheckUserDocSharePermission( 1, TEST_DOC_ID_FIRST ));
+        assertFalse( mySql.sproc_CheckUserDocSharePermission( 2, TEST_DOC_ID_FIRST ));
+
+        assertTrue( mimer.sproc_CheckUserDocSharePermission( 1, TEST_DOC_ID_FIRST ));
+        assertFalse( mimer.sproc_CheckUserDocSharePermission( 2, TEST_DOC_ID_FIRST ));
+    }
+
     public void test_sproc_checkUserAdminrole() {
         test_sproc_checkUserAdminrole( sqlServer );
         test_sproc_checkUserAdminrole( mySql );
