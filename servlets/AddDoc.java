@@ -198,7 +198,7 @@ public class AddDoc extends HttpServlet {
 		// Lets get the meta information
 		String sqlStr = "select * from meta where meta_id = "+meta_id ;
 		Hashtable hash = IMCServiceRMI.sqlQueryHash(imcserver,sqlStr) ;
-
+	
 		// Lets get the html template file
 
 		String htmlStr ;
@@ -215,11 +215,12 @@ public class AddDoc extends HttpServlet {
 		} else {
 			htmlStr = IMCServiceRMI.parseDoc(imcserver,null,advanced+"new_meta.html",lang_prefix ) ;
 		}
+	
 
 		Vector vec = new Vector () ;
 		String checks = "" ;
 		for ( int i = 0 ; i<metatable.length ; i+=2 ) {
-			String temp = ((String[])hash.get(metatable[i]))[0] ;
+			String temp = ( (String[])hash.get(metatable[i]) )[0] ;
 			String[] pd = {
 				"<",	"&lt;",
 				">",	"&gt;",
@@ -315,6 +316,41 @@ public class AddDoc extends HttpServlet {
 		vec.add(doc_type) ;
 //		vec.add("#owner#") ;
 //		vec.add(user.getString("first_name")+" "+user.getString("last_name")) ;
+
+
+		//**************** section index word stuff *****************
+		//lets get the section stuff from db
+		String[] parent_section = IMCServiceRMI.sqlProcedure(imcserver,"get_inherit_section_id "+meta_id) ;	
+		System.out.println("1 "+parent_section);
+		System.out.println("2 "+parent_section.length);
+		//lets add the stuff that ceep track of the inherit section id and name
+		if (parent_section == null || parent_section.length < 2 ) {
+			vec.add("#current_section_id#") ;	vec.add("-1") ;
+			vec.add("#current_section_name#") ;	vec.add(IMCServiceRMI.parseDoc(imcserver, null, MetaDataParser.SECTION_MSG_TEMPLATE, lang_prefix )) ; 
+		}else {			
+			vec.add("#current_section_id#") ;	vec.add(parent_section[0]) ;
+			vec.add("#current_section_name#") ;	vec.add(parent_section[1]) ;
+		}
+		
+		//lets build the option list used when the admin whants to breake the inherit chain
+		String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver,"get_all_sections") ;
+		Vector onlyTemp = new Vector();
+		String option_list = "";
+		String selected = "-1";
+		if (all_sections != null) {
+			for(int i=0; i<all_sections.length;i++) {
+				onlyTemp.add(all_sections[i]);
+			}
+			if (parent_section != null) {
+				if(parent_section.length > 0)  selected = parent_section[0];
+			}
+			 
+			option_list	= Html.createHtmlCode("ID_OPTION", selected, onlyTemp ) ;
+		}
+		vec.add("#section_option_list#"); vec.add(option_list);				
+		//**************** end section index word stuff *************
+		
+
 
   // Lets parse the information and send it to the browser
 		if (item_selected.equals ( "2" )) {

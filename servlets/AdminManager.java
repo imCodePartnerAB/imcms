@@ -103,6 +103,8 @@ public class AdminManager extends Administrator {
 	    url += "AdminConference" ;
 	} else if( whichButton.equalsIgnoreCase("AdminFortunes")) { 
 	    url += "AdminFortunes" ;
+	}else if( whichButton.equalsIgnoreCase("AdminSection")) { 
+	    url += "AdminSection" ;
 	} else {
 	    // Ok, were came here cause no valid argument was sent to us
 	    // Lets send the user back to the Get function.	

@@ -229,7 +229,20 @@ public class SaveNewMeta extends HttpServlet {
 
 		//lets log to mainLog the stuff done
 		mainLog.info(logdateFormat.format(new java.util.Date())+"Document [" +meta_id +"] of type ["+doc_type+"] created on ["+parent_meta_id+"] by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
-
+		
+		//ok lets handle the the section stuff save to db and so on
+		//lets start an see if we got any request to change the inherit one
+		String section_id = req.getParameter("change_section");
+		if (section_id == null) {
+			//ok it vas null so lets try and get the inherit one
+			section_id = req.getParameter("current_section_id");
+		}
+		//ok if we have one lets update the db
+		if (section_id != null) {
+			IMCServiceRMI.sqlUpdateProcedure(imcserver,"add_section_crossref " + meta_id +", " +section_id);
+		}
+				
+				
 	    // Here is the stuff we have to do for each individual doctype. All general tasks
 	    // for all documenttypes is done now.
 

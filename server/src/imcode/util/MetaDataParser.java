@@ -5,11 +5,14 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
+import imcode.external.diverse.* ;
 import imcode.util.* ;
 
 public class MetaDataParser {
 	private final static String CVS_REV="$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
+	
+	public final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
 
     /**
        parseMetaData collects the information for a certain meta_id from the db and
@@ -236,6 +239,36 @@ public class MetaDataParser {
 	if ( owner != null ) {
 	    vec.add(owner) ;
 	} else vec.add("?") ;
+	
+	//**************** section index word stuff *****************
+	//lets get the section stuff from db
+	String[] parent_section = IMCServiceRMI.sqlProcedure(imcserver,"get_inherit_section_id "+meta_id) ;	
+	
+	//lets add the stuff that ceep track of the inherit section id and name
+	if (parent_section == null || parent_section.length < 2 ) {
+		vec.add("#current_section_id#") ;	vec.add("-1") ;
+		vec.add("#current_section_name#") ;	vec.add(IMCServiceRMI.parseDoc(imcserver, null, SECTION_MSG_TEMPLATE, lang_prefix ) ) ; 
+	}else {			
+		vec.add("#current_section_id#") ;	vec.add(parent_section[0]) ;
+		vec.add("#current_section_name#") ;	vec.add(parent_section[1]) ;
+	}
+	
+	//lets build the option list used when the admin whants to breake the inherit chain
+	String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver,"get_all_sections") ;
+	Vector onlyTemp = new Vector();
+	String option_list = "";
+	String selected = "-1";
+	if (all_sections != null) {
+		for(int i=0; i<all_sections.length;i++) {
+			onlyTemp.add(all_sections[i]);
+		}
+		if (parent_section != null) {
+			if(parent_section.length > 0) selected = parent_section[0];
+		}
+		option_list	= Html.createHtmlCode("ID_OPTION", selected, onlyTemp ) ;
+	}
+	vec.add("#section_option_list#"); vec.add(option_list);				
+	//**************** end section index word stuff *************
 
 	// Lets fix the date_today tag
 	vec.add("#date_today#") ;

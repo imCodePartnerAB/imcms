@@ -358,6 +358,20 @@ public class SaveMeta extends HttpServlet {
 
 		// Update the date_modified for all parents.
 		IMCServiceRMI.sqlUpdateProcedure(imcserver, "UpdateParentsDateModified "+meta_id) ;
+		
+		///**************** section index word stuff *****************
+		//ok lets handle the the section stuff save to db and so on
+		//lets start an see if we got any request to change the inherit one
+		String section_id = req.getParameter("change_section");
+		if (section_id == null) {
+			//ok it vas null so lets try and get the inherit one
+			section_id = req.getParameter("current_section_id");
+		}
+		//ok if we have one lets update the db
+		if (section_id != null) {
+			IMCServiceRMI.sqlUpdateProcedure(imcserver,"add_section_crossref " + meta_id +", " +section_id);
+		}
+		//**************** end section index word stuff *************
 
 		// Let's split this joint!
 		byte[] tempbytes = AdminDoc.adminDoc(meta_id_int,meta_id_int,host,user,req,res) ;
