@@ -41,9 +41,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     private static final String SQL_SELECT_ALL_ROLES = "SELECT role_id, role_name, admin_role FROM roles";
     private static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
-    private static final String SQL_SELECT_ROLE_BY_ID = SQL_SELECT_ALL_ROLES + " WHERE role_id = ?";
-    private static final String SQL_SELECT_ALL_ROLES_EXCEPT_USERS = SQL_SELECT_ALL_ROLES + " WHERE role_id != "
-                                                                    + RoleDomainObject.USERS.getId();
 
     public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
         this.service = service;
@@ -109,10 +106,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         user.setActive( 0 != Integer.parseInt( sqlResult[15] ) );
         user.setCreateDate( sqlResult[16] );
         user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[17] ) );
-
-        setPhoneNumbersForUser( user );
-
-        user.setRoles( getRolesForUser( user ) );
     }
 
     private RoleDomainObject[] getRolesForUser( UserDomainObject user ) {
@@ -126,29 +119,6 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
             roles[i] = getRoleFromSqlResult( sqlRow );
         }
         return roles;
-    }
-
-    private void setPhoneNumbersForUser( UserDomainObject user ) {
-        String[][] phoneNbr = service.sqlProcedureMulti( SPROC_GET_USER_PHONE_NUMBERS,
-                                                         new String[]{"" + user.getId()} );
-        String workPhone = "";
-        String mobilePhone = "";
-        String homePhone = "";
-
-        if ( phoneNbr != null ) {
-            for ( int i = 0; i < phoneNbr.length; i++ ) {
-                if ( ( "2" ).equals( phoneNbr[i][3] ) ) {
-                    workPhone = phoneNbr[i][1];
-                } else if ( ( "3" ).equals( phoneNbr[i][3] ) ) {
-                    mobilePhone = phoneNbr[i][1];
-                } else if ( ( "1" ).equals( phoneNbr[i][3] ) ) {
-                    homePhone = phoneNbr[i][1];
-                }
-            }
-        }
-        user.setWorkPhone( workPhone );
-        user.setMobilePhone( mobilePhone );
-        user.setHomePhone( homePhone );
     }
 
     /**
@@ -396,5 +366,32 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
             users[i] = getUserFromSqlRow( sqlRows[i] );
         }
         return users;
+    }
+
+    public void initUserPhoneNumbers( UserDomainObject user ) {
+        String[][] phoneNbr = service.sqlProcedureMulti( SPROC_GET_USER_PHONE_NUMBERS,
+                                                         new String[]{"" + user.getId()} );
+        String workPhone = "";
+        String mobilePhone = "";
+        String homePhone = "";
+
+        if ( phoneNbr != null ) {
+            for ( int i = 0; i < phoneNbr.length; i++ ) {
+                if ( ( "2" ).equals( phoneNbr[i][3] ) ) {
+                    workPhone = phoneNbr[i][1];
+                } else if ( ( "3" ).equals( phoneNbr[i][3] ) ) {
+                    mobilePhone = phoneNbr[i][1];
+                } else if ( ( "1" ).equals( phoneNbr[i][3] ) ) {
+                    homePhone = phoneNbr[i][1];
+                }
+            }
+        }
+        user.setWorkPhone( workPhone );
+        user.setMobilePhone( mobilePhone );
+        user.setHomePhone( homePhone );
+    }
+
+    public void initUserRoles( UserDomainObject user ) {
+        user.setRoles( getRolesForUser( user ) );
     }
 }

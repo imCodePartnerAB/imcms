@@ -23,7 +23,7 @@ public class UserDomainObject extends Hashtable {
 
     private int id;
 
-    private class LazilyLoadedUserAttributes implements Serializable {
+    private static class LazilyLoadedUserAttributes implements Serializable {
 
         private String loginName;
         private String password;
@@ -37,9 +37,6 @@ public class UserDomainObject extends Hashtable {
         private String country = "";
         private String county_council = "";
         private String emailAddress = "";
-        private String workPhone = "";
-        private String mobilePhone = "";
-        private String homePhone = "";
         private int lang_id;
         private boolean active;
         private String create_date;
@@ -50,10 +47,22 @@ public class UserDomainObject extends Hashtable {
         private String loginType;
 
         private boolean imcmsExternal = false;
+
+    }
+
+    private static class LazilyLoadedUserPhoneNumbers implements Serializable {
+        private String workPhone = "";
+        private String mobilePhone = "";
+        private String homePhone = "";
+    }
+
+    private static class LazilyLoadedUserRoles implements Serializable {
         private Set roles = new HashSet();
     }
 
     private LazilyLoadedUserAttributes lazilyLoadedUserAttributes = null ;
+    private LazilyLoadedUserPhoneNumbers lazilyLoadedUserPhoneNumbers = null ;
+    private LazilyLoadedUserRoles lazilyLoadedUserRoles = null ;
 
     private LazilyLoadedUserAttributes getLazilyLoadedUserAttributes() {
         if (null == lazilyLoadedUserAttributes) {
@@ -64,6 +73,23 @@ public class UserDomainObject extends Hashtable {
         return lazilyLoadedUserAttributes;
     }
 
+    private LazilyLoadedUserPhoneNumbers getLazilyLoadedUserPhoneNumbers() {
+        if (null == lazilyLoadedUserPhoneNumbers) {
+            lazilyLoadedUserPhoneNumbers = new LazilyLoadedUserPhoneNumbers() ;
+            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper() ;
+            imcmsAuthenticatorAndUserMapper.initUserPhoneNumbers(this) ;
+        }
+        return lazilyLoadedUserPhoneNumbers ;
+    }
+
+    private LazilyLoadedUserRoles getLazilyLoadedUserRoles() {
+        if (null == lazilyLoadedUserRoles) {
+            lazilyLoadedUserRoles = new LazilyLoadedUserRoles() ;
+            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper() ;
+            imcmsAuthenticatorAndUserMapper.initUserRoles(this) ;
+        }
+        return lazilyLoadedUserRoles ;
+    }
 
     /**
      * get user-id
@@ -258,42 +284,42 @@ public class UserDomainObject extends Hashtable {
      * Get the users workphone
      */
     public String getWorkPhone() {
-        return this.getLazilyLoadedUserAttributes().workPhone;
+        return this.getLazilyLoadedUserPhoneNumbers().workPhone;
     }
 
     /**
      * Set the users workphone
      */
     public void setWorkPhone( String workphone ) {
-        this.getLazilyLoadedUserAttributes().workPhone = workphone;
+        this.getLazilyLoadedUserPhoneNumbers().workPhone = workphone;
     }
 
     /**
      * Get the users mobilephone
      */
     public String getMobilePhone() {
-        return this.getLazilyLoadedUserAttributes().mobilePhone;
+        return this.getLazilyLoadedUserPhoneNumbers().mobilePhone;
     }
 
     /**
      * Set the users mobilephone
      */
     public void setMobilePhone( String mobilephone ) {
-        this.getLazilyLoadedUserAttributes().mobilePhone = mobilephone;
+        this.getLazilyLoadedUserPhoneNumbers().mobilePhone = mobilephone;
     }
 
     /**
      * Get the users homephone
      */
     public String getHomePhone() {
-        return this.getLazilyLoadedUserAttributes().homePhone;
+        return this.getLazilyLoadedUserPhoneNumbers().homePhone;
     }
 
     /**
      * Set the users homepohne
      */
     public void setHomePhone( String homephone ) {
-        this.getLazilyLoadedUserAttributes().homePhone = homephone;
+        this.getLazilyLoadedUserPhoneNumbers().homePhone = homephone;
     }
 
     /**
@@ -389,19 +415,19 @@ public class UserDomainObject extends Hashtable {
     }
 
     public void addRole( RoleDomainObject role ) {
-        getLazilyLoadedUserAttributes().roles.add( role ) ;
+        getLazilyLoadedUserRoles().roles.add( role ) ;
     }
 
     public void setRoles( RoleDomainObject[] rolesForUser ) {
-        this.getLazilyLoadedUserAttributes().roles = new HashSet( Arrays.asList( rolesForUser ) );
+        this.getLazilyLoadedUserRoles().roles = new HashSet( Arrays.asList( rolesForUser ) );
     }
 
     public boolean hasRole( RoleDomainObject role ) {
-        return this.getLazilyLoadedUserAttributes().roles.contains( role );
+        return this.getLazilyLoadedUserRoles().roles.contains( role );
     }
 
     public RoleDomainObject[] getRoles() {
-        return (RoleDomainObject[])getLazilyLoadedUserAttributes().roles.toArray( new RoleDomainObject[getLazilyLoadedUserAttributes().roles.size()] );
+        return (RoleDomainObject[])getLazilyLoadedUserRoles().roles.toArray( new RoleDomainObject[getLazilyLoadedUserRoles().roles.size()] );
     }
 
     public boolean equals( Object o ) {
@@ -442,7 +468,7 @@ public class UserDomainObject extends Hashtable {
         return "(user " + id + " \"" + getLazilyLoadedUserAttributes().loginName + "\")";
     }
 
-    /* FIXME: Current context path should be sent in a HttpServletRequest, not in an UserDomainObject. */ 
+    /* FIXME: Current context path should be sent in a HttpServletRequest, not in an UserDomainObject. */
     public void setCurrentContextPath( String currentContextPath ) {
         this.currentContextPath = currentContextPath;
     }

@@ -90,15 +90,18 @@
                     </option><%
                 } %>
             </select></td>
-            <td align="right" >
+            <td width="20%" align="right">
             <input type="submit" class="imcmsFormBtnSmall"
                 name="<%= UserBrowser.REQUEST_PARAMETER__SELECT_USER_BUTTON %>"
-                value="<%= userFinder.getSelectButtonText().toLocalizedString(request) %>" onClick="if(!evalEditUser()) return false;" style="width:80">
+                value="<%= userFinder.getSelectButtonText().toLocalizedString(request) %>"
+                onClick="if(!evalEditUser()) return false;" style="width:7em">
             <%
                 UserDomainObject user = Utility.getLoggedOnUser(request);
                 if (userFinder.isUsersAddable() && (user.isSuperAdmin() || user.isUserAdmin())) { %>
-                    <br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
-                    <input type="submit" class="imcmsFormBtnSmall" name="<%= UserBrowser.REQUEST_PARAMETER__ADD_USER %>" value="<? templates/sv/AdminChangeUser.htm/2005 ?>" style="width:80">
+                    <div><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"></div>
+                    <input type="submit" class="imcmsFormBtnSmall"
+                        name="<%= UserBrowser.REQUEST_PARAMETER__ADD_USER %>"
+                        value="<? templates/sv/AdminChangeUser.htm/2005 ?>" style="width:7em">
             <% } %>
             </td>
         </tr>
