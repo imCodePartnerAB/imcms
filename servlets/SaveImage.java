@@ -202,7 +202,7 @@ public class SaveImage extends HttpServlet {
 		image.setImageAlign( image_align ) ;
 
 		// get alt_text
-		String alt_text = req.getParameter( "alt_text" ) ;
+		String alt_text = imcode.server.HTMLConv.toHTML(req.getParameter( "alt_text" )) ;
 		image.setAltText( alt_text ) ;
 
 		// get low_scr
