@@ -1,13 +1,11 @@
 package imcode.server.document.textdocument;
 
-import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.ApplicationServer;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.TemplateDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -60,13 +58,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     public void initDocument( DocumentMapper documentMapper ) {
         // lazily loaded
-    }
-
-    public void processNewDocumentInformation( DocumentComposer documentComposer,
-                                               DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
-                                               UserDomainObject user, HttpServletRequest request,
-                                               HttpServletResponse response ) throws IOException {
-        documentComposer.processNewTextDocumentInformation( this, newDocumentParentInformation, request, response, user );
     }
 
     public void removeAllImages() {

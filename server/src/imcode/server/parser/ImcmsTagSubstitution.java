@@ -645,7 +645,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private String tagLanguage( Properties attributes ) {
         String representation = attributes.getProperty( "representation" );
         if ( null == representation ) {
-            return LanguageMapper.getCurrentLanguageNameInUsersLanguage( service, documentRequest.getUser(), document.getLanguageIso639_2() );
+            return LanguageMapper.getCurrentLanguageNameInUsersLanguage( documentRequest.getUser(), document.getLanguageIso639_2() );
         } else if ( LanguageMapper.ISO639_2.equalsIgnoreCase( representation ) ) {
             return document.getLanguageIso639_2();
         } else {

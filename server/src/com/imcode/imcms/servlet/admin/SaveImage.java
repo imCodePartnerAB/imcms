@@ -9,6 +9,7 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImageFileMetaData;
 import imcode.util.Utility;
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Vector;
+
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
 
 public class SaveImage extends HttpServlet implements imcode.server.IMCConstants {
 
@@ -192,7 +195,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         image.setLowResolutionUrl( low_scr );
 
         // get target
-        String target = DocumentComposer.getTargetFromRequest(req) ;
+        String target = EditDocumentInformationPageFlow.getTargetFromRequest(req) ;
         image.setTarget( target );
 
         // get image_ref_link

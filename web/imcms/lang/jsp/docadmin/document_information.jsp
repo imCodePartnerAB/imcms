@@ -5,7 +5,6 @@
     import="imcode.server.ApplicationServer,
             org.apache.commons.lang.StringEscapeUtils,
             java.text.SimpleDateFormat,
-            imcode.util.DateConstants,
             java.text.DateFormat,
             org.apache.commons.lang.StringUtils,
             imcode.external.diverse.Html,
@@ -14,14 +13,21 @@
             imcode.server.LanguageMapper,
             imcode.server.IMCServiceInterface,
             imcode.server.user.UserDomainObject,
-            imcode.util.Utility,
             imcode.server.document.*,
             com.imcode.imcms.servlet.admin.DocumentComposer,
             org.apache.commons.lang.ObjectUtils,
             java.util.regex.Pattern,
             org.apache.oro.text.perl.Perl5Util,
             java.text.Collator,
-            java.util.*"
+            java.util.*,
+            com.imcode.imcms.servlet.admin.UserBrowser,
+            com.imcode.imcms.servlet.admin.UserBrowserFacade,
+            imcode.util.*,
+            imcode.server.document.textdocument.TextDocumentDomainObject,
+            com.imcode.imcms.flow.EditDocumentInformationPageFlow,
+            com.imcode.imcms.flow.CreateDocumentPageFlow,
+            com.imcode.imcms.flow.DocumentPageFlow,
+            com.imcode.imcms.flow.HttpPageFlow"
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
@@ -29,10 +35,11 @@ UserDomainObject user = Utility.getLoggedOnUser( request ) ;
 final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
 final DocumentMapper documentMapper = service.getDocumentMapper();
 
-DocumentDomainObject document = (DocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
-final boolean editingExistingDocument = DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( (String)request.getAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION  )) ;
-DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
-boolean creatingNewDocument = !editingExistingDocument;
+DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
+
+DocumentDomainObject document = httpFlow.getDocument() ;
+boolean editingExistingDocument = httpFlow instanceof EditDocumentInformationPageFlow ;
+boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
 
 %><%!
 
@@ -58,6 +65,10 @@ String formatTime(Date time) {
     }
     DateFormat dateFormat = new SimpleDateFormat( DateConstants.TIME_NO_SECONDS_FORMAT_STRING ) ;
     return dateFormat.format(time) ;
+}
+
+String formatUser(UserDomainObject user) {
+    return StringEscapeUtils.escapeHtml( user.getLastName()+", "+user.getFirstName()+" ("+user.getLoginName()+")" );
 }
 %><vel:velocity><html>
 <head>
@@ -85,7 +96,7 @@ function checkFocus() {
 </script>
 
 </head>
-<body id="theBody" bgcolor="#FFFFFF" onLoad="focusField(0,'<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>');">
+<body id="theBody" bgcolor="#FFFFFF" onLoad="focusField(0,'<%= StringEscapeUtils.escapeJavaScript( EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE ) %>');">
 
 
 #gui_outer_start()
@@ -99,7 +110,7 @@ function checkFocus() {
 <table border="0" cellspacing="0" cellpadding="0">
 <form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
 <tr>
-	<td><input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>"></td>
+	<td><input type="submit" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
 	<td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2002 ?>"
 	title="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(77)"></td>
@@ -114,13 +125,11 @@ function checkFocus() {
 
 %>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center" onMouseOver="checkFocus();">
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
-	value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>"><%
-if (creatingNewDocument) { %>
-<input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>"
-	value="<%=DocumentComposer.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION%>" />
-<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
-	value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
+    value="<%= EditDocumentInformationPageFlow.PAGE__DOCUMENT_INFORMATION %>">
+<% if (creatingNewDocument) { %>
 <tr>
 	<td class="imcmsAdmText">
 	<? install/htdocs/sv/jsp/docadmin/document_information.jsp/new_document_procedure_description ?> &nbsp;</td>
@@ -129,7 +138,6 @@ if (creatingNewDocument) { %>
 	<td>#gui_heading( '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>' )</td>
 </tr><%
 } else { %>
-<input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
 <tr>
 	<td>#gui_heading( '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>' )</td>
 </tr><%
@@ -140,19 +148,19 @@ if (creatingNewDocument) { %>
 	<tr>
 		<td class="imcmsAdmText" nowrap>
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
-		<td><input type="text" name="<%= DocumentComposer.PARAMETER__HEADLINE %>" size="48" maxlength="255" style="width: 100%"
+		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE %>" size="48" maxlength="255" style="width: 100%"
 		value="<%= StringEscapeUtils.escapeHtml(document.getHeadline()) %>"></td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
-		<textarea name="<%= DocumentComposer.PARAMETER__MENUTEXT %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;">
+		<textarea name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MENUTEXT %>" class="imcmsAdmForm" cols="47" rows="3" wrap="virtual" style="width:100%; overflow:auto;">
 <%= StringEscapeUtils.escapeHtml(document.getMenuText()) %></textarea><%
 		
-		if (creatingNewDocument && newDocumentParentInformation.documentTypeId == DocumentDomainObject.DOCTYPE_TEXT) { %>
+		if (creatingNewDocument && document instanceof TextDocumentDomainObject) { %>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS %>" value="1" checked></td>
+			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS %>" value="1" checked></td>
 			<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/copy_headline_and_text_to_textfields ?></td>
 		</tr>
 		</table><%
@@ -163,14 +171,14 @@ if (creatingNewDocument) { %>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
-			<td width="85%"><input type="text" name="<%= DocumentComposer.PARAMETER__IMAGE %>" size="40" maxlength="255" style="width: 100%"
+			<td width="85%"><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE %>" size="40" maxlength="255" style="width: 100%"
 			value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMenuImage(), "" )) %>"></td>
-			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= DocumentComposer.PARAMETER__GO_TO_IMAGE_BROWSE%>"
+			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSE%>"
 			value=" <? install/htdocs/global/pageinfo/browse ?> "></td>
 		</tr>
 		<input type="hidden" name="<%=
-		DocumentComposer.PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION %>" value="<%=
-		request.getAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION ) %>"/>
+		DocumentComposer.PARAMETER__PREVIOUS_ACTION %>" value="<%=
+		request.getAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__ACTION ) %>"/>
 		</table></td>
 	</tr>
 	<tr>
@@ -192,7 +200,7 @@ if (creatingNewDocument) { %>
 		<td class="imcmsAdmText">
 		<? install/htdocs/sv/jsp/docadmin/document_information.jsp/status ?></td>
 		<td>
-		<select name="<%= DocumentComposer.PARAMETER__STATUS %>" onFocus="selFocused = true;">
+		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__STATUS %>" onFocus="selFocused = true;">
 			<option value="<%= DocumentDomainObject.STATUS_NEW %>"<%
 				if (DocumentDomainObject.STATUS_NEW == document.getStatus()) {
 					%> selected<%
@@ -219,10 +227,10 @@ if (creatingNewDocument) { %>
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td><input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_START_DATE %>" size="11" maxlength="10" style="width: 7em;"
+				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_DATE %>" size="11" maxlength="10" style="width: 7em;"
 				value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationStartDatetime) ) %>"></td>
 				<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1007 ?></td>
-				<td><input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
+				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_START_TIME %>" size="5" maxlength="5" style="width: 4em;"
 				value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>"></td>
 				<td>&nbsp;<%= formatDatetimeWithParentheses( publicationStartDatetime ) %></td>
 			</tr>
@@ -239,10 +247,10 @@ if (creatingNewDocument) { %>
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td><input type="text" name="<%= DocumentComposer.PARAMETER__ARCHIVED_DATE %>" size="11" maxlength="10" style="width: 7em;"
+				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_DATE %>" size="11" maxlength="10" style="width: 7em;"
 				value="<%= StringEscapeUtils.escapeHtml( formatDate(archivedDatetime) ) %>"></td>
 				<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
-				<td><input type="text" name="<%= DocumentComposer.PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
+				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__ARCHIVED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 				value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>"></td>
 				<td>&nbsp;<%= formatDatetimeWithParentheses( archivedDatetime ) %></td>
 			</tr>
@@ -259,10 +267,10 @@ if (creatingNewDocument) { %>
 			<td>
 			<table border="0" cellspacing="0" cellpadding="0">
 			<tr>
-				<td><input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_END_DATE %>" size="11" maxlength="10" style="width: 7em;"
+				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_DATE %>" size="11" maxlength="10" style="width: 7em;"
 				value="<%= StringEscapeUtils.escapeHtml( formatDate(publicationEndDatetime) ) %>"></td>
 				<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1009 ?></td>
-				<td><input type="text" name="<%= DocumentComposer.PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
+				<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__PUBLICATION_END_TIME %>" size="5" maxlength="5" style="width: 4em;"
 				value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>"></td>
 				<td>&nbsp;<%= formatDatetimeWithParentheses( publicationEndDatetime ) %></td>
 			</tr>
@@ -303,7 +311,7 @@ if (creatingNewDocument) { %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/22 ?></td>
 		<td class="imcmsAdmText">
-		<select name="<%= DocumentComposer.PARAMETER__SECTIONS %>" size="5" multiple><%
+		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SECTIONS %>" size="5" multiple><%
 		SectionDomainObject[] sections = documentMapper.getAllSections() ;
 		Arrays.sort(sections) ;
 		SectionDomainObject[] documentSections = document.getSections() ;
@@ -328,10 +336,10 @@ if (creatingNewDocument) { %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/26 ?></td>
 		<td class="imcmsAdmText">
-		<select name="<%= DocumentComposer.PARAMETER__LANGUAGE %>" size="1" onFocus="selFocused = true;">
-			<%= LanguageMapper.getLanguageOptionList( service, user, document.getLanguageIso639_2() ) %>
+		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LANGUAGE %>" size="1" onFocus="selFocused = true;">
+			<%= LanguageMapper.getLanguageOptionList( user, document.getLanguageIso639_2() ) %>
 		</select>
-		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= LanguageMapper.getCurrentLanguageNameInUsersLanguage( service, user, document.getLanguageIso639_2() )%></td>
+		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= LanguageMapper.getCurrentLanguageNameInUsersLanguage( user, document.getLanguageIso639_2() )%></td>
 	</tr>
 	<tr>
 		<td colspan="2">#gui_hr( "cccccc" )</td>
@@ -346,7 +354,7 @@ if (creatingNewDocument) { %>
 			if ( !categoryType.hasImages() ) { %>
 		<div style="float: left; margin: auto 1em 1ex auto;">
 		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
-		<select name="<%= DocumentComposer.PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %> size="4" multiple<% } else { %> onFocus="selFocused = true;"<% } %>>
+		<select name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %> size="4" multiple<% } else { %> onFocus="selFocused = true;"<% } %>>
 			<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
 		</select></div><%
 			}
@@ -375,8 +383,8 @@ if (creatingNewDocument) { %>
 			<table border="0" cellspacing="1" cellpadding="2">
 			<tr>
 				<td bgcolor="#ffffff"><%=imageStr%></td>
-				<td bgcolor="#ffffff"><input id="<%= DocumentComposer.PARAMETER__CATEGORIES + "" + category.getId() %>" name="<%= DocumentComposer.PARAMETER__CATEGORIES %>" type="<%=typeStr%>" value="<%=category.getId()%>"<%=checkedStr%>></td>
-				<td bgcolor="#ffffff"><label for="<%= DocumentComposer.PARAMETER__CATEGORIES + "" + category.getId() %>"><%=category.getName()%></label></td>
+				<td bgcolor="#ffffff"><input id="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES + "" + category.getId() %>" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES %>" type="<%=typeStr%>" value="<%=category.getId()%>"<%=checkedStr%>></td>
+				<td bgcolor="#ffffff"><label for="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CATEGORIES + "" + category.getId() %>"><%=category.getName()%></label></td>
 			</tr>
 			</table></td>
 		</tr>
@@ -393,14 +401,14 @@ if (creatingNewDocument) { %>
 		<td class="imcmsAdmText">
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>" value="1"<%
+			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__VISIBLE_IN_MENU_FOR_UNAUTHORIZED_USERS %>" value="1"<%
 			if (document.isVisibleInMenusForUnauthorizedUsers()) {
 				%> checked<%
 			} %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/global/pageinfo/show_link_to_unauthorized_user ?></td>
 		</tr>
 		<tr>
-			<td><input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__LINKABLE_BY_OTHER_USERS %>" value="1"<%
+			<td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>" value="1"<%
 			if (document.isLinkableByOtherUsers()) {
 				%> checked<%
 			} %>></td>
@@ -423,10 +431,10 @@ if (creatingNewDocument) { %>
 			}
 		}
 		%>
-		<input type="text" name="<%= DocumentComposer.PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
+		<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
 		value="<%= StringEscapeUtils.escapeHtml( StringUtils.join( keywords, ", " ) ) %>"><br>
 		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
-		<input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__SEARCH_DISABLED %>" value="1" <%
+		<input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__SEARCH_DISABLED %>" value="1" <%
 		if (document.isSearchDisabled()) {
 			%> checked<%
 		} %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
@@ -440,28 +448,28 @@ if (creatingNewDocument) { %>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr><%
 			String target = document.getTarget() ; %>
-			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" value="_self"<%
+			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_self"<%
 			if ("_self".equalsIgnoreCase( target ) || "".equals( target )) {
 				%> checked<%
 				target = null;
 			} %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1015 ?> &nbsp;</td>
-			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" value="_blank"<%
+			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_blank"<%
 			if ("_blank".equalsIgnoreCase( target ) ) {
 				%> checked<%
 				target = null;
 			} %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1016 ?> &nbsp;</td>
-			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" value="_top"<%
+			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" value="_top"<%
 			if ("_top".equalsIgnoreCase( target ) ) {
 				%> checked<%
 				target = null;
 			} %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1017 ?> &nbsp;</td>
-			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" <% if (null != target) { %> checked<% } %>></td>
+			<td><input type="radio" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" <% if (null != target) { %> checked<% } %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1018 ?>&nbsp;</td>
 			<td>
-			<input type="text" name="<%= DocumentComposer.PARAMETER__TARGET %>" size="9" maxlength="20" style="width:120"
+			<input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__TARGET %>" size="9" maxlength="20" style="width:120"
 			value="<%
 			if (null != target) {
 				%><%= StringEscapeUtils.escapeHtml( target ) %><%
@@ -478,13 +486,13 @@ if (creatingNewDocument) { %>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="text" name="<%= DocumentComposer.PARAMETER__CREATED_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_DATE %>" size="11" maxlength="10" style="width: 7em;"
 			value="<%= formatDate( document.getCreatedDatetime() ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/time ?></td>
-			<td><input type="text" name="<%= DocumentComposer.PARAMETER__CREATED_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= formatTime( document.getCreatedDatetime() ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?>
-			<%= document.getCreator().getFullName() %> (<%= document.getCreator().getLoginName() %>)</td>
+			<%= formatUser(document.getCreator()) %></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -493,10 +501,10 @@ if (creatingNewDocument) { %>
 		<td>
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><input type="text" name="<%= DocumentComposer.PARAMETER__MODIFIED_DATE %>" size="11" maxlength="10" style="width: 7em;"
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_DATE %>" size="11" maxlength="10" style="width: 7em;"
 			value="<%= formatDate( document.getModifiedDatetime() ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/time ?></td>
-			<td><input type="text" name="<%= DocumentComposer.PARAMETER__MODIFIED_TIME %>" size="5" maxlength="5" style="width: 4em;"
+			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__MODIFIED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= formatTime( document.getModifiedDatetime() ) %>"></td>
 			<td class="imcmsAdmDim">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/date_format ?></td>
 		</tr>
@@ -509,15 +517,12 @@ if (creatingNewDocument) { %>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/42 ?></td>
 		<td class="imcmsAdmText">
-		<select name="<%= DocumentComposer.PARAMETER__PUBLISHER_ID %>" size="1" onFocus="selFocused = true;">
-			<%= Html.createPublisherOptionList( service.getImcmsAuthenticatorAndUserAndRoleMapper(), document.getPublisher()) %>
-		</select>
-		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_publisher ?> <% UserDomainObject publisher = document.getPublisher() ; %>
+		<% UserDomainObject publisher = document.getPublisher() ; %>
 		<%=
 		null == publisher
 		? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_publisher ?>"
-		: publisher.getLastName()+", "+publisher.getFirstName()
-		%></td>
+		: formatUser(publisher)
+		%>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSE %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_publisher_button ?>"></td>
 	</tr>
 	<tr>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
@@ -543,13 +548,13 @@ if (creatingNewDocument) { %>
 			document.writeln('<td>&nbsp;</td>') ;
 		}
 		</script>
-		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= DocumentComposer.PARAMETER_BUTTON__OK %>"
+		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>"
 		value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> "></td>
 		<td>&nbsp;</td>
 		<td><input type="RESET" class="imcmsFormBtn" name="reset"
 		value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2005 ?>"></td>
 		<td>&nbsp;</td>
-		<td><input type="SUBMIT" class="imcmsFormBtn"
+		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>"
 		value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2006 ?>"></td>
 	</tr>
 	</table></td>

@@ -6,7 +6,7 @@
  */
 package imcode.server.document;
 
-public class ConferenceDocumentDomainObject extends FormerExternalDocument {
+public class ConferenceDocumentDomainObject extends FormerExternalDocumentDomainObject {
 
     public int getDocumentTypeId() {
         return DOCTYPE_CONFERENCE;

@@ -6,13 +6,7 @@
  */
 package imcode.server.document;
 
-import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.user.UserDomainObject;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 public class HtmlDocumentDomainObject extends DocumentDomainObject {
 
@@ -32,14 +26,6 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
 
     public int getDocumentTypeId() {
         return DOCTYPE_HTML;
-    }
-
-    public void processNewDocumentInformation( DocumentComposer documentInformation,
-                                               DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
-                                               UserDomainObject user, HttpServletRequest request,
-                                               HttpServletResponse response ) throws IOException, ServletException {
-        documentInformation.processNewHtmlDocumentInformation( request, response, user );
-
     }
 
     public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {

@@ -5,15 +5,12 @@ import imcode.server.IMCServiceInterface;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
 
-    // todo: make sure that these stored procedures are accesed (called) only used within this class
-    // todo: and nowhere else directly to decouple
-    // todo: if not, make the constant public and use it in place?
-    // todo: Remove space in constansts
-    private static final String SPROC_GET_ALL_USERS = "getAllUsers";
     private static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
     private static final String SPROC_ADD_NEW_USER = "AddNewUser";
     private static final String SPROC_UPDATE_USER = "UpdateUser";
@@ -35,7 +32,18 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     private IMCServiceInterface service;
     private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
-    static final String SQL_SELECT_ROLE_BY_NAME = "SELECT role_id, role_name, admin_role FROM roles WHERE role_name = ?";
+    private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
+                                                   + "title, company, address, city, zip, country, county_council, "
+                                                   + "email, users.lang_id, lang_prefix, active, "
+                                                   + "create_date, external "
+                                                   + "FROM users, lang_prefixes "
+                                                   + "WHERE users.lang_id = lang_prefixes.lang_id ";
+
+    private static final String SQL_SELECT_ALL_ROLES = "SELECT role_id, role_name, admin_role FROM roles";
+    private static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
+    private static final String SQL_SELECT_ROLE_BY_ID = SQL_SELECT_ALL_ROLES + " WHERE role_id = ?";
+    private static final String SQL_SELECT_ALL_ROLES_EXCEPT_USERS = SQL_SELECT_ALL_ROLES + " WHERE role_id != "
+                                                                    + RoleDomainObject.USERS.getId();
 
     public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
         this.service = service;
@@ -150,17 +158,22 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         return new UserDomainObject( userId );
     }
 
-    String[] sqlSelectUserData( int userId ) {
-        String sqlStr = "SELECT user_id, login_name, login_password, first_name, last_name, "
-                        + "title, company, address, city, zip, country, county_council, "
-                        + "email, users.lang_id, lang_prefix, active, "
-                        + "create_date, external "
-                        + "FROM users, lang_prefixes "
-                        + "WHERE users.lang_id = lang_prefixes.lang_id "
+    private String[][] sqlSelectAllUsers( boolean includeUserExtern, boolean includeInactiveUsers ) {
+        String sqlStr = SQL_SELECT_USERS;
+        if ( !includeUserExtern ) {
+            sqlStr += " AND user_id != " + USER_EXTERN_ID;
+        }
+        if ( !includeInactiveUsers ) {
+            sqlStr += " AND active = 1";
+        }
+        return service.sqlQueryMulti( sqlStr, new String[0] );
+    }
+
+    String[] sqlSelectUserById( int userId ) {
+        String sqlStr = SQL_SELECT_USERS
                         + "AND user_id = ?";
 
-        String[] user_data = service.sqlQuery( sqlStr, new String[]{"" + userId} );
-        return user_data;
+        return service.sqlQuery( sqlStr, new String[]{"" + userId} );
     }
 
     public void updateUser( String loginName, UserDomainObject newUser ) {
@@ -233,37 +246,18 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     private void sqlAddRoleToUser( RoleDomainObject role, UserDomainObject user ) {
-        service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{String.valueOf( user.getId() ), "" + role.getId()} );
-    }
-
-    // todo: make a quicker version that not loops over all of the user_ids and makes a new db searc
-    // todo: change the "getAllUsers" sproc to specify its arguments.
-    public UserDomainObject[] getAllUsers() {
-        int noOfColumnsInSearchResult = 20;
-        String[] allUsersSqlResult = service.sqlProcedure( SPROC_GET_ALL_USERS, new String[]{} );
-        int noOfUsers = allUsersSqlResult.length / noOfColumnsInSearchResult;
-        UserDomainObject[] result = new UserDomainObject[noOfUsers];
-        for ( int i = 0; i < noOfUsers; i++ ) {
-            String userId = allUsersSqlResult[i * noOfColumnsInSearchResult];
-            result[i] = getUser( Integer.parseInt( userId ) );
-        }
-        return result;
+        service.sqlUpdateProcedure( SPROC_ADD_USER_ROLE, new String[]{
+            String.valueOf( user.getId() ), "" + role.getId()
+        } );
     }
 
     public UserDomainObject[] getUsers( boolean includeUserExtern, boolean includeInactiveUsers ) {
-        UserDomainObject[] users = getAllUsers();
-        List filterdUsers = new ArrayList();
-        if ( !includeUserExtern ) {
-            for ( int i = 0; i < users.length; i++ ) {
-                UserDomainObject user = users[i];
-                boolean includeAcordingToUserExtern = !includeUserExtern && USER_EXTERN_ID != user.getId();
-                boolean includeAcordingToInactiveUser = user.isActive() || includeInactiveUsers;
-                if ( includeAcordingToUserExtern && includeAcordingToInactiveUser ) {
-                    filterdUsers.add( user );
-                }
-            }
+        String[][] allUsersSqlResult = sqlSelectAllUsers( includeUserExtern, includeInactiveUsers );
+        UserDomainObject[] result = new UserDomainObject[allUsersSqlResult.length];
+        for ( int i = 0; i < allUsersSqlResult.length; i++ ) {
+            result[i] = getUserFromSqlResult( allUsersSqlResult[i] );
         }
-        return (UserDomainObject[])filterdUsers.toArray( new UserDomainObject[filterdUsers.size()] );
+        return result;
     }
 
     public void setUserRoles( UserDomainObject user, String[] roleNames ) {
@@ -281,7 +275,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public UserDomainObject[] getAllUsersWithRole( String roleName ) {
         RoleDomainObject role = getRoleByName( roleName );
-        if( null == role ) {
+        if ( null == role ) {
             return new UserDomainObject[]{};
         }
         String[] usersWithRole = service.sqlProcedure( SPROC_GET_USERS_WHO_BELONGS_TO_ROLE,
@@ -315,7 +309,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         if ( !roleExists ) {
             service.sqlUpdateProcedure( SPROC_ROLE_ADD_NEW, new String[]{roleName} );
         }
-        return getRoleByName( roleName ) ;
+        return getRoleByName( roleName );
     }
 
     public void deleteRole( String roleName ) {
@@ -379,11 +373,14 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     private void sqlAddAllRoles( UserDomainObject tempUser ) {
         tempUser.addRole( RoleDomainObject.USERS );
 
-        RoleDomainObject[] userRoles = tempUser.getRoles() ;
+        RoleDomainObject[] userRoles = tempUser.getRoles();
         for ( int i = 0; i < userRoles.length; i++ ) {
             RoleDomainObject userRole = userRoles[i];
             sqlAddRoleToUser( userRole, tempUser );
         }
     }
 
+    public UserDomainObject[] getAllUsers() {
+        return getUsers( true, true );
+    }
 }

@@ -11,11 +11,6 @@ GO
 CREATE PROCEDURE FindUserName
  @userName varchar(50)
 AS
-/*
- This function is used from the conference when  someone is logging in to the 
-conference. The system searches for the username and returns the 
-userId, userName and password
-*/
 SELECT  u.login_name
 FROM users u
 WHERE u.login_name = @userName

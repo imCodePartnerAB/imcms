@@ -1,18 +1,11 @@
 package imcode.server.document;
 
-import com.imcode.imcms.servlet.admin.DocumentComposer;
-import com.imcode.imcms.api.NoPermissionException;
-import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import imcode.server.ApplicationServer;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -349,11 +342,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         Attributes documentProperties = this.attributes;
         return ( documentProperties.archivedDatetime != null && documentProperties.archivedDatetime.before( time ) );
     }
-
-    public abstract void processNewDocumentInformation( DocumentComposer documentInformation,
-                                                        DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
-                                                        UserDomainObject user, HttpServletRequest request,
-                                                        HttpServletResponse response ) throws IOException, ServletException;
 
     public void removeAllCategories() {
         getLazilyLoadedDocumentCategories().categories.clear();

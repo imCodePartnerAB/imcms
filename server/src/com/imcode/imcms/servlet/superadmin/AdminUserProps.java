@@ -64,7 +64,6 @@ public class AdminUserProps extends Administrator {
         // Get a new Vector:  phonetype_id, typename
         Vector phoneTypesV = new Vector( java.util.Arrays.asList( phonetypesA ) );
 
-
         if ( req.getParameter( "ADD_USER" ) != null ) {
 
             // Lets check if the user is an admin, otherwise throw him out.
@@ -404,11 +403,6 @@ public class AdminUserProps extends Administrator {
         vec.add( "#PHONETYPES_MENU#" );
         vec.add( phonetypes );
 
-        // phoneslist
-        String phones = Html.createOptionList( "", tmp_phones );
-        vec.add( "#PHONES_MENU#" );
-        vec.add( phones );
-
         // Lets add html for admin_part in AdminUserResp
         vec.add( "#ADMIN_PART#" );
         vec.add( createAdminPartHtml( user, null, imcref, req, session ) );
@@ -480,7 +474,7 @@ public class AdminUserProps extends Administrator {
             }
         }
 
-        String password2 = req.getParameter( REQUEST_PARAMETER__PASSWORD2 ) ;
+        String password2 = req.getParameter( REQUEST_PARAMETER__PASSWORD2 );
 
         // Lets get all phonetypes from db
         String[] phonetypesA = imcref.sqlProcedure( "GetPhonetypes", new String[]{"" + user.getLangId()} );
@@ -503,7 +497,7 @@ public class AdminUserProps extends Administrator {
         vm.addProperty( "COUNTRY", userFromRequest.getCountry() );
         vm.addProperty( "COUNTRY_COUNCIL", userFromRequest.getCountyCouncil() );
         vm.addProperty( "EMAIL", userFromRequest.getEmailAddress() );
-        vm.addProperty( "LANG_TYPES", getLanguagesHtmlOptionList( user, imcref, userToChange ) );
+        vm.addProperty( "LANG_TYPES", getLanguagesHtmlOptionList( user, imcref, userFromRequest ) );
 
         if ( null != req.getParameter( "useradmin_settings" ) ) {
 
@@ -605,7 +599,6 @@ public class AdminUserProps extends Administrator {
         String newLogin;
         if ( null != req.getParameter( "login_name" ) ) {
             newLogin = userFromRequest.getLoginName();
-
         } else {
             // we are processing data from a user template where users login name will be the same
             // like his email. And then, if users current login name not is equal to his current email
@@ -621,14 +614,12 @@ public class AdminUserProps extends Administrator {
 
         // check that the changed login name don´t already exists
         if ( !newLogin.equalsIgnoreCase( currentLogin ) ) {
-            String[] userNameExists = imcref.sqlProcedure( "FindUserName", new String[]{newLogin} );
-            if ( userNameExists != null ) {
-                if ( userNameExists.length > 0 ) {
-                    String header = "Error in AdminUserProps.";
-                    log.debug( header + "- username already exists" );
-                    new AdminError( req, res, header, msg );
-                    return;
-                }
+            ImcmsAuthenticatorAndUserMapper userMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper();
+            if ( null != userMapper.getUser( newLogin ) ) {
+                String header = "Error in AdminUserProps.";
+                log.debug( header + "- username already exists" );
+                new AdminError( req, res, header, msg );
+                return;
             }
         }
 
@@ -657,7 +648,7 @@ public class AdminUserProps extends Administrator {
         }
         if ( !isChanged ) {
             userFromRequest.setPassword( currPwd );
-            password2 = currPwd ;
+            password2 = currPwd;
         }
 
         // when user has add a phone number in admin interface,
@@ -701,20 +692,20 @@ public class AdminUserProps extends Administrator {
             if ( null != phonesV && phonesV.size() > 0 ) {
 
                 //First delete existing phone number from db
-                imcref.sqlUpdateProcedure( "DelPhoneNr", new String[]{""+userToChangeId} );
+                imcref.sqlUpdateProcedure( "DelPhoneNr", new String[]{"" + userToChangeId} );
 
                 // Then save all number from session into db ( phonesV : id, number, user_id, phonetype_id )
                 for ( int i = 0; i < phonesV.size(); i++ ) {
                     String[] aPhone = (String[])phonesV.elementAt( i );
 
-                    imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{""+userToChangeId, aPhone[1], aPhone[3]} );
+                    imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{"" + userToChangeId, aPhone[1], aPhone[3]} );
                 }
             }
 
         } else {
             // We are processing data from a user template
             // Get all phone numbers for user
-            String[][] phoneNbr = imcref.sqlProcedureMulti( "GetUserPhoneNumbers", new String[]{""+userToChangeId} );
+            String[][] phoneNbr = imcref.sqlProcedureMulti( "GetUserPhoneNumbers", new String[]{"" + userToChangeId} );
 
             // Get workPhoneId and mobilePhoneId
             String workPhoneId = "";
@@ -735,12 +726,12 @@ public class AdminUserProps extends Administrator {
             // add new workphone
             if ( ( "" ).equals( workPhoneId ) && !( "" ).equals( workPhone ) ) {
 
-                imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{""+userToChangeId, workPhone, "2"} );
+                imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{"" + userToChangeId, workPhone, "2"} );
 
                 // uppdate a workphone
             } else if ( !( "" ).equals( workPhoneId ) && !( "" ).equals( workPhone ) ) {
 
-                imcref.sqlUpdateProcedure( "PhoneNbrUpdate", new String[]{""+userToChangeId, workPhoneId, "2"} );
+                imcref.sqlUpdateProcedure( "PhoneNbrUpdate", new String[]{"" + userToChangeId, workPhoneId, "2"} );
 
                 // delete a workphone
             } else if ( !( "" ).equals( workPhoneId ) && ( "" ).equals( workPhone ) ) {
@@ -752,12 +743,12 @@ public class AdminUserProps extends Administrator {
             // add new mobilephone
             if ( ( "" ).equals( mobilePhoneId ) && !( "" ).equals( mobilePhone ) ) {
 
-                imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{""+userToChangeId, mobilePhone, "3"} );
+                imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{"" + userToChangeId, mobilePhone, "3"} );
 
                 // uppdate a mobilephone
             } else if ( !( "" ).equals( mobilePhoneId ) && !( "" ).equals( mobilePhone ) ) {
 
-                imcref.sqlUpdateProcedure( "PhoneNbrUpdate", new String[]{""+userToChangeId, mobilePhoneId, "3"} );
+                imcref.sqlUpdateProcedure( "PhoneNbrUpdate", new String[]{"" + userToChangeId, mobilePhoneId, "3"} );
 
                 // delete a mobilephone
             } else if ( !( "" ).equals( mobilePhoneId ) && ( "" ).equals( mobilePhone ) ) {
@@ -783,14 +774,14 @@ public class AdminUserProps extends Administrator {
 
             if ( user.isSuperAdmin() ) { // delete all userroles
                 int roleId = -1;
-                imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{""+userToChangeId, "" + roleId} );
+                imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{"" + userToChangeId, "" + roleId} );
 
             } else {  // delete only roles that the useradmin has permission to administrate
                 String[] rolesArr = imcref.sqlProcedure( "GetUseradminPermissibleRoles", new String[]{
                     "" + user.getId()
                 } );
                 for ( int i = 0; i < rolesArr.length; i += 2 ) {
-                    imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{""+userToChangeId, rolesArr[i]} );
+                    imcref.sqlUpdateProcedure( "DelUserRoles", new String[]{"" + userToChangeId, rolesArr[i]} );
                 }
             }
             boolean useradminRoleIsSelected = false;
@@ -798,7 +789,7 @@ public class AdminUserProps extends Administrator {
                 int roleId = roleIdsFromRequest[i];
                 RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( roleId );
                 userFromRequest.addRole( role );
-                if ( role.equals( RoleDomainObject.USERADMIN )) {
+                if ( role.equals( RoleDomainObject.USERADMIN ) ) {
                     useradminRoleIsSelected = true;
                 }
             }
@@ -809,7 +800,7 @@ public class AdminUserProps extends Administrator {
             // and then add the new ones
             // but only if role Useradmin is selected
 
-            imcref.sqlUpdateProcedure( "DeleteUseradminPermissibleRoles", new String[]{""+userToChangeId} );
+            imcref.sqlUpdateProcedure( "DeleteUseradminPermissibleRoles", new String[]{"" + userToChangeId} );
 
             if ( useradminRoleIsSelected ) {
 
@@ -860,7 +851,7 @@ public class AdminUserProps extends Administrator {
         }
 
         ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
-        if ( !( null != imcmsAuthenticatorAndUserAndRoleMapper.getUser( userFromRequest.getLoginName() ) ) ) {
+        if ( null != imcmsAuthenticatorAndUserAndRoleMapper.getUser( userFromRequest.getLoginName() ) ) {
             String header = "Error in AdminUserProps. ";
             log.debug( header + "- username already exists" );
             new AdminError( req, res, header, msg );
@@ -903,7 +894,9 @@ public class AdminUserProps extends Administrator {
                 for ( int i = 0; i < phonesV.size(); i++ ) {
                     String[] aPhone = (String[])phonesV.elementAt( i );
 
-                    imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{""+userFromRequest.getId(), aPhone[1], aPhone[3]} );
+                    imcref.sqlUpdateProcedure( "PhoneNbrAdd", new String[]{
+                        "" + userFromRequest.getId(), aPhone[1], aPhone[3]
+                    } );
                 }
             }
             // we are processing data from a user template
@@ -918,7 +911,7 @@ public class AdminUserProps extends Administrator {
             }
             if ( !( "" ).equals( mobilePhone ) ) {
                 int phoneNumberType = 3;
-                ImcmsAuthenticatorAndUserMapper.staticSprocPhoneNbrAdd( imcref,  userFromRequest.getId(), workPhone, phoneNumberType );
+                ImcmsAuthenticatorAndUserMapper.staticSprocPhoneNbrAdd( imcref, userFromRequest.getId(), workPhone, phoneNumberType );
             }
         }
 
@@ -1147,7 +1140,7 @@ public class AdminUserProps extends Administrator {
             RoleDomainObject role = imcmsAuthenticatorAndUserMapper.getRoleById( roleId );
             if ( !RoleDomainObject.SUPERADMIN.equals( role ) && !RoleDomainObject.USERADMIN.equals( role ) ) {
                 imcref.sqlUpdateProcedure( "AddUseradminPermissibleRoles", new String[]{
-                    ""+userIdToAddUserAdminRolesTo, "" + role.getId()
+                    "" + userIdToAddUserAdminRolesTo, "" + role.getId()
                 } );
             }
         }
@@ -1187,10 +1180,10 @@ public class AdminUserProps extends Administrator {
      * failes, a error page will be generated and null will be returned.
      */
     private int[] getRoleIdsFromRequest( String name, HttpServletRequest req, HttpServletResponse res,
-                                       IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
+                                         IMCServiceInterface imcref, UserDomainObject user ) throws IOException {
         // Lets get the roles
         String[] roleIdStrings = ( req.getParameterValues( name ) == null )
-                         ? new String[0] : ( req.getParameterValues( name ) );
+                                 ? new String[0] : ( req.getParameterValues( name ) );
 
         Vector rolesV = new Vector( java.util.Arrays.asList( roleIdStrings ) );
         if ( rolesV.size() == 0 && name.equals( "roles" ) ) { // user must get at least one user role
@@ -1201,12 +1194,12 @@ public class AdminUserProps extends Administrator {
             new AdminError( req, res, header, msg );
             return null;
         }
-        int[] roleIds = new int[roleIdStrings.length] ;
+        int[] roleIds = new int[roleIdStrings.length];
         for ( int i = 0; i < roleIdStrings.length; i++ ) {
             String roleIdString = roleIdStrings[i];
-            roleIds[i] = Integer.parseInt( roleIdString ) ;
+            roleIds[i] = Integer.parseInt( roleIdString );
         }
-        return roleIds ;
+        return roleIds;
     }
 
     /**
@@ -1250,7 +1243,7 @@ public class AdminUserProps extends Administrator {
         userFromRequest.setCountyCouncil( req.getParameter( REQUEST_PARAMETER__COUNTY_COUNCIL ) );
         userFromRequest.setEmailAddress( req.getParameter( REQUEST_PARAMETER__EMAIL ) );
         userFromRequest.setLangId( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__LANGUAGE_ID ) ) );
-        userFromRequest.setActive( BooleanUtils.toBoolean( Integer.parseInt( req.getParameter(REQUEST_PARAMETER__ACTIVE) ) ) );
+        userFromRequest.setActive( BooleanUtils.toBoolean( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__ACTIVE ) ) ) );
 
         return userFromRequest;
     }
@@ -1261,41 +1254,43 @@ public class AdminUserProps extends Administrator {
      */
 
     private boolean validateParameters( HttpServletRequest req, HttpServletResponse res,
-                                           UserDomainObject user ) throws IOException {
+                                        UserDomainObject user ) throws IOException {
 
-        if ( !assertRequiredFieldsFilledIn(req) ) {
+        if ( !assertRequiredFieldsFilledIn( req ) ) {
 
             String header = "Error in AdminUserProps ";
             Properties langproperties = ApplicationServer.getIMCServiceInterface().getLanguageProperties( user );
             String msg = langproperties.getProperty( "error/servlet/AdminUserProps/vaidate_form_parameters" ) + "<br>";
             log.debug( header + "Error in checkingparameters" );
             new AdminError( req, res, header, msg );
-            return false ;
+            return false;
         }
         return true;
 
     } // end validateParameters
 
     private boolean assertRequiredFieldsFilledIn( HttpServletRequest req ) {
-        String[] requiredFields = { REQUEST_PARAMETER__LOGIN_NAME,
-                                    REQUEST_PARAMETER__FIRST_NAME,
-                                    REQUEST_PARAMETER__LAST_NAME,
-                                    REQUEST_PARAMETER__PASSWORD1,
-                                    REQUEST_PARAMETER__PASSWORD2, } ;
+        String[] requiredFields = {
+            REQUEST_PARAMETER__LOGIN_NAME,
+            REQUEST_PARAMETER__FIRST_NAME,
+            REQUEST_PARAMETER__LAST_NAME,
+            REQUEST_PARAMETER__PASSWORD1,
+            REQUEST_PARAMETER__PASSWORD2,
+        };
         for ( int i = 0; i < requiredFields.length; i++ ) {
             String requiredField = requiredFields[i];
             String requiredFieldValue = req.getParameter( requiredField );
-            if (StringUtils.isBlank(requiredFieldValue)) {
-                return false ;
+            if ( StringUtils.isBlank( requiredFieldValue ) ) {
+                return false;
             }
         }
 
-        String[] rolesParameterValues = req.getParameterValues( REQUEST_PARAMETER__ROLES ) ;
-        if (null == rolesParameterValues || 0 == rolesParameterValues.length ) {
-            return false ;
+        String[] rolesParameterValues = req.getParameterValues( REQUEST_PARAMETER__ROLES );
+        if ( null == rolesParameterValues || 0 == rolesParameterValues.length ) {
+            return false;
         }
 
-        return true ;
+        return true;
     }
 
     /**

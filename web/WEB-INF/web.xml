@@ -214,11 +214,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.BrowserDocumentComposer</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.BrowserDocumentComposer</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-class>
     </servlet>
@@ -514,6 +509,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.UserBrowser</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.UserBrowser</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.VerifyUser</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.VerifyUser</servlet-class>
     </servlet>
@@ -711,11 +711,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.billboard.BillBoardViewer</servlet-name>
         <url-pattern>/servlet/BillBoardViewer</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.BrowserDocumentComposer</servlet-name>
-        <url-pattern>/servlet/BrowserDocumentComposer</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -1011,6 +1006,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.LinkCheck</servlet-name>
         <url-pattern>/servlet/LinkCheck</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.UserBrowser</servlet-name>
+        <url-pattern>/servlet/UserBrowser</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -7,7 +7,6 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateConstants;
 import imcode.util.MetaDataParser;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
@@ -20,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -226,7 +224,7 @@ public class SaveMeta extends HttpServlet {
             DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"publisher_id",
         };
 
-        HashMap inputMap = new HashMap();
+        Map inputMap = new HashMap();
         // Loop through all meta-table-properties
         // Adding them to a HashMap to be used as input
         // That way i can mutilate the values before all the
@@ -235,17 +233,6 @@ public class SaveMeta extends HttpServlet {
             final String parameter = req.getParameter( metatable[i] );
             inputMap.put( metatable[i], parameter );
         }
-
-        // Here's some mutilation!
-        // activated_date and activated_time need to be merged, and likewise with archived_date and archived_time
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
-        SimpleDateFormat timeFormat = new SimpleDateFormat( DateConstants.TIME_NO_SECONDS_FORMAT_STRING );
-
-        Date activated_datetime = DocumentComposer.parseDatetimeParameters( req, "activated_date", "activated_time", dateFormat, timeFormat );
-        Date archived_datetime = DocumentComposer.parseDatetimeParameters( req, "archived_date", "archived_time", dateFormat, timeFormat );
-        Date createdDatetime = DocumentComposer.parseDatetimeParameters( req, "date_created", "created_time", dateFormat, timeFormat );
-        Date modifiedDatetime = DocumentComposer.parseDatetimeParameters( req, "date_modified", "modified_time", dateFormat, timeFormat );
 
         // If target is set to '_other', it means the real target is in 'frame_name'.
         // In this case, set target to the value of frame_name.
@@ -348,8 +335,8 @@ public class SaveMeta extends HttpServlet {
                         ? "-1" : req.getParameter( "default_template_set_2" );
         }
 
-        ArrayList sqlUpdateColumns = new ArrayList();
-        ArrayList sqlUpdateValues = new ArrayList();
+        List sqlUpdateColumns = new ArrayList();
+        List sqlUpdateValues = new ArrayList();
 
         Enumeration propkeys = metaprops.propertyNames();
         while ( propkeys.hasMoreElements() ) {
@@ -357,29 +344,6 @@ public class SaveMeta extends HttpServlet {
             String columnValue = metaprops.getProperty( columnName );
             sqlUpdateColumns.add( columnName + " = ?" );
             sqlUpdateValues.add( columnValue );
-        }
-        SimpleDateFormat datetimeFormat = new SimpleDateFormat( DateConstants.DATETIME_NO_SECONDS_FORMAT_STRING );
-
-        if ( null != req.getParameter( "activated_date" ) ) {
-            String updatePart = "activated_datetime = ";
-            if ( null == activated_datetime ) {
-                updatePart += "NULL";
-            } else {
-                updatePart += "?";
-                sqlUpdateValues.add( datetimeFormat.format( activated_datetime ) );
-            }
-            sqlUpdateColumns.add( updatePart );
-        }
-
-        if ( null != req.getParameter( "archived_date" ) ) {
-            String updatePart = "archived_datetime = ";
-            if ( null == archived_datetime ) {
-                updatePart += "NULL";
-            } else {
-                updatePart += "?";
-                sqlUpdateValues.add( datetimeFormat.format( archived_datetime ) );
-            }
-            sqlUpdateColumns.add( updatePart );
         }
 
         // todo: Move this to DocumentMapper
@@ -404,16 +368,6 @@ public class SaveMeta extends HttpServlet {
             sprocUpdateDefaultTemplates( imcref, metaIdStr, template1, template2 );
         }
 
-        //if the administrator wants to change the date we does it here
-        if ( createdDatetime != null ) {
-            //we did got a ok date so lets save it to db
-            DocumentMapper.sqlUpdateMetaDateCreated( imcref, metaIdStr, datetimeFormat.format( createdDatetime ) );
-        }
-        if ( null != modifiedDatetime ) {
-            //we did got a ok date so lets save it to db
-            imcref.updateModifiedDatesOnDocumentAndItsParent( metaId, modifiedDatetime );
-        }
-
         // Update the date_modified for all parents.
         DocumentMapper.sprocUpdateParentsDateModified( imcref, Integer.parseInt( metaIdStr ) );
 
@@ -422,7 +376,6 @@ public class SaveMeta extends HttpServlet {
 
         //lets log to mainlog that the user done stuff
         mainLog.info( "Metadata on [" + metaIdStr + "] updated by user: [" + user.getFullName() + "]" );
-        return;
     }
 
     private static void putTemporaryPermissionSettingsInUser( UserDomainObject user, String meta_id,

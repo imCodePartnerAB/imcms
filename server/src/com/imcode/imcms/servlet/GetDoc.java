@@ -139,7 +139,7 @@ public class GetDoc extends HttpServlet {
             return imcref.getAdminTemplate( NO_ACTIVE_DOCUMENT_URL, user, null );
         }
 
-        if ( document instanceof FormerExternalDocument ) {
+        if ( document instanceof FormerExternalDocumentDomainObject ) {
             redirectToExternalDocumentTypeWithAction( document, res, "view" );
             // Log to accesslog
             trackLog.info( documentRequest );

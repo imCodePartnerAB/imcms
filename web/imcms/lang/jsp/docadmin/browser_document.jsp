@@ -5,9 +5,13 @@
                                          imcode.server.document.BrowserDocumentDomainObject,
                                          org.apache.commons.lang.ObjectUtils,
                                          org.apache.commons.lang.StringEscapeUtils,
-                                         com.imcode.imcms.servlet.admin.BrowserDocumentComposer,
                                          java.util.*,
-                                         org.apache.commons.lang.StringUtils"%>
+                                         org.apache.commons.lang.StringUtils,
+                                         imcode.util.HttpSessionUtils,
+                                         com.imcode.imcms.flow.HttpPageFlow,
+                                         com.imcode.imcms.flow.EditBrowserDocumentPageFlow,
+                                         com.imcode.imcms.flow.DocumentPageFlow,
+                                         com.imcode.imcms.flow.*"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
@@ -23,7 +27,7 @@
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <table border="0" cellspacing="0" cellpadding="0">
-<form method="POST" action="BrowserDocumentComposer">
+<form method="POST" action="DocumentComposer">
 <tr>
 	<td><input type="submit" name="cancel" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
@@ -32,25 +36,10 @@
 </table>
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="660">
-<%
-    DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
-    boolean creatingNewDocument = null != newDocumentParentInformation;
-
-    if (creatingNewDocument) { %>
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
-            value="<%= DocumentComposer.ACTION__CREATE_NEW_BROWSER_DOCUMENT %>">
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
-            value="<%= DocumentComposer.getSessionAttributeNameFromRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
-<% } else {%>
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
-            value="<%= DocumentComposer.ACTION__PROCESS_EDITED_BROWSER_DOCUMENT %>">
-<% } %>
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
-            value="<%= DocumentComposer.getSessionAttributeNameFromRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
+    value="<%= DocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td colspan="3">
         #gui_heading( "<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/4/1 ?>" )
@@ -58,9 +47,9 @@
 </tr>
 <tr>
 	<td align="right">
-	<select name="<%= BrowserDocumentComposer.PARAMETER__BROWSERS %>" size="7" multiple>
+	<select name="<%= EditBrowserDocumentPageFlow.REQUEST_PARAMETER__BROWSERS %>" size="7" multiple>
         <%
-            Map addedBrowsers = (Map)request.getAttribute( BrowserDocumentComposer.REQUEST_ATTRIBUTE__ADDED_BROWSERS );
+            Map addedBrowsers = (Map)request.getAttribute( EditBrowserDocumentPageFlow.REQUEST_ATTRIBUTE__ADDED_BROWSERS );
 
             BrowserDocumentDomainObject.Browser[] allBrowsers = ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllBrowsers() ;
             Arrays.sort(allBrowsers) ;
@@ -75,7 +64,7 @@
 	</select>
     </td>
 	<td align="center">
-        <input type="submit" class="imcmsFormBtnSmall" name="<%= BrowserDocumentComposer.PARAMETER_BUTTON__ADD_BROWSERS %>"
+        <input type="submit" class="imcmsFormBtnSmall" name="<%= EditBrowserDocumentPageFlow.REQUEST_PARAMETER__ADD_BROWSERS_BUTTON %>"
                 value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2004 ?>">
     </td>
 	<td>
@@ -89,13 +78,13 @@
                     }
                     %><tr>
                         <td><%= browser.getName() %>:</td>
-                        <td><input type="text" name="<%= BrowserDocumentComposer.PARAMETER_PREFIX__DESTINATION %><%= browser.getId() %>" size="5" maxlength="9" value="<%= ObjectUtils.defaultIfNull( addedBrowsers.get(browser),"") %>"></td>
+                        <td><input type="text" name="<%= EditBrowserDocumentPageFlow.REQUEST_PARAMETER_PREFIX__DESTINATION %><%= browser.getId() %>" size="5" maxlength="9" value="<%= ObjectUtils.defaultIfNull( addedBrowsers.get(browser),"") %>"></td>
                     </tr><%
                 }
             %>
             <tr>
                 <td><? install/htdocs/sv/jsp/docadmin/browser_document.jsp/other_browsers ?>:</td>
-                <td><input type="text" name="<%= BrowserDocumentComposer.PARAMETER_PREFIX__DESTINATION %><%= BrowserDocumentDomainObject.Browser.DEFAULT.getId() %>" size="5" maxlength="9" value="<%= ObjectUtils.defaultIfNull( addedBrowsers.get(BrowserDocumentDomainObject.Browser.DEFAULT),"") %>"></td>
+                <td><input type="text" name="<%= EditBrowserDocumentPageFlow.REQUEST_PARAMETER_PREFIX__DESTINATION %><%= BrowserDocumentDomainObject.Browser.DEFAULT.getId() %>" size="5" maxlength="9" value="<%= ObjectUtils.defaultIfNull( addedBrowsers.get(BrowserDocumentDomainObject.Browser.DEFAULT),"") %>"></td>
             </tr>
         </table>
     </td>
@@ -108,9 +97,9 @@
 </tr>
 <tr>
 	<td colspan="3" align="right">
-	<input type="SUBMIT" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2005 ?>" name="<%= BrowserDocumentComposer.PARAMETER_BUTTON__OK %>">
+	<input type="SUBMIT" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2005 ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>">
 	<input type="RESET" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2006 ?>" name="reset">
-	<input type="SUBMIT" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2007 ?>" name="<%= BrowserDocumentComposer.PARAMETER_BUTTON__CANCEL %>"></td>
+	<input type="SUBMIT" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/browser_document.jsp/2007 ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>"></td>
 </tr>
 </form>
 </table>

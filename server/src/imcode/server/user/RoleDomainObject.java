@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * @author kreiger
  */
-public class RoleDomainObject implements Serializable {
+public class RoleDomainObject implements Serializable, Comparable {
 
     public final static RoleDomainObject SUPERADMIN = new RoleDomainObject( 0, RoleConstants.SUPER_ADMIN, 1 );
     public final static RoleDomainObject USERADMIN = new RoleDomainObject( 0, RoleConstants.USER_ADMIN, 2 );
@@ -63,5 +63,9 @@ public class RoleDomainObject implements Serializable {
 
     public boolean isAdminRole() {
         return 0 != adminRoleId ;
+    }
+
+    public int compareTo( Object o ) {
+        return name.compareToIgnoreCase(((RoleDomainObject)o).name) ;
     }
 }

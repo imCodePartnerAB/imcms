@@ -1,18 +1,8 @@
-/*
- * Created by IntelliJ IDEA.
- * User: kreiger
- * Date: 2004-feb-28
- * Time: 20:48:17
- */
 package imcode.server.document;
 
-import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.collections.MapUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,7 +10,7 @@ import java.util.Map;
 
 public class BrowserDocumentDomainObject extends DocumentDomainObject {
 
-    private Map browserDocumentIdMap = new HashMap();
+    private Map browserDocumentIdMap = MapUtils.typedMap( new HashMap(), Browser.class, Integer.class ) ;
 
     public Map getBrowserDocumentIdMap() {
         return Collections.unmodifiableMap( browserDocumentIdMap );
@@ -32,14 +22,6 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
 
     public int getDocumentTypeId() {
         return DOCTYPE_BROWSER;
-    }
-
-    public void processNewDocumentInformation( DocumentComposer documentInformation,
-                                               DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
-                                               UserDomainObject user, HttpServletRequest request,
-                                               HttpServletResponse response ) throws IOException, ServletException {
-        documentInformation.processNewBrowserDocumentInformation( request, response );
-
     }
 
     public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
@@ -56,6 +38,11 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
 
     public void setBrowserDocumentId( Browser browser, int documentId ) {
         this.browserDocumentIdMap.put( browser, new Integer( documentId ) );
+    }
+
+    public void setBrowserDocuments( Map browserDocuments ) {
+        this.browserDocumentIdMap.clear();
+        this.browserDocumentIdMap.putAll( browserDocuments );
     }
 
     public static class Browser implements Comparable, Serializable {

@@ -6,7 +6,7 @@
  */
 package imcode.server.document;
 
-public class ChatDocumentDomainObject extends FormerExternalDocument {
+public class ChatDocumentDomainObject extends FormerExternalDocumentDomainObject {
 
     public int getDocumentTypeId() {
         return DOCTYPE_CHAT;

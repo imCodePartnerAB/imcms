@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class Utility {
@@ -130,6 +129,15 @@ public class Utility {
 
     public static boolean isValidEmail( String email ) {
         return Pattern.compile( "\\w+@\\w+" ).matcher( email ).find();
+    }
+
+    public static void removeNullValuesFromMap( Map map ) {
+        Collection documentIds = map.values();
+        for ( Iterator iterator = documentIds.iterator(); iterator.hasNext(); ) {
+            if ( null == iterator.next() ) {
+                iterator.remove();
+            }
+        }
     }
 
 }

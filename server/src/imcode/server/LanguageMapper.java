@@ -45,9 +45,9 @@ public class LanguageMapper {
         LanguageMapper.iso639_2to639_1map = Collections.unmodifiableMap( iso6392to6391map );
     }
 
-    public static String getCurrentLanguageNameInUsersLanguage( IMCServiceInterface service, UserDomainObject user,
-            String documentLanguage ) {
-        List languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage( service, user );
+    public static String getCurrentLanguageNameInUsersLanguage( UserDomainObject user,
+                                                                String documentLanguage ) {
+        List languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage( user );
         String result = null;
         for ( Iterator iterator = languageKeysAndNamesInUsersLanguage.iterator() ; iterator.hasNext() ; ) {
             String langPrefix = (String) iterator.next();
@@ -59,14 +59,14 @@ public class LanguageMapper {
         return result;
     }
 
-    public static String getLanguageOptionList( IMCServiceInterface service, UserDomainObject user,
-            String documentLanguage ) {
-        List languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage( service, user );
+    public static String getLanguageOptionList( UserDomainObject user,
+                                                String documentLanguage ) {
+        List languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage( user );
         return Html.createOptionList( documentLanguage, languageKeysAndNamesInUsersLanguage );
     }
 
-    private static List getListOfLanguageKeysAndNamesInUsersLanguage( IMCServiceInterface service,
-            UserDomainObject user ) {
+    private static List getListOfLanguageKeysAndNamesInUsersLanguage( UserDomainObject user ) {
+        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface() ;
         String[][] languages = service.sqlQueryMulti( "select lang_prefix, user_prefix, language from languages where user_prefix = ?", new String[]{user.getLanguageIso639_2()} );
         List languagesInOptionList = new ArrayList();
         for ( int i = 0 ; i < languages.length ; i++ ) {

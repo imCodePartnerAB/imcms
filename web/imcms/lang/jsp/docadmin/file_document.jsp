@@ -1,13 +1,16 @@
 <%@ page contentType="text/html" import="com.imcode.imcms.servlet.admin.DocumentComposer,
                                          imcode.server.document.DocumentMapper,
-                                         imcode.util.Utility,
                                          org.apache.commons.lang.StringEscapeUtils,
                                          imcode.server.ApplicationServer,
                                          imcode.server.document.FileDocumentDomainObject,
-                                         org.apache.commons.lang.ObjectUtils"%>
-<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
-    FileDocumentDomainObject document = (FileDocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
-%>
+                                         org.apache.commons.lang.ObjectUtils,
+                                         imcode.server.document.HtmlDocumentDomainObject,
+                                         imcode.util.*,
+                                         com.imcode.imcms.flow.CreateDocumentPageFlow,
+                                         com.imcode.imcms.flow.DocumentPageFlow,
+                                         com.imcode.imcms.flow.HttpPageFlow,
+                                         com.imcode.imcms.flow.EditFileDocumentPageFlow"%>
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <vel:velocity>
 <html>
 <head>
@@ -33,27 +36,14 @@
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <%
-    DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
-    boolean creatingNewDocument = null != newDocumentParentInformation;
-
-    if (creatingNewDocument) { %>
-
-    <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
-            value="<%= DocumentComposer.ACTION__CREATE_NEW_FILE_DOCUMENT %>">
-    <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
-            value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
-
-    <% } else {%>
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
-            value="<%= DocumentComposer.ACTION__PROCESS_EDITED_FILE_DOCUMENT %>">
-    <% }
+    DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
+    FileDocumentDomainObject document = (FileDocumentDomainObject)httpFlow.getDocument() ;
+    boolean creatingNewDocument = httpFlow instanceof CreateDocumentPageFlow ;
 %>
-    <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
-            value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
+    value="<%= DocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td>
         #gui_heading( "<? install/htdocs/sv/jsp/docadmin/file_document.jsp/4/1 ?>" )
@@ -69,13 +59,13 @@
             <% if (!creatingNewDocument) { %>
                 <%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getFilename(), "" ) ) %><br>
             <% } %>
-            <input type="file" name="<%= DocumentComposer.PARAMETER__FILE_DOC__FILE %>" size="45">
+            <input type="file" name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__FILE %>" size="45">
         </td>
 	</tr>
 	<tr>
 		<td height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/7 ?></td>
 		<td>
-		<select name="<%= DocumentComposer.PARAMETER__FILE_DOC__MIME_TYPE %>">
+		<select name="<%= EditFileDocumentPageFlow.REQUEST_PARAMETER__FILE_DOC__MIME_TYPE %>">
 			<option value=""<% if ("".equals(ObjectUtils.defaultIfNull( document.getMimeType(), "")) ) { %> selected<% } %>>
                 <? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?>
             </option>
@@ -106,7 +96,7 @@
 </tr>
 <tr>
 	<td align="right">
-	<input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/2004 ?>" name="ok">
+	<input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/2004 ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>">
 	<input type="reset" class="imcmsFormBtn" name="reset" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/2005 ?>">
 	<input type="submit" class="imcmsFormBtn" name="cancel" value="<? install/htdocs/sv/jsp/docadmin/file_document.jsp/2006 ?>"></td>
 </tr>

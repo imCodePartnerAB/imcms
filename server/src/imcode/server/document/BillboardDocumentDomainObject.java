@@ -6,7 +6,7 @@
  */
 package imcode.server.document;
 
-public class BillboardDocumentDomainObject extends FormerExternalDocument {
+public class BillboardDocumentDomainObject extends FormerExternalDocumentDomainObject {
 
     public int getDocumentTypeId() {
         return DOCTYPE_BILLBOARD;

@@ -121,21 +121,4 @@ public class Html {
         return categoryOptionList;
     }
 
-    public static String createPublisherOptionList( ImcmsAuthenticatorAndUserMapper userAndRoleMapper,
-                                                     UserDomainObject publisher ) {
-        UserDomainObject[] users = userAndRoleMapper.getUsers( false, false );
-
-        String optionList;
-        Transformer userToStringPairTransformer = new Transformer() {
-            public Object transform( Object o ) {
-                UserDomainObject user = (UserDomainObject)o;
-                return new String[]{"" + user.getId(), user.getLastName() + ", " + user.getFirstName()};
-            }
-
-        };
-        optionList = createOptionList( Arrays.asList( users ), publisher, userToStringPairTransformer );
-        optionList = "<option></option>" + optionList;
-        return optionList;
-    }
-
 }

@@ -1,6 +1,5 @@
 package imcode.server.document;
 
-import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.*;
 import imcode.server.document.index.AutorebuildingDocumentIndex;
 import imcode.server.document.index.DocumentIndex;
@@ -1414,12 +1413,11 @@ public class DocumentMapper {
         return mimeTypes;
     }
 
-    public void saveNewDocumentAndAddToMenu(DocumentDomainObject newDocument, UserDomainObject user,
-                                            DocumentComposer.NewDocumentParentInformation newDocumentParentInformation) {
-        saveNewDocument(newDocument, user);
-        TextDocumentDomainObject parentDocument = (TextDocumentDomainObject) getDocument(newDocumentParentInformation.parentId);
-        parentDocument.getMenu(newDocumentParentInformation.parentMenuIndex).addMenuItem(new MenuItemDomainObject(newDocument));
-        saveDocument(parentDocument, user);
+    public void saveNewDocumentAndAddToMenu( DocumentDomainObject newDocument, UserDomainObject user,
+                                             TextDocumentDomainObject parentDocument, int parentMenuIndex ) {
+        saveNewDocument( newDocument, user );
+        parentDocument.getMenu( parentMenuIndex ).addMenuItem( new MenuItemDomainObject( newDocument ) );
+        saveDocument( parentDocument, user );
     }
 
     public BrowserDocumentDomainObject.Browser[] getAllBrowsers() {

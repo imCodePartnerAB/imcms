@@ -2,9 +2,14 @@
                  imcode.server.document.DocumentDomainObject,
                  org.apache.commons.lang.StringEscapeUtils,
                  org.apache.commons.lang.ObjectUtils,
-                 imcode.server.document.UrlDocumentDomainObject" contentType="text/html"%>
+                 imcode.server.document.UrlDocumentDomainObject,
+                 imcode.util.*,
+                 com.imcode.imcms.flow.EditUrlDocumentPageFlow,
+                 com.imcode.imcms.flow.DocumentPageFlow,
+                 com.imcode.imcms.flow.HttpPageFlow" contentType="text/html"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
-    UrlDocumentDomainObject document = (UrlDocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
+    DocumentPageFlow httpFlow = (DocumentPageFlow)DocumentComposer.getDocumentPageFlowFromRequest(request) ;
+    UrlDocumentDomainObject document = (UrlDocumentDomainObject)httpFlow.getDocument() ;
 %>
 <vel:velocity>
 <html>
@@ -27,25 +32,10 @@
 </table>
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="400">
-<%
-    DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
-    boolean creatingNewDocument = null != newDocumentParentInformation;
-
-    if (creatingNewDocument) { %>
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
-            value="<%= DocumentComposer.ACTION__CREATE_NEW_URL_DOCUMENT %>">
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
-            value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
-<%  } else { %>
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION %>"
-            value="<%= DocumentComposer.ACTION__PROCESS_EDITED_URL_DOCUMENT %>">
-<% } %>
-        <input type="hidden"
-            name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
-            value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
+    value="<%= DocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td colspan="2">
         #gui_heading( "<? install/htdocs/sv/jsp/docadmin/url_document.jsp/4/1 ?>" )
@@ -53,7 +43,7 @@
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1001 ?>&nbsp;</td>
-	<td><input type="text" name="<%= DocumentComposer.PARAMETER__URL_DOC__URL %>" size="62" maxlength="255"
+	<td><input type="text" name="<%= EditUrlDocumentPageFlow.REQUEST_PARAMETER__URL_DOC__URL %>" size="62" maxlength="255"
                 value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getUrl(), "" )) %>"></td>
 </tr>
 <tr>

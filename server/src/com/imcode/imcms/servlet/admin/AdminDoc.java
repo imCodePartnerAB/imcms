@@ -1,12 +1,12 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.servlet.GetDoc;
+import com.imcode.imcms.flow.*;
 import imcode.server.*;
 import imcode.server.document.*;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Parser;
-import imcode.util.Utility;
+import imcode.util.*;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
@@ -33,19 +33,24 @@ public class AdminDoc extends HttpServlet {
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( metaId );
         if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
-            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION );
+            HttpPageFlow httpPageFlow = new EditDocumentInformationPageFlow(document) ;
+            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else if ( document instanceof BrowserDocumentDomainObject
                     && IMCConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
-            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_BROWSER_DOCUMENT );
+            HttpPageFlow httpPageFlow = new EditBrowserDocumentPageFlow((BrowserDocumentDomainObject)document) ;
+            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else if ( document instanceof HtmlDocumentDomainObject
                     && IMCConstants.DISPATCH_FLAG__EDIT_HTML_DOCUMENT == flags ) {
-            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_HTML_DOCUMENT );
+            HttpPageFlow httpPageFlow = new EditHtmlDocumentPageFlow((HtmlDocumentDomainObject)document) ;
+            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else if ( document instanceof UrlDocumentDomainObject
                     && IMCConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT == flags ) {
-            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_URL_DOCUMENT );
+            HttpPageFlow httpPageFlow = new EditUrlDocumentPageFlow((UrlDocumentDomainObject)document) ;
+            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else if ( document instanceof FileDocumentDomainObject
                     && IMCConstants.DISPATCH_FLAG__EDIT_FILE_DOCUMENT == flags ) {
-            forwardDocumentToDocumentComposerWithAction( req, res, document, DocumentComposer.ACTION__EDIT_FILE_DOCUMENT );
+            HttpPageFlow httpPageFlow = new EditFileDocumentPageFlow((FileDocumentDomainObject)document, getServletContext()) ;
+            forwardToDocumentComposerWithFlow( req, res, httpPageFlow );
         } else {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -75,11 +80,10 @@ public class AdminDoc extends HttpServlet {
         }
     }
 
-    private void forwardDocumentToDocumentComposerWithAction( HttpServletRequest req, HttpServletResponse res,
-                                                              DocumentDomainObject document, String action ) throws ServletException, IOException {
-        DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
-                                                                                + ".document", document, req, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
-        req.getRequestDispatcher( "DocumentComposer?" + DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION + "=" + action ).forward( req, res );
+    private void forwardToDocumentComposerWithFlow( HttpServletRequest req, HttpServletResponse res,
+                                                             HttpPageFlow httpPageFlow ) throws ServletException, IOException {
+        HttpSessionUtils.addObjectToSessionAndSetSessionAttributeNameInRequest( httpPageFlow, req, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        req.getRequestDispatcher( "DocumentComposer" ).forward( req, res );
     }
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req,
