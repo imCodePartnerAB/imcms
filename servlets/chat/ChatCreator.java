@@ -64,7 +64,7 @@ public class ChatCreator extends ChatBase
 		{
 			String[] msgTypes = rmi.execSqlProcedure(chatPoolServer, "GetBaseMsgTypes");
 			String[] msgTypesId = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypesId");
-		
+			
 			for(int i =0;i<msgTypes.length;i++)
 			{
 				log("Stringmsgtype: " + msgTypes[i] );
@@ -78,9 +78,6 @@ public class ChatCreator extends ChatBase
 	
 		msgTypesV = (Vector)session.getValue("msgTypesV");
 		
-		
-		
-
 		//get the authorization types 
 		Vector autTypeV = new Vector();
 		
@@ -101,7 +98,6 @@ public class ChatCreator extends ChatBase
 		}
 		
 		autTypeV = (Vector)session.getValue("autTypesV");
-		
 		
 		//get existing rooms
 		Vector roomsV = ( (Vector)session.getValue("roomList")==null ) ? new Vector() : (Vector)session.getValue("roomList");
@@ -173,8 +169,6 @@ public class ChatCreator extends ChatBase
 				}
 			}
 			
-			
-			
 			vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
 			vm.addProperty("roomList", htm.createHtmlCode("ID_OPTION",theRoom, roomsV) ) ;
 			vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION",theType, msgTypesV) ) ;
@@ -200,7 +194,7 @@ public class ChatCreator extends ChatBase
 			//check that its really a new metaId
 			String foundMetaId = rmi.execSqlProcedureStr(chatPoolServer, "MetaIdExists " + metaId) ;
 			
-			if(!foundMetaId.equals("1"))
+			if( !foundMetaId.equals("1") )
 			{
 				action = "" ;
 				String header = "ChatCreator servlet. " ;
@@ -239,7 +233,15 @@ public class ChatCreator extends ChatBase
 		
 			}
 			
+			//lets connect the standard msgTypes with the chat		
+			String[] tempTypes = rmi.execSqlProcedure(chatPoolServer, "GetBaseMsgTypes");
 			
+			for(int i=0;i<tempTypes.length;i++)
+			{
+				String tempTypeId = rmi.execSqlProcedureStr(chatPoolServer, "GetMsgTypeId " + "'"+ tempTypes[i] +"'");
+				rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewChatMsg " + tempTypeId + " , " + metaId ) ;
+			}
+	
 			// Lets add the new msgTypes to the db
             for (int i=0;i<newMsgTypeV.size();i++)
             {
