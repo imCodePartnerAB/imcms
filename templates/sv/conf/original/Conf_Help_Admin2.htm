@@ -1,0 +1,942 @@
+<html>
+<head>
+<title>Hj&auml;lpsida</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Hj&auml;lpsida 
+  f&ouml;r konferensadministrat&ouml;rer</b><br>
+  </font></p>
+<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif">F&ouml;r att skapa 
+  nya htmlmallar finns det ett antal taggar per mallsida som man kan anv&auml;nda 
+  sig av.<br>
+  N&aring;gra taggar kan alltid anv&auml;ndas i samtliga mallsidor. Dessa f&ouml;ljer 
+  nedan. Efter dessa f&ouml;ljer de taggar respektive<br>
+  de kommando som kan skickas till de olika servlets som anv&auml;nds i konferensen.<br>
+  </font></p>
+<table width="100%" border="0">
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="3"><b><font size="2"><a href="#General_tags">Gemensamma 
+      taggar </a></font></b></font></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b><a href="#General_parameters">Gemensamma 
+      parametrar </a></b></font></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b><a href="#Conf_Add">ConfAdd 
+      servlet </a></b></font></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b><a href="#Conf_Admin">ConfAdmin 
+      servlet</a></b></font></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><a href="#Conf_Creator">ConfCreator 
+      servlet </a></b></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><a href="#Conf_Disc">ConfDisc 
+      servlet</a></b></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="2"><a href="#Conf_Disc_View">ConfDiscView 
+      servlet</a></font></b></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><font size="2"><b><a href="#Conf_Error">ConfError 
+      servlet </a> </b></font></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Forum"><font size="2"><b>ConfForum 
+      servlet</b></font></a></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Help"><font size="2"><b>ConfHelp 
+      servlet</b></font></a></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Login"><font size="2"><b>ConfLogin 
+      servlet</b></font></a></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Help"><font size="2"><b>ConfHelp 
+      servlet</b></font></a></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Manager"><font size="2"><b>ConfManager 
+      servlet</b></font></a></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_Reply"><font size="2"><b>ConfReply 
+      servlet</b></font></a></font></td>
+  </tr>
+  <tr> 
+    <td width="93%"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#Conf_View"><font size="2"><b>ConfViewer 
+      servlet</b></font></a></font></td>
+  </tr>
+</table>
+<p>&nbsp; </p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="General_tags"></a>Gemensamma 
+  taggar.</b></font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+    <td width="37%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Exempel</font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;SERVLET_URL&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      s&ouml;kv&auml;gen till servletmappen.</font></td>
+    <td width="37%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#SERVLET_URL#</font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;IMAGE_URL&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      s&ouml;kv&auml;g till konferensen bildmapp</font></td>
+    <td width="37%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">#IMAGE_URL#</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="General_parameters"></a>Gemensamma 
+  parametrar<br>
+  </b>En del parametrar anv&auml;nder sig servletarna av fr&aring;n och till. 
+  Dessa h&auml;mtas i f&ouml;rsta hand fr&aring;n requestobjektet och om det inte 
+  har angetts d&auml;r h&auml;mtas det fr&aring;n sessionobjektet.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parametrar</b></font></td>
+    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+  </tr>
+  <tr> 
+    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META_ID</font></td>
+    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      meta id: et f&ouml;r konferensen</font></td>
+  </tr>
+  <tr> 
+    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">PARENT_META_ID</font></td>
+    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilket meta_id som &quot;v&aring;rt&quot; meta_id &auml;r l&ouml;v under</font></td>
+  </tr>
+  <tr> 
+    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">COOKIE_ID</font></td>
+    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Oanv&auml;nt 
+      i denna modul.</font></td>
+  </tr>
+  <tr> 
+    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FORUM_ID</font></td>
+    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilket forum som &auml;r aktuellt</font></td>
+  </tr>
+  <tr> 
+    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DISC_ID</font></td>
+    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilken diskussion som &auml;r aktuell</font></td>
+  </tr>
+  <tr> 
+    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">LAST_LOGIN_DATE</font></td>
+    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilket datum anv&auml;ndaren sist var inloggad i konferensen</font></td>
+  </tr>
+  <tr> 
+    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">USER_ID</font></td>
+    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilken anv&auml;ndare som &auml;r inloggad</font></td>
+  </tr>
+  <tr> 
+    <td width="19%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DISC_INDEX</font></td>
+    <td width="81%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilket v&auml;rde som diskussionsindex har. Dvs vilken diskussion som anv&auml;nds 
+      f&ouml;r att ber&auml;kna vilka diskussioner som skall visas f&ouml;r anv&auml;ndaren.</font></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Add"></a>ConfAdd 
+  servlet</b><br>
+  <b>Post parametrar</b>: ConfAdd servlet st&ouml;der f&ouml;ljande parametrar.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="13%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parametrar</b></font></td>
+    <td width="59%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>V&auml;rden</b></font></td>
+  </tr>
+  <tr> 
+    <td width="13%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CANCEL</font></td>
+    <td width="59%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      att anv&auml;ndaren vill avbryta skapandet av inl&auml;gg/diskussion</font></td>
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="13%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD</font></td>
+    <td width="59%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      att anv&auml;ndaren vill l&auml;gga till nytt diskussion/inl&auml;gg</font></td>
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Godtyckligt</font></td>
+  </tr>
+</table>
+<p><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add 
+  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
+  Om funktionsparametern &auml;r add kr&auml;vs f&ouml;ljande parametrar:</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_HEADER</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      rubriken p&aring; inl&auml;gget</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Godtycklig</font></td>
+  </tr>
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_TEXT</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      text p&aring; inl&auml;gget</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Godtycklig</font></td>
+  </tr>
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADDTYPE</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilken typ av inl&auml;gg som g&ouml;rs. Kommentar eller starta diskussion</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REPLY, 
+      DISCUSSION</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Taggar</b>: 
+  ConfAdd servlet st&ouml;der f&ouml;ljande taggar.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+  </tr>
+  <tr> 
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;FIRST_NAMEL&#035;</font></td>
+    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      skribentens f&ouml;rnamn</font></td>
+  </tr>
+  <tr> 
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;LAST_NAMEL&#035;</font></td>
+    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      skribentens f&ouml;rnamn</font></td>
+  </tr>
+  <tr> 
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;ADD_TYPE&#035;</font></td>
+    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      typ av inl&auml;gg (DISCUSSION/REPLY)</font></td>
+  </tr>
+  <tr> 
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;DISC_HEADER&#035;</font></td>
+    <td width="78%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      aktuell diskussions rubrik</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Admin"></a>ConfAdmin 
+  servlet</b><br>
+  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Get 
+      parameter</b></font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;EXTERNAL_PATH&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anv&auml;nds 
+      i adminl&auml;ge f&ouml;r att ange var n&aring;gonstans en uppladdad fil 
+      skall placeras p&aring; server. </font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META 
+      </font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;TEMPLATE_LIST&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      en lista med vilka mallset som finns</font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META 
+      </font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;A_META_ID&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilket meta id den aktiva konferensen har</font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META 
+      </font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CURRENT_TEMPLATE_SET&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anv&auml;nds 
+      f&ouml;r att visa vilket templateset som anv&auml;nds </font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">META 
+      </font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;FORUM_LIST&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      en lista med de forum som finns i konferensen</font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FORUM</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NBR_OF_DISCS_TO_SHOW_LIST&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      en speciell form av forumulista som f&ouml;rutom forumnamnen &auml;ven inneh&aring;ller 
+      antalet diskussioner som visas</font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FORUM</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NEW_A_HREF_LIST&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      alla nya diskussioner sedan admin sist var inloggad</font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DISCUSSION</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;OLD_A_HREF_LIST&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      alla gamla diskussioner sedan admin sist var inloggad</font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DISCUSSION</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;USER_SORT_ORDER&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      anv&auml;ndarens sorteringsorder p&aring; inl&auml;ggen. Kan vara 1 eller 
+      0.</font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REPLY</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CHECKBOX_STATE&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      ordet checked / eller inget beroende p&aring; anv&auml;ndarens sorteringsorder. 
+      </font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REPLY</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;REPLIES_RECORDS&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      lista med samtliga inl&auml;gg i en diskussion</font></td>
+    <td width="22%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REPLY</font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_UNADMIN_BUTTON&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      bild p&aring; knapp f&ouml;r avsluta administration</font></td>
+    <td width="37%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_UNADMIN_LINK&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      knapp f&ouml;r att avsluta administration</font></td>
+    <td width="37%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font></td>
+  </tr>
+</table>
+<p><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Postparametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
+  </font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
+      parameter v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">REGISTER_TEMPLATE_LIB</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Registrerar 
+      ett nytt mallset </font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">UPLOAD_CONF</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      namnet p&aring; det f&ouml;rsta forumet</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SET_TEMPLATE_LIB</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilket mallset som skall anv&auml;ndas i en diskussion</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DELETE_REPLY</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Tar 
+      bort ett inl&auml;gg i en diskussion </font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">RESAVE_REPLY</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Sparar 
+      om ett editerat inl&auml;gg</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DELETE_DISCUSSION</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Tar 
+      bort en diskussion</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">DELETE_FORUM</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Tar 
+      bort ett forum</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_FORUM</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">L&auml;gger 
+      till ett forum</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CHANGE_FORUM_NAME</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">&Auml;ndrar 
+      namnet p&aring; ett befintligt forum</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SHOW_DISCUSSION_NBR</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">S&auml;tter 
+      antalet diskusssioner som skall visas i ett forum</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+</table>
+<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>REGISTER_TEMPLATE_LIB</b></font><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
+  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
+  Om funktionsparametern &auml;r REGISTER_TEMPLATE_LIB kr&auml;vs f&ouml;ljande 
+  parametrar.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="15%">TEMPLATE_LIB_NAME</td>
+    <td width="85%"><font size="2">Anger det nya namnet p&aring; det nya mallsetet</font></td>
+    <td width="85%"><font size="2">Godtycklig</font></td>
+  </tr>
+</table>
+<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>UPLOAD_CONF</b></font><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
+  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
+  Om funktionsparametern &auml;r UPLOAD_CONF kr&auml;vs f&ouml;ljande parametrar.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">TEMPLATE_NAME</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      namnet p&aring; det mallset uploaden skall utf&ouml;ras p&aring;</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Befintligt 
+      mallset (v&auml;ljs ur lista)</font></td>
+  </tr>
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">UPLOAD_TYPE</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      filtypen som laddas upp.</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">IMAGE/TEMPLATE</font></td>
+  </tr>
+</table>
+<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>SET_TEMPLATE_LIB</b></font><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
+  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
+  Om funktionsparametern &auml;r SET_TEMPLATE_LIB kr&auml;vs f&ouml;ljande parametrar.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="15%"><font face="Verdana, Arial, Helvetica, sans-serif">TEMPLATE_ID</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      id:et p&aring; det nya templatesetet som v&auml;ljs</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Befintligt 
+      mallset (v&auml;ljs ur lista)</font></td>
+  </tr>
+</table>
+<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>RESAVE_REPLY</b></font><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b> 
+  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
+  Om funktionsparametern &auml;r RESAVE_REPLY kr&auml;vs f&ouml;ljande parametrar.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">TEXT_BOX_x</font></td>
+    <td width="43%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      Texbox id:et p&aring; ett inl&auml;gg.</font></td>
+    <td width="45%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Exempel: 
+      TEXT_BOX_2 // Anger textbox nr 2 </font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">REPLY_HEADER_x</font></td>
+    <td width="43%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      Texbox id:et p&aring; ett inl&auml;gg.</font></td>
+    <td width="45%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Exempel: 
+      REPLY_HEADER_2 // Anger inl&auml;ggsrubrik nr 2 </font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><br>
+  <a name="Conf_Creator"></a>ConfCreator servlet</b><br>
+  <b>Taggar</b>: Saknar egna taggar.<br>
+  <b>Postparametrar: </b> </font></p>
+<p></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
+      parameter v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">action</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Skapar 
+      ny konferens</font></td>
+    <td width="21%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">ADD_CONF</font></td>
+  </tr>
+</table>
+<p><font color="#000000" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Add_conf 
+  parametrar</b></font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>:</b> 
+  Om action &auml;r Add_Conf kr&auml;vs f&ouml;ljande parametrar:</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
+      parameter v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">conference_name</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      ett internt namn p&aring; konferensen</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">forum_name</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      namnet p&aring; det f&ouml;rsta forumet</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+</table>
+<p>&nbsp; </p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Disc"></a>ConfDisc 
+  servlet</b><br>
+  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;A_HREF_LIST&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      lista med samtliga diskussioner i ett forum. Kommer i en a href tag</font></td>
+  </tr>
+  <tr> 
+    <td width="18%" height="20"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;PREVIOUS_BUTTON&#035;</font></td>
+    <td width="60%" height="20"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      knapp f&ouml;r lista f&ouml;rg&aring;nede diskussioner.</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NEXT_BUTTON&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      knapp f&ouml;r lista n&auml;st diskussioner.</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NEW_DISC_BUTTON&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      knapp f&ouml;r att l&auml;gga till diskussioner.</font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_BUTTON&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      bild p&aring; administrationsknapp</font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_LINK&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      knapp f&ouml;r administration av diskussion</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Getparametrar: 
+  </b>Inga <b><br>
+  Postparametrar: </b> </font></p>
+<p></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
+      parameter v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">UPDATE</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Uppdaterar 
+      diskussionsservleten</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">NEXT</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Generar 
+      en ny discussionslista med x antal senare skapade diskussioner om det finns 
+      s&aring;dana.</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">PREVIOUS</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Generar 
+      en ny discussionslista med x antal tidigare skapade diskussioner om det 
+      finns s&aring;dana.</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">SEARCH</font></td>
+    <td width="67%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">Generar 
+      en ny discussionslista med alla tr&auml;ffar som gjorts f&ouml;r en s&ouml;kning</font></td>
+    <td width="21%"><font size="2" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+</table>
+<p></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>S&ouml;kparametrar:</b><br>
+  F&ouml;ljande parametrar kommer att beh&ouml;vas om parametern SEARCH har skickats 
+  till ConfDisc Post funktion.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>S&ouml;k 
+      parameter</b></font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Inneb&ouml;rd</b></font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
+      parameter v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CATEGORY</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      vilken kategori s&ouml;kningen skall utf&ouml;ras i. 0=rubriker, 1=texter, 
+      2=anv&auml;ndare</font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">0/1/2</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SEARCH</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      s&ouml;kordet/orden som skall s&ouml;kas efter</font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FR_DATE</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      startdatum som s&ouml;kningen skall g&auml;lla f&ouml;r </font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">FR_VALUE</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      det defaultv&auml;rde som st&aring;r i datumrutan. F&ouml;r svenska g&auml;ller 
+      Ig&aring;r. FR_VALUE skall &ouml;verenst&auml;mma m FR_DATE defaultv&auml;rde</font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">TO_DATE</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      slutdatum som s&ouml;kningen skall g&auml;lla f&ouml;r </font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">TO_VALUE</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      det defaultv&auml;rde som st&aring;r i datumrutan. F&ouml;r svenska g&auml;ller 
+      Idag. TO_VALUE skall &ouml;verenst&auml;mma m TO_DATE defaultv&auml;rde</font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">godtyckligt</font></td>
+  </tr>
+</table>
+<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
+</font> 
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Disc_View"></a>ConfDiscView 
+  servlet</b><br>
+  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+  </tr>
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_DISC&#035;</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      referens till servleten som inneh&aring;ller diskussionsservleten</font></td>
+  </tr>
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_REPLY&#035;</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      referens till servleten som inneh&aring;ller inl&auml;ggsservleten</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Post: </b>Saknas 
+  </font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_Error"> 
+  </a>ConfError servlet</b><br>
+  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+  </tr>
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;ERROR_HEADER&#035;</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      felmeddelandes rubrik</font></td>
+  </tr>
+  <tr> 
+    <td width="15%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;ERROR_MESSAGE&#035;</font></td>
+    <td width="85%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      felmeddelandes text</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Get: </b>Saknas<br>
+  <b>Post: </b>Saknas <br>
+  <br>
+  <b><a name="Conf_Forum"> </a>ConfForum servlet</b><br>
+  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;FORUM_LIST&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      en optionlista med forum</font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_BUTTON&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      bild p&aring; administrationsknapp</font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_LINK&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      knapp f&ouml;r administration av forum</font></td>
+  </tr>
+</table>
+<p></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Get: </b>Saknas<br>
+  <b>Postparametrar: </b></font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
+      parameter v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">CHANGE_FORUM</font></td>
+    <td width="67%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ser 
+      till att listningen av diskussioner b&ouml;rjar om fr&aring;n b&ouml;rjan.</font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CHANGE</font></td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><br>
+  <a name="Conf_Help"></a>ConfHelp servlet</b><br>
+  <b>Taggar</b>: Saknar egna taggar.<br>
+  <b>Get: </b>Saknas<br>
+  <b>Postparametrar: </b> </font></p>
+<p></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
+      parameter v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">helparea</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Ingen, 
+      tills vidare. Skickas ifall hj&auml;lpsidan skall byggas ut.</font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">forum/discussion/reply/meta</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">helpmode</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Genererar 
+      hj&auml;lp-htmlsida f&ouml;r administrat&ouml;rer</font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADMIN</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">helpmode</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Genererar 
+      hj&auml;lp-htmlsida f&ouml;r anv&auml;ndare</font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">USER</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
+  <br>
+  <b><a name="Conf_Login"> </a>ConfLogin servlet</b><br>
+  <b>Taggar</b>: F&ouml;ljande taggar st&ouml;ds. Get tar tv&aring; parametrar, 
+  om inga av dessa parametrar anges genereras loginsidan automatiskt.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;USERS_MENU&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      en optionlista med anv&auml;ndarna i konferensen</font></td>
+  </tr>
+</table>
+<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
+<b>Getparametrar: </b> </font> 
+<p></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="56%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
+    <td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
+      parameter v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
+    <td width="56%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Generar 
+      htmlsida avsedd f&ouml;r att administrera anv&auml;ndare </font></td>
+    <td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADMIN_USER</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
+    <td width="56%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Generar 
+      htmlsida avsedd f&ouml;r att l&auml;gga till ny anv&auml;ndare</font></td>
+    <td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_USER</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;</font></td>
+    <td width="56%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Genererar 
+      htmlsida avsedd f&ouml;r att logga in</font></td>
+    <td width="32%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">inget 
+      (genereras om ingen av ovanst&aring;ende anges)</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Postparametrar: 
+  </b> </font></p>
+<p></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b> 
+      parameter v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Utf&ouml;rs 
+      om login_type OCH submit har skickats. Verifierar inloggning i konferensen.</font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">LOGIN</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Adderar 
+      en anv&auml;ndare in i Janus user db och till konferensens db </font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ADD_USER</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">login_type</font></td>
+    <td width="67%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Sparar 
+      en anv&auml;ndares anv&auml;ndarniv&aring; till konferens db </font></td>
+    <td width="21%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SAVE_USER</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
+  <b><a name="Conf_Manager"> </a>ConfManager servlet</b><br>
+  <b>Taggar</b>: Saknar egna taggar. </font></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Post: </b>Saknas<br>
+  <b>Get: </b>ConfManager l&auml;ser in parametern action och redirectar sedan 
+  vidare beroende p&aring; v&auml;rdet.</font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="68%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>H&auml;ndelse</b></font></td>
+    <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>parameter 
+      v&auml;rde</b></font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">action</font></td>
+    <td width="68%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Redirectar 
+      till ConfCreator?action=New</font></td>
+    <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">NEW</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">action</font></td>
+    <td width="68%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Redirectar 
+      till ConfLogin?login_type=login</font></td>
+    <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">VIEW</font></td>
+  </tr>
+  <tr> 
+    <td width="12%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">action</font></td>
+    <td width="68%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">ChangeExternalDoc2?meta_id&amp;parent_meta_id&amp;cookie_id&amp;metadata=meta</font></td>
+    <td width="20%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">CHANGE</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
+  <b><a name="Conf_Reply"> </a>ConfReply servlet</b><br>
+  <b>Taggar</b>: Saknar egna taggar. </font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="60%"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="2">Betydelse</font></b></font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;USER_SORT_ORDER&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      anv&auml;ndarens sorteringsorder p&aring; inl&auml;ggen. Kan vara 1 eller 
+      0.</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CHECKBOX_STATE&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      ordet checked / eller inget beroende p&aring; anv&auml;ndarens sorteringsorder. 
+      </font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;REPLIES_RECORDS&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      lista med samtliga inl&auml;gg i en diskussion</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;NEW_COMMENT&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      knapp f&ouml;r att l&auml;gga till kommentar.</font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_BUTTON&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      bild p&aring; administrationsknapp</font></td>
+  </tr>
+  <tr> 
+    <td width="23%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_ADMIN_LINK&#035;</font></td>
+    <td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      knapp f&ouml;r administration av kommentarer</font></td>
+  </tr>
+</table>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><br>
+  <b>Getparametrar: </b>Saknas.</font></p>
+<p></p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>Postparametrar: 
+  </b> </font></p>
+<p></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Parameter</b></font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">V&auml;rde</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Betydelse</b></font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">SORT_ORDER</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">1 
+      eller saknas</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      anv&auml;ndarens sorteringsordning.</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">UPDATE</font></td>
+    <td width="60%"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Anger 
+      att inl&auml;ggsservleten skall uppdateras</font></td>
+  </tr>
+</table>
+<p>&nbsp; </p>
+<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a name="Conf_View"> 
+  </a>ConfViewer servlet</b><br>
+  <b>Taggar</b>: </font></p>
+<table width="100%" border="1">
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>Tag</b></font></td>
+    <td width="60%"><font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="2">Betydelse</font></b></font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_FORUM&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      referens till servleten som genererar forum frame inneh&aring;llet</font></td>
+  </tr>
+  <tr> 
+    <td width="18%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&#035;CONF_DISC_VIEW&#035;</font></td>
+    <td width="60%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Infogar 
+      referens till servleten som genererar diskussions/inl&auml;ggs huvudframen</font></td>
+  </tr>
+</table>
+<p>&nbsp; </p>
+</body>
+</html>

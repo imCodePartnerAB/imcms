@@ -1,0 +1,48 @@
+<html>
+<head>
+<script language= "JavaScript">
+<!--
+function confirmDelDiscForm(){
+	if(confirm("Varning! Alla förbockade diskussioner kommer att tas bort," +"\n" +"de kan inte återskapas! Fortsätta?"))
+		return true
+	else
+		return false
+}
+//-->
+</script>
+
+<title>ConfAdminDisc</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<form method="post" action="#SERVLET_URL#ConfAdmin" name="DelDiscForm">
+  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+    <tr bgcolor="#9999FF"> 
+      <td width="60%" nowrap bgcolor="#FFFFFF">&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">ADMINISTRERA 
+        DISKUSSION </font></td>
+      <td height="12" width="40%" nowrap align="center" bgcolor="#FFFFFF">&nbsp;</td>
+    </tr>
+  </table>
+  <p>#NEW_A_HREF_LIST# #OLD_A_HREF_LIST# </p>
+  <br>
+  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+    <tr> 
+      <td width="48%"> 
+        &nbsp;<input name=DELETE_DISCUSSION type=submit value="TA BORT" style=font-size:10 onClick="if(confirmDelDiscForm()==false)return false; return true;">
+      </td>
+      <td width="52%">&nbsp;</td>
+    </tr>
+  </table>
+</form>
+<br>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td width="50%">&nbsp;&nbsp;<a href="#SERVLET_URL#ConfHelp?helpmode=admin&amp;helparea=Discussion#Discussion" target="_ConfHelp"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HJ&Auml;LP</font></a> 
+    </td>
+    <td width="50%">#CONF_UNADMIN_LINK#</td>
+  </tr>
+</table>
+<p>&nbsp; </p>
+</body>
+</html>
