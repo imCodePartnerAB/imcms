@@ -414,7 +414,7 @@ public class AdminUserProps extends Administrator {
         String userLanguage = user.getLangPrefix();
         String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{userLanguage} );
         Vector selectedLangV = new Vector();
-        selectedLangV.add( "1" );
+        selectedLangV.add( "" + user.getLangId() );
         vec.add( "#LANG_TYPES#" );
         vec.add( Html.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) ) );
 
@@ -1317,7 +1317,7 @@ public class AdminUserProps extends Administrator {
         String country = ( req.getParameter( "country" ) == null ) ? "" : ( req.getParameter( "country" ) );
         String country_council = ( req.getParameter( "country_council" ) == null ) ? "" : ( req.getParameter( "country_council" ) );
         String email = ( req.getParameter( "email" ) == null ) ? "" : ( req.getParameter( "email" ) );
-        String language = ( req.getParameter( "lang_id" ) == null ) ? "1" : ( req.getParameter( "lang_id" ) );
+        String language = ( req.getParameter( "lang_id" ) == null ) ? "" + user.getLangId() : ( req.getParameter( "lang_id" ) );
         String user_type = ( req.getParameter( "user_type" ) == null ) ? "" : ( req.getParameter( "user_type" ) );
         String active = ( req.getParameter( "active" ) == null ) ? "0" : ( req.getParameter( "active" ) );
 
