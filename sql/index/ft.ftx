@@ -40,7 +40,8 @@ EXEC sp_fulltext_column 'meta',
 			0x041d
 EXEC sp_fulltext_column 'meta',
 			'meta_text',
-			'add'
+			'add',
+			0x041d
 EXEC sp_fulltext_table  'meta',
 			'activate'
 GO
