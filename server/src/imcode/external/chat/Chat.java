@@ -16,7 +16,7 @@ public class Chat
 	private Hashtable _chatMembers;
 	private Hashtable _chatMsgTypes;
 	private Hashtable _chatGroups;
-	private Counter _memberCounter;
+	private static Counter _memberCounter;
 	private Counter _roomCounter;
 	private int _permission; 
 	private	int _updateTime = 30;
@@ -26,13 +26,17 @@ public class Chat
 	private	int _publik = 2;
 	private	int _dateTime = 2;
 	private	int _font = 2;
+	
+	static
+	{
+		_memberCounter = new Counter();
+	}
 
 	/**
 	*Default constructor.
 	*/
 	public Chat()
 	{
-		_memberCounter = new Counter();
 		_roomCounter = new Counter();
 		_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();	
@@ -42,7 +46,6 @@ public class Chat
 	{
 		_chatId=id;
 		_name=name;
-		_memberCounter = new Counter();
 		_roomCounter = new Counter();
 		_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();
@@ -61,7 +64,6 @@ public class Chat
 	public Chat(int id, Vector groups, Vector msgTypes, Properties params)
 	{
 		_chatId=id;
-		_memberCounter = new Counter();
 		_roomCounter = new Counter();
 		_chatMembers = new Hashtable();
 		_chatGroups = new Hashtable();
@@ -136,7 +138,7 @@ public class Chat
 	*@return The ChatMember with the supplied memberNumber or 
 	*null if no registerd ChatMember matches the given memberNumber
 	*/
-/*	public ChatMember getChatMember(int memberNumber)
+	public ChatMember getChatMember(int memberNumber)
 	{
 		String memberNumberString = String.valueOf(memberNumber);		
 		return (ChatMember)_chatMembers.get(memberNumberString);
@@ -151,7 +153,7 @@ public class Chat
 	{
 		_roomCounter.increment();
 		ChatGroup newGroup = new ChatGroup(groupNr,groupName);
-		_chatGroups.put( new Integer(groupNr),newGroup );
+		_chatGroups.put( String.valueOf(groupNr),newGroup );
 	}
 
 	/**
