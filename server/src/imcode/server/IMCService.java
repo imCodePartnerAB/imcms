@@ -363,7 +363,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	// sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
 	//	   				0                                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
 
-	sqlStr = "select date_modified, meta_headline from meta where meta_id = " + meta_id ;
+	sqlStr = "select date_modified, meta_headline, meta_image from meta where meta_id = " + meta_id ;
 	dbc.setSQLString(sqlStr);
 	Vector meta = (Vector)dbc.executeQuery() ;
 	dbc.clearResultSet() ;
@@ -704,7 +704,6 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	    String href = "\"GetDoc"+child_filename+"?meta_id="+child_meta_id+"\""+child_target ;
 	    props.setProperty("#getChildRef#",href) ;
 
-	    props.setProperty("#metaImage#",child_meta_image) ;
 	    props.setProperty("#childMetaImage#",child_meta_image) ;
 	    props.setProperty("#childMetaHeadline#",child_meta_headline) ;
 	    props.setProperty("#childMetaText#",child_meta_text) ;
@@ -740,6 +739,12 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	tags.setProperty("#session_counter_date#",	m_SessionCounterDate) ;
 	tags.setProperty("#lastDate#",				meta.get(0).toString()) ;
 	tags.setProperty("#metaHeadline#",			meta.get(1).toString()) ;
+
+	String meta_image = meta.get(2).toString() ;
+	if (!"".equals(meta_image)) {
+	    meta_image = "<img src=\""+meta_image+"\" border=\"0\">" ;
+	}
+	tags.setProperty("#metaImage#",                         meta_image) ;
 	tags.setProperty("#sys_message#",			sysData.getSystemMessage()) ;
 	tags.setProperty("#servlet_url#",			m_ServletUrl) ;
 	tags.setProperty("#webMaster#",				sysData.getWebMaster()) ;
