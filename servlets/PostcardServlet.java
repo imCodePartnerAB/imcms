@@ -26,8 +26,8 @@ import java.text.*;
 */
 
 public class PostcardServlet extends HttpServlet {
-	private final static String CVS_REV = "" ;
-	private final static String CVS_DATE = "" ;
+	private final static String CVS_REV = "$Revision$"  ;
+	private final static String CVS_DATE = "$Date$";
 	
 	private final static String	POSTCARD_MAIL_SENT = "bekraftelse.html";
 	private final static String POSTCARD_MAIL_SUBJECT = "mail_subject_postcard.html";

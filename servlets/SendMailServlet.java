@@ -40,8 +40,8 @@ import java.util.*;
 */
 
 public class SendMailServlet extends HttpServlet {
-	private final static String CVS_REV = "" ;
-	private final static String CVS_DATE = "" ;
+	private final static String CVS_REV = "$Revision$"  ;
+	private final static String CVS_DATE = "$Date$";
 	
 	private final static String SUBJECT_TEMPLATE = "mail_subject.html";
 	private final static String BODY_TEMPLATE = "mail_body.html";
