@@ -61,7 +61,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("START BillBoardDisc doPost");
+		//log("START BillBoardDisc doPost");
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 
@@ -102,11 +102,11 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			// Lets get the forum_id and set our session object before updating
 			Properties reqParams = this.getRequestParameters(req) ;
 			String aSectionId = reqParams.getProperty("SECTION_ID") ;//
-			log("aSectionId:"+aSectionId);
+			//log("aSectionId:"+aSectionId);
 			String discIndex = params.getProperty("DISC_INDEX") ;
-			log("discIndex: "+discIndex);		
+			//log("discIndex: "+discIndex);		
 			String changeForum = req.getParameter("CHANGE_SECTION");//CHANGE_FORUM
-			log("changeSection: "+changeForum);
+			//log("changeSection: "+changeForum);
 
 			//	RmiConf rmi = new RmiConf(user) ;
 			HttpSession session = req.getSession(false) ;
@@ -149,7 +149,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		// ********* ADD DISCUSSIONS ********
 		if (req.getParameter("ADD") != null)
 		{
-			 log("Nu redirectar vi till BillBoardAdd") ;
+			 //log("Nu redirectar vi till BillBoardAdd") ;
 			String where = MetaInfo.getServletPath(req) ;
 			res.sendRedirect(where + "BillBoardAdd?ADDTYPE=Discussion") ;
 			return ;
@@ -158,24 +158,24 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		// ********* VIEW NEXT DISCUSSIONS ********
 		if(( req.getParameter("NEXT") != null || req.getParameter("NEXT.x") != null ) )
 		{
-			log("*** NEXT ***");
+			//log("*** NEXT ***");
 			//if (req.getParameter("NEXT") != null) {
 
 			// Lets get the total nbr of discs in the forum
 			// RmiConf rmi = new RmiConf(user) ;
 			String sql = "B_GetNbrOfDiscs " + params.getProperty("SECTION_ID") ;
 			String nbrOfDiscsStr = rmi.execSqlProcedureStr(confPoolServer, sql) ;
-			log("nbrOfDiscsStr = "+nbrOfDiscsStr);
+			//log("nbrOfDiscsStr = "+nbrOfDiscsStr);
 			int nbrOfDiscs = 0 ;
 
 			// Lets get the nbr of discussions to show. If it does not contain any
 			// discussions, 20 will be returned by default from db
 			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "B_GetNbrOfDiscsToShow " +
 				params.getProperty("SECTION_ID"))  ;//GetNbrOfDiscsToShow, FORUM_ID
-			log("showDiscsStr = "+showDiscsStr);
+			//log("showDiscsStr = "+showDiscsStr);
 			
 			int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
-			log("Nbr of discs to show: " + showDiscsCounter) ;
+			//log("Nbr of discs to show: " + showDiscsCounter) ;
 
 			try {
 				nbrOfDiscs = Integer.parseInt(nbrOfDiscsStr) ;
@@ -186,8 +186,8 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			}
 
 			int currIndex = this.getDiscIndex(req) ;
-			log("currIndex ="+currIndex);
-			log("if satsen: "+currIndex+" + "+ showDiscsCounter +" < "+nbrOfDiscs);
+			//log("currIndex ="+currIndex);
+			//log("if satsen: "+currIndex+" + "+ showDiscsCounter +" < "+nbrOfDiscs);
 			if( currIndex + showDiscsCounter < nbrOfDiscs )
 			{
 				this.increaseDiscIndex(req, showDiscsCounter) ;
@@ -203,7 +203,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		// ********* VIEW PREVIOUS DISCUSSIONS ********
 		if(( req.getParameter("PREVIOUS") != null || req.getParameter("PREVIOUS.x") != null ) )
 		{
-			log("*** PREVIOUS ***");
+			//log("*** PREVIOUS ***");
 			//if (req.getParameter("PREVIOUS") != null) {
 			//RmiConf rmi = new RmiConf(user) ;
 
@@ -211,7 +211,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			// discussions, 20 will be returned by default from db
 			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "B_GetNbrOfDiscsToShow " +
 				params.getProperty("SECTION_ID"))  ;
-			log("showDiscsStr = "+showDiscsStr);
+			//log("showDiscsStr = "+showDiscsStr);
 			int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
 			// log("Nbr of discs to show: " + showDiscsCounter) ;
 
@@ -225,24 +225,24 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		}
 
 		// ********* SEARCH ********
+		//log("searche skuíten = "+req.getParameter("SEARCH"));
 		if (req.getParameter("SEARCH") != null)
 		{
-			//	log("Nu är vi i search") ;
+			//log("Nu är vi i search") ;
 			params = this.getSearchParameters(req, params) ;
 			String searchMsg = "" ;
 			String sqlAnswer[] = null ;
 			boolean searchParamsOk  = true ;
-			String currForum = "" ;
+			String currSection = "" ;
 
 			// Lets get the forumname for the current forum
 
 			String aSectionId = params.getProperty("SECTION_ID") ;
-			String sqlForumName = "GetSectionName " + aSectionId ;
-			currForum = "" + rmi.execSqlProcedureStr(confPoolServer, "GetSectionName " + aSectionId) ;
-
+			currSection = "" + rmi.execSqlProcedureStr(confPoolServer, "B_GetSectionName " + aSectionId) ;
+			//log("S currSection ="+currSection);
 			//lets get metaId befor buildSearchDateParams destroys that info (happens if error in dateformat)
 			String metaId = params.getProperty("META_ID");
-
+			//log("S metaid= "+metaId);
 			// Lets validate the searchdates. If not correct then get a message and show user
 			// 42=En sökdatumsträng var felaktig!
 			params = this.buildSearchDateParams(params) ;
@@ -274,7 +274,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
 			//log("Ok, we have passed test 1 and 2") ;
 			//log("searchParamsOk: " + searchParamsOk) ;
-			// this.log("SEARCHWORD: " + params.getProperty("SEARCH").trim()) ;
+			//this.log("SEARCHWORD: " + params.getProperty("SEARCH").trim()) ;
 
 
 			// Lets check if everything is alright
@@ -291,6 +291,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 				// IF WE ARE LOOKING FOR USERS ACTIVITY
 				if(params.getProperty("CATEGORY").equals("2"))
 				{
+					log("skall aldrig inträffa vad jag vet");
 					String sqlQ = this.buildSearchUserSql(params) ;
 					//log("SQL: " + sqlQ) ;
 					//RmiConf rmi = new RmiConf(user) ;
@@ -298,19 +299,20 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 				}
 				else
 				{
+					//log("ok lets search!!!!!!!!!!!!!!");
 					// Ok, Lets build the search string
 					//RmiConf rmi = new RmiConf(user) ;
-					String sqlQ = "SearchText " + metaId +", "+ aSectionId + ", " ;
+					String sqlQ = "B_SearchText " + metaId +", "+ aSectionId + ", " ;
 					sqlQ += category  + ", " + "'" + searchW + "'" + " ," ;
 					sqlQ += "'" + frDate  + "', '" + toDate + " 23:59:59" + "'" ;
-
-					// log("Search SQL: " + sqlQ) ;
+					
 					sqlAnswer = rmi.execSqlProcedureExt(confPoolServer, sqlQ) ;
+					//log("SQL SVARET:" + sqlAnswer) ;
 				} // End if
 			} // End if
 
 			//log("Ok, we have done a search!") ;
-			//log("sqlAnswer:" + sqlAnswer) ;
+			
 
 			// Lets get the part of an html page, wich will be parsed for every a Href reference
 			String templateLib = super.getExternalTemplateFolder(req) ;
@@ -329,7 +331,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 				if( sqlAnswer.length > 0)
 				{
 					//for(int i = 0 ; i < sqlAnswer.length ; i++){
-					//	log("SqlAnswer: " + i + " : " + sqlAnswer[i]) ;
+						//log("SqlAnswer: " + i + " : " + sqlAnswer[i]) ;
 					//}
 					allRecs = preParse(req, sqlAnswer, tagsV, aHreHtmlFile ) ;
 					if(allRecs == null )
@@ -382,7 +384,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 				newDiscButton = newButtonHtmlObj.createHtmlString( vmButtons, req );
 			}
 
-			vm.addProperty("CURRENT_SECTION_NAME", currForum  );//CURRENT_FORUM_NAME
+			vm.addProperty("CURRENT_SECTION_NAME", currSection  );//CURRENT_FORUM_NAME
 			vm.addProperty("PREVIOUS_BUTTON", "&nbsp;"  );
 			vm.addProperty("NEXT_BUTTON", "&nbsp;"  );
 			vm.addProperty("NEW_DISC_BUTTON", newDiscButton );
@@ -399,7 +401,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("START BillBoardDisc doGet");
+		//log("START BillBoardDisc doGet");
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)
 		{
@@ -447,7 +449,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		String aMetaId = params.getProperty("META_ID") ;
 		int metaId = Integer.parseInt( aMetaId );
 		String aSectionId = params.getProperty("SECTION_ID") ;
-		log("aSectionId= "+aSectionId);
+		//log("aSectionId= "+aSectionId);
 		
 	
 		// Lets get the part of an html page, wich will be parsed for every a Href reference
@@ -455,11 +457,11 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
 		// Lets get all Discussions
 		String sqlStoredProcOld = "B_GetAllBillsToShow " + aMetaId + ", " + aSectionId ;//GetAllDiscussions
-		log("B_GetAllBillsToShow: " + sqlStoredProcOld) ;
+		//log("B_GetAllBillsToShow: " + sqlStoredProcOld) ;
 		
 		
 		String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProcOld ) ;
-		log("sqlAnswer = "+sqlAnswer);
+		//log("sqlAnswer = "+sqlAnswer);
 		if (sqlAnswer == null)//ok we have delete the one so lets get the first
 		{	
 			String sqlGetFirst = "B_GetFirstSection " + aMetaId ;//GetAllDiscussions
@@ -488,7 +490,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		String allRecs  = "" ;
 		// Lets get the start record position in the array
 		int discIndexPos = this.getDiscIndex(req);
-		log("DOGET discindex: " + discIndexPos) ;
+		//log("DOGET discindex: " + discIndexPos) ;
 		int showDiscsCounter = 0;
 		if( sqlAnswer != null )
 		{
@@ -508,12 +510,12 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 			int recStartPos = this.getRecordPos(sqlAnswer, discIndexPos, req ) ;
 			int recStopPos = this.getRecordPos(sqlAnswer, discIndexPos + showDiscsCounter, req ) ;
 
-			 log("StartRecordPos: " + recStartPos ) ;
-			 log("StopRecordPos: " + recStopPos ) ;
+			 //log("StartRecordPos: " + recStartPos ) ;
+			 //log("StopRecordPos: " + recStopPos ) ;
 
 			// Lets create an array
 			String[] newArr = this.buildArray(sqlAnswer, recStartPos, recStopPos) ;
-			log("newarr = "+ newArr);
+			//log("newarr = "+ newArr);
 			// log("NEW ARR LENGTH: " + newArr.length ) ;
 			if( newArr.length > 0)
 				allRecs = preParse(req, newArr, tagsV, aHrefHtmlFile ) ;
@@ -524,7 +526,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 				HtmlGenerator previousButtonHtmlObj = new HtmlGenerator( templateLib, this.PREVIOUS_DISC_LIST_TEMPLATE );
 				previousButton = previousButtonHtmlObj.createHtmlString( vmButtons, req );
 			}
-			log("division 1 = "+( sqlAnswer.length/8 -1 )+" > "+(discIndexPos + showDiscsCounter ));
+			//log("division 1 = "+( sqlAnswer.length/8 -1 )+" > "+(discIndexPos + showDiscsCounter ));
 			//lets show nextbutton if not last set of discussions
 			if ( ( sqlAnswer.length/4 -1 ) > (discIndexPos + showDiscsCounter )  )
 			{
@@ -536,7 +538,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 
 		// Lets get the forumname for the current forum
 		String currSection = "" + rmi.execSqlProcedureStr(confPoolServer, "B_GetSectionName " + params.getProperty("SECTION_ID")) ;//GetForumName
-		log("currSection: " + currSection) ;
+		//log("currSection: " + currSection) ;
 
 		//lets show newdiscbutton if user has more than readrights
 		if ( IMCServiceRMI.checkDocRights( imcServer, metaId, user ) &&
@@ -555,7 +557,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		vm.addProperty( "ADMIN_LINK_HTML", this.ADMIN_LINK_TEMPLATE );
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 		//	this.showSession(req) ;
-		log("BillBoardDisc doGet är färdig") ;
+		//log("BillBoardDisc doGet är färdig") ;
 	} //DoGet
 
 	/**
@@ -1085,7 +1087,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	protected void showIt(Vector tags, Vector data)
 	{
 
-		log("***********") ;
+		//log("***********") ;
 		if(tags.size() != data.size())
 		{
 			log("Antalet stämmer inte ") ;
@@ -1219,7 +1221,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	//obs måste ses över och anpassas till billboarden
 	protected String buildSearchUserSql( Properties params)
 	{
-		String metaId = params.getProperty("META_ID") ;
+	/*	String metaId = params.getProperty("META_ID") ;
 		String aSectionId = params.getProperty("SECTION_ID") ;
 		String searchW = params.getProperty("SEARCH") ;
 		String category = params.getProperty("CATEGORY") ;
@@ -1246,6 +1248,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		sqlQ += "AND rep.user_id IN \n" ;
 		sqlQ += buildSearchWordsSql(searchW) ;
 		return sqlQ ;
+	*/return null;	
 	}
 
 	/**

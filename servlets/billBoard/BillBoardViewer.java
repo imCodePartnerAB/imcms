@@ -13,7 +13,7 @@ public class BillBoardViewer extends BillBoard {//ConfViewer
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-		log("START BillBoardViewer doGet");
+		//log("START BillBoardViewer doGet");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -60,7 +60,7 @@ public class BillBoardViewer extends BillBoard {//ConfViewer
 		vm.addProperty("BILLBOARD_SECTION", servletHome + "BillBoardForum?" + paramStr);
 		vm.addProperty("BILLBOARD_DISC_VIEW", servletHome + "BillBoardDiscView?" + paramStr ) ;
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-		log("Nu är BillBoardViewer klar") ;
+		//log("Nu är BillBoardViewer klar") ;
 		return ;
 	}
 

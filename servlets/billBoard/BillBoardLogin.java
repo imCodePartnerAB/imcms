@@ -64,7 +64,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-			log("START BillBoardLogin doGet");
+			//log("START BillBoardLogin doGet");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -129,7 +129,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-		log("START BillBoardLogin doPost");
+		//log("START BillBoardLogin doPost");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -164,74 +164,10 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 			log("Ok, nu försöker vi verifiera logga in!") ;
 			String userId = user.getString("user_id");
 			
-//remove ???			Properties lparams = this.getLoginParams(req ,res) ;
-
-			// Ok, Lets check what the user has sent us. Lets verify the fields the user
-			// have had to write freetext in to verify that the sql questions wont go mad.
-//remove ???			if (this.verifyLoginParams(req, res, lparams) == false) return ;
-//remove ???			lparams = super.verifyForSql(lparams) ;
-//remove ???			String userName = lparams.getProperty("LOGIN_NAME") ;
-//remove ???			String password = lparams.getProperty("PASSWORD") ;
-
-			// Validate loginparams against Janus DB
-//remove ???			RmiConf rmi = new RmiConf(user) ;
-//remove ???			String sqlQ = "GetBillBoardUserIdFromName '" + userName + "', '" + password + "'" ;//GetUserIdFromName
-//remove ???			String userId = rmi.execJanusSqlProcedureStr(imcServer, sqlQ ) ;
-			//log("Användarens id var: " + userId) ;
-
-			// Lets check that we the found the user. Otherwise send unvailid username password
-//remove ???			if( userId == null ) {
-//remove ???				String header = "BillBoardLogin servlet." ;
-//remove ???				BillBoardError err = new BillBoardError(req,res,header,50, LOGIN_ERROR_HTML ) ;
-//remove ???				log(header + err.getErrorMsg()) ;
-//remove ???				return ;
-//remove ???			}
-
-			// Ok, we found the user, lets verify that the user is a member of this conference
-			// MemberInConf	@meta_id int,	@user_id int
-//remove ???			String checkUserSql = "BillBoardMemberInConf " + params.getProperty("META_ID") + ", "+ userId ;//MemberInConf
-//remove ???			log("CheckUserSql: " + checkUserSql) ;
-//remove ???			String foundUserInConf = rmi.execSqlProcedureStr(confPoolServer, checkUserSql) ;
-
-			// Ok, The user is not a user in this conference, lets check if he has
-			// the right to be a member.
-//remove ???			boolean okToLogIn = false ;
-//remove ???			if(foundUserInConf == null) {
-//remove ???				log("Ok, the user is not a member here, lets find out if he could be") ;
-//remove ???				okToLogIn = super.checkDocRights(imcServer, params.getProperty("META_ID"), user) ;
-//remove ???				log("Ok, let the user in and let him be a member: " + okToLogIn) ;
-//remove ???			}
-
-//remove ???			if( foundUserInConf == null && okToLogIn == false) {
-//remove ???				String header = "BillBoardLogin servlet." ;
-//remove ???				BillBoardError err = new BillBoardError(req,res,header,50, LOGIN_ERROR_HTML ) ;
-//remove ???				log(header + err.getErrorMsg() + "\n the user exists, but is not a member in this conference") ;
-//remove ???				return ;
-//remove ???			}
-//remove ???			else {
-//remove ???				// Ok, The user is here for the first time, and he has the rights to go in
-				// Lets update his user object
-				//log("Lets update the users userObject") ;
-//remove ???				String firstName = rmi.execJanusSqlProcedureStr(imcServer,  "GetUserNames " + userId + ", 1" );
-//remove ???				String lastName = rmi.execJanusSqlProcedureStr(imcServer,  "GetUserNames " + userId + ", 2" ) ;
-//remove ???				if( firstName == null || lastName == null ) {
-//remove ???					String header = "BillBoardLogin servlet." ;
-//remove ???					BillBoardError err = new BillBoardError(req,res,header,62, LOGIN_ERROR_HTML ) ;
-//remove ???					log(header + err.getErrorMsg() + "\n the user exists, but is not a member in this conference") ;
-//remove ???					return ;
-//remove ???				}
-//remove ???				user.setField("user_id", userId) ;
-//remove ???				user.setField("first_name", firstName) ;
-//remove ???				user.setField("last_name", lastName) ;
-
-				//log("Uppdaterad objectID: " + user.getString("user_id") ) ;
-				//log("Uppdaterad first_name: " + user.getString("first_name") ) ;
-				//log("Uppdaterad last_name: " + user.getString("last_name") ) ;
-//remove ???			}
 
 			//  Lets update the users sessionobject with a a ok login to the conference
 			//	Send him to the manager with the ability to get in
-			log("Ok, nu förbereder vi användaren på att logga in") ;
+			//log("Ok, nu förbereder vi användaren på att logga in") ;
 			if(!super.prepareUserForBillBoard(req, res, params, userId) ) {
 				log("Error in prepareUserFor Conf" ) ;
 			}

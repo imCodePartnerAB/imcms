@@ -566,14 +566,14 @@ public class BillBoard extends HttpServlet { //Conference
 
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid
 		String templateLib = this.getExternalTemplateFolder(req) ;
-		log("TemplateLib: " + templateLib) ;
+		//log("TemplateLib: " + templateLib) ;
 
 		// Lets add 3 server hostadresses
 		String servletPath = MetaInfo.getServletPath(req) ;
 
 		// Lets get the path to the imagefolder.
 		String imagePath = this.getExternalImageFolder(req) ;
-		log("ImagePath: " + imagePath) ;
+		//log("ImagePath: " + imagePath) ;
 
 		VariableManager adminButtonVM = new VariableManager();
 		adminButtonVM.addProperty( "IMAGE_URL", imagePath);
@@ -770,9 +770,9 @@ public class BillBoard extends HttpServlet { //Conference
 			
 			// Ok, Lets get the last discussion in that forum
 			String sqlStr = "B_GetLastDiscussionId " +params.getProperty("META_ID") + ", " + aSectionId;
-			log("sqlStr= "+sqlStr);
+			//log("sqlStr= "+sqlStr);
 			String aDiscId = rmi.execSqlProcedureStr(ConfPoolServer, sqlStr) ;
-			log("aDiscId = "+aDiscId);
+			//log("aDiscId = "+aDiscId);
 
 			// Lets get the lastdiscussionid for that forum
 			// if not a aDiscId exists, then the  sp will return -1

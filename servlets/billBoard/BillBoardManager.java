@@ -49,7 +49,7 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 		// ********* NEW ********
 		if(action.equalsIgnoreCase("NEW"))
 		{
-			log("Lets add a billBoard");
+			//log("Lets add a billBoard");
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
 			{
@@ -96,7 +96,7 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 					session.putValue("BillBoard.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
 					session.putValue("BillBoard.cookie_id", params.getProperty("COOKIE_ID")) ;
 					session.putValue("BillBoard.viewedDiscList", new Properties()) ;
-					log("OK, nu sätter vi viewedDiscList") ;
+					//log("OK, nu sätter vi viewedDiscList") ;
 				}
 
 				String loginPage = MetaInfo.getServletPath(req) + "BillBoardLogin?login_type=login" ;
@@ -105,7 +105,7 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 				return ;
 			}
 
-			log("Ok, användaren har loggat in, förbered honom för konferensen" ) ;
+			//log("Ok, användaren har loggat in, förbered honom för konferensen" ) ;
 			//  Lets update the users sessionobject with a with a ok login to the conference
 			//	Send him to the manager with the ability to get in
 			if(!super.prepareUserForBillBoard(req, res, params, userId) )
@@ -136,7 +136,7 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 			String host = req.getHeader("Host") ;
 			String imcServer = Utility.getDomainPref("userserver",host) ;
 			String ConfPoolServer = Utility.getDomainPref("billboard_server",host) ;
-			log("confpoolserver " + ConfPoolServer ) ;
+			//log("confpoolserver " + ConfPoolServer ) ;
 			String metaId = req.getParameter("meta_id") ;
 			String frDate = req.getParameter("from_date") ;
 			String toDate = req.getParameter("to_date") ;
@@ -150,10 +150,10 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 			StringBuffer sql = new StringBuffer() ;
 			sql.append("AdminStatistics1" + " " + metaId + ", '" + frDate + "', '" );
 			sql.append(toDate + "', " + mode) ;
-			log("AdminStatistics sql: " + sql.toString()) ;
+			//log("AdminStatistics sql: " + sql.toString()) ;
 			String[][] arr = BillBoardManager.getStatistics(ConfPoolServer, sql.toString()) ;
 
-			log("AdminStatistics sql: " + arr.length) ;
+			//log("AdminStatistics sql: " + arr.length) ;
 		} // End if
 
 

@@ -19,7 +19,7 @@ public class BillBoardForum extends BillBoard {//ConfForum
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-		log("START BillBoardForum doPost");
+		//log("START BillBoardForum doPost");
 
 		//log( "Forum" );
 		// Lets validate the session, e.g has the user logged in to Janus?

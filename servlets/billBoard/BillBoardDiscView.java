@@ -39,7 +39,7 @@ public class BillBoardDiscView extends BillBoard {//ConfDiscView
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("START BillBoardDiscView doGet");
+		//log("START BillBoardDiscView doGet");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)

@@ -50,7 +50,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-		log("START BillBoardReply doPost");
+		//log("START BillBoardReply doPost");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -121,7 +121,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-		log("START BillBoardReply doGet");
+		//log("START BillBoardReply doGet");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -160,36 +160,16 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 		RmiConf rmi = new RmiConf(user) ;
         String sqlQ = "B_GetCurrentBill " + discId ;//GetAllRepliesInDisc
-        log("SQLQ: " + sqlQ ) ;
+        //log("SQLQ: " + sqlQ ) ;
 		String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, sqlQ) ;
-		if (sqlAnswer != null)
-		{
-			for(int i=0;i<sqlAnswer.length;i++)
-			{
-				log("sqlAnswer["+i+"]"+ sqlAnswer[i]);
-			}
-		}
+		
 		   //log("sqlAnswer: " + sqlAnswer) ;
 		// Lets get the discussion header
 		String discHeader = rmi.execSqlProcedureStr(confPoolServer, "B_GetBillHeader " + discId ) ;//GetDiscussionHeader
 
         if (discHeader == null || discId.equalsIgnoreCase("-1") )discHeader = " " ;
 		
-		//log("discHeader: " + discHeader) ;
-		/*
-		// THIS CODE IS USED IF WE WANT A CHECKOBOX INSTEAD
-			// Lets get the users sortorder from DB
-		String metaId = params.getProperty("META_ID") ;
-		String sqlQ = "ConfUsersGetReplyOrderSel " + metaId + ", " + userId  ;
-		//log("Sql: " + sqlQ) ;
-		String sortOrderVal = (String) rmi.execSqlProcedureStr(sqlQ) ;
-		String checkBoxStr = "" ;
-		// log("Sortorder: " + sortOrderVal) ;
-		if( sortOrderVal.equalsIgnoreCase("1")) checkBoxStr = "checked" ;
-			  // log("CheckBoxStr: " + checkBoxStr) ;
-		*/
-
-		// THIS CODE IS USED IF WE WANT RADIOBUTTONS
+		
 		// UsersSortOrderRadioButtons
 		String metaId = params.getProperty("META_ID") ;
 		int intMetaId = Integer.parseInt( metaId );
@@ -246,12 +226,12 @@ public class BillBoardReply extends BillBoard {//ConfReply
 			HtmlGenerator commentButtonHtmlObj = new HtmlGenerator( templateLib, this.NEW_COMMENT_TEMPLATE );
 			commentButton = commentButtonHtmlObj.createHtmlString( vmButtons, req );
 		}
-		log("NEW_REPLIE: "+ commentButton );
+		//log("NEW_REPLIE: "+ commentButton );
 		//log("USER_SORT_ORDER: "+ ascVal );
-		log("REPLIES_RECORDS: "+ currentRec);
-		log("CURRENT_DISCUSSION_HEADER: "+ discHeader );
-		log("ADMIN_LINK_HTML: "+ this.ADMIN_LINK_TEMPLATE );
-		log("aSnippetFile: "+aSnippetFile);
+		//log("REPLIES_RECORDS: "+ currentRec);
+		//log("CURRENT_DISCUSSION_HEADER: "+ discHeader );
+		//log("ADMIN_LINK_HTML: "+ this.ADMIN_LINK_TEMPLATE );
+		//log("aSnippetFile: "+aSnippetFile);
 
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty("NEW_REPLIE", commentButton ) ;
@@ -471,7 +451,7 @@ public class BillBoardReply extends BillBoard {//ConfReply
 				confDiscId =	(String) session.getValue("BillBoard.disc_id") ;
 			}
 		}
-		log("GetParameters: " + confDiscId) ;
+		//log("GetParameters: " + confDiscId) ;
 		reqParams.setProperty("DISC_ID", confDiscId) ;
 		return reqParams ;
 	}

@@ -18,7 +18,7 @@ public class BillBoardCreator extends BillBoard
 	throws ServletException, IOException
 	{
 		
-		log("START BillBoardCreator doPost");
+		//log("START BillBoardCreator doPost");
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 
@@ -57,7 +57,7 @@ public class BillBoardCreator extends BillBoard
 		// ********* NEW ********
 		if(action.equalsIgnoreCase("ADD_BILLBOARD"))
 		{
-			log("OK, nu skapar vi anslagstavlan") ;
+			//log("OK, nu skapar vi anslagstavlan") ;
 
 			// Added 000608
 			// Ok, Since the billboard db can be used from different servers
@@ -82,7 +82,7 @@ public class BillBoardCreator extends BillBoard
 			String confName = confParams.getProperty("BILLBOARD_NAME") ;//CONF_NAME
 			// String sortType = "1" ;	// Default value, unused so far
 			String sqlQ = "B_AddNewBillBoard " + metaId + ", '" + confName + "'" ;//AddNewConf
-			log("B_AddNewBillBoard sql:" + sqlQ ) ;
+			//log("B_AddNewBillBoard sql:" + sqlQ ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 
 			// Lets add a new section to the billBoard
@@ -91,7 +91,7 @@ public class BillBoardCreator extends BillBoard
 			newFsql += "'A' , 30, 14" ;
 			//newFsql += "'" + confParams.getProperty("ARCHIVE_MODE") + "', " ;
 			//newFsql += confParams.getProperty("ARCHIVE_TIME")	;
-			log("B_AddNewSection sql:" + newFsql ) ;
+			//log("B_AddNewSection sql:" + newFsql ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, newFsql) ;
 
 			// Lets get the administrators user_id
@@ -122,7 +122,7 @@ public class BillBoardCreator extends BillBoard
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("START BillBoardCreator doGet");
+		//log("START BillBoardCreator doGet");
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
 

@@ -18,7 +18,7 @@ public class BillBoardAdd extends BillBoard
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("START BillBoardAdd doPost");
+		//log("START BillBoardAdd doPost");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -49,14 +49,7 @@ public class BillBoardAdd extends BillBoard
 		String addType = "" ;
 		addType = req.getParameter("ADDTYPE") ;
 		
-//##########		
-		Enumeration enum = req.getParameterNames();
-		while(enum.hasMoreElements())
-		{
-			String temp =(String) enum.nextElement();
-			log(temp);
-		}
-//#########
+
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
@@ -67,8 +60,6 @@ public class BillBoardAdd extends BillBoard
 		{
 
 			// ********* CANCEL ********
-			log("CANCEL: "+req.getParameter("CANCEL"));
-			log("CANCEL.x: "+req.getParameter("CANCEL.x"));
 			if( req.getParameter("CANCEL") != null || req.getParameter("CANCEL.x") != null )
 			{
 				// if(req.getParameter("CANCEL") != null ) {
@@ -80,7 +71,7 @@ public class BillBoardAdd extends BillBoard
 			// ********* ADD DISCUSSION ********
 			if(addType.equalsIgnoreCase("DISCUSSION") && ( req.getParameter("ADD") != null || req.getParameter("ADD.x") != null ) )
 			{
-				log("Nu är vi i AddDiscussion") ;
+				//log("Nu är vi i AddDiscussion") ;
 
 				// Lets add a new discussion to the database
 				String aSectionId = params.getProperty("SECTION_ID") ;
@@ -104,9 +95,10 @@ public class BillBoardAdd extends BillBoard
 					BillBoardError err = new BillBoardError(req,res,51);
 					return;	
 				}
-
+				
+				addText = super.verifySqlText(textMailLinkFix(addText));
 				addHeader = super.verifySqlText(HTMLConv.toHTMLSpecial(addHeader));
-				addText = super.verifySqlText(HTMLConv.toHTMLSpecial(addText));
+				//addText = super.verifySqlText(HTMLConv.toHTMLSpecial(addText));
 				addEpost = super.verifySqlText(HTMLConv.toHTMLSpecial(addEpost));
 				
 				if (!validateEmail( addEpost ))
@@ -131,7 +123,7 @@ public class BillBoardAdd extends BillBoard
 				sqlQuest += sqlPDelim(addHeader);
 				sqlQuest += sqlP(addText)+", ";
 				sqlQuest +=	sqlPDelim(addEpost)+req.getRemoteAddr();//AddNewDisc
-				log("B_AddNewBillSQL: " + sqlQuest) ;
+				//log("B_AddNewBillSQL: " + sqlQuest) ;
 				rmi.execSqlUpdateProcedure(confPoolServer, sqlQuest) ;
 
 				// Lets add the new discussion id to the session object
@@ -156,7 +148,7 @@ public class BillBoardAdd extends BillBoard
 			if(addType.equalsIgnoreCase("REPLY") && ( req.getParameter("ADD") != null || req.getParameter("ADD.x") != null ) )
 			{
 				// if(req.getParameter("ADD") != null && addType.equalsIgnoreCase("REPLY")) {
-				log("Nu är vi i AddReply") ;
+				//log("Nu är vi i AddReply") ;
 
 				RmiConf rmi = new RmiConf(user) ;
 				
@@ -178,9 +170,7 @@ public class BillBoardAdd extends BillBoard
 				String addEpost =(params.getProperty("ADD_EPOST")).trim();
 				if (addHeader.equals("")||addText.equals("") ||addEpost.equals(""))
 				{
-					//BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)
-					log("pitten");
-					log("addHeader: "+addHeader+"\naddText: "+addText+"\naddEpost: "+addEpost+"\n\n\n");	
+					//BillBoardError(HttpServletRequest req, HttpServletResponse res, String header, int errorCode)	
 					BillBoardError err = new BillBoardError(req,res,51);
 					return;	
 				}
@@ -214,7 +204,7 @@ public class BillBoardAdd extends BillBoard
 				sqlQuest += sqlPDelim(addHeader);
 				sqlQuest += sqlP(addText)+", ";
 				sqlQuest +=	sqlPDelim(addEpost)+req.getRemoteAddr();//AddNewDisc
-				log("B_AddNewBillSQL: " + sqlQuest) ;
+				//log("B_AddNewBillSQL: " + sqlQuest) ;
 				rmi.execSqlUpdateProcedure(confPoolServer, sqlQuest) ;
 
 				// Lets redirect to the servlet which holds in us.
@@ -239,7 +229,7 @@ public class BillBoardAdd extends BillBoard
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		log("START BillBoardAdd doGet");
+		//log("START BillBoardAdd doGet");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -279,7 +269,7 @@ public class BillBoardAdd extends BillBoard
 			{
 				loginUserId = (String) session.getValue("BillBoard.user_id") ;//Conference.user_id
 			}
-			log("INLOGGAD ANVÄNDARES ID: " + loginUserId) ;
+			//log("INLOGGAD ANVÄNDARES ID: " + loginUserId) ;
 
 			// Lets get a VariableManager
 			VariableManager vm = new VariableManager() ;
@@ -377,7 +367,7 @@ public class BillBoardAdd extends BillBoard
 		// user passes a text or not, so lets look if the variable is empty, and if it is
 		// just put " " in it!
 		//Not yet anyway but soon we vill care!!!
-		log("ADD_EPOST:"+ addEpost +" ADD_HEADER:"+ addHeader +" ADD_TEXT:"+ addText+" ADD_TYPE:"+ addType);
+		//log("ADD_EPOST:"+ addEpost +" ADD_HEADER:"+ addHeader +" ADD_TEXT:"+ addText+" ADD_TYPE:"+ addType);
 		if(addText.equals("")) addText= " ";
 		if(addHeader.equals("")) addHeader = " ";
 		if(addEpost.equals("")) addEpost = " ";
@@ -444,16 +434,7 @@ public class BillBoardAdd extends BillBoard
 			// Do nothing, let mailtimeout stay at default.
 		}
 
-		/* user info */
-		//String postedLoginName;
-		//String firstName = emptyString;
-		//String lastName = emptyString;
-		//String password = emptyString;
-		//String userEmail = emptyString;
-
-		//String returnFileBody = emptyString;
-		//String serverMasterMailBody = emptyString;
-		//String returnString = emptyString;
+		
 		Vector errorParsVector = new Vector();
 		
 
@@ -486,9 +467,119 @@ public class BillBoardAdd extends BillBoard
 		}
 	}
 
-	//#########
-
-
+	/*
+	*Takes a string and takes out substrings marked #MAIL# to #/MAIL# or #LINK# to #/LINK#
+	*and convert everything else to html-safe code, Fore the substrings it creates 
+	*proper html-code 
+	*/
+	private String textMailLinkFix(String text)
+	{
+		//super.verifySqlText(HTMLConv.toHTMLSpecial(addText));
+		boolean done = false;
+		
+		StringBuffer sendStr = new StringBuffer();
+		String hackStr = text;
+		
+		while (!done)
+		{
+			boolean linkB = false;
+			boolean mailB = false;
+			String tempStr="";
+			int textLength = hackStr.length();//???
+			int lStart =hackStr.indexOf("#LINK#");
+			//log("lStart = "+lStart);
+			int lEnd = hackStr.indexOf("#/LINK#");
+			//log("lEnd = "+lEnd);
+			int mStart = hackStr.indexOf("#MAIL#");
+			//log("mStart = "+mStart);
+			int mEnd = hackStr.indexOf("#/MAIL#");
+			//log("mEnd ="+ mEnd);
+			//ok lets do some if cases to figure out what to do
+			if (lStart != -1 && lEnd != -1)
+			{
+				linkB = true;	
+			}
+			if (mStart != -1 && mEnd != -1)
+			{
+				mailB = true;
+			}
+			if (linkB && mailB)//ok we have at least one of each
+			{
+				if (lStart < mStart)//lets do link stuff //substring(int beginIndex, int endIndex)
+				{
+					//ok lets convert everything before the first #LINK# mark
+					if(lStart > 0)
+					sendStr.append(HTMLConv.toHTMLSpecial(hackStr.substring(0, lStart)));
+					
+					//ok lets append the link string
+					sendStr.append(doLinkStuff(hackStr.substring(lStart+6, lEnd)));
+					
+					hackStr = hackStr.substring(lEnd+7);
+					
+				}else //ok lets do mailstuff
+				{
+					//ok lets convert everything before the first #MAIL# mark
+					if(mStart > 0)
+					sendStr.append(HTMLConv.toHTMLSpecial(hackStr.substring(0, mStart)));
+					
+					//ok lets append the mail string
+					sendStr.append(doMailStuff(hackStr.substring(mStart+6, mEnd)));
+					
+					hackStr = hackStr.substring(mEnd+7);				
+				}
+			}else if(linkB)//ok lets do some linkstuff
+			{
+				//ok lets convert everything before the first #LINK# mark
+				if (lStart > 0)
+					sendStr.append(HTMLConv.toHTMLSpecial(hackStr.substring(0, lStart)));										
+			
+				//ok lets append the link string				
+				sendStr.append(doLinkStuff(hackStr.substring(lStart+6, lEnd)));
+				
+				hackStr = hackStr.substring(lEnd+7);				
+			}else if(mailB)	//lets do some mailstuff
+			{	//ok lets convert everything before the first #MAIL# mark
+				if(mStart > 0)
+				sendStr.append(HTMLConv.toHTMLSpecial(hackStr.substring(0, mStart)));
+					
+				//ok lets append the mail string
+				sendStr.append(doMailStuff(hackStr.substring(mStart+6, mEnd)));
+					
+				hackStr = hackStr.substring(mEnd+7);
+			
+			}else//ok we are done doing stuff 
+			{
+				sendStr.append(HTMLConv.toHTMLSpecial(hackStr));
+				done = true;	
+			}			
+			
+		}
+		return sendStr.toString();		
+	}
+	
+	/*
+	*Takes a string and makes an html-link-tag
+	*/
+	private String doLinkStuff(String str)
+	{
+		//<A HRef=' + AddStr + DaLink + ' Target=_new>' + DisplayURL + '</A>' + '&nbsp;
+		String daLink = "";
+		int i = str.indexOf("HTTP://");
+		if(i < 0) daLink = "HTTP://";		
+		 
+		return	" <A HRef=" + daLink + str +" Target=_new>"+str + "</A> ";
+	}
+	
+	/*
+	*Takes a string and makes an html-mailto-tag
+	*/
+	private String doMailStuff(String str)
+	{
+		//<A HRef="mailto:' + MailLink + '"' + 'Target=_new>' +' ' + MailLink + '</A>' + '&nbsp
+		return "<A HRef=\"mailto:" + str + "\" Target=_new> " +str + "</A> ";
+	}
+	
+	
 	/**
 	Init
 	*/

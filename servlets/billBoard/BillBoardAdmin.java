@@ -23,7 +23,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 	
-		log("START BillBoardAdmin doPost");
+		//log("START BillBoardAdmin doPost");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -58,82 +58,22 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			return ;
 		}
 
-		// ********* ADD SELF_REGISTERED USERS ********
-		if (req.getParameter("ADD_SELF_REG_ROLE") != null) {
-		/*	if (super.checkParameters(req, res, params) == false ) {
-				//
-				//String header = "ConfAdmin servlet. " ;
-				//String msg = params.toString() ;
-				//ConfError err = new ConfError(req,res,header,1) ;
-				
-				return ;
-			}
-
-			// Lets check if the user is a superadmin
-			if( Administrator.checkAdminRights(req,res)== false ) {
-				ConfError err = new ConfError(req,res,"BillBoardAdmin",64) ;
-				return ;
-			}
-
-			// Lets get the role id the user wants to add
-			String selfRegRoleId = req.getParameter("ALL_SELF_REGISTER_ROLES")  ;
-			if (selfRegRoleId == null) {
-				String header = "BillBoardAdmin servlet. " ;
-				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header, 86) ;
-				return ;
-			}
-
-			String roleName = rmi.execJanusSqlProcedureStr(imcServer, "RoleGetName " + selfRegRoleId) ;
-			String sqlSproc = "BillBoardSelfRegRoles_AddNew " + params.getProperty("META_ID") ;
-			sqlSproc += ", " + selfRegRoleId + ", '" + roleName + "'" ;
-			log("SQLAdd: " + sqlSproc) ;
-			rmi.execSqlUpdateProcedure(confPoolServer, sqlSproc) ;
-
-			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardAdmin?ADMIN_TYPE=SELF_REGISTER") ;//ConfAdmin
+		// ******** SHOW ARCHIVES BILLS *********
+		if (req.getParameter("ADMIN_OLD_BILLS") != null) {
+			//log("ok the administartor wants the old ones");	
+			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardAdmin?ADMIN_TYPE=OLD_DISCUSSION") ;
 			return ;
-		*/	
 		}
-
-		// ********* DELETE A SELF_REGISTERED ROLE ********
-		if (req.getParameter("DEL_SELF_REG_ROLE") != null) {
-		/*	if (super.checkParameters(req, res, params) == false ) {
-				
-				//String header = "ConfAdmin servlet. " ;
-				//String msg = params.toString() ;
-				//ConfError err = new ConfError(req,res,header,1) ;
-				
-				return ;
-			}
-
-			// Lets check if the user is a superadmin
-			if( Administrator.checkAdminRights(req,res)== false ) {
-				ConfError err = new ConfError(req,res,"BillBoardAdmin",64) ;
-				return ;
-			}
-
-
-			// Lets get the role id the user wants to delete
-			String selfRegRoleId = req.getParameter("CURR_SELF_REGISTER_ROLES")  ;
-			if (selfRegRoleId == null) {
-				String header = "BillBoardAdmin servlet. " ;
-				String msg = params.toString() ;
-				ConfError err = new ConfError(req,res,header, 87) ;
-				return ;
-			}
-
-			String roleName = rmi.execJanusSqlProcedureStr(imcServer, "RoleGetName " + selfRegRoleId) ;
-			String sqlSproc = "SelfRegRoles_Delete " + params.getProperty("META_ID") ;
-			sqlSproc += ", " + selfRegRoleId ;
-			rmi.execSqlUpdateProcedure(confPoolServer, sqlSproc) ;
-			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardAdmin?ADMIN_TYPE=SELF_REGISTER") ;
+		if (req.getParameter("ADMIN_NEW_BILLS") != null) {
+			//log("ok the administartor wants the new ones");	
+			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardAdmin?ADMIN_TYPE=DISCUSSION") ;
 			return ;
-		*/
 		}
-
+		
+	
 		// ********* REGISTER NEW TEMPLATE ********
 		if (req.getParameter("REGISTER_TEMPLATE_LIB") != null) {
-			log("Nu lägger vi till ett nytt set") ;
+			//log("Nu lägger vi till ett nytt set") ;
 			if (super.checkParameters(req, res, params) == false ) {
 				/*
 				String header = "ConfAdmin servlet. " ;
@@ -211,7 +151,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 		// ********* SET TEMPLATE LIB FOR A CONFERENCE  ********
 		if (req.getParameter("SET_TEMPLATE_LIB") != null) {
-			log("Lets set a new template set for the conference") ;
+			//log("Lets set a new template set for the conference") ;
 			if (super.checkParameters(req, res, params) == false ) {
 				/*
 				String header = "ConfAdmin servlet. " ;
@@ -252,7 +192,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		// ********* DELETE REPLY ********  Peter says OK!!!!
 		if (req.getParameter("DELETE_REPLY") != null) 
 		{
-			log("Nu tar vi bort inlägg") ;
+			//log("Nu tar vi bort inlägg") ;
 			if (super.checkParameters(req, res, params) == false ) {
 				/*
 				String header = "ConfAdmin servlet. " ;
@@ -321,7 +261,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 					String sqlQ = "B_UpdateBill "  + updateId + ", '" ;
 					sqlQ += newHeader + "', '" + newText + "', '"+ newEmail +"'" ;
-					log("B_UpdateBill sql:"+sqlQ);
+					//log("B_UpdateBill sql:"+sqlQ);
 					rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 			}
 			res.sendRedirect(MetaInfo.getServletPath(req) + "BillBoardDiscView") ;
@@ -330,7 +270,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 		// ********* DELETE DISCUSSION ********   Peter says OK!!!!
 		if (req.getParameter("DELETE_DISCUSSION") != null) {
-			log("Nu tar vi bort en diskussion") ;
+			//log("Nu tar vi bort en diskussion") ;
 			if (super.checkParameters(req, res, params) == false ) {
 				/*
 				String header = "ConfAdmin servlet. " ;
@@ -345,7 +285,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		
 			// Lets delete all the bills and all the replies to that bill.
 			if( discIds != null ) {
-			log("ok lets delete some");
+			//log("ok lets delete some");
 				for(int i = 0 ; i < discIds.length ; i++ ) {
 					String sqlQ = "B_DeleteBill " + discIds[i] ;//DeleteDiscussion
 					rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
@@ -357,7 +297,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 		// ********* DELETE SECTION ******** 	Peter says OK!!!!
 		if (req.getParameter("DELETE_SECTION") != null) {
-			log("Nu tar vi bort en avdelning") ;
+			//log("Nu tar vi bort en avdelning") ;
 			params = this.getDelSectionParameters(req, params) ;
 			if (super.checkParameters(req, res, params) == false) {
 				/*
@@ -390,7 +330,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 		// ********* ADD SECTION ********		Peter says OK!!!!
 		if (req.getParameter("ADD_SECTION") != null) {
-			log("Lets add a section") ;
+			//log("Lets add a section") ;
 			// Lets get addForum parameters
 			params = this.getAddSectionParameters(req, params) ;
 			if (super.checkParameters(req, res, params) == false) {
@@ -430,7 +370,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 		// ********* CHANGE SECTION NAME ********  Peter says OK!!!!
 		if (req.getParameter("CHANGE_SECTION_NAME") != null) {
-			log("Lets rename a section") ;
+			//log("Lets rename a section") ;
 			// Lets get addForum parameters
 			params = this.getRenameSectionParameters(req, params) ;
 			if (super.checkParameters(req, res, params) == false) {
@@ -455,7 +395,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		
 		// ********* SET SHOW_DISCUSSION_COUNTER ******** Peter says OK!!!!
 		if (req.getParameter("SHOW_DISCUSSION_NBR") != null) {
-			log("Lets set the nbr of discussions to show") ;
+			//log("Lets set the nbr of discussions to show") ;
 			// Lets get addForum parameters
 			params = this.getShowDiscussionNbrParameters(req, params) ;
 			if (super.checkParameters(req, res, params) == false) {
@@ -476,7 +416,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		}
 		// ********* SET SHOW NUMBERS OF DAYS ******** 	Peter says OK!!!!
 		if (req.getParameter("SHOW_DISCUSSION_DAYS") != null) {
-			log("Lets set the nbr of days to show a bill") ;
+			//log("Lets set the nbr of days to show a bill") ;
 			// Lets get addForum parameters
 			params = this.getShowDiscussionDaysParameters(req, params) ;
 			if (super.checkParameters(req, res, params) == false) {
@@ -505,7 +445,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException 
 	{
-		log("START BillBoardAdmin doGet");
+		//log("START BillBoardAdmin doGet");
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
@@ -551,50 +491,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		VariableManager vm = new VariableManager();
 		String htmlFile = "";
 
-
-		// *********** ADMIN SELF_REGISTER *************
-		// Lets build the selfregister page to the user
-		if (adminWhat.equalsIgnoreCase("SELF_REGISTER") ) {
-		/*
-			// Lets check if the user is a superadmin
-			if( Administrator.checkAdminRights(req,res)== false ) {
-				BillBoardError err = new BillBoardError(req,res,"BillBoardAdmin",64) ;
-				return ;
-			}
-
-
-			// Lets get the current self register roles from DB
-			String sqlSproc = "SelfRegRoles_GetAll " + params.getProperty("META_ID") ;
-			String sqlAnswer[] = rmi.execSqlProcedure(confPoolServer, sqlSproc ) ;
-			Vector selfRegV = super.convert2Vector(sqlAnswer) ;
-			String selfRegList = Html.createHtmlCode("ID_OPTION", "", selfRegV ) ;
-			
 	
-			// Lets ALL avaible self_register roles from DB
-			// First, get the langprefix
-			String lang_id = user.getString("lang_id") ;
-			String allAvailableSproc = "GetLangPrefixFromId " + lang_id ;
-			//log("LangPrefixSql: " + allAvailableSproc) ;
-			String langPrefix = rmi.execJanusSqlProcedureStr(imcServer, allAvailableSproc ) ;
-
-			String sqlSproc2 = "RoleGetConferenceAllowed '" + langPrefix + "'";
-			String sqlAnswer2[] = rmi.execJanusSqlProcedure(imcServer, sqlSproc2 ) ;
-			Vector allSelfRegV = super.convert2Vector(sqlAnswer2) ;
-			String allSelfRegList = Html.createHtmlCode("ID_OPTION", "", allSelfRegV ) ;
-
-			// Lets build the Responsepage
-			//VariableManager vm = new VariableManager() ;
-			vm.addProperty("SELFREG_ROLES_LIST", selfRegList ) ;
-			vm.addProperty("ALL_SELFREG_ROLES_LIST", allSelfRegList ) ;
-                        vm.addProperty("UNADMIN_LINK_HTML", this.FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE );
-			//vm.addProperty("A_META_ID", params.getProperty("META_ID") ) ;
-			//vm.addProperty("CURRENT_TEMPLATE_SET", currTemplateSet ) ;
-			//this.sendHtml(req,res,vm, "CONF_ADMIN_TEMPLATE3.HTM") ;
-			htmlFile = "BILLBOARD_ADMIN_TEMPLATE3.HTM";//CONF_ADMIN_TEMPLATE3.HTM
-			//return ;
-		*/
-		}
-
 		// *********** ADMIN META *************
 		if (adminWhat.equalsIgnoreCase("META") ) {
 
@@ -636,7 +533,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			}
 			else {
 				HTML_TEMPLATE ="BillBoard_admin_template1.htm" ;//Conf_admin_template1.htm
-				log("OK, Administrera metainformation") ;
+				//log("OK, Administrera metainformation") ;
 
 				// Lets get the current template set for this metaid
 				String sqlStoredProc = "B_GetTemplateLib " + params.getProperty("META_ID") ;
@@ -666,7 +563,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		// *********** ADMIN SECTION ************* Peter says ok!!!!
 		if (adminWhat.equalsIgnoreCase("SECTION") ) {//FORUM
 			HTML_TEMPLATE ="BillBoard_admin_section.htm" ;//Conf_admin_forum.htm
-			log("OK, Administrera SECTION") ;
+			//log("OK, Administrera SECTION") ;
 
 			// Lets get the information from DB
 			String sqlStoredProc = "B_GetAllSection " + params.getProperty("META_ID") ;//GetAllForum
@@ -722,7 +619,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 		if (adminWhat.equalsIgnoreCase("DISCUSSION") ) {
 			HTML_TEMPLATE ="BillBoard_admin_disc.htm" ;//Conf_admin_disc.htm
 			String adminDiscList = "BillBoard_admin_disc_list.htm" ;//Conf_admin_disc_list.htm
-			log("OK, Administrera Discussions") ;
+			//log("OK, Administrera Discussions") ;
 
 			// Lets get the url to the servlets directory
 			String servletHome = MetaInfo.getServletPath(req) ;
@@ -741,9 +638,9 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 			// Lets get all New Discussions
 			String sqlStoredProc = "B_GetAllBillsToShow " +aMetaId+ ", "+ aSectionId;//GetAllNewDiscussions
-			log("SQL new: " + sqlStoredProc) ;
+			//log("SQL new: " + sqlStoredProc) ;
 			String sqlAnswerNew[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProc ) ;
-			log("sqlAnswerNew: "+sqlAnswerNew);
+			//log("sqlAnswerNew: "+sqlAnswerNew);
 			// Lets get all Old Discussions
 			//String sqlStoredProcOld = "GetAllOldBillBoardDiscussions " + aMetaId + ", " + aSectionId +", '"+ aLoginDate + "'"  ;//GetAllOldDiscussions
 			// log("SQL OLD: " + sqlStoredProcOld ) ;
@@ -768,7 +665,70 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 			// Lets build the Responsepage
 			//VariableManager vm = new VariableManager() ;
-			log("allNewRecs: "+allNewRecs);
+			//log("allNewRecs: "+allNewRecs);
+			vm.addProperty("NEW_A_HREF_LIST", allNewRecs  ) ;
+			//vm.addProperty("OLD_A_HREF_LIST", allOldRecs  ) ;
+			vm.addProperty("UNADMIN_LINK_HTML", this.DISC_UNADMIN_LINK_TEMPLATE );
+
+			//this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
+			//log("ConfDisc OK") ;
+			htmlFile = HTML_TEMPLATE;
+			//return ;
+		} // End admin discussion
+//##########
+
+
+		// *********** ADMIN OLD DISCUSSION *************
+		if (adminWhat.equalsIgnoreCase("OLD_DISCUSSION") ) {
+			HTML_TEMPLATE ="BillBoard_admin_disc2.htm" ;//Conf_admin_disc.htm
+			String adminDiscList = "BillBoard_admin_disc_list.htm" ;//Conf_admin_disc_list.htm
+			//log("OK, Administrera old Discussions") ;
+
+			// Lets get the url to the servlets directory
+			String servletHome = MetaInfo.getServletPath(req) ;
+
+			// Lets get parameters
+			String aMetaId = params.getProperty("META_ID") ;
+			String aSectionId = params.getProperty("SECTION_ID") ;
+			//String aLoginDate = params.getProperty("LAST_LOGIN_DATE") ;
+
+			// Lets get path to the imagefolder. http://dev.imcode.com/images/se/102/ConfDiscNew.gif
+			//String imagePath = super.getExternalImageFolder(req) + "BillBoardDiscNew.gif" ;//ConfDiscNew.gif
+
+			// Lets get the part of an html page, wich will be parsed for every a Href reference
+			String aHrefHtmlFile = super.getExternalTemplateFolder(req) + adminDiscList ;
+			// log("aHrefHtmlFile: " + aHrefHtmlFile ) ;
+
+			// Lets get all New Discussions
+			String sqlStoredProc = "B_GetAllOldBills " +aMetaId+ ", "+ aSectionId;//GetAllNewDiscussions
+			//log("SQL new: " + sqlStoredProc) ;
+			String sqlAnswerNew[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProc ) ;
+			//log("sqlAnswerNew: "+sqlAnswerNew);
+			// Lets get all Old Discussions
+			//String sqlStoredProcOld = "GetAllOldBillBoardDiscussions " + aMetaId + ", " + aSectionId +", '"+ aLoginDate + "'"  ;//GetAllOldDiscussions
+			// log("SQL OLD: " + sqlStoredProcOld ) ;
+			//String sqlAnswerOld[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProcOld ) ;
+			//String sqlAnswerOld[] = null ;
+
+			// Lets build our tags vector.
+			Vector tagsV = this.buildAdminTags() ;
+
+			// Lets preparse all NEW records
+			String allNewRecs  = "" ;
+			if( sqlAnswerNew != null ) {
+				if( sqlAnswerNew.length > 0)
+					allNewRecs = discPreParse(req, sqlAnswerNew, tagsV, aHrefHtmlFile) ;
+			}
+			// Lets preparse all OLD records
+			//String allOldRecs  = "" ;
+			//if( sqlAnswerOld != null ) {
+			//	if( sqlAnswerOld.length > 0)
+			//		allOldRecs = discPreParse(req, sqlAnswerOld, tagsV, aHrefHtmlFile, imagePath , 0) ;
+			//}
+
+			// Lets build the Responsepage
+			//VariableManager vm = new VariableManager() ;
+			//log("allNewRecs: "+allNewRecs);
 			vm.addProperty("NEW_A_HREF_LIST", allNewRecs  ) ;
 			//vm.addProperty("OLD_A_HREF_LIST", allOldRecs  ) ;
 			vm.addProperty("UNADMIN_LINK_HTML", this.DISC_UNADMIN_LINK_TEMPLATE );
@@ -779,11 +739,13 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			//return ;
 		} // End admin discussion
 
+//##########
+
 		// *********** ADMIN REPLIES *************
 		if (adminWhat.equalsIgnoreCase("REPLY") ) {
 			HTML_TEMPLATE ="BillBoard_admin_reply.htm" ;//Conf_admin_reply.htm
 			String adminReplyList = "BillBoard_admin_reply_list.htm" ;//Conf_admin_reply_list.htm
-			log("OK, Administrera replies") ;
+			//log("OK, Administrera replies") ;
 
 			//Lets get the users userId
 			//Properties userParams = super.getUserParameters(user) ;
@@ -827,7 +789,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 			// Lets preparse all records
 			String allRecs = " " ;
 			if (sqlAnswer != null) allRecs = replyPreParse(req, sqlAnswer, tagsV, aSnippetFile) ;
-			log("allRecs is = "+allRecs);
+			//log("allRecs is = "+allRecs);
 			// Lets build the Responsepage
 			//VariableManager vm = new VariableManager() ;
 			//vm.addProperty("USER_SORT_ORDER", sortOrderVal) ;
@@ -883,7 +845,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				// Lets do for one record... Get all fields for that record
 				for(int j=i; j<i+nbrOfCols ; j++) {
 					dataV.add(DBArr[j]) ;
-					 log("VÄRDE: " + j + " : " +  DBArr[j]) ;
+					 //log("VÄRDE: " + j + " : " +  DBArr[j]) ;
 				} // End of one records for
 
 				// Lets check if the user is some kind of "Master" eg. if he's
@@ -975,7 +937,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 				// Lets do for one record... Get all fields for that record
 				for(int j=i; j<i+nbrOfCols ; j++) {
 					dataV.add(DBArr[j]) ;
-					log("DATA nr:"+j+" = "+DBArr[j]);
+					//log("DATA nr:"+j+" = "+DBArr[j]);
 				} // End of one records for
 
 				// Lets check if set new Disclflag should run
