@@ -13,7 +13,7 @@ public class TextDocument extends Document {
     public TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
         securityChecker.hasDocumentPermission( this );
         TextDocumentTextDomainObject imcmsText = documentMapper.getTextField( internalDocument, textFieldIndexInDocument ) ;
-        TextField textField = new TextField(imcmsText) ;
+        TextField textField = new TextField(imcmsText, this ) ;
         return textField;
     }
 
@@ -104,27 +104,31 @@ public class TextDocument extends Document {
      */
     public Menu getMenu( int menuIndexInDocument ) throws NoPermissionException {
         securityChecker.hasDocumentPermission( this );
-        return new Menu(menuIndexInDocument) ;
+        return new Menu(menuIndexInDocument, this ) ;
     }
 
     public static class TextField {
         TextDocumentTextDomainObject imcmsText ;
+        private TextDocument document;
 
-        private TextField (TextDocumentTextDomainObject imcmsText) {
+        private TextField (TextDocumentTextDomainObject imcmsText, TextDocument document ) {
             this.imcmsText = imcmsText ;
+            this.document = document;
         }
 
         /**
          * Set the format of the text in this textfield to HTML. (Should not be html-formatted.)
          */
-        public void setHtmlFormat() {
+        public void setHtmlFormat() throws NoPermissionException {
+            document.securityChecker.hasEditPermission(document.getId());
             this.imcmsText.setType(TextDocumentTextDomainObject.TEXT_TYPE_HTML) ;
         }
 
         /**
          *  Set the format of the text in this textfield to plain text. (Should be html-formatted.)
          */
-        public void setPlainFormat() {
+        public void setPlainFormat() throws NoPermissionException {
+            document.securityChecker.hasEditPermission(document.getId());
             this.imcmsText.setType(TextDocumentTextDomainObject.TEXT_TYPE_PLAIN) ;
         }
 
@@ -133,7 +137,8 @@ public class TextDocument extends Document {
          *
          * @return the text of this textfield.
          */
-        public String getText() {
+        public String getText() throws NoPermissionException {
+            document.securityChecker.hasDocumentPermission(document);
             return imcmsText.getText() ;
         }
 
@@ -143,22 +148,26 @@ public class TextDocument extends Document {
          *
          * @return the text of this textfield as a html-formatted string, suitable for displaying in a html-page.
          */
-        public String getHtmlFormattedText() {
+        public String getHtmlFormattedText() throws NoPermissionException {
+            document.securityChecker.hasDocumentPermission(document);
             return imcmsText.toHtmlString() ;
         }
     }
 
-    public class Menu {
+    public static class Menu {
         private int menuIndex ;
-        /** Menu sorted by 'manual' order. **/
-        public final static int SORT_BY_MANUAL_ORDER_DESCENDING    = 2 ;
+        private TextDocument document;
+
         /** Menu sorted by headline. **/
         public final static int SORT_BY_HEADLINE        = 1 ;
+        /** Menu sorted by 'manual' order. **/
+        public final static int SORT_BY_MANUAL_ORDER_DESCENDING    = 2 ;
         /** Menu sorted by datetime. **/
         public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING        = 3 ;
 
-        private Menu( int menuIndex ) {
+        private Menu( int menuIndex, TextDocument document ) {
             this.menuIndex = menuIndex;
+            this.document = document;
         }
 
         /**
@@ -167,18 +176,17 @@ public class TextDocument extends Document {
          * @return an array of the documents in this menu.
          */
         public Document[] getDocuments() {
-            String[] documentIds = documentMapper.getMenuLinks(getId(),menuIndex) ;
+            String[] documentIds = document.documentMapper.getMenuLinks(document.getId(),menuIndex) ;
             Document[] documents = new Document[documentIds.length] ;
 
             for (int i = 0; i < documentIds.length; i++) {
                 String documentId = documentIds[i];
-                DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt(documentId)) ;
-                if (document.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT) {
-                    documents[i] = new TextDocument( document, securityChecker, documentService, documentMapper, documentPermissionMapper) ;
+                DocumentDomainObject documentDO = document.documentMapper.getDocument(Integer.parseInt(documentId)) ;
+                if (documentDO.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT) {
+                    documents[i] = new TextDocument( documentDO, document.securityChecker, document.documentService, document.documentMapper, document.documentPermissionMapper) ;
                 } else {
-                    documents[i] = new Document( document, securityChecker, documentService, documentMapper, documentPermissionMapper) ;
+                    documents[i] = new Document( documentDO, document.securityChecker, document.documentService, document.documentMapper, document.documentPermissionMapper) ;
                 }
-
             }
             return documents ;
         }
@@ -186,26 +194,26 @@ public class TextDocument extends Document {
         /**
          * Add a document to the menu.
          *
-         * @param document the document to add
+         * @param documentToAdd the document to add
          * @throws NoPermissionException If you lack permission to edit the menudocument or permission to add the document.
          */
-        public void addDocument(Document document) throws NoPermissionException {
-            securityChecker.hasEditPermission(getId());
-            securityChecker.hasSharePermission(document) ;
+        public void addDocument(Document documentToAdd) throws NoPermissionException {
+            document.securityChecker.hasEditPermission(documentToAdd.getId());
+            document.securityChecker.hasSharePermission(documentToAdd) ;
 
-            documentMapper.addDocumentToMenu( securityChecker.getCurrentLoggedInUser(), getId(),menuIndex,document.getId()) ;
+            document.documentMapper.addDocumentToMenu( document.securityChecker.getCurrentLoggedInUser(), documentToAdd.getId(),menuIndex,documentToAdd.getId()) ;
         }
 
         /**
          * Remove a document from the menu.
          *
-         * @param document the document to add
+         * @param documentToRemove the document to remove
          * @throws NoPermissionException If you lack permission to edit the menudocument.
          */
-        public void removeDocument(Document document) throws NoPermissionException {
-            securityChecker.hasEditPermission(getId());
+        public void removeDocument(Document documentToRemove) throws NoPermissionException {
+            document.securityChecker.hasEditPermission(documentToRemove.getId());
 
-            documentMapper.removeDocumentFromMenu(securityChecker.getCurrentLoggedInUser(), getId(), menuIndex, document.getId()) ;
+            document.documentMapper.removeDocumentFromMenu(document.securityChecker.getCurrentLoggedInUser(), documentToRemove.getId(), menuIndex, documentToRemove.getId()) ;
 
         }
     }

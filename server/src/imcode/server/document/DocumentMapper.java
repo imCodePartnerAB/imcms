@@ -613,8 +613,9 @@ public class DocumentMapper {
     }
 
     private void inheritSection( int from_parentId, int to_metaId ) {
-        String[] sectionId = sprocSectionGetInheritId( service, from_parentId );
-        sprocSectionAddCrossref( service, to_metaId, Integer.parseInt( sectionId[0] ) );
+        String[] sectionIdStrAry = sprocSectionGetInheritId( service, from_parentId );
+        int sectionId = sectionIdStrAry.length > 0 ? Integer.parseInt( sectionIdStrAry[0] ) : -1 ;
+        sprocSectionAddCrossref( service, to_metaId, sectionId );
     }
 
     private void inheritClassifications( int from_parentId, int to_newMetaId ) {
