@@ -23,7 +23,7 @@ public class AdminUser extends Administrator {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        UserDomainObject user = Utility.getLoggedOnUser( req );
+        final UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Lets verify that the user is an admin, otherwise throw him out.
         if ( !user.isSuperAdmin() && !user.isUserAdmin() ) {
@@ -35,16 +35,16 @@ public class AdminUser extends Administrator {
             return;
         }
 
-        UserFinder userFinder = (UserFinder) UserFinder.getInstance( req );
-        if ( null != userFinder.getSelectedUser() ) {
-            gotoChangeUser(req, res, user, userFinder.getSelectedUser() );
-        } else {
-            userFinder.setUsersAddable( true );
-            userFinder.setNullSelectable( false );
-            userFinder.setSelectButton( UserFinder.SELECT_BUTTON__EDIT_USER );
-            userFinder.setForwardReturnUrl( "AdminUser" );
-            userFinder.forward( req, res );
-        }
+        UserFinder userFinder = UserFinder.getInstance( req );
+        userFinder.setUsersAddable( true );
+        userFinder.setSelectButton( UserFinder.SELECT_BUTTON__EDIT_USER );
+        userFinder.setSelectUserCommand( new UserFinder.SelectUserCommand() {
+            public void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
+                                    HttpServletResponse response ) throws ServletException, IOException {
+                gotoChangeUser( request, response, user, selectedUser );
+            }
+        } );
+        userFinder.forward( req, res );
     }
 
     public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
@@ -77,7 +77,7 @@ public class AdminUser extends Administrator {
             log.debug( header + "- user have no permission to edit user values" );
             new AdminError( req, res, header, msg );
         } else {
-            req.getSession().setAttribute( "userToChange", ""+userToChange.getId() );
+            req.getSession().setAttribute( "userToChange", "" + userToChange.getId() );
             res.sendRedirect( "AdminUserProps?CHANGE_USER=true" );
         }
     }

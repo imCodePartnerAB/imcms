@@ -8,12 +8,31 @@
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
-    UserBrowser.FormData formData = (UserBrowser.FormData)request.getAttribute( UserBrowser.REQUEST_ATTRIBUTE__FORM_DATA ) ;
+    UserBrowser.Page userBrowserPage = (UserBrowser.Page)request.getAttribute( UserBrowser.REQUEST_ATTRIBUTE__FORM_DATA ) ;
 %>
 <vel:velocity>
-#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/2 ?>" "<%= userFinder.getForwardReturnUrl() %>" "" "38" "" )
+<html>
+<head>
+<title><? templates/sv/AdminManager_adminTask_element.htm/2 ?></title>
+
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+
+</head>
+<body>
+	#gui_outer_start()
+	#gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/2 ?>" )
+    <table border="0" cellspacing="0" cellpadding="0">
+<form name="argumentForm" action="UserBrowser" method="GET" target="_top">
+<tr>
+	<td><input type="submit"  class="imcmsFormBtn" name="<%= UserBrowser.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>"></td>
+	<td>&nbsp;</td>
+	<td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW(38)"></td>
+</tr>
+</table>
+#gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="0" width="600" align="center">
-    <form name="argumentForm" action="UserBrowser" method="GET" target="_top">
             <input type="hidden" name="<%= UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE %>"
                                 value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE ) %>">
     <tr>
@@ -24,14 +43,14 @@
         <td>
         <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td><input type="text" name="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" size="20" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(formData.getSearchString()) %>"></td>
+            <td><input type="text" name="<%= UserBrowser.REQUEST_PARAMETER__SEARCH_STRING %>" size="20" maxlength="20" value="<%= StringEscapeUtils.escapeHtml(userBrowserPage.getSearchString()) %>"></td>
             <td class="imcmsAdmDim">&nbsp; <? templates/sv/AdminChangeUser.htm/1001 ?></td>
         </tr>
         </table></td>
     </tr>
     <tr>
         <td class="imcmsAdmText">&nbsp;</td>
-        <td><input type="checkbox" name="<%= UserBrowser.REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS %>" value="0" <% if (formData.isIncludeInactiveUsers()) { %>checked<%}%>> <? templates/sv/AdminChangeUser.htm/12 ?></td>
+        <td><input type="checkbox" name="<%= UserBrowser.REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS %>" value="0" <% if (userBrowserPage.isIncludeInactiveUsers()) { %>checked<%}%>> <? templates/sv/AdminChangeUser.htm/12 ?></td>
     </tr>
     <tr>
         <td class="imcmsAdmText">&nbsp;</td>
@@ -59,7 +78,7 @@
             <td>
             <select name="<%= UserBrowser.REQUEST_PARAMETER__USER_ID %>" size="15" style="min-width: 30em; width: 100%;">
                 <%
-                    UserDomainObject[] users = formData.getUsers();
+                    UserDomainObject[] users = userBrowserPage.getUsers();
                     for ( int i = 0; i < users.length; i++ ) {
                     UserDomainObject user = users[i];
                     %><option value="<%= user.getId() %>">

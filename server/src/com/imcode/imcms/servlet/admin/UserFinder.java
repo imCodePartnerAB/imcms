@@ -8,18 +8,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class UserFinder {
+import com.imcode.imcms.servlet.WebComponent;
+
+public class UserFinder extends WebComponent {
 
     private boolean userSelected;
     private UserDomainObject selectedUser;
     private boolean usersAddable;
     private String searchString;
     private int selectButton;
-    private boolean nullSelectable = true ;
+    private boolean nullSelectable ;
 
     public static final int SELECT_BUTTON__SELECT_USER = UserBrowser.SELECT_BUTTON__SELECT_USER;
     public static final int SELECT_BUTTON__EDIT_USER = UserBrowser.SELECT_BUTTON__EDIT_USER;
-    private String forwardReturnUrl;
+    private SelectUserCommand selectUserCommand;
 
     public static UserFinder getInstance( HttpServletRequest request ) {
         UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
@@ -27,10 +29,6 @@ public class UserFinder {
             userFinder = new UserFinder();
         }
         return userFinder;
-    }
-
-    public boolean isUserSelected() {
-        return userSelected;
     }
 
     public UserDomainObject getSelectedUser() {
@@ -43,12 +41,7 @@ public class UserFinder {
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
-        UserBrowser.forwardToJsp( request, response, new UserBrowser.FormData() );
-    }
-
-    public void setSelectedUser( UserDomainObject selectedUser ) {
-        userSelected = true;
-        this.selectedUser = selectedUser;
+        UserBrowser.forwardToJsp( request, response, new UserBrowser.Page() );
     }
 
     public String getSearchString() {
@@ -79,11 +72,17 @@ public class UserFinder {
         this.nullSelectable = nullSelectable;
     }
 
-    public String getForwardReturnUrl() {
-        return forwardReturnUrl;
+    public void selectUser( UserDomainObject selectedUser, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        this.selectUserCommand.selectUser(selectedUser,request,response) ;
     }
 
-    public void setForwardReturnUrl( String forwardReturnUrl ) {
-        this.forwardReturnUrl = forwardReturnUrl;
+    public void setSelectUserCommand( SelectUserCommand selectUserCommand ) {
+        this.selectUserCommand = selectUserCommand;
+    }
+
+    public static abstract class SelectUserCommand {
+
+        public abstract void selectUser( UserDomainObject selectedUser, HttpServletRequest request,
+                                HttpServletResponse response ) throws ServletException, IOException ;
     }
 }

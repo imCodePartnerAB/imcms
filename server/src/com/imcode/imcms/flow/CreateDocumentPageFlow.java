@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
-
 public abstract class CreateDocumentPageFlow extends DocumentPageFlow {
 
     protected TextDocumentDomainObject parentDocument;
