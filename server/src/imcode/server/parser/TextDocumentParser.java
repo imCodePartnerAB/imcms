@@ -71,9 +71,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     public byte[] parsePage (int meta_id, User user, int flags, ParserParameters paramsToParse) throws IOException{
 		return parsePage(meta_id,user,flags,1,paramsToParse) ;
-	}
+    }
 
-	public byte[] parsePage (int meta_id, User user, int flags, int includelevel,ParserParameters paramsToParse) throws IOException{
+    public byte[] parsePage (int meta_id, User user, int flags, int includelevel,ParserParameters paramsToParse) throws IOException{
 	try {
 	    long totaltime = System.currentTimeMillis() ;
 	    String meta_id_str = String.valueOf(meta_id) ;
@@ -286,40 +286,17 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    HashMap imageMap = new HashMap() ;
 
 	    Iterator it = texts.iterator() ;
+	    // This is where we gather all texts from the database and put them in our maps.
 	    while ( it.hasNext() ) {
 		String key = (String)it.next() ;
 		String txt_no = (String)it.next() ;
 		String txt_type = (String)it.next() ;
 		String value = (String)it.next() ;
-		if ( textmode ) {	// Textmode
-		    if ( value.length()>0 ) {
-			value = "<img src=\""
-			    + imageUrl
-			    + "red.gif\" border=\"0\">&nbsp;"
-			    + value
-			    + "<a href=\""
-			    + servletUrl
-			    + "ChangeText?meta_id="
-			    + meta_id
-			    + "&txt="
-			    + txt_no
-			    + "&type="
-			    + txt_type
-			    + "\"><img src=\""
-			    + imageUrl
-			    + "txt.gif\" border=\"0\"></a>" ;
-			tags.setProperty(key,value) ;
-			textMap.put(txt_no,value);
-		    }
-		} else {	// Not Textmode
+		if ( value.length()>0 ) {
 		    if (emp!=null) {
 			value = emphasizeString(value,emp,emphasize_substitution,patMat) ;
 		    }
-		    
-		    if ( value.length()>0 ) {
-			tags.setProperty(key,value) ;
-			textMap.put(txt_no,value) ;
-		    }
+		    textMap.put(txt_no,value) ;
 		}
 	    }
 
@@ -327,6 +304,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    int images_rows = images.size() / images_cols ;
 	    dbc.clearResultSet() ;
 	    Iterator imit = images.iterator() ;
+	    // This is where we gather all images from the database and put them in our maps.
 	    while ( imit.hasNext() ) {
 		String imgtag = (String)imit.next() ;
 		String imgnumber = (String)imit.next() ;
@@ -386,12 +364,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		    } else {
 			value.append(">") ;
 		    }
-		    if ( imagemode ) {	// Imagemode...
-			// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-			value.append("<a href=\"ChangeImage?meta_id="+meta_id+"&img="+imgnumber+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>") ;
-		    }
 		}
-		tags.setProperty(imgtag,value.toString()) ;
 		imageMap.put(imgnumber,value.toString()) ;
 	    }
 
@@ -610,19 +583,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    tags.setProperty("#saveSortStart*#","") ;
 	    tags.setProperty("#saveSortStop*#","") ;
 		
-			System.out.println(param_value)	;
-		tags.setProperty("#param#", param_value);
-
-	    if ( imagemode ) {	// imagemode
-		// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-		tags.setProperty("#img*#",				"<a href=\"ChangeImage?meta_id="+meta_id+"&img=#img_no#\"><img src=\""+imageUrl+"bild.gif\" border=\"0\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>") ;
-		numberedtags.setProperty("#img*#","#img_no#") ;
-	    }
-	    if ( textmode ) {	// Textmode
-		// FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-		tags.setProperty("#txt*#",				"<img src=\""+imageUrl+"red.gif\" border=\"0\">&nbsp;<a href=\""+servletUrl+"ChangeText?meta_id="+meta_id+"&txt=#txt_no#&type=1\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>") ;
-		numberedtags.setProperty("#txt*#","#txt_no#") ;
-	    }
+	    tags.setProperty("#param#", param_value);
 
 	    // Give the user a row of buttons if he is privileged enough.
 	    if ( serverObject.checkDocAdminRights(meta_id,user) && flags >= 0 ) {
