@@ -76,8 +76,8 @@ public class SearchDocuments extends HttpServlet {
 		
 		// lets set up the search string
 		StringTokenizer token = new StringTokenizer(searchString," \"+-",true);
-	   	searchString = buildSearchString(token, true)  ;	
-				
+	   	searchString = buildSearchString(token, true)  ;
+						
 		//lets set up the sql-params stringBuffer 
 		sqlBuff.append(user.getUserId());			//@user_id INT,
 		sqlBuff.append(",'"+searchString+"'");		//@keyword_string VARCHAR(128)
@@ -353,6 +353,9 @@ public class SearchDocuments extends HttpServlet {
 						buff.append("\"not\",");
 					}
 				}else {
+					if ( !str.endsWith("*") ) {
+						str =  str + "*";
+					}
 					if ( !first ) {
 						return "\""+str+"\",";
 					}else {
