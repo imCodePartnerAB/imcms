@@ -1,4 +1,4 @@
-SET QUOTED_IDENTIFIER ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
 GO
@@ -6,6 +6,7 @@ GO
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CopyDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[CopyDocs]
 GO
+
 
 
 CREATE PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT, @copyPrefix VARCHAR(20) AS
@@ -351,6 +352,12 @@ DEALLOCATE documents_cursor
 DROP TABLE #documents
 
 
+update meta
+   set 	date_created=getDate(),
+	date_modified=getDate(),
+	activated_datetime=null,
+	archived_datetime=null
+   where meta_id=@copy_id
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
