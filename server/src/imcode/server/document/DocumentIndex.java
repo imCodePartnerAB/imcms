@@ -21,9 +21,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.search.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,13 +32,14 @@ import java.text.DateFormat;
 public class DocumentIndex {
 
     private final static int INDEX_LOG_TIME_STEP = 2500;
-    private final static Logger log = Logger.getLogger( "imcode.server.document.DocumentIndex" );
+    private final static Logger log = Logger.getLogger( imcode.server.document.DocumentIndex.class.getName() );
 
     private File dir;
     private IndexWriter indexWriter;
 
     public DocumentIndex( File dir ) {
         this.dir = dir;
+        BooleanQuery.setMaxClauseCount( Integer.MAX_VALUE ); // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow queries?
     }
 
     public synchronized DocumentDomainObject[] search( Query query, UserDomainObject searchingUser ) throws IOException {
@@ -109,10 +108,10 @@ public class DocumentIndex {
     }
 
     public Query parseLucene( String queryString ) throws ParseException {
-        return QueryParser.parse( queryString,
-                                  "default",
-                                  new WhitespaceLowerCaseAnalyzer() );
-
+        Query query = QueryParser.parse( queryString,
+                                          "default",
+                                          new WhitespaceLowerCaseAnalyzer() );
+        return query;
     }
 
     private void logIndexingCompleted( int numberOfDocuments, StopWatch indexingStopWatch ) {

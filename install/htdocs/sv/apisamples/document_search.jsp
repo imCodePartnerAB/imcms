@@ -51,6 +51,21 @@ java.util.*,
         </ul>
         <% } %>
 
+        <h2>Search for documents containing "test" in textfield 1,
+            and modified between 2004-01-01 and 2005-01-01, sorted by modified time, newest first.</h2>
+        <ul>
+        <%
+            query = new LuceneParsedQuery("+text1:test +modified_datetime:[2003-01-01 TO 2005-01-01]");
+            documents = documentService.search(query);
+            Arrays.sort(documents, Document.Comparator.MODIFIED_DATETIME.reversed()) ;
+
+            if (0 == documents.length) { %>No hits.<% }
+            for ( int i = 0; i < documents.length; i++ ) {
+                Document document = documents[i]; %>
+                <li><%= document.getId() %> - <%= document.getHeadline() %> - <%= document.getModifiedDatetime() %></li>
+            <% } %>
+        </ul>
+
         <%
             CategoryType[] categoryTypes = documentService.getAllCategoryTypes() ;
             if (0 != categoryTypes.length) {
