@@ -3,6 +3,7 @@ package imcode.server.user;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
 
 import java.util.*;
 
@@ -458,10 +459,28 @@ public class UserDomainObject extends Hashtable {
         return Imcms.getServices().getDocumentMapper().userHasAtLeastDocumentReadPermission( this, document );
     }
 
-    public boolean canList( DocumentDomainObject documentDomainObject ) {
-        return documentDomainObject.isPublishedAndNotArchived()
-               && canAccess( documentDomainObject )
-               || canEdit( documentDomainObject );
+    public boolean canList( DocumentDomainObject document ) {
+        return document.isPublishedAndNotArchived()
+               && canAccess( document )
+               || canEdit( document );
+    }
+
+    public boolean isSuperAdminOrHasFullPermissionOn( DocumentDomainObject document ) {
+        return Imcms.getServices().getDocumentMapper().userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( this, DocumentPermissionSetDomainObject.TYPE_ID__FULL, document );
+    }
+
+    public boolean canDefineRestrictedOneFor( DocumentDomainObject document ) {
+        return isSuperAdminOrHasFullPermissionOn( document );
+    }
+
+    public boolean canDefineRestrictedTwoFor( DocumentDomainObject document ) {
+        return isSuperAdminOrHasFullPermissionOn( document )
+               || hasAtLeastRestrictedOnePermissionOn( document )
+                  && document.isRestrictedOneMorePrivilegedThanRestrictedTwo();
+    }
+
+    private boolean hasAtLeastRestrictedOnePermissionOn( DocumentDomainObject document ) {
+        return Imcms.getServices().getDocumentMapper().userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( this, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, document );
     }
 
     public String toString() {

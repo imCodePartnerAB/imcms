@@ -2,6 +2,7 @@ package imcode.server.document;
 
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 import java.util.ArrayList;
@@ -91,11 +92,16 @@ public class DocumentPermissionSetMapper {
         return createRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, true );
     }
 
-    public void saveRestrictedDocumentPermissionSets( DocumentDomainObject document ) {
-        saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOne(), false );
-        saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwo(), false );
-        saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOneForNewDocuments(), true );
-        saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwoForNewDocuments(), true );
+    public void saveRestrictedDocumentPermissionSets( DocumentDomainObject document, UserDomainObject user,
+                                                      DocumentDomainObject oldDocument ) {
+        if (user.canDefineRestrictedOneFor( oldDocument )) {
+            saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOne(), false );
+            saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOneForNewDocuments(), true );
+        }
+        if (user.canDefineRestrictedTwoFor( oldDocument )) {
+            saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwo(), false );
+            saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwoForNewDocuments(), true );
+        }
     }
 
     private void saveRestrictedDocumentPermissionSet( DocumentDomainObject document,

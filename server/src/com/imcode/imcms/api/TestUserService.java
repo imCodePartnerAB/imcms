@@ -156,7 +156,7 @@ public class TestUserService extends TestCase {
         }
 
         boolean evaluateSqlCall( MockImcmsServices.SqlCall sqlCall ) {
-            boolean stringMatchesUpdateTableName = Pattern.compile( "^update\\s+" + Pattern.quote( tableName ) ).matcher( sqlCall.getString().toLowerCase() ).find();
+            boolean stringMatchesUpdateTableName = Pattern.compile( "^update\\s+" + tableName ).matcher( sqlCall.getString().toLowerCase() ).find();
             boolean parametersContainsParameter = ArrayUtils.contains( sqlCall.getParameters(), parameter );
             return stringMatchesUpdateTableName && parametersContainsParameter;
         }
@@ -173,7 +173,7 @@ public class TestUserService extends TestCase {
         }
 
         boolean evaluateSqlCall( MockImcmsServices.SqlCall sqlCall ) {
-            boolean stringMatchesUpdateTableName = Pattern.compile( "^insert\\s+(?:into\\s+)?" + Pattern.quote( tableName ) ).matcher( sqlCall.getString().toLowerCase() ).find();
+            boolean stringMatchesUpdateTableName = Pattern.compile( "^insert\\s+(?:into\\s+)?" + tableName ).matcher( sqlCall.getString().toLowerCase() ).find();
             boolean parametersContainsParameter = ArrayUtils.contains( sqlCall.getParameters(), parameter );
             return stringMatchesUpdateTableName && parametersContainsParameter;
         }
@@ -188,7 +188,7 @@ public class TestUserService extends TestCase {
         }
 
         boolean evaluateSqlCall( MockImcmsServices.SqlCall sqlCall ) {
-            return Pattern.compile( Pattern.quote( string ) ).matcher( sqlCall.getString().toLowerCase() ).find();
+            return Pattern.compile( string ).matcher( sqlCall.getString().toLowerCase() ).find();
         }
     }
 }

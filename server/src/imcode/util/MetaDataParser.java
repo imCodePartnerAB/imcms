@@ -449,7 +449,7 @@ public class MetaDataParser {
 
         if ( document instanceof TextDocumentDomainObject ) {
             TextDocumentPermissionSetDomainObject currentUsersDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
-            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = ( (TextDocumentPermissionSetDomainObject)documentPermissionSet );
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentPermissionSet;
             SortedMap templateGroups = getAllowedTemplateGroupsMap( currentUsersDocumentPermissionSet, textDocumentPermissionSet );
             tags.add( "templateGroupsMap" );
             tags.add( templateGroups );

@@ -7,7 +7,7 @@
 #gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/17 ?>" "AdminManager" "back" 124 "focusField(1,'template')" )
 
 <%
-    AdminCategories.Page adminCategoriesPage = (AdminCategories.Page)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
+    AdminCategories.AdminCategoriesPage adminCategoriesPage = (AdminCategories.AdminCategoriesPage)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
     String mode = adminCategoriesPage.getMode() ;
     StringBuffer messageToUser = new StringBuffer("");
 
@@ -340,7 +340,7 @@
 </tr>
 <tr>
     <td colspan="2" align="right">
-        
+
         <%
             if (!inDefaultMode) {
                 if( inAddCategoryTypeMode ) { %>

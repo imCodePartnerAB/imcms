@@ -33,8 +33,8 @@ public class UserFinder extends WebComponent {
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
-        UserBrowser.Page page = new UserBrowser.Page();
-        page.forward( request, response );
+        UserBrowser.UserBrowserPage userBrowserPage = new UserBrowser.UserBrowserPage();
+        userBrowserPage.forward( request, response );
     }
 
     public void setSelectButtonText( LocalizedMessage buttonText ) {

@@ -152,3 +152,10 @@ ALTER TABLE text_docs ADD CONSTRAINT FK_text_docs_default_template FOREIGN KEY (
 GO
 
 -- 2004-12-06 Kreiger
+
+DROP PROCEDURE GetTemplates
+DROP PROCEDURE GetUserRolesDocPermissions
+DROP PROCEDURE UpdateDefaultTemplates
+GO
+
+-- 2004-12-07 Kreiger

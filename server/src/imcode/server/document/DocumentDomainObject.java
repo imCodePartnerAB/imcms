@@ -255,14 +255,12 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         attributes.linkableByOtherUsers = linkableByOtherUsers;
     }
 
-    public boolean isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() {
-        return attributes.permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
+    public boolean isRestrictedOneMorePrivilegedThanRestrictedTwo() {
+        return attributes.restrictedOneMorePrivilegedThanRestrictedTwo;
     }
 
-    public void setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(
-            boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo ) {
-        attributes.permissionSetOneIsMorePrivilegedThanPermissionSetTwo =
-        permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
+    public void setRestrictedOneMorePrivilegedThanRestrictedTwo( boolean b ) {
+        attributes.restrictedOneMorePrivilegedThanRestrictedTwo = b;
     }
 
     public boolean isPublished() {
@@ -441,7 +439,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         private int id;
         private Date modifiedDatetime;
         private Date lastModifiedDatetime ;
-        private boolean permissionSetOneIsMorePrivilegedThanPermissionSetTwo;
+        private boolean restrictedOneMorePrivilegedThanRestrictedTwo;
         private Date publicationStartDatetime;
         private Date publicationEndDatetime;
         private UserDomainObject publisher;

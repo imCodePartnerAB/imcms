@@ -3,12 +3,10 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
+import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;
-
-import org.apache.commons.lang.StringUtils;
 
 public class AdminCategories extends HttpServlet {
 
@@ -73,39 +69,39 @@ public class AdminCategories extends HttpServlet {
 
         DocumentMapper documentMapper = service.getDocumentMapper();
 
-        Page page = new Page();
+        AdminCategoriesPage adminCategoriesPage = new AdminCategoriesPage();
 
         CategoryTypeDomainObject categoryType = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
         CategoryDomainObject category = getCategoryFromIdInRequest( req, documentMapper );
 
         if ( null != req.getParameter( PARAMETER_MODE__ADD_CATEGORY_TYPE ) ){
-            addCategoryType( req, page, documentMapper );
+            addCategoryType( req, adminCategoriesPage, documentMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__EDIT_CATEGORY_TYPE ) ) {
-            editCategoryType( categoryType, req, page, documentMapper );
+            editCategoryType( categoryType, req, adminCategoriesPage, documentMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__DELETE_CATEGORY_TYPE ) ) {
-            deleteCategoryType( categoryType, page, documentMapper );
+            deleteCategoryType( categoryType, adminCategoriesPage, documentMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__ADD_CATEGORY ) ) {
-            page = addCategory( req, res, page, documentMapper );
+            adminCategoriesPage = addCategory( req, res, adminCategoriesPage, documentMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__EDIT_CATEGORY ) ) {
-            page = editCategory( req, res, page, documentMapper );
+            adminCategoriesPage = editCategory( req, res, adminCategoriesPage, documentMapper );
         } else if ( req.getParameter( PARAMETER_MODE__DELETE_CATEGORY ) != null ) {
-            deleteCategory( category, categoryType, req, page, documentMapper );
+            deleteCategory( category, categoryType, req, adminCategoriesPage, documentMapper );
         } else if ( null != req.getParameter( PARAMETER_MODE__VIEW_CATEGORY ) ) {
-            viewCategory( categoryType, category, req, page );
+            viewCategory( categoryType, category, req, adminCategoriesPage );
         }
 
         if ( !res.isCommitted() ) {
-            forward( page, user, req, res );
+            forward( adminCategoriesPage, user, req, res );
         }
     }
 
-    private void forward( Page formBean, UserDomainObject user, HttpServletRequest req,
+    private void forward( AdminCategoriesPage formBean, UserDomainObject user, HttpServletRequest req,
                           HttpServletResponse res ) throws ServletException, IOException {
         req.setAttribute( ATTRIBUTE__FORM_DATA, formBean );
         req.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP_TEMPLATE ).forward( req, res );
     }
 
-    private Page editCategory( HttpServletRequest req, HttpServletResponse res, Page formBean,
+    private AdminCategoriesPage editCategory( HttpServletRequest req, HttpServletResponse res, AdminCategoriesPage formBean,
                                    DocumentMapper documentMapper ) throws ServletException, IOException {
         formBean.setMode(PARAMETER_MODE__EDIT_CATEGORY) ;
 
@@ -152,9 +148,9 @@ public class AdminCategories extends HttpServlet {
         category.setType( categoryTypeToAddTo );
     }
 
-    private Page addCategory( HttpServletRequest req, HttpServletResponse res, Page page,
+    private AdminCategoriesPage addCategory( HttpServletRequest req, HttpServletResponse res, AdminCategoriesPage adminCategoriesPage,
                                   DocumentMapper documentMapper ) throws ServletException, IOException {
-        page.setMode(PARAMETER_MODE__ADD_CATEGORY) ;
+        adminCategoriesPage.setMode(PARAMETER_MODE__ADD_CATEGORY) ;
 
         CategoryDomainObject newCategory = null;
         CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
@@ -164,19 +160,19 @@ public class AdminCategories extends HttpServlet {
                                                 req.getParameter( PARAMETER__DESCRIPTION ),
                                                 req.getParameter( PARAMETER__ICON ),
                                                 categoryTypeToAddTo );
-        page.setCategoryToEdit( newCategory );
-        page.setCategoryTypeToEdit( categoryTypeToAddTo );
+        adminCategoriesPage.setCategoryToEdit( newCategory );
+        adminCategoriesPage.setCategoryTypeToEdit( categoryTypeToAddTo );
 
         if ( req.getParameter( PARAMETER__BROWSE_FOR_IMAGE ) != null ) {
-            forwardToImageBrowse( page, req, res );
+            forwardToImageBrowse( adminCategoriesPage, req, res );
         } else if ( null != req.getParameter( PARAMETER__ADD_CATEGORY_BUTTON ) && StringUtils.isNotBlank( newCategory.getName() ) ) {
             if ( !categoryTypeToAddTo.hasCategoryWithName( newCategory.getName() ) ) {
                 documentMapper.addCategoryToDb( newCategory.getType().getId(), newCategory.getName(), newCategory.getDescription(), newCategory.getImageUrl() );
-                page.setCategoryToEdit( new CategoryDomainObject( 0, "", "", "", null ) );
-                page.setUniqueCategoryName( true );
+                adminCategoriesPage.setCategoryToEdit( new CategoryDomainObject( 0, "", "", "", null ) );
+                adminCategoriesPage.setUniqueCategoryName( true );
             }
         }
-        return page;
+        return adminCategoriesPage;
     }
 
     private CategoryDomainObject getCategoryFromIdInRequest( HttpServletRequest req, DocumentMapper documentMapper ) {
@@ -205,8 +201,8 @@ public class AdminCategories extends HttpServlet {
     }
 
     private void deleteCategory( CategoryDomainObject categoryToEdit, CategoryTypeDomainObject categoryTypeToEdit,
-                                 HttpServletRequest req, Page page, DocumentMapper documentMapper ) {
-        page.setMode(PARAMETER_MODE__DELETE_CATEGORY) ;
+                                 HttpServletRequest req, AdminCategoriesPage adminCategoriesPage, DocumentMapper documentMapper ) {
+        adminCategoriesPage.setMode(PARAMETER_MODE__DELETE_CATEGORY) ;
         String[] documentsOfOneCategory = null;
         if ( categoryToEdit != null ) {
             documentsOfOneCategory = documentMapper.getAllDocumentsOfOneCategory( categoryToEdit );
@@ -222,12 +218,12 @@ public class AdminCategories extends HttpServlet {
             }
         }
 
-        page.setCategoryTypeToEdit( categoryTypeToEdit );
-        page.setCategoryToEdit( categoryToEdit );
-        page.setDocumentsOfOneCategory( documentsOfOneCategory );
+        adminCategoriesPage.setCategoryTypeToEdit( categoryTypeToEdit );
+        adminCategoriesPage.setCategoryToEdit( categoryToEdit );
+        adminCategoriesPage.setDocumentsOfOneCategory( documentsOfOneCategory );
     }
 
-    private void forwardToImageBrowse( final Page page, HttpServletRequest request,
+    private void forwardToImageBrowse( final AdminCategoriesPage adminCategoriesPage, HttpServletRequest request,
                                        HttpServletResponse response ) throws ServletException, IOException {
         ImageBrowser imageBrowser = new ImageBrowser();
         imageBrowser.setSelectImageUrlCommand( new ImageBrowser.SelectImageUrlCommand() {
@@ -235,15 +231,15 @@ public class AdminCategories extends HttpServlet {
                 if (null != imageUrl) {
                     imageUrl = "../images/"+imageUrl ;
                 }
-                page.getCategoryToEdit().setImageUrl( imageUrl );
-                forward( page, Utility.getLoggedOnUser( request ), request, response );
+                adminCategoriesPage.getCategoryToEdit().setImageUrl( imageUrl );
+                forward( adminCategoriesPage, Utility.getLoggedOnUser( request ), request, response );
             }
         } );
         imageBrowser.forward( request, response );
     }
 
     private void viewCategory( CategoryTypeDomainObject categoryTypeToEdit, CategoryDomainObject categoryToEdit,
-                               HttpServletRequest req, Page formBean ) {
+                               HttpServletRequest req, AdminCategoriesPage formBean ) {
         formBean.setMode(PARAMETER_MODE__VIEW_CATEGORY) ;
         formBean.setCategoryTypeToEdit( categoryTypeToEdit );
         if ( req.getParameter( PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE ) != null ) {
@@ -253,7 +249,7 @@ public class AdminCategories extends HttpServlet {
         }
     }
 
-    private void deleteCategoryType( CategoryTypeDomainObject categoryTypeToEdit, Page formBean,
+    private void deleteCategoryType( CategoryTypeDomainObject categoryTypeToEdit, AdminCategoriesPage formBean,
                                      DocumentMapper documentMapper ) {
         formBean.setMode(PARAMETER_MODE__DELETE_CATEGORY_TYPE) ;
         int numberOfCategories = 0;
@@ -268,7 +264,7 @@ public class AdminCategories extends HttpServlet {
     }
 
     private void editCategoryType( CategoryTypeDomainObject categoryTypeToEdit, HttpServletRequest req,
-                                   Page formBean, DocumentMapper documentMapper ) {
+                                   AdminCategoriesPage formBean, DocumentMapper documentMapper ) {
         formBean.setMode(PARAMETER_MODE__EDIT_CATEGORY_TYPE) ;
         formBean.setUniqueCategoryTypeName( true );
 
@@ -287,7 +283,7 @@ public class AdminCategories extends HttpServlet {
         formBean.setCategoryTypeToEdit( categoryTypeToEdit );
     }
 
-    private void  addCategoryType( HttpServletRequest req, Page formBean, DocumentMapper documentMapper ) {
+    private void  addCategoryType( HttpServletRequest req, AdminCategoriesPage formBean, DocumentMapper documentMapper ) {
         formBean.setMode(PARAMETER_MODE__ADD_CATEGORY_TYPE) ;
         if ( req.getParameter( PARAMETER_CATEGORY_TYPE_ADD ) != null
              && !req.getParameter( PARAMETER__NAME ).trim().equals( "" ) ){
@@ -338,7 +334,7 @@ public class AdminCategories extends HttpServlet {
         return temps;
     }
 
-    public static class Page {
+    public static class AdminCategoriesPage {
 
         private CategoryTypeDomainObject categoryTypeToEdit;
         private CategoryDomainObject categoryToEdit;

@@ -8,7 +8,7 @@
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
     UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
-    UserBrowser.Page userBrowserPage = (UserBrowser.Page)request.getAttribute( UserBrowser.REQUEST_ATTRIBUTE__FORM_DATA ) ;
+    UserBrowser.UserBrowserPage userBrowserPage = (UserBrowser.UserBrowserPage)request.getAttribute( UserBrowser.REQUEST_ATTRIBUTE__FORM_DATA ) ;
 %>
 <vel:velocity>
 <html>

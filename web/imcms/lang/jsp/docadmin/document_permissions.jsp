@@ -2,11 +2,9 @@
                  imcode.server.user.RoleDomainObject,
                  imcode.server.Imcms,
                  java.util.*,
-                 org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  imcode.util.Html,
-                 com.imcode.imcms.api.DocumentPermissionSet,
                  imcode.server.document.DocumentPermissionSetDomainObject,
                  imcode.util.HttpSessionUtils,
                  com.imcode.imcms.flow.*,
@@ -32,7 +30,7 @@
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
     value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
 <input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
-        value="<%= EditDocumentPermissionsPageFlow.PAGE__DOCUMENT_PERMISSIONS %>">
+        value="document_permissions">
     <table border="0" cellspacing="0" cellpadding="0">
         <tr>
             <td><input type="submit" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2001 ?>"></td>
@@ -64,19 +62,23 @@
                     for ( Iterator iterator = rolesMappedToPermissionSetIds.entrySet().iterator(); iterator.hasNext(); ) {
                         Map.Entry entry = (Map.Entry)iterator.next();
                         RoleDomainObject role = (RoleDomainObject)entry.getKey();
-                        Integer permissionSetId = (Integer)entry.getValue();
+                        int permissionSetId = ((Integer)entry.getValue()).intValue() ;
+                        if (DocumentPermissionSetDomainObject.TYPE_ID__NONE == permissionSetId) {
+                            continue ;
+                        }
                         allRoles.remove( role ) ;
-                %>
-                <tr align="center">
-                    <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRole( role )) { %>*<% } else { %>&nbsp;<% } %></td>
-                    <td class="imcmsAdmText" align="left"><%= role.getName() %></td>
-                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__NONE, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__NONE ) %></td>
-                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__READ, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__READ ) %></td>
-                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 ) %></td>
-                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 ) %></td>
-                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__FULL, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__FULL ) %></td>
-                </tr>
-                <% } %>
+                        %>
+                        <tr align="center">
+                            <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRole( role )) { %>*<% } else { %>&nbsp;<% } %></td>
+                            <td class="imcmsAdmText" align="left"><%= role.getName() %></td>
+                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__NONE, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__NONE ) %></td>
+                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__READ, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__READ ) %></td>
+                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 ) %></td>
+                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 ) %></td>
+                            <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__FULL, permissionSetId == DocumentPermissionSetDomainObject.TYPE_ID__FULL ) %></td>
+                        </tr>
+                        <%
+                    } %>
                 </table>
             </td>
         </tr>
@@ -90,7 +92,7 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <select name="<%= EditDocumentPermissionsPageFlow.REQUEST_PARAMETER__ROLES_WITHOUT_PERMISSIONS %>" size="4" multiple>
+                        <select name="<%= EditDocumentPermissionsPageFlow.DocumentPermissionsPage.REQUEST_PARAMETER__ROLES_WITHOUT_PERMISSIONS %>" size="4" multiple>
                             <%
                                 for ( Iterator iterator = allRoles.iterator(); iterator.hasNext(); ) {
                                     RoleDomainObject role = (RoleDomainObject)iterator.next();
@@ -102,41 +104,60 @@
                 </tr>
             </table>
         </tr>
-        <tr>
-            <td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/docinfo/change_meta_rights.html/9/1 ?>" )</td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><? templates/sv/permissions/define_sets.html/1 ?></td>
-            <td>
-            <table border="0" cellspacing="0" cellpadding="0">
+        <% if (user.canDefineRestrictedOneFor( document )) { %>
             <tr>
-                <td class="imcmsAdmText">#set_1# #new_set_1#<br>#set_2# #new_set_2#</td>
-                <td>&nbsp;</td>
-                <td class="imcmsAdmText">
-                #sets_precedence#</td>
+                <td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/docinfo/change_meta_rights.html/9/1 ?>" )</td>
             </tr>
-            </table></td>
-        </tr>
+            <tr>
+                <td class="imcmsAdmText"><? templates/sv/permissions/set_1_button.html/1 ?></td>
+                <td>
+                    <input type="submit" class="imcmsFormBtnSmall" name="define_set_1" value="<? templates/sv/permissions/set_1_button.html/2001 ?>">
+                    <input type="submit" class="imcmsFormBtnSmall" name="define_new_set_1" value="<? templates/sv/permissions/new_set_1_button.html/2001 ?>">
+                </td>
+            </tr>
+            <% if (user.canDefineRestrictedTwoFor(document)) { %>
+                <tr>
+                    <td>
+                        <? templates/sv/permissions/set_2_button.html/1 ?>
+                    </td>
+                    <td>
+                        <input type="submit" class="imcmsFormBtnSmall" name="define_set_2" value="<? templates/sv/permissions/set_2_button.html/2001 ?>">
+                        <input type="submit" class="imcmsFormBtnSmall" name="define_new_set_2" value="<? templates/sv/permissions/new_set_2_button.html/2001 ?>">
+                    </td>
+                </tr>
+            <% } %>
+            <% if (user.isSuperAdminOrHasFullPermissionOn(document)) { %>
+                <tr>
+                    <td class="imcmsAdmText">
+                        <? templates/sv/permissions/sets_precedence.html/precedence ?>
+                    </td>
+                    <td class="imcmsAdmText">
+                        <input type="CHECKBOX" name="<%= EditDocumentPermissionsPageFlow.DocumentPermissionsPage.REQUEST_PARAMETER__RESTRICTED_ONE_MORE_PRIVILEGED_THAN_RESTRICTED_TWO %>" value="1" <% if (document.isRestrictedOneMorePrivilegedThanRestrictedTwo()) { %>checked<% } %>>
+                        <? templates/sv/permissions/sets_precedence.html/1001 ?>
+                    </td>
+                </tr>
+            <% } %>
+        <% } %>
         <% if (document instanceof TextDocumentDomainObject) {
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document ; %>
-        <tr>
-            <td colspan="2">#gui_hr( "cccccc" )</td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><? templates/sv/docinfo/default_templates.html/2 ?></td>
-            <td class="imcmsAdmText">
-                <select name="default_template">
-                    <option value=""><? templates/sv/docinfo/default_templates_1.html/2 ?></option>
-                    <%
-                        TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
-                        TemplateDomainObject[] allTemplates = Imcms.getServices().getTemplateMapper().getAllTemplates() ;
-                        for ( int i = 0; i < allTemplates.length; i++ ) {
-                            TemplateDomainObject template = allTemplates[i];
-                            %><%= Html.option( ""+template.getId(), template.getName(), template.equals( defaultTemplate ))%><%
-                        } %>
-                </select>
-            </td>
-        </tr>
+            <tr>
+                <td colspan="2">#gui_hr( "cccccc" )</td>
+            </tr>
+            <tr>
+                <td class="imcmsAdmText"><? templates/sv/docinfo/default_templates.html/2 ?></td>
+                <td class="imcmsAdmText">
+                    <select name="<%= EditDocumentPermissionsPageFlow.DocumentPermissionsPage.REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID %>">
+                        <option value=""><? templates/sv/docinfo/default_templates_1.html/2 ?></option>
+                        <%
+                            TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
+                            TemplateDomainObject[] allTemplates = Imcms.getServices().getTemplateMapper().getAllTemplates() ;
+                            for ( int i = 0; i < allTemplates.length; i++ ) {
+                                TemplateDomainObject template = allTemplates[i];
+                                %><%= Html.option( ""+template.getId(), template.getName(), template.equals( defaultTemplate ))%><%
+                            } %>
+                    </select>
+                </td>
+            </tr>
         <% } %>
         <tr>
             <td colspan="2">#gui_hr( "blue" )</td>

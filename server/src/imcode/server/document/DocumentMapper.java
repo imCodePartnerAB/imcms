@@ -545,7 +545,7 @@ public class DocumentMapper {
         sqlColumnValues.add( document.getMenuText() );
         sqlColumnValues.add( document.getMenuImage() );
         sqlColumnValues.add( document.getCreator().getId() + "" );
-        sqlColumnValues.add( makeSqlStringFromBoolean( document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() ) );
+        sqlColumnValues.add( makeSqlStringFromBoolean( document.isRestrictedOneMorePrivilegedThanRestrictedTwo() ) );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isLinkableByOtherUsers() ) );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isVisibleInMenusForUnauthorizedUsers() ) );
         sqlColumnValues.add( document.getLanguageIso639_2() );
@@ -595,7 +595,7 @@ public class DocumentMapper {
 
             updateDocumentKeywords( document.getId(), document.getKeywords() );
 
-            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document );
+            documentPermissionSetMapper.saveRestrictedDocumentPermissionSets( document, user, oldDocument );
 
             document.accept( new DocumentSavingVisitor( user, oldDocument ) );
         } finally {
@@ -692,7 +692,7 @@ public class DocumentMapper {
         makeBooleanSqlUpdateClause( "disable_search", document.isSearchDisabled(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "show_meta", document.isVisibleInMenusForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues );
-        makeBooleanSqlUpdateClause( "permissions", document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(), sqlUpdateColumns, sqlUpdateValues );
+        makeBooleanSqlUpdateClause( "permissions", document.isRestrictedOneMorePrivilegedThanRestrictedTwo(), sqlUpdateColumns, sqlUpdateValues );
         UserDomainObject publisher = document.getPublisher();
         makeIntSqlUpdateClause( "publisher_id", publisher == null ? null : new Integer( publisher.getId() ), sqlUpdateColumns,
                                 sqlUpdateValues );
@@ -887,7 +887,7 @@ public class DocumentMapper {
         document.setMenuImage( result[4] );
         UserDomainObject creator = imcmsAuthenticatorAndUserAndRoleMapper.getUser( Integer.parseInt( result[5] ) );
         document.setCreator( creator );
-        document.setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo( getBooleanFromSqlResultString( result[6] ) );
+        document.setRestrictedOneMorePrivilegedThanRestrictedTwo( getBooleanFromSqlResultString( result[6] ) );
         document.setLinkableByOtherUsers( getBooleanFromSqlResultString( result[7] ) );
         document.setVisibleInMenusForUnauthorizedUsers( getBooleanFromSqlResultString( result[8] ) );
         document.setLanguageIso639_2( LanguageMapper.getAsIso639_2OrDefaultLanguage( result[9], service ) );
@@ -938,7 +938,7 @@ public class DocumentMapper {
         return keywords;
     }
 
-    private boolean userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
+    public boolean userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
                                                                            int leastPrivilegedPermissionSetIdWanted,
                                                                            DocumentDomainObject document ) {
         return user.isSuperAdmin()
