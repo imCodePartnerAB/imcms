@@ -20,9 +20,9 @@ public class ChatCreator extends ChatBase
 	throws ServletException, IOException
 	{
 
-		// Lets validate the session, e.g has the user logged in to Janus?
+		// Lets validate the session and get the session
 		if (super.checkSession(req,res) == false)	return ;
-		HttpSession session = req.getSession(true);
+		HttpSession session = req.getSession(false);
 
 
 		// Lets get the standard parameters and validate them
@@ -42,8 +42,9 @@ public class ChatCreator extends ChatBase
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String chatPoolServer = Utility.getDomainPref("chat_server",host) ;
+		RmiConf rmi = new RmiConf(user) ;
 		
-		String action=chatParams.getProperty("action");
+		String action=req.getParameter("action");
 	
 		if(action == null)
 		{
@@ -54,35 +55,58 @@ public class ChatCreator extends ChatBase
 			return ;
 		}
 		
+		//******************************** Get New Chatparameters********************************
+		
 		//get the msgTypes
-		RmiConf rmi = new RmiConf(user) ;
-		String[] msgTypes = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypes");
-		String[] msgTypesId = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypesId");
-		Vector msgTypeV = new Vector();
+		Vector msgTypesV = new Vector();
+		
+		if( (Vector)session.getValue("msgTypesV")==null )
+		{
+			String[] msgTypes = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypes");
+			String[] msgTypesId = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypesId");
+		
+			for(int i =0;i<msgTypes.length;i++)
+			{
+				log("Stringmsgtype: " + msgTypes[i] );
+				msgTypesV.add(msgTypesId[i]);
+				msgTypesV.add(msgTypes[i]);
+			}
+			
+			session.putValue("msgTypesV",msgTypesV);
+			
+		}
 	
-		for(int i =0;i<msgTypes.length;i++)
-		{
-			log("Stringmsgtype: " + msgTypes[i] );
-			msgTypeV.add(msgTypesId[i]);
-			msgTypeV.add(msgTypes[i]);
-		}
+		msgTypesV = (Vector)session.getValue("msgTypesV");
+		
+		
+		
 
-		//get the authorization types with "oregistrerad" default
-		String[] autTypes = rmi.execSqlProcedure(chatPoolServer, "GetAuthorizationTypes");
+		//get the authorization types 
 		Vector autTypeV = new Vector();
-		for(int i =0;i<autTypes.length;i++)
+		
+		if( (Vector)session.getValue("autTypesV")==null )
 		{
-			log("StringAuttype: " + autTypes[i] );
-			autTypeV.add(" ");
-			autTypeV.add(autTypes[i]);
+			String[] autTypes = rmi.execSqlProcedure(chatPoolServer, "GetAuthorizationTypes");
+			String[] msgTypesId = {"1","2","3"};
+		
+			for(int i =0;i<autTypes.length;i++)
+			{
+				log("Stringauttype: " + autTypes[i] );
+				autTypeV.add("i");
+				autTypeV.add(autTypes[i]);
+			}
+			
+			session.putValue("autTypesV",autTypeV);
+			
 		}
+		
+		autTypeV = (Vector)session.getValue("autTypesV");
+		
 		
 		//get existing rooms
 		Vector roomsV = ( (Vector)session.getValue("roomList")==null ) ? new Vector() : (Vector)session.getValue("roomList");
-		
+		//get existing msgTypes
 		Vector newMsgTypeV = ( (Vector)session.getValue("newMsgTypes")==null ) ? new Vector() : (Vector)session.getValue("newMsgTypes");
-		
-		
 		
 		//****************If newRoom or newMsgTypebutton is pressed:*********************************
 		
@@ -91,21 +115,19 @@ public class ChatCreator extends ChatBase
 			
 			VariableManager vm = new VariableManager() ;
 			Html htm = new  Html();
-			log("null");
-			
+	
 			//get new parameters
 			chatParams.setProperty("chatRoom",req.getParameter("chatRoom").trim());
 			chatParams.setProperty("msgType",req.getParameter("msgType").trim());
-			
-			
 			
 			//get all chatparameters
 			Enumeration chatEnum = chatParams.propertyNames();
 			while (chatEnum.hasMoreElements())
 			{
 				String paramName = (String)chatEnum.nextElement();
-				//log("ParamName: " + paramName);
 				
+				
+				//Add new Room
 				if ( req.getParameter("addRoom") != null && paramName.equals("chatRoom") )
 				{
 					//add new room to roomlist
@@ -114,29 +136,24 @@ public class ChatCreator extends ChatBase
 					roomsV.add(" ");
 					roomsV.add( chatParams.getProperty(paramName) );
 					
-					for(int i=0; i<roomsV.size();i++)
-					{
-						log("vector: " + roomsV.get(i));
-					}
-					
 					//add room to session
 					session.putValue("roomList",roomsV);					
 					
 					vm.addProperty("chatRoom"," ");
 				}
+				//Add new MsgType
 				else if ( req.getParameter("addMsgType") != null && paramName.equals("msgType") )
 				{
 					//add new msgType to msgTypelist
 					log("MsgTyp: " + chatParams.getProperty(paramName) );
 					
-					
 					newMsgTypeV.add( chatParams.getProperty(paramName) );
-					
+		////FIX kolla så det verkligen stämmer!
 					for(int i=0; i<newMsgTypeV.size();i++)
 					{
-						log("vector: " + msgTypeV.get(i));
-						msgTypeV.add(" ");
-						msgTypeV.add(newMsgTypeV.get(i));
+						log("vector: " + msgTypesV.get(i));
+						msgTypesV.add(" ");
+						msgTypesV.add(newMsgTypeV.get(i));
 					}
 					
 					//add type to session
@@ -152,7 +169,8 @@ public class ChatCreator extends ChatBase
 			
 			vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
 			vm.addProperty("roomList", htm.createHtmlCode("ID_OPTION","", roomsV) ) ;
-			vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION","", msgTypeV) ) ;
+			vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION","", msgTypesV) ) ;
+		////FIX selV ska helst bort
 			Vector selV = new Vector();
 			selV.add("1");selV.add("oregistrerad");
 			vm.addProperty("authorized", htm.createHtmlCode("ID_OPTION",selV, autTypeV) ) ;
@@ -166,18 +184,13 @@ public class ChatCreator extends ChatBase
 		if(action.equalsIgnoreCase("ADD_CHAT"))
 		{
 			log("OK, nu skapar vi Chatten") ;
-
-			// Added 000608
-			// Ok, Since the chat db can be used from different servers
-			// we have to check when we add a new chat that such an meta_id
-			// doesnt already exists.
 		
+		    //get the new metaId
 			String metaId = params.getProperty("META_ID") ;
 			log("metaid: "+ metaId);
 			
+			//check that its really a new metaId
 			String foundMetaId = rmi.execSqlProcedureStr(chatPoolServer, "MetaIdExists " + metaId) ;
-			
-			log("Found metaid: " + foundMetaId);
 			
 			if(!foundMetaId.equals("1"))
 			{
@@ -189,22 +202,19 @@ public class ChatCreator extends ChatBase
 			}
 
 			// Lets add a new Chat to DB
-			// AddNewChat @meta_id int, @chatName varchar(255)
 			String chatName = chatParams.getProperty("chatName");
 			String sqlQ = "AddNewChat " + metaId + ", '" + chatName + "'" ;
 			log("AddNewChat sql:" + sqlQ ) ;
 			rmi.execSqlUpdateProcedure(chatPoolServer, sqlQ) ;
 			
-			
-			
-			// Lets add the new rooms to the chat
+			// Lets add the new rooms to the db
 			for (int i=0;i<roomsV.size();i+=2)
 			{
 				//Lets get the highest roomId
 				String roomId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxRoomId");
 				roomsV.set(i,roomId);
 
-				String newRsql = "AddNewRoom " +  " '" +roomId + "', " + roomsV.get(i+1);//chatParams.getProperty("roomList");
+				String newRsql = "AddNewRoom " +  " '" +roomId + "', " + roomsV.get(i+1);
 				log("AddNewRoom sql:" + newRsql ) ;
 				rmi.execSqlUpdateProcedure(chatPoolServer, newRsql) ;
 		
@@ -216,21 +226,7 @@ public class ChatCreator extends ChatBase
 			}
 			
 			
-		
-		/*	// Lets get the administrators user_id
-			String user_id = user.getString("user_id") ;
-
-			// Lets get the recently added forums id
-			String forum_id = rmi.execSqlProcedureStr(chatPoolServer, "GetFirstForum " + metaId) ;
-
-			// Lets add this user into the conference if hes not exists there before were
-			// adding the discussion
-			String confUsersAddSql = "ChatUsersAdd "+ user_id +", "+ metaId +", '"+ user.getString("first_name") + "', '";
-			confUsersAddSql += user.getString("last_name") + "'";
-			rmi.execSqlUpdateProcedure(chatPoolServer, confUsersAddSql) ;
-
-		*/
-			// Lets add the new msgTypes to the chat
+			// Lets add the new msgTypes to the db
 			for (int i=0;i<newMsgTypeV.size();i++)
 			{
 				//save newMsgTypes to db
@@ -240,12 +236,12 @@ public class ChatCreator extends ChatBase
 				
 				String newMsql = "AddNewMsgType " +  " '" + msgTypeId + "', " + newMsgTypeV.get(i);
 				log("AddNewMsgType sql:" + newMsql ) ;
-				rmi.execSqlUpdateProcedure(chatPoolServer, newMsql) ;
+				rmi.execSqlUpdateProcedure(chatPoolServer,newMsql);
 				
 				
 				//add newTypes to msgTypesV
-				msgTypeV.add( msgTypeId );
-				msgTypeV.add( newMsgTypeV.get(i) );
+				msgTypesV.add( msgTypeId );
+				msgTypesV.add( newMsgTypeV.get(i) );
 
 				//add msgType to connection db
 //FIXIT	rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewRoomMsg " + " '"+ msgTypeId + "' , '" + metaId + "' ") ;
@@ -254,36 +250,36 @@ public class ChatCreator extends ChatBase
 				
 			}
 			
-			for (int i=0;i<msgTypeV.size();i++)
+			
+			// Lets add the new chatParameters to the db
+			Properties newChatParams = this.getNewChatParameters(req) ;
+			
+			Vector valuesV = new Vector();
+			String valuesS = "AddChatParams ";
+				
+			Iterator chatValuesIt = (newChatParams.values()).iterator();
+			while( chatValuesIt.hasNext() )
 			{
-				log("msgType: " + msgTypeV.get(i) );
-			}
+				 valuesS = valuesS + (String)chatValuesIt.next() +",";
+			}	
+				
+			valuesS=valuesS.substring(0,valuesS.length()-1);
 			
+			log("valuesS: " + valuesS );
 			
+			rmi.execSqlUpdateProcedure(chatPoolServer,valuesS);
 			
-		//	Chat theChat = new Chat((Integer.valueOf(metaId)).intValue(),chatName,roomsV);
-		//	theChat._name=chatName;
-			
-		//	ServletContext context = getServletContext() ;
-		//	context.setAttribute(metaId,theChat);
-			session.putValue("chatName",chatName);
+			//put the new chat in the session
+			//FIX lättare att lägga in chatobjekt?
 			session.putValue("chatId",metaId);
 			session.putValue("roomList",roomsV);
-			session.putValue("msgTypes",msgTypeV);
-			session.putValue("updateTime",chatParams.getProperty("updateTime"));
-			session.putValue("reload",chatParams.getProperty("reload"));
-			session.putValue("inOut",chatParams.getProperty("inOut"));
-			session.putValue("privat",chatParams.getProperty("privat"));
-			session.putValue("publik",chatParams.getProperty("publik"));
-			session.putValue("dateTime",chatParams.getProperty("dateTime"));
-			session.putValue("font",chatParams.getProperty("font"));
+			session.putValue("msgTypes",msgTypesV);
+			session.putValue("chatParams",newChatParams);
 			
-			//spara till databasen
-			
-			// Ok, were done creating the conference. Lets tell Janus system to show this child.
+			// Ok, were done creating the conference. Lets tell imCMS system to show this child.
 			rmi.activateChild(imcServer, metaId) ;
 
-			// Ok, Were done adding the conference, Lets go back to the Manager
+			// Ok, Were done adding the chat, Lets log in to it!
 			String loginPage = MetaInfo.getServletPath(req) + "ChatLogin?login_type=login" ;
 			res.sendRedirect(loginPage) ;
 
@@ -305,7 +301,8 @@ public class ChatCreator extends ChatBase
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)	return ;
-
+		HttpSession session = req.getSession(false);
+	
 		// Lets get the standard parameters and validate them
 		Properties params = super.getSessionParameters(req) ;
 		if (super.checkParameters(req, res, params) == false) return ;
@@ -323,6 +320,7 @@ public class ChatCreator extends ChatBase
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String chatPoolServer = Utility.getDomainPref("chat_server",host) ;
+		RmiConf rmi = new RmiConf(user) ;
 
 		String action = req.getParameter("action") ;
 		if(action == null)
@@ -334,40 +332,50 @@ public class ChatCreator extends ChatBase
 			return ;
 		}
 		
-		//get the msgTypes
-		RmiConf rmi = new RmiConf(user) ;
-		String[] msgTypes = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypes");
-		Vector msgTypeV = new Vector();
-		for(int i =0;i<msgTypes.length;i++)
-		{
-			log("Stringmsgtype: " + msgTypes[i] );
-			msgTypeV.add(" ");
-			msgTypeV.add(msgTypes[i]);
-		}
-
-		//get the authorization types with "oregistrerad" default
-		String[] autTypes = rmi.execSqlProcedure(chatPoolServer, "GetAuthorizationTypes");
-		Vector autTypeV = new Vector();
-		for(int i =0;i<autTypes.length;i++)
-		{
-			log("StringAuttype: " + autTypes[i] );
-			autTypeV.add(" ");
-			autTypeV.add(autTypes[i]);
-		}
 		
-	
-		Vector selV = new Vector();
-		selV.add("1");selV.add("oregistrerad");
-
-		// ********* NEW ********
+		// ********* Create NEW Chat *********************************************************
 		if(action.equalsIgnoreCase("NEW"))
 		{
-			// Lets build the Responsepage to the loginpage
+			//******************* Get Chat Standard Parameters ****************
+		
+			//get the standard msgTypes in the db
 			
+			String[] msgTypes = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypes");
+			String[] msgTypesId = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypesId");
+			Vector msgTypesV = new Vector();
+	
+			for(int i =0;i<msgTypes.length;i++)
+			{
+				log("Stringmsgtype: " + msgTypes[i] );
+				msgTypesV.add(msgTypesId[i]);
+				msgTypesV.add(msgTypes[i]);
+			}
+			
+			
+			
+			session.putValue("msgTypesV",msgTypesV);
+			
+			//get the authorization types 
+			String[] autTypes = rmi.execSqlProcedure(chatPoolServer, "GetAuthorizationTypes");
+			Vector autTypeV = new Vector();
+			for(int i =0;i<autTypes.length;i++)
+			{
+				log("StringAuttype: " + autTypes[i] );
+				autTypeV.add(" ");
+				autTypeV.add(autTypes[i]);
+			}
+			
+			session.putValue("autTypeV",autTypeV);
+		
+			Vector selV = new Vector();
+			selV.add("");selV.add("oregistrerad");
+
+			// Lets build the Responsepage to the loginpage
 			Html htm = new Html();
 			VariableManager vm = new VariableManager() ;
+			
 			vm.addProperty("SERVLET_URL", MetaInfo.getServletPath(req)) ;
-			vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION","säger till", msgTypeV) ) ;
+			vm.addProperty("msgTypes", htm.createHtmlCode("ID_OPTION","säger till", msgTypesV) ) ;
 			vm.addProperty("authorized", htm.createHtmlCode("ID_OPTION",selV, autTypeV) ) ;
 			sendHtml(req,res,vm, HTML_TEMPLATE) ;
 			return ;
@@ -381,23 +389,10 @@ public class ChatCreator extends ChatBase
 
 	protected Properties getNewChatParameters( HttpServletRequest req) throws ServletException, IOException
 	{
-		//log("Parameter Names: "+req.getParameterNames());
-		
 		Properties chatP = new Properties();
 		
-		String action = (req.getParameter("action")==null) ? "" : (req.getParameter("action"));		
 		String chatName = (req.getParameter("chatName")==null) ? "" : (req.getParameter("chatName"));
-		
-	//	String chatRoom = (req.getParameter("chatRoom") == null )? "" : (req.getParameter("chatRoom"));
-	String roomList= (req.getParameter("roomList")==null) ? "" : (req.getParameter("roomList"));
-		
-	//	String msgType= (req.getParameter("msgType")==null) ? "" : (req.getParameter("msgType"));
-	String msgList = (req.getParameter("messageTypes")==null ) ? "" :(req.getParameter("messageTypes"));
-		
-//	String authorized = (req.getParameter("authorized")==null ) ? "3":(req.getParameter("authorized"));
-		String template = (req.getParameter("template")==null ) ? "ORIGINAL" : (req.getParameter("template"));
-		String updateTime = (req.getParameter("updateTime")==null ) ? "" :(req.getParameter("updateTime"));
-		
+		String updateTime = (req.getParameter("updateTime")==null ) ? "" :(req.getParameter("updateTime"));		
 		String reload = (req.getParameter("reload")==null ) ? "" :(req.getParameter("reload"));
 		String inOut = (req.getParameter("inOut")==null ) ? "" :(req.getParameter("inOut"));
 		String privat = (req.getParameter("private")==null ) ? "" :(req.getParameter("private"));
@@ -405,15 +400,8 @@ public class ChatCreator extends ChatBase
 		String dateTime = (req.getParameter("dateTime")==null ) ? "" :(req.getParameter("dateTime"));
 		String font = (req.getParameter("font")==null ) ? "" :(req.getParameter("font"));
 
-//template=,  authorized=, 
-		chatP.setProperty("action",action.trim());
 		chatP.setProperty("chatName", chatName.trim());
-	//	chatP.setProperty("chatRoom",chatRoom.trim());
-	//	chatP.setProperty("msgType",msgType.trim());
-//	chatP.setProperty("authorized",authorized.trim());
-		chatP.setProperty("template",template.trim());
 		chatP.setProperty("updateTime",updateTime.trim());
-		
 		chatP.setProperty("reload",reload.trim());
 		chatP.setProperty("inOut",inOut.trim());
 		chatP.setProperty("privat",privat.trim());
@@ -421,10 +409,6 @@ public class ChatCreator extends ChatBase
 		chatP.setProperty("dateTime",dateTime.trim());
 		chatP.setProperty("font",font.trim());
 
-	
-//	chatP.setProperty("roomList", roomList.trim());
-	
-//	this.log("Chat paramters:" + confP.toString()) ;
 		return chatP ;
 	}
 
