@@ -35,15 +35,13 @@ public class DatabaseService {
     private static final String INSERT_TYPE_DATA = "4.insertdefaultpagesusersandroles.sql";
 
     private String ADITIONAL_TEST_DATA = "5.insertaditionaltestdata.sql";
-
-    private static final String SQL92_TYPE_TIMESTAMP = "timestamp";
-    private static final String SQL99_CLOB = "CLOB";
-
-    private static String SQLSERVER_AND_MYSQL_TIMESTAMP_TYPE = "datetime";
-    private static final String SQL_SERVER_TEXT = "TEXT";
+    private static final String SQL92_TYPE_TIMESTAMP = "TIMESTAMP";
+    private static String SQLSERVER_AND_MYSQL_TIMESTAMP_TYPE = "DATETIME";
+    private static final String TEXT_TYPE_MY_SQL = "TEXT";
+    private String TEXT_TYPE_INTERNATIONAL_SQL_SERVER = "NTEXT";
+    private String TEXT_TYPE_SQL_SERVER = "TEXT";
 
     private static Logger log = Logger.getLogger( DatabaseService.class );
-
     private SQLProcessor sqlProcessor;
     SQLProcessor getSQLProcessor() { return sqlProcessor; }
 
@@ -58,18 +56,21 @@ public class DatabaseService {
         String jdbcUrl;
         switch( databaseType ) {
             case MIMER:
+                // log.debug( "Creating a 'Mimer' database service");
                 jdbcDriver = "com.mimer.jdbc.Driver";
                 jdbcUrl = "jdbc:mimer://";
                 serverUrl = jdbcUrl + hostName + ":" + port + "/" + databaseName;
                 serverName = "Mimer test server";
                 break;
             case SQL_SERVER:
+                // log.debug( "Creating a 'SQL Server' database service");
                 jdbcDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
                 jdbcUrl = "jdbc:microsoft:sqlserver://";
                 serverUrl = jdbcUrl + hostName + ":" + port + ";DatabaseName=" + databaseName;
                 serverName = "SQL Server test server";
                 break;
             case MY_SQL:
+                // log.debug( "Creating a 'My SQL' database service");
                 jdbcDriver = "com.mysql.jdbc.Driver";
                 jdbcUrl = "jdbc:mysql://";
                 serverUrl = jdbcUrl + hostName + ":" + port + "/" + databaseName;
@@ -93,7 +94,6 @@ public class DatabaseService {
         try {
             ArrayList commands = readCommandsFromFile( DROP_TABLES );
             executeCommands( commands );
-            log.info( "Dropped tables" );
 
             commands = readCommandsFromFile( CREATE_TABLES );
             executeCreateCommands( commands );
@@ -101,11 +101,9 @@ public class DatabaseService {
             // I tried to use batchUpdate but for the current Mimer driver that only works for SELECT, INSERT, UPDATE,
             // and DELETE operations and this method is also used for create table and drop table commands. /Hasse
             // sqlProcessor.executeBatchUpdate( con, (String[])commands.toArray( new String[commands.size()] ) );
-            log.info( "Created tables" );
 
             commands = readCommandsFromFile( ADD_TYPE_DATA );
             sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
-            log.info( "Added type data" );
 
             commands = readCommandsFromFile( INSERT_TYPE_DATA );
             switch( databaseType ) {
@@ -114,7 +112,6 @@ public class DatabaseService {
                     break;
             }
             sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
-            log.info( "Inserted data, finished!" );
         } catch( IOException ex ) {
             log.fatal( "Couldn't open a file ", ex );
         }
@@ -123,12 +120,12 @@ public class DatabaseService {
     private void executeCreateCommands( ArrayList commands ) {
         switch( databaseType ) {
             case SQL_SERVER:
-                commands = changeClobToText( commands );
                 commands = changeTimestampToDateTime( commands );
+                commands = changeCHAR8000PlusToTextForSQLServer( commands );
                 break;
             case MY_SQL:
                 commands = changeTimestampToDateTime( commands );
-                commands = changeClobToText( commands );
+                commands = changeCHAR256PlusToTextForMySQL( commands );
                 break;
         }
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
@@ -136,6 +133,31 @@ public class DatabaseService {
             //            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
             sqlProcessor.executeUpdate( command, null );
         }
+    }
+
+    private ArrayList changeCHAR256PlusToTextForMySQL( ArrayList commands ) {
+        ArrayList modifiedCommands = new ArrayList();
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            // todo: detta borde gå att göra till ett generellt reg exp? för varje tal störren än 255 byt ut mot text?
+            command = command.replaceAll( "VARCHAR\\s*\\(\\s*1000\\s*\\)", TEXT_TYPE_MY_SQL); // "VARCHAR ( 1000 )" -> "TEXT"
+            command = command.replaceAll( "VARCHAR\\s*\\(\\s*15000\\s*\\)", TEXT_TYPE_MY_SQL); // "VARCHAR ( 15000 )" -> "TEXT"
+            command = command.replaceAll( "NCHAR\\s*VARYING\\s*\\(\\s*5000\\s*\\)", TEXT_TYPE_MY_SQL); // "NCHAR VARYING ( 15000 )" -> "TEXT"
+            modifiedCommands.add( command );
+        }
+        return modifiedCommands;
+    }
+
+    private ArrayList changeCHAR8000PlusToTextForSQLServer( ArrayList commands ) {
+        ArrayList modifiedCommands = new ArrayList();
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            // todo: detta borde gå att göra till ett generellt reg exp? för varje tal störren än 255 byt ut mot text?
+            command = command.replaceAll( "VARCHAR\\s*\\(\\s*15000\\s*\\)", TEXT_TYPE_SQL_SERVER); // "VARCHAR ( 15000 )" -> "TEXT"
+            command = command.replaceAll( "NCHAR\\s*VARYING\\s*\\(\\s*5000\\s*\\)", TEXT_TYPE_INTERNATIONAL_SQL_SERVER); // "NCHAR VARYING ( 5000 )" -> "TEXT"
+            modifiedCommands.add( command );
+        }
+        return modifiedCommands;
     }
 
     void initTestData() throws IOException {
@@ -147,8 +169,8 @@ public class DatabaseService {
         ArrayList modifiedCommands = new ArrayList();
         // CAST(CURRENT_TIMESTAMP AS CHAR(80)) is changed to CAST(CURRENT_TIMESTAMP AS CHAR)"
         String patternStr = "CAST *\\( *CURRENT_TIMESTAMP *AS *CHAR *\\( *[0-9]+ *\\) *\\)";
-        String replacementStr = "CAST(CURRENT_TIMESTAMP AS CHAR)";
         Pattern pattern = Pattern.compile( patternStr, Pattern.CASE_INSENSITIVE );
+        String replacementStr = "CAST(CURRENT_TIMESTAMP AS CHAR)";
 
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
@@ -157,16 +179,6 @@ public class DatabaseService {
             modifiedCommands.add( modifiedCommand );
         }
 
-        return modifiedCommands;
-    }
-
-    private ArrayList changeClobToText( ArrayList commands ) {
-        ArrayList modifiedCommands = new ArrayList();
-        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
-            String command = (String)iterator.next();
-            String modifiedCommand = command.replaceAll( SQL99_CLOB, SQL_SERVER_TEXT );
-            modifiedCommands.add( modifiedCommand );
-        }
         return modifiedCommands;
     }
 

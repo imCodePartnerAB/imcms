@@ -80,8 +80,8 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
 
         setupPoolingDriver();
 
-        s_logDriverInfo( nonPooledDriverClass );
-        s_logDatabaseData( getConnection() );
+//        s_logDriverInfo( nonPooledDriverClass );
+//        s_logDatabaseData( getConnection() );
     }
 
     public Connection getConnection() throws SQLException {

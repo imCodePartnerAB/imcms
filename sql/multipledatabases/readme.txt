@@ -12,20 +12,11 @@ Se respektive databasleverantörs instruktioner för hur man gör detta.
 Mimer: Kör ett skript med kommandot CREATE DATABANK innan create.sql skriptet körs. Se mimer.sql.
 Räcker med att köra när databasen är nyskapat, en gång.
 
-Arbetar med:
-3 fel när jag ändrade till CLOB.
-Endast för mimer...
-- sproc_getDocs
-- 2* sproc_getChilds,
-- sproc_CheckUserDocSharePermission
-"Could not receive data from server, java.net.SocketException: Connection reset"
-
-
 Kvar att undersöka/göra
 * Default värden satta till NULL är borttagna
 * Andra default värden är inte satta (ännu, går det, finns det en standard?)
 * Indexeringen är droppad så länge men borde gå att lägga till.
-* Sparar help.sql tills jag vet mer hur detta skapats.
+* Kvar är help.sql tills jag vet mer hur dessa skapats.
 
 Nedan är förändringar mot scriptet tables.ascii.sql
 * Splittat i två separata skript. Ett för drop table och ett för create table.
@@ -33,10 +24,21 @@ Nedan är förändringar mot scriptet tables.ascii.sql
 * tinyint är bytt mot smallint i alla tabeller
 * Microsofts (och MySQL) "datetime" & "smalldatetime" har bytts ut mot "timestamp" (Då detta är Standard SQL, vid körning av create table commandon
  byts alla ut mot datetime innan de körs. Därefter går det att arbeta på vanligt sätt med jdbc även mot SQLServer)
-* CREATE TABLE meta, meta_text varchar (1000) -> CLOB (vilket i SQLServer och MySQL fallen sedan byts ut mot TEXT)
-* CREATE TABLE frameset_docs, TEXT ->  CLOB (vilket i SQLServer och MySQL fallen sedan byts ut mot TEXT)
-* CREATE TABLE texts, TEXT -> CLOB (vilket i SQLServer och MySQL fallen sedan byts ut mot TEXT)
-* CREATE TABLE user_flags, description varchar (256) - varchar (255)
+
+När det gäller strängar skiljer sig dom åt rätt reält mellan databaserna:
+- MySQL tar bort trailing spaces på CHAR vilket gör att jag kör VARCHAR genomgående för att få samma beteende från samtliga.
+- Maximala storleken varierar också:
+    MIMER VARCHAR(max 15000) därefter CLOB, samt CHAR VARYING(max 5000) därefter CLOB
+    SQL Server VARCHAR(max 8 000) därefter text/ntext
+    MySQL VARCHAR(max 255) därefter TEXT(65 535), MEDIUMTEXT(16 777 215), and LONGTEXT(4 294 967 295)
+  CLOB fanns inget stöd för i MySQL eller i SQLServer så denna typ undveks då läsning och skrivning hade blivit olika för
+  de olika databasfallen. Om inte VARCHAR(15000) räcker får vi ta en ny funderare.
+  Då får man i så fall behandla MIMER annorlunda och använda CLOB för den och köra TEXT i övrigt.
+Detta har lett till följande:
+* meta: meta_text varchar(1000) -> TEXT i MySQL i övrigt oförändrat.
+* frameset_docs: frame_set text -> VARCHAR(15000) i scriptet, som i sin tur byts ut mot TEXT i MySQL och i SQLServer
+* texts: text ntext -> NCHAR VARYING(5000) i scriptet, som i sin tur byts ut mot TEXT i MySQL och NTEXT SQLServer
+
 * I user tabellen är namnet 'external' bytt mot external_user (extern är ett reserverat ord i Standard SQL)
 * I browsers tabellen är namnet 'value' bytt mot 'browser_value' (value är ett reserverat ord i Standard SQL)
 * I sys_data tabellen är namnet 'value' bytt mot 'sysdata_value' (value är ett reserverat ord i Standard SQL)

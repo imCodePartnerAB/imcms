@@ -46,7 +46,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private final static int DOC_TEST_THIRD_ID_FILE_DOC_TYPE = 9003;
     private final static int DOC_TEST_ID_DETACHED = 9999;
 
-    private int NEXT_FREE_PHONE_ID = 1;
+    private int NEXT_FREE_PHONE_ID = 2;
     private static final int PHONE_TYPE_HOME = 1;
     private static final int PHONE_TYPE_OTHER = 0;
 
@@ -56,9 +56,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     protected void setUp() throws IOException {
         databaseServices = new DatabaseService[]{
+            static_initMimer(),
             static_initMySql(),
             static_initSqlServer(),
-            static_initMimer()
         };
     }
 
@@ -225,8 +225,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             DatabaseService dbService = databaseServices[i];
             int rowCount = dbService.sproc_PhoneNbrUpdate( USER_USER_ID, NEXT_FREE_PHONE_ID, "666666", PHONE_TYPE_HOME );
             assertEquals( 0, rowCount );
-            dbService.sproc_phoneNbrAdd( USER_USER_ID, "034985", PHONE_TYPE_OTHER );
-            rowCount = dbService.sproc_PhoneNbrUpdate( USER_USER_ID, NEXT_FREE_PHONE_ID, "666666", PHONE_TYPE_HOME );
+            dbService.sproc_phoneNbrAdd( USER_TEST_ID, "034985", PHONE_TYPE_OTHER );
+            rowCount = dbService.sproc_PhoneNbrUpdate( USER_TEST_ID, NEXT_FREE_PHONE_ID, "666666", PHONE_TYPE_HOME );
             assertEquals( 1, rowCount );
         }
     }
@@ -246,10 +246,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     public void test_sproc_PhoneNbrDelete() {
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService dbService = databaseServices[i];
-            int rowCount = dbService.sproc_PhoneNbrDelete( 1 );
+            int rowCount = dbService.sproc_PhoneNbrDelete( NEXT_FREE_PHONE_ID );
             assertEquals( 0, rowCount );
-            dbService.sproc_phoneNbrAdd( USER_USER_ID, "9887655", 0 );
-            dbService.sproc_phoneNbrAdd( USER_USER_ID, "123456", 1 );
+            dbService.sproc_phoneNbrAdd( USER_TEST_ID, "9887655", 0 );
+            dbService.sproc_phoneNbrAdd( USER_TEST_ID, "123456", 1 );
             rowCount = dbService.sproc_PhoneNbrDelete( NEXT_FREE_PHONE_ID );
             rowCount += dbService.sproc_PhoneNbrDelete( NEXT_FREE_PHONE_ID + 1 );
             assertEquals( 2, rowCount );
