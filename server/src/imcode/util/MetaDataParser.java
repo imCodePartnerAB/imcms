@@ -321,7 +321,7 @@ public class MetaDataParser {
 		     && (user_set_id <= j && (user_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_1 || j != IMCConstants.DOC_PERM_SET_RESTRICTED_2 || (currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0))			// User has more privileged set_id than this set_id
 		     && (user_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_1 || role_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_2 || (currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2) != 0) ) 	// User has set_id 1, and may modify set_id 2?
 		    {
-			vec2.add("<input type=radio name=\"role_"+role_id+"\" value=\""+j+"\" "+((j == role_set_id) ? "checked>" : ">")) ;
+			vec2.add("<input type=\"radio\" name=\"role_"+role_id+"\" value=\""+j+"\" "+((j == role_set_id) ? "checked>" : ">")) ;
 		    } else {
 			vec2.add( (j == role_set_id) ? "*" : "O") ;
 		    }
