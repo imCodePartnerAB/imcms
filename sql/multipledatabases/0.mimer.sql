@@ -1,0 +1,1 @@
+CREATE DATABANK test;

@@ -1,3 +1,6 @@
+Denna beskrivning är obsolet.
+Se readme.txt i multipledatabases istället.
+todo: ta bort denna filen/ersätt.
 
 1. För att skapa en ny databas, gör så här.
 

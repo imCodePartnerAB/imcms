@@ -29,13 +29,13 @@ public class DatabaseService {
     final static int MY_SQL = 2;
 
     private static final char END_OF_COMMAND = ';';
-    private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/";
-    private static final String DROP_TABLES = "tables/drop.new.sql";
-    private static final String CREATE_TABLES = "tables/create.new.sql";
-    private static final String ADD_TYPE_DATA = "data/types.new.sql";
-    private static final String INSERT_NEW_DATA = "data/newdb.new.sql";
+    private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/multipledatabases/";
+    private static final String DROP_TABLES = "1.droptables.sql";
+    private static final String CREATE_TABLES = "2.createtables.sql";
+    private static final String ADD_TYPE_DATA = "3.inserttypedata.sql";
+    private static final String INSERT_TYPE_DATA = "4.insertdefaultpagesusersandroles.sql";
 
-    private String ADITIONAL_TEST_DATA = "data/aditionaltestdata.new.sql";
+    private String ADITIONAL_TEST_DATA = "5.insertaditionaltestdata.sql";
 
     private static String SQL92_TYPE_TIMESTAMP = "timestamp";
     private static String SQL_SERVER_TIMESTAMP_TYPE = "datetime";
@@ -43,6 +43,9 @@ public class DatabaseService {
     private static Logger log = Logger.getLogger( DatabaseService.class );
 
     private SQLProcessor sqlProcessor;
+
+    SQLProcessor getSQLProcessor() { return sqlProcessor; }
+
     private int databaseType;
 
     public DatabaseService( int databaseType, String hostName, int port, String databaseName, String user, String password ) {
@@ -103,7 +106,7 @@ public class DatabaseService {
             sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
             log.info( "Added type data" );
 
-            commands = readCommandsFromFile( INSERT_NEW_DATA );
+            commands = readCommandsFromFile( INSERT_TYPE_DATA );
             switch( databaseType ) {
                 case MY_SQL:
                     commands = changeCharInCurrentTimestampCast( commands );
@@ -419,10 +422,11 @@ public class DatabaseService {
     }
 
     // todo: flytta in detta i addNewUser istället, och se till att det fungerar concurrently.
+    // todo: kolla att det inte är highest+1 som förväntas.
     int sproc_getHighestUserId() {
         String columnName = "user_id";
         String TableName = "users";
-        return 1 + getMaxIntValue( TableName, columnName );
+        return getMaxIntValue( TableName, columnName );
     }
 
     int sproc_updateUser( Table_users userData ) {
