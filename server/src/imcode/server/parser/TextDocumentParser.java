@@ -8,7 +8,6 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.regex.*;
@@ -27,6 +26,7 @@ public class TextDocumentParser {
     private static Pattern MENU_PATTERN = null;
     private static Pattern IMCMS_TAG_PATTERN = null;
     private static Pattern HTML_TAG_PATTERN = null;
+    private static Pattern HTML_TAG_HTML_PATTERN = null;
 
     static {
         Perl5Compiler patComp = new Perl5Compiler();
@@ -34,6 +34,8 @@ public class TextDocumentParser {
             // OK, so this pattern is simple, ugly, and prone to give a lot of errors.
             // Very good. Very good. Know something? NO SOUP FOR YOU!
             HTML_TAG_PATTERN = patComp.compile( "<[^>]+?>", Perl5Compiler.READ_ONLY_MASK );
+
+            HTML_TAG_HTML_PATTERN = patComp.compile( "<[hH][tT][mM][lL]\\s*>", Perl5Compiler.READ_ONLY_MASK );
 
             IMCMS_TAG_PATTERN = patComp.compile( "<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.SINGLELINE_MASK
                                                                                  | Perl5Compiler.READ_ONLY_MASK );
@@ -63,51 +65,53 @@ public class TextDocumentParser {
     public String parsePage( ParserParameters parserParameters, int includelevel ) throws IOException {
         DocumentRequest documentRequest = parserParameters.getDocumentRequest();
         int flags = parserParameters.getFlags();
-        try {
-            TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
-            UserDomainObject user = documentRequest.getUser();
-            DocumentMapper documentMapper = service.getDocumentMapper();
 
-            TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
+        UserDomainObject user = documentRequest.getUser();
+        DocumentMapper documentMapper = service.getDocumentMapper();
 
-            boolean textmode = false ;
-            boolean imagemode = false ;
-            boolean menumode = false ;
-            boolean templatemode = false ;
-            boolean includemode = false ;
+        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
 
-            if ( flags > 0 ) {
-                textmode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
-                imagemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
-                            && permissionSet.getEditImages();
-                menumode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
-                templatemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
-                               && permissionSet.getEditTemplates();
-                includemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
-                              && permissionSet.getEditIncludes();
-            }
+        boolean textmode = false;
+        boolean imagemode = false;
+        boolean menumode = false;
+        boolean templatemode = false;
+        boolean includemode = false;
 
-            String template = getTemplate( document, parserParameters );
-
-            Perl5Matcher patMat = new Perl5Matcher();
-
-            SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
-
-            String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
-
-            Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
-            MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
-            MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution( parserParameters, document, menumode );
-            ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
-
-            String tagsReplaced = replaceTags( template, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution );
-
-            String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
-            return imcmsMessage + emphasizedAndTagsReplaced ;
-        } catch ( RuntimeException ex ) {
-            log.error( "Error occurred during parsing.", ex );
-            throw new UnhandledException( ex );
+        if ( flags > 0 ) {
+            textmode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
+            imagemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
+                        && permissionSet.getEditImages();
+            menumode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
+            templatemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
+                           && permissionSet.getEditTemplates();
+            includemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
+                          && permissionSet.getEditIncludes();
         }
+
+        String template = getTemplate( document, parserParameters );
+
+        Perl5Matcher patMat = new Perl5Matcher();
+
+        SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_STRING );
+
+        final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
+
+        Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
+        MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
+        MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution( parserParameters, document, menumode );
+        ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
+
+        String tagsReplaced = replaceTags( template, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution );
+
+        String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
+        return Util.substitute( patMat, HTML_TAG_HTML_PATTERN, new Substitution() {
+            public void appendSubstitution( StringBuffer stringBuffer, MatchResult matchResult, int i,
+                                            PatternMatcherInput patternMatcherInput, PatternMatcher patternMatcher,
+                                            Pattern pattern ) {
+                stringBuffer.append( imcmsMessage ).append( matchResult.group( 0 ) );
+            }
+        }, emphasizedAndTagsReplaced );
     }
 
     private String getTemplate( TextDocumentDomainObject document, ParserParameters parserParameters ) throws IOException {

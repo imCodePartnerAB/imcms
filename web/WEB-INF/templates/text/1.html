@@ -1,4 +1,3 @@
-<!--IMSCRIPT-->
 <html>
 <head>
 <title>#metaHeadline# - Powered by imCMS from imCode Partner AB</title>
@@ -36,28 +35,28 @@ LI { padding-bottom:5; }
 	<tr valign="top">
 		<td width="200"><?imcms:include
 		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoLeft"?></td>
-		
+
 		<td width="15">&nbsp;</td>
-		
+
 		<td width="385"><?imcms:text
 		no='1' label='Text (Rubrik)' pre='<span class="imcHeading">' post='</span><br><br>
-		
+
 		'?><?imcms:text
 		no='2' label='<br>Text' post='<br><br>'?><?imcms:menu
 		no='1' label='<br><br>Meny (punktlista)'?>
-		
+
 		<ul><?imcms:menuloop?>
 			<li style="padding-bottom:5">#menuitemlink##menuitemheadline##/menuitemlink#<?/imcms:menuloop?>
 		</ul>
 		<?/imcms:menu?><?imcms:include
-		
+
 		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr>' post='<hr>'?><?imcms:image
 		no='3' label='Bild' pre='<br><br>' post='<br>'?><br>
 		<?imcms:include no='1' label='Dynamisk inkludering 1'?></td>
-		
+
 		<td width="10">&nbsp;</td>
 
-		
+
 		<td width="150"><?imcms:include
 		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoRight"?></td>
 	</tr>
@@ -72,4 +71,3 @@ LI { padding-bottom:5; }
 
 </body>
 </html>
-<!--/IMSCRIPT-->
