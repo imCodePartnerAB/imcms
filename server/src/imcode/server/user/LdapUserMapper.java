@@ -4,9 +4,7 @@ import org.apache.log4j.Logger;
 
 import javax.naming.*;
 import javax.naming.directory.*;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 /*
 The use of LDAP simple auth for secret data or update is NOT recommended.
@@ -29,29 +27,29 @@ public class LdapUserMapper implements UserMapper {
     /* and the password is ignored */
 
    /** From person oid=2.5.6.7 */
-   private static final String PERSON_SURNAME = "sn";
-   private static final String PERSON_TELEPHONE_NUMBER = "telephoneNumber";
+   static final String PERSON_SURNAME = "sn";
+   static final String PERSON_TELEPHONE_NUMBER = "telephoneNumber";
 
    /** From organizationalPerson oid=2.5.6.7 */
-   private static final String ORGANIZATIONALPERSON_TITLE = "title";
-   private static final String ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME = "st";
-   private static final String ORGANIZATIONALPERSON_POSTAL_CODE = "postalCode";
-   private static final String ORGANIZATIONALPERSON_STREET_ADRESS = "streetAddress";
-   //   private static final String ORGANIZATIONALPERSON_ORGANIZATIONAL_UNIT_NAME = "ou";
+   static final String ORGANIZATIONALPERSON_TITLE = "title";
+   static final String ORGANIZATIONALPERSON_STATE_OR_PROVINCE_NAME = "st";
+   static final String ORGANIZATIONALPERSON_POSTAL_CODE = "postalCode";
+   static final String ORGANIZATIONALPERSON_STREET_ADRESS = "streetAddress";
+   //   static final String ORGANIZATIONALPERSON_ORGANIZATIONAL_UNIT_NAME = "ou";
 
    /** From inetOrgPerson oid=2.16.840.1.113730.3.2.2 */
-   private static final String INETORGPERSON_GIVEN_NAME = "givenName";
-   private static final String INETORGPERSON_MAIL = "mail";
-   private static final String INETORGPERSON_HOME_PHONE = "homePhone";
-   private static final String INETORGPERSON_MOBILE = "mobile";
-   private static final String INETORGPERSON_LOCALITY_NAME = "l";
-   //   private static final String INETORGPERSON_PREFERED_LANGUAGE = "preferredLanguage";
-   //   private static final String INETORGPERSON_USER_IDENTITY = "uid";
+   static final String INETORGPERSON_GIVEN_NAME = "givenName";
+   static final String INETORGPERSON_MAIL = "mail";
+   static final String INETORGPERSON_HOME_PHONE = "homePhone";
+   static final String INETORGPERSON_MOBILE = "mobile";
+   static final String INETORGPERSON_LOCALITY_NAME = "l";
+   //   static final String INETORGPERSON_PREFERED_LANGUAGE = "preferredLanguage";
+   //   static final String INETORGPERSON_USER_IDENTITY = "uid";
 
    /** Non standard */
-   private static final String NONSTANDARD_USERID = "sAMAccountName";
-   private static final String NONSTANDARD_COMPANY = "company";
-   private static final String NONSTANDARD_COUNTRY = "co";
+   static final String NONSTANDARD_USERID = "sAMAccountName";
+   static final String NONSTANDARD_COMPANY = "company";
+   static final String NONSTANDARD_COUNTRY = "co";
 
    protected static final String DEFAULT_LDAP_ROLE = "LDAP";
 
@@ -227,10 +225,15 @@ public class LdapUserMapper implements UserMapper {
       String loginName = user.getLoginName();
       String[] attributesToReturn = ldapAttributesAutoMappedToRoles;
 
-      searchForUserAttributes( loginName, attributesToReturn );
+      Map attributeMappedRoles = searchForUserAttributes( loginName, attributesToReturn );
+      HashSet roles = new HashSet(attributeMappedRoles.values()) ;
 
-      String[] result = new String[]{DEFAULT_LDAP_ROLE};
-      return result;
+      String[] rolesArray = new String[roles.size()+1] ;
+      roles.toArray(rolesArray) ;
+
+      rolesArray[rolesArray.length-1] = DEFAULT_LDAP_ROLE ;
+
+      return rolesArray;
    }
 
    private Map searchForUserAttributes( String loginName, String[] attributesToReturn ) {

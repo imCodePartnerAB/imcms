@@ -21,7 +21,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       String ldapAuthenticationType = "simple";
       String ldapUserName = "imcode\\hasbra";
       String ldapPassword = "hasbra";
-      ldapUserMapper = new LdapUserMapper( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword, new String[0] );
+      ldapUserMapper = new LdapUserMapper( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword, new String[] { LdapUserMapper.NONSTANDARD_COMPANY } );
       imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( mockImcmsService, logger );
       externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, new SmbAuthenticator(), ldapUserMapper, "se" );
    }
@@ -50,6 +50,9 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    public void testLdapOnlyExisting() {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, new String[]{} );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
 
       User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
@@ -61,6 +64,9 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
 
       User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
@@ -68,10 +74,13 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.verify();
    }
 
-   public void testAlwaysExistingImcmsRole() {
+   public void testMergedRolesFromImcmsAndExternal() {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"2"} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE} );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE} );
 
@@ -80,6 +89,8 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
 
       assertTrue( Arrays.asList( userRoles ).contains( ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE ) );
       assertTrue( Arrays.asList( userRoles ).contains( LdapUserMapper.DEFAULT_LDAP_ROLE ) );
+      assertTrue( Arrays.asList( userRoles ).contains("Crisp")) ;
+
       assertFalse( Arrays.asList( userRoles ).contains( null ) );
       mockImcmsService.verify();
    }
@@ -99,6 +110,5 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       assertTrue( Arrays.asList( roles ).contains( LdapUserMapper.DEFAULT_LDAP_ROLE ) );
       mockImcmsService.verify();
    }
-
 
 }

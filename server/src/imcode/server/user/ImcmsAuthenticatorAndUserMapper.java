@@ -171,6 +171,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
 
    public void assignRoleToUser( User user, String roleName ) {
       String userIdStr = String.valueOf(user.getUserId()) ;
+      addRole( roleName );
       log.debug("Trying to assign role "+roleName+" to user "+user.getLoginName()) ;
       String rolesIdStr = service.sqlProcedureStr("GetRoleIdByRoleName", new String[]{roleName});
       service.sqlUpdateProcedure( "AddUserRole", new String[]{ userIdStr, rolesIdStr } ) ;

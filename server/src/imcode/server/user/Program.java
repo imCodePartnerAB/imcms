@@ -21,7 +21,7 @@ public class Program {
       SearchControls searchControls = new SearchControls();
       searchControls.setSearchScope( SearchControls.ONELEVEL_SCOPE );
       String name = "CN=Users, DC=imcode, DC=com";
-      String filter = "samaccountname=chrham"; // See http://www.cis.ohio-state.edu/cs/Services/rfc/rfc-text/rfc2254.txt
+      String filter = "samaccountname=hasbra"; // See http://www.cis.ohio-state.edu/cs/Services/rfc/rfc-text/rfc2254.txt
 
       NamingEnumeration namingEnumeration = ctx.search( name, filter, searchControls );
       while( namingEnumeration.hasMoreElements() ) {
