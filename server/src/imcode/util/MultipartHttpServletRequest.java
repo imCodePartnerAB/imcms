@@ -86,7 +86,9 @@ public class MultipartHttpServletRequest extends HttpServletRequestWrapper {
         while ( superParameterNames.hasMoreElements() ) {
             parameterNames.add( superParameterNames.nextElement() );
         }
-        parameterNames.addAll( fileItemMap.keySet() );
+        if (null != fileItemMap) {
+            parameterNames.addAll( fileItemMap.keySet() );
+        }
         return new IteratorEnumeration( parameterNames.iterator() );
     }
 

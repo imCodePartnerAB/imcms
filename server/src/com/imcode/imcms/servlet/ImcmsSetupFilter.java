@@ -31,7 +31,7 @@ public class ImcmsSetupFilter implements Filter {
             session.setAttribute( LOGGED_IN_USER, user );  // just a marker object
         }
 
-        initRequestWithImcmsSystemAPI( user, request );
+        initRequestWithApi( user, request );
 
         NDC.setMaxDepth(0);
         String contextPath = ((HttpServletRequest)request).getContextPath() ;
@@ -43,11 +43,13 @@ public class ImcmsSetupFilter implements Filter {
         NDC.setMaxDepth(0);
     }
 
-    private void initRequestWithImcmsSystemAPI( UserDomainObject currentUser, ServletRequest request ) {
+    private void initRequestWithApi( UserDomainObject currentUser, ServletRequest request ) {
+        NDC.push( "initRequestWithApi" );
         ContentManagementSystem imcmsSystem;
-        IMCService service = (IMCService)ApplicationServer.getIMCServiceInterface();
+        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
         imcmsSystem = new DefaultContentManagementSystem( service, currentUser );
         request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
+        NDC.pop() ;
     }
 
     public void init( FilterConfig config ) throws ServletException {

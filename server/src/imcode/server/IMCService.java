@@ -644,8 +644,7 @@ final public class IMCService implements IMCServiceInterface {
 
     public String getTemplate( String path, UserDomainObject user, List variables ) {
         try {
-            VelocityEngine velocity = createVelocityEngine( user );
-
+            VelocityEngine velocity = getVelocityEngine( user );
             VelocityContext context = new VelocityContext();
             StringWriter stringWriter = new StringWriter();
             velocity.mergeTemplate( path, WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252, context, stringWriter );
@@ -659,8 +658,9 @@ final public class IMCService implements IMCServiceInterface {
         }
     }
 
-    private VelocityEngine createVelocityEngine( UserDomainObject user ) throws Exception {
+    private synchronized VelocityEngine createVelocityEngine( UserDomainObject user ) throws Exception {
         VelocityEngine velocity = new VelocityEngine();
+        log.debug( "createVelocityEngine", new Throwable()) ;
         velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath.getCanonicalPath() );
         velocity.setProperty( VelocityEngine.VM_LIBRARY, user.getLanguageIso639_2()+"/gui.vm");
         velocity.setProperty( VelocityEngine.VM_LIBRARY_AUTORELOAD, "true");

@@ -1,7 +1,7 @@
 <%@ page import="com.imcode.imcms.servlet.admin.ImageBrowse,
                  com.imcode.imcms.servlet.admin.ImageBrowse,
                  org.apache.commons.lang.StringEscapeUtils"%>
-
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -14,9 +14,10 @@
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text')">
 
+<vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
-
+</vel:velocity>
 
 <%
     ImageBrowse.FormData imageBrowseFormData;
@@ -34,12 +35,15 @@
     <td><input type="button" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2002 ?>" title="<? install/htdocs/sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
 </tr>
 </table>
+<vel:velocity>
 #gui_mid()
-
+</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <% if (null != imageBrowseFormData.getImageNumber()) { %>
 <tr>
-	<td colspan="3">#gui_heading( "<? install/htdocs/sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormData.getImageNumber()%> <? install/htdocs/sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormData.getMetaId()%>" )</td>
+	<td colspan="3">
+        <vel:velocity>#gui_heading( "<? install/htdocs/sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormData.getImageNumber()%> <? install/htdocs/sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormData.getMetaId()%>" )</vel:velocity>
+    </td>
 </tr>
 <% } %>
 <tr valign="top">
@@ -86,7 +90,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td colspan="3">#gui_hr( "blue" )</td>
+	<td colspan="3"><vel:velocity>#gui_hr( "blue" )</vel:velocity></td>
 </tr>
 <tr>
 	<td colspan="3" align="right">
@@ -102,10 +106,10 @@
 </tr>
 </table>
 </form>
+<vel:velocity>
 #gui_bottom()
 #gui_outer_end()
-
-
+</vel:velocity>
 <div align="center" id="previewDiv"><%=imageBrowseFormData.getImagePreview()%></div>
 
 <script language="JavaScript">

@@ -1,8 +1,8 @@
 <%@ page import="com.imcode.imcms.servlet.admin.DocumentComposer,
                  org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.document.HtmlDocumentDomainObject,
-                 org.apache.commons.lang.ObjectUtils"%>
-<%@page contentType="text/html"%>
+                 org.apache.commons.lang.ObjectUtils" contentType="text/html"%>
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <html>
 <head>
 
@@ -13,10 +13,10 @@
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'frame_set')">
-
+<vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
-
+</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="0">
 <form method="POST" action="DocumentComposer">
 <tr>
@@ -26,8 +26,9 @@
 </tr>
 </form>
 </table>
+<vel:velocity>
 #gui_mid()
-
+</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form method="POST" action="DocumentComposer">
 <%
@@ -51,7 +52,7 @@
                 name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
                 value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
-	<td>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/html_document.jsp/6 ?>" )</td>
+	<td><vel:velocity>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/html_document.jsp/6 ?>" )</vel:velocity></td>
 </tr>
 <tr>
 	<td><? install/htdocs/sv/jsp/docadmin/html_document.jsp/5 ?></td>
@@ -61,7 +62,7 @@
 <%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getHtmlDocumentHtml(), "") ) %></textarea></td>
 </tr>
 <tr>
-	<td>#gui_hr( "blue" )</td>
+	<td><vel:velocity>#gui_hr( "blue" )</vel:velocity></td>
 </tr>
 <tr>
 	<td align="right">
@@ -71,9 +72,9 @@
 </tr>
 </form>
 </table>
+<vel:velocity>
 #gui_bottom()
 #gui_outer_end()
-
-
+</vel:velocity>
 </body>
 </html>

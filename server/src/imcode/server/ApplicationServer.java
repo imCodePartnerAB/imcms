@@ -11,7 +11,7 @@ public class ApplicationServer {
 
     private final static Logger log = Logger.getLogger( imcode.server.ApplicationServer.class.getName() );
     private static IMCServiceInterface imcServiceInterface ;
-
+    private static ConnectionPool apiConnectionPool ;
 
     public synchronized static IMCServiceInterface getIMCServiceInterface() {
         if ( null == imcServiceInterface ) {
@@ -27,10 +27,12 @@ public class ApplicationServer {
         return imcref ;
     }
 
-    public static ConnectionPool createNewConnecionPoolToImcmsDatabase() {
-        Properties serverprops = getServerProperties();
-        ConnectionPool connectionPool = createConnectionPool( serverprops );
-        return connectionPool;
+    public synchronized static ConnectionPool getApiConnectionPool() {
+        if (null == apiConnectionPool) {
+            Properties serverprops = getServerProperties();
+            apiConnectionPool = createConnectionPool( serverprops );
+        }
+        return apiConnectionPool ;
     }
 
     private static Properties getServerProperties() {

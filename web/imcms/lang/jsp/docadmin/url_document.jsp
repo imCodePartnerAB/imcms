@@ -3,7 +3,7 @@
                  org.apache.commons.lang.StringEscapeUtils,
                  org.apache.commons.lang.ObjectUtils,
                  imcode.server.document.UrlDocumentDomainObject" contentType="text/html"%>
-<%
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
     UrlDocumentDomainObject document = (UrlDocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
 %>
 <html>
@@ -16,10 +16,10 @@
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'url_ref')">
-
+<vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
-
+</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="DocumentComposer">
 <tr>
@@ -28,8 +28,9 @@
 	<td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/url_document.jsp/2002 ?>" title="<? install/htdocs/sv/jsp/docadmin/url_document.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(82)"></td>
 </tr>
 </table>
+<vel:velocity>
 #gui_mid()
-
+<vel:velocity>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <%
     DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = (DocumentComposer.NewDocumentParentInformation)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
@@ -51,7 +52,7 @@
             name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
             value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
-	<td colspan="2">#gui_heading( "<? install/htdocs/sv/jsp/docadmin/url_document.jsp/4/1 ?>" )</td>
+	<td colspan="2"><vel:velocity>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/url_document.jsp/4/1 ?>" )</vel:velocity></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1001 ?>&nbsp;</td>
@@ -59,7 +60,7 @@
                 value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getUrlDocumentUrl(), "" )) %>"></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "cccccc" )</td>
+	<td colspan="2"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1002 ?><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="22"></td>
@@ -85,7 +86,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "blue" )</td>
+	<td colspan="2"><vel:velocity>#gui_hr( "blue" )</vel:velocity></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -95,9 +96,9 @@
 </tr>
 </form>
 </table>
+<vel:velocity>
 #gui_bottom()
 #gui_outer_end()
-
-
+</vel:velocity>
 </body>
 </html>

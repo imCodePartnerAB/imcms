@@ -39,7 +39,7 @@ public class ConnectionPoolForNonPoolingDriver extends ConnectionPool {
     }
 
     public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        return dataSource.getConnection() ;
     }
 
     public void testConnectionAndLogResultToTheErrorLog() throws SQLException {

@@ -1,13 +1,17 @@
 package imcode.util;
 
+import imcode.server.ApplicationServer;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
+import org.apache.velocity.VelocityContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.StringTokenizer;
 
@@ -107,6 +111,14 @@ public class Utility {
 
     public static void setDefaultHtmlContentType( HttpServletResponse res ) {
         res.setContentType( "text/html; charset="+WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
+    }
+
+
+    public static String evaluateVelocity( String template, HttpServletRequest request ) throws Exception {
+        UserDomainObject user = getLoggedOnUser( request );
+        StringWriter out = new StringWriter() ;
+        ApplicationServer.getIMCServiceInterface().getVelocityEngine(user).evaluate( new VelocityContext(), out, "velocity", template ) ;
+        return out.toString() ;
     }
 
 }

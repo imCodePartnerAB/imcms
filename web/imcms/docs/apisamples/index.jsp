@@ -38,7 +38,7 @@ In this sample page, the first choice is made; see <%=makeLinks("error.jsp")%> f
 <h3>Who you are</h3>
 To see what user you are logged in as, <%= makeLinks("logged_in_user.jsp") %><br>
 <br>
-First, make sure that you are logged in, <a href="../../../login/index.html">../../../login/index.html</a><br>
+First, make sure that you are logged in, <a href="<%= request.getContextPath() %>/login/"><%= request.getContextPath() %>/login/</a><br>
 Log out (and become an non-logged in user), <a href="../../../servlet/LogOut">../../../servlet/LogOut</a>
 </p>
 

@@ -1,3 +1,4 @@
+<%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <html>
 <head>
 <title><? templates/login/access_denied.html/1 ?></title>
@@ -9,10 +10,10 @@
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'name')">
-
+<vel:velocity>
 #gui_outer_start()
 #gui_head( "<? templates/login/access_denied.html/2 ?>" )
-
+</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="0" width="310">
 <form>
 <tr>
@@ -29,8 +30,9 @@
 </tr>
 </form>
 </table>
+<vel:velocity>
 #gui_mid()
-
+</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="2" width="310">
 <tr>
 	<td colspan="2" nowrap><span class="imcmsAdmText">
@@ -72,9 +74,9 @@
 	</table></td>
 </tr>
 </table>
+<vel:velocity>
 #gui_bottom()
 #gui_outer_end()
-
-
+</vel:velocity>
 </body>
 </html>

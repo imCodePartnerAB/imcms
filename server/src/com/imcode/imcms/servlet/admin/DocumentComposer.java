@@ -7,7 +7,11 @@ package com.imcode.imcms.servlet.admin;
  * Time: 16:19:25
  */
 
-import imcode.server.*;
+import com.imcode.imcms.servlet.GetDoc;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
@@ -17,7 +21,6 @@ import imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,8 +33,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import com.imcode.imcms.servlet.GetDoc;
 
 public class DocumentComposer extends HttpServlet {
 

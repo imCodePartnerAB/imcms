@@ -23,11 +23,11 @@
         <tr>
 		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/icon ?> &nbsp;</td>
             <td>
-            <input type="text" name="icon" <% if (readonly) {%>readonly<%}%> size="30" maxlength="255" value="<%= StringEscapeUtils.escapeHtml((String)ObjectUtils.defaultIfNull(categoryToEdit.getImage(),"")) %>">
+            <input type="text" name="icon" <% if (readonly) {%>readonly<%}%> size="30" maxlength="255" value="<%= StringEscapeUtils.escapeHtml((String)ObjectUtils.defaultIfNull(categoryToEdit.getImageUrl(),"")) %>">
             &nbsp;
             <% if (!readonly) { %><input type="submit" class="imcmsFormBtnSmall" name="<%= AdminCategories.PARAMETER__BROWSE_FOR_IMAGE %>" value=" Browse "><% } %>
             &nbsp;
-            <% String image = categoryToEdit.getImage() ;
+            <% String image = categoryToEdit.getImageUrl() ;
                 if (null == image) {
                     image = "" ;
                 }

@@ -14,7 +14,7 @@ public class DatabaseService {
 
     public DatabaseService( IMCServiceInterface service ) {
         this.service = service;
-        this.myOwnConnectionPool = ApplicationServer.createNewConnecionPoolToImcmsDatabase();
+        this.myOwnConnectionPool = ApplicationServer.getApiConnectionPool();
     }
 
     /**

@@ -8,7 +8,9 @@ package imcode.server.document;
 
 import imcode.server.IMCConstants;
 
-public class DocumentPermissionSetDomainObject {
+import java.io.Serializable;
+
+public class DocumentPermissionSetDomainObject implements Serializable {
 
     public final static int FULL = IMCConstants.DOC_PERM_SET_FULL;
     public final static int RESTRICTED_1 = IMCConstants.DOC_PERM_SET_RESTRICTED_1;
