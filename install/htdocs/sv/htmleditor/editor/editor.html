@@ -320,7 +320,16 @@ if(showSimple){
 <tr>
 	<td>
 <SCRIPT LANGUAGE="JavaScript1.2">
-<? sv/htmleditor/editor/editor.html/24 ?>
+<!--
+var iCount = 0;
+var sChecked='';
+document.write('<select name="createLinkCssTemp" unselectable="On" style="width:140" onChange="document.forms[0].createLinkCss.value = this.options[this.selectedIndex].value; this.selectedIndex = 0">');
+document.write('	<option value=""><? sv/htmleditor/editor/editor.html/24/1 ?></option>');
+for (var i=0; i<arrAllClass.length; i++){
+	document.write('	<option value="' + arrAllClass[i] + '">' + arrAllClass[i] + '</option>');
+}
+document.write('</select>');
+//-->
 </SCRIPT></td>
 </tr>
 <tr>
@@ -1240,9 +1249,13 @@ function fBlueDn(){
 	<td CLASS="imEditHelpHeadingBig"><? sv/htmleditor/editor/editor.html/131 ?></td>
 	<td align="right"><button class="fButtonSmall" onClick="hideHelp('all');"><? sv/htmleditor/editor/editor.html/132 ?></button></td>
 </tr>
-</table><? sv/htmleditor/editor/editor.html/1017 ?>&nbsp; <span class="imEditHelpLinkActive"><? sv/htmleditor/editor/editor.html/133 ?></span> &nbsp;<? sv/htmleditor/editor/editor.html/1018 ?>
+</table><? sv/htmleditor/editor/editor.html/1017 ?>&nbsp; <span class="imEditHelpLinkActive"><? sv/htmleditor/editor/editor.html/133 ?></span> &nbsp;|&nbsp; <a href="javascript:showHelp('upperbuttons');" class="imEditHelpLink"><? sv/htmleditor/editor/editor.html/1018/1 ?></a> &nbsp;|&nbsp; <a href="javascript:showHelp('rightbuttons');" class="imEditHelpLink"><? sv/htmleditor/editor/editor.html/1018/2 ?></a> &nbsp;|&nbsp;</b><br><br>
 
-<span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/134 ?></span><? sv/htmleditor/editor/editor.html/135 ?></div>
+<span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/134 ?></span><br><br>
+
+Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
+
+Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</div>
 
 
 <div id="helpTextAllUpperDiv" contenteditable="false" unselectable="off" style="position:absolute; left:5; top:80; width:525; height:380; z-index:201; text-align: left; padding:5; visibility:hidden; background-color:#FFFFE0; border: 2px inset #D6D3CE; overflow=auto" class="imEditHelp">

@@ -503,7 +503,7 @@ function toggleFontSize() {
 			if (isIE || (isMac && isMoz)) { %>
 	<tr>
 		<td colspan="2"<% if (isMac) { %> <? sv/jsp/FileAdmin_edit.jsp/8 ?>
-		<? sv/jsp/FileAdmin_edit.jsp/1003 ?>><%
+		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit" style="width:790; height:<% if (isTempl || (isMac && isIE)) { %>505<% } else { %>515<% } %>; overflow:auto" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (isMoz) { %>
 	<tr>
 		<td colspan="2" valign="top">

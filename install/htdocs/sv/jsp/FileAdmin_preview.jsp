@@ -291,7 +291,11 @@ function findIt(str) {
 			<option value="8.0"<%  if (defZoom.equals("8.0")) { %> selected<% } %>>800%
 			<option value="16.0"<% if (defZoom.equals("16.0")) { %> selected<% } %>>1600%
 		</select></td>
-		<td class="norm"> &nbsp; <? sv/jsp/FileAdmin_preview.jsp/1004 ?> &nbsp;</td>
+		<td class="norm"> &nbsp; | &nbsp; <%
+		} %><? sv/jsp/FileAdmin_preview.jsp/1004/1 ?>
+		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=1" target="main"><? sv/jsp/FileAdmin_preview.jsp/1004/2 ?></a> /
+		<a href="<%= thisPage %>?frame=main&file=<%= file %>&border=0" target="main"><? sv/jsp/FileAdmin_preview.jsp/1004/3 ?></a> &nbsp; | &nbsp;
+		<a href="javascript: closeIt();"><b><? sv/jsp/FileAdmin_preview.jsp/1004/4 ?></b></a> &nbsp; | &nbsp;</td>
 	</tr>
 	</form>
 	</table><% 

@@ -61,7 +61,12 @@ if( saveAnswers ) {
 	<input type="submit" name="Save" value="<? sv/poll/pollForm_part_show.jsp/2001 ?>">&nbsp;&nbsp;<input type="reset" name="Reset" value="<? sv/poll/pollForm_part_show.jsp/2002 ?>">&nbsp;&nbsp;<input type="button" name="cancel" value="<? sv/poll/pollForm_part_show.jsp/2003 ?>" onclick="javascript:window.close()">
 	<? sv/poll/pollForm_part_show.jsp/2 ?>
 	<input type="button" name="cancel" value="<? sv/poll/pollForm_part_show.jsp/2004 ?>" onclick="javascript:window.close()">
-	<? sv/poll/pollForm_part_show.jsp/3 ?>
+	<% 
+}
+
+if ( hide_result < 1 ){ // show link only if hide_result = 0 and saveAnswers == true
+	%> 
+	<br><br><a href="@servleturl@/GetDoc?meta_id=<%= meta_id %>&template=<%= result_template%>" target="_blank" onClick="openW(); return false;"><b><? sv/poll/pollForm_part_show.jsp/3/1 ?></b></a><br>
 
 <SCRIPT language=JavaScript>
 <!--
