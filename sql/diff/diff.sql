@@ -3785,3 +3785,36 @@ where meta_id < 1000
 GO
 
 --2002-02-14
+
+-- Changed the lang prefix uk to en
+update roles_permissions 
+set lang_prefix='en'
+where lang_prefix='uk'
+
+update doc_permissions 
+set lang_prefix='en'
+where lang_prefix='uk'
+
+update permissions 
+set lang_prefix='en'
+where lang_prefix='uk'
+
+update doc_types 
+set lang_prefix='en'
+where lang_prefix='uk'
+
+update user_types 
+set lang_prefix='en'
+where lang_prefix='uk'
+
+update languages 
+set lang_prefix='en'
+where lang_prefix='uk'
+
+update languages 
+set user_prefix='en'
+where user_prefix='uk'
+go
+
+
+-- 2002-03-07
