@@ -2696,10 +2696,12 @@ CREATE PROCEDURE GetUserTypes
 /*
 Used to generate a list with all type of users. Used from AdminUserProps
 */
+  @lang_prefix VARCHAR(3)
+
  AS
  SELECT DISTINCT user_type, type_name 
  FROM user_types
-
+ WHERE lang_prefix=@lang_prefix
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
