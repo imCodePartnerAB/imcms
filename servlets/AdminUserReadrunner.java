@@ -49,6 +49,7 @@ public class AdminUserReadrunner extends HttpServlet {
 
 	if (null != req.getParameter("cancel")) {
 	    res.sendRedirect("AdminUser") ;
+	    return ;
 	}
 
 	User theEditedUser = imcref.getUserById(Integer.parseInt(req.getParameter("user_id"))) ;
@@ -71,7 +72,7 @@ public class AdminUserReadrunner extends HttpServlet {
 	} catch (NumberFormatException nfe) {
 	    throw nfe ;
 	}
-	displayPage(imcref, user, theEditedUser, res) ;
+	res.sendRedirect("AdminUser") ;
     }
 
 
