@@ -217,11 +217,13 @@ public class PostcardServlet extends HttpServlet {
 		}
 		
 		//ok lets save the bottom frame page, incase it has been removed
-		//by some stupid sysAdmin
-		
+		//by some stupid sysAdmin¨
 		String bottomString = IMCServiceRMI.parseExternalDoc( imcserver, new Vector(),POSTCARD_BOTTOM,"se","105");	
-		File imagePathFile = new File(imcode.util.Utility.getDomainPref("image_path",host));
-		File postcardFolder = new File(imagePathFile.getParent(),POSTCARD_FOLDER);	
+		String pp = imcode.util.Utility.getDomainPref("image_path",host);
+		File imagePathFile = new File(this.getServletContext().getRealPath("/"),pp);
+		
+	
+		File postcardFolder = new File(imagePathFile.getParent(),POSTCARD_FOLDER);		
 		File bottomFile = new File(postcardFolder,"bottom.html");	
 		FileWriter writ = new FileWriter(bottomFile);
 		BufferedWriter buff = new BufferedWriter( writ );	
