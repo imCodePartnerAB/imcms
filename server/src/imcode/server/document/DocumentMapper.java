@@ -392,22 +392,15 @@ public class DocumentMapper {
     }
 
     public void initBrowserDocumentFromDb( BrowserDocumentDomainObject document ) {
-        String sqlStr = "SELECT to_meta_id, browsers.browser_id, browsers.name, browsers.value\n"
-                        + "FROM browser_docs, browsers\n"
-                        + "WHERE browser_docs.browser_id = browsers.browser_id\n"
-                        + "AND meta_id = ?";
+        String sqlStr = "SELECT to_meta_id, browser_id FROM browser_docs WHERE meta_id = ?" ;
         String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + document.getId()} );
         for ( int i = 0; i < sqlResult.length; i++ ) {
             String[] sqlRow = sqlResult[i];
             int toMetaId = Integer.parseInt( sqlRow[0] );
-            int browserId = Integer.parseInt( sqlRow[1] );
-            String browserName = sqlRow[2];
-            int browserSpecificity = Integer.parseInt( sqlRow[3] );
-            BrowserDocumentDomainObject.Browser browser = new BrowserDocumentDomainObject.Browser( browserId, browserName, browserSpecificity );
+            int browserId = Integer.parseInt( sqlRow[1] ) ;
+            BrowserDocumentDomainObject.Browser browser = getBrowserById( browserId ) ;
             document.setBrowserDocumentId( browser, toMetaId );
         }
-
-        //TODO
     }
 
     public void initHtmlDocumentFromDb( HtmlDocumentDomainObject documentDomainObject ) {

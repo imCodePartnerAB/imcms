@@ -12,10 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.*;
 import java.io.*;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.*;
 
 public class GetDoc extends HttpServlet {
 
@@ -189,6 +186,9 @@ public class GetDoc extends HttpServlet {
                                              new String[]{"" + meta_id, br_id} );
             if ( tmp != null && ( !"".equals( tmp ) ) ) {
                 meta_id = Integer.parseInt( tmp );
+            } else {
+                Map browserDocumentIdMap = ((BrowserDocumentDomainObject)document).getBrowserDocumentIdMap();
+                meta_id = ((Integer)browserDocumentIdMap.get( BrowserDocumentDomainObject.Browser.DEFAULT )).intValue() ;
             }
 
             Utility.redirect( req, res, "GetDoc?meta_id=" + meta_id + "&parent_meta_id=" + parent_meta_id );
