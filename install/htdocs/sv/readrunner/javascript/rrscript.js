@@ -453,24 +453,6 @@ function RRgetCookies() {
 		f.RRopacityLevel.value = (arrSettings[8] >= 0) ? arrRROpacityLevels[arrSettings[8]] : arrRROpacityLevels[0];
 	}
 }
-/*
-function RRcheckCookieForPauses() {
-	var retStop = 0;
-	var retDiv = 0;
-	var f = document.forms.form1;
-	var theCookieSettings = unescape(getCookie('RRsettings'));
-	if (theCookieSettings.indexOf('/') != -1) {
-		arrSettings = theCookieSettings.split(",")
-		var StopCheck = (arrSettings[1].split("/")[0] == 'true') ? 1 : 0;
-		var StopVal = (arrSettings[1].split("/")[1] >= 0) ? parseFloat(arrSettings[1].split("/")[1]) : parseFloat(iDefaultPausStop);
-		var DivCheck = (arrSettings[2].split("/")[0] == 'true') ? 1 : 0;
-		var DivVal = (arrSettings[2].split("/")[1] >= 0) ? parseFloat(arrSettings[2].split("/")[1]) : parseFloat(iDefaultPausDiv);
-		retStop = (StopCheck == 0 || StopVal == 0) ? 1 : 0;
-		retDiv = (DivCheck == 0 || DivVal == 0) ? 1 : 0;
-	}
-	arrRet = new Array(retStop,retDiv)
-	return arrRet;
-}*/
 
 
 /* ************* Get Cookie By Name ************* */
@@ -592,6 +574,23 @@ function RRoutBtn(elBtn) {
 }
 
 
+function RRdividersOnInCookie() { /* checks the cookie if there are "skiljetecken" pauses (1 / 0) */
+	//var retStop = 0;
+	var retDiv = 0; // Off by default. If there are no cookie
+	var f = document.forms.form1;
+	var theCookieSettings = unescape(getCookie('RRsettings'));
+	if (theCookieSettings.indexOf('/') != -1) {
+		arrSettings = theCookieSettings.split(",")
+		//var StopCheck = (arrSettings[1].split("/")[0] == 'true') ? 1 : 0;
+		//var StopVal = (arrSettings[1].split("/")[1] >= 0) ? parseFloat(arrSettings[1].split("/")[1]) : parseFloat(iDefaultPausStop);
+		var DivCheck = (arrSettings[2].split("/")[0] == 'true') ? 1 : 0;
+		var DivVal = (arrSettings[2].split("/")[1] >= 0) ? parseFloat(arrSettings[2].split("/")[1]) : parseFloat(iDefaultPausDiv);
+		//retStop = (StopCheck == 0 || StopVal == 0) ? 1 : 0;
+		retDiv = (DivCheck == 0 || DivVal == 0) ? 0 : 1; // On if cookie says > 0. Off by default
+	}
+	return retDiv;
+}
+
 /* *************************************
  *        Linebreak check              *
  ************************************* */
@@ -603,7 +602,8 @@ function RRcheckLineBreaks() {
 	var resultString;
 	var oObject = document.all.item("RR1");
 	var bSeperator;
-	if (unescape(getParam('readrunner_no_separators')) == '1'){
+	//if (unescape(getParam('readrunner_no_separators')) == '1'){
+	if (RRdividersOnInCookie()) {
 		bSeperator = false;}
 	else{
 		bSeperator = true;}

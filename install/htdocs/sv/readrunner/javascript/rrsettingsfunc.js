@@ -55,9 +55,9 @@ function startRR() {
 	var f = document.forms.form1;
 	var iMetaId = f.MetaId.value;
 	var sTempl = (unescape(getParam('template')) != '') ? '&template=' + unescape(getParam('template')) : '';
-	var sNoPausStop = (!f.cbp2.checked || parseFloat(f.p2.value) == 0) ? '&readrunner_no_stops=1' : '';
-	var sNoPausSep = (!f.cbp3.checked || parseFloat(f.p3.value) == 0) ? '&readrunner_no_separators=1' : '';
-	if (parseInt(iMetaId) > 1000) document.location.href = '@servleturl@/GetDoc?meta_id=' + iMetaId + sTempl + sNoPausStop + sNoPausSep;
+	//var sNoPausStop = (!f.cbp2.checked || parseFloat(f.p2.value) == 0) ? '&readrunner_no_stops=1' : '';
+	//var sNoPausSep = (!f.cbp3.checked || parseFloat(f.p3.value) == 0) ? '&readrunner_no_separators=1' : '';
+	if (parseInt(iMetaId) > 1000) document.location.href = '@servleturl@/GetDoc?meta_id=' + iMetaId + sTempl;
 }
 
 
@@ -163,7 +163,7 @@ function setCookie(name, value) {
 	var today = new Date();
 	var expire = new Date();
 	expire.setTime(today.getTime() + 1000*60*60*24*365); // 365 days
-	var sCookieCont = name + "=" + escape(value);
+	var sCookieCont = name + "=" + value;
 	sCookieCont += (expire == null) ? "" : "\; expires=" + expire.toGMTString();
 	sCookieCont += "; path=" + RRpath;
 	document.cookie = sCookieCont;
