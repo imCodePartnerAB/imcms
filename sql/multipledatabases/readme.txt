@@ -30,11 +30,7 @@ classification_fix.prc
 deletenewdocpermissionsetex.prc
 deleteuseradminpermissibleroles.prc
 existingdocsgetselectedmetaids.prc
-getallusersinlist.prc
-getbrowserdocchilds.prc
 getcategoryusers.prc
-getcurrentsessioncounter.prc
-getcurrentsessioncounterdate.prc
 getdoctypeswithnewpermissions.prc
 getdoctypeswithpermissions.prc
 getdocumentinfo.prc
