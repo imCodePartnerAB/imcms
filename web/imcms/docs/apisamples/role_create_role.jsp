@@ -11,7 +11,8 @@ Before:<br>
 <%=java.util.Arrays.asList( userService.getAllRoles() )%>
 <%
    String roleName = "Test role";
-   Role role = userService.addNewRole( roleName );
+   Role role = userService.createNewRole( roleName );
+   userService.saveRole( role );
 %><br>
 After adding a new role named "<%= role.getName() %>":<br>
 <%=java.util.Arrays.asList( userService.getAllRoles() )%>

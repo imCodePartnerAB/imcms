@@ -23,16 +23,20 @@ Version 1.12.0
     * Added classes:
         - Role - Represents a user-role.
         - SaveException - Thrown when something can't be saved.
+        - AlreadyExistsException - Extends SaveException.
     * Changed classes:
         - MaxCategoriesOfTypeExceededException - Extends SaveException
-        - CategoryAlreadyExistsException - Extends SaveException
-        - CategoryTypeAlreadyExistsException - Extends SaveException
+        - CategoryAlreadyExistsException - Extends AlreadyExistsException
+        - CategoryTypeAlreadyExistsException - Extends AlreadyExistsException
+        - UserAlreadyExistsException - Extends AlreadyExistsException
+        - RoleAlreadyExistsException - Extends AlreadyExistsException
     * Added methods:
         - User.getRoles() - Get the user's roles.
         - User.setRoles(Role[]) - Set the user's roles.
         - User.hasRole(Role) - Returns true if the user has the role.
         - User.addRole(Role) - Add a role to the user.
         - User.removeRole(Role) - Remove a role from the user.
+        - UserService.createNewRole(String) - Create a new role
         - UserService.deleteRole(Role) - Delete a role, requires superadmin permission.
         - UserService.getAllRoles() - Returns all roles in the system, requires superadmin permission.
         - UserService.getAllUsersWithRole(Role) - Get all users with the given permission.
@@ -42,7 +46,7 @@ Version 1.12.0
         - UserService.createNewUser(String, String) - Create a new user.
         - UserService.saveUser(User) - Save a new or existing user, requires superadmin permission.
         - User.set* - Added a bunch of setters.
-        - User.get* - Added a few missing setters.
+        - User.get* - Added a few missing getters.
     * Changed methods:
         - UserService.addNewRole(String) - Returns the new role.
         - DocumentService.saveChanges(Document) - Throws SaveException instead of MaxCategoriesOfTypeExceededException.
@@ -54,6 +58,7 @@ Version 1.12.0
         - UserService.getRoleNames(User) - Use User.getRoles()
         - UserService.getAllRolesNames() - Use UserService.getAllRoles()
         - UserService.setUserRoles(User,String[]) - Use User.setRoles(Role[])
+        - UserService.addNewRole(String) - Use UserService.createNewRole(String) and UserService.saveRole(Role)
     * Removed methods:
         - DocumentService.createAndSaveNewTextDocument(Document) - Use DocumentService.createNewTextDocument() and
             DocumentService.saveChanges(Document)

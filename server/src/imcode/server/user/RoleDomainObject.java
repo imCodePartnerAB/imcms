@@ -20,6 +20,10 @@ public class RoleDomainObject implements Serializable, Comparable {
         this.adminRoleId = adminRoleId;
     }
 
+    public void setId( int id ) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }

@@ -61,8 +61,13 @@ class DBConnect {
     }
 
     private RuntimeException getException( SQLException ex ) {
-        if ("23000".equals( ex.getSQLState() )) {
-             return new IntegrityConstraintViolationSQLException(ex) ;
+        String sqlState = ex.getSQLState();
+        if ("23000".equals( sqlState )) {
+            return new IntegrityConstraintViolationSQLException(ex) ;
+        } else if ("01004".equals( sqlState )) {
+            return new StringTruncationSQLException(ex) ;
+        } else {
+            log.debug( "SQLException with SQLState "+sqlState) ;
         }
         return new RuntimeException( ex );
     }

@@ -4,6 +4,7 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.db.IntegrityConstraintViolationSQLException;
+import imcode.server.db.StringTruncationSQLException;
 
 public class UserService {
 
@@ -89,10 +90,11 @@ public class UserService {
         getMapper().setUserRoles( user.getInternal(), roleNames );
     }
 
-    public Role addNewRole( String roleName ) throws NoPermissionException {
-        getSecurityChecker().isSuperAdmin();
-
-        return new Role(getMapper().addRole( roleName ));
+    /** @deprecated Use {@link #createNewRole(String)} followed by {@link #saveRole(Role)} instead. */
+    public Role addNewRole( String roleName ) throws NoPermissionException, SaveException {
+        Role role = createNewRole( roleName ) ;
+        saveRole( role );
+        return role ;
     }
 
     /** @deprecated Use {@link #getAllUsersWithRole(Role)}} instead. */
@@ -124,6 +126,10 @@ public class UserService {
         mapper.deleteRole( mapper.getRoleByName( role ) );
     }
 
+    public Role createNewRole( String roleName ) {
+        return new Role( new RoleDomainObject( 0, roleName, 0 ) );
+    }
+
     /**
      * @throws NoPermissionException unless superadmin.
      * @throws SaveException if another role with the same name exists.
@@ -137,7 +143,9 @@ public class UserService {
         try {
             getMapper().saveRole(role.getInternal()) ;
         } catch ( IntegrityConstraintViolationSQLException icvse ) {
-            throw new SaveException("A role with the name \""+role.getName()+"\" already exists.") ;
+            throw new RoleAlreadyExistsException("A role with the name \""+role.getName()+"\" already exists.") ;
+        } catch( StringTruncationSQLException stse ) {
+            throw new SaveException( "Role name too long." );
         }
     }
 
@@ -162,7 +170,7 @@ public class UserService {
         try {
             getMapper().saveUser(user.getInternal()) ;
         } catch ( IntegrityConstraintViolationSQLException icvse ) {
-            throw new SaveException( "A user with the login name \""+user.getLoginName()+"\" already exists." ) ;
+            throw new UserAlreadyExistsException( "A user with the login name \""+user.getLoginName()+"\" already exists." ) ;
         }
     }
 }

@@ -1,12 +1,11 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.util.Html;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.Html;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
@@ -21,7 +20,6 @@ import java.util.Vector;
 /**
  * Comments. This servlet will need the following stored procedures in the db
  * - RoleFindName
- * - RoleAddNew
  * - RoleDelete
  * - RoleGetPermissionsFromRole
  * - RoleGetPermissionsByLanguage

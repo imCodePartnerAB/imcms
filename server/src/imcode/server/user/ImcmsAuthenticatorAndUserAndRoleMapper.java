@@ -15,7 +15,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     private static final String SPROC_GET_USER_BY_LOGIN = "GetUserByLogin";
 
     private static final String SPROC_ADD_USER_ROLE = "AddUserRole";
-    private static final String SPROC_ROLE_ADD_NEW = "RoleAddNew";
     private static final String SPROC_ROLE_DELETE = "RoleDelete";
     private static final String SPROC_GET_ALL_ROLES = "GetAllRoles";
     private static final String SPROC_GET_USER_ROLES = "GetUserRoles";
@@ -283,12 +282,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     }
 
     public synchronized RoleDomainObject addRole( String roleName ) {
-        RoleDomainObject role = getRoleByName( roleName );
-        boolean roleExists = null != role;
-        if ( !roleExists ) {
-            service.sqlUpdateProcedure( SPROC_ROLE_ADD_NEW, new String[]{roleName} );
-        }
-        return getRoleByName( roleName );
+        String insertSql = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,0,0) "
+                           + "SELECT @@IDENTITY";
+        int newRoleId = Integer.parseInt( service.sqlQueryStr( insertSql, new String[] { roleName } ) ) ;
+        return getRoleById( newRoleId );
     }
 
     public void deleteRole( RoleDomainObject role ) {
@@ -422,7 +419,12 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     }
 
     public void saveRole( RoleDomainObject role ) {
-        service.sqlUpdateQuery( "UPDATE roles SET role_name = ? WHERE role_id = ?", new String[] { role.getName(), ""+role.getId() } ) ;
+        if (0 == role.getId()) {
+            RoleDomainObject newRole = addRole( role.getName() ) ;
+            role.setId(newRole.getId()) ;
+        } else {
+            service.sqlUpdateQuery( "UPDATE roles SET role_name = ? WHERE role_id = ?", new String[] { role.getName(), ""+role.getId() } ) ;
+        }
     }
 
     public void saveUser( UserDomainObject user ) {

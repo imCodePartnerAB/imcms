@@ -6,6 +6,10 @@ public class ImmutableRoleDomainObject extends RoleDomainObject {
         super(roleId, roleName, adminRoleId);
     }
 
+    public void setId( int id ) {
+        return ;
+    }
+
     public void setName( String name ) {
         return ;
     }
