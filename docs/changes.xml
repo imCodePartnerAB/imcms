@@ -67,6 +67,15 @@
             </p>
             <bug id="2785"/>
         </change>
+        <change>
+            <p>
+                Whitespace in <attr>label</attr>-attributes are now normalized,
+                i.e. consecutive runs of whitespace are replaced by a single space.
+                This is a workaround for newlines in the <attr>label</attr>-attribute
+                not being handled correctly in some places.
+            </p>
+            <bug id="2874"/>
+        </change>
     </changes>
 
     <changes for="administrators">
