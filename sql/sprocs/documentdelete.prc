@@ -17,6 +17,7 @@ AS
 /*
 Deletes a meta Id in the system. Used by func deleteDocAll in the ImcService class
 */
+delete from document_categories where meta_id = @meta_id
 delete from meta_classification where meta_id = @meta_id
 delete from childs where to_meta_id = 	@meta_id   
 delete from childs where menu_id = (select menu_id from menus where meta_id = @meta_id) 

@@ -9,7 +9,6 @@ import imcode.external.diverse.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import com.imcode.imcms.servlet.superadmin.Administrator;
 
 public class AdminDeleteDoc extends Administrator {
 
