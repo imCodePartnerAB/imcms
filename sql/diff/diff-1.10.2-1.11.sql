@@ -2,6 +2,8 @@ ALTER TABLE fileupload_docs ADD variant_name VARCHAR(100) NOT NULL DEFAULT ''
 ALTER TABLE fileupload_docs ADD default_variant BIT NOT NULL DEFAULT 0
 ALTER TABLE fileupload_docs DROP CONSTRAINT PK_fileupload_docs
 ALTER TABLE fileupload_docs ADD CONSTRAINT PK_fileupload_docs PRIMARY KEY ( meta_id, variant_name )
+GO
+
 
 -- 2004-07-27 Kreiger
 
@@ -13,7 +15,7 @@ ALTER TABLE [dbo].[document_categories] ADD CONSTRAINT
 	) REFERENCES [dbo].[categories] (
 		[category_id]
 	)
-
+GO
 -- 2004-09-15 Lennart
 
 
@@ -32,7 +34,7 @@ begin
 end
 close posCursor
 deallocate posCursor
-
+GO
 
 --  repair table fileupload_docs,
 --  add all activated fileupload documents that is missing in table fileupload_docs.
@@ -53,7 +55,7 @@ begin
 end
 close posCursor
 deallocate posCursor
-
+GO
 
 -- Delete all erroneous HTML-documents  ( activate=0 and missing in table frameset_docs )
 declare @meta_id int
@@ -71,7 +73,7 @@ begin
 end
 close posCursor
 deallocate posCursor
-
+GO
 
 -- Delete all erroneous URL-documents  ( missing in table url_docs )
 declare @meta_id int
@@ -89,7 +91,7 @@ begin
 end
 close posCursor
 deallocate posCursor
-
+GO
 
 -- Delete all erroneous text-documents  ( missing in table text_docs and don't have any references in table texts )
 declare @meta_id int
@@ -111,7 +113,7 @@ begin
 end
 close posCursor
 deallocate posCursor
-
+GO
 
 
 -- Delete all erroneous browser-documents  ( missing in table browser_docs )
@@ -130,7 +132,7 @@ begin
 end
 close posCursor
 deallocate posCursor
-
+GO
 
 --- Delete erroneous rows in table childs
 DELETE FROM childs
@@ -141,12 +143,13 @@ WHERE  (to_meta_id IN
        (to_meta_id NOT IN
             (SELECT meta_id
             FROM meta))
-
+GO
 -- 040916 Lennart Å
 
 update doc_types set type='Textsida' where doc_type=2 and lang_prefix='swe'
 update doc_types set type='Extern länk' where doc_type=5 and lang_prefix='swe'
 update display_name set display_name='Sidans typ' where sort_by_id=3 and lang_id=1 
+GO
 
 -- 040928
 
