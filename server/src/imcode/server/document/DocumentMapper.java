@@ -51,6 +51,14 @@ public class DocumentMapper {
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final String XOPEN_SQLSTATE__INTEGRITY_CONSTRAINT_VIOLATION = "23000";
 
+    private static final String TEMPLATE__STATUS_NEW = "textdoc/status/new.frag";
+    private static final String TEMPLATE__STATUS_DISAPPROVED = "textdoc/status/disapproved.frag";
+    private static final String TEMPLATE__STATUS_PUBLISHED = "textdoc/status/published.frag";
+    private static final String TEMPLATE__STATUS_UNPUBLISHED = "textdoc/status/unpublished.frag";
+    private static final String TEMPLATE__STATUS_ARCHIVED = "textdoc/status/archived.frag";
+    private static final String TEMPLATE__STATUS_APPROVED = "textdoc/status/approved.frag";
+
+
     public DocumentMapper( IMCServiceInterface service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
         this.service = service;
         this.imcmsAAUM = imcmsAAUM;
@@ -1708,6 +1716,26 @@ public class DocumentMapper {
             return new FileInputStream( file );
         }
     }
+
+    public String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
+        String statusIconTemplateName = null;
+        if ( DocumentDomainObject.STATUS_NEW == document.getStatus() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_NEW;
+        } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_DISAPPROVED;
+        } else if ( document.isPublishedAndNotArchived() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_PUBLISHED;
+        } else if ( document.isNoLongerPublished() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_UNPUBLISHED;
+        } else if ( document.isArchived() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_ARCHIVED;
+        } else {
+            statusIconTemplateName = TEMPLATE__STATUS_APPROVED;
+        }
+        String statusIconTemplate = service.getAdminTemplate( statusIconTemplateName, user, null );
+        return statusIconTemplate;
+    }
+
 
 }
 

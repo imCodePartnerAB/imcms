@@ -386,7 +386,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         tags.put( "getMetaId", "" + document.getId() );
         tags.put( "doc_buttons", tempbuffer.toString() );
-
+        tags.put( "statusicon", documentMapper.getStatusIconTemplate( document, user ) ) ;
 
         // if user is superadmin or useradmin lets add superadmin button
         if ( checkAdminRights( user ) || checkUserAdminrole( user.getUserId(), 2 ) ) {

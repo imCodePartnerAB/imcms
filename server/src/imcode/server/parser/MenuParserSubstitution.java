@@ -3,6 +3,7 @@ package imcode.server.parser;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import org.apache.oro.text.regex.*;
 
@@ -18,13 +19,6 @@ class MenuParserSubstitution implements Substitution {
     private boolean menumode;
     private int[] implicitMenus = {1};
     private ParserParameters parserParameters;
-
-    public static final String TEMPLATE__STATUS_NEW = "textdoc/status/new.frag";
-    public static final String TEMPLATE__STATUS_DISAPPROVED = "textdoc/status/disapproved.frag";
-    public static final String TEMPLATE__STATUS_PUBLISHED = "textdoc/status/published.frag";
-    public static final String TEMPLATE__STATUS_UNPUBLISHED = "textdoc/status/unpublished.frag";
-    public static final String TEMPLATE__STATUS_ARCHIVED = "textdoc/status/archived.frag";
-    public static final String TEMPLATE__STATUS_APPROVED = "textdoc/status/approved.frag";
 
     public MenuParserSubstitution( ParserParameters parserParameters, Map menus,
                                    boolean menumode ) {
@@ -420,7 +414,8 @@ class MenuParserSubstitution implements Substitution {
             a_href = parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags )
                      + a_href;
 
-            a_href = getStatusIconTemplate( menuItem.getDocument() ) + a_href;
+            DocumentMapper documentMapper = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper();
+            a_href = documentMapper.getStatusIconTemplate( menuItem.getDocument(), user ) + a_href;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );
@@ -434,25 +429,6 @@ class MenuParserSubstitution implements Substitution {
                           : "</a>" );
 
         return new MapSubstitution( tags, true );
-    }
-
-    private String getStatusIconTemplate( DocumentDomainObject document ) {
-        String statusIconTemplateName = null;
-        if ( DocumentDomainObject.STATUS_NEW == document.getStatus() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_NEW;
-        } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_DISAPPROVED;
-        } else if ( document.isPublishedAndNotArchived() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_PUBLISHED;
-        } else if ( document.isNoLongerPublished() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_UNPUBLISHED;
-        } else if ( document.isArchived() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_ARCHIVED;
-        } else {
-            statusIconTemplateName = TEMPLATE__STATUS_APPROVED;
-        }
-        String statusIconTemplate = parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( statusIconTemplateName, parserParameters.getDocumentRequest().getUser(), null );
-        return statusIconTemplate;
     }
 
 }
