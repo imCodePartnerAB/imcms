@@ -29,7 +29,7 @@ public class ImageUpload extends HttpServlet {
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 		File file_path 				= new File(Utility.getDomainPref( "image_path", host ));
 		String image_url			= Utility.getDomainPref( "image_url",host ) ;
-		log (image_url) ;
+		String image_path			= Utility.getDomainPref( "image_path",host ) ;
 
 		imcode.server.User user ; 
 
@@ -99,28 +99,27 @@ public class ImageUpload extends HttpServlet {
 		}
 		//String htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_img.html",img_no,0,0,0) ;
 		//out.println(htmlStr) ;
-		String image_ref = image_url+fn.getName() ;
-		String imageName = (image_ref.lastIndexOf("/") != -1)?image_ref.substring(image_ref.lastIndexOf("/") +1):image_ref;	
-		String imagePath = Utility.getDomainPref( "image_path",host );
-		log("ImagePath: " + imagePath + imageName);
-		File _file = new File(imagePath + imageName);
-		ImageFileMetaData imFMD = new ImageFileMetaData(_file);
-		int origW = imFMD.getWidth();
-		int origH = imFMD.getHeight();
-		log("width/height: " + origW + ", " + origH);
+		String image_ref = fn.getName() ;
+		ImageFileMetaData imagefile = new ImageFileMetaData(new File(image_path,image_ref)) ;
+		int width = imagefile.getWidth() ;
+		int height = imagefile.getHeight() ;
 		Vector vec = new Vector() ;
+		vec.add("#keep_aspect#") ;
+		vec.add("checked") ;
+		vec.add("#imgUrl#") ;
+		vec.add(image_url) ;
 		vec.add("#imgName#") ;
 		vec.add("") ;
 		vec.add("#imgRef#") ;
 		vec.add(image_ref) ;
 		vec.add("#imgWidth#") ;
-		vec.add("" + origW) ;
+		vec.add(""+width) ;
 		vec.add("#imgHeight#") ;
-		vec.add("" + origH) ;
+		vec.add(""+height) ;
 		vec.add("#origW#") ;
-		vec.add("" + origW) ;
+		vec.add(""+width) ;
 		vec.add("#origH#") ;
-		vec.add("" + origH) ;
+		vec.add(""+height) ;
 		vec.add("#imgBorder#") ;
 		vec.add("0") ;
 		vec.add("#imgVerticalSpace#") ;
