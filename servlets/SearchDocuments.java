@@ -115,7 +115,7 @@ public class SearchDocuments extends HttpServlet {
 	// Lets get the number of hits. Docs will have the following 'syntax'
 	// meta id, meta_headline, meta_text
 	int no_of_docs = docs.size( ) ;
-	//log("Antal träffar: " + (no_of_docs / fieldRecSize)) ;
+	log("Antal träffar: " + (no_of_docs / fieldRecSize)) ;
 
 	// Lets send the search paramters
 	Properties props = this.getSummaryProps(servlet_url) ;
@@ -124,6 +124,7 @@ public class SearchDocuments extends HttpServlet {
 	props.setProperty("#SEARCH_AREA#", search_area) ;
 	props.setProperty("#QUEST#", question_field) ;
 	props.setProperty("#TOTAL_HITS#", "" + no_of_docs / fieldRecSize) ;
+	props.setProperty("#SEARCH_PREP#", search_prep);
 
 
 	// Ok, we had no hits...
@@ -268,7 +269,7 @@ public class SearchDocuments extends HttpServlet {
 	if ( string_match.equals("match") )
 	    match = "" ;
 
-	StringTokenizer parser = new StringTokenizer(question_str.trim()," ") ;
+	StringTokenizer parser = new StringTokenizer(question_str.trim()," ,") ;
 	while ( parser.hasMoreTokens() )
 	    tokens.addElement(parser.nextToken()) ;
 
@@ -544,6 +545,7 @@ public class SearchDocuments extends HttpServlet {
 	p.put("#STRING_MATCH#", "") ;
 	p.put("#SEARCH_AREA#", "") ;
 	p.put("#QUEST#", "") ;
+	p.put("#SEARCH_PREP#", "");
 
 	p.put("#ONE_RECORD#", "") ;
 
@@ -575,14 +577,15 @@ public class SearchDocuments extends HttpServlet {
     */
     public void init (ServletConfig config) throws ServletException {
 
-	super.init(config);
+		super.init(config);
     }
 
     /**
        Log to log file
     */
     public void log(String str) {
-	super.log(str) ;
+		super.log(str) ;
+		//System.out.println("SearchDocuments: "+str);
     }
 
     /**
@@ -592,16 +595,11 @@ public class SearchDocuments extends HttpServlet {
     public String verifySqlText(String str ) { 
 	StringBuffer buf =  new StringBuffer(str) ;
 	char apostrof = '\'' ;
-	char comma = ',';
 	for(int i = 0 ; i < buf.length() ; i++) { 
 	    if (buf.charAt(i) == apostrof ) {
 		buf.insert(i,apostrof) ;
 		i+=1 ;
 	    }
-		else if (buf.charAt(i) == comma)
-		{
-			buf.replace(i,i+1," ") ;	
-		}
 	}
 	str = buf.toString() ;
 	return str ;
