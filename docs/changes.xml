@@ -75,6 +75,12 @@
             </p>
             <bug id="2890"/>
         </change>
+        <change>
+            <p>
+                Fixed an exception when trying to edit a non-existing document.
+            </p>
+            <bug id="2898"/>
+        </change>
     </changes>
 
     <changes for="template creators">
