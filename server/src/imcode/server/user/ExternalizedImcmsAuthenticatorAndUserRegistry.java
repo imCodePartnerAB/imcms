@@ -17,8 +17,9 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     private Logger log = Logger.getLogger( ExternalizedImcmsAuthenticatorAndUserRegistry.class );
 
     public ExternalizedImcmsAuthenticatorAndUserRegistry( ImcmsAuthenticatorAndUserAndRoleMapper imcmsAndRole,
-                                                        Authenticator externalAuthenticator,
-                                                        UserAndRoleRegistry externalUserRegistry, String defaultLanguage ) throws IllegalArgumentException {
+                                                          Authenticator externalAuthenticator,
+                                                          UserAndRoleRegistry externalUserRegistry,
+                                                          String defaultLanguage ) throws IllegalArgumentException {
         if ( ( null == externalAuthenticator ) != ( null == externalUserRegistry ) ) {
             throw new IllegalArgumentException( "External authenticator and external usermapper should both be either set or not set." );
         }
@@ -38,14 +39,12 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
 
     public boolean authenticate( String loginName, String password ) {
         NDC.push( "authenticate" );
-        // this is a fix. Because external users gets the password empty string "" we need to check that the
-        // password exeedes 0 lenght.
         boolean userAuthenticatesInImcms = false;
         if ( password.length() >= ImcmsConstants.PASSWORD_MINIMUM_LENGTH ) {
             userAuthenticatesInImcms = imcmsAuthenticatorAndUserMapperAndRole.authenticate( loginName, password );
         }
         boolean userAuthenticatesInExternal = false;
-        if ( !userAuthenticatesInImcms && null != externalAuthenticator ) {
+        if ( !userAuthenticatesInImcms && null != externalAuthenticator && password.length() > 0 ) {
             userAuthenticatesInExternal = externalAuthenticator.authenticate( loginName, password );
         }
         NDC.pop();
@@ -57,7 +56,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
         UserDomainObject imcmsUser = imcmsAuthenticatorAndUserMapperAndRole.getUser( loginName );
         boolean imcmsUserExists = null != imcmsUser;
         boolean imcmsUserIsInternal = imcmsUserExists && !imcmsUser.isImcmsExternal();
-        UserDomainObject result ;
+        UserDomainObject result;
 
         if ( imcmsUserIsInternal ) {
             result = imcmsUser;
