@@ -2,6 +2,7 @@ package imcode.server.parser ;
 
 
 import java.util.Properties ;
+import java.text.SimpleDateFormat ;
 import org.apache.oro.text.regex.* ;
 
 import org.apache.log4j.Category;
@@ -11,7 +12,7 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 	
-	private final static Category log = Category.getInstance( "server" );
+    private final static Category log = Category.getInstance( "server" );
 	
     private int sortKey ;
     private Menu parentMenu;
@@ -76,20 +77,23 @@ public class MenuItem extends Document implements imcode.server.IMCConstants {
 		headline += "</strike>" ;
 	    }
 	}
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") ;
+	String createdDate = dateFormat.format(getCreatedDatetime()) ;
+	String modifiedDate = dateFormat.format(getModifiedDatetime()) ;
 
 	Properties tags = new Properties() ;
 	tags.setProperty("#childMetaId#",""+getMetaId()) ;
 	tags.setProperty("#childMetaHeadline#",headline) ;
 	tags.setProperty("#childMetaText#",getText()) ;
 	tags.setProperty("#childMetaImage#",image) ;
-	tags.setProperty("#childCreatedDate#",getCreatedDatetime().toString()) ;
-	tags.setProperty("#childModifiedDate#",getModifiedDatetime().toString()) ;
+	tags.setProperty("#childCreatedDate#",createdDate) ;
+	tags.setProperty("#childModifiedDate#",modifiedDate) ;
 	tags.setProperty("#menuitemmetaid#",""+getMetaId()) ;
 	tags.setProperty("#menuitemheadline#",headline) ;
 	tags.setProperty("#menuitemtext#",getText()) ;
 	tags.setProperty("#menuitemimage#",image) ;
-	tags.setProperty("#menuitemdatecreated#",getCreatedDatetime().toString()) ;
-	tags.setProperty("#menuitemdatemodified#",getModifiedDatetime().toString()) ;
+	tags.setProperty("#menuitemdatecreated#",createdDate) ;
+	tags.setProperty("#menuitemdatemodified#",modifiedDate) ;
 
 	// If this doc is a file, we'll want to put in the filename
 	// as an escaped translated path
