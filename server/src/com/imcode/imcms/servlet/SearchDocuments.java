@@ -45,7 +45,7 @@ public class SearchDocuments extends HttpServlet {
     private final static String NAV_INACTIVE = "search_nav_inactive.html";
     private final static String NAV_AHREF = "search_nav_ahref.html";
 
-    private final static Logger log = Logger.getLogger( "SearchDocuments" );
+    private final static Logger log = Logger.getLogger( com.imcode.imcms.servlet.SearchDocuments.class.getName() );
 
     /**
      * doPost()
@@ -285,7 +285,7 @@ public class SearchDocuments extends HttpServlet {
 
 
         //now lets send it to browser
-        res.setContentType( "text/html" );
+        Utility.setDefaultHtmlContentType( res );
         ServletOutputStream out = res.getOutputStream();
         out.print( returnStr );
         out.flush();
