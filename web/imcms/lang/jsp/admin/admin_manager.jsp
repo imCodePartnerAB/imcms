@@ -74,8 +74,7 @@
 			%> value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/3 ?>">
 			&nbsp;&nbsp;<input type="button"<%
 			%> value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/4 ?>"<%
-			%> title="<? web/imcms/lang/jsp/<%
-			%>admin/admin_manager.jsp/5 ?>"<%
+			%> title="<? web/imcms/lang/jsp/admin/admin_manager.jsp/5 ?>"<%
 			%> class="imcmsFormBtnSmall"<%
 			%> onClick="openHelpW(28)"></td>
 		</form>
@@ -112,7 +111,7 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 				DocumentDomainObject.DOCTYPE_URL,
 				DocumentDomainObject.DOCTYPE_FILE,
 			} ;
-			
+
 			for ( int i = 0; i < documentTypes.length; i++ ) {
 				DocumentTypeDomainObject documentType = documentTypes[i] ; %>
 			<option value="<%= documentType.getId() %>"><%= documentType.getName().toLocalizedString( request ) %></option><%
@@ -125,7 +124,7 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 	</tr>
 	</table><%
 	}
-	
+
 	List subreports = adminManagerPage.getSubreports() ;
 	for ( Iterator iterator = subreports.iterator(); iterator.hasNext(); ) {
 		AdminManagerSubreport subreport = (AdminManagerSubreport)iterator.next();
