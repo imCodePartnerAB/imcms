@@ -5,7 +5,7 @@
 	        java.io.*,
             imcode.server.user.UserDomainObject"
 
-%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><vel:velocity><%
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
 UserDomainObject user = Utility.getLoggedOnUser( request );
 if (!user.isSuperAdmin()) {
@@ -204,19 +204,6 @@ if (isHelpWin) { %>
 <title>:: imCMS ::</title>
 
 
-
-<% /*<STYLE TYPE="text/css">
-<!--
-.imHeading { font: bold 17px Verdana, Geneva, sans-serif; color:#000066; }
-.imFilename { font: 10px Verdana, Geneva, sans-serif; color:#006600; }
-.norm { font: 11px Verdana, Geneva, sans-serif; color:#333333; }
-TT, .edit { font: 11px "Courier New", Courier, monospace, color:#000000; }
-SELECT, INPUT, .small { font: 10px Verdana, Geneva, sans-serif; color:#333333; }
-A:link, A:visited, A:active { color:#000099; text-decoration:none; }
-B { font-weight:bold; }
--->
-</STYLE>*/ %>
-
 </head>
 <body>
 
@@ -269,20 +256,10 @@ B { font-weight:bold; }
 <head>
 <title>:: imCMS ::</title>
 
+<vel:velocity>
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-
-<% /*<STYLE TYPE="text/css">
-<!--
-.imHeading { font: bold 17px Verdana, Geneva, sans-serif; color:#000066; }
-.imFilename { font: 10px Verdana, Geneva, sans-serif; color:#006600; }
-.norm { font: 11px Verdana, Geneva, sans-serif; color:#333333; }
-TT, .edit { font: 11px "Courier New", Courier, monospace, color:#000000; }
-SELECT, INPUT, .small { font: 10px Verdana, Geneva, sans-serif; color:#333333; }
-A:link, A:visited, A:active { color:#000099; text-decoration:none; }
-B { font-weight:bold; }
--->
-</STYLE>*/ %>
+</vel:velocity>
 
 <script language="JavaScript">
 <!--
@@ -846,4 +823,3 @@ function replaceLongParams(theString) {
 
 </body>
 </html>
-</vel:velocity>
