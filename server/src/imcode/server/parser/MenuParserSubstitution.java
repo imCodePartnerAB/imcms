@@ -1,5 +1,6 @@
 package imcode.server.parser;
 
+import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -28,7 +29,7 @@ class MenuParserSubstitution implements Substitution {
     private static final int EXISTING_DOCTYPE_ID = 0;
 
     MenuParserSubstitution( ParserParameters parserParameters, TextDocumentDomainObject document,
-                                   boolean menuMode ) {
+                            boolean menuMode ) {
         this.parserParameters = parserParameters;
         this.menuMode = menuMode;
         this.menus = document.getMenus();
@@ -46,7 +47,7 @@ class MenuParserSubstitution implements Substitution {
         List parseTags = Arrays.asList( new String[]{
             "#menuindex#", "" + menuIndex,
             "#label#", labelAttribute,
-            "#flags#", ""+parserParameters.getFlags(),
+            "#flags#", "" + parserParameters.getFlags(),
             "#sortOrder" + ( null != menu ? menu.getSortOrder() : MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) + "#", "checked",
             "#doc_types#", createDocumentTypesOptionList(),
             "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId()
@@ -79,15 +80,15 @@ class MenuParserSubstitution implements Substitution {
         DocumentDomainObject document = parserParameters.getDocumentRequest().getDocument();
 
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-        IdNamePair[] docTypes = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper().getCreatableDocumentTypeIdsAndNamesInUsersLanguage(document ,user) ;
+        IdNamePair[] docTypes = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper().getCreatableDocumentTypeIdsAndNamesInUsersLanguage( document, user );
         Map docTypesMap = new HashMap();
         for ( int i = 0; i < docTypes.length; i++ ) {
             IdNamePair docType = docTypes[i];
-            docTypesMap.put( new Integer( docType.getId() ), docType ) ;
+            docTypesMap.put( new Integer( docType.getId() ), docType );
         }
 
         String existing_doc_name = parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/existing_doc_name.html", parserParameters.getDocumentRequest().getUser(), null );
-        docTypesMap.put( new Integer(EXISTING_DOCTYPE_ID), new IdNamePair( EXISTING_DOCTYPE_ID, existing_doc_name ) );
+        docTypesMap.put( new Integer( EXISTING_DOCTYPE_ID ), new IdNamePair( EXISTING_DOCTYPE_ID, existing_doc_name ) );
 
         final int[] docTypeIdsOrder = {
             DocumentDomainObject.DOCTYPE_TEXT,
@@ -104,11 +105,12 @@ class MenuParserSubstitution implements Substitution {
         StringBuffer documentTypesHtmlOptionList = new StringBuffer();
         for ( int i = 0; i < docTypeIdsOrder.length; i++ ) {
             int docTypeId = docTypeIdsOrder[i];
-            IdNamePair temp = (IdNamePair)docTypesMap.get( new Integer( docTypeId )) ;
-            if (null != temp) {
+            IdNamePair temp = (IdNamePair)docTypesMap.get( new Integer( docTypeId ) );
+            if ( null != temp ) {
                 int documentTypeId = temp.getId();
                 String documentTypeName = temp.getName();
-                documentTypesHtmlOptionList.append( "<option value=\"" + documentTypeId + "\">" + documentTypeName + "</option>" );
+                documentTypesHtmlOptionList.append( "<option value=\"" + documentTypeId + "\">" + documentTypeName
+                                                    + "</option>" );
             }
         }
 
@@ -172,7 +174,7 @@ class MenuParserSubstitution implements Substitution {
      *
      * @param menuLoopNode   The imcms:menuloop-element
      * @param result         The StringBuffer to which to append the result
-     * @param menu      The current menu
+     * @param menu           The current menu
      * @param menuAttributes The attributes passed down from the imcms:menu-element.
      * @param patMat         The patternmatcher used for pattern matching.
      */
@@ -192,17 +194,33 @@ class MenuParserSubstitution implements Substitution {
                                                                     result, menuAttributes, patMat, menuIndex );
     }
 
+    private boolean editingMenu( int menuIndex ) {
+        Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
+        boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex
+                                  && menuMode;
+        return editingThisMenu;
+    }
+
     private void loopOverMenuItemsAndMenuItemTemplateElementsAndAddToResult( MenuDomainObject menu,
                                                                              final List menuLoopNodeChildren,
                                                                              StringBuffer result,
                                                                              Properties menuAttributes,
-                                                                             PatternMatcher patMat, final int menuIndex ) {
-        Iterator menuItemsIterator = new FilterIterator(Arrays.asList(menu.getMenuItems()).iterator(), new Predicate() {
+                                                                             PatternMatcher patMat,
+                                                                             final int menuIndex ) {
+        final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        Iterator menuItemsIterator = new FilterIterator( Arrays.asList( menu.getMenuItems() ).iterator(), new Predicate() {
             public boolean evaluate( Object o ) {
-                DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument() ;
-                return editingMenu( menuIndex ) || document.isPublishedAndNotArchived() ;
+                DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
+                UserDomainObject user = parserParameters.getDocumentRequest().getUser();
+                if ( document.isVisibleInMenusForUnauthorizedUsers()
+                     || documentMapper.userHasAtLeastDocumentReadPermission( user, document ) ) {
+                    if ( editingMenu( menuIndex ) || document.isPublishedAndNotArchived() ) {
+                        return true;
+                    }
+                }
+                return false;
             }
-        });
+        } );
         int menuItemIndexStart = 0;
         try {
             menuItemIndexStart = Integer.parseInt( menuAttributes.getProperty( "indexstart" ) );
@@ -227,8 +245,8 @@ class MenuParserSubstitution implements Substitution {
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuitem".equals( ( (Element)menuLoopChild ).getName() ) ) { // Is it an imcms:menuitem?
                             MenuItemDomainObject menuItem = menuItemsIterator.hasNext()
-                                                ? (MenuItemDomainObject)menuItemsIterator.next()
-                                                : null; // If there are more menuitems from the db, put the next in 'menuItem', otherwise put null.
+                                                            ? (MenuItemDomainObject)menuItemsIterator.next()
+                                                            : null; // If there are more menuitems from the db, put the next in 'menuItem', otherwise put null.
                             nodeMenuItem( (Element)menuLoopChild, result, menuItem,
                                           menuAttributes, patMat, menuItemIndex, menu, menuIndex ); // Parse one menuitem.
                             menuItemIndex += menuItemIndexStep;
@@ -368,7 +386,7 @@ class MenuParserSubstitution implements Substitution {
         tags.setProperty( "#/menuitemlinkonly#", "</a>" );
 
         boolean editingThisMenu = editingMenu( menuIndex );
-        DocumentMapper documentMapper = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper() ;
+        DocumentMapper documentMapper = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper();
         if ( editingThisMenu ) {
             final int sortOrder = menu.getSortOrder();
             if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED == sortOrder
@@ -416,13 +434,6 @@ class MenuParserSubstitution implements Substitution {
                           : "</a>" );
 
         return new MapSubstitution( tags, true );
-    }
-
-    private boolean editingMenu( int menuIndex ) {
-        Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-        boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex
-                                  && menuMode;
-        return editingThisMenu;
     }
 
 }
