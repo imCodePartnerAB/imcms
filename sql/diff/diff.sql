@@ -1431,7 +1431,7 @@ update doc_types
 set type = 'Upload file' where doc_type = 8 and lang_prefix = 'en'
 
 update doc_types
-set type = 'Browser controled link' where doc_type = 6 and lang_prefix = 'en'
+set type = 'Browser controlled link' where doc_type = 6 and lang_prefix = 'en'
 
 update doc_types
 set type = 'Chat page' where doc_type = 103 and lang_prefix = 'en'
