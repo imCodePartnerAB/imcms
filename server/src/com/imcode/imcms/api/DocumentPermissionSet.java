@@ -26,13 +26,6 @@ public class DocumentPermissionSet {
         return internalDocPermSet.toString();
     }
 
-    /**
-     * @deprecated Use {@link #getEditDocumentInformationPermission()}
-     */
-    public boolean getEditHeadlinePermission() {
-        return internalDocPermSet.getEditDocumentInformation();
-    }
-
     public boolean getEditDocumentInformationPermission() {
         return internalDocPermSet.getEditDocumentInformation();
     }
@@ -63,6 +56,14 @@ public class DocumentPermissionSet {
         return false;
     }
 
+    public boolean getEditMenusPermission() {
+        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
+            return ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getEditMenus();
+        }
+
+        return false;
+    }
+
     public String[] getEditableTemplateGroupNames() {
         if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
             TemplateGroupDomainObject[] internalTemplateGroups = ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).getAllowedTemplateGroups();
@@ -76,22 +77,7 @@ public class DocumentPermissionSet {
         return new String[]{};
     }
 
-    /**
-     * @return An empty String array.
-     * @deprecated This method will be removed. Returning document type names is broken.
-     */
-    public String[] getEditableMenuDocumentTypeNames() {
-        return new String[]{};
-    }
-
     public void setEditDocumentInformationPermission( boolean b ) {
-        internalDocPermSet.setEditDocumentInformation( b );
-    }
-
-    /**
-     * @deprecated Use {@link #setEditDocumentInformationPermission(boolean)} *
-     */
-    public void setEditHeadlinePermission( boolean b ) {
         internalDocPermSet.setEditDocumentInformation( b );
     }
 
@@ -108,6 +94,12 @@ public class DocumentPermissionSet {
     public void setEditPicturesPermission( boolean b ) {
         if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
             ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).setEditImages( b );
+        }
+    }
+
+    public void setEditMenusPermission( boolean b ) {
+        if ( internalDocPermSet instanceof TextDocumentPermissionSetDomainObject ) {
+            ( (TextDocumentPermissionSetDomainObject)internalDocPermSet ).setEditMenus( b );
         }
     }
 

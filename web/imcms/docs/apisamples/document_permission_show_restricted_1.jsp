@@ -12,6 +12,7 @@ In document <%=documentId%> the permission set "<%=restrictedOne.getType()%>" ha
 <ul>
   <li>Edit document information: <%=restrictedOne.getEditDocumentInformationPermission()%></li>
   <li>Edit includes: <%=restrictedOne.getEditIncludesPermission()%></li>
+  <li>Edit menus: <%=restrictedOne.getEditMenusPermission()%></li>
   <li>Edit permissions: <%=restrictedOne.getEditRolePermissionsPermission()%></li>
   <li>Edit pictures: <%=restrictedOne.getEditPicturesPermission()%></li>
   <li>Edit texts: <%=restrictedOne.getEditTextsPermission()%></li>
