@@ -34,6 +34,27 @@
         </change>
     </changes>
 
+    <changes for="API-using developers">
+        <change>
+            <p>
+                Made it possible to edit categories through the API.
+            </p>
+            <p>
+                Added methods <method>setName()</method>, <method>setDescription()</method>,
+                and <method>setImage()</method> to <class>Category</class>.
+            </p>
+            <p>
+                Added method <method>DocumentService.saveCategory(Category)</method>.
+            </p>
+            <p>
+                Deprecated method <method>DocumentService.createNewCategory(String, String, String, CategoryType)</method>.
+                Use <method>Category.Category(String, CategoryType)</method>
+                and <method>DocumentService.saveCategory(Category)</method> instead.
+            </p>
+            <bug id="2790"/>
+        </change>
+    </changes>
+
 </changeset>
 
 <changeset version="2.0.0">

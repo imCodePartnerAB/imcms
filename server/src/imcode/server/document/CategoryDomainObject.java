@@ -1,4 +1,4 @@
-package imcode.server.document; 
+package imcode.server.document;
 
 import java.io.Serializable;
 
@@ -10,8 +10,8 @@ public class CategoryDomainObject implements Comparable, Serializable {
     private String name;
     private int id;
     private CategoryTypeDomainObject type;
-    private String description;
-    private String imageUrl;
+    private String description = "";
+    private String imageUrl = "";
 
     public CategoryDomainObject(int id, String name, String description, String image, CategoryTypeDomainObject type) {
         this.description = description;
@@ -78,5 +78,9 @@ public class CategoryDomainObject implements Comparable, Serializable {
 
     public void setType(CategoryTypeDomainObject type) {
         this.type = type;
+    }
+
+    public void setId( int id ) {
+        this.id = id;
     }
 }

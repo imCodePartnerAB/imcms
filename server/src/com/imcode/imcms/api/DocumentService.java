@@ -14,9 +14,9 @@ public class DocumentService {
 
     static Document wrapDocumentDomainObject( DocumentDomainObject document,
                                               ContentManagementSystem contentManagementSystem ) {
-        ApiWrappingDocumentVisitor apiWrappingDocumentVisitor = new ApiWrappingDocumentVisitor(contentManagementSystem) ;
-        document.accept(apiWrappingDocumentVisitor) ;
-        return apiWrappingDocumentVisitor.getDocument() ;
+        ApiWrappingDocumentVisitor apiWrappingDocumentVisitor = new ApiWrappingDocumentVisitor( contentManagementSystem );
+        document.accept( apiWrappingDocumentVisitor );
+        return apiWrappingDocumentVisitor.getDocument();
     }
 
     /**
@@ -182,19 +182,13 @@ public class DocumentService {
      * @return The newly created category.
      * @throws NoPermissionException
      * @throws CategoryAlreadyExistsException
+     * @deprecated Use {@link Category#Category(String, CategoryType)} and {@link #saveCategory(Category)} instead.
      */
-
     public Category createNewCategory( String name, String description, String imageUrl, CategoryType categoryType ) throws NoPermissionException, CategoryAlreadyExistsException {
         getSecurityChecker().isSuperAdmin();
-        if ( !categoryType.getInternal().hasCategoryWithName( name ) ) {
-            CategoryDomainObject newCategoryDO = getDocumentMapper().addCategoryToDb( categoryType.getInternal().getId(), name, description, imageUrl );
-            return new Category( newCategoryDO );
-        } else {
-            throw new CategoryAlreadyExistsException( "A category with name " + name
-                                                      + " already exists in category type "
-                                                      + categoryType.getName()
-                                                      + "." );
-        }
+        CategoryDomainObject newCategory = new CategoryDomainObject( 0, name, description, imageUrl, categoryType.getInternal() );
+        newCategory = getDocumentMapper().addCategory( newCategory );
+        return new Category( newCategory );
     }
 
     public Section getSection( int sectionId ) {
@@ -202,18 +196,18 @@ public class DocumentService {
         if ( null == section ) {
             return null;
         }
-        return new Section( section ) ;
+        return new Section( section );
     }
 
     /**
-         @since 2.0
+     * @since 2.0
      */
-    public Section getSection(String name) {
+    public Section getSection( String name ) {
         SectionDomainObject section = getDocumentMapper().getSectionByName( name );
         if ( null == section ) {
             return null;
         }
-        return new Section( section ) ;
+        return new Section( section );
     }
 
     public Document[] search( SearchQuery query ) throws SearchException {
@@ -238,16 +232,21 @@ public class DocumentService {
         return new LuceneParsedQuery( query );
     }
 
-    public org.w3c.dom.Document getXmlDomForDocument(Document document) {
+    public org.w3c.dom.Document getXmlDomForDocument( Document document ) {
         XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder();
         xmlDocumentBuilder.addDocument( document.getInternal() );
         org.w3c.dom.Document xmlDocument = xmlDocumentBuilder.getXmlDocument();
-        return xmlDocument ;
+        return xmlDocument;
+    }
+
+    public void saveCategory( Category category ) throws NoPermissionException, CategoryAlreadyExistsException {
+        getSecurityChecker().isSuperAdmin();
+        getDocumentMapper().saveCategory( category.getInternal() );
     }
 
     static class ApiWrappingDocumentVisitor extends DocumentVisitor {
 
-        private ContentManagementSystem contentManagementSystem ;
+        private ContentManagementSystem contentManagementSystem;
         private Document document;
 
         ApiWrappingDocumentVisitor( ContentManagementSystem contentManagementSystem ) {
@@ -257,6 +256,7 @@ public class DocumentService {
         public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
             document = new FileDocument( fileDocument, contentManagementSystem );
         }
+
         public void visitTextDocument( TextDocumentDomainObject textDocument ) {
             document = new TextDocument( textDocument, contentManagementSystem );
         }
@@ -272,6 +272,6 @@ public class DocumentService {
         public Document getDocument() {
             return document;
         }
-   }
+    }
 
 }

@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
+import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import imcode.server.*;
 import imcode.server.db.Database;
 import imcode.server.document.index.DocumentIndex;
@@ -55,6 +56,17 @@ public class DocumentMapper {
     private final DocumentCache documentCache;
     private final Clock clock;
     private final ImcmsServices services;
+    public static final String SQL_GET_ALL_CATEGORIES_OF_TYPE = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
+                      + "FROM categories\n"
+                      + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
+                      + "WHERE categories.category_type_id = ?\n"
+                      + "ORDER BY categories.name";
+    public static final String SQL_GET_CATEGORY = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
+                      + "FROM categories\n"
+                      + "JOIN category_types\n"
+                      + "ON categories.category_type_id = category_types.category_type_id\n"
+                      + "WHERE category_types.name = ?\n"
+                      + "AND categories.name = ?";
 
     public DocumentMapper( ImcmsServices services, Database database,
                            ImcmsAuthenticatorAndUserAndRoleMapper userRegistry,
@@ -127,11 +139,7 @@ public class DocumentMapper {
     }
 
     public CategoryDomainObject[] getAllCategoriesOfType( CategoryTypeDomainObject categoryType ) {
-        String sqlQuery = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
-                          + "FROM categories\n"
-                          + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
-                          + "WHERE categories.category_type_id = ?\n"
-                          + "ORDER BY categories.name";
+        String sqlQuery = SQL_GET_ALL_CATEGORIES_OF_TYPE;
         String[][] sqlResult = database.sqlQueryMulti( sqlQuery, new String[]{"" + categoryType.getId()} );
         CategoryDomainObject[] categoryDomainObjects = new CategoryDomainObject[sqlResult.length];
         for ( int i = 0; i < sqlResult.length; i++ ) {
@@ -186,12 +194,7 @@ public class DocumentMapper {
     }
 
     public CategoryDomainObject getCategory( CategoryTypeDomainObject categoryType, String categoryName ) {
-        String sqlQuery = "SELECT categories.category_id, categories.name, categories.description, categories.image\n"
-                          + "FROM categories\n"
-                          + "JOIN category_types\n"
-                          + "ON categories.category_type_id = category_types.category_type_id\n"
-                          + "WHERE category_types.name = ?\n"
-                          + "AND categories.name = ?";
+        String sqlQuery = SQL_GET_CATEGORY;
         String[] sqlResult = database.sqlQuery( sqlQuery, new String[]{categoryType.getName(), categoryName} );
         if ( 0 != sqlResult.length ) {
             final int categoryId = Integer.parseInt( sqlResult[0] );
@@ -278,12 +281,14 @@ public class DocumentMapper {
         } );
     }
 
-    public CategoryDomainObject addCategoryToDb( int categoryTypeId, String name, String description, String image ) {
+    public CategoryDomainObject addCategory( CategoryDomainObject category ) throws CategoryAlreadyExistsException {
         String sqlstr = "insert into categories  (category_type_id, name, description, image) values(?,?,?,?) SELECT @@IDENTITY";
         String newId = database.sqlQueryStr( sqlstr, new String[]{
-            categoryTypeId + "", name, description, image
+            category.getType().getId() + "", category.getName(), category.getDescription(), category.getImageUrl()
         } );
-        return getCategoryById( Integer.parseInt( newId ) );
+        int categoryId = Integer.parseInt( newId );
+        category.setId(categoryId);
+        return getCategoryById( categoryId ) ;
     }
 
     public void updateCategory( CategoryDomainObject category ) {
@@ -1051,6 +1056,21 @@ public class DocumentMapper {
         selectedChild.setHeadline( selectedChild.getHeadline() + copyHeadlineSuffix );
         makeDocumentLookNew( selectedChild, user );
         services.getDocumentMapper().saveNewDocument( selectedChild, user );
+    }
+
+    public void saveCategory( CategoryDomainObject category ) throws CategoryAlreadyExistsException {
+        CategoryDomainObject categoryInDb = getCategory( category.getType(), category.getName() );
+        if ( null != categoryInDb && category.getId() != categoryInDb.getId() ) {
+            throw new CategoryAlreadyExistsException( "A category with name \"" + category.getName()
+                                                      + "\" already exists in category type \""
+                                                      + category.getType().getName()
+                                                      + "\"." );
+        }
+        if (0 == category.getId()) {
+            addCategory( category );
+        } else {
+            updateCategory( category );
+        }
     }
 
     public static class TextDocumentMenuIndexPair {

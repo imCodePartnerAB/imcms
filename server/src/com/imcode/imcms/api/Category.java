@@ -9,6 +9,10 @@ public class Category implements Comparable {
 
     private CategoryDomainObject internalCategory ;
 
+    public Category( String name, CategoryType categoryType ) {
+        this.internalCategory = new CategoryDomainObject( 0, name, "","", categoryType.getInternal() );
+    }
+
     Category( CategoryDomainObject internalCategory ) {
         this.internalCategory = internalCategory ;
     }
@@ -19,6 +23,10 @@ public class Category implements Comparable {
 
     public String getName() {
         return internalCategory.getName() ;
+    }
+
+    public void setName(String name) {
+        internalCategory.setName( name );
     }
 
     public boolean equals(Object o) {
@@ -50,6 +58,14 @@ public class Category implements Comparable {
 
     public String getImage(){
         return internalCategory.getImageUrl();
+    }
+
+    public void setImage( String imageUrl ) {
+        internalCategory.setImageUrl( imageUrl );
+    }
+
+    public void setDescription( String description ) {
+        internalCategory.setDescription( description );
     }
 
     public int compareTo( Object o ) {

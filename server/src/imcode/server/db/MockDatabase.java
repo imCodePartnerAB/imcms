@@ -82,6 +82,10 @@ public class MockDatabase implements Database {
             public Object setValue( Object value ) {
                 throw new UnsupportedOperationException();
             }
+
+            public String toString() {
+                return sqlCallPredicate+": "+result ;
+            }
         } );
     }
 
@@ -284,7 +288,10 @@ public class MockDatabase implements Database {
         }
 
         boolean evaluateSqlCall( MockDatabase.SqlCall sqlCall ) {
-            return Pattern.compile( regex ).matcher( sqlCall.getString().toLowerCase() ).find();
+            Pattern pattern = Pattern.compile( regex, Pattern.CASE_INSENSITIVE );
+            Matcher matcher = pattern.matcher( sqlCall.getString() );
+            boolean result = matcher.find();
+            return result;
         }
 
         String getFailureMessage() {

@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.servlet.admin.ImageBrowser;
+import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
@@ -126,7 +127,7 @@ public class AdminCategories extends HttpServlet {
             boolean nameWasChanged = !req.getParameter( PARAMETER__OLD_NAME ).toLowerCase().equals( req.getParameter( PARAMETER__NAME ).toLowerCase() );
             CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
             if ( nameWasChanged ) {
-                nameIsUnique = !categoryTypeToAddTo.hasCategoryWithName( req.getParameter( PARAMETER__NAME ) );
+                nameIsUnique = null == documentMapper.getCategory( categoryTypeToAddTo, req.getParameter( PARAMETER__NAME ) );
             }
             if ( nameIsUnique ) {
                 setCategoryFromRequest( category, req, documentMapper );
@@ -166,11 +167,11 @@ public class AdminCategories extends HttpServlet {
         if ( req.getParameter( PARAMETER__BROWSE_FOR_IMAGE ) != null ) {
             forwardToImageBrowse( adminCategoriesPage, req, res );
         } else if ( null != req.getParameter( PARAMETER__ADD_CATEGORY_BUTTON ) && StringUtils.isNotBlank( newCategory.getName() ) ) {
-            if ( !categoryTypeToAddTo.hasCategoryWithName( newCategory.getName() ) ) {
-                documentMapper.addCategoryToDb( newCategory.getType().getId(), newCategory.getName(), newCategory.getDescription(), newCategory.getImageUrl() );
-                adminCategoriesPage.setCategoryToEdit( new CategoryDomainObject( 0, null, "", "", null ) );
-                adminCategoriesPage.setUniqueCategoryName( true );
-            }
+            try {
+                documentMapper.addCategory( newCategory );
+            } catch ( CategoryAlreadyExistsException ignored ) {}
+            adminCategoriesPage.setCategoryToEdit( new CategoryDomainObject( 0, null, "", "", null ) );
+            adminCategoriesPage.setUniqueCategoryName( true );
         }
         return adminCategoriesPage;
     }

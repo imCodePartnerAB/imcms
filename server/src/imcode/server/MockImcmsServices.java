@@ -28,6 +28,7 @@ public class MockImcmsServices implements ImcmsServices {
     private Database database ;
     private KeyStore keyStore;
     private TemplateMapper templateMapper;
+    private DocumentMapper documentMapper;
 
     public UserDomainObject verifyUser( String login, String password ) {
         return null;
@@ -240,7 +241,7 @@ public class MockImcmsServices implements ImcmsServices {
     }
 
     public DocumentMapper getDocumentMapper() {
-        return null;
+        return documentMapper;
     }
 
     public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
@@ -350,5 +351,9 @@ public class MockImcmsServices implements ImcmsServices {
 
     public void setTemplateMapper( TemplateMapper templateMapper ) {
         this.templateMapper = templateMapper;
+    }
+
+    public void setDocumentMapper( DocumentMapper documentMapper ) {
+        this.documentMapper = documentMapper;
     }
 }

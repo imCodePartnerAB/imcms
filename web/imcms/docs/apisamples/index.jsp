@@ -89,7 +89,8 @@ To list files in file-documents, <%= makeLinks("file_document_search.jsp") %><br
 
 <h3>Categories</h3>
 List all possible document categories, <%= makeLinks("categories_show_all.jsp") %><br>
-Create a new Category type, and a category, <%= makeLinks("category_create.jsp") %><br>
+Create a new category type and a category, <%= makeLinks("category_create.jsp") %><br>
+Change the name of a category, <%= makeLinks( "category_edit.jsp" ) %><br>
 
 <h3>Searching for documents</h3>
 Searching for documents, <%= makeLinks("document_search.jsp") %><br>

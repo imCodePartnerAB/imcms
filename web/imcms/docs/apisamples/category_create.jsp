@@ -11,14 +11,20 @@
     <body>
         <%
             String categoryTypeName = "API-sample Category Type";
+            CategoryType categoryType ;
             try{
-                CategoryType newCategoryType = documentService.createNewCategoryType( categoryTypeName, 1 );
-                Category newCategory = documentService.createNewCategory( "API-sample category", "A description", "", newCategoryType );%>
-                A new Category type "<%= newCategoryType.getName() %>" was created, including one category with name "<%= newCategory.getName() %>"<%
-            } catch( CategoryAlreadyExistsException ex ) {
-                %>A category type with that name already exists.<%
+                categoryType = documentService.createNewCategoryType( categoryTypeName, 1 );
+                %>Created category type with name "<%= categoryTypeName %>".<br><%
             } catch( CategoryTypeAlreadyExistsException ex ) {
-                %>A category with that name already exists within the category type name "<%=categoryTypeName %>". <%
+                categoryType = documentService.getCategoryType( categoryTypeName ) ;
+            }
+            String categoryName = "API-sample category";
+            Category newCategory = new Category( categoryName, categoryType );
+            try {
+                documentService.saveCategory( newCategory );
+                %>Created category with name "<%= newCategory.getName() %>" and type "<%= categoryType.getName() %>".<%
+            } catch( CategoryAlreadyExistsException ex ) {
+                %>A category with the name "<%= categoryName %>" already exists within the category type name "<%=categoryTypeName %>". <%
             }
         %>
     </body>
