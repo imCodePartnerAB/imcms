@@ -2,6 +2,7 @@ package imcode.server ;
 
 import java.io.* ;
 import java.util.* ;
+import java.text.Collator;
 
 import imcode.server.parser.ParserParameters ;
 import imcode.server.user.*;
@@ -262,4 +263,6 @@ public interface IMCServiceInterface {
     File getFilePath();
 
     File getIncludePath();
+
+    Collator getDefaultLanguageCollator();
 }

@@ -13,6 +13,7 @@ import imcode.util.net.SMTP;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.text.Collator;
 
 class MockIMCServiceInterface extends MockObject implements IMCServiceInterface {
 
@@ -340,6 +341,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     }
 
     public File getIncludePath() {
+        return null;  // TODO
+    }
+
+    public Collator getDefaultLanguageCollator() {
         return null;  // TODO
     }
 

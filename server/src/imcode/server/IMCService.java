@@ -20,6 +20,7 @@ import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.*;
+import java.text.Collator;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -172,7 +173,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         try {
             result = Integer.parseInt( propertyValueString );
         } catch ( NumberFormatException nfe ) {
-            log.warn( "Illegal value for " + property + ": " + propertyValueString + ". Using default: " + defaultValue );
+            log.warn( "Illegal value for " + property + ": " + propertyValueString + ". Using default: "
+                      + defaultValue );
         }
         log.info( property + ": " + result );
         return result;
@@ -330,7 +332,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
         int user_permission_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
-        if ( user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ && !user.isUserAdmin()) {
+        if ( user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ && !user.isUserAdmin() ) {
             return "";
         }
 
@@ -376,7 +378,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         tags.put( "getMetaId", "" + document.getId() );
         tags.put( "doc_buttons", tempbuffer.toString() );
-        tags.put( "statusicon", documentMapper.getStatusIconTemplate( document, user ) ) ;
+        tags.put( "statusicon", documentMapper.getStatusIconTemplate( document, user ) );
 
         // if user is superadmin or useradmin lets add superadmin button
         if ( user.isSuperAdmin() || user.isUserAdmin() ) {
@@ -455,7 +457,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             String to_meta_id = childs.get( i ).toString();
             String sql = "UPDATE childs SET " + columnName
                          + " = ? WHERE to_meta_id = ? AND menu_id = (SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?)";
-            sqlUpdateQuery( sql, new String[]{columnValue, to_meta_id,"" + meta_id,  "" + menuIndex} );
+            sqlUpdateQuery( sql, new String[]{columnValue, to_meta_id, "" + meta_id, "" + menuIndex} );
         }
 
         updateLogs( "Child manualsort for [" + meta_id + "] updated by user: [" +
@@ -1049,7 +1051,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * get template
      */
     public String getTemplateData( int template_id ) throws IOException {
-        return fileCache.getCachedFileString( new File( templatePath, "/text/" + template_id + ".html" ) ) ;
+        return fileCache.getCachedFileString( new File( templatePath, "/text/" + template_id + ".html" ) );
     }
 
     /**
@@ -1383,6 +1385,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     public File getIncludePath() {
         return includePath;
+    }
+
+    public Collator getDefaultLanguageCollator() {
+        try {
+            return Collator.getInstance( new Locale( LanguageMapper.convert639_2to639_1( defaultLanguageAsIso639_2 ) ) );
+        } catch ( LanguageMapper.LanguageNotSupportedException e ) {
+            throw new RuntimeException( e ) ;
+        }
     }
 
 }

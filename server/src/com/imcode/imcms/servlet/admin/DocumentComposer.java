@@ -17,6 +17,7 @@ import imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -498,7 +499,7 @@ public class DocumentComposer extends HttpServlet {
         document.setLinkableByOtherUsers( linkableByOtherUsers );
 
         String keywordsString = request.getParameter( PARAMETER__KEYWORDS );
-        String[] keywords = keywordsString.split( "[^\\p{L}\\d]+" );
+        String[] keywords = parseKeywords( keywordsString ) ;
         document.setKeywords( keywords );
 
         boolean searchDisabled = "1".equals( request.getParameter( PARAMETER__SEARCH_DISABLED ) );
@@ -523,6 +524,27 @@ public class DocumentComposer extends HttpServlet {
             // OK, no publisher
         }
         document.setPublisher( publisher );
+    }
+
+    private String[] parseKeywords( String keywordsString ) {
+        List keywords = new ArrayList();
+        StringBuffer currentKeyword = new StringBuffer() ;
+        boolean insideString = false ;
+        for (int i = 0; i < keywordsString.length(); ++i) {
+            char c = keywordsString.charAt( i ) ;
+            if ('"' == c) {
+                insideString = !insideString ;
+            } else if (Character.isLetterOrDigit( c ) || insideString) {
+                currentKeyword.append( c ) ;
+            } else if (0 < currentKeyword.length()) {
+                keywords.add( currentKeyword.toString() ) ;
+                currentKeyword.setLength( 0 );
+            }
+        }
+        if (0 < currentKeyword.length()) {
+            keywords.add(currentKeyword.toString()) ;
+        }
+        return (String[])keywords.toArray( new String[keywords.size()] );
     }
 
     public static String getTargetFromRequest( HttpServletRequest request ) {

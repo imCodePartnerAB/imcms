@@ -1,14 +1,10 @@
 <%@ page contentType="text/html; charset=cp1252"  import="imcode.server.ApplicationServer,
                  org.apache.commons.lang.StringEscapeUtils,
-                 java.util.Date,
-                 java.text.SimpleDateFormat,
+                                                          java.text.SimpleDateFormat,
                  imcode.util.DateConstants,
                  java.text.DateFormat,
                  org.apache.commons.lang.StringUtils,
-                 java.util.Arrays,
-                 java.util.Set,
-                 java.util.HashSet,
-                 imcode.external.diverse.Html,
+                                                          imcode.external.diverse.Html,
                  org.apache.commons.collections.iterators.TransformIterator,
                  org.apache.commons.collections.Transformer,
                  imcode.server.LanguageMapper,
@@ -17,7 +13,11 @@
                  imcode.util.Utility,
                  imcode.server.document.*,
                  com.imcode.imcms.servlet.admin.DocumentComposer,
-                                                          org.apache.commons.lang.ObjectUtils"%><%
+                                                          org.apache.commons.lang.ObjectUtils,
+                                                          java.util.regex.Pattern,
+                                                          org.apache.oro.text.perl.Perl5Util,
+                                                          java.text.Collator,
+                                                          java.util.*"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
@@ -372,9 +372,19 @@ imcmsGui("mid", null);
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
 		<td class="imcmsAdmText">
+        <%
+            String[] keywords = document.getKeywords();
+            Collator collator = service.getDefaultLanguageCollator() ;
+            Arrays.sort(keywords,collator) ;
+            for ( int i = 0; i < keywords.length; i++ ) {
+                if (Pattern.compile("[^\\p{L}\\d]").matcher(keywords[i]).find()) {
+                    keywords[i] = '"'+keywords[i]+'"' ;
+                }
+            }
+        %>
         <input type="text" name="<%= DocumentComposer.PARAMETER__KEYWORDS %>" size="105" maxlength="200" style="width: 100%"
-                value="<%= StringEscapeUtils.escapeHtml( StringUtils.join( document.getKeywords(), ", " ) ) %>"><br>
-		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1014 ?></span><br>
+                value="<%= StringEscapeUtils.escapeHtml( StringUtils.join( keywords, ", " ) ) %>"><br>
+		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
 		<input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__SEARCH_DISABLED %>" value="1" <% if (document.isSearchDisabled()) { %> checked<% } %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
 	</tr>
 	<tr>
