@@ -2,8 +2,6 @@ package imcode.server ;
 
 import imcode.util.* ;
 
-import org.apache.log4j.* ;
-
 /**
    Class that represents a text in imCMS.
    It only represents an abstract model of a text,

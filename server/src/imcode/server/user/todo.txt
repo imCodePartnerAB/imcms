@@ -1,5 +1,4 @@
 Akut
-- Testa borttagning av user (och roller?) som tas bort ur LDAP
 - Gå igenom todo:s i user paketet
 - Lägg till API skal på
    - user/role/authentication delarna

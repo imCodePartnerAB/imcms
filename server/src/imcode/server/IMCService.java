@@ -177,12 +177,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
       LdapUserMapper ldapUserMapper = null;
       try {
-         ldapUserMapper = new LdapUserMapper( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword, new String[0] );
+         ldapUserMapper = new LdapUserMapper( ldapServerURL,
+                                              ldapAuthenticationType,
+                                              ldapUserName,
+                                              ldapPassword,
+                                              new String[]{ "Company" } );
       } catch( LdapUserMapper.LdapInitException e ) {
          log.error( "Failed to initialize external ldap system", e );
       }
 
-      imcmsAndLdapAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( new ImcmsAuthenticatorAndUserMapper( this, log ), new SmbAuthenticator(), ldapUserMapper, this.getLanguage() );
+      imcmsAndLdapAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( new ImcmsAuthenticatorAndUserMapper( this, log ),
+                                                                                   new SmbAuthenticator(),
+                                                                                   ldapUserMapper,
+                                                                                   this.getLanguage() );
       imcmsAndLdapAuthAndMapper.synchRolesWithExternal();
    }
 

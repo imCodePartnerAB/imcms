@@ -14,19 +14,19 @@ public class User extends Hashtable {
    private int userId;
    private String loginName;		//varchar 50
    private String password;		//varchar 15
-   private String firstName;		//varchar 25
-   private String lastName;		//varchar 30
-   private String title;		//varchar 30
-   private String company;		//varchar 30
-   private String address;		//varchar 40
-   private String city;		//varchar 30
-   private String zip;			//varchar 15
-   private String country;		//varchar 30
-   private String county_council;	//varchar 30
-   private String emailAddress;	//varchar 50
-   private String workPhone;           //varchar 25
-   private String mobilePhone;         //varchar 25
-   private String homePhone;           //varchar 25
+   private String firstName = "";		//varchar 25
+   private String lastName = "";		//varchar 30
+   private String title = "";		//varchar 30
+   private String company = "";		//varchar 30
+   private String address = "";		//varchar 40
+   private String city = "";		//varchar 30
+   private String zip = "";			//varchar 15
+   private String country = "";		//varchar 30
+   private String county_council = "";	//varchar 30
+   private String emailAddress = "";	//varchar 50
+   private String workPhone = "";           //varchar 25
+   private String mobilePhone = "";         //varchar 25
+   private String homePhone = "";           //varchar 25
    private int lang_id;		//int
    private int user_type;		//int
    private boolean active;		//int

@@ -192,6 +192,9 @@ public class LdapUserMapper implements UserMapper {
    private String getValueForUserField( String userFieldName, Map ldapAttributeValues ) {
       String ldapAttribute = (String)userFieldLdapMappings.get( userFieldName );
       String value = (String)ldapAttributeValues.get( ldapAttribute );
+      if (null == value) {
+         value = "" ;
+      }
       return value;
    }
 

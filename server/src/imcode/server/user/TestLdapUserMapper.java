@@ -51,6 +51,29 @@ public class TestLdapUserMapper extends UserBaseTestCase {
       assertNull( user.getLangPrefix() );
    }
 
+   public void testExistingUserWithUnsetAttributes() {
+      User user = ldapUserMapper.getUser( "imcms_ldaptest" );
+      assertNotNull( user );
+      assertEquals( "imcms_ldaptest", user.getLoginName() );
+      assertNull( user.getPassword() );
+
+      assertEquals( "", user.getAddress() );
+      assertEquals( "", user.getCity() );
+      assertEquals( "", user.getCompany() );
+      assertEquals( "", user.getCountry() );
+      assertEquals( "", user.getCountyCouncil() );
+      assertEquals( "imcms_ldaptest", user.getEmailAddress() );
+      assertEquals( "imcms_ldaptest", user.getFirstName() );
+      assertEquals( "", user.getHomePhone() );
+      assertEquals( "imcms_ldaptest", user.getLastName() );
+      assertEquals( "", user.getTitle() );
+      assertEquals( "", user.getMobilePhone() );
+      assertEquals( "", user.getWorkPhone() );
+      assertEquals( "", user.getZip() );
+      assertTrue(user.isActive()) ;
+      assertNull( user.getLangPrefix() );
+   }
+
    public void testGetRolesForChristoffer() {
       User user = ldapUserMapper.getUser( "chrham" );
       String[] roleNames = ldapUserMapper.getRoleNames( user );
