@@ -42,11 +42,6 @@ public class ChangeExternalDoc2 extends HttpServlet {
 			return ;
 		}
 
-		if( req.getParameter("metadata")!=null ) {
-			htmlStr = imcode.util.MetaDataParser.parseMetaData(String.valueOf(meta_id), String.valueOf(parent_meta_id),user, null) ;
-			out.write( htmlStr ) ;
-			return ;
-		}
 		String output = GetDoc.getDoc(parent_meta_id,parent_meta_id,req,res) ;
 		out.write ( output ) ;
 

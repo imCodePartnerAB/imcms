@@ -1,24 +1,17 @@
 package imcode.util;
 
-import imcode.external.diverse.Html;
-import imcode.server.*;
-import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCConstants;
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.parser.AdminButtonParser;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MetaDataParser {
 
-    private final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
-
-    private static final String ADVANCED_CHANGE_DOCINFO_TEMPLATE = "docinfo/adv_change_meta.html";
-    private static final String SIMPLE_CHANGE_DOCINFO_TEMPLATE = "docinfo/change_meta.html";
     private static final String PERMISSIONS_TABLE_HEAD_TEMPLATE = "permissions/roles_rights_table_head.html";
     private static final String PERMISSIONS_TABLE_ROW_TEMPLATE = "permissions/roles_rights_table_row.html";
     private static final String PERMISSIONS_TABLE_TAIL_TEMPLATE = "permissions/roles_rights_table_tail.html";
@@ -30,50 +23,15 @@ public class MetaDataParser {
     private static final String ALL_DEFINE_RESTRICTED_BUTTONS_TEMPLATE = "permissions/define_sets.html";
     private static final String RESTRICTED_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE = "docinfo/default_templates_1.html";
     private static final String RESTRICTED_2_AND_MAYBE_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE = "docinfo/default_templates.html";
-    private static final String CATEGORIES_MULTICHOICE_LIST_TEMPLATE = "docinfo/category_list.html";
-    private static final String CATEGORIES_SINGLECHOICE_DROPDOWN_TEMPLATE = "docinfo/category_dropdown.html";
-    private static final String PUBLISHER_NONE_MSG_TEMPLATE = "docinfo/publisher_no_one_msg.html";
     public static final String USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS = "temp_perm_settings";
-
-    /**
-     * parseMetaData collects the information for a certain meta_id from the db and
-     * parses the information into the change_meta.html (the plain admin mode file).
-     */
-    static public String parseMetaData( String meta_id, String parent_meta_id, UserDomainObject user,
-                                        String meta_image ) {
-
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-        // Now watch as i fetch the permission_set for the user...
-        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet",
-                                                            new String[]{meta_id, "" + user.getId()} );
-        int currentuser_set_id = Integer.parseInt( current_permissions[0] );
-        int currentuser_perms = Integer.parseInt( current_permissions[1] );
-
-        if ( currentuser_set_id == IMCConstants.DOC_PERM_SET_FULL || ( currentuser_perms & IMCConstants.PERM_EDIT_DOCINFO ) != 0 ) {
-            return getMetaDataFromDb( Integer.parseInt(meta_id), parent_meta_id, user, ADVANCED_CHANGE_DOCINFO_TEMPLATE, false,
-                                      meta_image );
-        } else {
-            return getMetaDataFromDb( Integer.parseInt(meta_id), parent_meta_id, user, SIMPLE_CHANGE_DOCINFO_TEMPLATE, false, meta_image );
-        }
-    } // end of parseMetaData
 
     /**
      * parseMetaPermission parses the page which consists of  the information for a certain meta_id from the db and
      * parses the information into the change_meta.html (the plain admin mode file).
      */
-    public static String parseMetaPermission( String meta_id, String parent_meta_id, UserDomainObject user,
+    public static String parseMetaPermission( String metaIdStr, String parent_meta_id, UserDomainObject user,
                                               String htmlFile, String meta_image ) {
-        return getMetaDataFromDb( Integer.parseInt(meta_id), parent_meta_id, user, htmlFile, true, meta_image );
-    }
-
-    /**
-     * getMetaDataFromDb collects the information for a certain meta_id from the db and
-     * parses the information into the assigned htmlFile. If the htmlfile doesnt has
-     * all the properties, hidden fields will be created by default into the htmlfile
-     */
-    static private String getMetaDataFromDb( int meta_id, String parent_meta_id, UserDomainObject user,
-                                             String htmlFile, boolean showRoles, String meta_image ) {
+        int metaId = Integer.parseInt(metaIdStr);
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -100,7 +58,7 @@ public class MetaDataParser {
         };
 
         // Lets get all info for the meta id
-        Hashtable hash = imcref.sqlProcedureHash( "GetDocumentInfo", new String[]{"" + meta_id} );
+        Map hash = imcref.sqlProcedureHash( "GetDocumentInfo", new String[]{"" + metaId} );
 
         if ( null != meta_image ) {
             hash.put( "meta_image", new String[]{meta_image} );
@@ -114,15 +72,15 @@ public class MetaDataParser {
         // If they press another button, this array will be put in the user-object, to remember their settings.
         Object[] temp_perm_settings = (Object[])user.get( USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS );
 
-        Vector vec = new Vector();
+        List vec = new Vector();
 
-        if ( showRoles == true ) {
-            getRolesFromDb( meta_id, user, vec );
+        if ( true == true ) {
+            getRolesFromDb( metaId, user, vec );
         }
 
         user.remove( USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS );	// Forget about it, so it won't appear on a reload.
 
-        if ( temp_perm_settings != null && meta_id == Integer.parseInt((String)temp_perm_settings[0]) ) {		// Make sure this is the right document.
+        if ( temp_perm_settings != null && metaId == Integer.parseInt((String)temp_perm_settings[0]) ) {		// Make sure this is the right document.
             // Copy everything from this temporary hashtable into the meta-hash.
             Enumeration temp_enum = ( (Hashtable)temp_perm_settings[1] ).keys();
             while ( temp_enum.hasMoreElements() ) {
@@ -163,125 +121,9 @@ public class MetaDataParser {
 
         }
 
-        String target = HTMLConv.toHTMLSpecial( ( (String[])hash.get( "target" ) )[0] );
-
-        if ( "_self".equals( target ) || "_top".equals( target ) || "_blank".equals( target ) ) {
-            vec.add( "#" + target + "#" );
-            vec.add( "checked" );
-            vec.add( "#frame_name#" );
-            vec.add( "" );
-        } else if ( target.length() == 0 ) {
-            vec.add( "#_self#" );
-            vec.add( "checked" );
-            vec.add( "#frame_name#" );
-            vec.add( "" );
-        } else {
-            vec.add( "#_other#" );
-            vec.add( "checked" );
-            vec.add( "#frame_name#" );
-            vec.add( target );
-        }
-
-        // Here i'll select all classification-strings and
-        // concatenate them into one semicolon-separated string.
-        String[] classifications = imcref.sqlQuery(
-                "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?",
-                new String[]{""+meta_id} );
-        String classification = "";
-        if ( classifications.length > 0 ) {
-            classification += HTMLConv.toHTMLSpecial( classifications[0] );
-            for ( int i = 1; i < classifications.length; ++i ) {
-                classification += ", " + HTMLConv.toHTMLSpecial( classifications[i] );
-            }
-        }
-
-        SimpleDateFormat dateFormat_date = new SimpleDateFormat( "yyyy-MM-dd" );
-        SimpleDateFormat dateFormat_time = new SimpleDateFormat( "HH:mm" );
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm" );
-        Date theDate;
-        try {
-            theDate = dateFormat.parse( ( (String[])hash.get( "activated_datetime" ) )[0] );
-            vec.add( "#activated_date#" );
-            vec.add( dateFormat_date.format( theDate ) );
-            vec.add( "#activated_time#" );
-            vec.add( dateFormat_time.format( theDate ) );
-        } catch ( NullPointerException pe ) {
-            vec.add( "#activated_date#" );
-            vec.add( "" );
-            vec.add( "#activated_time#" );
-            vec.add( "" );
-        } catch ( ParseException pe ) {
-            vec.add( "#activated_date#" );
-            vec.add( "" );
-            vec.add( "#activated_time#" );
-            vec.add( "" );
-        }
-
-        try {
-            theDate = dateFormat.parse( ( (String[])hash.get( "archived_datetime" ) )[0] );
-            vec.add( "#archived_date#" );
-            vec.add( dateFormat_date.format( theDate ) );
-            vec.add( "#archived_time#" );
-            vec.add( dateFormat_time.format( theDate ) );
-        } catch ( NullPointerException pe ) {
-            vec.add( "#archived_date#" );
-            vec.add( "" );
-            vec.add( "#archived_time#" );
-            vec.add( "" );
-        } catch ( ParseException pe ) {
-            vec.add( "#archived_date#" );
-            vec.add( "" );
-            vec.add( "#archived_time#" );
-            vec.add( "" );
-        }
-
-        try {
-            theDate = dateFormat.parse( ( (String[])hash.get( "date_created" ) )[0] );
-            vec.add( "#date_created#" );
-            vec.add( dateFormat_date.format( theDate ) );
-            vec.add( "#created_time#" );
-            vec.add( dateFormat_time.format( theDate ) );
-        } catch ( NullPointerException pe ) {
-            vec.add( "#date_created#" );
-            vec.add( "" );
-            vec.add( "#created_time#" );
-            vec.add( "" );
-        } catch ( ParseException pe ) {
-            vec.add( "#date_created#" );
-            vec.add( "" );
-            vec.add( "#created_time#" );
-            vec.add( "" );
-        }
-
-        try {
-            theDate = dateFormat.parse( ( (String[])hash.get( "date_modified" ) )[0] );
-            Date now = new Date();
-            vec.add( "#new_date_modified#" );
-            vec.add( dateFormat_date.format( now ) );
-            vec.add( "#new_modified_time#" );
-            vec.add( dateFormat_time.format( now ) );
-            vec.add( "#date_modified#" );
-            vec.add( dateFormat_date.format( theDate ) );
-            vec.add( "#modified_time#" );
-            vec.add( dateFormat_time.format( theDate ) );
-        } catch ( NullPointerException pe ) {
-            vec.add( "#date_modified#" );
-            vec.add( "" );
-            vec.add( "#modified_time#" );
-            vec.add( "" );
-        } catch ( ParseException pe ) {
-            vec.add( "#date_modified#" );
-            vec.add( "" );
-            vec.add( "#modified_time#" );
-            vec.add( "" );
-        }
-
-        vec.add( "#classification#" );
-        vec.add( classification );
-
         // Lets add the standard fileItemMap to the vector
         vec.add( "#meta_id#" );
-        vec.add( ""+meta_id );
+        vec.add( ""+metaId );
 
         vec.add( "#parent_meta_id#" );
         vec.add( parent_meta_id );
@@ -292,7 +134,7 @@ public class MetaDataParser {
         vec.add( checks );
 
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( meta_id ) ;
+        DocumentDomainObject document = documentMapper.getDocument( metaId ) ;
         // Lets get the menu with the buttons
         String menuStr = imcref.getAdminButtons(user, document);
         vec.add( "#adminMode#" );
@@ -301,7 +143,7 @@ public class MetaDataParser {
         // Lets get the owner from the db and add it to vec
         String owner = imcref.sqlQueryStr(
                 "select rtrim(first_name)+' '+rtrim(last_name) from users join meta on users.user_id = meta.owner_id and meta.meta_id = ?",
-                new String[]{""+meta_id} );
+                new String[]{""+metaId} );
         vec.add( "#owner#" );
         if ( owner != null ) {
             vec.add( owner );
@@ -309,139 +151,15 @@ public class MetaDataParser {
             vec.add( "?" );
         }
 
-        getSectionDataFromDbAndAddSectionRelatedTagsToParseList( imcref, meta_id, vec, user );
-
-        addLanguageRelatedTagsForDocInfoPageToParseList( vec, hash, imcref, user );
-
-        addPublisherRelatedTagsForDocInfoPageToParseList( vec, hash, imcref, user );
-
-        vec.add( "#categories#" );
-        vec.add( createHtmlListBoxesOfCategoriesForEachCategoryType( documentMapper, meta_id, imcref, user ) );
-
         // Lets fix the date_today tag
-        vec.add( "#date_today#" );
-        SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd" );
-        vec.add( dateformat.format( new Date() ) );
-
         return imcref.getAdminTemplate( htmlFile, user, vec );
-
-    } // end of parseMetaData
-
-    public static String createHtmlListBoxesOfCategoriesForEachCategoryType( DocumentMapper documentMapper,
-                                                                             int documentId,
-                                                                             IMCServiceInterface imcref,
-                                                                             UserDomainObject user ) {
-        StringBuffer result = new StringBuffer();
-        DocumentDomainObject document = documentMapper.getDocument( documentId );
-        CategoryTypeDomainObject[] categoryTypes = documentMapper.getAllCategoryTypes();
-        for ( int i = 0; i < categoryTypes.length; i++ ) {
-            CategoryTypeDomainObject categoryType = categoryTypes[i];
-
-            List tags = new ArrayList();
-            tags.add( "#category_type_name#" );
-            tags.add( categoryType.getName() );
-            tags.add( "#max_choices#" );
-            tags.add( "" + categoryType.getMaxChoices() );
-
-            tags.add( "#multiple#" );
-            if ( 1 != categoryType.getMaxChoices() ) {
-                tags.add( "multiple" );
-            } else {
-                tags.add( "" );
-            }
-
-            String categoryOptionList = Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType,
-                                                                                         document );
-
-            tags.add( "#category_options#" );
-            tags.add( categoryOptionList.toString() );
-
-            final String template = 1 == categoryType.getMaxChoices()
-                                    ? CATEGORIES_SINGLECHOICE_DROPDOWN_TEMPLATE : CATEGORIES_MULTICHOICE_LIST_TEMPLATE;
-            result.append( imcref.getAdminTemplate( template, user, tags ) );
-
-        }
-        return result.toString();
-    }
-
-    public static void addPublisherRelatedTagsForDocInfoPageToParseList( Vector vec, Hashtable hash,
-                                                                         IMCServiceInterface imcref,
-                                                                         UserDomainObject user ) {
-        ImcmsAuthenticatorAndUserMapper userAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
-
-        String publisherIdStr = ( (String[])hash.get( "publisher_id" ) )[0];
-        UserDomainObject publisher = null;
-        if ( null != publisherIdStr ) {
-            publisher = userAndRoleMapper.getUser( Integer.parseInt( publisherIdStr ) );
-        }
-
-        vec.add( "#current_publisher_name#" );
-        if ( null != publisher ) {
-            vec.add( publisher.getLastName() + ", " + publisher.getFirstName() );
-        } else {
-            vec.add( imcref.getAdminTemplate( PUBLISHER_NONE_MSG_TEMPLATE, user, null ) );
-        }
-
-        String optionList = Html.createPublisherOptionList( userAndRoleMapper, publisher );
-
-        vec.add( "#publisher_id#" );
-        vec.add( optionList );
-    }
-
-    public static void addLanguageRelatedTagsForDocInfoPageToParseList( Vector vec, Hashtable hash,
-                                                                        IMCServiceInterface imcref,
-                                                                        UserDomainObject user ) {
-        String documentLanguage = ( (String[])hash.get( "lang_prefix" ) )[0];
-        documentLanguage = LanguageMapper.getAsIso639_2OrDefaultLanguage( documentLanguage, imcref );
-        vec.add( "#lang_prefix#" );
-        vec.add( LanguageMapper.getLanguageOptionList( imcref, user, documentLanguage ) );
-        vec.add( "#current_language#" );
-        vec.add( LanguageMapper.getCurrentLanguageNameInUsersLanguage( imcref, user, documentLanguage ) );
-    }
-
-    public static void getSectionDataFromDbAndAddSectionRelatedTagsToParseList( IMCServiceInterface imcref,
-                                                                                int meta_id, Vector vec,
-                                                                                UserDomainObject user ) {
-        //**************** section index word stuff *****************
-        //lets get the section stuff from db
-        String[][] documentSections = imcref.sqlProcedureMulti( "SectionGetInheritId", new String[]{""+meta_id} );
-
-        //lets add the stuff that ceep track of the inherit section id and name
-        List selected = new ArrayList();
-        vec.add( "#current_section_name#" );
-        StringBuffer documentSectionNames = new StringBuffer();
-        if ( 0 == documentSections.length ) {
-            vec.add( imcref.getAdminTemplate( SECTION_MSG_TEMPLATE, user, null ) );
-        } else {
-            for ( int i = 0; i < documentSections.length; i++ ) {
-                if ( 0 != i ) {
-                    documentSectionNames.append( ", " );
-                }
-                String documentSectionId = documentSections[i][0];
-                String documentSectionName = documentSections[i][1];
-                selected.add( documentSectionId );
-                documentSectionNames.append( documentSectionName );
-            }
-            vec.add( documentSectionNames.toString() );
-        }
-
-        //lets build the option list used when the admin whants to breake the inherit chain
-        String[][] allSectionsArray = imcref.sqlProcedureMulti( "SectionGetAll", new String[0] );
-
-        List allSections = new ArrayList();
-        for ( int i = 0; i < allSectionsArray.length; i++ ) {
-            allSections.add( allSectionsArray[i][0] );
-            allSections.add( allSectionsArray[i][1] );
-        }
-        vec.add( "#section_option_list#" );
-        vec.add( Html.createOptionList( allSections, selected ) );
     }
 
     /**
      * getRolesFromDb collects the information for a certain meta_id regarding the
      * rolesrights and parses the information into the assigned htmlFile.
      */
-    private static void getRolesFromDb( int meta_id, UserDomainObject user, Vector vec ) {
+    private static void getRolesFromDb( int meta_id, UserDomainObject user, List vec ) {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -456,7 +174,7 @@ public class MetaDataParser {
         // If they press another button, this array will be put in the user-object, to remember their settings.
         Object[] temp_perm_settings = (Object[])user.remove( USER_HASH_KEY__TEMPORARY_PERMISSION_SETTINGS );
 
-        Hashtable temp_perm_hash = null;
+        Map temp_perm_hash = null;
         String[] temp_default_templates = null;
 
         if ( temp_perm_settings != null && meta_id == Integer.parseInt( (String)temp_perm_settings[0] ) ) {		// Make sure this is the right document.
@@ -495,18 +213,11 @@ public class MetaDataParser {
                 // So... it's put away for later... we don't need it now.
                 continue;
             }
-            Vector vec2 = new Vector();
+            List vec2 = new ArrayList();
             vec2.add( "#role_name#" );
             vec2.add( role_name );
             vec2.add( "#user_role#" );
             vec2.add( String.valueOf( IMCConstants.DOC_PERM_SET_FULL ).equals( role_permissions[i][3] ) ? "" : "*" );
-
-            // // As we all know... 0 is full, 3 is read, 4 is none, and 1 and 2 are "other"
-            // // Btw, 'none' doesn't really have a value, but is rather the absence of a value.
-            // // I just use 4 here because i have to distinguish the absence of a value from a value that is about to be removed.
-            // // FIXME: Hire the mafia to force me to put these as constants in an interface.
-
-            // Update: Hey, hey! After finding a horse's head in my bed, i decided to create imcode.server.IMCConstants...
 
             for ( int j = IMCConstants.DOC_PERM_SET_FULL; j <= IMCConstants.DOC_PERM_SET_NONE; ++j ) { // From DOC_PERM_SET_FULL to DOC_PERM_SET_NONE (0 to 4)
                 vec2.add( "#" + j + "#" );
@@ -544,13 +255,13 @@ public class MetaDataParser {
             // If the permission_set_id of the user is 0 (full) or 1 (level 1 admin)
             // We want the buttons for defining permissionsets.
 
-            Vector ftr = new Vector();
+            List ftr = new ArrayList();
 
             int doc_type = imcref.getDocType( meta_id );
             String default_templates = "";//the string containing default-templates-option-list
 
             if ( user_set_id == IMCConstants.DOC_PERM_SET_FULL ) {
-                Vector perm_vec = new Vector();
+                List perm_vec = new ArrayList();
                 if ( ( currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) {
                     perm_vec.add( "#permissions#" );
                     perm_vec.add( "checked" );
@@ -650,7 +361,7 @@ public class MetaDataParser {
                            + templates[i][1]
                            + "</option>\n\t";
             }
-            Vector tempV = new Vector();
+            List tempV = new ArrayList();
             tempV.add( "#templ_option_list#" );
             tempV.add( tempStr );
             options_templates_1 = imcref.getAdminTemplate( RESTRICTED_1_DEFAULT_TEMPLATE_CHOICE_TEMPLATE, user, tempV );
@@ -666,7 +377,7 @@ public class MetaDataParser {
         }
 
         if ( !options_templates_1.equals( "" ) || !options_templates_2.equals( "" ) ) {
-            Vector vect = new Vector();
+            List vect = new ArrayList();
             vect.add( "#def_templ_1#" );
             vect.add( options_templates_1 );
             vect.add( "#def_templ_2#" );
@@ -787,7 +498,7 @@ public class MetaDataParser {
 
         String[] user_dt = imcref.sqlProcedure( "GetDocTypesWith" + newstr + "Permissions",
                                                 new String[]{"" + meta_id, "" + user_set_id, lang_prefix} );
-        HashSet user_doc_types = new HashSet();
+        Set user_doc_types = new HashSet();
 
         // I'll fill a HashSet with all the doc-types the current user may use,
         // for easy retrieval.
@@ -829,7 +540,7 @@ public class MetaDataParser {
         String[] user_tg = imcref.sqlProcedure( "GetTemplateGroupsWith" + newstr + "Permissions",
                                                 new String[]{"" + meta_id, "" + user_set_id} );
 
-        HashSet user_templategroups = new HashSet();
+        Set user_templategroups = new HashSet();
 
         // I'll fill a HashSet with all the templategroups the current user may use,
         // for easy retrieval.
