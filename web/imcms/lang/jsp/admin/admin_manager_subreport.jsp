@@ -12,7 +12,7 @@
     List documents = subreport.getDocuments() ;
 %>
 
-<table border="0" cellspacing="0" cellpadding="2" width="656" align="center">
+<table border="0" cellspacing="0" cellpadding="2" width="100%" align="center">
     <tr>
         <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
     </tr>
