@@ -1,7 +1,7 @@
 package imcode.server.user;
 
 
-public class TestLdapUserMapper extends Log4JInitTestCase {
+public class TestLdapUserMapper extends UserBaseTestCase {
    private LdapUserMapper mapper;
 
    public void setUp() {

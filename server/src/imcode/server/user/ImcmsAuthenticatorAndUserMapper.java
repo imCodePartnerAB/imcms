@@ -44,27 +44,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
       // if resultSet > 0 a result is found
       if( user_data.length > 0 ) {
 
-         result = new imcode.server.user.User();
-
-         result.setUserId( Integer.parseInt( user_data[0] ) );
-         result.setLoginName( user_data[1] );
-         result.setPassword( user_data[2].trim() );
-         result.setFirstName( user_data[3] );
-         result.setLastName( user_data[4] );
-         result.setTitle( user_data[5] );
-         result.setCompany( user_data[6] );
-         result.setAddress( user_data[7] );
-         result.setCity( user_data[8] );
-         result.setZip( user_data[9] );
-         result.setCountry( user_data[10] );
-         result.setCountyCouncil( user_data[11] );
-         result.setEmailAddress( user_data[12] );
-         result.setLangId( Integer.parseInt( user_data[13] ) );
-         result.setUserType( Integer.parseInt( user_data[15] ) );
-         result.setActive( 0 != Integer.parseInt( user_data[16] ) );
-         result.setCreateDate( user_data[17] );
-         result.setLangPrefix( user_data[14] );
-         result.setImcmsExternal( 0 != Integer.parseInt( user_data[18] ));
+         result = staticExtractUserFromStringArray( user_data );
 
          String[][] phoneNbr = service.sqlProcedureMulti( "GetUserPhoneNumbers " + user_data[0] );
          String workPhone = "";
@@ -96,6 +76,32 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
       return result;
    }
 
+   private static User staticExtractUserFromStringArray( String[] user_data ) {
+      User result;
+      result = new User();
+
+      result.setUserId( Integer.parseInt( user_data[0] ) );
+      result.setLoginName( user_data[1] );
+      result.setPassword( user_data[2].trim() );
+      result.setFirstName( user_data[3] );
+      result.setLastName( user_data[4] );
+      result.setTitle( user_data[5] );
+      result.setCompany( user_data[6] );
+      result.setAddress( user_data[7] );
+      result.setCity( user_data[8] );
+      result.setZip( user_data[9] );
+      result.setCountry( user_data[10] );
+      result.setCountyCouncil( user_data[11] );
+      result.setEmailAddress( user_data[12] );
+      result.setLangId( Integer.parseInt( user_data[13] ) );
+      result.setUserType( Integer.parseInt( user_data[15] ) );
+      result.setActive( 0 != Integer.parseInt( user_data[16] ) );
+      result.setCreateDate( user_data[17] );
+      result.setLangPrefix( user_data[14] );
+      result.setImcmsExternal( 0 != Integer.parseInt( user_data[18] ));
+      return result;
+   }
+
    /**
     @return An object representing the user with the given id.
     **/
@@ -107,16 +113,28 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
 
 
 
-   public void update( String loginName, imcode.server.user.User newUserData ) {
+   public void updateUser( String loginName, User newUserData ) {
+      String updateUserPRCStr = "UpdateUser";
       imcode.server.user.User imcmsUser = getUser( loginName );
-
       imcode.server.user.User tempUser = (imcode.server.user.User)newUserData.clone();
       tempUser.setUserId( imcmsUser.getUserId() );
+      tempUser.setLoginName( loginName );
 
-      String updateUserPRCStr = "updateuser";
+      callModifyUserProcedure( updateUserPRCStr, tempUser );
+   }
+
+   public synchronized void addUser( User newUser ) {
+      String updateUserPRCStr = "AddNewUser";
+      String newUserId = service.sqlProcedureStr( "GetHighestUserId" );
+      int newIntUserId = Integer.parseInt(newUserId) ;
+      newUser.setUserId(newIntUserId) ;
+      callModifyUserProcedure( updateUserPRCStr, newUser );
+   }
+
+   private void callModifyUserProcedure( String modifyUserProcedureName, User tempUser ) {
       String[] params = {
          String.valueOf(tempUser.getUserId()),
-         loginName,
+         tempUser.getLoginName(),
          tempUser.getPassword(),
          tempUser.getFirstName(),
          tempUser.getLastName(),
@@ -128,14 +146,12 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
          tempUser.getCountry(),
          tempUser.getCountyCouncil(),
          tempUser.getEmailAddress(),
-         "0",
+         tempUser.isImcmsExternal()?"1":"0",
          "1001",
          "0",
          String.valueOf(tempUser.getLangId()),
          String.valueOf( tempUser.getUserType() ),
          tempUser.isActive()?"1":"0" };
-
-
-      service.sqlUpdateProcedure( updateUserPRCStr, params );
+      service.sqlUpdateProcedure( modifyUserProcedureName, params );
    }
 }

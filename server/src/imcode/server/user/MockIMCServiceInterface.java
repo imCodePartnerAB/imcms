@@ -13,6 +13,12 @@ import java.util.*;
 
 class MockIMCServiceInterface implements IMCServiceInterface {
 
+   private String[][] expectedSQLResult;
+   private int resultIndex = 0;
+   public void setExpectedSQLResult( String[][] expectedSQLResult ) {
+      this.expectedSQLResult = expectedSQLResult;
+   }
+
    public User verifyUser( String login, String password ) {
       return null;
    }
@@ -133,13 +139,7 @@ class MockIMCServiceInterface implements IMCServiceInterface {
 
    // Send a procedure to the database and return a string array
    public String[] sqlProcedure( String procedure, String[] params ) {
-      String[] result = new String[0];
-      if( params[0].equalsIgnoreCase("admin") ) {
-         result = new String[] {"1","admin","admin","Admin","Super", "", "","","","","","","", "1","se","1","1","2003-05-12 00:00:00"};
-      } else if( "user".equalsIgnoreCase(params[0]) ){
-         result = new String[] {"2","user","user","User","Extern", "", "","","","","","","", "1","se","1","1","2003-05-12 00:00:00"};
-      }
-      return result;
+      return expectedSQLResult[resultIndex++];
    }
 
    // Send a procedure to the database and return a string array
@@ -149,7 +149,7 @@ class MockIMCServiceInterface implements IMCServiceInterface {
 
    // Send a procedure to the database and return a string
    public String sqlProcedureStr( String procedure ) {
-      return null;
+      return "3";
    }
 
    // Send a procedure to the database and return a string
@@ -169,7 +169,7 @@ class MockIMCServiceInterface implements IMCServiceInterface {
 
    // Send a update procedure to the database
    public int sqlUpdateProcedure( String procedure, String[] params ) {
-      return 0;
+      return 1;
    }
 
    // Parse doc replace variables with data, uses two vectors

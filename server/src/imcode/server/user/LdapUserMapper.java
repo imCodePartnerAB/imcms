@@ -19,7 +19,7 @@ public class   LdapUserMapper implements UserMapper {
       String ldapServerURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
 
       try {
-         ctx = s_setupInitialDirContext( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword );
+         ctx = staticSetupInitialDirContext( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword );
       } catch( AuthenticationException ex ) {
          throw new LdapInitException( "Authentication failed, using login: '" + ldapUserName + "', password: '" + ldapPassword + "'", ex );
       } catch( NameNotFoundException ex ) {
@@ -33,10 +33,6 @@ public class   LdapUserMapper implements UserMapper {
       LdapInitException(String message, Throwable cause){
          super( message, cause );
       }
-   }
-
-   private Logger getLogger() {
-      return Logger.getLogger( this.getClass().getName() );
    }
 
    public imcode.server.user.User getUser( String loginName ) {
@@ -67,11 +63,6 @@ public class   LdapUserMapper implements UserMapper {
       return null;
    }
 
-   public void update( String loginName, imcode.server.user.User user ) {
-      // read only for now
-      throw new UnsupportedOperationException();
-   }
-
    private imcode.server.user.User mapAllPossibleAttributes( NamingEnumeration attribEnum ) {
       imcode.server.user.User user = new imcode.server.user.User();
       while( attribEnum.hasMoreElements() ) {
@@ -90,7 +81,7 @@ public class   LdapUserMapper implements UserMapper {
       return user;
    }
 
-   private static DirContext s_setupInitialDirContext( String ldapServerURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword ) throws NamingException {
+   private static DirContext staticSetupInitialDirContext( String ldapServerURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword ) throws NamingException {
       String ContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
       Hashtable env = new Hashtable();
       env.put( Context.INITIAL_CONTEXT_FACTORY, ContextFactory );
@@ -101,4 +92,19 @@ public class   LdapUserMapper implements UserMapper {
       DirContext ctx = new InitialDirContext( env );
       return ctx;
    }
+
+   public void updateUser( String loginName, imcode.server.user.User user ) {
+      // read only for now
+      throw new UnsupportedOperationException();
+   }
+
+   public void addUser( User newUser ) {
+      // read only for now
+      throw new UnsupportedOperationException();
+   }
+
+   private Logger getLogger() {
+      return Logger.getLogger( this.getClass() ) ;
+   }
+
 }

@@ -3,43 +3,74 @@ package imcode.server.user;
 import org.apache.log4j.Logger;
 
 public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper, Authenticator {
-   private ImcmsAuthenticatorAndUserMapper imcms;
-   private UserMapper ldap;
+   private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
+   private Authenticator otherAuthenticator;
+   private UserMapper otherUserMapper;
 
-   public AuthenticatorAndUserMapperUsingImcmsAndOther(ImcmsAuthenticatorAndUserMapper imcms, UserMapper ldap) {
-      this.imcms = imcms;
-      this.ldap = ldap;
+   public AuthenticatorAndUserMapperUsingImcmsAndOther( ImcmsAuthenticatorAndUserMapper imcms, Authenticator otherAuthenticator, UserMapper otherUserMapper ) {
+      this.imcmsAuthenticatorAndUserMapper = imcms;
+      this.otherAuthenticator = otherAuthenticator;
+      this.otherUserMapper = otherUserMapper;
    }
 
    public boolean authenticate( String loginName, String password ) {
-      boolean userExistsInImcms = imcms.authenticate(loginName,password);
-      return  userExistsInImcms ;
+      boolean result = false;
+      boolean userExistsInOther = otherAuthenticator.authenticate( loginName, password );
+      result = userExistsInOther;
+      if( !userExistsInOther ) {
+         boolean userExistsInImcms = imcmsAuthenticatorAndUserMapper.authenticate( loginName, password );
+         result = userExistsInImcms;
+      }
+      return result;
    }
 
    public User getUser( String loginName ) {
-      imcode.server.user.User imcmsUser = imcms.getUser(loginName);
-      imcode.server.user.User ldapUser  = ldap.getUser(loginName) ;
-      boolean imcmsUserExists = null != imcmsUser ;
-      boolean ldapUserExists  = null != ldapUser ;
-      boolean imcmsUserIsInternal = (null != imcmsUser) && !imcmsUser.isImcmsExternal() ;
+      imcode.server.user.User imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
+      imcode.server.user.User otherUser = otherUserMapper.getUser( loginName );
+      boolean imcmsUserExists = null != imcmsUser;
+      boolean otherUserExists = null != otherUser;
+      boolean imcmsUserIsInternal = (null != imcmsUser) && !imcmsUser.isImcmsExternal();
 
-      if ( imcmsUserExists && ldapUserExists && imcmsUserIsInternal ) {
-         throw new UserConflictException("An imcms-internal user was found in external directory.",null) ;
-      } else if( !imcmsUserExists && !ldapUserExists ) {
-         return null;
-      } else if (ldapUserExists) {
-         imcms.update( loginName, ldapUser );
-         imcode.server.user.User updated = imcms.getUser( loginName );
-         return updated;
-      } else if( imcmsUserExists && !ldapUserExists ) {
-         imcmsUser.setActive( false );
-         imcms.update( loginName, imcmsUser );
-         return null;
-      } else if( imcmsUserIsInternal ) {
-         return imcmsUser;
+      User result = null;
+
+      if( !imcmsUserIsInternal && !otherUserExists && !imcmsUserExists ) {
+         result = null;
+      } else if( !imcmsUserIsInternal && !otherUserExists && imcmsUserExists ) {
+         deactivateExternalUserInImcms( loginName, imcmsUser );
+         result = null;
+      } else if( !imcmsUserIsInternal && otherUserExists && !imcmsUserExists ) {
+         result = addExternalUserToImcms( loginName, otherUser );
+      } else if( !imcmsUserIsInternal && otherUserExists && imcmsUserExists ) {
+         result = updateExternalUserInImcms( loginName, otherUser );
+      } else if( imcmsUserIsInternal && !otherUserExists && !imcmsUserExists ) {
+         throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
+      } else if( imcmsUserIsInternal && !otherUserExists && imcmsUserExists ) {
+         result = imcmsUser;
+      } else if( imcmsUserIsInternal && otherUserExists && !imcmsUserExists ) {
+         throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
+      } else if( imcmsUserIsInternal && otherUserExists && imcmsUserExists ) {
+         throw new UserConflictException( "An imcmsAuthenticatorAndUserMapper-internal user was found in external directory.", null );
       }
-      getLogger().fatal("BUG!, check " + getClass().getName() + ".getUser() for fallthrough");
-      return null;
+      return result;
+   }
+
+   private User updateExternalUserInImcms( String loginName, User otherUser ) {
+      otherUser.setImcmsExternal( true );
+      imcmsAuthenticatorAndUserMapper.updateUser( loginName, otherUser );
+      User updatedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
+      return updatedUser;
+   }
+
+   private void deactivateExternalUserInImcms( String loginName, User imcmsUser ) {
+      imcmsUser.setActive( false );
+      imcmsAuthenticatorAndUserMapper.updateUser( loginName, imcmsUser );
+   }
+
+   private User addExternalUserToImcms( String loginName, User otherUser ) {
+      otherUser.setImcmsExternal( true );
+      imcmsAuthenticatorAndUserMapper.addUser( otherUser );
+      User addedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
+      return addedUser;
    }
 
    public User getUser( int id ) {
@@ -47,15 +78,22 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
       return null;
    }
 
-   private Logger getLogger() {
-      return Logger.getLogger( this.getClass().getName() );
+   public void updateUser( String loginName, User newUserData ) {
+      // todo
+      throw new UnsupportedOperationException( "Not implemented yet" );
    }
 
-   public void update( String loginName, imcode.server.user.User newUserData ) {
+   public void addUser( User newUser ) {
+      // todo
+      throw new UnsupportedOperationException( "Not implemented yet" );
+   }
+
+   private Logger getLogger() {
+      return Logger.getLogger( this.getClass() ) ;
    }
 
    public class UserConflictException extends RuntimeException {
-      UserConflictException(String message, Throwable cause){
+      UserConflictException( String message, Throwable cause ) {
          super( message, cause );
       }
 

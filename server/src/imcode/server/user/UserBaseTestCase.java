@@ -8,10 +8,13 @@ import org.apache.log4j.SimpleLayout;
 import java.io.File;
 import java.io.IOException;
 
-abstract class Log4JInitTestCase extends TestCase {
+abstract class UserBaseTestCase extends TestCase {
+   protected static final String[] SQL_RESULT_ADMIN = { "1","admin","admin","Admin","Super", "", "","","","","","","", "1","se","1","1","2003-05-12 00:00:00","0"};
+   protected final static String[] SQL_RESULT_USER = { "2","user","user","User","Extern", "", "","","","","","","", "1","se","1","1","2003-05-12 00:00:00","0" };
+   protected static final String[] SQL_RESULT_HASBRA = {"3","hasbra","hasbra","Hasse","Brattberg", "", "","","","","","","", "1","se","1","1","2003-05-12 00:00:00","1"};
 
-   public Log4JInitTestCase() {
-      super( "Log4JInitTestCase" );
+   public UserBaseTestCase() {
+      super( "UserBaseTestCase" );
       try {
          initLog4J();
       } catch( IOException e ) {

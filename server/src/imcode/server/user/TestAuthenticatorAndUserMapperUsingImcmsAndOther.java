@@ -1,26 +1,27 @@
 package imcode.server.user;
 
-import junit.framework.TestCase;
 import org.apache.log4j.Logger;
-import imcode.server.IMCServiceInterface;
 
-public class TestAuthenticatorAndUserMapperUsingImcmsAndOther extends Log4JInitTestCase {
+public class TestAuthenticatorAndUserMapperUsingImcmsAndOther extends UserBaseTestCase {
    private AuthenticatorAndUserMapperUsingImcmsAndOther imcmsAndLdapAuthAndMapper;
-   private IMCServiceInterface service;
-
-   protected void setUp() throws Exception {
-      Logger logger = Logger.getLogger( this.getClass() );
-      service = new MockIMCServiceInterface();
-      imcmsAndLdapAuthAndMapper = new AuthenticatorAndUserMapperUsingImcmsAndOther(
-         new ImcmsAuthenticatorAndUserMapper( service, logger ),
-         new LdapUserMapper() );
-   }
+   private MockIMCServiceInterface mockImcmsService;
 
    public void testDummy() {
       assertTrue( true );
    }
 
-   public void testImcmsOnlyExisting() {
+   public void setUp()  throws LdapUserMapper.LdapInitException  {
+      Logger logger = Logger.getLogger( this.getClass() );
+      mockImcmsService = new MockIMCServiceInterface();
+      imcmsAndLdapAuthAndMapper = new AuthenticatorAndUserMapperUsingImcmsAndOther(
+         new ImcmsAuthenticatorAndUserMapper( mockImcmsService, logger ),
+         new LdapAuthenticator(),
+         new LdapUserMapper() );
+   }
+
+   public void testImcmsOnlyExisting(){
+      mockImcmsService.setExpectedSQLResult( new String[][]{ SQL_RESULT_ADMIN } );
+
       String loginName = "admin";
       boolean userAuthenticates = imcmsAndLdapAuthAndMapper.authenticate( loginName, "admin" );
       assertTrue( userAuthenticates );
@@ -30,11 +31,23 @@ public class TestAuthenticatorAndUserMapperUsingImcmsAndOther extends Log4JInitT
       assertTrue( user.getFirstName().equalsIgnoreCase(loginName));
    }
 
-   public void testLdapOnlyExisting() {
+   public void testLdapOnlyAuthentication() {
+      mockImcmsService.setExpectedSQLResult( new String[][]{{}} );
       String loginName = "hasbra";
       boolean userAuthenticates = imcmsAndLdapAuthAndMapper.authenticate( loginName, "hasbra" );
       assertTrue( userAuthenticates );
+   }
 
+   public void testLdapOnlyExisting() {
+      mockImcmsService.setExpectedSQLResult( new String[][]{{},SQL_RESULT_HASBRA} );
+      String loginName = "hasbra";
+      imcode.server.user.User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
+      assertTrue( "hasse".equalsIgnoreCase(user.getFirstName()));
+   }
+
+   public void testLdapAndImcmsUpdateSynchronization() {
+      mockImcmsService.setExpectedSQLResult( new String[][]{SQL_RESULT_HASBRA,SQL_RESULT_HASBRA,SQL_RESULT_HASBRA} );
+      String loginName = "hasbra";
       imcode.server.user.User user = imcmsAndLdapAuthAndMapper.getUser(loginName) ;
       assertTrue( "hasse".equalsIgnoreCase(user.getFirstName()));
    }
