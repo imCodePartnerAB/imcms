@@ -549,6 +549,8 @@ public class UserDomainObject extends Hashtable {
                 return document.getPermissionSetForRestrictedOne();
             case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
                 return document.getPermissionSetForRestrictedTwo();
+            case DocumentPermissionSetDomainObject.TYPE_ID__NONE:
+                return DocumentPermissionSetDomainObject.NONE;
             default:
                 return null;
         }

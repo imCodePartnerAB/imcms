@@ -424,7 +424,7 @@ class MenuParser {
 
         tags.setProperty( "#menuitemlink#", a_href );
         tags.setProperty( "#/menuitemlink#",
-                          editingThisMenu && user.canEdit( document )
+                          editingThisMenu && user.canEdit( menuItem.getDocument() )
                           ? "</a>"
                             + serverObject.getAdminTemplate( "textdoc/admin_menuitem.frag", user, Arrays.asList( new String[]{
                                 "#meta_id#", ""

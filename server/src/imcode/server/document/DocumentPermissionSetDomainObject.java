@@ -14,6 +14,12 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     public static final int TYPE_ID__READ = 3 ;
     public static final int TYPE_ID__NONE = 4 ;
 
+    public static final DocumentPermissionSetDomainObject NONE = new TextDocumentPermissionSetDomainObject( TYPE_ID__NONE ) {
+        boolean hasPermission( String permissionName ) {
+            return false;
+        }
+    };
+
     public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject( TYPE_ID__READ ) {
         boolean hasPermission( String permissionName ) {
             return false ;
