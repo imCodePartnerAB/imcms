@@ -8,6 +8,8 @@ import imcode.util.* ;
   Return to last page.
   */
 public class LastRequest extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	 init()

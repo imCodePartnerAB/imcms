@@ -6,6 +6,8 @@ import javax.servlet.http.* ;
 import imcode.util.* ;
 
 public class LogOut extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	 init()

@@ -9,6 +9,8 @@ import imcode.util.* ;
   Save new meta for a document.
   */
 public class SaveNewMeta extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	/**
 	init()
 	*/

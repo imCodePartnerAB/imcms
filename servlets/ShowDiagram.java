@@ -19,6 +19,8 @@ import imcode.util.* ;
 	This class reads the diagram files and outputs a diagram in GIF-format
 */
 public class ShowDiagram extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	public void init( ServletConfig config ) throws ServletException {
 
@@ -310,6 +312,8 @@ public class ShowDiagram extends HttpServlet {
 	}
 
 	public class LabelGen implements JCLabelGenerator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 		DecimalFormat df;
 
@@ -368,6 +372,8 @@ public class ShowDiagram extends HttpServlet {
 	}
 
 	public class FileParser {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 		public LinkedList getData( String file ) throws IOException {
 			BufferedReader in = new BufferedReader( new InputStreamReader( new FileInputStream( file ) ) );
 			LinkedList data = new LinkedList( );

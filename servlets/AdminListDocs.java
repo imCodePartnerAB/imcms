@@ -50,6 +50,8 @@ import imcode.external.diverse.MetaInfo;
  *
 */
 public class AdminListDocs extends Administrator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private static final String TEMPLATE_LISTDOC = "AdminListDocs.html";
 	private static final String TEMPLATE_LISTDOC_LIST_MODIFIED = "AdminListDocs_doclList_modified.html";

@@ -10,6 +10,8 @@ import imcode.util.* ;
  *  A class that allows Web users to upload local files to a web server's file system.
  */
 public class ImageUpload extends HttpServlet {   
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);

@@ -30,6 +30,8 @@ import imcode.util.* ;
  *
 */
 public class Administrator extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private static final String TEMPLATE_ERROR = "Error.html";
 

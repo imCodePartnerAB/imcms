@@ -6,6 +6,8 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 	
 public class AdminCounter extends Administrator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     private final static String HTML_TEMPLATE = "AdminCounter.htm" ;	
 
     /**

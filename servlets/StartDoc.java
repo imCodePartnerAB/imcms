@@ -11,6 +11,8 @@ import imcode.server.* ;
   Start servlet in the system.
 */
 public class StartDoc extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	/**
 	init()
 	*/

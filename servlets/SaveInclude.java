@@ -12,6 +12,8 @@ import java.io.IOException ;
 import java.util.Vector ;
 
 public class SaveInclude extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     public void init (ServletConfig config) throws ServletException {
 	super.init( config ) ;

@@ -40,6 +40,8 @@ import imcode.util.IMCServiceRMI;
   Get a document = Parse data from database.
 */
 public class GetDoc extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private final static  int COOKIE_EXPIRE_TIME = 518400;
 	private final static String SERVLET_CONFIG_FILE_NAME = "servlet.cfg";

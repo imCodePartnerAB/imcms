@@ -12,6 +12,8 @@ import imcode.external.diverse.* ;
 	Shows an empty metadata page, which calls SaveNewMeta
 */
 public class AddDoc extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	 init()

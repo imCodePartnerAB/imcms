@@ -8,6 +8,8 @@ import imcode.util.* ;
   Save a new framesetdocument.
   */
 public class SaveNewFrameset extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()

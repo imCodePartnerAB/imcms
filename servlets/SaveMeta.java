@@ -9,6 +9,8 @@ import imcode.util.* ;
   Save meta from metaform.
   */
 public class SaveMeta extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()

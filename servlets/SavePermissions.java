@@ -6,6 +6,8 @@ import javax.servlet.http.*;
 import imcode.util.* ;
 
 public class SavePermissions extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()

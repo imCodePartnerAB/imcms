@@ -7,6 +7,8 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 
 public class AdminError extends Administrator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	
     public AdminError(HttpServletRequest req, HttpServletResponse res, String header,String msg) 

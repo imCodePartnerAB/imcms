@@ -33,6 +33,8 @@ import imcode.util.Utility;
 */
 
 public class ErrorMessageGenerator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	
 	/** File name for errorCodes */
 	private static final String ERROR_CODE_FILE = "ErrMsg.ini";

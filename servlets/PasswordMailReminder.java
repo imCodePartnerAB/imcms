@@ -64,6 +64,8 @@ import imcode.util.Utility;
 */
 
 public class PasswordMailReminder extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/* filnames for templates */
 	private final static String USER_DONT_EXIST = "password_no_user.txt";

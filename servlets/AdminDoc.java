@@ -9,6 +9,8 @@ import imcode.server.* ;
   Administrate a document. 
   */
 public class AdminDoc extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	 init()

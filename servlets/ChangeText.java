@@ -10,6 +10,8 @@ import imcode.util.* ;
   Edit text in a document.
   */
 public class ChangeText extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()

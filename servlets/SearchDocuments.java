@@ -10,6 +10,8 @@ import imcode.util.* ;
   Search documents
 */
 public class SearchDocuments extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
     /**
        doPost()

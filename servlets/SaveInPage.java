@@ -9,6 +9,8 @@ import imcode.util.* ;
   Save data from editwindow.
   */
 public class SaveInPage extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()

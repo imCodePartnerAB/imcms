@@ -9,6 +9,8 @@ import imcode.util.* ;
   Verify a user.
 */
 public class VerifyUser extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	 init()

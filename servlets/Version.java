@@ -3,6 +3,8 @@ import java.util.zip.* ;
 import javax.servlet.* ;
 import javax.servlet.http.* ;
 
+import org.apache.oro.text.perl.* ;
+
 public class Version extends HttpServlet implements FilenameFilter {
 
     private final static String CVS_REV =  "$Revision$" ;
@@ -10,7 +12,7 @@ public class Version extends HttpServlet implements FilenameFilter {
     private final static String CVS_NAME = "$Name$" ;
     private final static String CVS_TAG = CVS_NAME.substring(CVS_NAME.indexOf(' ')+1,CVS_NAME.lastIndexOf(' ')) ;
 
-    private final static int BUFFER_LEN = 16384 ;
+    private final static int BUFFERLENGTH = 32768 ;
 
     private class DirectoryFilter implements FileFilter {
 	
@@ -42,6 +44,8 @@ public class Version extends HttpServlet implements FilenameFilter {
     }
 
     public void checksumDirectory(File dir, ServletOutputStream out) throws java.io.IOException {
+	Perl5Util perl = new Perl5Util() ;
+
 	// Get all .class-files in /WEB-INF/classes
 	File[] classes = dir.listFiles(this) ;
 
@@ -50,11 +54,23 @@ public class Version extends HttpServlet implements FilenameFilter {
 	    out.print(classes[i].getPath().substring(classes_path.length())+' ') ;
 
 	    Checksum checksum = new CRC32() ;
-	    FileInputStream in = new FileInputStream(classes[i]) ;
-	    byte[] buffer = new byte[BUFFER_LEN] ;
-	    for (int read; -1 != (read = in.read(buffer,0,BUFFER_LEN)); ) {
-		checksum.update(buffer,0,read) ;
+	    int class_length = (int)classes[i].length() ;
+	    char[] buffer = new char[BUFFERLENGTH] ;
+	    Reader in = new InputStreamReader(new CheckedInputStream(new FileInputStream(classes[i]), checksum), "8859_1") ;
+	    StringBuffer file_buffer = new StringBuffer() ;
+	    // Read the classfile, and have the inputstream compute the checksum as we go.
+	    for (int read; -1 != (read = in.read(buffer,0,BUFFERLENGTH));) {
+		file_buffer.append(buffer, 0, read) ;
+	    } ;
+
+	    // Find and print the revision.
+	    if (perl.match("/\\$Revision$/",file_buffer.toString())) {
+		String revision = perl.group(1) ;
+		out.print(revision+' ') ;
+	    } else {
+		out.print("Unknown ") ;
 	    }
+	    // Print the checksum.
 	    out.println(checksum.getValue()) ;
 	}
 

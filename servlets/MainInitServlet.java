@@ -18,6 +18,8 @@ import imcode.util.log.LogLevels;
  * @author  Hasse Brattberg, hasse@erudio.se
  */
 public class MainInitServlet extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	public void init(ServletConfig config) throws ServletException
 	{

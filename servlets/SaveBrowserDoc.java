@@ -10,6 +10,8 @@ import imcode.util.* ;
 	Shows a change_meta.html which calls SaveMeta
 */
 public class SaveBrowserDoc extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()

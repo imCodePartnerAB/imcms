@@ -50,6 +50,8 @@ import imcode.util.IMCServiceRMI;
 */
 
 public class AdminRoleBelongings extends Administrator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	private static final String HTML_ADMIN_ROLE_BELONGING = "AdminRoleBelongings.html";
 	private static final String HTML_ADMIN_ROLE_BELONGING_EDIT = "AdminRoleBelongings_edit.html";

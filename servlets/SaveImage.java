@@ -10,6 +10,8 @@ import javax.swing.ImageIcon;
   Save image data.
   */
 public class SaveImage extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()

@@ -8,6 +8,8 @@ import imcode.util.* ;
   Save text in a document.
   */
 public class SaveText extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()

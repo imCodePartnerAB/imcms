@@ -6,6 +6,8 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 
 public class AdminDeleteDoc extends Administrator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
     private final static String HTML_TEMPLATE = "AdminDeleteDoc.htm" ;
  
     /**

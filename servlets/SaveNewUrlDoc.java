@@ -7,6 +7,8 @@ import imcode.util.* ;
   Save a new urldocument.
   */
 public class SaveNewUrlDoc extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 	/**
 	init()
 	*/

@@ -11,6 +11,8 @@ import imcode.external.diverse.*;
 //former class GenericUpload
 
 public class ConfAndBillbTemplateUpload extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);

@@ -8,6 +8,8 @@ import imcode.util.* ;
   Save document sorting (date,name,manual)
   */
 public class SaveSort extends HttpServlet {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	/**
 	init()

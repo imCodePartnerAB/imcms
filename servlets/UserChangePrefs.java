@@ -6,6 +6,8 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 
 public class UserChangePrefs extends Administrator {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
 
 	String LOGIN = "userprefs_login.htm" ;
 	String LOGIN_FAILED = "userprefs_login_failed.htm"   ;
