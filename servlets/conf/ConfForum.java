@@ -38,7 +38,7 @@ public class ConfForum extends Conference {
         Vector forumV = super.convert2Vector( sqlAnswer );
 
         // Lets fill the select box
-        String forumList = Html.createHtmlOptionList( "", forumV );
+        String forumList = Html.createOptionList( "", forumV );
 
         // Lets build the Responsepage
         VariableManager vm = new VariableManager();

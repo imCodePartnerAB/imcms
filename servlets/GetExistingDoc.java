@@ -363,7 +363,7 @@ public class GetExistingDoc extends HttpServlet {
             }
         }
 
-        String sortOrderStr = Html.createHtmlOptionList( sortBy, sortOrderV );
+        String sortOrderStr = Html.createOptionList( sortBy, sortOrderV );
         outVector.add( "#sortBy#" );
         outVector.add( sortOrderStr );
 

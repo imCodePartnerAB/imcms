@@ -3,7 +3,7 @@ package imcode.server.document;
 /**
  * @author kreiger
  */
-public class SectionDomainObject {
+public class SectionDomainObject implements Comparable {
 
     private int id ;
     private String name ;
@@ -38,6 +38,10 @@ public class SectionDomainObject {
 
     public int hashCode() {
         return id;
+    }
+
+    public int compareTo( Object o ) {
+        return name.compareToIgnoreCase( ((SectionDomainObject)o).name ) ;
     }
 
 }

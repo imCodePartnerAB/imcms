@@ -2,14 +2,13 @@ package imcode.util;
 
 import imcode.external.diverse.Html;
 import imcode.server.*;
-import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.parser.AdminButtonParser;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
-import org.apache.log4j.Logger;
+import org.apache.commons.collections.Transformer;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -17,8 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MetaDataParser {
-
-    private static final Logger log = Logger.getLogger( "imcode.util.MetaDataParser" );
 
     private final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
 
@@ -329,9 +326,8 @@ public class MetaDataParser {
         addPublisherRelatedTagsForDocInfoPageToParseList( vec, hash, imcref, user );
 
         vec.add( "#categories#" );
-        vec.add(
-                createHtmlListBoxesOfCategoriesForEachCategoryType( imcref.getDocumentMapper(),
-                                                                    Integer.parseInt( meta_id ), imcref, user ) );
+        vec.add( createHtmlListBoxesOfCategoriesForEachCategoryType( imcref.getDocumentMapper(),
+                                                                     Integer.parseInt( meta_id ), imcref, user ) );
 
         // Lets fix the date_today tag
         vec.add( "#date_today#" );
@@ -365,27 +361,11 @@ public class MetaDataParser {
                 tags.add( "" );
             }
 
-            CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType( categoryType );
-            CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType( categoryType );
-            HashSet documentSelectedCategoriesSet = new HashSet( Arrays.asList( documentSelectedCategories ) );
-
-            StringBuffer categoryOptions = new StringBuffer();
-            if ( 1 == categoryType.getMaxChoices() ) {
-                categoryOptions.append( "<option></option>" );
-            }
-            for ( int j = 0; j < categories.length; j++ ) {
-                CategoryDomainObject category = categories[j];
-                categoryOptions.append( "<option value=\"" ).append( category.getId() ).append( "\"" );
-                if ( documentSelectedCategoriesSet.contains( category ) ) {
-                    categoryOptions.append( " selected" );
-                }
-                categoryOptions.append( ">" )
-                        .append( category.getName() )
-                        .append( "</option>" );
-            }
+            String categoryOptionList = Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType,
+                                                                                         document );
 
             tags.add( "#category_options#" );
-            tags.add( categoryOptions.toString() );
+            tags.add( categoryOptionList.toString() );
 
             final String template = 1 == categoryType.getMaxChoices()
                                     ? CATEGORIES_SINGLECHOICE_DROPDOWN_TEMPLATE : CATEGORIES_MULTICHOICE_LIST_TEMPLATE;
@@ -413,22 +393,8 @@ public class MetaDataParser {
             vec.add( imcref.parseDoc( null, PUBLISHER_NONE_MSG_TEMPLATE, user ) );
         }
 
-        UserDomainObject[] users = userAndRoleMapper.getUsers( false, false );
-        List usersInOptionList = new ArrayList();
-        usersInOptionList.add( "" );
-        usersInOptionList.add( "" );
-        for ( int i = 0; i < users.length; i++ ) {
-            UserDomainObject oneUserForList = users[i];
-            usersInOptionList.add( "" + oneUserForList.getUserId() );
-            usersInOptionList.add( oneUserForList.getLastName() + ", " + oneUserForList.getFirstName() );
-        }
+        String optionList = Html.createPublisherOptionList( userAndRoleMapper, publisher );
 
-        String optionList;
-        if ( null != publisher ) {
-            optionList = Html.createHtmlOptionList( "" + publisher.getUserId(), usersInOptionList );
-        } else {
-            optionList = Html.createHtmlOptionList( null, usersInOptionList );
-        }
         vec.add( "#publisher_id#" );
         vec.add( optionList );
     }
@@ -479,15 +445,14 @@ public class MetaDataParser {
             allSections.add( allSectionsArray[i][1] );
         }
         vec.add( "#section_option_list#" );
-        vec.add( Html.createHtmlCode( "ID_OPTION", selected, allSections ) );
+        vec.add( Html.createOptionList( allSections, selected ) );
     }
 
     /**
      * getRolesFromDb collects the information for a certain meta_id regarding the
      * rolesrights and parses the information into the assigned htmlFile.
      */
-    private static void getRolesFromDb( String meta_id, UserDomainObject user, Vector vec )
-            throws IOException {
+    private static void getRolesFromDb( String meta_id, UserDomainObject user, Vector vec ) {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
@@ -767,7 +732,7 @@ public class MetaDataParser {
      */
 
     public static String parsePermissionSet( int meta_id, final UserDomainObject user, int set_id,
-                                             boolean for_new ) throws IOException {
+                                             boolean for_new ) {
         final IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         // Lets get the langprefix

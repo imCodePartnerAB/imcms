@@ -448,7 +448,8 @@
 
     </target>
 
-    <target name="language-property-files" depends="init,junit-task-available,tools" unless="no-junit-task-available">
+    <target name="language-property-files" depends="init,junit-task-available,tools" unless="no-junit-task-available"
+        description="Test language property files">
 
         <junit haltonerror="yes" haltonfailure="yes" fork="yes" dir="${basedir}">
             <classpath path="tools/build">

@@ -54,7 +54,7 @@ public class AdminUser extends Administrator {
         // Lets get all USERTYPES from DB
         String[] userTypes = imcref.sqlProcedure( "GetUserTypes", new String[]{lang_prefix} );
         Vector userTypesV = new Vector( java.util.Arrays.asList( userTypes ) );
-        String user_type = Html.createHtmlOptionList( category, userTypesV );
+        String user_type = Html.createOptionList( category, userTypesV );
         vm.addProperty( "USER_TYPES", user_type );
 
 
@@ -78,7 +78,7 @@ public class AdminUser extends Administrator {
             String[] usersArr = imcref.sqlProcedure( "GetCategoryUsers", new String[]{category, searchString, "" + user.getUserId(), "" + showAll, active} );
 
             Vector usersV = new Vector( java.util.Arrays.asList( usersArr ) );
-            String usersOption = Html.createHtmlOptionList( "", usersV );
+            String usersOption = Html.createOptionList( "", usersV );
             vm.addProperty( "USERS_MENU", usersOption );
             vm.addProperty( "active", activeChecked );
             vm.addProperty( "searchstring", req.getParameter( "search" ) );

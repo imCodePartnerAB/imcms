@@ -9,7 +9,16 @@
 
 package imcode.external.diverse;
 
+import org.apache.commons.collections.Transformer;
+
 import java.util.*;
+
+import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.DocumentMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.UserDomainObject;
 
 /**
  * Takes care of creating Html code.
@@ -25,109 +34,65 @@ public class Html {
 
     /**
      * CreateHtml code, can mark up several values as selected
+     * @deprecated Use {@link #createOptionList(java.util.List, java.util.List, org.apache.commons.collections.Transformer)} instead.
      */
+    public static String createOptionList( List allValues, List selectedValues ) {
+        StringBuffer htmlStr = new StringBuffer();
 
-    public static String createHtmlCode(String format, List selected, List data) {
-        String htmlStr = "";
+        Set selectedValuesSet = new HashSet( selectedValues );
+        for ( int i = 0; i < allValues.size(); i += 2 ) {
+            String value = allValues.get(i).toString() ;
+            String name = allValues.get(i+1).toString() ;
+            boolean valueSelected = selectedValuesSet.contains( value ) ;
+            htmlStr.append(createOption( value, name, valueSelected)) ;
+        } // end for
 
-        if ( format.equals( "ID_OPTION" ) ) {
-            for ( int i = 0 ; i < data.size() ; i += 2 ) {
-                htmlStr += "<option value=\"" + data.get(i).toString() + "\"";
-                if ( selected.size() > 0 ) {
-                    String lookFor = data.get(i).toString();
-                    for ( int j = 0 ; j < selected.size() ; j++ ) {
-                        if (lookFor.equals(selected.get(j).toString())) {
-                            htmlStr += " selected ";
-                        }
-                    } // end for
-                    htmlStr += ">";
-                    htmlStr += data.get(i + 1).toString() + "</option>\n";
-                } else {
-                    htmlStr += ">";
-                    htmlStr += data.get(i + 1).toString() + "</option>\n";
-                } // end if
-            } // end for
-        } // end if
-
-        return htmlStr;
-    }
-
-
-    /**
-     * CreateHtml code. Generates the following HTML code snippets. Format should be
-     * one of the arguments below.
-     *
-     * ID_OPTION	--> can only update one choice as selected,
-     * A_HREF_LIST --> Returns a list with links NOT IMPLEMENTED YET
-     */
-
-    public static String createHtmlOptionList( String selected, List data ) {
-        StringBuffer htmlStr = new StringBuffer() ;
-
-        for ( int i = 0 ; i < data.size()-1 ; i += 2 ) {
-            String value = (String) data.get( i );
-            String visible = (String) data.get( i+1 );
-
-            htmlStr.append( "<option value=\"" ).append( value ).append( "\"" );
-
-            if ( null != selected ) {
-                if ( selected.equals( value ) ) {
-                    htmlStr.append(" selected ");
-                }
-            }
-
-            htmlStr.append(">");
-            htmlStr.append(visible).append("</option>");
-        }
         return htmlStr.toString();
     }
 
+    public static String createOptionList( List allValues, Object selectedValue,
+                                           Transformer objectToStringPairTransformer ) {
+        return createOptionList( allValues, Arrays.asList(new Object[] {selectedValue}), objectToStringPairTransformer) ;
+    }
+
+    public static String createOptionList( List allValues, List selectedValues,
+                                           Transformer objectToStringPairTransformer ) {
+        StringBuffer htmlStr = new StringBuffer();
+
+        Set selectedValuesSet = new HashSet( selectedValues );
+        for ( int i = 0; i < allValues.size(); i++ ) {
+            final Object valueObject = allValues.get(i);
+            String[] valueAndNameStringPair = (String[])objectToStringPairTransformer.transform(valueObject) ;
+            String value = valueAndNameStringPair[0] ;
+            String name = valueAndNameStringPair[1] ;
+            boolean valueSelected = selectedValuesSet.contains( valueObject ) ;
+            htmlStr.append(createOption( value, name, valueSelected)) ;
+        } // end for
+
+        return htmlStr.toString();
+    }
 
     /**
      * CreateHtml code. Generates the following HTML code snippets. Format should be
      * one of the arguments below.
-     * <p/>
-     * ID_OPTION	--> can only update one choice as selected,
-     * A_HREF_LIST --> Returns a list with links NOT IMPLEMENTED YET
      */
-    public static String createHtmlCode(String format, String selected, Vector data) {
-        String htmlStr = "";
-		
-        if (format.equalsIgnoreCase("ID_OPTION")) {
-            for (int i = 0; i < data.size(); i += 2) {
-                htmlStr += "<option value=\"" + data.elementAt(i).toString() + "\"";
-                if (selected != null) {
-                    if (data.elementAt(i).toString().equals(selected)) {
-                        htmlStr += " selected ";
-                    }
-                }
 
-                htmlStr += ">";
-                htmlStr += data.elementAt(i + 1).toString() + "</option>\n";
-            }
-        }
-        return htmlStr;
+    public static String createOptionList( String selected, List data ) {
+        return createOptionList( data, Arrays.asList(new String[] {selected}) ) ;
     }
-
 
     /**
      * creats list of options, no selected options.
+     *
      * @param options must be in order name, value.
      */
-    public static String createListOfOptions( String[][] options ) {
-
+    public static String createOptionList( String[][] options ) {
         StringBuffer optionList = new StringBuffer();
-
-        for ( int i = 0 ; i < options.length ; i++ ) {
-            boolean selected = options[i].length == 3;
-
-            optionList.append( createOption( options[i][0], options[i][1], selected ) );
+        for ( int i = 0; i < options.length; i++ ) {
+            optionList.append( createOption( options[i][0], options[i][1], false ) );
         }
-
         return optionList.toString();
     }
-
-
 
     /**
      * creats option.
@@ -136,7 +101,7 @@ public class Html {
      * @param elementValue - option string
      * @param selected     - true or falsee
      */
-    private static String createOption(String elementValue, String elementName, boolean selected) {
+    private static String createOption( String elementValue, String elementName, boolean selected ) {
 
         StringBuffer option = new StringBuffer();
 
@@ -146,6 +111,44 @@ public class Html {
         }
         option.append( ">" + elementName + "</option>" );
         return option.toString();
+    }
+
+    public static String createOptionListOfCategoriesOfTypeForDocument( DocumentMapper documentMapper,
+                                                                      CategoryTypeDomainObject categoryType,
+                                                                      DocumentDomainObject document ) {
+        CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType( categoryType );
+        Arrays.sort(categories) ;
+        CategoryDomainObject[] documentSelectedCategories = document.getCategoriesOfType( categoryType );
+
+        Transformer categoryToStringPairTransformer = new Transformer() {
+            public Object transform( Object o ) {
+                CategoryDomainObject category = (CategoryDomainObject)o ;
+                return new String[] {""+category.getId(), category.getName()} ;
+            }
+        } ;
+        String categoryOptionList = createOptionList( Arrays.asList(categories), Arrays.asList(documentSelectedCategories), categoryToStringPairTransformer) ;
+
+        if ( 1 == categoryType.getMaxChoices() ) {
+            categoryOptionList = "<option></option>" + categoryOptionList ;
+        }
+        return categoryOptionList;
+    }
+
+    public static String createPublisherOptionList( ImcmsAuthenticatorAndUserMapper userAndRoleMapper,
+                                                     UserDomainObject publisher ) {
+        UserDomainObject[] users = userAndRoleMapper.getUsers( false, false );
+
+        String optionList;
+        Transformer userToStringPairTransformer = new Transformer() {
+            public Object transform( Object o ) {
+                UserDomainObject user = (UserDomainObject)o;
+                return new String[]{"" + user.getUserId(), user.getLastName() + ", " + user.getFirstName()};
+            }
+
+        };
+        optionList = createOptionList( Arrays.asList( users ), publisher, userToStringPairTransformer );
+        optionList = "<option></option>" + optionList;
+        return optionList;
     }
 
 }

@@ -169,7 +169,7 @@ public class AdminUserProps extends Administrator {
 
         //System.out.println("selected= " + selected);
 
-        String phones = Html.createHtmlOptionList( selected, phonesV );
+        String phones = Html.createOptionList( selected, phonesV );
 
         res.setContentType( "text/html" ); // set content type
         Writer out = res.getWriter();
@@ -232,7 +232,7 @@ public class AdminUserProps extends Administrator {
         vec.add( "" );
 
         // phonetype list
-        String phonetypes = Html.createHtmlOptionList( "1", phoneTypesV );
+        String phonetypes = Html.createOptionList( "1", phoneTypesV );
         vec.add( "#PHONETYPES_MENU#" );
         vec.add( phonetypes );
 
@@ -289,7 +289,7 @@ public class AdminUserProps extends Administrator {
         String[] langList = imcref.sqlProcedure( "GetLanguageList", new String[]{userLanguage} );
         Vector selectedLangV = new Vector();
         selectedLangV.add( "" + userToChange.getLangId() );
-        String languagesHtmlOptionList = Html.createHtmlCode( "ID_OPTION", selectedLangV, new Vector( Arrays.asList( langList ) ) );
+        String languagesHtmlOptionList = Html.createOptionList( new Vector( Arrays.asList( langList ) ), selectedLangV );
         return languagesHtmlOptionList;
     }
 
@@ -386,12 +386,12 @@ public class AdminUserProps extends Administrator {
         vec.add( "" );
 
         // phonetype list
-        String phonetypes = Html.createHtmlOptionList( "1", phoneTypesV );
+        String phonetypes = Html.createOptionList( "1", phoneTypesV );
         vec.add( "#PHONETYPES_MENU#" );
         vec.add( phonetypes );
 
         // phoneslist
-        String phones = Html.createHtmlOptionList( "", tmp_phones );
+        String phones = Html.createOptionList( "", tmp_phones );
         vec.add( "#PHONES_MENU#" );
         vec.add( phones );
 
@@ -625,7 +625,7 @@ public class AdminUserProps extends Administrator {
             }
 
             // phonetype list
-            String phonetypes = Html.createHtmlOptionList( phonetypes_id, phoneTypesV );
+            String phonetypes = Html.createOptionList( phonetypes_id, phoneTypesV );
             vm.addProperty( "PHONETYPES_MENU", phonetypes );
 
             selectedPhoneId = req.getParameter( "user_phones" );
@@ -702,7 +702,7 @@ public class AdminUserProps extends Administrator {
             phonesV = this.getPhonesVector( phoneNumbers, "" + user.getLangId(), imcref );
 
             // add phones list
-            String phones = Html.createHtmlOptionList( selectedPhoneId, phonesV );
+            String phones = Html.createOptionList( selectedPhoneId, phonesV );
             log( "phones stringen: " + phones );
             vm.addProperty( "PHONES_MENU", phones );
 
@@ -1454,7 +1454,7 @@ public class AdminUserProps extends Administrator {
             log( "Size theUserRolesV: " + userRolesV.size() );
 
             // Lets create html option for user roles
-            rolesMenuStr = Html.createHtmlCode( "ID_OPTION", userRolesV, allRolesV );
+            rolesMenuStr = Html.createOptionList( allRolesV, userRolesV );
 
             if ( isSuperadmin ) {
                 // Lets get the information for usersadmin roles and put them in a vector
@@ -1467,7 +1467,7 @@ public class AdminUserProps extends Administrator {
                 log( "Size theUsersdminRolesV: " + useradminRolesV.size() );
 
                 // Lets create html option for useradmin roles
-                rolesMenuUseradminStr = Html.createHtmlCode( "ID_OPTION", useradminRolesV, rolesV );
+                rolesMenuUseradminStr = Html.createOptionList( rolesV, useradminRolesV );
             }
 
 
@@ -1478,7 +1478,7 @@ public class AdminUserProps extends Administrator {
                 active = userInfo.getProperty( "active" );
             }
 
-            String user_type = Html.createHtmlOptionList( userType, userTypesV );
+            String user_type = Html.createOptionList( userType, userTypesV );
 
             vec_admin_part.add( "#ACTIVE#" );
             vec_admin_part.add( "1" );
@@ -1544,20 +1544,20 @@ public class AdminUserProps extends Administrator {
 
 
             // Lets create html option for user types
-            String user_type = Html.createHtmlOptionList( userType, userTypesV );
+            String user_type = Html.createOptionList( userType, userTypesV );
 
             // Lets put the user roles in the vector
             userRolesV = new Vector( java.util.Arrays.asList( userRoles ) );
 
             // Lets create html option for user roles
-            rolesMenuStr = Html.createHtmlCode( "ID_OPTION", userRolesV, allRolesV );
+            rolesMenuStr = Html.createOptionList( allRolesV, userRolesV );
 
             if ( isSuperadmin ) {
                 // Lets put the roles that useradmin is allow to administrate in a vector
                 useradminRolesV = new Vector( java.util.Arrays.asList( useradminRoles ) );
 
                 // Lets create html option for useradmin roles
-                rolesMenuUseradminStr = Html.createHtmlCode( "ID_OPTION", useradminRolesV, rolesV );
+                rolesMenuUseradminStr = Html.createOptionList( rolesV, useradminRolesV );
             }
 
             vec_admin_part.add( "#ACTIVE#" );

@@ -57,6 +57,9 @@ public class DocumentDomainObject implements IMCConstants {
     /* url documents only*/
     private String urlRef;
 
+    private boolean visibleInMenuForUnauthorizedUsers ;
+    private boolean linkableByOtherUsers;
+
     // If an field is added, make sure to update DocumentMapper
 
     protected DocumentDomainObject() {
@@ -334,4 +337,23 @@ public class DocumentDomainObject implements IMCConstants {
         this.mime = mime;
     }
 
+    public boolean isVisibleInMenuForUnauthorizedUsers() {
+        return visibleInMenuForUnauthorizedUsers;
+    }
+
+    public void setVisibleInMenuForUnauthorizedUsers( boolean visibleInMenuForUnauthorizedUsers ) {
+        this.visibleInMenuForUnauthorizedUsers = visibleInMenuForUnauthorizedUsers;
+    }
+
+    public boolean isLinkableByOtherUsers() {
+        return linkableByOtherUsers;
+    }
+
+    public void setLinkableByOtherUsers( boolean linkableByOtherUsers ) {
+        this.linkableByOtherUsers = linkableByOtherUsers;
+    }
+
+    public void removeAllSections() {
+        sections.clear();
+    }
 }

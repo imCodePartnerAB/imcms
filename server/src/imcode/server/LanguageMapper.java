@@ -63,7 +63,7 @@ public class LanguageMapper {
     public static String getLanguageOptionList( IMCServiceInterface service, UserDomainObject user,
             String documentLanguage ) {
         List languageKeysAndNamesInUsersLanguage = getListOfLanguageKeysAndNamesInUsersLanguage( service, user );
-        return Html.createHtmlOptionList( documentLanguage, languageKeysAndNamesInUsersLanguage );
+        return Html.createOptionList( documentLanguage, languageKeysAndNamesInUsersLanguage );
     }
 
     private static List getListOfLanguageKeysAndNamesInUsersLanguage( IMCServiceInterface service,

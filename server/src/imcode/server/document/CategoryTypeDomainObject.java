@@ -3,7 +3,7 @@ package imcode.server.document;
 /**
  * @author kreiger
  */
-public class CategoryTypeDomainObject {
+public class CategoryTypeDomainObject implements Comparable {
 
     private int id;
     private String name ;
@@ -50,6 +50,10 @@ public class CategoryTypeDomainObject {
 
     public String toString() {
         return getName() ;
+    }
+
+    public int compareTo( Object o ) {
+        return name.compareToIgnoreCase( ((CategoryTypeDomainObject)o).name) ;
     }
 
 }

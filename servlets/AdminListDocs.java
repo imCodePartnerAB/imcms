@@ -79,7 +79,7 @@ public class AdminListDocs extends Administrator {
         String[][] queryResult = imcref.sqlProcedureMulti( "ListDocsGetInternalDocTypes", new String[]{languagePrefix} );
 
         // Lets generate the html page
-        String optionList = Html.createListOfOptions( queryResult );
+        String optionList = Html.createOptionList( queryResult );
 
         VariableManager vm = new VariableManager();
         vm.addProperty( "DOCUMENT_TYPES", optionList );

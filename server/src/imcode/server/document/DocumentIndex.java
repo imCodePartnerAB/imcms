@@ -12,7 +12,6 @@ import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -34,7 +33,8 @@ public class DocumentIndex {
     private final static int INDEX_LOG_TIME_STEP = 2500;
     private final static Logger log = Logger.getLogger( "imcode.server.document.DocumentIndex" );
 
-    File dir;
+    private File dir;
+    private IndexWriter indexWriter;
 
     public DocumentIndex( File dir ) {
         this.dir = dir;
@@ -75,10 +75,10 @@ public class DocumentIndex {
     public void indexAllDocuments() {
         NDC.push( "indexAllDocuments" );
         try {
-            IndexWriter indexWriter = new IndexWriter( dir, new WhitespaceLowerCaseAnalyzer(), true );
+            openIndexWriter( true );
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-            String[] documentIds = imcref.sqlQuery( "SELECT meta_id FROM meta", new String[0] );
+            String[] documentIds = getAllDocumentIds( imcref );
             log.info( "Building index of all " + documentIds.length + " documents" );
             DocumentMapper documentMapper = imcref.getDocumentMapper();
             int nextIndexLogTime = INDEX_LOG_TIME_STEP;
@@ -100,11 +100,26 @@ public class DocumentIndex {
                     "Completed index of " + documentIds.length + " documents in " + indexingStopWatch.getTime() + "ms" );
             logGetDocumentsStopWatch( getDocumentStopWatch, documentIds.length );
             optimizeIndex( indexWriter );
-            indexWriter.close();
+            closeIndexWriter();
         } catch ( Exception e ) {
             log.error( "Failed to index all documents", e );
         } finally {
             NDC.pop();
+        }
+    }
+
+    private String[] getAllDocumentIds( IMCServiceInterface imcref ) {
+        return imcref.sqlQuery( "SELECT meta_id FROM meta", new String[0] );
+    }
+
+    private synchronized void closeIndexWriter() throws IOException {
+        indexWriter.close();
+        indexWriter = null;
+    }
+
+    private synchronized void openIndexWriter( final boolean createIndex ) throws IOException {
+        if ( null == indexWriter ) {
+            indexWriter = new IndexWriter( dir, new WhitespaceLowerCaseAnalyzer(), createIndex );
         }
     }
 
@@ -139,9 +154,9 @@ public class DocumentIndex {
     }
 
     private void addDocumentToIndex( DocumentDomainObject document ) throws IOException {
-        IndexWriter indexWriter = new IndexWriter( dir, new SimpleAnalyzer(), false );
+        openIndexWriter( false );
         addDocumentToIndex( document, indexWriter );
-        indexWriter.close();
+        closeIndexWriter();
     }
 
     private void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {

@@ -82,7 +82,7 @@ public class AdminIpAccess extends Administrator {
             // Lets get all USERS from DB
             String[] usersArr = imcref.sqlProcedure( "GetAllUsersInList", new String[0] );
             Vector usersV = new Vector( java.util.Arrays.asList( usersArr ) );
-            String usersOption = Html.createHtmlOptionList( "", usersV );
+            String usersOption = Html.createOptionList( "", usersV );
 
             // Lets generate the html page
             VariableManager vm = new VariableManager();

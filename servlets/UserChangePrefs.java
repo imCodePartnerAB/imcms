@@ -174,7 +174,7 @@ public class UserChangePrefs extends Administrator {
 		// Lets fix all users phone numbers from DB
                 String[] phonesArr = imcref.sqlProcedure("GetUserPhones", new String[] {userId});
 		Vector phonesV  = new Vector(java.util.Arrays.asList(phonesArr)) ;
-		String phones = Html.createHtmlOptionList( "", phonesV ) ;
+		String phones = Html.createOptionList( "", phonesV ) ;
 		vm.addProperty("PHONES_MENU", phones  ) ;
 		vm.addProperty("CURR_USER_ID", userId  ) ;
 
@@ -182,7 +182,7 @@ public class UserChangePrefs extends Administrator {
                 String[] langList = imcref.sqlProcedure("GetLanguageList", new String[0]);
 		Vector selectedLangV = new Vector() ;
 		selectedLangV.add(vm.getProperty("LANG_ID")) ;
-		vm.addProperty("LANG_TYPES", Html.createHtmlCode("ID_OPTION",selectedLangV, new Vector(java.util.Arrays.asList(langList)))) ;
+		vm.addProperty("LANG_TYPES", Html.createOptionList( new Vector(Arrays.asList(langList)), selectedLangV )) ;
 
 		// Lets set the user id we are working on
 		// HttpSession session = req.getSession(true) ;

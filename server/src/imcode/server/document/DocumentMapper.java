@@ -7,7 +7,9 @@ import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.poll.PollHandlingSystem;
+import imcode.external.diverse.Html;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
@@ -32,7 +34,6 @@ public class DocumentMapper {
     // todo make sure all these is only used in one sprocMethod
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
-    private static final String SPROC_GET_USER_PERMISSION_SET = "GetUserPermissionSet";
     private static final String SPROC_GET_TEXT = "GetText";
     private static final String SPROC_GET_INCLUDES = "GetIncludes";
     private static final String SPROC_INSERT_TEXT = "InsertText";
@@ -511,10 +512,8 @@ public class DocumentMapper {
     }
 
     public void indexDocument(DocumentDomainObject document) {
-        File indexDir = new File(WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), "WEB-INF/index");
-        DocumentIndex documentIndexer = new DocumentIndex(indexDir);
         try {
-            documentIndexer.reindexOneDocument(document);
+            documentIndex.reindexOneDocument(document);
         } catch (IOException e) {
             log.error("Failed to index document " + document.getMetaId(), e);
         }
@@ -529,6 +528,45 @@ public class DocumentMapper {
     }
 
     public void saveDocument(DocumentDomainObject document) throws MaxCategoryDomainObjectsOfTypeExceededException {
+        checkMaxDocumentCategoriesOfType( document );
+
+        sqlUpdateMetaTable( document );
+
+        updateDocumentSections(document.getMetaId(), document.getSections());
+
+        updateDocumentCategories( document );
+
+        updateDocumentRolePermissions( document );
+
+        updateDocumentKeywords( document.getMetaId(), document.getKeywords() );
+
+        switch (document.getDocumentType()) {
+            case DocumentDomainObject.DOCTYPE_TEXT:
+                sqlUpdateTextPartOfDocument(document.getMetaId(), document.getTemplate(), document.getMenuSortOrder(), document.getTemplateGroupId());
+                break;
+            case DocumentDomainObject.DOCTYPE_URL:
+                sqlUpdateUrlPartOfDocument(document.getMetaId(), document.getUrlRef());
+                break;
+            case DocumentDomainObject.DOCTYPE_FILE:
+                sqlUpdateFilePartOfDocument(document.getMetaId(), document.getFilename(), document.getMime());
+                break;
+        }
+
+        touchDocument( document );
+    }
+
+    private void updateDocumentRolePermissions( DocumentDomainObject document ) {
+        for (Iterator it = document.getRolesMappedToPermissionSetIds().entrySet().iterator(); it.hasNext();) {
+            Map.Entry rolePermissionTuple = (Map.Entry) it.next();
+            RoleDomainObject role = (RoleDomainObject) rolePermissionTuple.getKey();
+            int permissionSetId = ((Integer) rolePermissionTuple.getValue()).intValue();
+            sprocSetRoleDocPermissionSetId(service, document.getMetaId(), role.getId(), permissionSetId);
+        }
+        // TODO Restricted One and Two (Bug 1443)
+    }
+
+    private void checkMaxDocumentCategoriesOfType( DocumentDomainObject document )
+            throws MaxCategoryDomainObjectsOfTypeExceededException {
         CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
         for (int i = 0; i < categoryTypes.length; i++) {
             CategoryTypeDomainObject categoryType = categoryTypes[i];
@@ -541,64 +579,64 @@ public class DocumentMapper {
                         + "'");
             }
         }
+    }
 
-        Date now = new Date();
-        document.setModifiedDatetime(now);
-
-        // Attributes in alphabetical order, so one can easier find if something is added or removed.
-        Date activatedDatetime = document.getActivatedDatetime();
-        boolean archived = document.isArchivedFlag();
-        Date archivedDatetime = document.getArchivedDatetime();
-        Date createdDatetime = document.getCreatedDatetime();
-        // String filename = document.filename; // only in file documents, not implemented yet.
-        String headline = document.getHeadline();
-        String image = document.getImage();
-        String language = document.getLanguageIso639_2();
-        int menuSortOrder = document.getMenuSortOrder();
-        Date modifiedDatetime = document.getModifiedDatetime();
-        SectionDomainObject[] sections = document.getSections();
-        String target = document.getTarget();
-        TemplateDomainObject template = document.getTemplate();
-        int templateGroupId = document.getTemplateGroupId();
-        String text = document.getMenuText();
-        UserDomainObject publisher = document.getPublisher();
-
-        sqlUpdateMeta(service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline,
-                image, modifiedDatetime, target, text, archived, language, publisher,
-                document.isSearchDisabled());
-        setSectionsForDocument(service, document.getMetaId(), sections);
-
-        service.sqlUpdateQuery("DELETE FROM document_categories WHERE meta_id = ?",
-                new String[]{"" + document.getMetaId()});
+    private void updateDocumentCategories( DocumentDomainObject document ) {
+        removeAllCategoriesFromDocument( document );
         CategoryDomainObject[] categories = document.getCategories();
         for (int i = 0; i < categories.length; i++) {
             CategoryDomainObject category = categories[i];
-            int categoryId = category.getId();
-            service.sqlUpdateQuery("INSERT INTO document_categories (meta_id, category_id) VALUES(?,?)",
-                    new String[]{"" + document.getMetaId(), "" + categoryId});
+            addCategoryToDocument( category, document );
         }
+    }
 
-        for (Iterator it = document.getRolesMappedToPermissionSetIds().entrySet().iterator(); it.hasNext();) {
-            Map.Entry rolePermissionTuple = (Map.Entry) it.next();
-            RoleDomainObject role = (RoleDomainObject) rolePermissionTuple.getKey();
-            int permissionSetId = ((Integer) rolePermissionTuple.getValue()).intValue();
-            sprocSetRoleDocPermissionSetId(service, document.getMetaId(), role.getId(), permissionSetId);
-        }
+    private void addCategoryToDocument( CategoryDomainObject category, DocumentDomainObject document ) {
+        int categoryId = category.getId();
+        service.sqlUpdateQuery("INSERT INTO document_categories (meta_id, category_id) VALUES(?,?)",
+                new String[]{"" + document.getMetaId(), "" + categoryId});
+    }
 
-        // TODO Restricted One and Two (Bug 1443)
+    private void removeAllCategoriesFromDocument( DocumentDomainObject document ) {
+        service.sqlUpdateQuery("DELETE FROM document_categories WHERE meta_id = ?",
+                new String[]{"" + document.getMetaId()});
+    }
 
-        switch (document.getDocumentType()) {
-            case DocumentDomainObject.DOCTYPE_TEXT:
-                sqlUpdateTextPartOfDocument(document.getMetaId(), template, menuSortOrder, templateGroupId);
-                break;
-            case DocumentDomainObject.DOCTYPE_URL:
-                sqlUpdateUrlPartOfDocument(document.getMetaId(), document.getUrlRef());
-                break;
-            case DocumentDomainObject.DOCTYPE_FILE:
-                sqlUpdateFilePartOfDocument(document.getMetaId(), document.getFilename(), document.getMime());
-                break;
-        }
-        indexDocument(document);
+    private void sqlUpdateMetaTable( DocumentDomainObject document ) {
+        String headline = document.getHeadline();
+        String text = document.getMenuText();
+        UserDomainObject publisher = document.getPublisher();
+
+        StringBuffer sqlStr = new StringBuffer("update meta set ");
+
+        ArrayList sqlUpdateColumns = new ArrayList();
+        ArrayList sqlUpdateValues = new ArrayList();
+
+        makeDateSQL("activated_datetime", document.getActivatedDatetime(), sqlUpdateColumns, sqlUpdateValues);
+        makeDateSQL("archived_datetime", document.getArchivedDatetime(), sqlUpdateColumns, sqlUpdateValues);
+        makeDateSQL("date_created", document.getCreatedDatetime(), sqlUpdateColumns, sqlUpdateValues);
+        String headlineThatFitsInDB = headline.substring(0,
+                Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
+        makeStringSQL("meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
+        makeStringSQL("meta_image", document.getImage(), sqlUpdateColumns, sqlUpdateValues);
+        makeDateSQL("date_modified", document.getModifiedDatetime(), sqlUpdateColumns, sqlUpdateValues);
+        makeStringSQL("target", document.getTarget(), sqlUpdateColumns, sqlUpdateValues);
+        String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
+        makeStringSQL("meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
+        makeStringSQL("lang_prefix", document.getLanguageIso639_2(), sqlUpdateColumns, sqlUpdateValues);
+        makeBooleanSQL("archive", document.isArchivedFlag(), sqlUpdateColumns, sqlUpdateValues);
+        makeBooleanSQL("disable_search", document.isSearchDisabled(), sqlUpdateColumns, sqlUpdateValues);
+        makeBooleanSQL("shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues) ;
+        makeBooleanSQL("show_meta", document.isVisibleInMenuForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues) ;
+        makeIntSQL("publisher_id", (publisher == null ? null : new Integer(publisher.getUserId())), sqlUpdateColumns,
+                sqlUpdateValues);
+
+        // todo: Remove from the meta table all collumns that are not used.
+        // Candidates: All not used above.
+        sqlStr.append(StringUtils.join(sqlUpdateColumns.iterator(), ","));
+        sqlStr.append(" where meta_id = ?");
+        sqlUpdateValues.add("" + document.getMetaId());
+        service.sqlUpdateQuery(sqlStr.toString(),
+                (String[]) sqlUpdateValues.toArray(new String[sqlUpdateValues.size()]));
     }
 
     private void sqlUpdateFilePartOfDocument(int metaId, String fileName, String mime) {
@@ -716,9 +754,13 @@ public class DocumentMapper {
         return included_docs;
     }
 
-    public void saveDocumentKeywords(int meta_id, String separatedKeywords) {
-        Set allKeywords = new HashSet(Arrays.asList(getAllKeywords()));
+    public void updateDocumentKeywords(int meta_id, String separatedKeywords) {
         String[] keywords = separatedKeywords.split("\\W+");
+        updateDocumentKeywords( meta_id, keywords );
+    }
+
+    private void updateDocumentKeywords( int meta_id, String[] keywords ) {
+        Set allKeywords = new HashSet(Arrays.asList(getAllKeywords()));
         deleteKeywordsFromDocument(meta_id);
         for (int i = 0; i < keywords.length; i++) {
             String keyword = keywords[i];
@@ -882,12 +924,12 @@ public class DocumentMapper {
 
     private void inheritClassifications(int from_parentId, int to_newMetaId) {
         String classifications = getKeywordsAsOneString(from_parentId);
-        saveDocumentKeywords(to_newMetaId, classifications);
+        updateDocumentKeywords(to_newMetaId, classifications);
     }
 
     private void inheritSection(int from_parentId, int to_metaId) {
         SectionDomainObject[] sections = getSections(from_parentId);
-        setSectionsForDocument(service, to_metaId, sections);
+        updateDocumentSections(to_metaId, sections);
     }
 
     private static void initTextDoc(IMCServiceInterface service, DocumentDomainObject inout_document) {
@@ -979,7 +1021,7 @@ public class DocumentMapper {
         }
     }
 
-    private static void setSectionsForDocument(IMCServiceInterface service, int metaId,
+    private void updateDocumentSections(int metaId,
                                                SectionDomainObject[] sections) {
         removeAllSectionsFromDocument(service, metaId);
         for (int i = 0; null != sections && i < sections.length; i++) {
@@ -1014,6 +1056,8 @@ public class DocumentMapper {
         document.setMenuText(result[4]);
         document.setImage(result[5]);
         document.setCreator(imcmsAAUM.getUser(Integer.parseInt(result[6])));
+        document.setLinkableByOtherUsers("0".equals(result[8]) ? false : true);
+        document.setVisibleInMenuForUnauthorizedUsers("0".equals(result[10]) ? false : true);
         document.setArchivedFlag("0".equals(result[12]) ? false : true);
         document.setLanguageIso639_2(LanguageMapper.getAsIso639_2OrDefaultLanguage(result[14], service));
         DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_SECONDS_FORMAT_STRING);
@@ -1104,42 +1148,6 @@ public class DocumentMapper {
     private void sqlUpdateDocType(IMCServiceInterface service, int metaId, int docType) {
         service.sqlUpdateQuery("update meta set doc_type = ? where meta_id = ?",
                 new String[]{"" + docType, "" + metaId});
-    }
-
-    private static void sqlUpdateMeta(IMCServiceInterface service, int meta_id, Date activatedDatetime,
-                                      Date archivedDateTime, Date createdDatetime, String headline, String image,
-                                      Date modifiedDateTime, String target, String text, boolean isArchived,
-                                      String language, UserDomainObject publisher, boolean isSearchDisabled) {
-
-        StringBuffer sqlStr = new StringBuffer("update meta set ");
-
-        ArrayList sqlUpdateColumns = new ArrayList();
-        ArrayList sqlUpdateValues = new ArrayList();
-
-        makeDateSQL("activated_datetime", activatedDatetime, sqlUpdateColumns, sqlUpdateValues);
-        makeDateSQL("archived_datetime", archivedDateTime, sqlUpdateColumns, sqlUpdateValues);
-        makeDateSQL("date_created", createdDatetime, sqlUpdateColumns, sqlUpdateValues);
-        String headlineThatFitsInDB = headline.substring(0,
-                Math.min(headline.length(), META_HEADLINE_MAX_LENGTH - 1));
-        makeStringSQL("meta_headline", headlineThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
-        makeStringSQL("meta_image", image, sqlUpdateColumns, sqlUpdateValues);
-        makeDateSQL("date_modified", modifiedDateTime, sqlUpdateColumns, sqlUpdateValues);
-        makeStringSQL("target", target, sqlUpdateColumns, sqlUpdateValues);
-        String textThatFitsInDB = text.substring(0, Math.min(text.length(), META_TEXT_MAX_LENGTH - 1));
-        makeStringSQL("meta_text", textThatFitsInDB, sqlUpdateColumns, sqlUpdateValues);
-        makeStringSQL("lang_prefix", language, sqlUpdateColumns, sqlUpdateValues);
-        makeBooleanSQL("archive", isArchived, sqlUpdateColumns, sqlUpdateValues);
-        makeBooleanSQL("disable_search", isSearchDisabled, sqlUpdateColumns, sqlUpdateValues);
-        makeIntSQL("publisher_id", (publisher == null ? null : new Integer(publisher.getUserId())), sqlUpdateColumns,
-                sqlUpdateValues);
-
-        // todo: Remove from the meta table all collumns that are not used.
-        // Candidates: All not used above.
-        sqlStr.append(StringUtils.join(sqlUpdateColumns.iterator(), ","));
-        sqlStr.append(" where meta_id = ?");
-        sqlUpdateValues.add("" + meta_id);
-        service.sqlUpdateQuery(sqlStr.toString(),
-                (String[]) sqlUpdateValues.toArray(new String[sqlUpdateValues.size()]));
     }
 
     /**

@@ -108,7 +108,7 @@ public class ConfLogin extends Conference {
             String[] usersArr = confref.sqlProcedure("A_GetAllConfUsersInList", new String[]{""+params.getMetaId()} );
             Vector usersV = super.convert2Vector(usersArr);
             VariableManager vm = new VariableManager();
-            String usersOption = Html.createHtmlOptionList( "", usersV );
+            String usersOption = Html.createOptionList( "", usersV );
             vm.addProperty( "USERS_MENU", usersOption );
             vm.addProperty( "UNADMIN_LINK_HTML", USER_UNADMIN_LINK_TEMPLATE );
             this.sendHtml( req, res, vm, ADMIN1_HTML );

@@ -37,7 +37,7 @@ public class SaveNewMeta extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        if( null != req.getParameter("ImageBrowse") ) {
+        if( pressedButton( req, "ImageBrowse" ) ) {
             RequestDispatcher rd =  req.getRequestDispatcher("ImageBrowse");
             rd.forward( req, res );
             return;
@@ -201,7 +201,7 @@ public class SaveNewMeta extends HttpServlet {
 
             // Save the classifications to the db
             if( classification != null ) {
-                imcref.getDocumentMapper().saveDocumentKeywords( metaId, classification );
+                imcref.getDocumentMapper().updateDocumentKeywords( metaId, classification );
             }
 
             DocumentMapper.sprocUpdateInheritPermissions( imcref, metaId, parentMetaId, Integer.parseInt(doc_type) );
@@ -263,6 +263,10 @@ public class SaveNewMeta extends HttpServlet {
             String htmlStr = AdminDoc.adminDoc( parentMetaId, parentMetaId, user, req, res );
             out.write( htmlStr );
         }
+    }
+
+    private boolean pressedButton( HttpServletRequest req, String buttonName ) {
+        return null != req.getParameter(buttonName);
     }
 
     private boolean checkForNullPublisherId(String columnName, String columnValue, ArrayList sqlInsertValues) {

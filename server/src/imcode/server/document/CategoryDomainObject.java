@@ -3,7 +3,7 @@ package imcode.server.document;
 /**
  * @author kreiger
  */
-public class CategoryDomainObject {
+public class CategoryDomainObject implements Comparable {
 
     private String name;
     private int id;
@@ -62,4 +62,7 @@ public class CategoryDomainObject {
         this.image = image;
     }
 
+    public int compareTo( Object o ) {
+        return name.compareToIgnoreCase( ((CategoryDomainObject)o).name ) ;
+    }
 }

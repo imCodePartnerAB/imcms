@@ -444,6 +444,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>SaveDocument</servlet-name>
+        <servlet-class>SaveDocument</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>SaveFileUpload</servlet-name>
         <servlet-class>SaveFileUpload</servlet-class>
     </servlet>
@@ -991,6 +996,11 @@
     <servlet-mapping>
         <servlet-name>SaveBrowserDoc</servlet-name>
         <url-pattern>/servlet/SaveBrowserDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>SaveDocument</servlet-name>
+        <url-pattern>/servlet/SaveDocument</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

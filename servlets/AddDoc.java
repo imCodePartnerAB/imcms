@@ -254,7 +254,7 @@ public class AddDoc extends HttpServlet {
 
         // Lets fix the sortby list, first get the displaytexts from the database
         String[] sortOrder = imcref.sqlProcedure( "SortOrder_GetExistingDocs", new String[] { user.getLangPrefix() } );
-        String sortOrderStr = Html.createHtmlOptionList("", Arrays.asList(sortOrder));
+        String sortOrderStr = Html.createOptionList("", Arrays.asList(sortOrder));
         vec.add("#sortBy#");
         vec.add(sortOrderStr);
 

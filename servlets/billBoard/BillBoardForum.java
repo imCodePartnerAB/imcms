@@ -62,7 +62,7 @@ public class BillBoardForum extends BillBoard {//ConfForum
 		Vector sectionV = super.convert2Vector(sqlAnswer) ;
 
 		// Lets fill the select box
-		String sectionList = Html.createHtmlOptionList( "", sectionV ) ;
+		String sectionList = Html.createOptionList( "", sectionV ) ;
 
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;

@@ -7,6 +7,7 @@ import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MetaDataParser;
 import imcode.util.Utility;
+import imcode.util.DateConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.*;
 
 /**
@@ -211,61 +213,13 @@ public class SaveMeta extends HttpServlet {
         // Here's some mutilation!
         // activated_date and activated_time need to be merged, and likewise with archived_date and archived_time
 
-        String activated_date = req.getParameter( "activated_date" );
-        String activated_time = req.getParameter( "activated_time" );
+        SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
+        SimpleDateFormat timeFormat = new SimpleDateFormat( DateConstants.TIME_FORMAT_NO_SECONDS_STRING );
 
-        SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd" );
-        SimpleDateFormat timeformat = new SimpleDateFormat( "HH:mm" );
-        String activated_datetime = null;
-        try {
-            dateformat.parse( activated_date );
-            activated_datetime = activated_date;
-            timeformat.parse( activated_time );
-            activated_datetime += ' ' + activated_time;
-        } catch ( ParseException pe ) {
-            // activated_datetime contains as much as we want.
-        } catch ( NullPointerException npe ) {
-            // activated_datetime contains as much as we want.
-        }
-
-        String archived_date = req.getParameter( "archived_date" );
-        String archived_time = req.getParameter( "archived_time" );
-        String archived_datetime = null;
-        try {
-            dateformat.parse( archived_date );
-            archived_datetime = archived_date;
-            timeformat.parse( archived_time );
-            archived_datetime += ' ' + archived_time;
-        } catch ( ParseException pe ) {
-            // archived_datetime contains as much as we want.
-        } catch ( NullPointerException npe ) {
-            // archived_datetime contains as much as we want.
-        }
-
-        //ok here we check if the createdate is requested to bee changed
-        String createdDate = req.getParameter( "date_created" );
-        String createdTime = req.getParameter( "created_time" );
-        String createdDatetime = null;
-        if ( createdDate != null && createdTime != null ) {
-            createdDatetime = createdDate + ' ' + createdTime;
-            try {
-                dateformat.parse( createdDatetime );
-            } catch ( ParseException ex ) {
-                // createdDatetime is null
-            }
-        }
-        //ok here we check if the modifieddate is requested to bee changed
-        String modified_date = req.getParameter( "date_modified" );
-        String modified_time = req.getParameter( "modified_time" );
-
-        Date modifiedDateTime = null;
-        if ( modified_date != null && modified_time != null ) {
-            try {
-                modifiedDateTime = dateformat.parse( modified_date + " " + modified_time );
-            } catch ( ParseException ex ) {
-                // modifiedDateTime is null
-            }
-        }
+        Date activated_datetime = SaveDocument.parseDatetimeParameters( req, "activated_date", "activated_time", dateFormat, timeFormat );
+        Date archived_datetime = SaveDocument.parseDatetimeParameters( req, "archived_date", "archived_time", dateFormat, timeFormat );
+        Date createdDatetime = SaveDocument.parseDatetimeParameters( req, "date_created", "created_time", dateFormat,timeFormat) ;
+        Date modifiedDatetime = SaveDocument.parseDatetimeParameters( req, "date_modified", "modified_time", dateFormat,timeFormat) ;
 
         // If target is set to '_other', it means the real target is in 'frame_name'.
         // In this case, set target to the value of frame_name.
@@ -378,6 +332,7 @@ public class SaveMeta extends HttpServlet {
             sqlUpdateColumns.add( columnName + " = ?" );
             sqlUpdateValues.add( columnValue );
         }
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING );
 
         if ( null != req.getParameter( "activated_date" ) ) {
             String updatePart = "activated_datetime = ";
@@ -385,7 +340,7 @@ public class SaveMeta extends HttpServlet {
                 updatePart += "NULL";
             } else {
                 updatePart += "?";
-                sqlUpdateValues.add( activated_datetime );
+                sqlUpdateValues.add( datetimeFormat.format(activated_datetime) );
             }
             sqlUpdateColumns.add( updatePart );
         }
@@ -396,7 +351,7 @@ public class SaveMeta extends HttpServlet {
                 updatePart += "NULL";
             } else {
                 updatePart += "?";
-                sqlUpdateValues.add( archived_datetime );
+                sqlUpdateValues.add( datetimeFormat.format(archived_datetime) );
             }
             sqlUpdateColumns.add( updatePart );
         }
@@ -419,7 +374,7 @@ public class SaveMeta extends HttpServlet {
 
         // Save the classifications to the db
         if ( classification != null ) {
-            imcref.getDocumentMapper().saveDocumentKeywords( Integer.parseInt( metaIdStr ), classification );
+            imcref.getDocumentMapper().updateDocumentKeywords( Integer.parseInt( metaIdStr ), classification );
         }
 
         //ok lets save the default templates
@@ -430,11 +385,11 @@ public class SaveMeta extends HttpServlet {
         //if the administrator wants to change the date we does it here
         if ( createdDatetime != null ) {
             //we did got a ok date so lets save it to db
-            DocumentMapper.sqlUpdateMetaDateCreated( imcref, metaIdStr, createdDatetime );
+            DocumentMapper.sqlUpdateMetaDateCreated( imcref, metaIdStr, datetimeFormat.format(createdDatetime) );
         }
-        if ( null != modifiedDateTime ) {
+        if ( null != modifiedDatetime ) {
             //we did got a ok date so lets save it to db
-            imcref.updateModifiedDatesOnDocumentAndItsParent( metaId, modifiedDateTime );
+            imcref.updateModifiedDatesOnDocumentAndItsParent( metaId, modifiedDatetime );
         }
 
         // Update the date_modified for all parents.
