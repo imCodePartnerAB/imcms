@@ -153,13 +153,13 @@ public class DocumentIndex {
         addDocumentToIndex( document );
     }
 
-    private void addDocumentToIndex( DocumentDomainObject document ) throws IOException {
+    private synchronized void addDocumentToIndex( DocumentDomainObject document ) throws IOException {
         openIndexWriter( false );
         addDocumentToIndex( document, indexWriter );
         closeIndexWriter();
     }
 
-    private void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
+    private synchronized void addDocumentToIndex( DocumentDomainObject document, IndexWriter indexWriter ) throws IOException {
         if ( !document.isSearchDisabled() ) {
             Document indexDocument = createIndexDocument( document );
             indexWriter.addDocument( indexDocument );
