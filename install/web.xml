@@ -12,6 +12,19 @@
       <filter-class>com.imcode.imcms.servlet.ImcmsSetupFilter</filter-class>
    </filter>
 
+<!-- Filter that generates HttpUnit code for requests to a log4j category named "httpunit"
+    <filter>
+        <filter-name>HttpUnitGeneratingFilter</filter-name>
+        <description>Generates HttpUnit code for all requests</description>
+        <filter-class>imcode.util.test.HttpUnitGeneratingFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>HttpUnitGeneratingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+-->
+
     <filter-mapping>
         <filter-name>ImcmsSetupFilter</filter-name>
         <url-pattern>/*</url-pattern>
