@@ -354,31 +354,27 @@ public interface IMCServiceInterface extends java.rmi.Remote {
     throws java.rmi.RemoteException ;
 
    // delete demotemplate
-   public int deleteDemoTemplate(int template_id)
+    public int deleteDemoTemplate(int template_id)
    	throws java.rmi.RemoteException ;
 
-   public String getMenuButtons(int meta_id, User user)
-	throws java.rmi.RemoteException ;
+    public String getMenuButtons(int meta_id, User user) throws java.rmi.RemoteException ;
 
-   public String getMenuButtons(String meta_id, User user)
-    throws java.rmi.RemoteException ;
+    public String getMenuButtons(String meta_id, User user) throws java.rmi.RemoteException ;
 
-   public String getLanguage(String lang_id)
-	throws java.rmi.RemoteException ;
+    public String getLanguage(String lang_id) throws java.rmi.RemoteException ;
 
-
-    public SystemData getSystemData()     throws java.rmi.RemoteException ;
-
-    public void setSystemData(SystemData sd)     throws java.rmi.RemoteException ;
+    public SystemData getSystemData() throws java.rmi.RemoteException ;
+    
+    public void setSystemData(SystemData sd) throws java.rmi.RemoteException ;
 
     // Get the information for each selected metaid. Used by existing documents
+    // Wow. Wonderful methodname. Indeed. Just beautiful.
     public Hashtable ExistingDocsGetMetaIdInfo( String[] meta_id)  throws java.rmi.RemoteException ;
 
-     public String[] getDocumentTypesInList(String langPrefixStr) throws java.rmi.RemoteException ;
+    public String[] getDocumentTypesInList(String langPrefixStr) throws java.rmi.RemoteException ;
 
-     public Hashtable getDocumentTypesInHash(String langPrefixStr) throws java.rmi.RemoteException  ;
-
-
-
+    public Hashtable getDocumentTypesInHash(String langPrefixStr) throws java.rmi.RemoteException  ;
+    
+    public boolean checkUserDocSharePermission(User user, int meta_id) throws java.rmi.RemoteException ;
 
 }

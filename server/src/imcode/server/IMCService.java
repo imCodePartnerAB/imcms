@@ -1945,6 +1945,13 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	dbc = null ;
     }
 
+    /**
+       Makes copies of the documents given in the String-array, and inserts them into the given document and menu.
+       @param meta_id The document to insert into
+       @param doc_menu_no The menu to insert into
+       @param user The user
+       @param childsThisMenu The id's to copy.
+    **/
     public void copyDocs( int meta_id, int doc_menu_no,  User user, String[] childsThisMenu) {
 
 	if (childsThisMenu != null && childsThisMenu.length > 0) {
@@ -1954,7 +1961,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 		childs.append(",").append(childsThisMenu[i]) ;
 	    }
 
-	    childs.append("',"+meta_id+","+doc_menu_no) ;
+	    childs.append("',"+meta_id+","+doc_menu_no+","+user.getUserId()) ;
 	    sqlUpdateProcedure(childs.toString()) ;
 
 	}
@@ -1962,8 +1969,8 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
     }
 
     /**
-     * <p>Archive childs for a menu.
-     */
+     * Archive childs for a menu.
+     **/
     public void archiveChilds(int meta_id,User user,String childsThisMenu[]) {
 	String sqlStr = "" ;
 	String childStr = "[" ;
@@ -4039,5 +4046,8 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	return this.sqlQueryHash("GetDocTypes '" + langPrefixStr +  "'") ;
     }
 
+    public boolean checkUserDocSharePermission(User user, int meta_id) {
+	return sqlProcedure("CheckUserDocSharePermission "+user.getUserId()+","+meta_id).length>0 ;
+    }
 
 } // END CLASS IMCService
