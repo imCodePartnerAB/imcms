@@ -2125,6 +2125,41 @@ public abstract class DatabaseService {
         }
     }
 
+    Table_section sproc_SectionGetInheritId( int parent_meta_id ) {
+        String sql = "SELECT s.section_id, s.section_name " +
+            "FROM sections s, meta_section ms, meta m " +
+            "where m.meta_id=ms.meta_id and m.meta_id= ? and ms.section_id=s.section_id";
+        Object[] paramValues = new Object[]{ new Integer(parent_meta_id)};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Table_section( rs );
+            }
+        } );
+        if( 0 == queryResult.size() ) {
+            return null;
+        } else {
+            return (Table_section)queryResult.get(0);
+        }
+    }
+
+    int sproc_SectionChangeAndDeleteCrossref( int new_section_id, int old_section_id ) {
+        int rowCount = 0;
+
+        SQLProcessor.SQLTransaction transaction = sqlProcessor.startTransaction();
+        Integer oldSectionId = new Integer(old_section_id);
+        try {
+            rowCount += sectionDelete( transaction, oldSectionId );
+            String sql = "update meta_section set section_id = ? where section_id = ? ";
+            Object[] paramValues = new Object[]{ new Integer(new_section_id), oldSectionId };
+            rowCount += transaction.executeUpdate( sql, paramValues );
+            transaction.commit();
+        } catch( SQLException ex ) {
+            transaction.rollback();
+            log.warn( "Failure in sproc_SectionChangeAndDeleteCrossref", ex );
+        }
+        return rowCount;
+    }
+
     Table_section[] sproc_SectionGetAll() {
         String sql = "SELECT section_id, section_name FROM sections";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
@@ -2171,17 +2206,22 @@ public abstract class DatabaseService {
     }
 
     int sproc_SectionDelete( int section_id ) {
-        Integer sectionId = new Integer( section_id );
-        SQLProcessor.SQLTransaction transaction = sqlProcessor.startTransaction();
         int rowCount = 0;
+        SQLProcessor.SQLTransaction transaction = sqlProcessor.startTransaction();
         try {
-            rowCount = deleteFrom_meta_section( transaction, sectionId );
-            rowCount += deleteFrom_sections( transaction, sectionId );
+            Integer sectionId = new Integer( section_id );
+            rowCount += sectionDelete( transaction, sectionId );
             transaction.commit();
         } catch( SQLException ex ) {
             transaction.rollback();
             log.warn( "sproc_SectionDelete failed", ex );
         }
+        return rowCount;
+    }
+
+    private int sectionDelete( SQLProcessor.SQLTransaction transaction, Integer sectionId ) throws SQLException {
+        int rowCount = deleteFrom_meta_section( transaction, sectionId );
+        rowCount += deleteFrom_sections( transaction, sectionId );
         return rowCount;
     }
 

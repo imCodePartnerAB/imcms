@@ -116,8 +116,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_SectionGetAll( databaseService );
             test_sproc_SectionGetAllCount( databaseService );
             test_sproc_SectionCount( databaseService );
+            test_sproc_SectionGetInheritId( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_SectionGetInheritId( DatabaseService databaseService ) {
+        assertNotNull( databaseService.sproc_SectionGetInheritId( DOC_TEST_FIRST_ID ) );
     }
 
     private void test_sproc_SectionCount( DatabaseService databaseService ) {
@@ -538,6 +543,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService databaseService = databaseServices[i];
             assertEquals(1, databaseService.sproc_SectionAddCrossref(metaSectionData) );
+        }
+    }
+
+    public void test_sproc_SectionChangeAndDeleteCrossref() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 2, databaseService.sproc_SectionChangeAndDeleteCrossref( SECTION_TEST_ID + 1, SECTION_TEST_ID  ) );
         }
     }
 

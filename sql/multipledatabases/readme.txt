@@ -100,7 +100,6 @@ roleupdatepermissions.prc
 searchdocs.prc
 searchdocsindex.prc
 sectionchangeanddeletecrossref.prc
-sectiongetinheritid.prc
 servermasterget.prc
 servermasterset.prc
 setdocpermissionset.prc
