@@ -9,8 +9,8 @@ Template: AdminChangeUser.htm
 
 <title>Användare</title>
 
-<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
-<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
+<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
 
 <SCRIPT language="JavaScript">
 <!--
@@ -137,7 +137,7 @@ writeFormField("TEXT","searchstring",20,20,null,"");
 		</select></td>
 		<td>&nbsp;</td>
 		<td>
-		<input type="submit" class="imcmsFormBtnSmall" name="ADD_USER" value="Lägg till ny" style="width:80"><br><img src="@rooturl@/imcms/images/1x1.gif" width="1" height="3"><br><input type="submit" class="imcmsFormBtnSmall" name="CHANGE_USER" value=" Redigera " onClick="if(!evalEditUser()) return false;" style="width:80"></td>
+		<input type="submit" class="imcmsFormBtnSmall" name="ADD_USER" value="Lägg till ny" style="width:80"><br><img src="@imcmsimageurl@/1x1.gif" width="1" height="3"><br><input type="submit" class="imcmsFormBtnSmall" name="CHANGE_USER" value=" Redigera " onClick="if(!evalEditUser()) return false;" style="width:80"></td>
 	</tr>
 	</table></td>
 </tr>
