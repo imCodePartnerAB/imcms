@@ -381,4 +381,6 @@ public interface IMCServiceInterface {
     
     public boolean checkUserDocSharePermission(User user, int meta_id)  ;
 
+    public String getInclude(String path) throws java.io.IOException ;
+    
 }

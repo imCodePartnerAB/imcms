@@ -2747,4 +2747,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	return sqlProcedure("CheckUserDocSharePermission "+user.getUserId()+","+meta_id).length>0 ;
     }
 
+    /**
+       Return a file relative to the include-path.
+    **/
+    public String getInclude(String path) throws IOException {
+	return fileCache.getCachedFileString(new File(m_IncludePath,path)) ;
+    }
+
 } // END CLASS IMCService
