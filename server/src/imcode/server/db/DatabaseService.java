@@ -214,8 +214,8 @@ public class DatabaseService {
             }
         };
 
-        ArrayList result = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
-        return (Table_roles[])result.toArray( new Table_roles[result.size()] );
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
+        return (Table_roles[])queryResult.toArray( new Table_roles[queryResult.size()] );
     }
 
     static class Table_users {
@@ -356,8 +356,8 @@ public class DatabaseService {
             }
         };
 
-        ArrayList result = sqlProcessor.executeQuery( sql, null, resultProcessor );
-        return (Table_users[])result.toArray( new Table_users[result.size()] );
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, resultProcessor );
+        return (Table_users[])queryResult.toArray( new Table_users[queryResult.size()] );
     }
 
     static class ViewTemplateGroup {
@@ -400,8 +400,8 @@ public class DatabaseService {
             }
         };
 
-        ArrayList result = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
-        return (ViewTemplateGroup[])result.toArray( new ViewTemplateGroup[result.size()] );
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
+        return (ViewTemplateGroup[])queryResult.toArray( new ViewTemplateGroup[queryResult.size()] );
     }
 
     // todo, ska man behöva stoppa in user_id här? Kan man inte bara få ett unikt?
@@ -447,8 +447,8 @@ public class DatabaseService {
                 return new Integer( id );
             }
         };
-        ArrayList result = sqlProcessor.executeQuery( sql, null, resultProcessor );
-        Integer id = (Integer)(result.get( 0 ));
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, null, resultProcessor );
+        Integer id = (Integer)(queryResult.get( 0 ));
         if( id == null ) {
             return 0;
         } else {
@@ -488,5 +488,58 @@ public class DatabaseService {
             "VALUES ( ?, ? )";
         Object[] paramValues = new Object[]{ new Integer(user_id), new Integer(role_id) };
        return sqlProcessor.executeUpdate( sql, paramValues );
+    }
+
+
+    static class Table_user_roles_crossref {
+        int user_id;
+        int role_id;
+
+        public Table_user_roles_crossref( int user_id, int role_id ) {
+            this.user_id = user_id;
+            this.role_id = role_id;
+        }
+
+        public boolean equals( Object o ) {
+            if( this == o )
+                return true;
+            if( !(o instanceof Table_user_roles_crossref) )
+                return false;
+
+            final Table_user_roles_crossref table_user_roles_crossref = (Table_user_roles_crossref)o;
+
+            if( role_id != table_user_roles_crossref.role_id )
+                return false;
+            if( user_id != table_user_roles_crossref.user_id )
+                return false;
+
+            return true;
+        }
+    }
+
+    /**
+     * Adds a role to a particular user
+     */
+    int sproc_AddUserRole(  Table_user_roles_crossref userRoleTupple ) {
+        // Lets check if the role already exists
+       ArrayList querryResult = sql_selectUserAndRoleFrom_user_roles_crossref( userRoleTupple );
+
+       if( querryResult.size() == 0 ) {
+           Object[] paramValues = new Object[]{ new Integer( userRoleTupple.user_id ), new Integer( userRoleTupple.role_id ) };
+           String sqlInsert = "INSERT INTO user_roles_crossref(user_id, role_id) VALUES( ? , ? )";
+           return sqlProcessor.executeUpdate( sqlInsert, paramValues );
+       } else {
+           return 0;
+       }
+    }
+
+    private ArrayList sql_selectUserAndRoleFrom_user_roles_crossref( Table_user_roles_crossref userRoleTupple ) {
+        String sqlSelect = "SELECT user_id, role_id FROM user_roles_crossref WHERE user_id = ? AND role_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( userRoleTupple.user_id ), new Integer( userRoleTupple.role_id ) };
+        return sqlProcessor.executeQuery( sqlSelect, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Table_user_roles_crossref( rs.getInt("user_id"), rs.getInt("role_id"));
+            }
+        } );
     }
 }

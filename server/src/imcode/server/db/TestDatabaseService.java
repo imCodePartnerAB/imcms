@@ -208,6 +208,23 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
+    public void test_sproc_AddUserRole() {
+        DatabaseService.Table_user_roles_crossref existing = new DatabaseService.Table_user_roles_crossref( 1, 0 );
+        DatabaseService.Table_user_roles_crossref nonExisting = new DatabaseService.Table_user_roles_crossref( 1, 1 );
+
+        test_sproc_AddUserRole( sqlServer, existing, nonExisting );
+        test_sproc_AddUserRole( mySql, existing, nonExisting );
+        if( testMimer ) {
+            test_sproc_AddUserRole( mimer, existing, nonExisting );
+        }
+    }
+
+    private void test_sproc_AddUserRole( DatabaseService dbService, DatabaseService.Table_user_roles_crossref existing, DatabaseService.Table_user_roles_crossref nonExisting ) {
+        assertEquals( 0, dbService.sproc_AddUserRole( existing ) );
+        assertEquals( 1, dbService.sproc_AddUserRole( nonExisting ) );
+        assertEquals( 0, dbService.sproc_AddUserRole( nonExisting ) );
+    }
+
     private DatabaseService.Table_users createDummyUser( int nextFreeUserId ) {
         DatabaseService.Table_users user = new DatabaseService.Table_users( nextFreeUserId, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", 0, 1001, 0, 1, 1, 1, new Timestamp( new java.util.Date().getTime() ) );
         return user;
