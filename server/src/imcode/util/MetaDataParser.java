@@ -589,16 +589,18 @@ public class MetaDataParser {
 		{
 		// Check if the current user may set this templategroup for any set-id (May he use it himself?)
 	    	
-			if ( user_set_id == 0 )			// If current user has full rights,		 	    ) 
-			{
-				options_templates += "<option value=\"2097152_" + templates[i] + "\">" + templates[i+1]+"</option>" ;
-	    	}
+		//	if ( user_set_id == 0 )			// If current user has full rights,		 	    ) 
+		//	{
+	    //	}
+	    	options_templates += "<option value=\"2097152_" + templates[i] + "\">" + templates[i+1]+"</option>" ;
+			
 		}
 		
-		vec.put("templates", option_templates) ;
+		
+		
+		vec.put("templates", options_templates) ;
 
 //----------------------------------------------------------------------------------------
-
 
 
 	vec.put("set_id", String.valueOf(set_id)) ;
@@ -614,9 +616,12 @@ public class MetaDataParser {
 	vec.put("doc_rights",doc_specific.toString()) ;
 
 	StringBuffer complete ;
-	if ( for_new ) {
+	if ( for_new ) 
+	{
 	    complete = new StringBuffer(IMCServiceRMI.parseDoc(imcserver,null,"permissions/define_new_permissions.html",lang_prefix)) ;
-	} else {
+	} 
+	else 
+	{
 	    complete = new StringBuffer(IMCServiceRMI.parseDoc(imcserver,null,"permissions/define_permissions.html",lang_prefix)) ;
 	}
 
