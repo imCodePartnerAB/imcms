@@ -16,6 +16,7 @@ import imcode.util.poll.PollHandlingSystemImpl;
 import imcode.util.shop.ShoppingOrderSystem;
 import imcode.util.shop.ShoppingOrderSystemImpl;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
@@ -566,6 +567,9 @@ final public class IMCService implements IMCServiceInterface {
      */
     public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                             String directory ) {
+        if (null == user) {
+            throw new NullArgumentException( "user" ) ;
+        }
         String langPrefix = user.getLanguageIso639_2() ;
         return getTemplate( langPrefix + "/" + directory + "/"
                             + adminTemplateName, user, variables );
@@ -577,6 +581,9 @@ final public class IMCService implements IMCServiceInterface {
     public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
                                                           String directory, String subDirectory ) {
 
+        if (null == user) {
+            throw new NullArgumentException( "user" ) ;
+        }
         String langPrefix = this.getUserLangPrefixOrDefaultLanguage( user );
 
         return getTemplate( langPrefix + "/" + directory + "/" + subDirectory
@@ -584,7 +591,7 @@ final public class IMCService implements IMCServiceInterface {
                             + adminTemplateName, user, variables );
     }
 
-    public String getTemplate( String path, UserDomainObject user, List variables ) {
+    private String getTemplate( String path, UserDomainObject user, List variables ) {
         try {
             VelocityEngine velocity = getVelocityEngine( user );
             VelocityContext context = getVelocityContext( user );
@@ -641,6 +648,7 @@ final public class IMCService implements IMCServiceInterface {
 
     public VelocityContext getVelocityContext( UserDomainObject user ) {
         VelocityContext context = new VelocityContext();
+        // FIXME: This method needs an HttpServletRequest in, to get the context path from
         context.put( "contextPath", user.getCurrentContextPath() );
         context.put( "language", user.getLanguageIso639_2() );
         return context;

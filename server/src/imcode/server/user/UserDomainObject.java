@@ -453,6 +453,7 @@ public class UserDomainObject extends Hashtable {
         return "(user " + id + " \"" + getLazilyLoadedUserAttributes().loginName + "\")";
     }
 
+    /* FIXME: Current context path should be sent in a HttpServletRequest, not in an UserDomainObject. */ 
     public void setCurrentContextPath( String currentContextPath ) {
         this.currentContextPath = currentContextPath;
     }

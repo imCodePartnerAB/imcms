@@ -173,8 +173,6 @@ public interface IMCServiceInterface {
 
     public String getFortune(String path) throws IOException ;
 
-    public String getTemplate( String path, UserDomainObject user, List variables ) throws IOException ;
-
     public List getQuoteList(String quoteListName);
 
     public void setQuoteList(String quoteListName, List quoteList) throws IOException ;

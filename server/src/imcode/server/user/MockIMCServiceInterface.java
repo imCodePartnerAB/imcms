@@ -299,10 +299,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public String getTemplate( String path, UserDomainObject user, List variables ) throws IOException {
-      return null;
-   }
-
     public List getQuoteList( String quoteListName ) {
         return null;  // TODO
     }

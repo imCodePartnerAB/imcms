@@ -18,8 +18,6 @@ import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
 
-    //private final static Logger log = Logger.getLogger( ImcmsSetupFilter.class );
-
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
 
         HttpServletRequest httpServletRequest = ((HttpServletRequest) request);
@@ -37,6 +35,8 @@ public class ImcmsSetupFilter implements Filter {
             user = getUserUserOrIpLoggedInUser( ip );
             session.setAttribute( WebAppGlobalConstants.LOGGED_IN_USER, user );
         }
+
+        // FIXME: Ugly hack to get the contextpath into IMCService.getVelocityContext()
         user.setCurrentContextPath( ((HttpServletRequest) request).getContextPath() );
 
         initRequestWithApi( user, request );
