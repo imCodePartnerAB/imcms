@@ -16,7 +16,6 @@
 <tr>
     <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
 </tr>
-<form method="post" name="subreport" action="AdminManager">
 <tr>
     <td nowrap><span class="imcmsAdmHeading" ><%= StringEscapeUtils.escapeHtml( subreportHeading.toLocalizedString( request ) ) %> (<%= documents.size() %> <? web/imcms/lang/jsp/admin/admin_manager.jsp/10 ?>)</span></td>
     <td align="right">
@@ -55,7 +54,6 @@
     <tr>
         <td colspan="4"><img src="<%= imagesPath %>/1x1_cccccc.gif" width="100%" height="1"></td>
     </tr>
-</form>
 
    <% for (int i = 0; i < documents.size() && subreport.isBelowMaxDocumentCount(i); i++) {
         boolean expand = i < 2 || subreport.isExpanded() ;

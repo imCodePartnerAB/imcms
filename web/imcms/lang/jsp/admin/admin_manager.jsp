@@ -44,40 +44,42 @@
 #gui_head( "<? web/imcms/lang/jsp/admin/admin_manager.jsp/1 ?> - <%= adminManagerPage.getHeading().toLocalizedString( request ) %>" )
 <!-- /gui_head -->
 
-<table  border="0" cellspacing="0" cellpadding="0" width="100%">
-<tr>
-	<td colspan="4" id="adm">
-	    <table border="0" cellspacing="0" cellpadding="0">
-        <form method="post" action="AdminManager" name="AdminManager">
-         <% if ( null != adminManagerPage.getHtmlAdminPart() ) { %>
-	    <tr>
-		    <td><%= adminManagerPage.getHtmlAdminPart() %></td>
-		    <td>&nbsp; &nbsp;</td>
-		    <td><input type="submit" class="imcmsFormBtnSmall" style="height:20"  name="submit" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/2 ?>"></td>
+    <table  border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tr>
+            <td colspan="4" id="adm">
+                <table border="0" cellspacing="0" cellpadding="0">
+                    <form method="post" action="AdminManager" name="AdminManager">
+                         <% if ( null != adminManagerPage.getHtmlAdminPart() ) { %>
+                            <tr>
+                                <td><%= adminManagerPage.getHtmlAdminPart() %></td>
+                                <td>&nbsp; &nbsp;</td>
+                                <td><input type="submit" class="imcmsFormBtnSmall" style="height:20"  name="submit" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/2 ?>"></td>
+                            </tr>
+                        <% }else { %>
+                            <tr><td colspan="3">&nbsp;</td></tr>
+                        <%}%>
+                    </form>
+                </table></td>
+                <form action="StartDoc">
+            <td colspan="2" align="right"><input type="submit" class="imcmsFormBtnSmall" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/3 ?>">
+                &nbsp;&nbsp;<input type="button" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/4 ?>" title="<? web/imcms/lang/jsp/admin/admin_manager.jsp/5 ?>" class="imcmsFormBtnSmall" onClick="openHelpW(28)"></td>
+                </form>
         </tr>
-        <% }else { %>
-        <tr><td colspan="3">&nbsp;</td></tr>
-        <%}%>
-        </form>
-	    </table></td>
-        <form action="StartDoc">
-    <td colspan="2" align="right"><input type="submit" class="imcmsFormBtnSmall" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/3 ?>">
-	    &nbsp;&nbsp;<input type="button" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/4 ?>" title="<? web/imcms/lang/jsp/admin/admin_manager.jsp/5 ?>" class="imcmsFormBtnSmall" onClick="openHelpW(28)"></td>
-	    </form>
-</tr>
-</table>
+    </table>
 #gui_mid_tabs1()
 <%= tabString %>
 #gui_mid_tabs2()
+    <form method="post" name="subreport" action="AdminManager">
+        <%
+          List subreports = adminManagerPage.getSubreports() ;
+          for ( Iterator iterator = subreports.iterator(); iterator.hasNext(); ) {
+              AdminManagerSubreport subreport = (AdminManagerSubreport)iterator.next();
+              request.setAttribute( "subreport", subreport );
+              %><jsp:include page="admin_manager_subreport.jsp"/><%
+          }
+        %>
+    </form>
 
-<%
-  List subreports = adminManagerPage.getSubreports() ;
-  for ( Iterator iterator = subreports.iterator(); iterator.hasNext(); ) {
-      AdminManagerSubreport subreport = (AdminManagerSubreport)iterator.next();
-      request.setAttribute( "subreport", subreport );
-      %><jsp:include page="admin_manager_subreport.jsp"/><%
-  }
-%>
 </table>
 
 #gui_end_of_page()

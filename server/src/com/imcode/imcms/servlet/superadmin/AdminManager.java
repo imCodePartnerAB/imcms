@@ -51,8 +51,6 @@ public class AdminManager extends Administrator {
     public static final String REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder = "list_documents_not_changed_in_six_month_current_sortorder";
     public static final String REQUEST_PARAMETER__list_documents_changed_current_sortorder = "list_documents_changed_current_sortorder";
     public static final String REQUEST_PARAMETER__SEARCH_LIST_CURRENT_SORTORDER = "search_list_current_sortorder";
-    private static final String REQUEST_PARAMETER__NEW_SORTORDER = "new_sortorder";
-    private static final String REQUEST_PARAMETER__LIST_TYPE = "list_type";
     public static final String REQUEST_PARAMETER__list_new_not_approved_current_expand = "list_new_not_approved_current_expand";
     public static final String REQUEST_PARAMETER__list_documents_changed_current_expand = "list_documents_changed_current_expand";
     public static final String REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand = "list_documents_archived_less_then_one_week_current_expand";
@@ -126,109 +124,72 @@ public class AdminManager extends Administrator {
         Query restrictingQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + "" ) );
         booleanQuery.add( restrictingQuery, true, false );
 
-        HashMap current_sortorderMap = new HashMap();
-        HashMap expand_listMap = new HashMap();
-        String sortorder;
-        String new_sortorder = "";
-        String list_toChange_sortorder = "";
         DocumentDomainObject[] documentsFound = index.search( booleanQuery, loggedOnUser );
+
+        addNewNotApprovedDocumentsToList( booleanQuery, documents_new, index, loggedOnUser );
+        addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_modified );
+
+        AdminManagerSubreport newDocumentsSubreport = createNewDocumentsSubreport( documents_new );
+        AdminManagerSubreport modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documents_modified );
+        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documents_archived_less_then_one_week );
+        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documents_publication_end_less_then_one_week );
+        AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documents_not_changed_in_six_month );
 
         AdminManagerPage adminManagerPage = null ;
         if ( tabToShow.equals( PARAMETER_VALUE__SHOW_NEW ) ) {
 
-            addNewNotApprovedDocumentsToList( booleanQuery, documents_new, index, loggedOnUser );
+            newDocumentsSubreport.setMaxDocumentCount( 0 );
 
-            if ( null != req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER ) ) {
-                new_sortorder = req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER );
-                list_toChange_sortorder = LIST_TYPE__list_new_not_approved;
-            }
-            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_sortorder ), LIST_TYPE__list_new_not_approved, "MOD" );
-            current_sortorderMap.put( LIST_TYPE__list_new_not_approved, sortorder );
-            Collections.sort( documents_new, getComparator( sortorder ) );
-            setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_new_not_approved, REQUEST_PARAMETER__list_new_not_approved_current_expand );
+            AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
+            newDocumentsAdminManagerPage.setName( "admin_manager_new.jsp");
+            newDocumentsAdminManagerPage.setTabName( "new" );
+            newDocumentsAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0" ) );
 
-            // documents_new_not_approved = new AdminManagerSubreport(LIST_TYPE__list_new_not_approved, "", "", DEFAULT_DOCUMENTS_PER_LIST, documents_new  );
-            adminManagerPage = createNewDocumentsAdminManagerPage( documents_new );
+            newDocumentsAdminManagerPage.addSubreport( newDocumentsSubreport );
+
+            adminManagerPage = newDocumentsAdminManagerPage;
 
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_REMINDERS ) ) {
 
+            AdminManagerPage reminderAdminManagerPage = new AdminManagerPage();
+            reminderAdminManagerPage.setName( "admin_manager_reminders.jsp" );
+            reminderAdminManagerPage.setTabName( "reminders" );
+            reminderAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1" ) );
 
-            if ( null != req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER ) ) {
-                new_sortorder = req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER );
-                list_toChange_sortorder = req.getParameter( REQUEST_PARAMETER__LIST_TYPE );
-            }
-            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_sortorder ), LIST_TYPE__list_documents_archived_less_then_one_week, "ARCR" );
-            current_sortorderMap.put( LIST_TYPE__list_documents_archived_less_then_one_week, sortorder );
+            documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
+            reminderAdminManagerPage.addSubreport(documentsArchivedWithinOneWeekSubreport);
 
-            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder ), LIST_TYPE__list_documents_publication_end_less_then_one_week, "PUBER" );
-            current_sortorderMap.put( LIST_TYPE__list_documents_publication_end_less_then_one_week, sortorder );
+            modifiedDocumentsSubreport.setMaxDocumentCount( 0 );
+            reminderAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
 
-            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder ), LIST_TYPE__list_documents_not_changed_in_six_month, "MOD" );
-            current_sortorderMap.put( LIST_TYPE__list_documents_not_changed_in_six_month, sortorder );
+            documentsUnpublishedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
+            reminderAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
 
-            addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, null, current_sortorderMap );
+            documentsUnmodifiedForSixMonthsSubreport.setMaxDocumentCount( 0 );
+            reminderAdminManagerPage.addSubreport( documentsUnmodifiedForSixMonthsSubreport );
 
-            setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_archived_less_then_one_week, REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand );
-            setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_publication_end_less_then_one_week, REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder );
-            setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_not_changed_in_six_month, REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder );
-
-            adminManagerPage = createReminderAdminManagerPage( documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_modified );
+            adminManagerPage = reminderAdminManagerPage;
 
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SUMMARY ) ) {
 
-            addNewNotApprovedDocumentsToList( booleanQuery, documents_new, index, loggedOnUser );
+            AdminManagerPage summaryAdminManagerPage = new AdminManagerPage();
+            summaryAdminManagerPage.setName( "admin_manager_summary.jsp" );
+            summaryAdminManagerPage.setTabName( "summary" );
+            summaryAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2" ) );
 
-            if ( null != req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER ) ) {
-                new_sortorder = req.getParameter( REQUEST_PARAMETER__NEW_SORTORDER );
-                list_toChange_sortorder = req.getParameter( REQUEST_PARAMETER__LIST_TYPE );
-            }
-            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_sortorder ), LIST_TYPE__list_new_not_approved, "MOD" );
-            current_sortorderMap.put( LIST_TYPE__list_new_not_approved, sortorder );
-            Collections.sort( documents_new, getComparator( sortorder ) );
+            summaryAdminManagerPage.addSubreport( newDocumentsSubreport );
 
-            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_changed_current_sortorder ), LIST_TYPE__list_documents_changed, "MOD" );
-            current_sortorderMap.put( LIST_TYPE__list_documents_changed, sortorder );
+            summaryAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
 
-            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder ), LIST_TYPE__list_documents_publication_end_less_then_one_week, "PUBER" );
-            current_sortorderMap.put( LIST_TYPE__list_documents_publication_end_less_then_one_week, sortorder );
+            summaryAdminManagerPage.addSubreport( documentsArchivedWithinOneWeekSubreport );
 
-            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_sortorder ), LIST_TYPE__list_documents_archived_less_then_one_week, "ARCR" );
-            current_sortorderMap.put( LIST_TYPE__list_documents_archived_less_then_one_week, sortorder );
+            summaryAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
 
-            sortorder = getSortorderForListType( list_toChange_sortorder, new_sortorder, req.getParameter( REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder ), LIST_TYPE__list_documents_not_changed_in_six_month, "MOD" );
-            current_sortorderMap.put( LIST_TYPE__list_documents_not_changed_in_six_month, sortorder );
+            summaryAdminManagerPage.addSubreport( documentsUnmodifiedForSixMonthsSubreport );
+            adminManagerPage = summaryAdminManagerPage;
 
-            addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_modified, current_sortorderMap );
-
-            expand_listMap.put( LIST_TYPE__list_new_not_approved, null
-                                                                  != req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_expand )
-                                                                  ? req.getParameter( REQUEST_PARAMETER__list_new_not_approved_current_expand )
-                                                                  : "hide" );
-            expand_listMap.put( LIST_TYPE__list_documents_changed, null
-                                                                   != req.getParameter( REQUEST_PARAMETER__list_documents_changed_current_expand )
-                                                                   ? req.getParameter( REQUEST_PARAMETER__list_documents_changed_current_expand )
-                                                                   : "hide" );
-            expand_listMap.put( LIST_TYPE__list_documents_publication_end_less_then_one_week, null
-                                                                                              != req.getParameter( REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_expand )
-                                                                                              ? req.getParameter( REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_expand )
-                                                                                              : "hide" );
-            expand_listMap.put( LIST_TYPE__list_documents_archived_less_then_one_week, null
-                                                                                       != req.getParameter( REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand )
-                                                                                       ? req.getParameter( REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand )
-                                                                                       : "hide" );
-            expand_listMap.put( LIST_TYPE__list_documents_not_changed_in_six_month, null
-                                                                                    != req.getParameter( REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_expand )
-                                                                                    ? req.getParameter( REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_expand )
-                                                                                    : "hide" );
-
-            setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_new_not_approved, REQUEST_PARAMETER__list_new_not_approved_current_expand );
-            setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_changed, REQUEST_PARAMETER__list_documents_changed_current_expand );
-            setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_publication_end_less_then_one_week, REQUEST_PARAMETER__list_documents_publication_end_less_then_one_week_current_sortorder );
-            setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_archived_less_then_one_week, REQUEST_PARAMETER__list_documents_archived_less_then_one_week_current_expand );
-            setNewExpandStatusForList( req, expand_listMap, LIST_TYPE__list_documents_not_changed_in_six_month, REQUEST_PARAMETER__list_documents_not_changed_in_six_month_current_sortorder );
-
-            adminManagerPage = createSummaryAdminManagerPage( documents_new, documents_modified, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month );
         } else if ( tabToShow.equals( PARAMETER_VALUE__SHOW_SEARCH ) ) {
+
             DocumentFinder documentFinder = new DocumentFinder( new AdminManagerSearchPage() );
             documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
             documentFinder.forward( req, res );
@@ -240,32 +201,6 @@ public class AdminManager extends Administrator {
         }
     }
 
-    private AdminManagerPage createSummaryAdminManagerPage( List documents_new, List documents_modified,
-                                                                         List documents_archived_less_then_one_week,
-                                                                         List documents_publication_end_less_then_one_week,
-                                                                         List documents_not_changed_in_six_month ) {
-        AdminManagerPage summaryAdminManagerPage = new AdminManagerPage();
-        summaryAdminManagerPage.setName( "admin_manager_summary.jsp" );
-        summaryAdminManagerPage.setTabName( "summary" );
-        summaryAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/2" ) );
-
-        AdminManagerSubreport newDocumentsSubreport = createNewDocumentsSubreport( documents_new ) ;
-        summaryAdminManagerPage.addSubreport( newDocumentsSubreport );
-
-        AdminManagerSubreport modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documents_modified );
-        summaryAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
-
-        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documents_archived_less_then_one_week );
-        summaryAdminManagerPage.addSubreport( documentsArchivedWithinOneWeekSubreport );
-
-        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documents_publication_end_less_then_one_week );
-        summaryAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
-
-        AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documents_not_changed_in_six_month );
-        summaryAdminManagerPage.addSubreport( documentsUnmodifiedForSixMonthsSubreport );
-        return summaryAdminManagerPage;
-    }
-
     private AdminManagerSubreport createModifiedDocumentsSubreport( List documents_modified ) {
         AdminManagerSubreport modifiedDocumentsSubreport = new AdminManagerSubreport();
         modifiedDocumentsSubreport.setDocuments( documents_modified );
@@ -273,51 +208,11 @@ public class AdminManager extends Administrator {
         return modifiedDocumentsSubreport;
     }
 
-    private AdminManagerPage createNewDocumentsAdminManagerPage( List documents_new ) {
-        AdminManagerSubreport newDocumentsSubreport = createNewDocumentsSubreport( documents_new );
-        newDocumentsSubreport.setMaxDocumentCount( 0 );
-
-        AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
-        newDocumentsAdminManagerPage.setName( "admin_manager_new.jsp");
-        newDocumentsAdminManagerPage.setTabName( "new" );
-        newDocumentsAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/0" ) );
-        newDocumentsAdminManagerPage.addSubreport(newDocumentsSubreport) ;
-        return newDocumentsAdminManagerPage;
-    }
-
     private AdminManagerSubreport createNewDocumentsSubreport( List documents_new ) {
         AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
         newDocumentsSubreport.setDocuments( documents_new );
         newDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1" ) );
         return newDocumentsSubreport;
-    }
-
-    private AdminManagerPage createReminderAdminManagerPage( List documents_archived_less_then_one_week,
-                                                             List documents_publication_end_less_then_one_week,
-                                                             List documents_not_changed_in_six_month,
-                                                             List documents_modified ) {
-        AdminManagerPage reminderAdminManagerPage = new AdminManagerPage();
-        reminderAdminManagerPage.setName( "admin_manager_reminders.jsp" );
-        reminderAdminManagerPage.setTabName( "reminders" );
-        reminderAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1" ) );
-
-        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documents_archived_less_then_one_week );
-        documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
-        reminderAdminManagerPage.addSubreport(documentsArchivedWithinOneWeekSubreport);
-
-        AdminManagerSubreport modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documents_modified );
-        //modifiedDocumentsSubreport.setMaxDocumentCount( 0 );
-        reminderAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
-
-        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documents_publication_end_less_then_one_week );
-        documentsUnpublishedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
-        reminderAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
-
-        AdminManagerSubreport documentsUnchangedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documents_not_changed_in_six_month );
-        documentsUnchangedForSixMonthsSubreport.setMaxDocumentCount( 0 );
-        reminderAdminManagerPage.addSubreport( documentsUnchangedForSixMonthsSubreport );
-
-        return reminderAdminManagerPage;
     }
 
     private AdminManagerSubreport createDocumentsUnmodifiedForSixMonthsSubreport(
@@ -342,35 +237,6 @@ public class AdminManager extends Administrator {
         documentsUnpublishedWithinOneWeekSubreport.setDocuments( documents_publication_end_less_then_one_week );
         documentsUnpublishedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3" ) );
         return documentsUnpublishedWithinOneWeekSubreport;
-    }
-
-    private void setNewExpandStatusForList( HttpServletRequest req, HashMap expand_listMap, String list,
-                                            String request_parameter ) {
-
-        String expand_status = null != req.getParameter( request_parameter )
-                               ? req.getParameter( request_parameter ) : "hide";
-
-        if ( list.equals( req.getParameter( "list_type" ) ) ) {
-            if ( null != req.getParameter( REQUEST_PARAMETER__showAll ) ) {
-                expand_status = "expand";
-            }
-            if ( null != req.getParameter( REQUEST_PARAMETER__hideAll ) ) {
-                expand_status = "hide";
-            }
-        }
-
-        expand_listMap.put( list, expand_status );
-    }
-
-    private String getSortorderForListType( String list_toChange_sortorder, String new_sortorder,
-                                            String current_sortorder, String list_type, String default_sortorder ) {
-        String sortorder;
-        if ( list_toChange_sortorder.equals( list_type ) ) {
-            sortorder = new_sortorder;
-        } else {
-            sortorder = null != current_sortorder ? current_sortorder : default_sortorder;
-        }
-        return sortorder;
     }
 
     private static class DatesSummarySearchResultColumn implements DocumentFinder.SearchResultColumn {
@@ -455,8 +321,7 @@ public class AdminManager extends Administrator {
     private void addFoundDocumentsToCorrespondingList( DocumentDomainObject[] documentsFound,
                                                        List documents_archived_less_then_one_week,
                                                        List documents_publication_end_less_then_one_week,
-                                                       List documents_not_changed_in_six_month, List documents_changed,
-                                                       HashMap sortorderMap ) {
+                                                       List documents_not_changed_in_six_month, List documents_changed ) {
         Date now = new Date();
         Date oneWeekAhead = getDate( +7 );
         Date sixMonthAgo = getDate( -182 );
@@ -466,7 +331,6 @@ public class AdminManager extends Administrator {
                  && documentsFound[i].getArchivedDatetime().after( now )
                  && documentsFound[i].getArchivedDatetime().before( oneWeekAhead ) ) {
                 documents_archived_less_then_one_week.add( documentsFound[i] );
-                Collections.sort( documents_archived_less_then_one_week, getComparator( sortorderMap.get( LIST_TYPE__list_documents_archived_less_then_one_week ).toString() ) );
             }
 
             if ( null != documents_publication_end_less_then_one_week
@@ -474,19 +338,16 @@ public class AdminManager extends Administrator {
                  && documentsFound[i].getPublicationEndDatetime().after( now )
                  && documentsFound[i].getPublicationEndDatetime().before( oneWeekAhead ) ) {
                 documents_publication_end_less_then_one_week.add( documentsFound[i] );
-                Collections.sort( documents_publication_end_less_then_one_week, getComparator( sortorderMap.get( LIST_TYPE__list_documents_publication_end_less_then_one_week ).toString() ) );
             }
 
             if ( null != documents_not_changed_in_six_month && null != documentsFound[i].getModifiedDatetime()
                  && documentsFound[i].getModifiedDatetime().before( sixMonthAgo ) ) {
                 documents_not_changed_in_six_month.add( documentsFound[i] );
-                Collections.sort( documents_not_changed_in_six_month, getComparator( sortorderMap.get( LIST_TYPE__list_documents_not_changed_in_six_month ).toString() ) );
             }
 
             if ( null != documents_changed && null != documentsFound[i].getModifiedDatetime()
                  && documentsFound[i].getModifiedDatetime().after( documentsFound[i].getCreatedDatetime() ) ) {
                 documents_changed.add( documentsFound[i] );
-                Collections.sort( documents_changed, getComparator( sortorderMap.get( LIST_TYPE__list_documents_changed ).toString() ) );
             }
         }
     }
