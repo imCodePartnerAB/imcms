@@ -52,9 +52,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private final static Logger mainLog = Logger.getLogger( "mainlog" );
 
     private final static Logger log = Logger.getLogger( DefaultImcmsServices.class.getName() );
-    private static final String EXTERNAL_AUTHENTICATOR_SMB = "SMB";
+
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
+
     private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
     private ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAuthAndMapper = null;
     private DocumentMapper documentMapper;
@@ -144,7 +145,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             return dateFormat.parse( this.sqlProcedureStr( "GetCurrentSessionCounterDate", new String[0] ) );
         } catch ( ParseException ex ) {
             log.fatal( "Failed to get SessionCounterDate from db.", ex );
-            throw new RuntimeException( ex );
+            throw new UnhandledException( ex );
         }
     }
 
@@ -253,8 +254,6 @@ final public class DefaultImcmsServices implements ImcmsServices {
         try {
             if ( null == externalAuthenticatorName ) {
                 externalAuthenticator = null;
-            } else if ( EXTERNAL_AUTHENTICATOR_SMB.equalsIgnoreCase( externalAuthenticatorName ) ) {
-                externalAuthenticator = new SmbAuthenticator( authenticatorPropertiesSubset );
             } else if ( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
                 try {
                     externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
@@ -360,7 +359,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             try {
                 documentMapper.saveDocument( document, user );
             } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
-                throw new RuntimeException( e );
+                throw new UnhandledException( e );
             }
         }
     }
@@ -517,7 +516,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             }
             return result;
         } catch ( Exception e ) {
-            throw new RuntimeException( "getTemplate(\"" + path + "\") : " + e.getMessage(), e );
+            throw new UnhandledException( "getTemplate(\"" + path + "\") : " + e.getMessage(), e );
         }
     }
 
@@ -542,7 +541,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             }
             return velocityEngine;
         } catch ( Exception e ) {
-            throw new RuntimeException( e );
+            throw new UnhandledException( e );
         }
     }
 
@@ -695,9 +694,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
             int set_id = Integer.parseInt( perms[0] );
             int set = Integer.parseInt( perms[1] );
 
+            boolean userHasFullPermission = set_id == 0;
             if ( perms.length > 0
-                 && set_id == 0		// User has full permission for this document
-                 || ( set_id < 3 && ( ( set & permission ) > 0 ) )	// User has at least one of the permissions given.
+                 && userHasFullPermission		// User has full permission for this document
+                 || set_id < 3 && ( set & permission ) > 0	// User has at least one of the permissions given.
             ) {
                 return true;
             } else {

@@ -16,6 +16,7 @@ public class UserDomainObject extends Hashtable {
 
     public UserDomainObject() {
         lazilyLoadedUserAttributes = new LazilyLoadedUserAttributes();
+        lazilyLoadedUserPhoneNumbers = new LazilyLoadedUserPhoneNumbers();
     }
 
     UserDomainObject( int id ) {
@@ -70,8 +71,9 @@ public class UserDomainObject extends Hashtable {
     private LazilyLoadedUserAttributes getLazilyLoadedUserAttributes() {
         if (null == lazilyLoadedUserAttributes) {
             lazilyLoadedUserAttributes = new LazilyLoadedUserAttributes() ;
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper() ;
-            imcmsAuthenticatorAndUserMapper.initUserFromSqlData(this, imcmsAuthenticatorAndUserMapper.sqlSelectUserById(id));
+            if ( 0 != id ) {
+                getUserMapper().initUserFromSqlData(this, getUserMapper().sqlSelectUserById(id));
+            }
         }
         return lazilyLoadedUserAttributes;
     }
@@ -79,8 +81,9 @@ public class UserDomainObject extends Hashtable {
     private LazilyLoadedUserPhoneNumbers getLazilyLoadedUserPhoneNumbers() {
         if (null == lazilyLoadedUserPhoneNumbers) {
             lazilyLoadedUserPhoneNumbers = new LazilyLoadedUserPhoneNumbers() ;
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper() ;
-            imcmsAuthenticatorAndUserMapper.initUserPhoneNumbers(this) ;
+            if ( 0 != id ) {
+                getUserMapper().initUserPhoneNumbers(this) ;
+            }
         }
         return lazilyLoadedUserPhoneNumbers ;
     }
@@ -88,10 +91,16 @@ public class UserDomainObject extends Hashtable {
     private LazilyLoadedUserRoles getLazilyLoadedUserRoles() {
         if (null == lazilyLoadedUserRoles) {
             lazilyLoadedUserRoles = new LazilyLoadedUserRoles() ;
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper() ;
-            imcmsAuthenticatorAndUserMapper.initUserRoles(this) ;
+            if (0 != id) {
+                getUserMapper().initUserRoles(this) ;
+            }
         }
         return lazilyLoadedUserRoles ;
+    }
+
+    private ImcmsAuthenticatorAndUserMapper getUserMapper() {
+        ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        return imcmsAuthenticatorAndUserMapper;
     }
 
     /**
@@ -105,6 +114,11 @@ public class UserDomainObject extends Hashtable {
      * set user-id
      */
     public void setId( int id ) {
+        if (0 != this.id) {
+            getLazilyLoadedUserAttributes() ;
+            getLazilyLoadedUserPhoneNumbers() ;
+            getLazilyLoadedUserRoles() ;
+        }
         this.id = id;
     }
 
