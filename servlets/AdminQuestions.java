@@ -18,6 +18,8 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
     private final static String RESULT_ERR_MSG	= "qustion_result_err_msg.frag";
     private final static String OPTION_LINE		= "option_line.frag";
 
+    private final static long ONE_DAY = 86400000 ;
+
     /**
        The GET method creates the html page when this side has been
        redirected from somewhere else.
@@ -135,7 +137,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 		while (iter.hasNext()) {
 		    Poll poll = (Poll) iter.next();
 		    DateRange dates = poll.getDateRange();
-		    buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(dates.getEndDate())+" "+ poll.getQuestion());
+		    buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY))+" "+ poll.getQuestion());
 		    Iterator answerIter = poll.getAnswersIterator();
 		    while (answerIter.hasNext()) {
 			String answer = (String)answerIter.next();
@@ -179,7 +181,7 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	    while (iter.hasNext()) {
 		Poll poll = (Poll) iter.next();
 		DateRange dates = poll.getDateRange();
-		buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(dates.getEndDate())+" "+ poll.getQuestion() + "</option>");
+		buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY))+" "+ poll.getQuestion() + "</option>");
 	    }
 
 

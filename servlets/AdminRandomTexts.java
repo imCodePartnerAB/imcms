@@ -8,160 +8,162 @@ import imcode.util.fortune.* ;
 import java.text.SimpleDateFormat;
 
 
-public class AdminRandomTexts extends Administrator implements imcode.server.IMCConstants{
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+public class AdminRandomTexts extends Administrator implements imcode.server.IMCConstants {
+    private final static String CVS_REV = "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
-	private final static String HTML_TEMPLATE		= "admin_random_texts.html";
-	private final static String HTML_TEMPLATE_ADMIN = "admin_random_texts_file.html";
-	private final static String OPTION_LINE		= "option_line.frag";
+    private final static String HTML_TEMPLATE		= "admin_random_texts.html";
+    private final static String HTML_TEMPLATE_ADMIN = "admin_random_texts_file.html";
+    private final static String OPTION_LINE		= "option_line.frag";
 
-	/**
-	The GET method creates the html page when this side has been
-	redirected from somewhere else.
-	**/
-	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException	{
+    private final static long ONE_DAY = 86400000 ;
 
-		res.setContentType("text/html");
-		Writer out = res.getWriter();
+    /**
+       The GET method creates the html page when this side has been
+       redirected from somewhere else.
+    **/
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException	{
 
-		// Lets get the server this request was aimed for
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("adminserver",host) ;
+	res.setContentType("text/html");
+	Writer out = res.getWriter();
 
-		// Lets validate the session
-		if (super.checkSession(req,res) == false)	return ;
+	// Lets get the server this request was aimed for
+	String host = req.getHeader("Host") ;
+	String imcServer = Utility.getDomainPref("adminserver",host) ;
 
-		// Lets get an user object
-		imcode.server.User user = super.getUserObj(req,res) ;
-		if(user == null){
-			String header = "Error in AdminRandomTexts." ;
-			String msg = "Couldnt create an user object."+ "<BR>" ;
-			this.log(header + msg) ;
-			AdminError err = new AdminError(req,res,header,msg) ;
-			return ;
-		}
+	// Lets validate the session
+	if (super.checkSession(req,res) == false)	return ;
 
-		// Lets verify that the user who tries to admin a fortune is an admin
-		if (super.checkAdminRights(imcServer, user) == false){
-			String header = "Error in AdminRandomTexts." ;
-			String msg = "The user is not an administrator."+ "<BR>" ;
-			this.log(header + msg) ;
-
-			// Lets get the path to the admin templates folder
-			String server			= Utility.getDomainPref("adminserver",host) ;
-			File templateLib = getAdminTemplateFolder(server, user) ;
-
-			AdminError err = new AdminError(req,res,header,msg) ;
-			return ;
-		}
-
-		//get fortunefiles
-		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
-		File files[] = fortune_path.listFiles();
-
-		StringBuffer options = new StringBuffer() ;
-
-		for(int i=0;i<files.length;i++)	{
-			//remove suffixes and create optionstring
-			String filename=files[i].getName();
-			int index = filename.lastIndexOf(".");
-			if (index != -1) {
-			    filename=filename.substring(0,index);
-			}
-			if ( ( !filename.endsWith(".current") ) && ( !filename.endsWith(".stat") ) && ( !filename.endsWith(".poll") ) )	{
-			    options.append( "<option value=\""  + filename + "\">" + filename + "</option>" ) ;
-			}
-		}
-
-		//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
-		Vector values = new Vector();
-		values.add("#options#");
-		values.add(options.toString());
-
-		out.write(IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
-
-	} // End doGet
-
-	/**
-	doPost
-	*/
-	public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
-		// Lets get the parameters and validate them, we dont have any own
-		// parameters so were just validate the metadata
-		res.setContentType("text/html");
-		Writer out = res.getWriter();
-
-			String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("adminserver",host) ;
-
-		imcode.server.User user ;
-
-		// Check if the user logged on
-		if ((user = Check.userLoggedOn(req,res,"StartDoc" )) == null ){
-			return ;
-		}
-
-		HttpSession session = req.getSession();
-
-		String whichFile = req.getParameter("AdminFile") ;
-
-		if (req.getParameter("back")!=null)	{
-			res.sendRedirect("AdminManager") ;
-			return;
-		}
-
-		if (whichFile == null || "".equals(whichFile)){
-		    res.sendRedirect("AdminRandomTexts") ;
-		    return;
-		}
-
-		session.setAttribute("file",whichFile);
-
-		if (req.getParameter("edit")!=null)	{
-			String options = IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
-
-			StringBuffer buff = new StringBuffer();
-			List lines = IMCServiceRMI.getQuoteList(imcServer, whichFile+".txt");
-			Iterator iter = lines.iterator();
-			int counter = 0;
-			SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
-			while (iter.hasNext()) {
-				Quote quote = (Quote) iter.next();
-				DateRange dates = quote.getDateRange();
-				buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(dates.getEndDate())+" "+ quote.getText() + "</option>");
-			}
-
-
-			String date1 = "";
-			String date2 = "";
-			String text  = "";
-
-			//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
-			Vector values = new Vector();
-			values.add("#date1#");
-			values.add(date1);
-			values.add("#date2#");
-			values.add(date2);
-			values.add("#text#");
-			values.add(text);
-			values.add("#file#");
-			values.add(whichFile);
-			values.add("#options#");
-			values.add(buff.toString());
-
-			out.write(IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE_ADMIN , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
-			session.setAttribute("lines",lines);
-			return;
-		}
+	// Lets get an user object
+	imcode.server.User user = super.getUserObj(req,res) ;
+	if(user == null){
+	    String header = "Error in AdminRandomTexts." ;
+	    String msg = "Couldnt create an user object."+ "<BR>" ;
+	    this.log(header + msg) ;
+	    AdminError err = new AdminError(req,res,header,msg) ;
+	    return ;
 	}
 
-	/**
-	Log function, will work for both servletexec and Apache
-	**/
-	public void log( String str){
-		super.log(str) ;
-		System.out.println("AdminRandomTexts: " + str ) ;
+	// Lets verify that the user who tries to admin a fortune is an admin
+	if (super.checkAdminRights(imcServer, user) == false){
+	    String header = "Error in AdminRandomTexts." ;
+	    String msg = "The user is not an administrator."+ "<BR>" ;
+	    this.log(header + msg) ;
+
+	    // Lets get the path to the admin templates folder
+	    String server			= Utility.getDomainPref("adminserver",host) ;
+	    File templateLib = getAdminTemplateFolder(server, user) ;
+
+	    AdminError err = new AdminError(req,res,header,msg) ;
+	    return ;
 	}
+
+	//get fortunefiles
+	File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+	File files[] = fortune_path.listFiles();
+
+	StringBuffer options = new StringBuffer() ;
+
+	for(int i=0;i<files.length;i++)	{
+	    //remove suffixes and create optionstring
+	    String filename=files[i].getName();
+	    int index = filename.lastIndexOf(".");
+	    if (index != -1) {
+		filename=filename.substring(0,index);
+	    }
+	    if ( ( !filename.endsWith(".current") ) && ( !filename.endsWith(".stat") ) && ( !filename.endsWith(".poll") ) )	{
+		options.append( "<option value=\""  + filename + "\">" + filename + "</option>" ) ;
+	    }
+	}
+
+	//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
+	Vector values = new Vector();
+	values.add("#options#");
+	values.add(options.toString());
+
+	out.write(IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
+
+    } // End doGet
+
+    /**
+       doPost
+    */
+    public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
+	// Lets get the parameters and validate them, we dont have any own
+	// parameters so were just validate the metadata
+	res.setContentType("text/html");
+	Writer out = res.getWriter();
+
+	String host = req.getHeader("Host") ;
+	String imcServer = Utility.getDomainPref("adminserver",host) ;
+
+	imcode.server.User user ;
+
+	// Check if the user logged on
+	if ((user = Check.userLoggedOn(req,res,"StartDoc" )) == null ){
+	    return ;
+	}
+
+	HttpSession session = req.getSession();
+
+	String whichFile = req.getParameter("AdminFile") ;
+
+	if (req.getParameter("back")!=null)	{
+	    res.sendRedirect("AdminManager") ;
+	    return;
+	}
+
+	if (whichFile == null || "".equals(whichFile)){
+	    res.sendRedirect("AdminRandomTexts") ;
+	    return;
+	}
+
+	session.setAttribute("file",whichFile);
+
+	if (req.getParameter("edit")!=null)	{
+	    String options = IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
+
+	    StringBuffer buff = new StringBuffer();
+	    List lines = IMCServiceRMI.getQuoteList(imcServer, whichFile+".txt");
+	    Iterator iter = lines.iterator();
+	    int counter = 0;
+	    SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
+	    while (iter.hasNext()) {
+		Quote quote = (Quote) iter.next();
+		DateRange dates = quote.getDateRange();
+		buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY))+" "+ quote.getText() + "</option>");
+	    }
+
+
+	    String date1 = "";
+	    String date2 = "";
+	    String text  = "";
+
+	    //Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
+	    Vector values = new Vector();
+	    values.add("#date1#");
+	    values.add(date1);
+	    values.add("#date2#");
+	    values.add(date2);
+	    values.add("#text#");
+	    values.add(text);
+	    values.add("#file#");
+	    values.add(whichFile);
+	    values.add("#options#");
+	    values.add(buff.toString());
+
+	    out.write(IMCServiceRMI.parseExternalDoc(imcServer, values, HTML_TEMPLATE_ADMIN , user.getLangPrefix(), DOCTYPE_FORTUNES+""));
+	    session.setAttribute("lines",lines);
+	    return;
+	}
+    }
+
+    /**
+       Log function, will work for both servletexec and Apache
+    **/
+    public void log( String str){
+	super.log(str) ;
+	System.out.println("AdminRandomTexts: " + str ) ;
+    }
 
 } // End of class

@@ -19,6 +19,8 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
     private final static String TEXT_ERROR		= "text_err_msg.frag" ;
     private final static SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
 
+    private final static long ONE_DAY = 86400000 ;
+
     /**
        The GET method creates the html page when this side has been
        redirected from somewhere else.
@@ -112,7 +114,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 		DateRange dates = quote.getDateRange();
 
 		date1 = dateForm.format(dates.getStartDate());
-		date2 = dateForm.format(dates.getEndDate());
+		date2 = dateForm.format(new Date(dates.getEndDate().getTime() - ONE_DAY));
 		text  = quote.getText();
 		lines.remove(quote);
 	    }
@@ -179,16 +181,25 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	String	date2 = (req.getParameter("date2")).trim();
 	String	text =	(req.getParameter("text")).trim();
 
-	if( checkDate(date1) && checkDate(date2) && text.length()>1 ){
+	if ( text.length() > 1 ) {
 	    try {
-		DateRange range = new DateRange(dateForm.parse(date1), dateForm.parse(date2));
+		DateRange range = new DateRange(dateForm.parse(date1), new Date(dateForm.parse(date2).getTime()+ONE_DAY));
 		Quote quote = new Quote(text,range);
 
 		lines.add(quote);
-	    }catch(ParseException pe) {
-		//this will newer happen sense we already succeded parsing the dates
+	    } catch(ParseException ignored) {
+		// ignored
 	    }
 	}
+    }
+
+    private boolean checkDate(String dateStr){
+	try {
+	    dateForm.parse(dateStr);
+	} catch(java.text.ParseException pe){
+	    return false;
+	}
+	return true;
     }
 
     private StringBuffer createOptionList(HttpServletRequest req, List lines, String server, imcode.server.User user ) throws ServletException, IOException {
@@ -198,19 +209,9 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	while (iter.hasNext()) {
 	    Quote quote = (Quote) iter.next();
 	    DateRange dates = quote.getDateRange();
-	    buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(dates.getEndDate())+" "+ quote.getText() + "</option>");
+	    buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY))+" "+ quote.getText() + "</option>");
 	}
 	return buff;
-    }
-
-    private boolean checkDate(String dateStr){
-	try
-	    {
-		dateForm.parse(dateStr);
-	    }catch(java.text.ParseException pe){
-		return false;
-	    }
-	return true;
     }
 
     /**

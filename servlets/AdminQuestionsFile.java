@@ -20,6 +20,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
     private final static SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
 
+    private final static long ONE_DAY = 86400000 ;
 
     /**
        The GET method creates the html page when this side has been
@@ -72,23 +73,6 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 	    IMCServiceRMI.setPollList(imcserver, whichFile+".poll.txt", lines);
 
-	    // Get the current poll
-	    List currentPollList = IMCServiceRMI.getPollList(imcserver,whichFile+".current.txt") ;
-	    if ( currentPollList.isEmpty() ) {
-		// There was no poll, get one.
-		currentPollList = this.getNewQuestion(imcserver,whichFile) ;
-	    }
-	    Poll currentPoll = (Poll) currentPollList.get(0) ;
-
-	    // Get a new poll
-	    List newPollList = this.getNewQuestion(imcserver,whichFile) ;
-	    Poll newCurrentPoll = (Poll) newPollList.get(0) ;
-
-	    // Replace the current poll if it changed.
-	    if (!newCurrentPoll.getQuestion().equals(currentPoll.getQuestion())) {
-		IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
-	    }
-
 	    //tillbaks till
 	    res.sendRedirect("AdminQuestions") ;
 	    return;
@@ -134,7 +118,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 		DateRange dates = poll.getDateRange();
 
 		date1 = dateForm.format(dates.getStartDate());
-		date2 = dateForm.format(dates.getEndDate());
+		date2 = dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY));
 		text  = poll.getQuestion();
 		lines.remove(poll);
 	    }
@@ -205,7 +189,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	while (iter.hasNext()) {
 	    Poll poll = (Poll) iter.next();
 	    DateRange dates = poll.getDateRange();
-	    buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(dates.getEndDate())+" "+ poll.getQuestion() + "</option>");
+	    buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY))+" "+ poll.getQuestion() + "</option>");
 	}
 	return buff;
     }
@@ -215,13 +199,13 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	String	date2 = (req.getParameter("date2")).trim();
 	String	text = (req.getParameter("text")).trim();
 
-	if( checkDate(date1) && checkDate(date2) && text.length()>1 ){
+	if ( text.length()>1 ) {
 	    try {
-		DateRange range = new DateRange(dateForm.parse(date1), dateForm.parse(date2));
+		DateRange range = new DateRange(dateForm.parse(date1), new Date(dateForm.parse(date2).getTime()+86400000));
 		Poll poll = new Poll(text,range);
 		lines.add(poll);
-	    }catch(ParseException pe) {
-		//this will newer happen sense we already succeded parsing the dates
+	    } catch(ParseException ignored) {
+		// ignored
 	    }
 	}
     }
@@ -257,12 +241,34 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    }
 	}
 
-	// FIXME: We didn't find a question/poll... what to do, what to do?
-	List newPollList = new LinkedList() ;
-	DateRange dateRange = new DateRange(new Date(0),new Date(0)) ;
-	newPollList.add(new Poll("",dateRange)) ;
-	return newPollList ;
+	return null ;
 
+    }
+
+    private void updateCurrentQuestion(String imcserver, String whichFile) throws IOException, ServletException {
+	// Get the current poll
+	List currentPollList = IMCServiceRMI.getPollList(imcserver,whichFile+".current.txt") ;
+	if ( currentPollList.isEmpty() ) {
+	    // There was no poll, get one.
+	    currentPollList = this.getNewQuestion(imcserver,whichFile) ;
+	}
+	Poll currentPoll = (Poll) currentPollList.get(0) ;
+
+	// Get a new poll
+	List newPollList = this.getNewQuestion(imcserver,whichFile) ;
+	Poll newCurrentPoll = (Poll) newPollList.get(0) ;
+
+	// Replace the current poll if it changed.
+	if (!newCurrentPoll.getQuestion().equals(currentPoll.getQuestion())) {
+
+	    // The poll was no longer current, archive it...
+	    List pollStatsList = IMCServiceRMI.getPollList(imcserver,whichFile+".stat.txt") ;
+	    pollStatsList.add(currentPoll) ;
+	    IMCServiceRMI.setPollList(imcserver,whichFile+".stat.txt",pollStatsList) ;
+
+	    IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
+
+	}
     }
 
 } // End of class
