@@ -224,7 +224,7 @@ public class ImcmsTagSubstitution implements Substitution {
 	    } else {
 		result = "" ;
 	    }
-	} else {
+	} else if (!textMode) {
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
 		result = tempAtt + result ;
@@ -257,7 +257,7 @@ public class ImcmsTagSubstitution implements Substitution {
 	    } else {
 		result = "" ;
 	    }
-	} else {
+	} else if (!imageMode) {
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
 		result = tempAtt + result ;
