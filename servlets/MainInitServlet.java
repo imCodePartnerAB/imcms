@@ -6,6 +6,7 @@
  
 import javax.servlet.*;
 import javax.servlet.http.*;
+import java.io.File ;
 
 import imcode.util.Prefs;
 import imcode.util.log.Log;
@@ -26,14 +27,21 @@ public class MainInitServlet extends HttpServlet {
 			// This is the first thin we allways must do.
 			// Other parts of the programi depending that this is done.
 			// Uggly, but can't find anoterh way for the moment/Hasse
-			String realPathToWebApp = this.getServletContext().getRealPath("/");
-			imcode.server.WebAppGlobalConstants.init( realPathToWebApp );
+			System.err.println("MainInitServlet.init()") ;
+			File realPathToWebApp = new File(this.getServletContext().getRealPath("/")) ;
+			imcode.server.WebAppGlobalConstants.init( realPathToWebApp.toString() );
 			
+			System.err.println("Getting init-parameter log4j-init-file") ;
 			String file = getInitParameter("log4j-init-file");
 			System.out.println( realPathToWebApp + " " + file );
-			Log.initLog( realPathToWebApp + file );
+			System.err.println("Initializing log (with a slash to fix dumb servletengines).") ;
+			
+			String initLogString = (new File(realPathToWebApp,file)).toString() ;
+			System.err.println("Initializing log with "+initLogString) ;
+			Log.initLog( initLogString );
 			logPlattformInfo( this.getServletContext() );
-					
+
+			System.err.println("Calling Prefs.setConfigPath().") ;
 			Prefs.setConfigPath( this.getServletContext().getRealPath("/") + "/WEB-INF/conf/");
 		}
 		catch( Exception e ) 
