@@ -1,0 +1,388 @@
+package imcode.server.db;
+
+import org.apache.log4j.Logger;
+
+import java.util.Vector;
+import java.util.Iterator;
+import java.util.ArrayList;
+
+import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.Timestamp;
+
+import java.io.IOException;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
+
+public class DatabaseService {
+    final static int MIMER = 0;
+    final static int SQL_SERVER = 1;
+    //final static int MY_SQL = 2;
+
+    private static final char END_OF_COMMAND = ';';
+    private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/";
+    private static final String DROP_TABLES = "tables/drop.new.sql";
+    private static final String CREATE_TABLES = "tables/create.new.sql";
+    private static final String ADD_TYPE_DATA = "data/types.new.sql";
+    private static final String INSERT_NEW_DATA = "data/newdb.new.sql";
+
+    private static String SQL92_TYPE_TIMESTAMP = "timestamp";
+    private static String SQL_SERVER_TIMESTAMP_TYPE = "datetime";
+
+    public static void main( String[] args ) throws Exception {
+    }
+
+    private static Logger log = Logger.getLogger( DatabaseService.class );
+
+    private ConnectionPool connectionPool;
+    private SQLProcessor sqlProcessor = new SQLProcessor();
+    private int databaseType;
+
+    public DatabaseService( int databaseType, String host, int port, String databaseName ) {
+        this.databaseType = databaseType;
+        String serverUrl = null;
+        String jdbcDriver = null;
+        String user = null;
+        String password = null;
+
+        switch( databaseType ) {
+            case MIMER:
+                jdbcDriver = "com.mimer.jdbc.Driver";
+                String jdbcUrl = "jdbc:mimer://";
+                serverUrl = jdbcUrl + host + ":" + port + "/" + databaseName;
+                user = "sysadm";
+                password = "admin";
+                break;
+            case SQL_SERVER:
+                jdbcDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
+                String jdbcUrl1 = "jdbc:microsoft:sqlserver://";
+                serverUrl = jdbcUrl1 + host + ":" + port + ";DatabaseName=" + databaseName;
+                user = "sa";
+                password = "sa";
+                break;
+        }
+
+        int maxConnectionCount = 20;
+        try {
+            connectionPool = new ConnectionPoolForNonPoolingDriver( "", jdbcDriver, serverUrl, user, password, maxConnectionCount );
+        } catch( Exception ex ) {
+            log.fatal( "Couldn't initialize connection pool", ex );
+        }
+    }
+
+    class RoleTableData {
+        private int id;
+        private String name;
+
+        public RoleTableData( int id, String name ) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    /**
+     *  Document me!
+     */
+    // todo: rename to getallroles _but_ user
+    // todo: user RoleDomainObject or create one if it dosn't exist
+    public RoleTableData[] sproc_getallroles() {
+        String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
+        Object[] paramValues = null;
+
+        ResultProcessor resultProcessor = new ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int id = rs.getInt( "role_id" );
+                String name = rs.getString( "role_name" );
+
+                RoleTableData result = null;
+                if( !name.equalsIgnoreCase( "users" ) ) { // all roles but user should be mapped.
+                    result = new RoleTableData( id, name );
+                }
+                return result;
+            }
+        };
+
+        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
+        return (RoleTableData[])result.toArray( new RoleTableData[result.size()] );
+    }
+
+    class UsersTabelData {
+        public UsersTabelData( int userId, String loginName, String password, String firstName, String lastName, String title, String company, String address, String city, String zip, String country, String county_council, String emailAddress, int external, int lastPage, int archiveMode, int langId, int userType, int active, Timestamp createDate ) {
+            this.userId = userId;
+            this.loginName = loginName;
+            this.password = password;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.title = title;
+            this.company = company;
+            this.address = address;
+            this.city = city;
+            this.zip = zip;
+            this.country = country;
+            this.county_council = county_council;
+            this.emailAddress = emailAddress;
+            this.external = external;
+            this.lastPage = lastPage;
+            this.archiveMode = archiveMode;
+            this.langId = langId;
+            this.userType = userType;
+            this.active = active;
+            this.createDate = createDate;
+        }
+
+        private int userId;
+        private String loginName;
+        private String password;
+        private String firstName;
+        private String lastName;
+        private String title;
+        private String company;
+        private String address;
+        private String city;
+        private String zip;
+        private String country;
+        private String county_council;
+        private String emailAddress;
+        private int external;
+        private int lastPage;
+        private int archiveMode;
+        private int langId;
+        private int userType;
+        private int active;
+        private Timestamp createDate;
+
+        public boolean equals( Object o ) {
+            if( this == o )
+                return true;
+            if( !(o instanceof UsersTabelData) )
+                return false;
+
+            final UsersTabelData usersTabelData = (UsersTabelData)o;
+
+            if( active != usersTabelData.active )
+                return false;
+            if( archiveMode != usersTabelData.archiveMode )
+                return false;
+            if( external != usersTabelData.external )
+                return false;
+            if( langId != usersTabelData.langId )
+                return false;
+            if( lastPage != usersTabelData.lastPage )
+                return false;
+            if( userId != usersTabelData.userId )
+                return false;
+            if( userType != usersTabelData.userType )
+                return false;
+            if( address != null ? !address.equals( usersTabelData.address ) : usersTabelData.address != null )
+                return false;
+            if( city != null ? !city.equals( usersTabelData.city ) : usersTabelData.city != null )
+                return false;
+            if( company != null ? !company.equals( usersTabelData.company ) : usersTabelData.company != null )
+                return false;
+            if( country != null ? !country.equals( usersTabelData.country ) : usersTabelData.country != null )
+                return false;
+            if( county_council != null ? !county_council.equals( usersTabelData.county_council ) : usersTabelData.county_council != null )
+                return false;
+            if( createDate != null ? !createDate.equals( usersTabelData.createDate ) : usersTabelData.createDate != null )
+                return false;
+            if( emailAddress != null ? !emailAddress.equals( usersTabelData.emailAddress ) : usersTabelData.emailAddress != null )
+                return false;
+            if( firstName != null ? !firstName.equals( usersTabelData.firstName ) : usersTabelData.firstName != null )
+                return false;
+            if( lastName != null ? !lastName.equals( usersTabelData.lastName ) : usersTabelData.lastName != null )
+                return false;
+            if( loginName != null ? !loginName.equals( usersTabelData.loginName ) : usersTabelData.loginName != null )
+                return false;
+            if( password != null ? !password.equals( usersTabelData.password ) : usersTabelData.password != null )
+                return false;
+            if( title != null ? !title.equals( usersTabelData.title ) : usersTabelData.title != null )
+                return false;
+            if( zip != null ? !zip.equals( usersTabelData.zip ) : usersTabelData.zip != null )
+                return false;
+
+            return true;
+        }
+
+        public int hashCode() {
+            int result;
+            result = userId;
+            result = 29 * result + (loginName != null ? loginName.hashCode() : 0);
+            result = 29 * result + (password != null ? password.hashCode() : 0);
+            result = 29 * result + (firstName != null ? firstName.hashCode() : 0);
+            result = 29 * result + (lastName != null ? lastName.hashCode() : 0);
+            result = 29 * result + (title != null ? title.hashCode() : 0);
+            result = 29 * result + (company != null ? company.hashCode() : 0);
+            result = 29 * result + (address != null ? address.hashCode() : 0);
+            result = 29 * result + (city != null ? city.hashCode() : 0);
+            result = 29 * result + (zip != null ? zip.hashCode() : 0);
+            result = 29 * result + (country != null ? country.hashCode() : 0);
+            result = 29 * result + (county_council != null ? county_council.hashCode() : 0);
+            result = 29 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
+            result = 29 * result + external;
+            result = 29 * result + lastPage;
+            result = 29 * result + archiveMode;
+            result = 29 * result + langId;
+            result = 29 * result + userType;
+            result = 29 * result + active;
+            result = 29 * result + (createDate != null ? createDate.hashCode() : 0);
+            return result;
+        }
+
+        public String toString() {
+            return createDate.toString();
+        }
+    }
+
+    /**
+     *  Document me!
+     * @return
+     */
+
+    UsersTabelData[] sproc_getallusers() {
+        String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
+        Object[] paramValues = null;
+
+        ResultProcessor resultProcessor = new ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                UsersTabelData result = null;
+                int userId = rs.getInt( "user_id" );
+                String loginName = rs.getString("login_name");
+                String password = rs.getString("login_password");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String title = rs.getString("title");
+                String company = rs.getString("company");
+                String address = rs.getString("address");
+                String city = rs.getString("city");
+                String zip = rs.getString("zip");
+                String country = rs.getString("country");
+                String county_council = rs.getString("county_council");
+                String emailAddress = rs.getString("email");
+                int external = rs.getInt("external");
+                int lastPage = rs.getInt("last_page");
+                int archiveMode = rs.getInt("archive_mode");
+                int langId = rs.getInt("lang_id");
+                int userType = rs.getInt("user_type");
+                int active = rs.getInt("active");
+                Timestamp createDate = rs.getTimestamp("create_date");
+                result = new UsersTabelData( userId, loginName, password, firstName, lastName, title, company, address, city, zip, country, county_council, emailAddress, external, lastPage, archiveMode, langId, userType, active, createDate );
+                return result;
+            }
+        };
+
+        ArrayList result = executeQuery( sql, paramValues, resultProcessor );
+        return (UsersTabelData[])result.toArray(new UsersTabelData[result.size()]);
+    }
+
+    private abstract class ResultProcessor {
+        abstract Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException;
+    }
+
+    private ArrayList executeQuery( String sql, Object[] paramValues, ResultProcessor resultProc ) {
+        Connection conn = null;
+        ArrayList result = new ArrayList();
+        try {
+            conn = connectionPool.getConnection();
+            ResultSet rs = sqlProcessor.executeQuery( conn, sql, paramValues );
+            while( rs.next() ) {
+                Object temp = resultProc.mapOneRowFromResultsetToObject( rs );
+                if( null != temp ) {
+                    result.add( temp );
+                }
+            }
+        } catch( SQLException ex ) {
+            log.fatal( "Exception in executeQuery()", ex );
+        } finally {
+            closeConnection( conn );
+        }
+        return result;
+    }
+
+    private void closeConnection( Connection conn ) {
+        try {
+            if( conn != null ) {
+                conn.close();
+            }
+        } catch( SQLException ex ) {
+            // Swallow
+        }
+    }
+
+    void initializeDatabase() throws Exception {
+        executeCommandsFromFile( DROP_TABLES );
+        executeCommandsFromFile( CREATE_TABLES );
+        executeCommandsFromFile( ADD_TYPE_DATA );
+        executeCommandsFromFile( INSERT_NEW_DATA );
+    }
+
+    private void executeCommandsFromFile( String fileName ) throws Exception {
+        Vector commands = readCommandsFromFile( fileName );
+
+        if( databaseType == SQL_SERVER ) {
+            commands = changeSQLSpecificDateTimeDataType( commands );
+        }
+
+        executeCommands( commands );
+    }
+
+    private Vector changeSQLSpecificDateTimeDataType( Vector commands ) {
+        Vector modifiedCommands = new Vector();
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            String modifiedCommand = static_changeSQLServerTimestampType( command );
+            modifiedCommands.add( modifiedCommand );
+        }
+        return modifiedCommands;
+    }
+
+    private void executeCommands( Vector commands ) throws Exception {
+        Connection conn = connectionPool.getConnection();
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
+            sqlProcessor.executeUpdate( conn, command, null );
+        }
+    }
+
+    private Vector readCommandsFromFile( String fileName ) throws IOException {
+        File sqlScriptingFile = new File( FILE_PATH + fileName );
+
+        BufferedReader reader = new BufferedReader( new FileReader( sqlScriptingFile ) );
+        StringBuffer commandBuff = new StringBuffer();
+        Vector commands = new Vector();
+        String aLine;
+        do {
+            aLine = reader.readLine();
+            if( null != aLine && !aLine.equals( "" ) ) {
+                commandBuff.append( aLine );
+                int lastCharPos = aLine.length() - 1;
+                char endChar = aLine.charAt( lastCharPos );
+                if( END_OF_COMMAND == endChar ) {
+                    commandBuff.deleteCharAt( commandBuff.length() - 1 );
+                    String command = commandBuff.toString();
+                    commands.add( command );
+                    commandBuff.setLength( 0 );
+                }
+            }
+        } while( null != aLine );
+        return commands;
+    }
+
+
+
+    private static String static_changeSQLServerTimestampType( String createCommand ) {
+        String result = createCommand.replaceAll( SQL92_TYPE_TIMESTAMP, SQL_SERVER_TIMESTAMP_TYPE );
+        return result;
+    }
+
+}
