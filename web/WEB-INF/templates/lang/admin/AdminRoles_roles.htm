@@ -1,43 +1,14 @@
-<html>
-<head>
+#gui_start_of_page( "<? templates/sv/AdminRoles_roles.htm/1 ?>" "AdminRoles" "CANCEL" "89" "" )
 
 
-<title><? templates/sv/AdminRoles_roles.htm/1 ?></title>
-
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-
-
-</head>
-
-<body bgcolor="#FFFFFF">
-#gui_outer_start()
-#gui_head( "<? global/imcms_administration ?>" )
-
-
-<table border="0" cellspacing="0" cellpadding="0">
-<form metod="post" action="AdminRoles" name="abortForm">
-<tr>
-	<td><input type="submit" class="imcmsFormBtn" name="CANCEL" value="<? templates/sv/AdminRoles.htm/3 ?>"></td>
-	<td>&nbsp;</td>
-    <td><input type="button" value="<? templates/sv/AdminRoles.htm/4 ?>" title="<? templates/sv/AdminRoles.htm/5 ?>" class="imcmsFormBtn" onClick="openHelpW(89)"></td>
-</tr>
-</form>
-</table>
-
-#gui_mid()
-
-
-<table border="0" cellspacing="0" cellpadding="2" width="400" align="center">
 <form method="post" action="AdminRoles" name="UserInfo">
+<table border="0" cellspacing="0" cellpadding="2" width="400" align="center">
     <tr>
-        <td>#gui_heading( "<? templates/sv/AdminRoles_roles.htm/1 ?>" )</td>
+      <td>&nbsp;</td>
     </tr>
     <tr>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr>
-      <td class="imcmsAdmText" width="90%">
-        <font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoles_roles.htm/3 ?>
+      <td class="imcmsAdmText">
+        <font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoles_roles.htm/2 ?>
           <select name="ROLE_ID" size="3">
           #ROLES_MENU#
           </select>
@@ -56,23 +27,9 @@
       </td>
 
     </tr>
-    <tr>
-        <td width="5%">&nbsp; </td>
-    </tr>
-    <tr>
-        <td colspan="2">#gui_hr( "blue" )</td>
-    </tr>
-    <tr>
-        <td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" name="CANCEL_ROLE_ADMIN" value="Avbryt"></td>
-    </tr>
-
-</form>
 </table>
+</form>
 
-#gui_bottom()
-#gui_outer_end()
-
-</body>
-</html>
+#gui_end_of_page()
 
 

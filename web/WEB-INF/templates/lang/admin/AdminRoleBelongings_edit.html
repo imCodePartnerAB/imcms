@@ -1,77 +1,56 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html40/loose.dtd">
-<html>
-<head>
-<title><? templates/sv/AdminRoleBelongings_edit.html/1 ?></title>
 
+#gui_start_of_page( "<? templates/sv/AdminRoleBelongings_edit.html/1 ?>" "AdminRoleBelongings" "BELONGING_CANCEL" "4" "" )
 
-</head>
-
-<body bgcolor="#FFFFFF">
 <form method="post" action="AdminRoleBelongings" name="UserInfo">
-  <table width="40%" border="0" cellspacing="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminRoleBelongings_edit.html/2 ?></font></b></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">
-        <font face="Verdana, Arial, Helvetica, sans-serif">
-          <input type="HIDDEN" name="CURENT_ROLE_ID" value="#CURENT_ROLE_ID#">
-          &nbsp;<? templates/sv/AdminRoleBelongings_edit.html/1001 ?>: #CURENT_ROLE_NAME#
-        </font>
-      </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
+  <table width="400" border="0" cellspacing="0">
+   	<tr>
+	  <td colspan="2">
         <table width="100%" border="0">
-          <tr> 
-            <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoleBelongings_edit.html/3 ?></font></td>
-            <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoleBelongings_edit.html/4 ?></font></td>
+          <tr>
+	        <td colspan="2" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif">
+            <? templates/sv/AdminRoleBelongings_edit.html/5 ?>: <b>#CURENT_ROLE_NAME#</b></font>
+             <input type="HIDDEN" name="CURENT_ROLE_ID" value="#CURENT_ROLE_ID#">
+             </td>
+	      </tr>
+	      <tr><td>&nbsp;</td></tr>
+          <tr>
+            <td width="50%" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoleBelongings_edit.html/3 ?></font></td>
+            <td width="50%" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoleBelongings_edit.html/4 ?></font></td>
           </tr>
           <tr> 
-            <td width="50%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+            <td width="50%" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif">
               <select name="USER_ID" size="10" multiple>
-          #USER_MENU#
+                #USER_MENU#
               </select>
               </font></td>
-            <td width="50%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+            <td width="50%" class="imcmsAdmText"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
               <select name="ROLE_ID" size="10">
-          #ROLES_MENU#
+                #ROLES_MENU#
               </select>
               </font></td>
           </tr>
         </table>
       </td>
-	  <td width="5%">&nbsp;</td>
 	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-        <input type="submit" name="BELONGING_ADD_ROLE" value="<? templates/sv/AdminRoleBelongings_edit.html/2001 ?>">
-        <input type="submit" name="BELONGING_REMOVE_ROLE" value="<? templates/sv/AdminRoleBelongings_edit.html/2002 ?>">
-        <input type="submit" name="BELONGING_MOVE_ROLE" value="<? templates/sv/AdminRoleBelongings_edit.html/2003 ?>">
-        <input type="submit" name="BELONGING_CANCEL" value="<? templates/sv/AdminRoleBelongings_edit.html/2004 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=4" target="_blank"><img src="$contextPath/imcms/$language/images/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/AdminRoleBelongings_edit.html/2005 ?>"></a>
+	<tr>
+      <td colspan="2">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="2">#gui_hr( "blue" )</td>
+    </tr>
+    <tr>
+	   <td colspan="2" align="right">
+	        <input type="submit" name="BELONGING_ADD_ROLE" class="imcmsFormBtn" value="<? templates/sv/AdminRoleBelongings_edit.html/6 ?>">&nbsp;
+            <input type="submit" name="BELONGING_REMOVE_ROLE" class="imcmsFormBtn" value="<? templates/sv/AdminRoleBelongings_edit.html/7 ?>">&nbsp;
+            <input type="submit" name="BELONGING_MOVE_ROLE" class="imcmsFormBtn" value="<? templates/sv/AdminRoleBelongings_edit.html/8 ?>">&nbsp;
+            <input type="submit" name="BELONGING_CANCEL" class="imcmsFormBtn" value="<? global/cancel ?>">
       </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp; </td>
-	  <td width="90%">&nbsp; </td>
-	  <td width="5%">&nbsp; </td>
 	</tr>
   </table>
-  </form>
+</form>
+#gui_bottom()
+#gui_outer_end()
 </body>
 </html>
