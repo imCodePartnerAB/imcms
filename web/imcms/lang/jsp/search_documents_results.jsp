@@ -19,9 +19,6 @@
 <% if (null != documentsFound) { %>
     <table border="0" cellspacing="0" cellpadding="2" width="656">
         <tr>
-            <td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="35"></td>
-        </tr>
-        <tr>
             <td><span class="imcmsAdmHeading"><? templates/sv/search/search_result.html/7 ?></span></td>
         </tr>
         <tr>
