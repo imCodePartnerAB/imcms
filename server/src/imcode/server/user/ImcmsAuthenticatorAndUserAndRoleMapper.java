@@ -508,6 +508,22 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
                                      + "AND    phones.user_id = ?", new String[]{"" + userToChangeId} );
     }
 
+    public RoleDomainObject[] getUseradminPermissibleRoles( int loggedOnUser ){
+        String[] roleIds =  service.sqlQuery( "SELECT role_id FROM roles\n"
+                                            + "WHERE roles.role_id IN\n"
+                                                    + "( SELECT role_id\n"
+                                                       + "FROM useradmin_role_crossref\n"
+                                                       + "WHERE user_id = ? )", new String[]{""+loggedOnUser} );
+
+        List  useradminPermissibleRolesList = new ArrayList();
+        for (int i = 0; i < roleIds.length; i++ ){
+            useradminPermissibleRolesList.add( getRoleById( Integer.parseInt(roleIds[i]) ) );
+        }
+        return (RoleDomainObject[])useradminPermissibleRolesList.toArray( new RoleDomainObject[useradminPermissibleRolesList.size()]);
+    }
+
+
+
     public RoleDomainObject[] getAllRolesWithPermission( RolePermissionDomainObject rolePermission ) {
         RoleDomainObject[] allRoles = getAllRoles() ;
         List rolesWithPermissionList = new ArrayList( allRoles.length );

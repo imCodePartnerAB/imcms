@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.Imcms;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.RoleDomainObject;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
 
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 public class UserBrowser extends HttpServlet {
 
@@ -55,15 +58,33 @@ public class UserBrowser extends HttpServlet {
     }
 
     private UserBrowserPage createPageFromRequest( HttpServletRequest request ) {
+        UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
         ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS );
         String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
         UserDomainObject[] users = userMapperAndRole.findUsersByNamePrefix( searchString, includeInactiveUsers );
+        if (loggedOnUser.isUserAdmin()){
+            users = getUsersWithUseradminPermissibleRoles(userMapperAndRole, loggedOnUser, users);
+        }
         UserBrowserPage userBrowserPage = new UserBrowserPage();
         userBrowserPage.setSearchString( searchString );
         userBrowserPage.setUsers( users );
         userBrowserPage.setIncludeInactiveUsers( includeInactiveUsers );
         return userBrowserPage;
+    }
+
+    private UserDomainObject[] getUsersWithUseradminPermissibleRoles(ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole, UserDomainObject loggedOnUser, UserDomainObject[] users) {
+        List userList = new ArrayList();
+        RoleDomainObject[] useradminPermissibleRoles = userMapperAndRole.getUseradminPermissibleRoles( loggedOnUser.getId() );
+        for( int i=0; i < users.length; i++){
+            for( int k=0; k < useradminPermissibleRoles.length; k++){
+                if( users[i].hasRole( useradminPermissibleRoles[k] ) ){
+                    userList.add(users[i]);
+                }
+            }
+        }
+        users = (UserDomainObject[])userList.toArray(new UserDomainObject[userList.size()]);
+        return users;
     }
 
     private UserDomainObject getSelectedUserFromRequest( HttpServletRequest request ) {
