@@ -6,7 +6,7 @@
 <SCRIPT language=JavaScript>
 <!--
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT>
@@ -44,7 +44,7 @@ function openHelp(id){
   <tr bgcolor="#bababa"> 
 	<td width="5%"><font size="2">&nbsp;</font></td>
 	<td> 
-	  <form method="post" action="#SERVLET_URL#AdminCounter">
+	  <form method="post" action="AdminCounter">
 		<table width="100%" border="0">
 		  <tr> 
 			<td width="34%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Aktuell 
@@ -97,7 +97,7 @@ function openHelp(id){
   <tr bgcolor="#bababa"> 
 	<td width="5%">&nbsp;</td>
 	<td> 
-	  <form method="post" action="#SERVLET_URL#AdminCounter">
+	  <form method="post" action="AdminCounter">
 		<table width="100%" border="0">
 		  <tr> 
 			<td width="40%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Aktuellt 
@@ -123,9 +123,9 @@ function openHelp(id){
 	<td> 
 	  <div align="center"> 
 		<hr>
-		<form method="post" action="#SERVLET_URL#AdminCounter" name="Counter">
+		<form method="post" action="AdminCounter" name="Counter">
 		  <div align="left"> 
-			<input type="submit" name="CancelCounter" value="Tillbaka">&nbsp; <a href="javascript:openHelp('17');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+			<input type="submit" name="CancelCounter" value="Tillbaka">&nbsp; <a href="javascript:openHelp("17");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  </div>
 		</form>
 	  </div>

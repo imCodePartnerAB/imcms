@@ -6,7 +6,7 @@
 <SCRIPT language=JavaScript>
 <!--
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT>
@@ -14,7 +14,7 @@ function openHelp(id){
 </head>
 
 <body bgcolor="#FFFFFF">
-<form method="post" action="#SERVLET_URL#AdminRoles" name="addIP">
+<form method="post" action="AdminRoles" name="addIP">
   <table width="40%" border="0" cellspacing="0">
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
@@ -27,7 +27,7 @@ function openHelp(id){
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
-		<input type="hidden" name="ROLE_ID" value="#CURRENT_ROLE_ID#">
+		<input type="HIDDEN" name="ROLE_ID" value="#CURRENT_ROLE_ID#">
 		&nbsp; </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
@@ -43,7 +43,7 @@ function openHelp(id){
 		<p> 
 		  <input type="text" name="ROLE_NAME" maxlength="25">
 		  <input type="submit" name="RENAME_ROLE" value="Spara">
-		  <input type="submit" name="CANCEL_ROLE" value="Avbryt">&nbsp; <a href="javascript:openHelp('31');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		  <input type="submit" name="CANCEL_ROLE" value="Avbryt">&nbsp; <a href="javascript:openHelp("31");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		</p>
 	  </td>
 	  <td width="5%">&nbsp;</td>

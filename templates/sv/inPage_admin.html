@@ -30,7 +30,7 @@ function openHelp(id){
 
 </SCRIPT>
 
-<FORM name="myForm" METHOD=POST ACTION="SaveInPage">
+<FORM name="myForm" METHOD="POST" ACTION="SaveInPage">
 
   <table BORDER="1" cellspacing="0" cellpadding="2">
 
@@ -38,7 +38,7 @@ function openHelp(id){
 
       <td valign="top" colspan="3"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;Administrera 
 
-        dokument </font></b><!--input type=HIDDEN name=flags value="0"--> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">MetaId:&nbsp;&nbsp;#getMetaId#&nbsp;&nbsp; 
+        dokument </font></b><!--input TYPE="HIDDEN" name=flags value="0"--> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">MetaId:&nbsp;&nbsp;#getMetaId#&nbsp;&nbsp; 
 
         </font><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#FFFFFF"><nobr>Akt 
 
@@ -58,7 +58,7 @@ function openHelp(id){
 
           &nbsp;
 
-<select name="group" size=1>            #getTemplateGroups#                                                        </select>
+<select name="group" size="1">            #getTemplateGroups#                                                        </select>
 
           </font></font>
 
@@ -74,7 +74,7 @@ function openHelp(id){
 
           &nbsp;
 
-<select name="template" size=1>			#getTemplates#		                <option></option>
+<select name="template" size="1">			#getTemplates#		                <option></option>
 
           </select>
 
@@ -96,7 +96,7 @@ function openHelp(id){
 
   </table>
 
-<input type=HIDDEN name=meta_id value="#getMetaId#">
+<input TYPE="HIDDEN" NAME="meta_id" value="#getMetaId#">
 
 #getDocType# 
 

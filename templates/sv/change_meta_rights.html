@@ -2,22 +2,22 @@
 <SCRIPT language=JavaScript>
 <!--
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT>
 
 </HEAD>
 <body bgcolor="#FFFFFF">
-<FORM METHOD=POST ACTION="SaveMeta">
+<FORM METHOD="POST" ACTION="SaveMeta">
   <div align="center">
         <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
 			<tr valign="middle" bgcolor="#333366"> 
 				<td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&Auml;ndra 
-					dokumentdata <!--input type=HIDDEN name=flags value="4"--> 
-					<input type=HIDDEN name=doc_type value="#doc_type#">
-					<input type=HIDDEN name=parent_meta_id value="#parent_meta_id#">
-					<input type=HIDDEN name=meta_id value="#meta_id#">
+					dokumentdata <!--input TYPE="HIDDEN" name=flags value="4"--> 
+					<input TYPE="HIDDEN" name="doc_type" value="#doc_type#">
+					<input TYPE="HIDDEN" name="parent_meta_id" value="#parent_meta_id#">
+					<input TYPE="HIDDEN" NAME="meta_id" value="#meta_id#">
 					#checks# </font></b></td>
 			</tr>
 			<!--tr valign="middle" bgcolor="#333366"> 
@@ -30,9 +30,9 @@ function openHelp(id){
 					&nbsp;</b>(i meny)<br>
 					</font></td>
 				<td valign="middle" bgcolor="#BABABA"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-					<input type=TEXT name=meta_headline size=60 value="#meta_headline#">
+					<input TYPE="TEXT" name="meta_headline" SIZE="60" value="#meta_headline#">
 					<br>
-					<input type=CHECKBOX name=show_meta value="1" #show_meta#>
+					<input type="CHECKBOX" name="show_meta" value="1" #show_meta#>
 					Visa rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig</font> 
 				</td>
 			</tr>
@@ -61,15 +61,15 @@ function openHelp(id){
 					av</font></td>
 				<td valign="middle" bgcolor="#BABABA">&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">(#owner#)<b> 
 					</b> 
-					<input type=CHECKBOX name=shared value="1" #shared#>
+					<input type="CHECKBOX" name=shared value="1" #shared#>
 					Dela ut dokumentet<b> </b></font></td>
 			</tr>
 			<tr> 
 				<td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
 				<td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 					<div align="left"> 
-						<input type=submit value="Spara" name="ok">
-						<input type=reset value="&Aring;terställ" name="reset">&nbsp; <a href="javascript:openHelp('84');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+						<input TYPE="SUBMIT" value="Spara" name="ok">
+						<input TYPE="RESET" value="&Aring;terställ" name="reset">&nbsp; <a href="javascript:openHelp("84");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 						<font size="2"> </font> </div>
 				</td>
 			</tr>

@@ -17,14 +17,14 @@ function openHelp(id){
       <tr> 
         
     <td valign=top align="center"><BR> 
-      <FORM ACTION=UserChangePrefs METHOD=POST name="login">
-        <TABLE BORDER=1 cellpadding="0" cellspacing="0" width="200">
+      <FORM ACTION="UserChangePrefs" METHOD="POST" name="login">
+        <TABLE BORDER="1" cellpadding="0" cellspacing="0" width="200">
           <TR bgcolor="#333366"> 
-            <TD COLSPAN=2 align="center"> <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="3"><b>V&auml;lkommen 
+            <TD COLSPAN="2" align="center"> <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="3"><b>V&auml;lkommen 
               !</b></font> </TD>
           </TR>
  <TR bgcolor="#333366"> 
-        <TD COLSPAN=2 align="center"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">
+        <TD COLSPAN="2" align="center"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">
             Ange ditt namn och l&ouml;senord<br>
               f&ouml;r att &auml;ndra dina personliga inst&auml;llningar.</font> 
             </TD>
@@ -34,7 +34,7 @@ function openHelp(id){
             <TD bgcolor="#bababa" valign="middle"> &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Namn:</font><b> 
               </b> </TD>
             <TD bgcolor="#bababa" valign="middle" align="center"> 
-              <INPUT TYPE=TEXT NAME="login_name" VALUE="" SIZE=15>
+              <INPUT TYPE="TEXT" NAME="login_name" VALUE="" SIZE="15">
             </TD>
       </TR>
 
@@ -42,14 +42,14 @@ function openHelp(id){
             <TD bgcolor="#bababa" valign="middle"> &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&ouml;senord:</font> 
             </TD>
             <TD bgcolor="#bababa" valign="middle" align="center"> 
-              <INPUT TYPE=PASSWORD NAME="password" VALUE="" SIZE=15>
+              <INPUT TYPE="PASSWORD" NAME="password" VALUE="" SIZE="15">
             </TD>
       </TR>
 
       <TR bgcolor="#bababa" valign="middle"> 
-        <TD COLSPAN=2> 
+        <TD COLSPAN="2"> 
           <CENTER>
-                <INPUT TYPE=SUBMIT VALUE="  OK   " name="verifyUser">&nbsp; <a href="javascript:openHelp('54');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></TD>
+                <INPUT TYPE="SUBMIT" VALUE="  OK   " name="verifyUser">&nbsp; <a href="javascript:openHelp('54');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></TD>
           </CENTER>
 </TD></TR>
 </TABLE>

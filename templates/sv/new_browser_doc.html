@@ -10,7 +10,7 @@ function openHelp(id){
 
 </HEAD>
 <BODY  bgcolor="#FFFFFF">
-<FORM METHOD=POST ACTION="SaveNewBrowserDoc">
+<FORM METHOD="POST" ACTION="SaveNewBrowserDoc">
   <CENTER>
     <table border = 1 cellspacing="0" cellpadding="2" width="430" align="center" >
 	  <tr bgcolor="#333366" valign="middle"> 
@@ -44,13 +44,13 @@ function openHelp(id){
 	  #getDocType# #DocMenuNo# 
 	  <tr bgcolor="#BABABA"> 
 		<td colspan="3" valign="middle" align="center"> 
-		  <input type=submit value="OK" name="ok">
-		  <input type=reset value="Rensa" name="reset">
-		  <input type=submit value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp('46');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		  <input TYPE="SUBMIT" value="OK" name="ok">
+		  <input TYPE="RESET" value="Rensa" name="reset">
+		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp('46');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		</td>
 	  </tr>
-	  <input type=HIDDEN name=meta_id value="#getMetaId#">
-	  <INPUT TYPE=HIDDEN NAME="new_meta_id" VALUE="#new_meta_id#">
+	  <input TYPE="HIDDEN" NAME="meta_id" value="#getMetaId#">
+	  <INPUT TYPE="HIDDEN" NAME="new_meta_id" VALUE="#new_meta_id#">
 	</table>
   </CENTER>
 </FORM>

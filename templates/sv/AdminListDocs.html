@@ -8,7 +8,7 @@
 <SCRIPT language=JavaScript>
 <!--
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT>
@@ -16,7 +16,7 @@ function openHelp(id){
 </head>
 
 <body bgcolor="#FFFFFF">
-<form method="post" action="#SERVLET_URL#AdminListDocs">
+<form method="post" action="AdminListDocs">
   <table width="40%" border="0" cellspacing="0">
     <tr bgcolor="#333366"> 
       <td width="5%">&nbsp;</td>
@@ -116,7 +116,7 @@ function openHelp(id){
       <td width="5%">&nbsp;</td>
       <td width="90%"> 
         <input type="submit" name="LISTDOC_LIST" value="Visa" >
-        <input type="submit" name="CANCEL" value="Avbryt">&nbsp; <a href="javascript:openHelp('6');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+        <input type="submit" name="CANCEL" value="Avbryt">&nbsp; <a href="javascript:openHelp("6");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
       </td>
       <td width="5%">&nbsp;</td>
     </tr>

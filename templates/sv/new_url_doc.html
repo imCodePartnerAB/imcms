@@ -14,7 +14,7 @@ function openHelp(id){
 </head>
 
 <body bgcolor="#FFFFFF">
-<form method=POST action="SaveNewUrlDoc">
+<form METHOD="POST" action="SaveNewUrlDoc">
   <BR><BR><div align="center">
     <table 0 cellspacing=0 width="450" cellpadding="2" border="1" align="center">
 	  <tr bgcolor="#333366" > 
@@ -27,7 +27,7 @@ function openHelp(id){
 	  <tr> 
 		<td valign="middle" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Url 
 		  </font>&nbsp;&nbsp;&nbsp; 
-		  <input type="TEXT" name="url_ref" value="" SIZE=60 MAXLENGTH=255>
+		  <input type="TEXT" name="url_ref" value="" SIZE="60" MAXLENGTH="255">
 		  <!--<INPUT TYPE = SUBMIT VALUE = "Sök" NAME="submit"> --></td>
 	  </tr>
 	  <TR>
@@ -44,20 +44,20 @@ function openHelp(id){
 		  &nbsp;</font><font size="2"> 
 		  <input type="radio" name="target" value="_other">
 		  </font><font face="Verdana, Arial, Helvetica, sans-serif">Annan frame:</font> 
-		  <input type=text name="frame_name" size=20>
+		  <input TYPE="TEXT" name="frame_name" SIZE="2"0>
 		  </font></TD>
 	  </TR>
 	  <div align="center"> 
 		<TR> 
 		  <TD align="center" valign="middle" bgcolor="#BABABA"> 
-			<input type=SUBMIT value="OK" name="ok">
-			<INPUT TYPE=RESET VALUE="Rensa">
-			<input type=SUBMIT value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp('82');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+			<input TYPE="SUBMIT" value="OK" name="ok">
+			<INPUT TYPE="RESET" VALUE="Rensa">
+			<input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp('82');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  </TD>
 		</TR>
-		<INPUT TYPE=HIDDEN NAME=meta_id VALUE="#getMetaId#">
-		<INPUT TYPE=HIDDEN NAME=url_no VALUE=#url_no#>
-		<INPUT TYPE=HIDDEN NAME="new_meta_id" VALUE="#new_meta_id#">
+		<INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
+		<INPUT TYPE="HIDDEN" NAME="url_no" VALUE="#url_no#">
+		<INPUT TYPE="HIDDEN" NAME="new_meta_id" VALUE="#new_meta_id#">
 	  </div>
 	</table>
       

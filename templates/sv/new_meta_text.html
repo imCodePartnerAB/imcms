@@ -1,6 +1,6 @@
 <HTML><HEAD><TITLE>Admin - L&auml;gga till nytt dokument</TITLE></HEAD>
 <body bgcolor="#FFFFFF">
-<FORM METHOD=POST ACTION="SaveNewMeta">
+<FORM METHOD="POST" ACTION="SaveNewMeta">
   <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
 	<tr valign="middle" bgcolor="#FFFFFF"> 
 	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">N&auml;r 
@@ -11,18 +11,18 @@
 	<tr valign="middle" bgcolor="#333366"> 
 	  <td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">L&auml;gga 
 		till dokument 
-		<input type=HIDDEN name=doc_type value="#doc_type#">
-		<input type=HIDDEN name=doc_menu_no value="#doc_menu_no#">
-		<input type=HIDDEN name=parent_meta_id value="#parent_meta_id#">
+		<input TYPE="HIDDEN" name="doc_type" value="#doc_type#">
+		<input TYPE="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+		<input TYPE="HIDDEN" name="parent_meta_id" value="#parent_meta_id#">
 		#checks#</font></b></td>
 	</tr>
-	<input type=hidden name=description size=30 value="" oldvalue="#description#">
+	<input TYPE="HIDDEN" name="description" SIZE="30" value="" oldvalue="#description#">
 	<tr valign="middle"> 
 	  <td width="61" bgcolor="#BABABA" valign="middle"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Rubrik<br>
 		<font size="1">&nbsp;(i&nbsp;meny)</font></font></font><br>
 	  </td>
 	  <td valign="middle" bgcolor="#BABABA"> <font size="2"></font> 
-		<input type=TEXT name=meta_headline size=60 maxlength="255">
+		<input TYPE="TEXT" name="meta_headline" SIZE="60" maxlength="255">
 	  </td>
 	</tr>
 	<tr> 
@@ -30,9 +30,9 @@
 		<br>
 		<font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
 	  <td valign="middle" bgcolor="#BABABA"> 
-		<textarea name=meta_text cols="50" rows="3" maxlength="100"></textarea>
+		<textarea name="meta_text" cols="50" rows="3" maxlength="100"></textarea>
 		<br>
-		<input type=CHECKBOX name=copyMetaHeader value="1" checked>
+		<input type="CHECKBOX" name="copyMetaHeader" value="1" checked>
 		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Kopiera text/rubrik 
 		till text 1 resp. text 2</font> </td>
 	
@@ -42,16 +42,16 @@
 		<font size="1" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;(i&nbsp;meny)</font><br>
 	  </td>
 	  <td valign="middle" bgcolor="#BABABA"> 
-		<input type=TEXT name=meta_image size=60 value="#meta_image#">
+		<input TYPE="TEXT" name="meta_image" SIZE="60" value="#meta_image#">
 	  </td>
 	</tr>
 	<tr> 
 	  <td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
 	  <td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 		<div align="left"> 
-		  <input type=submit value="OK" name="ok">
-		  <input type=reset value="Återställ" name="reset">
-		  <input type=submit value="Avbryt" name="cancel">
+		  <input TYPE="SUBMIT" value="OK" name="ok">
+		  <input TYPE="RESET" value="Återställ" name="reset">
+		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">
 		  <font size="2"></font></div>
 	  </td>
 	</tr>

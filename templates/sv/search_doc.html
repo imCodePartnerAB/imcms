@@ -55,7 +55,7 @@ if (window.document.captureEvents!=null)
 </SCRIPT>
 </HEAD>
 <body bgcolor="#FFFFFF" link="#333399" vlink="#333399" alink="#999999" leftmargin="15" topmargin="0" marginwidth="15" marginheight="0">
-<FORM METHOD=POST ACTION="#SERVLET_URL#SearchDocuments" name="form1">
+<FORM METHOD="POST" ACTION="SearchDocuments" name="form1">
   <table border="0" width="500" cellpadding="2" cellspacing="0">
     <tr> 
     <td><img src="@imageurl@/sok.gif" width="500" height="27" align="top"></td>
@@ -81,7 +81,7 @@ if (window.document.captureEvents!=null)
         <input type="radio" name="search_prep" value="or">
         <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ett av orden 
         m&aring;ste finnas (OR)
-        <input type="hidden" name="start" value="#START#">
+        <input type="HIDDEN" name="start" value="#START#">
         </font></td>
     </tr>
     <tr bgcolor="#BABABA" valign="middle"> 

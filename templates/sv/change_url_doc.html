@@ -6,7 +6,7 @@
 <SCRIPT language=JavaScript>
 <!--
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT>
@@ -14,9 +14,9 @@ function openHelp(id){
 </head>
 
 <body bgcolor="#FFFFFF">
-<form method=POST action="SaveUrlDoc">
+<form METHOD="POST" action="SaveUrlDoc">
   <BR><BR><div align="center">
-    <table 0 cellspacing=0 width="450" cellpadding="2" align="center" border="1">
+    <table 0 cellspacing="0" width="450" cellpadding="2" align="center" border="1">
 	  <tr bgcolor="#333366" > 
 		<td width="84%" valign="middle" height="14"><B><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&Auml;ndra 
 		  URL</font></B></td>
@@ -27,7 +27,7 @@ function openHelp(id){
 	  <tr  bgcolor="#A1A1A1"> 
 		<td width="84%" valign="middle" height=28 bgcolor="#BABABA" align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Url 
 		  </font>&nbsp;&nbsp;&nbsp; 
-		  <input type="TEXT" name="url_ref" value="#url_doc_ref#" SIZE=60 MAXLENGTH=255>
+		  <input type="TEXT" name="url_ref" value="#url_doc_ref#" SIZE="60" MAXLENGTH="255">
 		</td>
 	  </tr>
 	  <TR bgcolor="#A1A1DE">
@@ -44,17 +44,17 @@ function openHelp(id){
 		  &nbsp;</font><font size="2"> 
 		  <input type="radio" name="target" value="_other" #_other#>
 		  </font><font face="Verdana, Arial, Helvetica, sans-serif">Annan frame:</font> 
-		  <input type=text name="frame_name" size=20 value="#frame_name#">
+		  <input TYPE="TEXT" name="frame_name" SIZE="20" value="#frame_name#">
 		  </font></TD>
 	  </TR>
 	  <div align="center"> 
 		<TR bgcolor="#A1A1DE"> 
 		  <TD width="84%" bgcolor="#BABABA" valign="middle" align="center"> 
-			<INPUT TYPE=SUBMIT VALUE="Spara" NAME="ok">&nbsp; <a href="javascript:openHelp('82');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+			<INPUT TYPE="SUBMIT" VALUE="Spara" NAME="ok">&nbsp; <a href="javascript:openHelp("82");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  </TD>
 		</TR>
-		<INPUT TYPE=HIDDEN NAME=meta_id VALUE="#getMetaId#">
-		<INPUT TYPE=HIDDEN NAME=parent_meta_id VALUE="#getParentMetaId#">
+		<INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
+		<INPUT TYPE="HIDDEN" name="parent_meta_id" VALUE="#getParentMetaId#">
 	  </div>
 	</table>
       

@@ -8,7 +8,7 @@
 <SCRIPT language=JavaScript>
 <!--
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT>
@@ -16,7 +16,7 @@ function openHelp(id){
 </head>
 
 <body bgcolor="#FFFFFF">
-<form method="post" action="#SERVLET_URL#AdminRoleBelongings" name="UserInfo">
+<form method="post" action="AdminRoleBelongings" name="UserInfo">
   <table width="40%" border="0" cellspacing="0">
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
@@ -29,7 +29,7 @@ function openHelp(id){
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">
-        &nbspAktuell roll: #CURENT_ROLE_NAME#</font><input type="hidden" name="CURENT_ROLE_ID" value="#CURENT_ROLE_ID#"></td>
+        &nbspAktuell roll: #CURENT_ROLE_NAME#</font><input type="HIDDEN" name="CURENT_ROLE_ID" value="#CURENT_ROLE_ID#"></td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
@@ -60,7 +60,7 @@ function openHelp(id){
 	  <td width="90%"> 
         <input type="submit" name="BELONGING_ACTIVATE" value="Aktivera" >
         <input type="submit" name="BELONGING_DEACTIVATE" value="Avaktivera" >
-        <input type="submit" name="BELONGING_CANCEL" value="Avbryt">&nbsp; <a href="javascript:openHelp('3');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+        <input type="submit" name="BELONGING_CANCEL" value="Avbryt">&nbsp; <a href="javascript:openHelp("3");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
       </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>

@@ -10,9 +10,9 @@
 	<td width="5%">&nbsp;</td>
 	<td align="center">
 	    <form action="SaveInclude" method="POST">
-	        <input type="hidden" name="meta_id" value="#meta_id#">
+	        <input type="HIDDEN" name="meta_id" value="#meta_id#">
 		<input type="text" name="include_meta_id" value="#include_meta_id#" size="6" maxlength="6">
-		<input type="hidden" name="include_id" value="#include_id#">
+		<input type="HIDDEN" name="include_id" value="#include_id#">
 		<input type="submit" name="ok" value="OK">
 	    </form>
 	</td>
@@ -21,12 +21,12 @@
     <tr bgcolor="#BABABA">
 	<td width="5%">&nbsp;</td>
 	<td align="center">
-	    <a href="GetDoc?meta_id=#include_meta_id#" target="_blank">Redigera</a>&nbsp; <a href="javascript:openHelp('53');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan" align="absmiddle"></a>
+	    <a href="GetDoc?meta_id=#include_meta_id#" target="_blank">Redigera</a>&nbsp; <a href="javascript:openHelp("53");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan" align="absmiddle"></a>
 	</td>
 	<td width="5%">&nbsp;<SCRIPT language=JavaScript>
 <!--
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT></td>

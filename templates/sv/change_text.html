@@ -3,13 +3,13 @@
 <TITLE>Admin</TITLE>
 <style type="text/css">
 <!--
-.hide {  visibility: hidden; }
+.hide {  visibility: HIDDEN; }
 .show {  visibility: visible; }
 -->
 </style>
 </HEAD>
 <BODY  bgcolor="#FFFFFF"><H3>
-  <FORM METHOD=POST ACTION="SaveText" name="">
+  <FORM METHOD="POST" ACTION="SaveText" name="">
     <TABLE width="430" align="center" cellpadding="2" cellspacing="0" border="1">
       <CENTER>
         <TR bgcolor="#333366" > 
@@ -21,14 +21,14 @@
         </TR>
         <TR > 
           <TD bgcolor="#BABABA"> 
-            <textarea name=text cols=70 rows=15 wrap="VIRTUAL">
+            <textarea name=text cols="70" rows=15 wrap="VIRTUAL">
 #txt#</textarea>
           </TD>
         </TR>
         <TR> 
           <TD valign="middle" align="left" bgcolor="#BABABA"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Format:&nbsp;&nbsp;&nbsp;&nbsp;</font> 
-            <INPUT TYPE=RADIO NAME=type VALUE="0" #!html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vanlig text</font>&nbsp;&nbsp; 
-            <INPUT TYPE=RADIO NAME=type VALUE="1" #html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font></TD>
+            <INPUT type="RADIO" NAME="type"  VALUE="0" #!html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vanlig text</font>&nbsp;&nbsp; 
+            <INPUT type="RADIO" NAME="type"  VALUE="1" #html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font></TD>
         </TR>
         <TR> 
           <TD valign="middle" align="center" bgcolor="#BABABA"> 
@@ -44,8 +44,8 @@
 	                <INPUT TYPE="SUBMIT" VALUE="Avbryt" NAME="cancel">
 		    </td>
 		    <td>
-	                <div id="three" style="visibility:hidden"> 
-	        	    <input type="button" name="rensa" value="Rensa" onClick="document.forms[0].text.value=''"><a href="javascript:openHelp('36');">&nbsp;<img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+	                <div id="three" style="visibility:HIDDEN"> 
+	        	    <input type="button" name="rensa" value="Rensa" onClick="document.forms[0].text.value="""><a href="javascript:openHelp("36");">&nbsp;<img src="@imageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	                </div>
 		    </td>
 		</tr>
@@ -61,7 +61,7 @@
 <SCRIPT language=JavaScript>
 <!--
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT>

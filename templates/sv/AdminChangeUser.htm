@@ -28,7 +28,7 @@ function evalEditUser() {
 }
 
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT>
@@ -57,7 +57,7 @@ function openHelp(id){
   <tr bgcolor="#bababa"> 
 	<td width="5%">&nbsp;</td>
 	<td width="90%"> 
-	  <form method="get" action="#SERVLET_URL#AdminUser" name="user_categoriesForm">
+	  <form method="get" action="AdminUser" name="user_categoriesForm">
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Anv&auml;ndarkategori: 
 		<br>
 		<select name="user_categories">
@@ -85,15 +85,15 @@ function openHelp(id){
   <tr bgcolor="#bababa"> 
 	<td width="5%" height="24">&nbsp;</td>
 	<td width="90%" height="24"> 
-	  <form method="post" action="#SERVLET_URL#AdminUser" name="argumentForm" target="_top">
+	  <form method="post" action="AdminUser" name="argumentForm" target="_top">
 		<select name="user_Id" size="5">
           #USERS_MENU#
         </select>
 		<br>
 		<br>
-		<input type="submit" name=ADD_USER value="L&auml;gg till">
+		<input type="submit" name="ADD_USER" value="L&auml;gg till">
 		<input type="submit" name="CHANGE_USER" value="Redigera " onClick="if(evalEditUser()==false)return false; return true;">
-		<input type="submit" name="GO_BACK" value="Tillbaka">&nbsp; <a href="javascript:openHelp('38');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		<input type="submit" name="GO_BACK" value="Tillbaka">&nbsp; <a href="javascript:openHelp("38");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	  </form>
 	  &nbsp; <font size="2"> </font> </td>
 	<td width="5%" height="24">&nbsp;</td>

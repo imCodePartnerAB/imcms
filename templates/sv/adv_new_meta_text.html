@@ -4,13 +4,13 @@
 <SCRIPT language=JavaScript>
 <!--
 function openHelp(id){
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
 </SCRIPT>
 </HEAD>
 <body bgcolor="#FFFFFF">
-<FORM METHOD=POST ACTION="SaveNewMeta">
+<FORM METHOD="POST" ACTION="SaveNewMeta">
   <table border="1" cellspacing="0" cellpadding="2" width="450" align="center">
 	<tr valign="middle" bgcolor="#FFFFFF"> 
 	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">N&auml;r 
@@ -21,18 +21,18 @@ function openHelp(id){
 	<tr valign="middle" bgcolor="#333366"> 
 	  <td colspan="2">&nbsp;<b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">L&auml;gga 
 		till dokument 
-		<input type=HIDDEN name=doc_type value="#doc_type#">
-		<input type=HIDDEN name=doc_menu_no value="#doc_menu_no#">
-		<input type=HIDDEN name=parent_meta_id value="#parent_meta_id#">
+		<input TYPE="HIDDEN" name="doc_type" value="#doc_type#">
+		<input TYPE="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+		<input TYPE="HIDDEN" name="parent_meta_id" value="#parent_meta_id#">
 		#checks#</font></b></td>
 	</tr>
-	<input type=hidden name=description size=30 value="" oldvalue="#description#">
+	<input TYPE="HIDDEN" name="description" SIZE="30" value="" oldvalue="#description#">
 	<tr valign="middle"> 
 	  <td width="61" bgcolor="#BABABA" valign="middle"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Rubrik<br>
 		<font size="1">&nbsp;(i&nbsp;meny)</font></font></font><br>
 	  </td>
 	  <td valign="middle" bgcolor="#BABABA"> <font size="2"></font> 
-		<input type=TEXT name=meta_headline size=60 maxlength="255">
+		<input TYPE="TEXT" name="meta_headline" SIZE="60" maxlength="255">
 	  </td>
 	</tr>
 	<tr> 
@@ -40,9 +40,9 @@ function openHelp(id){
 		<br>
 		<font size="1">&nbsp;(i&nbsp;meny)</font></font></td>
 	  <td valign="middle" bgcolor="#BABABA"> 
-		<textarea name=meta_text cols="50" rows="3" maxlength="100"></textarea>
+		<textarea name="meta_text" cols="50" rows="3" maxlength="100"></textarea>
 		<br>
-		<input type=CHECKBOX name=copyMetaHeader value="1" checked>
+		<input type="CHECKBOX" name="copyMetaHeader" value="1" checked>
 		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Kopiera text/rubrik 
 		till text 1 resp. text 2</font> </td>
 	
@@ -52,16 +52,16 @@ function openHelp(id){
 		<font size="1" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;(i&nbsp;meny)</font><br>
 	  </td>
 	  <td valign="middle" bgcolor="#BABABA"> 
-		<input type=TEXT name=meta_image size=60 value="#meta_image#">
+		<input TYPE="TEXT" name="meta_image" SIZE="60" value="#meta_image#">
 	  </td>
 	</tr>
 	<tr> 
 	  <td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
 	  <td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 		<div align="left"> 
-		  <input type=submit value="OK" name="ok">
-		  <input type=reset value="Återställ" name="reset">
-		  <input type=submit value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp('77');"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		  <input TYPE="SUBMIT" value="OK" name="ok">
+		  <input TYPE="RESET" value="Återställ" name="reset">
+		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">&nbsp; <a href="javascript:openHelp("77");"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		  <font size="2"></font></div>
 	  </td>
 	</tr>
@@ -83,12 +83,12 @@ function openHelp(id){
 	<tr> 
 	  <td width="61" valign="middle" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;S&ouml;kord</font></td>
 	  <td valign="middle" bgcolor="#BABABA"> 
-		<input type=TEXT name=classification size=50 value="#classification#" >
+		<input TYPE="TEXT" name="classification" size="50" value="#classification#" >
 		<font size="2"> <br>
 		</font><font face="Verdana, Arial, Helvetica, sans-serif" size="1">&nbsp;S&ouml;kord 
 		skall anges separerade med kommatecken.<br> &nbsp;Ex:soppa, blomkol</font><font size="2"> 
 		</font><font size="2"> <br>
-		<input type=CHECKBOX name=disable_search value="1" #disable_search#>
+		<input type="CHECKBOX" name="disable_search" value="1" #disable_search#>
 		<font face="Verdana, Arial, Helvetica, sans-serif">Blockera s&ouml;kning</font></font> 
 	  </td>
 	</tr>
@@ -96,39 +96,39 @@ function openHelp(id){
 	  <td width="88" valign="middle" bgcolor="#BABABA"><font size="2"><font face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Dela 
 		ut</font></font></td>
 	  <td valign="middle" bgcolor="#BABABA"><font size="2"> 
-		<input type=CHECKBOX name=show_meta value="1" #show_meta#>
+		<input type="CHECKBOX" name="show_meta" value="1" #show_meta#>
 		<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Visa dokumentet 
 		&auml;ven f&ouml;r obeh&ouml;riga anv&auml;ndare<br>
 		</font> 
-		<input type=CHECKBOX name=shared value="1" #shared#>
+		<input type="CHECKBOX" name="shared" value="1" #shared#>
 		<font face="Verdana, Arial, Helvetica, sans-serif">Dela ut dokumentet 
 		f&ouml;r andra administrat&ouml;rer</font></font></td>
 	</tr>
 	<tr valign="middle"> 
 	  <td width="61" height="14" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Publicera</font></td>
 	  <td width="*" valign="middle" height="14" bgcolor="#BABABA"><font size="2"> 
-		<input type=TEXT name=activated_date size=13 value="#activated_date#" maxlength="10" >
+		<input TYPE="TEXT" name="activated_date" size="13 value="#activated_date#" maxlength="10" >
 		<font face="Verdana, Arial, Helvetica, sans-serif"> <font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font> 
 		&nbsp;&nbsp;&nbsp;&nbsp;kl:</font> 
-		<input type=TEXT name=activated_time size=7 maxlength="5" value="#activated_time#" >
+		<input TYPE="TEXT" name="activated_time" size="7" maxlength="5" value="#activated_time#" >
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">(HH:MM)</font></font></td>
 	</tr>
 	<tr valign="middle"> 
 	  <td width="61" height="14" bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Arkivera</font></td>
 	  <td width="*" valign="middle" height="14" bgcolor="#BABABA"><font size="2"> 
-		<input type=TEXT name=archived_date size=13 maxlength="10" >
+		<input TYPE="TEXT" name="archived_date" size="13" maxlength="10" >
 		<font face="Verdana, Arial, Helvetica, sans-serif"> <font size="1">(&Aring;&Aring;&Aring;&Aring;-MM-DD)</font> 
 		&nbsp;&nbsp;&nbsp;&nbsp;kl:</font> 
-		<input type=TEXT name=archived_time size=7 maxlength="5">
+		<input TYPE="TEXT" name="archived_time" size="7" maxlength="5">
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="1">(HH:MM)<br>
 		</font> 
-		<input type=CHECKBOX name=archive value="1" #archive#>
+		<input type="CHECKBOX" name="archive" value="1" #archive#>
 		<font face="Verdana, Arial, Helvetica, sans-serif">Arkivera nu</font></font></td>
 	</tr>
 	<tr valign="middle"> 
 	  <td width="61" height=2 bgcolor="#BABABA"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;Visa 
 		i </font></td>
-	  <td width="*" valign="middle" height=14 bgcolor="#BABABA"><font size="2"> 
+	  <td width="*" valign="middle" height="14" bgcolor="#BABABA"><font size="2"> 
 		<input type="radio" name="target" value="_self" #_self#>
 		</font><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Samma 
 		frame</font><font size="2"> 
@@ -141,16 +141,16 @@ function openHelp(id){
 		<br>
 		<input type="radio" name="target" value="_other" #_other#>
 		</font><font face="Verdana, Arial, Helvetica, sans-serif">Annan frame</font> 
-		<input type=text name="frame_name" size=20 value="#frame_name#">
+		<input TYPE="TEXT" name="frame_name" SIZE="20" value="#frame_name#">
 		</font></td>
 	</tr>
 	<tr> 
 	  <td width="61" valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
 	  <td valign="middle" height="8" bgcolor="#BABABA" align="center"> 
 		<div align="left"> 
-		  <input type=submit value="OK" name="ok">
-		  <input type=reset value="&Aring;terst&auml;ll" name="reset">
-		  <input type=submit value="Avbryt" name="cancel">
+		  <input TYPE="SUBMIT" value="OK" name="ok">
+		  <input TYPE="RESET" value="&Aring;terst&auml;ll" name="reset">
+		  <input TYPE="SUBMIT" value="Avbryt" name="cancel">
 		</div>
 	  </td>
 	</tr>
