@@ -62,7 +62,7 @@
   </target>
 
   <target name="install" depends="build" description="Copies the webapp directly into the deployroot.">
-    <copy todir="${webapproot}" overwrite="yes">
+    <copy todir="${webapproot}">
       <fileset dir="${build}"/>
     </copy>
   </target>
