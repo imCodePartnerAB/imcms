@@ -717,15 +717,6 @@ public class IMCServiceRMI {
 			imc.changeTemplateGroupName(group_id,name) ;
 		}
 	}
-	public static void setLogFlag ( String server, boolean flag ) throws IOException {
-		IMCServiceInterface imc = getInterface( server ) ;
-		try {
-			imc.setLogFlag(flag) ;
-		} catch ( IOException ex ) {
-			imc = renewInterface(server) ;
-			imc.setLogFlag(flag) ;
-		}
-	}
 	public static java.util.Date getCurrentDate ( String server ) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
 		try {
@@ -847,4 +838,25 @@ public class IMCServiceRMI {
 			return imc.getLanguage() ;
 		}
 	}
+
+	public static SystemData getSystemData (String server) throws IOException {
+		IMCServiceInterface imc = getInterface( server ) ;
+		try {
+			return imc.getSystemData() ;
+		} catch ( IOException ex ) {
+			imc = renewInterface(server) ;
+			return imc.getSystemData() ;
+		}
+	}
+
+	public static void setSystemData (String server, SystemData sd) throws IOException {
+		IMCServiceInterface imc = getInterface( server ) ;
+		try {
+			imc.setSystemData(sd) ;
+		} catch ( IOException ex ) {
+			imc = renewInterface(server) ;
+			imc.setSystemData(sd) ;
+		}
+	}
+
 }
