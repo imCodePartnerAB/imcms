@@ -8,6 +8,7 @@
 
   <!-- The directory to build in. -->
   <property name="build"          value="${basedir}/build"/>
+  <property name="dist"           value="${basedir}/dist"/>
 
   <!-- Where to put generated documentation -->
   <property name="doc"            value="${basedir}/doc"/>
@@ -59,18 +60,20 @@
   <property file="${build.properties}"/>
 
   <!-- URIs -->
-  <property name="servleturl"     value="${rooturl}/servlet"/>
-  <property name="loginurl"       value="${rooturl}/login"/>
-  <property name="imageurl"       value="${rooturl}/images"/>
+  <property name="servleturl"      value="${rooturl}/servlet"/>
+  <property name="loginurl"        value="${rooturl}/login"/>
+  <property name="imageurl"        value="${rooturl}/images"/>
   <property name="adminbuttonsurl" value="${rooturl}/admin"/>
+  <property name="cssurl"          value="${rooturl}/css"/>
+  <property name="postcardsurl"    value="${rooturl}/postcards"/>
 
 
-  <!-- Filenames -->
-  <property name="wardist" value="${webappname}.war"/>
+  <!-- Locations for the final packages -->
+  <property name="wardist"         value="${dist}/${webappname}.war"/>
 
-  <property name="dist-sql" value="${webappname}.sql"/>
-  <property name="sprocs-sql" value="sprocs.sql"/>
-  <property name="help-sql" value="help.sql"/>
+  <property name="dist-sql"        value="${dist}/imcms.sql"/>
+  <property name="sprocs-sql"      value="${dist}/sprocs.sql"/>
+
 
   <!-- Where to install imCMS -->
   <property name="webapproot" value="${deployroot}/${webappname}"/>
@@ -82,6 +85,29 @@
 	  description="Handy target for everything else to depend on.">
 
     <tstamp/>
+
+    <!-- Global filters -->
+    <filter token="rooturl"         value="${rooturl}"/>
+    <filter token="servleturl"      value="${servleturl}"/>
+    <filter token="loginurl"        value="${loginurl}"/>
+    <filter token="imageurl"        value="${imageurl}"/>
+    <filter token="cssurl"          value="${cssurl}"/>
+    <filter token="postcardsurl"    value="${postcardsurl}"/>
+    <filter token="adminbuttonsurl" value="${adminbuttonsurl}"/>
+
+    <filter token="db-host"         value="${db-host}"/>
+    <filter token="db-port"         value="${db-port}"/>
+    <filter token="db-name"         value="${db-name}"/>
+    <filter token="db-user"         value="${db-user}"/>
+    <filter token="db-pass"         value="${db-pass}"/>
+
+    <filter token="plugin-db-host"  value="${plugin-db-host}"/>
+    <filter token="plugin-db-port"  value="${plugin-db-port}"/>
+    <filter token="plugin-db-name"  value="${plugin-db-name}"/>
+    <filter token="plugin-db-user"  value="${plugin-db-user}"/>
+    <filter token="plugin-db-pass"  value="${plugin-db-pass}"/>
+
+    <filter token="smtp-server"     value="${smtp-server}"/>
 
   </target>
 
@@ -138,8 +164,7 @@
 	  description="Packages a complete distribution.">
 
     <war warfile="${wardist}"
-	 basedir="build"
-	 excludes="${WEB-INF}/web.xml"
+	 basedir="${build}"
 	 webxml="install/web.xml"/>
 
     <echo>Done packaging distribution '${wardist}'.</echo>
@@ -151,24 +176,16 @@
 
   <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
   <target name="build"
-	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,sql,web.xml"
+	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,sql"
 	  description="Builds everything.">
 
-  </target>
-
-
-  <!-- Copies the deploy-descriptor to its correct location. -->
-  <target name="web.xml" depends="init">
-    <copy file="install/web.xml" todir="${WEB-INF}" overwrite="yes"/>
   </target>
 
 
   <!-- Delete everything built by the 'build'-target. -->
   <target name="clean" description="Deletes everything for a fresh start.">
     <delete dir="${build}"/>
-    <delete>
-	<fileset dir="." includes="${wardist},${dist-sql},${help-sql},${sprocs-sql}"/>
-    </delete>
+    <delete dir="${dist}"/>
   </target>
 
 
@@ -183,6 +200,7 @@
     <copy todir="${webapproot}">
       <fileset dir="${build}"/>
     </copy>
+    <copy todir="${webapproot}/WEB-INF" file="install/web.xml"/>
   </target>
 
 
@@ -218,7 +236,7 @@
   </target>
 
 
-  <!-- Build extra tools (like ant-tasks) needed for building. -->
+  <!-- Build extra tools needed for building. -->
   <target name="tools">
     <ant dir="tools"/>
   </target>
@@ -227,29 +245,17 @@
   <!-- Generates the sql-scripts -->
   <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
     <taskdef name="cat" classname="Cat" classpath="tools"/>
-    
-    <copy file="sql/help/help.sql" tofile="${help-sql}">
-	<filterset>
-	   <filter token="imageurl" value="${imageurl}"/>
-      </filterset>
-    </copy>	
-
-    <cat destfile="${dist-sql}" orderby="path">
+    <cat destfile="${dist-sql}" orderby="path" filtering="true">
       <fileset dir="sql/tables" includes="tables.ascii.sql"/>
       <fileset dir="sql/sprocs"/>
       <fileset dir="sql/data" includes="types.sql"/>
       <fileset dir="sql/data" includes="newdb.sql"/>
       <fileset dir="sql/index"/>
-      <fileset dir="" includes="help.sql"/>
+      <fileset dir="sql/help" includes="help.sql"/>
     </cat>
-    <cat destfile="${sprocs-sql}" orderby="path">
+    <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
       <fileset dir="sql/sprocs"/>
     </cat>
-    <copy file="sql/help/help.sql" tofile="${help-sql}">
-	<filterset>
-	   <filter token="imageurl" value="${imageurl}"/>
-      </filterset>
-    </copy>	
   </target>
 
 
@@ -317,32 +323,10 @@
   <target name="conf"
 	  depends="init"
 	  description="Builds the config-directory.">
-    <copy todir="${conf}">
+    <copy todir="${conf}" filtering="true">
       <fileset dir="install/conf">
 	<exclude name="policy"/>
       </fileset>
-      <filterset>
-
-	<filter token="rooturl" value="${rooturl}"/>
-	<filter token="servleturl" value="${servleturl}"/>
-	<filter token="loginurl" value="${loginurl}"/>
-	<filter token="imageurl" value="${imageurl}"/>
-
-	<filter token="db-host" value="${db-host}"/>
-	<filter token="db-port" value="${db-port}"/>
-	<filter token="db-name" value="${db-name}"/>
-	<filter token="db-user" value="${db-user}"/>
-	<filter token="db-pass" value="${db-pass}"/>
-
-	<filter token="plugin-db-host" value="${plugin-db-host}"/>
-	<filter token="plugin-db-port" value="${plugin-db-port}"/>
-	<filter token="plugin-db-name" value="${plugin-db-name}"/>
-	<filter token="plugin-db-user" value="${plugin-db-user}"/>
-	<filter token="plugin-db-pass" value="${plugin-db-pass}"/>
-
-	<filter token="smtp-server" value="${smtp-server}"/>
-
-      </filterset>
     </copy>
   </target>
 
@@ -355,18 +339,17 @@
     <mkdir dir="${login}"/>
     <mkdir dir="${css}"/>
     <mkdir dir="${user}"/>
-    <copy file="templates/login/index.html" todir="${login}">
-       <filterset>
-	<filter token="servleturl" value="${servleturl}"/>
-	<filter token="imageurl" value="${imageurl}"/>
-      </filterset>
-    </copy>
+    <copy file="templates/login/index.html" todir="${login}" filtering="true"/>
     <copy todir="${images}">
       <fileset dir="install/htdocs/images">
 	<patternset>
 	  <include name="*.gif"/>
 	</patternset>
       </fileset>
+      <fileset dir="install/htdocs/imcms/resource"/>
+    </copy>
+    <copy todir="${images}/${language}/admin">
+      <fileset dir="install/htdocs/imcms/imagebrowse"/>
     </copy>
     <copy todir="${adminbuttons}">
       <fileset dir="install/htdocs/imcms">
@@ -375,18 +358,14 @@
 	</patternset>
       </fileset>
     </copy>
-    <copy todir="${webroot}">
+    <copy todir="${webroot}" filtering="true">
       <fileset dir="templates">
 	<patternset>
 	  <include name="*.htm"/>
 	  <include name="*.html"/>
+	  <include name="*.jsp"/>
 	</patternset>
       </fileset>
-      <filterset>
-	<filter token="servleturl" value="${servleturl}"/>
-	<filter token="loginurl" value="${loginurl}"/>
-	<filter token="imageurl" value="${imageurl}"/>
-      </filterset>
     </copy>
 
   </target>
@@ -400,15 +379,8 @@
     <mkdir dir="${admintemplates}"/>
     <mkdir dir="${demotemplates}"/>
 
-    <copy todir="${admintemplates}/adminbuttons">
+    <copy todir="${admintemplates}/adminbuttons" filtering="true">
       <fileset dir="templates/${srclanguage}/adminbuttons"/>
-      <filterset>
-
-	<filter token="adminbuttonsurl" value="${adminbuttonsurl}"/>
-	<filter token="loginurl" value="${loginurl}"/>
-	<filter token="imageurl" value="${imageurl}"/>
-
-      </filterset>
     </copy>
 
     <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
@@ -417,31 +389,19 @@
     <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
 	     token="&#13;" value=""/>
 
-    <copy todir="${admintemplates}/permissions">
+    <copy todir="${admintemplates}/permissions" filtering="true">
       <fileset dir="templates/${srclanguage}/permissions"/>
-      <filterset>
-	<filter token="loginurl" value="${loginurl}"/>
-	<filter token="imageurl" value="${imageurl}"/>
-      </filterset>
     </copy>
 
-   <copy todir="${admintemplates}/sections">
+   <copy todir="${admintemplates}/sections" filtering="true">
       <fileset dir="templates/${srclanguage}/sections"/>
-      <filterset>
-	<filter token="loginurl" value="${loginurl}"/>
-	<filter token="imageurl" value="${imageurl}"/>
-      </filterset>
     </copy>
     
-    <copy todir="${admintemplates}/search">
+    <copy todir="${admintemplates}/search" filtering="true">
       <fileset dir="templates/${srclanguage}/search"/>
-      <filterset>
-	<filter token="loginurl" value="${loginurl}"/>
-	<filter token="imageurl" value="${imageurl}"/>
-      </filterset>
     </copy>
 
-    <copy todir="${admintemplates}">
+    <copy todir="${admintemplates}" filtering="true">
       <fileset dir="templates/${srclanguage}">
 	<patternset>
 	  <include name="*.htm"/>
@@ -450,18 +410,10 @@
 	  <include name="*.txt"/>
 	</patternset>
       </fileset>
-      <filterset>
-	<filter token="loginurl" value="${loginurl}"/>
-	<filter token="imageurl" value="${imageurl}"/>
-      </filterset>
     </copy>
 
-    <copy todir="${texttemplates}">
+    <copy todir="${texttemplates}" filtering="true">
       <fileset dir="templates/text"/>
-      <filterset>
-	<filter token="loginurl" value="${loginurl}"/>
-	<filter token="imageurl" value="${imageurl}"/>
-      </filterset>
     </copy>
 
   </target>
@@ -514,7 +466,7 @@
   <target name="conference-templates"
 	  depends="init"
 	  description="Copies the conference-templates.">
-    <copy todir="${conference-templates}">
+    <copy todir="${conference-templates}" filtering="true">
       <fileset dir="templates/${srclanguage}/conf" excludes="original/images/"/>
     </copy>
   </target>
@@ -565,10 +517,10 @@
   <target name="chat-templates"
 	  depends="init"
 	  description="Copies the chat-templates.">
-    <copy todir="${chat-templates}/original">
+    <copy todir="${chat-templates}/original" filtering="true">
       <fileset dir="templates/${srclanguage}/chat/orginal"/>
     </copy>
-    <copy todir="${chat-templates}">
+    <copy todir="${chat-templates}" filtering="true">
       <fileset dir="templates/${srclanguage}/chat" excludes="orginal/"/>
     </copy>
   </target>
@@ -609,10 +561,10 @@
   <target name="billboard-templates"
 	  depends="init"
 	  description="Copies the billboard-templates.">
-    <copy todir="${billboard-templates}/original">
+    <copy todir="${billboard-templates}/original" filtering="true">
       <fileset dir="templates/${srclanguage}/billBoard/ORIGINAL" excludes="images/"/>
     </copy>
-    <copy todir="${billboard-templates}">
+    <copy todir="${billboard-templates}" filtering="true">
       <fileset dir="templates/${srclanguage}/billBoard" excludes="ORIGINAL/"/>
     </copy>
   </target>
@@ -638,7 +590,7 @@
   <target name="postcard-templates"
 	  depends="init"
 	  description="Copies the postcard-templates.">
-    <copy todir="${postcard-templates}">
+    <copy todir="${postcard-templates}" filtering="true">
       <fileset dir="templates/${srclanguage}/postcard"/>
     </copy>
   </target>
@@ -666,7 +618,7 @@
   <target name="fortune-templates"
 	depends="init,web"
 	description="Copies the fortune-templates.">
-	<copy todir="${fortune-templates}">
+	<copy todir="${fortune-templates}" filtering="true">
 	  <fileset dir="templates/${srclanguage}/fortunes"/>
 	</copy>
   </target>

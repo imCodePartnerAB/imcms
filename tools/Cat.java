@@ -7,9 +7,13 @@ public class Cat extends Task {
 
     protected File destFile = null ; // the destination file
     protected String orderBy = null ;
+    protected boolean filtering = false;
     protected boolean append = false ;
+    protected int verbosity = Project.MSG_VERBOSE;
+    protected boolean forceOverwrite = false;
 
     protected Vector filesets = new Vector() ;
+    private Vector filterSets = new Vector();
 
     private String ORDER_BY_PATH    = "path" ;
 
@@ -22,7 +26,7 @@ public class Cat extends Task {
     public void setAppend(boolean  v) {
 	this.append = v;
     }
-    
+
     /**
      * Sets the value of destFile
      *
@@ -48,48 +52,205 @@ public class Cat extends Task {
         filesets.addElement(set);
     }
 
+    /**
+     * Used to force listing of all names of copied files.
+     */
+    public void setVerbose(boolean verbose) {
+        if (verbose) {
+            this.verbosity = Project.MSG_INFO;
+        } else {
+            this.verbosity = Project.MSG_VERBOSE;
+        }
+    }
+
+    /**
+     * Sets filtering.
+     */
+    public void setFiltering(boolean filtering) {
+        this.filtering = filtering;
+    }
+
+    /**
+     * Overwrite any existing destination file(s).
+     */
+    public void setOverwrite(boolean overwrite) {
+        this.forceOverwrite = overwrite;
+    }
+
+    /**
+     * Create a nested filterset
+     */
+    public FilterSet createFilterSet() {
+        FilterSet filterSet = new FilterSet();
+        filterSets.addElement(filterSet);
+        return filterSet;
+    }
+
+    /**
+     * Get the filtersets being applied to this operation.
+     *
+     * @return a vector of FilterSet objects
+     */
+    protected Vector getFilterSets() {
+        return filterSets;
+    }
+
     public void execute() throws BuildException {
+	validateAttributes() ;
+	doFileOperations() ;
+    }
+
+    /** Make sure all attributes are correct. **/
+    protected void validateAttributes() {
         if ( filesets.size() == 0 ) {
             throw new BuildException("Specify at least one fileset.");
         }
+
 	if ( destFile == null ) {
 	    throw new BuildException("Specify a destfile.") ;
 	}
 
 	if ( orderBy != null && !ORDER_BY_PATH.equalsIgnoreCase(orderBy)) {
-	    throw new BuildException("Specify a valid orderby, or none.") ;
+	    throw new BuildException("Specify a valid orderby ('path'), or none.") ;
+	}
+    }
+
+    /** Do whatever is necessary to open the destination file. **/
+    protected OutputStream openOutputStream() throws IOException {
+	File parent = new File(destFile.getParent()) ;
+	if (!parent.exists()) {
+	    if (!parent.mkdirs()) {
+		log("Unable to create directory " + parent.getAbsolutePath(), Project.MSG_ERR);
+	    } else {
+		log("Created directory " + parent.getAbsolutePath(), verbosity);
+	    }
 	}
 
+	return new FileOutputStream(destFile.getPath(),append) ;
+
+    }
+
+    /** Do all fileoperations. **/
+    protected void doFileOperations() {
 	try {
-	    OutputStream out = new FileOutputStream(destFile.getPath(),append) ;
-    
-	    Vector srcFiles = new Vector() ;
 
-	    // deal with the filesets
-	    for (int i=0; i<filesets.size(); i++) {
-		FileSet fs = (FileSet) filesets.elementAt(i);
-		DirectoryScanner ds = fs.getDirectoryScanner(project);
-		File baseDir = fs.getDir(project);
+	    List srcFiles = handleFileSets() ;
 
-		String[] srcFilesArray = ds.getIncludedFiles() ;
-		if (ORDER_BY_PATH.equalsIgnoreCase(orderBy)) {
-		    Arrays.sort(srcFilesArray) ;
-		}
-		for ( int j = 0; j < srcFilesArray.length; ++j ) {
-		    srcFiles.add(new File(baseDir,srcFilesArray[j])) ;
-		}
+	    if (srcFiles == null) {
+		return ;
 	    }
+
+	    FilterSetCollection filters = handleFilterSets() ;
+
 	    log("Concatenating "+srcFiles.size()+(srcFiles.size() == 1 ? " file to " : " files to ") + destFile.getAbsolutePath()) ;
-	    for (int j = 0; j<srcFiles.size(); ++j ) {
-		int read ;
-		byte[] buffer = new byte[BUFFER_SIZE] ;
-		FileInputStream in = new FileInputStream((File)srcFiles.elementAt(j)) ;
-		while (-1 != (read = in.read(buffer,0,BUFFER_SIZE)) ) {
-		    out.write(buffer,0,read) ;
-		}
-	    }
+
+	    catFiles(srcFiles,filters) ;
+
 	} catch (IOException ex) {
 	    throw new BuildException(ex) ;
+	}
+    }
+
+    /** Deal with the filesets **/
+    protected List handleFileSets() {
+	List srcFiles = new Vector() ;
+	boolean foundNewer = false ;
+
+	for (Iterator filesetsIterator = filesets.iterator(); filesetsIterator.hasNext();) {  // for each fileset
+	    FileSet fs = (FileSet) filesetsIterator.next() ;
+	    DirectoryScanner ds = fs.getDirectoryScanner(project);
+	    File baseDir = fs.getDir(project);
+
+	    // get all files in this fileset
+	    String[] srcFilesArray = ds.getIncludedFiles() ;
+
+	    // sort by path if requested
+	    if (ORDER_BY_PATH.equalsIgnoreCase(orderBy)) {
+		Arrays.sort(srcFilesArray) ;
+	    }
+
+	    long destModified = destFile.lastModified() ;
+
+	    // add all source files to vector
+	    for ( int j = 0; j < srcFilesArray.length; ++j ) {
+		File srcFile = new File(baseDir,srcFilesArray[j]) ;
+		if (srcFile.equals(destFile)) {
+		    log("Skipping self-concatenation of " + srcFile, verbosity) ;
+		} else {
+		    // See if we can find a sourcefile that is newer than the destination
+		    if (!foundNewer && srcFile.lastModified() > destModified) {
+			foundNewer = true ;
+		    }
+		    srcFiles.add(srcFile) ;
+		}
+	    }
+	}
+
+	// If we didn't find any newer sourcefiles, then forget it.
+	if (!forceOverwrite && !foundNewer) {
+	    srcFiles = null ;
+	}
+
+	return srcFiles ;
+    }
+
+    /** Handle the filtersets. **/
+    protected FilterSetCollection handleFilterSets() {
+	// handle filters
+	FilterSetCollection executionFilters = new FilterSetCollection();
+	if (filtering) {
+	    executionFilters.addFilterSet(project.getGlobalFilterSet());
+	}
+	for (Enumeration filterEnum = filterSets.elements(); filterEnum.hasMoreElements();) {
+	    executionFilters.addFilterSet((FilterSet)filterEnum.nextElement());
+	}
+	return executionFilters ;
+    }
+
+    /** Cat through all files  **/
+    protected void catFiles(List srcFiles, FilterSetCollection filters) throws IOException {
+	OutputStream out = openOutputStream() ;
+
+	// do actual concatenation
+	for (Iterator srcFilesIterator = srcFiles.iterator(); srcFilesIterator.hasNext(); ) {
+
+	    File srcFile = (File)srcFilesIterator.next() ;
+	    log("Concatenating " + srcFile + " to " + destFile, verbosity) ;
+
+	    FileInputStream in = new FileInputStream(srcFile) ;
+	    catStream(in,out,filters) ;
+	    in.close() ;
+	}
+	out.close() ;
+    }
+
+
+    /** Cat one file/stream **/
+    protected void catStream(InputStream in, OutputStream out, FilterSetCollection filters) throws IOException {
+	if (filters != null && filters.hasFilters()) {
+
+	    BufferedReader input = new BufferedReader(new InputStreamReader(in)) ;
+	    BufferedWriter output = new BufferedWriter(new OutputStreamWriter(out)) ;
+
+	    for (String newline,line = input.readLine(); line != null; line = input.readLine()) {
+		if (line.length() == 0) {
+		    output.newLine();
+		} else {
+		    newline = filters.replaceTokens(line);
+		    output.write(newline);
+		    output.newLine();
+		}
+	    }
+	    output.flush() ;
+
+	} else {
+
+	    int read ;
+	    byte[] buffer = new byte[BUFFER_SIZE] ;
+	    while (-1 != (read = in.read(buffer,0,BUFFER_SIZE)) ) {
+		out.write(buffer,0,read) ;
+	    }
+
 	}
     }
 }

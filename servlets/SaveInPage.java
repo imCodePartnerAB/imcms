@@ -45,10 +45,10 @@ public class SaveInPage extends HttpServlet {
 
 		// get form data
 		imcode.server.Table doc = new imcode.server.Table() ;
-		
+
 		String template  = req.getParameter("template") ;
 		String groupId  = req.getParameter("group");
-	
+
 		//the template group admin is a ugly mess but lets try to do the best of it
 		//we save the group_id but if the group gets deleted else where it doesn't get changed
 		//in the text_docs table, but the system vill not crash it only shows an empty group string.
@@ -136,7 +136,7 @@ public class SaveInPage extends HttpServlet {
 			if ( group != null ) {
 				user.setTemplateGroup(Integer.parseInt(req.getParameter("group"))) ;
 			}
-//			htmlStr = IMCServiceRMI.interpretTemplate(imcserver,meta_id,user) ;
+
 			String output = AdminDoc.adminDoc(meta_id,meta_id,host,user,req,res) ;
 			if ( output != null ) {
 				out.write(output) ;

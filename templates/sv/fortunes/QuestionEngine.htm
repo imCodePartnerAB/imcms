@@ -1,10 +1,10 @@
 <table border="0" cellspacing="0" cellpadding="0">
      <tr align="center" valign="top" bgcolor="#999966"> 
-         <td colspan="3"><img src="../resource/te_veckans.gif" width="135" height="46"></td>
+         <td colspan="3"><img src="@imageurl@/te_veckans.gif" width="135" height="46"></td>
      </tr>
 	<form name="weeklyQ" style="background-color:#999966">
 	<tr align="left" valign="top" bgcolor="#999966"> 
-         <td><img src="../resource/transpix.gif" width="6" height="6"></td>
+         <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
          <td> <p><span class="vitbrodtext">#question#<br></span></p>
 			  <input type="hidden" name="question" value="#question#">
 			  <input type="hidden" name="infile" value="#file#">
@@ -22,7 +22,7 @@
 				else {
 
     alert('Du glömde välja!') ;}
-  				window.open('/imcms/servlet/QuestionResult?answer=' + answer + '&file=' + thefile ,'visa','width=250,height=300');
+  				window.open('@servleturl@/QuestionResult?answer=' + answer + '&file=' + thefile ,'visa','width=250,height=300');
 				}
 				//-->
 			  </script>
@@ -37,14 +37,14 @@
                     </tr>
 			   </table>
                <br>
-               <a href="javascript:checkChecked()"><img src="../resource/kn_visa_resultat.gif" width="104" height="15" border="0" alt="Visa resultat"></a> 
+               <a href="javascript:checkChecked()"><img src="@imageurl@/kn_visa_resultat.gif" width="104" height="15" border="0" alt="Visa resultat"></a> 
          </td>
-         <td><img src="../resource/transpix.gif" width="6" height="6"></td>
+         <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
     </tr>
 	</form>
 	<tr align="left" valign="top" bgcolor="#999966"> 
-         <td><img src="../resource/transpix.gif" width="6" height="6"></td>
-         <td><img src="../resource/transpix.gif" width="123" height="6"></td>
-         <td><img src="../resource/transpix.gif" width="6" height="6"></td>
+         <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
+         <td><img src="@imageurl@/transpix.gif" width="123" height="6"></td>
+         <td><img src="@imageurl@/transpix.gif" width="6" height="6"></td>
     </tr>
 </table>

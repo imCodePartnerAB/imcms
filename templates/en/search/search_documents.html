@@ -1,133 +1,43 @@
-<HTML><HEAD><TITLE>S&ouml;k</TITLE>
-<SCRIPT language="VBScript">
-<!-- Little code
-Sub Document_onKeyPress()
-if (window.event.keyCode = 13) Then
-call IEkeyDown(13)
-End If
-End Sub
-// Som slutar här -->
-</SCRIPT>
-
-<SCRIPT language="Javascript 1.2">
-<!-- Original:  Ronnie T. Moore -->
-<!-- Web Site:  The JavaScript Source -->
-
-<!-- This script and many more are available free online at -->
-<!-- The JavaScript Source!! http://javascript.internet.com -->
-
-<!-- Begin
-var nextfield = "question_field"; // name of first box on page
-netscape = "";
-ver = navigator.appVersion; len = ver.length;
-for(iln = 0; iln < len; iln++) if (ver.charAt(iln) == "(") break;
-netscape = (ver.charAt(iln+1).toUpperCase() != "C");
-
-function keyDown(DnEvents) { // handles keypress
-// determines whether Netscape or Internet Explorer
-	k = (netscape) ? DnEvents.which : window.event.keyCode;
-	//window.status = k;
-	if (k == 13){ // enter key pressed
-		if(!alreadySubmitted) {
-		 	//document.forms[0].submit();
- 			document.form1.submit() ;
-			alreadySubmitted = true;
-///alert("Subit");
-		 	return true; // submit, we finished all fields
-			}
-		}	
-}
-
-function IEkeyDown(k) { // handles keypress
-		if(!alreadySubmitted) {
-		 	document.forms[0].submit();
-			alreadySubmitted = true;
-alert("Submit");
-		 	return true;
-		}
-}
-
-
-if (window.document.captureEvents!=null) 
- window.document.captureEvents(Event.KEYPRESS);
- window.document.onkeypress = keyDown;
-
-//  End -->
-</SCRIPT>
+<!DOCTYPE html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>S&ouml;k</TITLE>
 </HEAD>
-<body bgcolor="#FFFFFF" link="#333399" vlink="#333399" alink="#999999" leftmargin="15" topmargin="0" marginwidth="15" marginheight="0">
-<FORM METHOD="POST" ACTION="SearchDocuments" name="form1">
-  <table border="0" width="500" cellpadding="2" cellspacing="0">
-    <tr> 
-      <td><img src="../IMAGES/sok.gif" width="500" height="27" align="top"></td>
-  </tr>
-  <tr> 
-    <td>&nbsp;</td>
-  </tr>
-</table>
-  <table border="1" width="554" cellpadding="2" cellspacing="0">
-    <tr bgcolor="#333366"> 
-      <td colspan="2"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">Enter 
-        your question below:</font></b> </td>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td height="35" colspan="2"> 
-        <input type="text" name="question_field" size="65">
-        <input type="submit" name="search" value="Search">
-        <a href="../search/search_help.htm" target="_blank">Help</a><BR>
-      </td>
-    </tr>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td width="255"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-        <input type="radio" name="search_prep" value="and" checked>
-        All words must be found (AND)</font> </td>
-      <td width="285"> 
-        <input type="radio" name="search_prep" value="or">
-        <font face="Verdana, Arial, Helvetica, sans-serif" size="2">One of the words 
-        must be found (OR) 
-        <input type="HIDDEN" name="start" value="#START#">
-        <input type="HIDDEN" name="search2" value="Hurra">
-        </font></td>
-    </tr>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td height="66" colspan="2"> 
-        <p><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-          <input type="checkbox" name="search_type" value="atc_icd10">
-          Search for document codes - (ATC or ICD10 codes)</font> 
-        <table width="62%" border="0">
-          <tr> 
-            <td width="13%">&nbsp;</td>
-            <td width="63%"> 
-              <input type="checkbox" name="string_match" value="match">
-              <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Exact 
-              string matching</font> </td>
-            <td width="24%">&nbsp;</td>
-          </tr>
-        </table>
-        
-      </td>
-    </tr>
-    <tr bgcolor="#BABABA" valign="middle"> 
-      <td colspan="2" height="51">
-        <p> 
-          <select name="search_area" size="1">
-            <option value="all" selected>All pages</option>
-            <option value="not_archived">Pages in use</option>
-            <option value="archived">Archived pages</option>
-          </select>
-          <font face="Verdana, Arial, Helvetica, sans-serif" size="2">Select search area 
-          </font></p>
-        </td>
-    </tr>
-  </table>
-  <br>
+<BODY bgcolor="#ffffff" link="#333399" vlink="#333399" alink="#999999">
+<FORM method="post" action="SearchDocuments">
+	<table cellpadding="2" cellspacing="0" align="center" border="1" width="600">
+		<TR bgcolor="#333366">
+			<TD colspan="2"><B><FONT face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#ffffff">			
+			Type your query below:
+</FONT></B>
+			</TD>
+		</TR>
+		<TR bgcolor="#bababa">
+			<TD height="35" colspan="2">
+				<INPUT type="Text" name="question_field" size="65">
+				<INPUT type="submit" name="search" value="Search">
+			</TD>
+		</TR>
+		
+		<TR bgcolor="#bababa">
+			<TD height="51">
+				<SELECT name="no_of_hits" size="1">
+					<OPTION value="10">10</OPTION>
+					<OPTION value="20">20</OPTION>
+					<OPTION value="30">30</OPTION>
+					<OPTION value="40">40</OPTION>
+					<OPTION value="50" selected>50</OPTION>
+					<OPTION value="60">60</OPTION>
+					<OPTION value="70">70</OPTION>
+					<OPTION value="80">80</OPTION>
+					<OPTION value="90">90</OPTION>
+					<OPTION value="100">100</OPTION>				
+				</SELECT><FONT face="Verdana, Arial, Helvetica, sans-serif" size="2">
+				Hits per page.</FONT>
+			</TD>
+		</TR>
+	</TABLE><BR>
 </FORM>
-  
-<SCRIPT language="Javascript 1.2">
-<!--
-var alreadySubmitted = false;
-document.form1.elements[1].focus();
-document.form1.question_field.focus();
-//document.form1.question_field.focus();
-//-->
-</script>
-</BODY></HTML>
+	#search_hit_list#
+</BODY>
+</HTML>
