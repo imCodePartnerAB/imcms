@@ -236,9 +236,9 @@ public class ConfLogin extends Conference {
 		    log(header + err.getErrorMsg() + "\n the user exists, but is not a member in this conference") ;
 		    return ;
 		}
-		user.setField("user_id", userId) ;
-		user.setField("first_name", firstName) ;
-		user.setField("last_name", lastName) ;
+		user.setUserId(Integer.parseInt(userId)) ;
+		user.setFirstName(firstName) ;
+		user.setLastName(lastName) ;
 	    }
 
 	    //  Lets update the users sessionobject with a a ok login to the conference
@@ -342,8 +342,7 @@ public class ConfLogin extends Conference {
 	    }
 
 	    // Ok, Lets add the users roles into db, first get the role his in the system with
-	    Properties currUserParams = super.getUserParameters(user) ;
-	    String userId = currUserParams.getProperty("USER_ID") ;
+	    String userId = ""+user.getUserId();
 
 	    String usersRoles[] = imcref.sqlProcedure( "GetUserRolesIDs " + userId ) ;
 

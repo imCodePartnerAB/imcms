@@ -142,7 +142,7 @@ public class GetExistingDoc extends HttpServlet {
 
 	    includeDocStr = created_date + ", " + changed_date + ", " + activated_date + ", " + archived_date;
 	    sortBy = req.getParameter("sortBy");
-	    userId = "" + user.getObject("user_id");
+	    userId = "" + user.getUserId();
 	    fromDoc = "1";
 
 	    // Lets get the language prefix

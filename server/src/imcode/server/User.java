@@ -3,138 +3,167 @@ package imcode.server ;
 import java.util.* ;
 
 public class User extends Hashtable {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	int archive_mode = 0 ;
-	String browser_info[] = new String[3] ;
-	String browser_str = "" ;
-	String last_request = "" ;
-	String login_type = "verify" ;
-	int template_group = -1 ;
+    private final static String CVS_REV="$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
+    /** Good stuff **/
+    private int userId ;
+    private String loginName ;
+    private String password ;
+    private String firstName = "" ;
+    private String lastName  = "" ;
+    private boolean active ;
+    private String langPrefix ;
+    private String emailAddress = "" ;
+    private int template_group = -1 ;
+    private String loginType ;
 
-	public User() {
-		super(10,0.5f) ;
-	}
-
-	public User(String fieldNames[],Vector fieldData) {
-		super(10,0.5f) ;
-		for(int i = 0 ; i < fieldData.size() ; i++)
-			put(fieldNames[i],fieldData.elementAt(i)) ;
-
-	}
-
+    /**
+       get user-id
+    **/
     public int getUserId() {
-	return getInt("user_id") ;
+	return this.userId ;
     }
 
-	// add object
-	public void addObject(String fieldName,Vector object) {
-		put(fieldName,object) ;
-	}
+    /**
+       get user-id
+    **/
+    public void setUserId(int userId) {
+	this.userId = userId ;
+    }
 
-	// get object
-	public Object getObject(String fieldName) {
-		return get(fieldName) ;
-	}
+    /**
+       get login name (username)
+    **/
+    public String getLoginName() {
+	return this.loginName ;
+    }
 
-	// get String
-	public String getString(String fieldName) {
-		return get(fieldName).toString() ;
-	}
+    /**
+       set login name (username)
+    **/
+    public void setLoginName(String loginName) {
+	this.loginName = loginName ;
+    }
 
-	// get int
-	public int getInt(String fieldName) {
-		return Integer.parseInt(get(fieldName).toString()) ;
-	}
+    /**
+       get password
+    **/
+    public String getPassword() {
+	return this.password ;
+    }
 
+    /**
+       set password
+    **/
+    public void setPassword(String password) {
+	this.password = password ;
+    }
 
-	// get boolean
-	public boolean getBoolean(String fieldName) {
-		return (Integer.parseInt(get(fieldName).toString()) !=0) ;
-	}
+    /**
+       get full name
+    **/
+    public String getFullName() {
+	return getFirstName() + " " +
+	    getLastName() ;
+    }
 
-	public void setFields(String fieldNames[],Vector fieldData) {
-		for(int i = 0 ; i < fieldData.size() ; i++)
-			put(fieldNames[i],fieldData.elementAt(i)) ;
-	}
+    /**
+       get first name
+    **/
+    public String getFirstName() {
+	return this.firstName ;
+    }
 
-	public void setField(String fieldName,String fieldData) {
-		put(fieldName,fieldData) ;
-	}
+    /**
+       set first name
+    **/
+    public void setFirstName(String firstName) {
+	this.firstName = firstName ;
+    }
 
+    /**
+       set last name
+    **/
+    public String getLastName() {
+	return this.lastName ;
+    }
 
-	// set last_meta_id
-	public void setLastMetaId(int last_meta_id) {
-		put("last_page",Integer.toString(last_meta_id))  ;
-	}
-	
-	public String getLastMetaId() {
-		return (String)get("last_page");
-	}
-	// get browser_info
-	public String[] getBrowserInfo() {
-		return browser_info ;
-	}
+    /**
+       get last name
+    **/
+    public void setLastName(String lastName) {
+	this.lastName = lastName ;
+    }
 
-	// get browser_str
-	public String getBrowserStr() {
-		return browser_str ;
-	}
+    /**
+       Check whether the user is allowed to log in
+    **/
+    public boolean isActive() {
+	return this.active ;
+    }
 
-      	// get the users preferred language id
-	public int getLangId() {
-		return Integer.parseInt( (String) get("lang_id") ) ;
-	}
+    /**
+       Set whether the user is allowed to log in
+    **/
+    public void setActive(boolean active) {
+	this.active = active ;
+    }
+
+    /**
+       Return the users e-mail address
+    **/
+    public String getEmailAddress() {
+	return this.emailAddress ;
+    }
+
+    /**
+       Set the users e-mail address
+    **/
+    public void setEmailAddress(String emailAddress) {
+	this.emailAddress = emailAddress ;
+    }
+
+    /**
+       set template group
+    **/
+    public void setTemplateGroup(int template_group) {
+	this.template_group = template_group ;
+    }
+
+    /**
+       get template group
+    **/
+    public int getTemplateGroup() {
+	return template_group ;
+    }
+
 
     /**
        Return the users lang_prefix
-       Wonderful, no?
-       Just imagine how long we have made do without this.
     **/
-	public String getLangPrefix() {
-	    return (String) get("lang_prefix") ;
-	}
+    public String getLangPrefix() {
+	return this.langPrefix ;
+    }
 
-	// set browser_info
-	public void setBrowserInfo(String type,String version,String plattform) {
-		browser_info[0] = type ;
-		browser_info[1] = version ;
-		browser_info[2] = plattform ;
-		browser_str = type + version + "_" + plattform ;
-	}
+    /**
+       Set the users lang_prefix
+    **/
+    public void setLangPrefix(String langPrefix) {
+	this.langPrefix = langPrefix ;
+    }
 
+    /**
+       Get the login-type.
+    **/
+    public String getLoginType() {
+	return this.loginType ;
+    }
 
-	// set last request
-	public void setLastRequest(String last_request) {
-		this.last_request = last_request ;
-	}
-
-	// get  last request
-	public String getLastRequest() {
-		return last_request ;
-	}
-
-
-	// set login_type
-	public void setLoginType(String type) {
-		login_type = type ;
-	}
-
-	// get login_type
-	public String getLoginType() {
-		return login_type ;
-	}
-
-
-	// set template group
-	public void setTemplateGroup(int template_group) {
-		this.template_group = template_group ;
-	}
-
-	// get template group
-	public int getTemplateGroup() {
-		return template_group ;
-	}
-
+    /**
+       Set the login-type.
+    **/
+    public void setLoginType(String loginType) {
+	this.loginType = loginType ;
+    }
 }

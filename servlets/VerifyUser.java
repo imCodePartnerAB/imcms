@@ -50,12 +50,10 @@ public class VerifyUser extends HttpServlet {
 	String value = req.getHeader( "User-Agent" ) ; 
 
 	// Check the name and password for validity
-	user = allowUser( name, passwd, host ) ; 
-
-	// add browser info to user
+	user = imcref.verifyUser( name, passwd );
 
 	if( user == null ) {
-	    res.sendRedirect(access_denied_url) ;              
+	    res.sendRedirect(access_denied_url) ;
 	    return ;
 	} else {
 
@@ -81,21 +79,5 @@ public class VerifyUser extends HttpServlet {
 	    res.sendRedirect( scheme + "://" + serverName + port + servlet_url + "StartDoc" );
 
 	}
-    }
-
-    /**
-       Test if user exist in the database
-    */
-    protected imcode.server.User allowUser( String user_name, String passwd, String host ) throws IOException { 
-	imcode.server.User user = new imcode.server.User( ) ;
-	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-
-	// user information
-	// FIXME: Replace this SQL-abomination.
-	String fieldNames[] = {"user_id","login_name","login_password","first_name",
-			       "last_name","title", "company", "address","city","zip","country",
-			       "county_council","email","admin_mode","last_page","archive_mode","lang_id", "user_type", "active", "create_date" } ;
-	user = imcref.verifyUser( new imcode.server.LoginUser( user_name,passwd ),fieldNames );
-	return user ; //  user ;
     }
 }

@@ -82,15 +82,15 @@ public class ConfCreator extends Conference {
 	    confref.sqlUpdateProcedure(newFsql) ;
 
 	    // Lets get the administrators user_id
-	    String user_id = user.getString("user_id") ;
+	    String user_id = ""+user.getUserId() ;
 
 	    // Lets get the recently added forums id
 	    String forum_id = confref.sqlProcedureStr("A_GetFirstForum " + metaId) ;
 
 	    // Lets add this user into the conference if hes not exists there before were
 	    // adding the discussion
-	    String confUsersAddSql = "A_ConfUsersAdd "+ user_id +", "+ metaId +", '"+ user.getString("first_name") + "', '";
-	    confUsersAddSql += user.getString("last_name") + "'";
+	    String confUsersAddSql = "A_ConfUsersAdd "+ user_id +", "+ metaId +", '"+ user.getFirstName() + "', '"
+		+ user.getLastName() + "'";
 	    confref.sqlUpdateProcedure(confUsersAddSql) ;
 
 	    // Ok, were done creating the conference. Lets tell the system to show this child.

@@ -95,13 +95,11 @@ public class BillBoardManager extends BillBoard	  //ConfManager
 	    {
 
 		// Lets get userparameters
-		Properties userParams = super.getUserParameters(user) ;
 		String metaId = params.getProperty("META_ID") ;
-		String userId = userParams.getProperty("USER_ID") ;
+		String userId = ""+user.getUserId() ;
 
 		// Lets detect which type of user we got
-		//String userType = userParams.getProperty("USER_TYPE") ;
-		String loginType = userParams.getProperty("LOGIN_TYPE") ;
+		String loginType = user.getLoginType() ;
 
 		// We got 3 usertypes: 0= specialusers, 1=normal, 2=confernce
 		// We got 3 logintypes: "Extern"=web users, "ip_access"= people from a certain ip nbr

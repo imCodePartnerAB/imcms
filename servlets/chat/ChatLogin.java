@@ -63,7 +63,7 @@ public class ChatLogin extends ChatBase {
 
 	//**** sets up the different loginpages  ****
 
-	String userIdStr = user.getString("user_id");
+	String userIdStr = ""+user.getUserId();
 	int userIdInt = Integer.parseInt(userIdStr);
 
 	//lets get the authorization types for this chat
@@ -146,7 +146,7 @@ public class ChatLogin extends ChatBase {
 	Vector roomsV = myChat.getAllChatGroupsIdAndNameV();
 
 	//get the users username
-	String userName = user.getString("login_name");
+	String userName = user.getLoginName();
 	Vector tags = new Vector();
 	tags.add("#CHAT_SELFREG_LINK#");	tags.add(selfRegLink);
 	tags.add("#userName#");			tags.add(userName);
@@ -279,8 +279,7 @@ public class ChatLogin extends ChatBase {
 	    }
 
 	    // Ok, Lets add the users roles into db, first get the role his in the system with
-	    Properties currUserParams = super.getUserParameters(user) ;
-	    String userId = currUserParams.getProperty("USER_ID") ;
+	    String userId = ""+user.getUserId() ;
 
 	    String usersRoles[] = imcref.sqlProcedure("GetUserRolesIDs " + userId ) ;
 	    // log("SQL fråga:" + "GetUserRolesIDs " + userId) ;
@@ -345,8 +344,7 @@ public class ChatLogin extends ChatBase {
 	    imcode.server.User oldUser = user;
 	    user = null;
 	    user = allowUser( userName, password, imcref );
-	    user.setField("last_page",oldUser.getString("last_page"));
-	    user.addObject("history",(Vector)oldUser.getObject("history"));
+	    user.put("history",oldUser.get("history"));
 
 	    session.setAttribute("logon.isDone", user );
 	    chatAlias = null;
@@ -380,7 +378,7 @@ public class ChatLogin extends ChatBase {
 		    myMember.setName("Alias: "+chatAlias);
 		}
 	    }else{
-		myMember.setName(user.getString("login_name"));
+		myMember.setName(user.getLoginName());
 	    }
 	    myMember.setIPNr(req.getRemoteHost());
 	    //lets get the rooom
@@ -587,11 +585,7 @@ public class ChatLogin extends ChatBase {
        Test if user exist in the database
     */
     private imcode.server.User allowUser( String user_name, String passwd, IMCServiceInterface imcref ) throws IOException {
-	// user information
-	String fieldNames[] = {"user_id","login_name","login_password","first_name",
-			       "last_name","title", "company", "address","city","zip","country",
-			       "county_council","email","admin_mode","last_page","archive_mode","lang_id", "user_type", "active", "create_date" } ;
-	return imcref.verifyUser(new imcode.server.LoginUser( user_name,passwd ),fieldNames );
+	return imcref.verifyUser(user_name,passwd);
     }
 
     /**

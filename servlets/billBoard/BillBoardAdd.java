@@ -72,8 +72,6 @@ public class BillBoardAdd extends BillBoard	{
 		return;
 	    }
 
-	// Lets get the userinformation
-	Properties userParams = getUserParameters(user) ;
 
 	// Lets detect which addtype we have
 	String addType = "" ;
@@ -111,7 +109,6 @@ public class BillBoardAdd extends BillBoard	{
 			//lets collect everything we might need later on, and store it in the session.
 
 			String aSectionId = params.getProperty("SECTION_ID") ;
-			//	String userId = userParams.getProperty("USER_ID") ;
 
 			String userId = "" ;
 			HttpSession session = req.getSession(false) ;
@@ -190,7 +187,6 @@ public class BillBoardAdd extends BillBoard	{
 			//log("Nu är vi i AddDiscussion") ;
 			// Lets add a new discussion to the database
 
-			//	String userId = userParams.getProperty("USER_ID") ;
 			String userId = "" ;
 			HttpSession session = req.getSession(false) ;
 			if (session != null)
@@ -433,9 +429,6 @@ public class BillBoardAdd extends BillBoard	{
 
 		// Lets get a VariableManager
 		VariableManager vm = new VariableManager() ;
-
-		// Lets get the userinformation and put the username in the variable manager
-		Properties userParams = getUserParameters(user) ;
 
 		// Lets get the users first and last names
 

@@ -23,7 +23,7 @@ public class MetaDataParser {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
 	// Now watch as i fetch the permission_set for the user...
-	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getInt("user_id")) ;
+	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
 	int currentuser_set_id = Integer.parseInt(current_permissions[0]) ;
 	int currentuser_perms = Integer.parseInt(current_permissions[1]) ;
 
@@ -347,10 +347,10 @@ public class MetaDataParser {
 
 
 	// Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
-	String[][] role_permissions = imcref.sqlProcedureMulti("GetUserRolesDocPermissions "+meta_id+","+user.getInt("user_id")) ;
+	String[][] role_permissions = imcref.sqlProcedureMulti("GetUserRolesDocPermissions "+meta_id+","+user.getUserId()) ;
 
 	// Now watch as i fetch the permission_set for the user...
-	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getInt("user_id")) ;
+	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
 	int user_set_id = Integer.parseInt(current_permissions[0]) ;
 	int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;		// A bitvector containing the permissions for this document. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
 
@@ -595,7 +595,7 @@ public class MetaDataParser {
 	}
 
 	// Here i fetch the current users set-id and the document-permissions for this document (Whether set-id 1 is more privileged than set-id 2.)
-	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getInt("user_id")) ;
+	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
 	int user_set_id = Integer.parseInt(current_permissions[0]) ;
 	int user_perm_set = Integer.parseInt(current_permissions[1]) ;
 	int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;

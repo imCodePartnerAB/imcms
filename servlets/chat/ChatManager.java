@@ -68,13 +68,8 @@ public class ChatManager extends ChatBase{
 	if(action.equalsIgnoreCase("VIEW")){
 
 	    // Lets get userparameters
-	    Properties userParams = super.getUserParameters(user) ;
 	    String metaId = params.getProperty("META_ID") ;
-	    String userId = userParams.getProperty("USER_ID") ;
-
-	    // Lets detect which type of user we got
-	    String userType = userParams.getProperty("USER_TYPE") ;
-	    String loginType = userParams.getProperty("LOGIN_TYPE") ;
+	    String userId = ""+user.getUserId() ;
 
 	    // Lets store  the standard metavalues in his session object
 	    HttpSession session = req.getSession(false) ;

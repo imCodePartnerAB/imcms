@@ -275,7 +275,6 @@ public class GetDoc extends HttpServlet {
 
 	    paramsToParser.setReadrunnerParameters(Readrunner.getReadrunnerParameters(req)) ;
 
-	    user.setLastMetaId( meta_id ) ;
 	    String result = imcref.parsePage( documentRequest,0,paramsToParser ) ;
 	    // Log to accesslog
 	    trackLog.info(documentRequest);

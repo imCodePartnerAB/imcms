@@ -13,9 +13,31 @@ CREATE PROCEDURE GetUserInfo
 */
  @aUserId int
 AS
- SELECT * 
- FROM users
- WHERE user_id = @aUserId 
+ SELECT user_id,
+	login_name,
+	login_password,
+	first_name,
+	last_name,
+	title,	        -- Unused?
+	company,        -- Unused?
+	address,        -- Unused?
+	city,           -- Unused?
+	zip,            -- Unused?
+	country,        -- Unused?
+	county_council, -- Unused?
+	email,
+	admin_mode,     -- Unused?
+	last_page,      -- Unused?
+	archive_mode,   -- Unused?
+	lang_id,
+	user_type,      -- Unused?
+	active,
+	create_date,    -- Unused?
+        lang_prefix
+
+ FROM users, lang_prefixes
+ WHERE user_id = @aUserId
+ AND  users.lang_id = lang_prefixes.lang_id
 
 
 GO

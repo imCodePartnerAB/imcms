@@ -88,37 +88,6 @@ public class Conference extends HttpServlet {
 	return forumId ;
     }
 
-    /**
-       Collects all information from the user object. To get information from
-       Janus's userobject.
-       * userObject.getString(String theKey)
-       * userObject.getInt(String theKey)
-       * userObject.getBoolean(String theKey)
-
-    **/
-
-    public Properties getUserParameters(imcode.server.User user) {
-	Properties userParams= new Properties() ;
-	userParams.setProperty("USER_ID", user.getString("user_id")) ;
-	userParams.setProperty("LOGIN_NAME", user.getString("login_name")) ;
-	userParams.setProperty("LOGIN_PASSWORD", user.getString("login_password")) ;
-	userParams.setProperty("FIRST_NAME", user.getString("first_name")) ;
-	userParams.setProperty("LAST_NAME", user.getString("last_name")) ;
-	userParams.setProperty("ADDRESS", user.getString("address")) ;
-	userParams.setProperty("CITY", user.getString("city")) ;
-	userParams.setProperty("ZIP", user.getString("zip")) ;
-	userParams.setProperty("COUNTRY", user.getString("country")) ;
-	userParams.setProperty("COUNTY_COUNCIL", user.getString("county_council")) ;
-	userParams.setProperty("EMAIL", user.getString("email")) ;
-	userParams.setProperty("ADMIN_MODE", user.getString("admin_mode")) ;
-	userParams.setProperty("LAST_PAGE", user.getString("last_page")) ;
-	userParams.setProperty("ARCHIVE_MODE", user.getString("archive_mode")) ;
-	userParams.setProperty("USER_TYPE", user.getString("user_type")) ;
-	userParams.setProperty("LOGIN_TYPE", user.getLoginType()) ;
-
-	return userParams ;
-    }
-
 
     /**
        Returns an user object. If an error occurs, an errorpage will be generated.
@@ -299,7 +268,7 @@ public class Conference extends HttpServlet {
     protected boolean checkAdminRights(IMCServiceInterface imcref, imcode.server.User user) {
 
 	// Lets verify that the user who tries to add a new user is an SUPERADMIN
-	int currUser_id = user.getInt("user_id") ;
+	int currUser_id = user.getUserId() ;
 	String checkAdminSql = "CheckAdminRights " + currUser_id ;
 	String[] roles = imcref.sqlProcedure(checkAdminSql) ;
 
@@ -616,7 +585,6 @@ public class Conference extends HttpServlet {
 	if(user == null) return false ;
 
 	// Lets get userparameters
-	Properties userParams = this.getUserParameters(user) ;
 	String metaId = params.getProperty("META_ID") ;
 
 	// Lets get serverinformation
@@ -636,8 +604,8 @@ public class Conference extends HttpServlet {
 	if(lastLoginDate == null) {
 	    // Ok, det är första gången användaren är här.
 
-	    firstName = userParams.getProperty("FIRST_NAME") ;
-	    lastName = userParams.getProperty("LAST_NAME") ;
+	    firstName = user.getFirstName() ;
+	    lastName = user.getLastName() ;
 	    String firstTimeInConfSql = "A_ConfUsersAdd " + loginUserId + ", " + metaId + ", '";
 	    firstTimeInConfSql += firstName + "', '" + lastName + "'" ;
 

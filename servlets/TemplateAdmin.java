@@ -83,8 +83,6 @@ public class TemplateAdmin extends HttpServlet {
 		}
 
 		res.setContentType("text/html") ;
-//		res.setHeader("Cache-Control","no-cache; must-revalidate;") ;
-//		res.setHeader("Pragma","no-cache;") ;
 		PrintWriter out = res.getWriter() ;
 		
 		String lang_prefix = user.getLangPrefix() ;

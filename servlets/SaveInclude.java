@@ -58,7 +58,7 @@ public class SaveInclude extends HttpServlet {
 	if (included_meta_id != null && include_id != null) {
 	    if ("".equals(included_meta_id.trim())) {
 		imcref.sqlUpdateProcedure("DeleteInclude "+meta_id_str+","+include_id) ;
-		 mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" + include_id +	"] on ["+meta_id_str+"] removed by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
+		 mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" + include_id +	"] on ["+meta_id_str+"] removed by user: [" +user.getFullName() + "]");
 
 	    } else {
 		try {
@@ -67,7 +67,7 @@ public class SaveInclude extends HttpServlet {
 		    // Make sure the user has permission to share the included document
 		    if (imcref.checkUserDocSharePermission(user,included_meta_id_int)) {
 			imcref.sqlUpdateProcedure("SetInclude "+meta_id_str+","+include_id+","+included_meta_id) ;
-		    mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" +include_id  +	"] on ["+meta_id_str+"] changed to ["+ included_meta_id+ "]  by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
+		    mainLog.info(dateFormat.format(new java.util.Date())+"Include nr [" +include_id  +	"] on ["+meta_id_str+"] changed to ["+ included_meta_id+ "]  by user: [" +user.getFullName() + "]");
 			} else {
 			sendPermissionDenied(imcref,out,meta_id,user) ;
 			return ;

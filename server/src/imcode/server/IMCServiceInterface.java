@@ -1,26 +1,3 @@
-/******************************************************************************************
- * IMCServiceInterface.java                                                                *
- * Copyright Magnum Software 1998,1999                                                     *
- *-----------------------------------------------------------------------------------------*
- * SYNOPSIS:                                                                               *
- * Outline     : The interface for the Imcode Net Server services                          *
- *-----------------------------------------------------------------------------------------*
- * Author      : Magnus Isenberg : Magnum Software (c) 1998,1999                           *
- *-----------------------------------------------------------------------------------------*
- * PLATFORM    : PC/MAC/SOLARIS					              *
- * ENVIRONMENT : WINDOWS 95/98/NT MacOS UNIX OS2 LINUX runs from command line.             *
- * TOOLS       : JavaSoft JDK1.2, KAWA IDE				              *
- * REFERENCE   : The Java Class Libraries 1 & 2		                          *
- *               Getting Staring Using RMI (www.javasoft.com)                              *
- * Thanks to   : Andreas Bengtsson : Software Engineer : Entra Memtek Education AB         *
- *             : Hasse Brattberg   : Software Engineer : Entra Memtek Education AB         *
- *             : Roger Larsson     : HTML Programmer   : Visby Interactive Studio AB       *
- *-----------------------------------------------------------------------------------------*
- * Last Update : 17:00 17-02-1999                                                          *
- *-----------------------------------------------------------------------------------------*
- * REVISION HISTORY :                                                                      *
- * 17-02-1999 : MI  : First Written                                                        *
- ******************************************************************************************/
 package imcode.server ;
 
 import java.io.* ;
@@ -35,8 +12,12 @@ public interface IMCServiceInterface {
     final static String CVS_REV = "$Revision$" ;
     final static String CVS_DATE = "$Date$" ;
 
-    // Verify a Internet/Intranet user. Data from any SQL Database.
-    imcode.server.User verifyUser(imcode.server.LoginUser login_user,String fieldNames[])
+    /** Verify a Internet/Intranet user. Data from any SQL Database. **/
+    imcode.server.User verifyUser(String login, String password)
+	;
+
+    /** Get a user by user-id **/
+    imcode.server.User getUserById(int userId)
 	;
 
     /**
@@ -84,10 +65,6 @@ public interface IMCServiceInterface {
 
     // save textdoc
     public void saveTextDoc(int meta_id,imcode.server.User user,imcode.server.Table doc)
-	;
-
-    // Check if browser doc
-    int isBrowserDoc(int meta_id,imcode.server.User user)
 	;
 
     // Save a url_doc
@@ -213,7 +190,7 @@ public interface IMCServiceInterface {
 	;
 
     // parsedoc use template
-    public String  parseDoc(java.util.Vector variables,String admin_template_name,
+    public String  parseDoc(java.util.List variables,String admin_template_name,
 			    String lang_prefix)  ;
 
     // parseExternaldoc use template
@@ -371,4 +348,5 @@ public interface IMCServiceInterface {
     public Template getTemplate(int meta_id) ;
 
     public boolean checkAdminRights(imcode.server.User user) ;
+
 }

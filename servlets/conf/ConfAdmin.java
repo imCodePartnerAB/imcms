@@ -615,8 +615,7 @@ public class ConfAdmin extends Conference {
 	    String adminReplyList = "Conf_Admin_Reply_List.htm" ;
 
 	    // Lets get the users userId
-	    Properties userParams = super.getUserParameters(user) ;
-	    String userId = userParams.getProperty("USER_ID") ;
+	    String userId = ""+user.getUserId() ;
 
 	    // Lets get the replylist from DB
 	    String discId = params.getProperty("DISC_ID") ;

@@ -237,7 +237,7 @@ public class SaveNewMeta extends HttpServlet {
 	    imcref.sqlUpdateQuery(sqlStr ) ;
 
 		//lets log to mainLog the stuff done
-		mainLog.info(logdateFormat.format(new java.util.Date())+"Document [" +meta_id +"] of type ["+doc_type+"] created on ["+parent_meta_id+"] by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
+		mainLog.info(logdateFormat.format(new java.util.Date())+"Document [" +meta_id +"] of type ["+doc_type+"] created on ["+parent_meta_id+"] by user: [" + user.getFullName() + "]");
 		
 		//ok lets handle the the section stuff save to db and so on
 		//lets start an see if we got any request to change the inherit one

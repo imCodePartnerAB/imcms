@@ -173,4 +173,11 @@ public class Utility {
     }
 
 
+    /**
+       Make a HttpServletResponse non-cacheable
+    **/
+    public static void setNoCache(HttpServletResponse res) {
+	res.setHeader("Cache-Control","no-cache; must-revalidate;") ;
+	res.setHeader("Pragma","no-cache;") ;
+    }
 }

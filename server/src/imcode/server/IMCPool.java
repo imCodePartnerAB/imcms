@@ -466,7 +466,7 @@ public class IMCPool implements IMCPoolInterface {
 	sqlStr  = "select role_id from users,user_roles_crossref\n" ;
 	sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
 	sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-	sqlStr += "and users.user_id = " + user.getInt("user_id") ;
+	sqlStr += "and users.user_id = " + user.getUserId() ;
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setSQLString(sqlStr);
@@ -474,14 +474,11 @@ public class IMCPool implements IMCPoolInterface {
 	Vector super_admin_vec = (Vector)dbc.executeQuery().clone() ;
 	dbc.clearResultSet() ;
 
-
 	if ( super_admin_vec.size() > 0 ) {
 	    dbc.closeConnection() ;
 	    dbc = null ;
 	    return  true ;
 	}
-
-
 
 	// ROLES RIGHTS
 	sqlStr  = "select meta.meta_id from meta,roles_rights,user_roles_crossref " ;
@@ -489,22 +486,7 @@ public class IMCPool implements IMCPoolInterface {
 	sqlStr += " and roles_rights.meta_id = meta.to_meta_id" ;
 	sqlStr += " and roles_rights.permission_id = 3" ;
 	sqlStr += " and roles_rights.role_id = user_roles_crossref.role_id" ;
-	sqlStr += " and user_roles_crossref.user_id =" + user.getInt("user_id") ;
-
-
-	/* USER RIGHTS
-	   sqlStr += " union " ;
-
-
-	   sqlStr += " select menu_sort,manual_sort_order,date_created,meta.meta_headline from meta,childs,user_rights " ;
-	   sqlStr += "where meta.meta_id = childs.to_meta_id and childs.meta_id = " ;
-	   sqlStr += meta.getInt("meta_id") ;
-	   sqlStr += " and meta.archive=" + user.getInt("archive_mode") ;
-	   sqlStr += " and meta.activate=1" ;
-	   sqlStr += " and user_rights.meta_id = childs.to_meta_id" ;
-	   sqlStr += " and user_rights.permission_id > 0" ;
-	   sqlStr += " and user_rights.user_id =" + user.getInt("user_id") ; */
-
+	sqlStr += " and user_roles_crossref.user_id =" + user.getUserId() ;
 
 	dbc.setSQLString(sqlStr);
 	dbc.createStatement() ;
@@ -513,11 +495,11 @@ public class IMCPool implements IMCPoolInterface {
 	dbc.closeConnection() ;
 	dbc = null ;
 
-	if (hasAdminRights.size() >0)
+	if (hasAdminRights.size() >0) {
 	    return true ;
-	else
+	} else {
 	    return false ;
-
+	}
     }
 
 

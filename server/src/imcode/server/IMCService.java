@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.*;
 import java.text.Collator ;
 import java.text.DateFormat;
+import java.text.ParseException ;
 import java.text.SimpleDateFormat;
 import java.net.URL ;
 import java.net.MalformedURLException ;
@@ -54,13 +55,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     private FileCache fileCache = new FileCache() ;
 
-    private final static DateFormat logdateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ") ;
     private final static Logger mainLog = Logger.getLogger( IMCConstants.MAIN_LOG ) ;
     private final static Logger log = Logger.getLogger( "server" ) ;
 
     static {
 	mainLog.info("Main log started." );
-	log.debug("Main log called for the first time. The logs name is "+IMCConstants.MAIN_LOG );
     }
 
     /**
@@ -143,71 +142,91 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Verify a Internet/Intranet user. User data retrived from SQL Database.
      */
-    public imcode.server.User verifyUser(LoginUser login_user,String fieldNames[]) {
-	String sqlStr = "" ;
-	User user = new User() ;
-	DBConnect dbc = new DBConnect(m_conPool,login_user.createLoginQuery()) ;
-	dbc.getConnection() ;
-	dbc.createStatement() ;
-	Vector user_data = (Vector)dbc.executeQuery() ;
-	dbc.clearResultSet() ;
+    public imcode.server.User verifyUser(String login, String password) {
 
+	login = login.trim() ;
+
+	User user = null ;
+	String[] user_data = sqlProcedure("GetUserByLogin", new String[] { login } ) ;
+
+	/*
+	  The columns are:
+
+	  user_id,login_name,login_password,first_name
+	  0       1          2              3
+	  last_name,email,lang_prefix,active
+	  4         5     6           7
+	*/
 
 	// if resultSet > 0 a user is found
-	if ( user_data.size() > 0 ) {
-	    user.setFields(fieldNames,user_data) ;
-	    // add roles to user
-	    sqlStr  = "select role_id from user_roles_crossref where user_id = " ;
-	    sqlStr += user.getInt("user_id") ;
-	    dbc.setSQLString(sqlStr) ;
-	    dbc.createStatement() ;
-	    Vector user_roles = (Vector)dbc.executeQuery() ;
-	    dbc.clearResultSet() ;
-	    user.addObject("user_roles",user_roles) ;
+	if ( user_data.length > 0 ) {
 
-	    String login_password_from_db = user.getString(login_user.getLoginPasswordFieldName()).trim() ;
-	    String login_password_from_form = login_user.getLoginPassword() ;
+	    user = new User() ;
 
-	    if ( login_password_from_db.equals(login_password_from_form) && user.getBoolean("active"))
-		this.updateLogs("->User "	 + login_user.getLoginName()
-				+ " succesfully logged in.") ;
-	    else if (!user.getBoolean("active") ) {
-		this.updateLogs("->User "	 + (login_user.getLoginName()).trim()
-				+ " tried to logged in: User deleted!") ;
-		dbc.closeConnection() ;
-		dbc = null ;
+	    user.setUserId       ( Integer.parseInt( user_data[0]  ) ) ;
+	    user.setLoginName    ( user_data[1] ) ;
+	    user.setPassword     ( user_data[2].trim() ) ;
+	    user.setFirstName    ( user_data[3] ) ;
+	    user.setLastName     ( user_data[4] ) ;
+	    user.setEmailAddress ( user_data[5] ) ;
+	    user.setLangPrefix   ( user_data[6] ) ;
+	    user.setActive       ( 0 != Integer.parseInt( user_data[7] ) ) ;
+
+	    String login_password_from_db = user.getPassword() ;
+	    String login_password_from_form = password ;
+
+	    if ( login_password_from_db.equals(login_password_from_form) && user.isActive())
+		this.updateLogs("->User " + login + " succesfully logged in.") ;
+	    else if (!user.isActive() ) {
+		this.updateLogs("->User " + (login) + " tried to logged in: User deleted!") ;
 		return null ;
 	    } else {
-		this.updateLogs("->User "	 + (login_user.getLoginName()).trim()
-				+ " tried to logged in: Wrong password!") ;
-		dbc.closeConnection() ;
-		dbc = null ;
+		this.updateLogs("->User " + (login) + " tried to logged in: Wrong password!") ;
 		return null ;
 	    }
 
 	} else {
-	    this.updateLogs("->User " + login_user.getLoginName()
-			    + " tried to logged in: User not found!") ;
-	    dbc.closeConnection() ;
-	    dbc = null ;
+	    this.updateLogs("->User " + (login) + " tried to logged in: User not found!") ;
 	    return null ;
 	}
 
-	// Get the users language prefix
-	String lang_prefix = null ;
-	sqlStr = "select lang_prefix from lang_prefixes where lang_id = "+user.getLangId() ;	// Find language
-	dbc.setSQLString(sqlStr) ;
-	dbc.createStatement() ;
-	Vector lang_prefix_data = (Vector)dbc.executeQuery() ;
-	if ( lang_prefix_data.size() > 0 ) {
-	    lang_prefix = lang_prefix_data.elementAt(0).toString() ;
-	    user.put("lang_prefix",lang_prefix) ;
-	}
-
-	dbc.closeConnection() ;
-	dbc = null ;
-
 	return user ;
+    }
+
+    /**
+       
+    **/
+    public User getUserById(int userId) {
+
+	/*
+	  The columns are:
+
+	  user_id,login_name,login_password,first_name
+	  0       1          2              3
+	  last_name,email,active,lang_prefix
+	  4         12    18     20
+	*/
+	String[] user_data = sqlProcedure("GetUserInfo", new String[] { ""+userId } ) ;
+
+	// if resultSet > 0 a user is found
+	if ( user_data.length > 0 ) {
+
+	    User user = new User() ;
+
+	    user.setUserId       ( Integer.parseInt( user_data[0]  ) ) ;
+	    user.setLoginName    ( user_data[1] ) ;
+	    user.setPassword     ( user_data[2].trim() ) ;
+	    user.setFirstName    ( user_data[3] ) ;
+	    user.setLastName     ( user_data[4] ) ;
+	    user.setEmailAddress ( user_data[12] ) ;
+	    user.setActive       ( 0 != Integer.parseInt( user_data[18] ) ) ;
+	    user.setLangPrefix   ( user_data[20] ) ;
+
+	    return user ;
+	} else {
+	    // No user with that id.
+	    return null ;
+	}
     }
 
     public String parsePage (DocumentRequest documentRequest, int flags,ParserParameters paramsToParse) throws IOException {
@@ -219,20 +238,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     */
     public String getMenuButtons(String meta_id, User user) {
 	// Get the users language prefix
-	String lang_prefix = null ;
-	String sqlStr = "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id") ;	// Find language
-	DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
-	dbc.getConnection() ;
-	dbc.createStatement() ;
-	Vector data = (Vector)dbc.executeQuery() ;
-	if ( data.size() > 0 ) {
-	    lang_prefix = data.elementAt(0).toString() ;
-	}
-	dbc.clearResultSet() ;
+	String lang_prefix = user.getLangPrefix() ;
 
 	// Find out what permissions the user has
-	sqlStr = "GetUserPermissionSet (?,?)" ;
-	String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getInt("user_id"))} ;
+	String sqlStr = "GetUserPermissionSet (?,?)" ;
+	DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
+	String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
 	dbc.setProcedure(sqlStr,sqlAry) ;
 	Vector permissions = (Vector)dbc.executeProcedure() ;
 	dbc.clearResultSet() ;
@@ -279,7 +290,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	tags.put("doc_buttons",tempbuffer.toString()) ;
 	tags.put("doc_type",doctype) ;
 
-	Vector temp = (Vector)dbc.sqlQuery("select user_id from user_roles_crossref where role_id = 0 and user_id = "+user.getInt("user_id")) ;
+	Vector temp = (Vector)dbc.sqlQuery("select user_id from user_roles_crossref where role_id = 0 and user_id = "+user.getUserId()) ;
 
 	if ( temp.size() > 0 ) {
 	    tags.put("superadmin",superadmin.toString()) ;
@@ -319,7 +330,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	touchDocument(meta_id) ;
 
 	this.updateLogs("Text " + txt_no +	" in  " + "[" + meta_id + "] modified by user: [" +
-			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
     }
 
@@ -421,7 +432,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	this.updateLogs("ImageRef " + img_no + " =" + image.getImageRef() +
 			" in  " + "[" + meta_id + "] modified by user: [" +
-			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
 	// close connection
 	dbc.closeConnection() ;
@@ -455,8 +466,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
 	this.updateLogs("Text docs  [" + meta_id + "] updated by user: [" +
-			user.getString("first_name").trim() + " " +
-			user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
 
     }
@@ -474,7 +484,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc.createStatement() ;
 	dbc.executeUpdateQuery() ;
 	this.updateLogs("Document  " + "[" + meta_id + "] ALL deleted by user: [" +
-			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
 	//close connection
 	dbc.closeConnection() ;
@@ -487,15 +497,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public void addExistingDoc(int meta_id,User user,int existing_meta_id,int doc_menu_no) {
 
-		String sqlStr = "AddExistingDocToMenu  " +  meta_id + ", " + existing_meta_id + ", " + doc_menu_no;
-		int addDoc = sqlUpdateProcedure(sqlStr) ;
+	String sqlStr = "AddExistingDocToMenu  " +  meta_id + ", " + existing_meta_id + ", " + doc_menu_no;
+	int addDoc = sqlUpdateProcedure(sqlStr) ;
 
-		if (1 == addDoc ) {	// if existing doc is added to the menu
-			this.updateLogs("(AddExisting) Child links for [" + meta_id + "] updated by user: [" +
-				user.getString("first_name").trim() + " " +
-				user.getString("last_name").trim() + "]") ;
-		}
+	if (1 == addDoc ) {	// if existing doc is added to the menu
+	    this.updateLogs("(AddExisting) Child links for [" + meta_id + "] updated by user: [" +
+			    user.getFullName() + "]") ;
 	}
+    }
 
 
     /**
@@ -528,8 +537,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
 	this.updateLogs("Child manualsort for [" + meta_id + "] updated by user: [" +
-			user.getString("first_name").trim() + " " +
-			user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
 
 	//close connection
@@ -575,7 +583,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	this.updateLogs("Childs " + childStr + " from " +
 			"[" + meta_id + "] deleted by user: [" +
-			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
 	//close connection
 	dbc.closeConnection() ;
@@ -605,7 +613,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    String[] uncopyable = sqlProcedure("CheckForFileDocs", new String[] { logchilds.toString() } ) ;
 	    if (uncopyable.length == 0) {
 		sqlUpdateProcedure("CopyDocs", new String[] { logchilds.toString(),""+meta_id,""+doc_menu_no,""+user.getUserId(),copyPrefix } ) ;
-		this.updateLogs("Childs [" + logchilds.toString()+"] on ["+meta_id+"] copied by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+		this.updateLogs("Childs [" + logchilds.toString()+"] on ["+meta_id+"] copied by user: [" + user.getFullName() + "]") ;
 	    }
 	    return uncopyable ;
 	}
@@ -640,63 +648,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	this.updateLogs("Childs " + childStr + " from " +
 			"[" + meta_id + "] archived by user: [" +
-			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
 	//close connection
 	dbc.closeConnection() ;
 	dbc = null ;
     }
-
-    /**
-     * Check if browser doc.                                                                     *
-     */
-    public int isBrowserDoc(int meta_id,imcode.server.User user) {
-	String sqlStr = "" ;
-	int to_meta_id ;
-
-	to_meta_id = meta_id ;
-
-
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.getConnection() ;
-
-	sqlStr = "select doc_type from meta where meta_id = " + meta_id ;
-	dbc.setSQLString(sqlStr) ;
-	dbc.createStatement() ;
-	Vector vec_doc_type = (Vector)dbc.executeQuery() ;
-	dbc.clearResultSet() ;
-
-
-
-	if ( Integer.parseInt(vec_doc_type.elementAt(0).toString()) == 6 ) {
-	    sqlStr  = "select to_meta_id from browser_docs where meta_id = " + meta_id ;
-	    sqlStr += " and browser = '" + user.getBrowserStr() + "'";
-	    dbc.setSQLString(sqlStr) ;
-	    dbc.createStatement() ;
-	    Vector vec_to_meta_id = (Vector)dbc.executeQuery() ;
-	    dbc.clearResultSet() ;
-	    to_meta_id = Integer.parseInt(vec_to_meta_id.elementAt(0).toString()) ;
-
-
-	    if (to_meta_id == -1) {
-		sqlStr  = "select to_meta_id from browser_docs where meta_id = " + meta_id ;
-		sqlStr += " and browser = 'other_" + user.getBrowserInfo()[2] + "'" ;
-		dbc.setSQLString(sqlStr) ;
-		dbc.createStatement() ;
-		vec_to_meta_id = (Vector)dbc.executeQuery() ;
-		dbc.clearResultSet() ;
-		to_meta_id = Integer.parseInt(vec_to_meta_id.elementAt(0).toString()) ;
-	    }
-	}
-
-
-	//close connection
-	dbc.closeConnection() ;
-	dbc = null ;
-
-	return to_meta_id ;
-    }
-
 
     /**
      * Save an url document.
@@ -724,7 +681,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc = null ;
 
 	this.updateLogs("UrlDoc [" + meta_id +	"] modified by user: [" +
-			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
     }
 
@@ -760,7 +717,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	this.activateChild(meta_id,user) ;
 
 	this.updateLogs("UrlDoc [" + meta_id +	"] created by user: [" +
-			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
     }
 
@@ -831,7 +788,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	this.activateChild(meta_id,user) ;
 
 	this.updateLogs("FramesetDoc [" + meta_id +	"] created by user: [" +
-			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
     }
 
@@ -860,7 +817,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc.closeConnection() ;
 
 	this.updateLogs("FramesetDoc [" + meta_id +	"] updated by user: [" +
-			user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			user.getFullName() + "]") ;
 
     }
 
@@ -870,7 +827,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public void updateLogs(String event) {
 
-	mainLog.info(logdateFormat.format(new java.util.Date())+event );
+	mainLog.info( event );
 
     }
 
@@ -1088,7 +1045,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc.executeUpdateQuery() ;
 
 	this.updateLogs("Child [" + meta_id +	"] removed from " + parent_meta_id +
-			"by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			"by user: [" + user.getFullName() + "]") ;
 
 
 	//close connection
@@ -1118,7 +1075,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc.executeUpdateQuery() ;
 
 	this.updateLogs("Child [" + meta_id +	"] activated  " +
-			"by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			"by user: [" + user.getFullName() + "]") ;
 
 
 	//close connection
@@ -1146,7 +1103,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc.executeUpdateQuery() ;
 
 	this.updateLogs("Child [" + meta_id +	"] made inactive  " +
-			"by user: [" + user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]") ;
+			"by user: [" + user.getFullName() + "]") ;
 
 
 	//close connection
@@ -1442,7 +1399,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
        Parse doc replace variables with data , use template
     */
-    public String parseDoc(java.util.Vector variables, String admin_template_name, String lang_prefix) {
+    public String parseDoc(java.util.List variables, String admin_template_name, String lang_prefix) {
 	try {
 	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/admin/"+admin_template_name)) ;
 	    if (variables == null) {
@@ -1817,14 +1774,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     **/
     public String[][] sqlProcedureMulti(String procedure) {
 
-
 	Vector data = new Vector() ;
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
-
-
 
 	data = (Vector)dbc.executeProcedure() ;
 	int columns = dbc.getColumnCount() ;
@@ -1832,13 +1786,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	if (columns == 0)
 	    return new String[0][0] ;
 
-
 	int rows = data.size() / columns ;
 	dbc.clearResultSet() ;
 	dbc.closeConnection() ;
-
-
-
 
 	String result[][] = new String[rows][columns] ;
 	for(int i = 0 ; i < rows ; i++) {
@@ -1848,14 +1798,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	}
 
-
 	return result ;
 
-
-
-
     }
-
 
 
     /**
@@ -1958,7 +1903,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    dbc.getConnection() ;
 
 	    String sqlStr = "GetUserPermissionSet (?,?)" ;
-	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getInt("user_id"))} ;
+	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector perms = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
@@ -1985,7 +1930,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    dbc.getConnection() ;
 
 	    String sqlStr = "GetUserPermissionSet (?,?)" ;
-	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getInt("user_id"))} ;
+	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector perms = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
@@ -2014,7 +1959,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    dbc.getConnection() ;
 
 	    String sqlStr = "GetUserPermissionSet (?,?)" ;
-	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getInt("user_id"))} ;
+	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector perms = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
@@ -2048,7 +1993,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    DBConnect dbc = new DBConnect(m_conPool) ;
 	    dbc.getConnection() ;
 	    String sqlStr = "GetUserPermissionSet (?,?)" ;
-	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getInt("user_id"))} ;
+	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector perms = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
@@ -2099,17 +2044,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 			int set_id = Integer.parseInt((String)perms.elementAt(0)) ;
 
-			if (set_id == IMCConstants.DOC_PERM_SET_FULL){
-				return	IMCConstants.DOC_PERM_SET_FULL;	// User has full permission for this document
-			}else if (set_id == IMCConstants.DOC_PERM_SET_RESTRICTED_1){
-				return	IMCConstants.DOC_PERM_SET_RESTRICTED_1;	// User has restricted 1 permission for this document
-			}else if (set_id == IMCConstants.DOC_PERM_SET_RESTRICTED_2){
-				return	IMCConstants.DOC_PERM_SET_RESTRICTED_2;	// User has restricted 2 permission for this document
-			}else if (set_id == IMCConstants.DOC_PERM_SET_READ){
-				return	IMCConstants.DOC_PERM_SET_READ;	// User has only read permission for this document
-			}else{
-				return DOC_PERM_SET_NONE; //the user has no permission at all for this document
+			switch (set_id) {
+			case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this document
+			case IMCConstants.DOC_PERM_SET_RESTRICTED_1: // User has restricted 1 permission for this document
+			case IMCConstants.DOC_PERM_SET_RESTRICTED_2: // User has restricted 2 permission for this document
+			case IMCConstants.DOC_PERM_SET_READ:         // User has only read permission for this document
+			    return set_id ;                          // We have a valid permission-set-id. Return it.
+
+			default:                                     // We didn't get a valid permission-set-id.
+			    return DOC_PERM_SET_NONE ;               // User has no permission at all for this document
 			}
+
 		} catch (RuntimeException ex){
 			log.error("Exception in getUserHighestPermissionSet(int,int)",ex) ;
 			throw ex ;
@@ -2194,11 +2139,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	File f = new File(m_TemplateHome, "text/" + new_template_id + ".html") ;
 
-	//		if (!f.exists())
-	//			overwrite = true ;
-
-	// save template data
-	//		if (overwrite) {
 	try {
 	    FileOutputStream fw = new FileOutputStream(f) ;
 	    fw.write(template) ;
@@ -2208,26 +2148,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	} catch(IOException e) {
 	    return -2 ;
 	}
-	//		} else {
-	//			return -1;
-	//
-	//		}
-
-
-
-	// save template demo
-	/*  if ( demo_template != null) {
-	    if (demo_template.length > 0) {
-	    try {
-	    FileOutputStream fw = new FileOutputStream(m_TemplateHome + lang_prefix + "/text/demo/" + file_name) ;
-	    fw.write(demo_template) ;
-	    fw.close() ;
-	    } catch(IOException e) {
-	    return -2 ;
-	    }
-	    }
-	    }*/
-
 
 	//  0 = OK
 	// -1 = file exist
@@ -2410,7 +2330,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	// get lang prefix
 	sqlStr  = "select lang_prefix from users,lang_prefixes\n" ;
 	sqlStr += "where users.lang_id = lang_prefixes.lang_id\n" ;
-	sqlStr += "and user_id =" + user.getInt("user_id") ;
+	sqlStr += "and user_id =" + user.getUserId() ;
 	dbc.setSQLString(sqlStr);
 	dbc.createStatement() ;
 	String lang_prefix = ((Vector)dbc.executeQuery()).elementAt(0).toString() ;

@@ -173,7 +173,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		sqlStr = "GetDocTypesForUser (?,?,?)" ;
 		String[] sqlAry2 = {
 		    String.valueOf(meta_id),
-		    String.valueOf(user.getInt("user_id")),
+		    String.valueOf(user.getUserId()),
 		    lang_prefix
 		} ;
 		dbc.setProcedure(sqlStr,sqlAry2) ;
@@ -190,7 +190,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		sqlStr = "GetTemplategroupsForUser (?,?)" ;
 		String[] sqlAry2 = {
 		    String.valueOf(meta_id),
-		    String.valueOf(user.getInt("user_id"))
+		    String.valueOf(user.getUserId())
 		} ;
 		dbc.setProcedure(sqlStr,sqlAry2) ;
 		templategroups = (Vector)dbc.executeProcedure() ;
@@ -218,7 +218,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    // Here we have the most timeconsuming part of parsing the page.
 	    // Selecting all the documents with permissions from the DB
 	    sqlStr = "getChilds (?,?)" ;
-	    //String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getInt("user_id"))} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector childs = (Vector)dbc.executeProcedure() ;
 
@@ -423,7 +422,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    Properties temptags = new Properties () ;
 
 	    // Put tags and corresponding data in Properties
-	    tags.setProperty("#userName#",		user.getString("first_name").trim()+" "+user.getString("last_name").trim()) ;
+	    tags.setProperty("#userName#",		user.getFullName()) ;
 	    tags.setProperty("#session_counter#",	String.valueOf(serverObject.getSessionCounter())) ;
 	    tags.setProperty("#session_counter_date#",	serverObject.getSessionCounterDate()) ;
 	    tags.setProperty("#lastDate#",		DATETIMEFORMAT.format(myDoc.getModifiedDatetime())) ;

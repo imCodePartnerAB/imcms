@@ -74,11 +74,10 @@ public class ConfReply extends Conference {
 	if(req.getParameter("UPDATE") !=null ) {
 	    // Lets get the users userId, the metaId and sortorder
 	    // Ok, lets save the users sortorder if he has change it
-	    Properties userParams = super.getUserParameters(user) ;
 
 	    // Lets get ourselves a userid. we cant use the userparams id
 	    // since we got external users. so the userid could be an ip access nbr
-	    String userId = userParams.getProperty("USER_ID") ;
+	    String userId = "" + user.getUserId() ;
 	    HttpSession session = req.getSession(false) ;
 	    if (session != null) {
 		userId = (String) session.getAttribute("Conference.user_id") ;
@@ -118,12 +117,10 @@ public class ConfReply extends Conference {
 	    return;
 	}
 
-	// Lets get the users userId
-	Properties userParams = super.getUserParameters(user) ;
-	String userId = "" ;
-
 	// Lets get the replylist from DB
 	String discId = params.getProperty("DISC_ID") ;
+
+	String userId = "" ;
 
 	// Lets update the sessions DISC_ID
 	HttpSession session = req.getSession(false) ;

@@ -114,7 +114,7 @@ public class BillBoardCreator extends BillBoard
 			billref.sqlUpdateProcedure(newFsql) ;
 
 			// Lets get the administrators user_id
-			String user_id = user.getString("user_id") ;
+			String user_id = ""+user.getUserId() ;
 
 			// Ok, were done creating the billBoard. Lets tell Janus system to show this child.
 			imcref.activateChild(Integer.parseInt(metaId),user) ;

@@ -7,13 +7,17 @@ import imcode.external.diverse.* ;
 import imcode.server.* ;
 import imcode.util.* ;
 
+import org.apache.log4j.* ;
+
 public class AdminUser extends Administrator
 {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 
-    String HTML_TEMPLATE ;
-    String HTML_RESPONSE ;
+    private final static String HTML_TEMPLATE = "AdminChangeUser.htm" ;
+    private final static String HTML_RESPONSE = "AdminUserResp.htm" ;
+
+    private static Category log = Logger.getInstance( AdminUser.class.getName() ) ;
 
     /**
        The GET method creates the html page when this side has been
@@ -587,24 +591,10 @@ public class AdminUser extends Administrator
 	return new Vector(java.util.Arrays.asList(roles)) ;
     }
 
-
-    /**
-       Init: Detects paths and filenames.
-    */
-
-    public void init(ServletConfig config) throws ServletException
-    {
-
-	super.init(config);
-	HTML_TEMPLATE = "AdminChangeUser.htm";
-	HTML_RESPONSE = "AdminUserResp.htm";
-
-    }
-
     public void log( String str)
     {
 	super.log(str) ;
-	System.out.println("AdminUser: " + str ) ;
+	log.debug("AdminUser: " + str ) ;
     }
 
 

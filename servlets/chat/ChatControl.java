@@ -431,12 +431,7 @@ public class ChatControl extends ChatBase
 	    myChat.removeChatMember(senderNr);
 
 	    super.cleanUpSessionParams(session);
-	    String lastPage = user.getString("last_page");
-	    if(lastPage.equals("1001"))	{
-		lastPage = imcref.getStartUrl();
-	    }
-	    //log("*** end logOut ***");
-	    res.sendRedirect("GetDoc?meta_id="+lastPage);
+	    res.sendRedirect("StartDoc");
 	    return;
 	}//end logout
 

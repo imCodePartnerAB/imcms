@@ -13,12 +13,6 @@ import imcode.server.* ;
 public class StartDoc extends HttpServlet {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
-    /**
-       init()
-    */
-    public void init( ServletConfig config ) throws ServletException {
-	super.init( config ) ;
-    }
 
     /**
        doGet()
@@ -107,10 +101,7 @@ public class StartDoc extends HttpServlet {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
 	// user information
-	String fieldNames[] = {"user_id","login_name","login_password","first_name",
-			       "last_name","title","user","address","city","zip","country",
-			       "county_council","email","admin_mode","last_page","archive_mode" ,"lang_id" ,"user_type","active", "create_date"} ;
-	return imcref.verifyUser( new imcode.server.LoginUser( user_name,passwd ),fieldNames ) ;
+	return imcref.verifyUser( user_name,passwd ) ;
     }
 
     /**
@@ -134,11 +125,11 @@ public class StartDoc extends HttpServlet {
 	String user_data[] = imcref.sqlQuery( sqlStr );
 
 	if( user_data.length > 0 )  {
-	    user = allowUser( user_data[0],user_data[1],host ) ;
+	    user = imcref.verifyUser( user_data[0],user_data[1] ) ;
 	    user.setLoginType("ip_access") ;
 	}
 	else {
-	    user = allowUser( "User","user", host ) ;
+	    user = imcref.verifyUser( "User","user" ) ;
 	    user.setLoginType("extern") ;
 	}
 
@@ -146,7 +137,7 @@ public class StartDoc extends HttpServlet {
     }
 
     static void incrementSessionCounter(IMCServiceInterface imcref, User user, HttpServletRequest req) throws IOException {
-	if (!( user.getString("login_name").equalsIgnoreCase("user")
+	if (!( "user".equalsIgnoreCase(user.getLoginName())
 	       && req.getParameter("no_count")!=null) 
 	    ) {
 	    // Only increase the login counter if the user

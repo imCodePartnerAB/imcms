@@ -17,6 +17,8 @@ import imcode.external.diverse.* ;
 import imcode.util.* ;
 import imcode.server.* ;
 
+import org.apache.log4j.* ;
+
 /**
  * Parent servlet for administration.
  *
@@ -36,6 +38,8 @@ public class Administrator extends HttpServlet {
     private final static String CVS_DATE = "$Date$" ;
 
     private static final String TEMPLATE_ERROR = "Error.html";
+
+    private static Category log = Logger.getInstance( Administrator.class.getName() ) ;
 
     public boolean checkParameters(Properties aPropObj) {
 	// Ok, lets check that the user has typed anything in all the fields
@@ -179,8 +183,7 @@ public class Administrator extends HttpServlet {
     */
 
     public void log(String msg) {
-	super.log(msg) ;
-	System.out.println("Administrator: " + msg) ;
+	log.debug("Administrator: " + msg) ;
     }
 
     /**

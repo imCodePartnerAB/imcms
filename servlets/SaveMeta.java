@@ -426,7 +426,7 @@ public class SaveMeta extends HttpServlet {
 	}
 
 	//lets log to mainlog that the user done stuff
-	mainLog.info(logdateFormat.format(new java.util.Date())+"Metadata on ["+meta_id+"] updated by user: [" +user.getString("first_name").trim() + " " + user.getString("last_name").trim() + "]");
+	mainLog.info(logdateFormat.format(new java.util.Date())+"Metadata on ["+meta_id+"] updated by user: [" + user.getFullName() + "]");
 
 	return ;
     }

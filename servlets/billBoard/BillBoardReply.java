@@ -97,13 +97,9 @@ public class BillBoardReply extends BillBoard {//ConfReply
 
 	// ********* UPDATE DISCUSSIONS ********
 	if(req.getParameter("UPDATE") !=null ) {
-	    // Lets get the users userId, the metaId and sortorder
-	    // Ok, lets save the users sortorder if he has change it
-	    Properties userParams = super.getUserParameters(user) ;
-
 	    // Lets get ourselves a userid. we cant use the userparams id
 	    // since we got external users. so the userid could be an ip access nbr
-	    String userId = userParams.getProperty("USER_ID") ;
+	    String userId = ""+user.getUserId() ;
 	    HttpSession session = req.getSession(false) ;
 	    if (session != null) {
 		userId = (String) session.getAttribute("BillBoard.user_id") ;
@@ -189,8 +185,8 @@ public class BillBoardReply extends BillBoard {//ConfReply
 	    }//end PREVIEW-mode
 
 	int aMetaId = Integer.parseInt( params.getProperty("META_ID") );
+
 	// Lets get the users userId
-	Properties userParams = super.getUserParameters(user) ;
 	String userId = "" ;
 
 	String discId = params.getProperty("DISC_ID") ;

@@ -38,16 +38,9 @@ public class ConfAdd extends Conference {
 	    return;
 	}
 
-	// Lets get the userinformation
-	Properties userParams = getUserParameters(user) ;
-
 	// Lets detect which addtype we have
 	String addType = "" ;
 	addType = req.getParameter("ADDTYPE") ;
-
-	//		log("ADD.x: " + req.getParameter("ADD.x"));
-	//    log("CANCEL.x: " + req.getParameter("CANCEL.x")) ;
-
 
 	// Lets get serverinformation
 	String host = req.getHeader("Host") ;
@@ -212,9 +205,6 @@ public class ConfAdd extends Conference {
 
 	    // Lets get a VariableManager
 	    VariableManager vm = new VariableManager() ;
-
-	    // Lets get the userinformation and put the username in the variable manager
-	    Properties userParams = getUserParameters(user) ;
 
 	    // Lets get the users first and last names
 	    String sqlName = "A_GetConfLoginNames " + params.getProperty("META_ID") ;

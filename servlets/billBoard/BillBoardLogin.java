@@ -69,7 +69,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
-		String userId = user.getString("user_id");
+		String userId = ""+user.getUserId();
 		if(!super.prepareUserForBillBoard(req, res, params, userId) ) {
 				log("Error in prepareUserFor Conf" ) ;
 		}
@@ -131,7 +131,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 		// Ok, the user wants to login
 		if(loginType.equalsIgnoreCase("login") /* && req.getParameter("submit") != null */) {
 			//log("Ok, nu försöker vi verifiera logga in!") ;
-			String userId = user.getString("user_id");
+			String userId = ""+user.getUserId();
 
 			//  Lets update the users sessionobject with a a ok login to the conference
 			//	Send him to the manager with the ability to get in
