@@ -10,7 +10,8 @@ import java.io.File ;
 public class WebAppGlobalConstants {
 
 	private static WebAppGlobalConstants singletonInstance;
-    public final static String USER_LOGIN_NAME = "loginname";
+    public final static String USER_LOGIN_NAME_PARAMETER_NAME = "loginname";
+    public static final String DEFAULT_ENCODING_CP1252 = "cp1252";
 
     /**
 	* This must be called before any other method is called.

@@ -23,7 +23,6 @@ public class GetDoc extends HttpServlet {
     private static Category trackLog = Logger.getInstance( IMCConstants.ACCESS_LOG );
     private static Category log = Logger.getInstance( GetDoc.class.getName() );
     private static String noActiveDocUrl = "no_active_document.html";
-    private static final String ENCODING_CP1252 = "cp1252";
 
     /**
      * doGet()
@@ -33,7 +32,7 @@ public class GetDoc extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         int meta_id;
-        res.setContentType( "text/html; charset=" + ENCODING_CP1252 );
+        res.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
         ServletOutputStream out = res.getOutputStream();
 
         try {
@@ -45,7 +44,7 @@ public class GetDoc extends HttpServlet {
         }
         String tempstring = getDoc( meta_id, meta_id, req, res );
         if( tempstring != null ) {
-            byte[] tempbytes = tempstring.getBytes( ENCODING_CP1252 );
+            byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
             res.setContentLength( tempbytes.length );
             out.write( tempbytes );
         }
