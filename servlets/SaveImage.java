@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+
 import imcode.util.* ;
 /**
   Save image data.
