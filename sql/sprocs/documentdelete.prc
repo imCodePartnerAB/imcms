@@ -3,9 +3,11 @@ GO
 SET ANSI_NULLS OFF 
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[DocumentDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[DocumentDelete]
+/****** Object:  Stored Procedure dbo.DocumentDelete    Script Date: 2002-10-18 12:05:21 ******/
+if exists (select * from sysobjects where id = object_id('dbo.DocumentDelete') and sysstat & 0xf = 4)
+	drop procedure dbo.DocumentDelete
 GO
+
 
 
 
@@ -31,10 +33,11 @@ delete from new_doc_permission_sets_ex where meta_id = @meta_id
 delete from new_doc_permission_sets where meta_id = @meta_id
 delete from doc_permission_sets_ex where meta_id = @meta_id
 delete from doc_permission_sets where meta_id = @meta_id
-delete from meta where meta_id = @meta_id
-delete from meta where meta_id = @meta_id
+delete from includes where meta_id = @meta_id
 delete from meta_section where meta_id = @meta_id
+delete from meta where meta_id = @meta_id
 GO
+
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 

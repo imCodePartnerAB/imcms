@@ -38,6 +38,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private File m_IncludePath ;
     private File m_FortunePath ;
     private File m_ImagePath ;
+	private File m_FilePath;
     private String m_StartUrl  ;			   // start url
     private String m_ServletUrl  ;			   // servlet url
     private String m_ImageUrl ;            // image folder
@@ -81,7 +82,11 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	String fortunePathString = props.getProperty("FortunePath").trim() ;
 	m_FortunePath       = imcode.util.Utility.getAbsolutePathFromString(fortunePathString) ;
-	log.info("FortunePath: " + m_IncludePath) ;
+	log.info("FortunePath: " + m_FortunePath) ;
+
+	String filePathString = props.getProperty("FilePath").trim() ;
+	m_FilePath       = imcode.util.Utility.getAbsolutePathFromString(filePathString) ;
+	log.info("FilePath: " + m_FilePath) ;
 
 	m_StartUrl       = props.getProperty("StartUrl").trim() ; //FIXME: Get from webserver, or get rid of if possible.
 	log.info("StartUrl: " + m_StartUrl) ;
@@ -464,12 +469,22 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     }
 
     /**
-     * Delete a doc and all data related.
+     * Delete a doc and all data related. Delete from db and file system.
      */
+	 /* Fixme:  delete doc from plugin db */
     public void deleteDocAll(int meta_id,imcode.server.User user) {
 	String sqlStr = "DocumentDelete " + meta_id ;
+	
+	String filename = meta_id + "_se";
+	File file = new File(m_FilePath, filename);
+	//System.out.println("FilePath: " + file.toString()) ;
+	
+	//If meta_id is a file document we have to delete the file from file system
+	if ( file.exists() ) {
+		file.delete(); 
+	}
 
-	// create a db connection an get meta data
+	// Create a db connection and execte sp DocumentDelete on meta_id
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setSQLString(sqlStr) ;
