@@ -104,6 +104,7 @@ function RRremovePaddings() {
 			}
 		}
 	}
+	document.styleSheets[0].addRule("Q", "height:0");
 	RRcheckSpeed();
 	RRpanelInit();
 	//window.setTimeout("RRhideWait()", 500); // How long banner is shown after pageload...
@@ -115,10 +116,9 @@ function RRremovePaddings() {
 	enableMouseClick();
 }*/
 
-/* *************** Add rule to css ************** */
+/* *************** Copy to buffer ************** */
 
 function RRinitWorm(){
-	document.styleSheets[0].addRule("Q", "height:0");
 	document.getElementById("RRbufferDiv").innerHTML = document.getElementById("RRcontentDiv").innerHTML;
 	//document.body.onScroll = "updateScreenSize();"
 }
