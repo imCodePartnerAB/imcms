@@ -73,6 +73,9 @@ public class MenuParserSubstitution implements Substitution {
        Handle an imcms:menu element.
     **/
     private void nodeMenu(Element menuNode, StringBuffer result, Menu currentMenu, PatternMatcher patMat) {
+	if (currentMenu == null || currentMenu.isEmpty()) {
+	    return ; // Don't output anything
+	}
 	Properties menuAttributes = menuNode.getAttributes() ; // Get the attributes from the imcms:menu-element. This will be passed down, to allow attributes of the imcms:menu-element to affect the menuitems.
 	if (menuNode.getChildElement("menuloop") == null) {
 	    nodeMenuLoop(new SimpleElement("menuloop",null,menuNode.getChildren()), result, currentMenu, menuAttributes, patMat) ; // The imcms:menu contained no imcms:menuloop, so let's create one, passing the children from the imcms:menu
