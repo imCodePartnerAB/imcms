@@ -58,12 +58,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private String USER_TEST_LOGIN_NAME = "TestUser";
     private static final int SECTION_TEST_ID = 1;
     private static final String SECTION_TEST_NAME = "TestSection";
+    private static final String USER_NAME_NON_EXISTING = "adsnfpjpacidfjaoökjadfac";
 
     protected void setUp() throws IOException {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            //DatabaseTestInitializer.static_initMimer(),
+            DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -118,8 +119,20 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_SectionCount( databaseService );
             test_sproc_SectionGetInheritId( databaseService );
             test_sproc_systemdata( databaseService );
+            test_sproc_RoleFindName( databaseService );
+            test_sproc_GetUserByLogin( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_GetUserByLogin( DatabaseService databaseService ) {
+        assertNull( databaseService.sproc_GetUserByLogin( USER_NAME_NON_EXISTING ) );
+        assertEquals( USER_TEST_LOGIN_NAME, databaseService.sproc_GetUserByLogin( USER_TEST_LOGIN_NAME ).login_name );
+    }
+
+    private void test_sproc_RoleFindName( DatabaseService databaseService ) {
+        assertEquals( -1, databaseService.sproc_RoleFindName( "alskdjfaldskjhflj" ));
+        assertEquals( ROLE_USERS_ID, databaseService.sproc_RoleFindName( ROLE_USERS_NAME ));
     }
 
     private void test_sproc_systemdata( DatabaseService databaseService ) {
@@ -127,7 +140,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertEquals( "@webmaster-name@", databaseService.sproc_WebMasterGet_name() );
         assertEquals( "@webmaster-email@", databaseService.sproc_WebMasterGet_email() );
         assertEquals( "@servermaster-name@", databaseService.sproc_ServerMasterGet_name() );
-        assertEquals( "@servermaster-email@", databaseService.sproc_ServerMasterGet_email() );
+        assertEquals( "@servermaster-email@", databaseService.sproc_ServerMasterGet_address() );
         assertEquals( "", databaseService.sproc_SystemMessageGet() );
     }
 
@@ -427,18 +440,18 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     public void test_sproc_ChangeUserActiveStatus() {
         DatabaseService.Table_users user = static_createDummyUser();
-        user.active = 1;
+        user.active = true;
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService dbService = databaseServices[i];
             dbService.sproc_AddNewuser( user );
 
             dbService.sproc_ChangeUserActiveStatus( USER_TEST_ID, false );
             DatabaseService.Table_users modifiedUser = dbService.selectFrom_users( new Integer( USER_TEST_ID ) );
-            assertEquals( 0, modifiedUser.active );
+            assertFalse( modifiedUser.active );
 
             dbService.sproc_ChangeUserActiveStatus( USER_TEST_ID, true );
             DatabaseService.Table_users modifiedUser2 = dbService.selectFrom_users( new Integer( USER_TEST_ID ) );
-            assertEquals( 1, modifiedUser2.active );
+            assertTrue( modifiedUser2.active );
         }
     }
 
@@ -563,9 +576,25 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
+    public void test_sproc_RoleAddNew() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 1, databaseService.sproc_RoleAddNew("BlaBbaBla") );
+        }
+    }
+
+    public void test_sproc_RoleDelete() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 3, databaseService.sproc_RoleDelete( ROLE_TEST_ID ) );
+        }
+    }
+
     // Below is helper functions to more than one test.
     private static DatabaseService.Table_users static_createDummyUser() {
-        DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", 0, DOC_FIRST_PAGE_ID, 0, 1, 1, 1, new Timestamp( new java.util.Date().getTime() ) );
+        DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", false, DOC_FIRST_PAGE_ID, 0, 1, 1, true, new Timestamp( new java.util.Date().getTime() ) );
         return user;
     }
+
+
 }

@@ -55,7 +55,6 @@ getuserrolesdocpermissions.prc
 getuserswhobelongstorole.prc
 getusertype.prc
 getusertypes.prc
-incsessioncounter.prc
 inheritpermissions.prc
 inserttext.prc
 ipaccessadd.prc
@@ -80,15 +79,12 @@ poll_increaseansweroption.prc
 poll_setanswerpoint.prc
 poll_setparameter.prc
 removeuserfromrole.prc
-roleaddnew.prc
 roleadmingetall.prc
 rolecheckconferenceallowed.prc
 rolecount.prc
 rolecountaffectedusers.prc
-roledelete.prc
 roledeleteviewaffectedmetaids.prc
 roledeleteviewaffectedusers.prc
-rolefindname.prc
 rolegetallapartfromrole.prc
 rolegetconferenceallowed.prc
 rolegetname.prc
@@ -99,8 +95,6 @@ roleupdatename.prc
 roleupdatepermissions.prc
 searchdocs.prc
 searchdocsindex.prc
-sectionchangeanddeletecrossref.prc
-servermasterget.prc
 servermasterset.prc
 setdocpermissionset.prc
 setdocpermissionsetex.prc
@@ -118,14 +112,12 @@ shop_getshoppingorderforuserbyid.prc
 shop_getshoppingordersforuser.prc
 sortorder_getexistingdocs.prc
 startdocset.prc
-systemmessageget.prc
 systemmessageset.prc
 unsetuserflag.prc
 updatedefaulttemplates.prc
 updateparentsdatemodified.prc
 updatetemplatetextsandimages.prc
 userprefschange.prc
-webmasterget.prc
 webmasterset.prc
 
 Nedan är förändringar mot scriptet tables.ascii.sql

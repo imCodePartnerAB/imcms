@@ -158,57 +158,29 @@ public abstract class DatabaseService {
         return commands;
     }
 
-    class Table_roles {
-        private int role_id;
-        private String role_name;
-        private int permissions;
-        private int admin_role;
-
-        Table_roles( ResultSet rs ) throws SQLException {
-            role_id = rs.getInt( "role_id" );
-            role_name = rs.getString( "role_name" );
-            permissions = rs.getInt( "permissions" );
-            admin_role = rs.getInt( "admin_role" );
-        }
-    }
-
-    Table_roles[] sproc_GetAllRoles_but_user() {
-        String sql = "SELECT role_id, role_name, permissions, admin_role FROM roles WHERE role_name <> 'Users' ORDER BY role_name";
-        Object[] paramValues = null;
-
-        SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
-            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                return new Table_roles( rs );
-            }
-        };
-
-        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
-        return (Table_roles[])queryResult.toArray( new Table_roles[queryResult.size()] );
-    }
-
-    static class Table_users {
-        int user_id;
-        String login_name;
-        private String login_password;
-        private String first_name;
-        private String last_name;
-        private String title;
-        private String company;
-        private String address;
-        private String city;
-        private String zip;
-        private String country;
-        private String county_council;
-        private String email;
-        private int external;
+    public static class Table_users {
+        public int user_id;
+        public String login_name;
+        public String login_password;
+        public String first_name;
+        public String last_name;
+        public String title;
+        public String company;
+        public String address;
+        public String city;
+        public String zip;
+        public String country;
+        public String county_council;
+        public String email;
+        public boolean external;
         private int last_page;
         private int archive_mode;
-        private int lang_id;
-        private int user_type;
-        int active;
-        private Timestamp create_date;
+        public int lang_id;
+        public int user_type;
+        public boolean active;
+        public Timestamp create_date;
 
-        Table_users( int user_id, String login_name, String login_password, String first_name, String last_name, String title, String company, String address, String city, String zip, String country, String county_council, String email, int external, int last_page, int archive_mode, int lang_id, int user_type, int active, Timestamp create_date ) {
+        Table_users( int user_id, String login_name, String login_password, String first_name, String last_name, String title, String company, String address, String city, String zip, String country, String county_council, String email, boolean external, int last_page, int archive_mode, int lang_id, int user_type, boolean active, Timestamp create_date ) {
             this.user_id = user_id;
             this.login_name = login_name;
             this.login_password = login_password;
@@ -245,12 +217,12 @@ public abstract class DatabaseService {
             country = rs.getString( "country" );
             county_council = rs.getString( "county_council" );
             email = rs.getString( "email" );
-            external = rs.getInt( "external" );
+            external = rs.getInt( "external" ) == 1;
             last_page = rs.getInt( "last_page" );
             archive_mode = rs.getInt( "archive_mode" );
             lang_id = rs.getInt( "lang_id" );
             user_type = rs.getInt( "user_type" );
-            active = rs.getInt( "active" );
+            active = (rs.getInt("active") == 1 );
             create_date = rs.getTimestamp( "create_date" );
         }
     }
@@ -268,7 +240,7 @@ public abstract class DatabaseService {
     // todo, ska man behöva stoppa in user_id här? Kan man inte bara få ett unikt?
     int sproc_AddNewuser( Table_users userData ) {
         String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date ) " + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Object[] paramValues = new Object[]{new Integer( userData.user_id ), userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.external ), new Integer( 1001 ), new Integer( 0 ), new Integer( userData.lang_id ), new Integer( userData.user_type ), new Integer( userData.active ), userData.create_date};
+        Object[] paramValues = new Object[]{new Integer( userData.user_id ), userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.external?1:0 ), new Integer( 1001 ), new Integer( 0 ), new Integer( userData.lang_id ), new Integer( userData.user_type ), new Integer( userData.active?1:0 ), userData.create_date};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
@@ -289,7 +261,7 @@ public abstract class DatabaseService {
             "last_name = ?, " + "title = ?, " + "company = ?, " + "address =  ?, " + "city = ?, " + "zip = ?, " +
             "country = ?, " + "county_council =?, " + "email = ?, " + "user_type = ?, " + "active = ?, " +
             "lang_id = ? " + "WHERE user_id = ?";
-        Object[] paramValues = new Object[]{userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.user_type ), new Integer( userData.active ), new Integer( userData.lang_id ), new Integer( userData.user_id )};
+        Object[] paramValues = new Object[]{userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.user_type ), new Integer( userData.active?1:0 ), new Integer( userData.lang_id ), new Integer( userData.user_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
@@ -327,11 +299,10 @@ public abstract class DatabaseService {
                 return new Integer( id );
             }
         } );
-        Integer id = (Integer)(queryResult.get( 0 ));
-        if( id == null ) {
+        if( queryResult.isEmpty() ) {
             return 0;
         } else {
-            return id.intValue();
+            return ((Integer)queryResult.get( 0 )).intValue();
         }
     }
 
@@ -376,13 +347,13 @@ public abstract class DatabaseService {
         // Lets check if the role already exists
         String sqlSelect = "SELECT role_id FROM user_roles_crossref WHERE user_id = ? AND role_id = ? ";
         Object[] paramValues = new Object[]{new Integer( user_id ), new Integer( role_id )};
-        ArrayList querryResult = sqlProcessor.executeQuery( sqlSelect, paramValues, new SQLProcessor.ResultProcessor() {
+        ArrayList queryResult = sqlProcessor.executeQuery( sqlSelect, paramValues, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 return new Integer( rs.getInt( "role_id" ) );
             }
         } );
 
-        if( querryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             String sqlInsert = "INSERT INTO user_roles_crossref(user_id, role_id) VALUES( ? , ? )";
             return sqlProcessor.executeUpdate( sqlInsert, paramValues );
         } else {
@@ -499,11 +470,11 @@ public abstract class DatabaseService {
         return (Table_phone[])queryResult.toArray( new Table_phone[queryResult.size()] );
     }
 
-    static class MoreThanOneTable_phones_phonetypes {
+    public static class MoreThanOneTable_phones_phonetypes {
         private int phone_id;
-        private String number;
+        public String number;
         private int user_id;
-        private int phonetype_id;
+        public int phonetype_id;
         private String typename;
 
         MoreThanOneTable_phones_phonetypes( ResultSet rs ) throws SQLException {
@@ -517,7 +488,7 @@ public abstract class DatabaseService {
 
     // todo: Do we realy need to return user_id?
     // todo: This should be able to be used instead of sproc_GetUserPhones, why not?
-    MoreThanOneTable_phones_phonetypes[] sproc_GetUserPhoneNumbers( int user_id ) {
+    public MoreThanOneTable_phones_phonetypes[] sproc_GetUserPhoneNumbers( int user_id ) {
         String sql = "SELECT phones.phone_id, phones.number, phones.user_id, phones.phonetype_id, phonetypes.typename " +
             "FROM phones " +
             "INNER JOIN users ON phones.user_id = users.user_id " +
@@ -560,7 +531,6 @@ public abstract class DatabaseService {
         } catch( SQLException e ) {
             transaction.rollback();
         }
-        ;
         return rowCount;
     }
 
@@ -1098,7 +1068,7 @@ public abstract class DatabaseService {
                 return new Table_meta( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_meta)queryResult.get( 0 );
@@ -1152,7 +1122,7 @@ public abstract class DatabaseService {
                 return new Table_text_docs( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_text_docs)queryResult.get( 0 );
@@ -1194,7 +1164,7 @@ public abstract class DatabaseService {
                 return new Table_url_docs( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_url_docs)queryResult.get( 0 );
@@ -1229,7 +1199,7 @@ public abstract class DatabaseService {
                 return new Table_browser_docs( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_browser_docs)queryResult.get( 0 );
@@ -1286,7 +1256,7 @@ public abstract class DatabaseService {
                 return new Table_frameset_docs( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_frameset_docs)queryResult.get( 0 );
@@ -1319,7 +1289,7 @@ public abstract class DatabaseService {
                 return new Table_fileupload_docs( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_fileupload_docs)queryResult.get( 0 );
@@ -1486,7 +1456,7 @@ public abstract class DatabaseService {
                 return new Table_doc_permission_sets( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_doc_permission_sets)queryResult.get( 0 );
@@ -1519,7 +1489,7 @@ public abstract class DatabaseService {
                 return new Table_new_doc_permission_sets( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_new_doc_permission_sets)queryResult.get( 0 );
@@ -1554,7 +1524,7 @@ public abstract class DatabaseService {
                 return new Table_doc_permission_sets_ex( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_doc_permission_sets_ex)queryResult.get( 0 );
@@ -1589,7 +1559,7 @@ public abstract class DatabaseService {
                 return new Table_new_doc_permission_sets_ex( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_new_doc_permission_sets_ex)queryResult.get( 0 );
@@ -1622,7 +1592,7 @@ public abstract class DatabaseService {
                 return new Table_roles_rights( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_roles_rights)queryResult.get( 0 );
@@ -1653,7 +1623,7 @@ public abstract class DatabaseService {
                 return new Table_meta_classification( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_meta_classification)queryResult.get( 0 );
@@ -1686,7 +1656,7 @@ public abstract class DatabaseService {
                 return new Table_meta_section( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_meta_section)queryResult.get( 0 );
@@ -1842,7 +1812,7 @@ public abstract class DatabaseService {
                 return new Table_users( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_users)queryResult.get( 0 );
@@ -1894,13 +1864,13 @@ public abstract class DatabaseService {
     /** Get the users preferred language. Used by the administrator functions.
      * Begin with getting the users langId from the userobject.
      */
-    Table_lang_prefixes sproc_GetLangPrefixFromId( int lang_id ) {
+    public Table_lang_prefixes sproc_GetLangPrefixFromId( int lang_id ) {
         return selectFrom_lang_prefixes( new Integer( lang_id ) );
     }
 
-    static class Table_lang_prefixes {
+    public static class Table_lang_prefixes {
         private int lang_id;
-        String lang_prefix;
+        public String lang_prefix;
 
         Table_lang_prefixes( ResultSet rs ) throws SQLException {
             lang_id = rs.getInt( "lang_id" );
@@ -1916,7 +1886,7 @@ public abstract class DatabaseService {
                 return new Table_lang_prefixes( rs );
             }
         } );
-        if( queryResult.size() == 0 ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_lang_prefixes)queryResult.get( 0 );
@@ -2010,7 +1980,7 @@ public abstract class DatabaseService {
                 return rs.getString( "login_password" );
             }
         } );
-        if( 0 == queryResult.size() ) {
+        if( queryResult.isEmpty() ) {
             return "";// todo: borde det inte vara null istället?
         } else {
             return (String)queryResult.get( 0 );
@@ -2077,44 +2047,44 @@ public abstract class DatabaseService {
         return (PartOfTable_users[])queryResult.toArray( new PartOfTable_users[queryResult.size()] );
     }
 
-    int sproc_StartDocGet() {
+    public int sproc_StartDocGet() {
         Integer type_id = new Integer( 0 );
         return Integer.parseInt( selectFrom_sys_data( type_id ) );
     }
 
     // todo: döp om sysdata_value så man förstår vad detta är för något...
-    int sproc_GetCurrentSessionCounter() {
+    public int sproc_GetCurrentSessionCounter() {
         Integer type_id = new Integer( 1 );
         return Integer.parseInt( selectFrom_sys_data( type_id ) );
     }
 
     // todo: returnera date objekt i stället? Ändra typen i databasen?
-    String sproc_GetCurrentSessionCounterDate() {
+    public String sproc_GetCurrentSessionCounterDate() {
         Integer type_id = new Integer( 2 );
         return selectFrom_sys_data( type_id );
     }
 
-    String sproc_SystemMessageGet() {
+    public String sproc_SystemMessageGet() {
         Integer type_id = new Integer( 3 );
         return selectFrom_sys_data( type_id );
     }
 
-    String sproc_ServerMasterGet_name() {
+    public String sproc_ServerMasterGet_name() {
         Integer type_id = new Integer( 4 );
         return selectFrom_sys_data( type_id );
     }
 
-    String sproc_ServerMasterGet_email() {
+    public String sproc_ServerMasterGet_address() {
         Integer type_id = new Integer( 5 );
         return selectFrom_sys_data( type_id );
     }
 
-    String sproc_WebMasterGet_name() {
+    public String sproc_WebMasterGet_name() {
         Integer type_id = new Integer( 6 );
         return selectFrom_sys_data( type_id );
     }
 
-    String sproc_WebMasterGet_email() {
+    public String sproc_WebMasterGet_email() {
         Integer type_id = new Integer( 7 );
         return selectFrom_sys_data( type_id );
     }
@@ -2130,15 +2100,15 @@ public abstract class DatabaseService {
         return (String)queryResult.get( 0 );
     }
 
-    int sproc_SetSessionCounterValue( int sysdata_value ) {
-        return updateSysdata( new Integer( 1 ), new Integer( sysdata_value ) );
+    public int sproc_SetSessionCounterValue( int sysdata_value ) {
+        return update_sys_data( new Integer( 1 ), new Integer( sysdata_value ) );
     }
 
     int sproc_SetSessionCounterDate( String counterDate ) {
-        return updateSysdata( new Integer( 2 ), counterDate );
+        return update_sys_data( new Integer( 2 ), counterDate );
     }
 
-    private int updateSysdata( Integer type_id, Object sysdata_value ) {
+    private int update_sys_data( Integer type_id, Object sysdata_value ) {
         String sql = " UPDATE sys_data SET sysdata_value = ? WHERE type_id  = ? ";
         Object[] paramValues = new Object[]{sysdata_value, type_id};
         int rowCount = sqlProcessor.executeUpdate( sql, paramValues );
@@ -2167,7 +2137,7 @@ public abstract class DatabaseService {
                 return new Table_section( rs );
             }
         } );
-        if( 0 == queryResult.size() ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_section)queryResult.get(0);
@@ -2314,7 +2284,7 @@ public abstract class DatabaseService {
                 return new Table_section( rs );
             }
         } );
-        if( 0 == queryResult.size() ) {
+        if( queryResult.isEmpty() ) {
             return null;
         } else {
             return (Table_section)queryResult.get(0);
@@ -2346,5 +2316,127 @@ public abstract class DatabaseService {
         return rowCount;
     }
 
+    class Table_roles {
+        private int role_id;
+        private String role_name;
+        private int permissions;
+        private int admin_role;
 
+        Table_roles( ResultSet rs ) throws SQLException {
+            role_id = rs.getInt( "role_id" );
+            role_name = rs.getString( "role_name" );
+            permissions = rs.getInt( "permissions" );
+            admin_role = rs.getInt( "admin_role" );
+        }
+    }
+
+    Table_roles[] sproc_GetAllRoles_but_user() {
+        String sql = "SELECT role_id, role_name, permissions, admin_role FROM roles WHERE role_name <> 'Users' ORDER BY role_name";
+        Object[] paramValues = null;
+
+        SQLProcessor.ResultProcessor resultProcessor = new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Table_roles( rs );
+            }
+        };
+
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, resultProcessor );
+        return (Table_roles[])queryResult.toArray( new Table_roles[queryResult.size()] );
+    }
+
+    /**
+     * This function is when an administrator tries to add a new roleName.
+     * The system searches for the rolename and returns the the id it exists otherwize -1
+     */
+     public int sproc_RoleFindName( String role_name ) {
+          String sql = "SELECT r.role_id FROM roles r WHERE r.role_name = ? ";
+          Object[] paramValues = new Object[]{ role_name };
+          ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+              Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                  return new Integer( rs.getInt("role_id"));
+              }
+          } );
+        if( queryResult.isEmpty() ) {
+            return -1;
+        } else {
+            return ((Integer)queryResult.get(0)).intValue();
+        }
+      }
+
+    /**
+     *  Adds a new role
+     */
+    public int sproc_RoleAddNew( String role_name ) {
+        SQLProcessor.SQLTransaction transaction = sqlProcessor.startTransaction();
+        int rowCount = 0;
+        try {
+            int newRoleId = 1 + getMaxIntValue( transaction, "roles", "role_id" );
+            String sql = "INSERT INTO roles ( role_id , role_name, permissions, admin_role ) VALUES( ?, ?, ?, ? )";
+            Object[] paramValues = new Object[]{ new Integer( newRoleId ), role_name, new Integer(0), new Integer(0) } ;
+            rowCount += transaction.executeUpdate( sql, paramValues );
+
+            transaction.commit();
+        } catch( SQLException ex ) {
+            transaction.rollback();
+            log.warn( "Failure in sproc_RoleAddNew", ex );
+        }
+        return rowCount;
+    }
+
+    /**
+     * Deletes an role from the role table. Used by the AdminRoles servlet
+     */
+     public int sproc_RoleDelete( int role_id ) {
+        SQLProcessor.SQLTransaction transaction = sqlProcessor.startTransaction();
+        int rowCount = 0;
+        try {
+            String sql = "DELETE FROM ROLES_RIGHTS WHERE role_id = ? ";
+            Object[] paramValues = new Object[]{ new Integer(role_id) };
+            rowCount += transaction.executeUpdate( sql, paramValues );
+
+            sql = "DELETE FROM user_roles_crossref WHERE role_id = ? ";
+            rowCount += transaction.executeUpdate( sql, paramValues );
+
+            sql = "DELETE FROM ROLES WHERE role_id = ? ";
+            rowCount += transaction.executeUpdate( sql, paramValues );
+
+            transaction.commit();
+        } catch( SQLException ex ) {
+            transaction.rollback();
+            log.warn("failure in sproc_RoleDelete ", ex );
+        }
+        return rowCount;
+     }
+
+    /**
+     * Get data for a user by his login_name. Used for login.
+     * @param login_name
+     * @return null if no user found
+     */
+    // todo :  denna
+    public Table_users sproc_GetUserByLogin( String login_name ) {
+        Integer user_id = getUserIdFromLoginName( login_name );
+        if( user_id == null ) {
+            return null;
+        }
+
+        return selectFrom_users( user_id );
+    }
+
+    // todo: Denna returnerar lang_id istället för lang prefix
+    // todo: anropa även sproc_GetLangPrefixFromId för denna information
+    private Integer getUserIdFromLoginName( String login_name ) {
+        String sql = "SELECT user_id FROM users WHERE login_name = ? ";
+        Object[] paramValues = new Object[]{ login_name  };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer( rs.getInt("user_id"));
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (Integer)queryResult.get(0);
+        }
+    }
 }
