@@ -1,7 +1,7 @@
 <!--IMSCRIPT-->
 <html>
 <head>
-<title>#metaHeadline# - Powered by imCode imCMS</title>
+<title>#metaHeadline# - Powered by imCMS from imCode Partner AB</title>
 
 <style type="text/css">
 <!--
@@ -28,43 +28,43 @@ LI { padding-bottom:5; }
 	<table border="0" cellspacing="0" cellpadding="0" width="760">
 	<tr>
 		<td colspan="5"><?imcms:include
-		url="http://www.imcms.net/servlet/GetDoc?meta_id=1240&template=imcmsDemoTop"?></td>
+		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoTop"?></td>
 	</tr>
 	<tr>
 		<td colspan="5" height="15">&nbsp;</td>
 	</tr>
 	<tr valign="top">
 		<td width="200"><?imcms:include
-		url="http://www.imcms.net/servlet/GetDoc?meta_id=1240&template=imcmsDemoLeft"?></td>
+		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoLeft"?></td>
 		
 		<td width="15">&nbsp;</td>
 		
 		<td width="385"><?imcms:text
-		no='1' label='Text 1 (Rubrik)' pre='<span class="imcHeading">' post='</span><br><br>
+		no='1' label='Text (Rubrik)' pre='<span class="imcHeading">' post='</span><br><br>
 		
-		'?><?imcms:image
-		no='1' label='Bild 1'?><?imcms:text
-		no='2' label='<br>Text 2'?><?imcms:menu
-		no='1' label='<br><br>Meny 1 (punktlista)'?>
+		'?><?imcms:text
+		no='2' label='<br>Text' post='<br><br>'?><?imcms:menu
+		no='1' label='<br><br>Meny (punktlista)'?>
 		
 		<ul><?imcms:menuloop?>
 			<li style="padding-bottom:5">#menuitemlink##menuitemheadline##/menuitemlink#<?/imcms:menuloop?>
 		</ul>
 		<?/imcms:menu?><?imcms:include
 		
-		url="http://www.imcms.net/servlet/GetDoc?meta_id=1240&template=imcmsDemoContent"?></td>
+		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr>' post='<hr>'?><?imcms:image
+		no='3' label='Bild' pre='<br><br>' post='<br>'?></td>
 		
 		<td width="10">&nbsp;</td>
 		
 		<td width="150"><?imcms:include
-		url="http://www.imcms.net/servlet/GetDoc?meta_id=1240&template=imcmsDemoRight"?></td>
+		url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoRight"?></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
 	<td align="center" valign="bottom">&nbsp;<br>#adminMode##changePage#
 	<?imcms:include
-	url="http://www.imcms.net/servlet/GetDoc?meta_id=1240&template=imcmsDemoBottom"?></td>
+	url="http://doc.imcms.net/1.8.0/servlet/GetDoc?meta_id=1054&template=imcmsDemoBottom"?></td>
 </tr>
 </table>
 
