@@ -3,12 +3,10 @@ package imcode.server.user;
 import org.apache.log4j.Logger;
 
 import javax.naming.*;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchResult;
+import javax.naming.directory.*;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 /*
 The use of LDAP simple auth for secret data or update is NOT recommended.
@@ -60,11 +58,12 @@ public class LdapUserMapper implements UserMapper {
    private DirContext ctx = null;
    private String userIdentifier = null;
    private HashMap userFieldLdapMappings = null;
+   private String[] ldapAttributesAutoMappedToRoles;
 
    public LdapUserMapper( String ldapServerURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword, String[] ldapAttributesAutoMappedToRoles ) throws LdapInitException {
-
-      userIdentifier = NONSTANDARD_USERID;
-      userFieldLdapMappings = createLdapMappings();
+      this.ldapAttributesAutoMappedToRoles = ldapAttributesAutoMappedToRoles;
+      this.userIdentifier = NONSTANDARD_USERID;
+      this.userFieldLdapMappings = createLdapMappings();
 
       try {
          ctx = staticSetupInitialDirContext( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword );
@@ -86,31 +85,19 @@ public class LdapUserMapper implements UserMapper {
    public User getUser( String loginName ) {
       User result = null;
 
-      final String mappingString = userIdentifier + "=" + loginName;
+      Map attributeMap = searchForUserAttributes(loginName,null) ;
 
-      NamingEnumeration enum = null;
-      boolean foundUser = false;
-      try {
-         enum = ctx.search( "", mappingString, null );
-         foundUser = enum != null && enum.hasMore();
-      } catch( NamingException e ) {
-         result = null;
-         getLogger().warn( "Could not find user", e );
-      }
-
-      if( foundUser ) {
-         SearchResult searchResult = (SearchResult)enum.nextElement();
-
-         result = createUserFromLdapSearchResult( searchResult );
+      if (null != attributeMap) {
+         result = createUserFromLdapAttributes( attributeMap );
 
          result.setLoginName( loginName );
-         result.setActive(true) ;
+         result.setActive( true );
       }
 
       return result;
    }
 
-   private User createUserFromLdapSearchResult( SearchResult searchResult ) {
+   private Map createMapFromSearchResult( SearchResult searchResult ) {
       NamingEnumeration attribEnum = searchResult.getAttributes().getAll();
 
       HashMap ldapAttributeValues = new HashMap();
@@ -125,12 +112,10 @@ public class LdapUserMapper implements UserMapper {
          }
          ldapAttributeValues.put( attributeName1, attributeValue );
       }
-
-      return createUserFromLdapAttributes( ldapAttributeValues );
-
+      return ldapAttributeValues;
    }
 
-   private User createUserFromLdapAttributes( HashMap ldapAttributeValues ) {
+   private User createUserFromLdapAttributes( Map ldapAttributeValues ) {
       User newlyFoundLdapUser = new User();
 
       String value = getValueForUserField( "lastName", ldapAttributeValues );
@@ -206,7 +191,7 @@ public class LdapUserMapper implements UserMapper {
       return result;
    }
 
-   private String getValueForUserField( String userFieldName, HashMap ldapAttributeValues ) {
+   private String getValueForUserField( String userFieldName, Map ldapAttributeValues ) {
       String ldapAttribute = (String)userFieldLdapMappings.get( userFieldName );
       String value = (String)ldapAttributeValues.get( ldapAttribute );
       return value;
@@ -239,9 +224,35 @@ public class LdapUserMapper implements UserMapper {
    }
 
    public String[] getRoleNames( User user ) {
-      // todo Really get the roles from ldap
+      String loginName = user.getLoginName();
+      String[] attributesToReturn = ldapAttributesAutoMappedToRoles;
+
+      searchForUserAttributes( loginName, attributesToReturn );
+
       String[] result = new String[]{DEFAULT_LDAP_ROLE};
       return result;
+   }
+
+   private Map searchForUserAttributes( String loginName, String[] attributesToReturn ) {
+      Map attributeMap = null;
+
+      NamingEnumeration enum;
+
+      Attributes loginNameAttribute = new BasicAttributes( userIdentifier, loginName );
+      boolean foundUser = false;
+      try {
+         enum = ctx.search( "", loginNameAttribute, attributesToReturn );
+         foundUser = enum != null && enum.hasMore();
+         if( foundUser ) {
+            SearchResult searchResult = (SearchResult)enum.nextElement();
+            attributeMap = createMapFromSearchResult( searchResult );
+         } else {
+            getLogger().warn( "Could not find user " + enum );
+         }
+      } catch( NamingException e ) {
+         getLogger().warn( "Could not find user", e );
+      }
+      return attributeMap;
    }
 
    public String[] getAllRoleNames() {
