@@ -33,8 +33,6 @@ public class ChangeImage extends HttpServlet {
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String image_url = imcref.getImageUrl();
-        File image_path = Utility.getDomainPrefPath( "image_path" );
 
         int meta_id;
         int img_no;
@@ -69,79 +67,17 @@ public class ChangeImage extends HttpServlet {
 
 
         //*lets get some path we need later on
-        String canon_path = image_path.getCanonicalPath(); //ex: C:\Tomcat3\webapps\imcms\images
-        String root_dir_parent = image_path.getParentFile().getCanonicalPath();  //ex: C:\Tomcat3\webapps\webapps\imcms
-        String root_dir_name = canon_path.substring( root_dir_parent.length() );
-        if ( root_dir_name.startsWith( File.separator ) ) {
-            root_dir_name = root_dir_name.substring( File.separator.length() );
-            //ex: root_dir_name = images
-        }
+        String image_url = imcref.getImageUrl();
+        File image_path = Utility.getDomainPrefPath( "image_path" );
+
 
         //*lets get the dirlist, and add the rootdir to it
         List imageFolders = GetImages.getImageFolders( image_path, true );
         imageFolders.add( 0, image_path );
 
-        //*the StringBuffers to save the lists html-code in
-        StringBuffer folderOptions = new StringBuffer( imageFolders.size() * 64 );
+        //*the StringBuffers to save the image directories list html-code in
+        StringBuffer folderOptions = createImageFolderOptionList(imageFolders,image_path);
 
-        //*lets create the image folder option list
-        for ( int x = 0; x < imageFolders.size(); x++ ) {
-            File fileObj = (File)imageFolders.get( x );
-
-            //ok lets set up the folder name to show and the one to put as value
-            String optionName = fileObj.getCanonicalPath();
-            //lets remove the start of the path so we end up at the rootdir.
-            if ( optionName.startsWith( canon_path ) ) {
-                optionName = optionName.substring( root_dir_parent.length() );
-                if ( optionName.startsWith( File.separator ) ) {
-                    optionName = optionName.substring( File.separator.length() );
-                }
-            } else if ( optionName.startsWith( File.separator ) ) {
-                optionName = optionName.substring( File.separator.length() );
-            }
-            //the path to put in the option value
-            String optionPath = optionName;
-            if ( optionPath.startsWith( root_dir_name ) ) {
-                optionPath = optionPath.substring( root_dir_name.length() );
-            }
-            //ok now we have to replace all parent folders with a '-' char
-            StringTokenizer token = new StringTokenizer( optionName, "\\", false );
-            StringBuffer buff = new StringBuffer( "" );
-            while ( token.countTokens() > 1 ) {
-                token.nextToken();
-                buff.append( "&nbsp;&nbsp;-" );
-            }
-            if ( token.countTokens() > 0 ) {
-                optionName = buff.toString() + token.nextToken();
-            }
-            File urlFile = new File( optionName );
-            String fileName = urlFile.getName();
-            File parentDir = urlFile.getParentFile();
-            if ( parentDir != null ) {
-                optionName = parentDir.getPath() + "/";
-            } else {
-                optionName = "";
-            }
-            //filepathfix ex: images\nisse\kalle.gif to images/nisse/kalle.gif
-            optionName = optionName.replace( File.separatorChar, '/' ) + fileName;
-
-            int i = optionName.lastIndexOf('-');
-            String tempPathFirst = "";
-            String tempPathLast = "";
-            if ( i > 0 ) {
-                tempPathFirst = (optionName.substring(0,i)).replace( '-', ' ' );
-                tempPathLast = (optionName.substring(i));
-                optionName = tempPathFirst + tempPathLast;
-            }
-            optionName = optionName.replace( '-', '\\' );
-            folderOptions.append(
-                    "<option value=\"" + optionPath + "\""
-                    + ">"
-                    + optionName
-                    + "</option>\r\n" );
-        }//end setUp option dir list
-
-    
         HttpSession session = req.getSession( true );
         session.setAttribute( "imageFolderOptionList", folderOptions.toString() );
 
@@ -305,5 +241,80 @@ public class ChangeImage extends HttpServlet {
         String htmlStr = imcref.parseDoc( vec, "change_img.html", user );
         out.print( htmlStr );
 
+    }
+
+
+    public StringBuffer createImageFolderOptionList( List imageFolders, File image_path) throws IOException {
+
+        // create the image folder option list
+
+        //lets get some path we need later on
+        String canon_imagePath = image_path.getCanonicalPath(); //ex: C:\Tomcat3\webapps\imcms\images
+        String root_dir_parent = image_path.getParentFile().getCanonicalPath();  //ex: C:\Tomcat3\webapps\webapps\imcms
+        String root_dir_name = canon_imagePath.substring( root_dir_parent.length() );
+        if ( root_dir_name.startsWith( File.separator ) ) {
+            root_dir_name = root_dir_name.substring( File.separator.length() );
+            //ex: root_dir_name = images
+        }
+
+        StringBuffer folderOptions = new StringBuffer( imageFolders.size() * 64 );
+
+        for ( int x = 0; x < imageFolders.size(); x++ ) {
+            File fileObj = (File)imageFolders.get( x );
+
+            //ok lets set up the folder name to show and the one to put as value
+            String optionName = fileObj.getCanonicalPath();
+            //lets remove the start of the path so we end up at the rootdir.
+            if ( optionName.startsWith( canon_imagePath ) ) {
+                optionName = optionName.substring( root_dir_parent.length() );
+                if ( optionName.startsWith( File.separator ) ) {
+                    optionName = optionName.substring( File.separator.length() );
+                }
+            } else if ( optionName.startsWith( File.separator ) ) {
+                optionName = optionName.substring( File.separator.length() );
+            }
+            //the path to put in the option value
+            String optionPath = optionName;
+            if ( optionPath.startsWith( root_dir_name ) ) {
+                optionPath = optionPath.substring( root_dir_name.length() );
+            }
+            //ok now we have to replace all parent folders with a '-' char
+            StringTokenizer token = new StringTokenizer( optionName, "\\", false );
+            StringBuffer buff = new StringBuffer( "" );
+            while ( token.countTokens() > 1 ) {
+                token.nextToken();
+                buff.append( "&nbsp;&nbsp;-" );
+            }
+            if ( token.countTokens() > 0 ) {
+                optionName = buff.toString() + token.nextToken();
+            }
+            File urlFile = new File( optionName );
+            String fileName = urlFile.getName();
+            File parentDir = urlFile.getParentFile();
+            if ( parentDir != null ) {
+                optionName = parentDir.getPath() + "/";
+            } else {
+                optionName = "";
+            }
+            //filepathfix ex: images\nisse\kalle.gif to images/nisse/kalle.gif
+            optionName = optionName.replace( File.separatorChar, '/' ) + fileName;
+
+            int i = optionName.lastIndexOf('-');
+            String tempPathFirst = "";
+            String tempPathLast = "";
+            if ( i > 0 ) {
+                tempPathFirst = (optionName.substring(0,i)).replace( '-', ' ' );
+                tempPathLast = (optionName.substring(i));
+                optionName = tempPathFirst + tempPathLast;
+            }
+            optionName = optionName.replace( '-', '\\' );
+            folderOptions.append(
+                    "<option value=\"" + optionPath + "\""
+                    + ">"
+                    + optionName
+                    + "</option>\r\n" );
+        }//end setUp option dir list
+
+        return folderOptions;
     }
 }
