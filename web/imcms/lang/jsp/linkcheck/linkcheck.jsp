@@ -68,12 +68,14 @@
                         <% } %>
                     <td><%= Utility.getLinkedStatusIconTemplate( document, user ) %></td>
                     <td><a href="<%= link.getUrl() %>"><%= link.getUrl() %></a></td>
+										<vel:velocity>
                     <td align="center"><img
 										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isHostFound()) ? "1" : "0" %>.gif"></td>
                     <td align="center"><img
 										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isHostReachable()) ? "1" : "0" %>.gif"></td>
                     <td align="center"><img
-										rc="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isOk()) ? "1" : "0" %>.gif"></td>
+										src="$contextPath/imcms/$language/images/admin/btn_checked_<%= (link.isOk()) ? "1" : "0" %>.gif"></td>
+										</vel:velocity>
                 </tr><%
                 out.flush();
             }
