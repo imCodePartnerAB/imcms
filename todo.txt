@@ -3,13 +3,17 @@ Lennart:
 - Går det att bestämma vilken url man ska till efter inloggning beroende på vilken sida man loggar in från?
 
 Christoffer:
+- Säkerheten och *.jsp sidor. Ska vi lägga loginfilter på alla *.jsp sidor? Eller *.*, går det?
+- Namnen på api, paket, user userdb etc
 - servlet.jar, vilken version ska vara incheckad? Någon över huvudtaget?
+- Servlets in i paket, och fixa om urlerna till att döljas för surfaren?
 
 Hillar, prioritera
 (?) Include av externa system
 (?) "" password
 (?) Inloggningschecken till filtret
 (?) Markera roller som externa så att de kan tas bort ifall de försvinner
+(?) Hantering av extern användare, useradmin.jsp, och rollerna
 
 API:et (prio)
 (1) Visa behörighet för sida

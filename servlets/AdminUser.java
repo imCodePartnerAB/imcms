@@ -10,13 +10,11 @@ import imcode.server.user.User;
 import imcode.util.*;
 
 import org.apache.log4j.*;
-import com.imcode.imcms.RequestConstants;
 
 public class AdminUser extends Administrator {
    private final static String HTML_TEMPLATE = "AdminChangeUser.htm";
    private static Category log = Logger.getInstance( AdminUser.class.getName() );
    private String CHANGE_EXTERNAL_USER_URL = "/adminuser/changeexternaluser.jsp";
-    public final static String USER_LOGIN_NAME = "loginname";
 
     /**
     The GET method creates the html page when this side has been
@@ -165,7 +163,7 @@ public class AdminUser extends Administrator {
          else {
             // req.setAttribute( RequestConstants.USER_LOGIN_NAME, userToChange.getLoginName() );
             String queryString =
-               "?" + java.net.URLEncoder.encode(USER_LOGIN_NAME, "UTF-8") +
+               "?" + java.net.URLEncoder.encode(WebAppGlobalConstants.USER_LOGIN_NAME, "UTF-8") +
                "=" + java.net.URLEncoder.encode(userToChange.getLoginName(), "UTF-8") ;
             RequestDispatcher rd = req.getRequestDispatcher( CHANGE_EXTERNAL_USER_URL + queryString );
             rd.forward( req, res );

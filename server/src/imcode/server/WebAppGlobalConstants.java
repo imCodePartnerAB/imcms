@@ -11,8 +11,9 @@ public class WebAppGlobalConstants {
 	private final static String CVS_REV="$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
 	private static WebAppGlobalConstants singletonInstance;
-	
-	/** 
+    public final static String USER_LOGIN_NAME = "loginname";
+
+    /**
 	* This must be called before any other method is called.
 	* When the first Servlet is loaded.
 	*/

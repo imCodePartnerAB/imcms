@@ -2,8 +2,8 @@
                  javax.servlet.http.HttpServletResponse,
                  javax.servlet.ServletException,
                  java.io.IOException,
-                 AdminUser,
-                 com.imcode.imcms.*"%>
+                 com.imcode.imcms.*,
+                 imcode.server.WebAppGlobalConstants"%>
 <%!
 
 private final static String ACTION_SAVE_USER       = "SAVE_USER" ;
@@ -35,7 +35,7 @@ private static void updateUserRoles( HttpServletRequest request, UserMapperBean 
 ImcmsSystem  imcms = (ImcmsSystem)request.getAttribute( RequestConstants.SYSTEM );
 UserMapperBean  userMapper = imcms.getUserMapperBean();
 
-String userLoginName = request.getParameter( AdminUser.USER_LOGIN_NAME );
+String userLoginName = request.getParameter( WebAppGlobalConstants.USER_LOGIN_NAME );
 UserBean user = userMapper.getUser( userLoginName );
 
 if ( buttonPressed(request, ACTION_CANCEL) ) {
@@ -231,7 +231,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 <tr>
 	<td>&nbsp;</td>
 	<td colspan="3">
-	<input type="hidden" name="<%=AdminUser.USER_LOGIN_NAME%>" value="<%=userLoginName%>">
+	<input type="hidden" name="<%=WebAppGlobalConstants.USER_LOGIN_NAME%>" value="<%=userLoginName%>">
 	<input type="submit" name="<%= ACTION_SAVE_USER %>" value="Spara">
 	<input type="submit" name="<%= ACTION_CANCEL %>" value="Avbryt"></td>
 	<td>&nbsp;</td>
