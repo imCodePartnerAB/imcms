@@ -26,6 +26,9 @@ new_doc_permission_sets     - Rättighetsuppsättningar på nya dokument.
 new_doc_permission_sets_ex  - Rättighetsuppsättningar på nya dokument.
 permission_sets             - Språk-specifika namn på rättighetsuppsättningar.
 permissions                 - Språk-specifika namn på ej dokument-typs-specifika rättigheter.
+polls			    - Dynamiska enkäter som är kopplade till ett meta_id
+poll_questions		    - Flervalsfrågor som ingår i en enkät
+poll_answers		    - Svarsalternativ som är kopplade till en fråga
 phones                      - Telefon-nummer.
 roles                       - Roller.
 roles_permissions           - Rättigheter på roller.

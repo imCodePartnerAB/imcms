@@ -128,6 +128,7 @@ public class AdminDoc extends HttpServlet {
 	default:
 	    DocumentRequest documentRequest = new DocumentRequest(imcref,req.getRemoteAddr(),req.getSession(true).getId(),user,meta_id,null) ;
 	    documentRequest.setUserAgent(req.getHeader("User-agent")) ;
+	    documentRequest.setContextPath(req.getContextPath()) ;
 	    String result = imcref.parsePage( documentRequest,flags,new ParserParameters() ) ;
 	    return result ;
 

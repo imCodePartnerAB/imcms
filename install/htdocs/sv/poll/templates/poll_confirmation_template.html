@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<title></title>
+
+<!--IMSCRIPT-->
+<?imcms:include file='../../inc/style.htm'?>
+<!--/IMSCRIPT-->
+
+</head>
+<body>
+<!--IMSCRIPT--> 
+<table border="0" cellpadding="0" cellspacing="0" width="500">
+<tr>
+	<td align="center"><?imcms:text no="64" label="Rubrik:" pre='<br><b>'  post='</b><br>&nbsp;</td>
+</tr>
+<tr>
+	<td align="center">'?>
+	<?imcms:include url="@rooturl@/poll/poll_part_name.jsp"  sendsessionid="true" sendmetaid="true"?></td>
+</tr>
+<tr>
+	<td><hr></td>
+</tr>
+<tr>
+	<td align="center"><b>
+	<?imcms:include url="@rooturl@/poll/pollConfirmation_part_text.jsp"  sendsessionid="true" sendmetaid="true"?> </b></td>
+</tr> 
+<tr>
+	<td><hr></td>
+</tr>
+<tr>
+	<td align="Right"><a href="javascript:window.close()">Stäng fönstret</a></td>
+</tr>
+</table>
+<br>
+
+#adminMode##changePage#
+
+<!--/IMSCRIPT--> 
+
+</body>
+</html>

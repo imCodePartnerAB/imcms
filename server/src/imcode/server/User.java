@@ -16,16 +16,19 @@ public class User extends Hashtable {
     private String password ;		//varchar 15
     private String firstName;		//varchar 25
     private String lastName;		//varchar 30
-    private String title;			//varchar 30
-    private String company;			//varchar 30
-    private String address;			//varchar 40
-    private String city;			//varchar 30
-    private String zip;				//varchar 15
-    private String country;			//varchar 30
+    private String title;		//varchar 30
+    private String company;		//varchar 30
+    private String address;		//varchar 40
+    private String city;		//varchar 30
+    private String zip;			//varchar 15
+    private String country;		//varchar 30
     private String county_council;	//varchar 30
     private String emailAddress;	//varchar 50
-    private int lang_id;			//int
-    private int user_type;			//int
+    private String workPhone;           //varchar 25
+    private String mobilePhone;         //varchar 25
+    private String homePhone;           //varchar 25
+    private int lang_id;		//int
+    private int user_type;		//int
     private boolean active ;		//int
     private String create_date;		//smalldatetime
 
@@ -33,6 +36,8 @@ public class User extends Hashtable {
 
     private int template_group = -1 ;
     private String loginType ;
+
+    private IMCServiceInterface serverObject;
 
     /**
        get user-id
@@ -111,7 +116,6 @@ public class User extends Hashtable {
     public void setLastName(String lastName) {
 	this.lastName = lastName ;
     }
-
 
     /**
        set title
@@ -213,8 +217,6 @@ public class User extends Hashtable {
 	return this.county_council;
     }
 
-
-
     /**
        Return the users e-mail address
     **/
@@ -229,6 +231,47 @@ public class User extends Hashtable {
 	this.emailAddress = emailAddress ;
     }
 
+    /**
+       Get the users workphone
+    **/
+    public String getWorkPhone(){
+	return this.workPhone;
+    }
+
+    /**
+       Set the users workphone
+    **/
+    public void setWorkPhone(String workphone){
+	this.workPhone = workphone;
+    }
+
+    /**
+       Get the users mobilephone
+    **/
+    public String getMobilePhone(){
+	return this.mobilePhone;
+    }
+
+    /**
+       Set the users mobilephone
+    **/
+    public void setMobilePhone(String mobilephone){
+	this.mobilePhone = mobilephone;
+    }
+
+    /**
+       Get the users homephone
+    **/
+    public String getHomePhone(){
+	return this.homePhone;
+    }
+
+    /**
+       Set the users homepohne
+    **/
+    public void setHomePhone(String homephone){
+	this.homePhone = homephone;
+    }
 
     /**
        get lang_id
@@ -288,8 +331,6 @@ public class User extends Hashtable {
     public String getCreateDate() {
 	return this.create_date ;
     }
-
-
 
 
     /**

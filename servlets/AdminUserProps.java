@@ -14,15 +14,15 @@ import org.apache.log4j.* ;
 public class AdminUserProps extends Administrator {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
-	
-	private final static String HTML_RESPONSE = "AdminUserResp.htm" ;
-	private final static String HTML_RESPONSE_ADMIN_PART = "AdminUserResp_admin_part.htm" ;
-	private final static String HTML_RESPONSE_SUPERADMIN_PART = "AdminUserResp_superadmin_part.htm" ;
+
+    private final static String HTML_RESPONSE = "AdminUserResp.htm" ;
+    private final static String HTML_RESPONSE_ADMIN_PART = "AdminUserResp_admin_part.htm" ;
+    private final static String HTML_RESPONSE_SUPERADMIN_PART = "AdminUserResp_superadmin_part.htm" ;
 
 
     private static Category log = Logger.getInstance( AdminUserProps.class.getName() ) ;
 
-	/**
+    /**
      * GET
      **/
 	

@@ -960,4 +960,312 @@ GO
 
 -- 2003-02-07 kreiger
 
-print' OBS!!!  Glöm inte att du MÅSTE köra hela sprocs.sql efter detta script vid uppgradering  OBS!!'
+CREATE TABLE [dbo].[shopping_order_item_descriptions] (
+	[item_id] [int] NOT NULL ,
+	[number] [int] NOT NULL ,
+	[description] [varchar] (100) COLLATE Finnish_Swedish_CI_AS NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[shopping_order_items] (
+	[item_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[order_id] [int] NOT NULL ,
+	[quantity] [int] NOT NULL ,
+	[price] [money] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[shopping_orders] (
+	[order_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[order_datetime] [datetime] NOT NULL ,
+	[user_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[shopping_order_item_descriptions] WITH NOCHECK ADD 
+	CONSTRAINT [PK_shopping_order_item_descriptions] PRIMARY KEY  CLUSTERED 
+	(
+		[item_id],
+		[number]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[shopping_order_items] WITH NOCHECK ADD 
+	CONSTRAINT [PK_shopping_order_items] PRIMARY KEY  CLUSTERED 
+	(
+		[item_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[shopping_orders] WITH NOCHECK ADD 
+	CONSTRAINT [PK_shopping_orders] PRIMARY KEY  CLUSTERED 
+	(
+		[order_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[shopping_order_item_descriptions] ADD 
+	CONSTRAINT [FK_shopping_order_item_descriptions_shopping_order_items] FOREIGN KEY 
+	(
+		[item_id]
+	) REFERENCES [dbo].[shopping_order_items] (
+		[item_id]
+	)
+GO
+
+ALTER TABLE [dbo].[shopping_order_items] ADD 
+	CONSTRAINT [FK_shopping_order_items_shopping_orders] FOREIGN KEY 
+	(
+		[order_id]
+	) REFERENCES [dbo].[shopping_orders] (
+		[order_id]
+	)
+GO
+
+-- 2003-03-12 kreiger
+
+
+
+CREATE TABLE [dbo].[poll_answers] (
+	[id] [int] IDENTITY (1, 1) NOT NULL ,
+	[question_id] [int] NOT NULL ,
+	[text_id] [int] NOT NULL ,
+	[option_number] [int] NOT NULL ,
+	[answer_count] [int] NOT NULL ,
+	[option_point] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[poll_questions] (
+	[id] [int] IDENTITY (1, 1) NOT NULL ,
+	[poll_id] [int] NOT NULL ,
+	[question_number] [int] NOT NULL ,
+	[text_id] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[polls] (
+	[id] [int] IDENTITY (1, 1) NOT NULL ,
+	[name] [int] NULL ,
+	[description] [int] NULL ,
+	[meta_id] [int] NOT NULL ,
+	[popup_freq] [int] NOT NULL ,
+	[set_cookie] [bit] NOT NULL ,
+	[hide_result] [bit] NOT NULL ,
+	[confirmation_text] [int] NULL ,
+	[email_recipients] [int] NULL ,
+	[result_template] [int] NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[poll_answers] WITH NOCHECK ADD 
+	CONSTRAINT [PK_poll_answers] PRIMARY KEY  CLUSTERED 
+	(
+		[id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[poll_questions] WITH NOCHECK ADD 
+	CONSTRAINT [PK_poll_questions] PRIMARY KEY  CLUSTERED 
+	(
+		[id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[polls] WITH NOCHECK ADD 
+	CONSTRAINT [PK_polls] PRIMARY KEY  CLUSTERED 
+	(
+		[id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[poll_answers] WITH NOCHECK ADD 
+	CONSTRAINT [DF_poll_answers_ans_count] DEFAULT (0) FOR [answer_count],
+	CONSTRAINT [IX_poll_answers] UNIQUE  NONCLUSTERED 
+	(
+		[question_id],
+		[text_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [IX_poll_answers_1] UNIQUE  NONCLUSTERED 
+	(
+		[question_id],
+		[option_number]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[poll_questions] WITH NOCHECK ADD 
+	CONSTRAINT [IX_poll_questions] UNIQUE  NONCLUSTERED 
+	(
+		[poll_id],
+		[question_number]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [IX_poll_questions_1] UNIQUE  NONCLUSTERED 
+	(
+		[poll_id],
+		[text_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [dbo].[polls] WITH NOCHECK ADD 
+	CONSTRAINT [DF_polls_popup_freq] DEFAULT (0) FOR [popup_freq],
+	CONSTRAINT [DF_polls_enable_cookie] DEFAULT (0) FOR [set_cookie],
+	CONSTRAINT [DF_polls_showresult] DEFAULT (0) FOR [hide_result]
+GO
+
+ALTER TABLE [dbo].[poll_answers] ADD 
+	CONSTRAINT [FK_poll_answers_poll_questions] FOREIGN KEY 
+	(
+		[question_id]
+	) REFERENCES [dbo].[poll_questions] (
+		[id]
+	)
+GO
+
+ALTER TABLE [dbo].[poll_questions] ADD 
+	CONSTRAINT [FK_poll_questions_polls] FOREIGN KEY 
+	(
+		[poll_id]
+	) REFERENCES [dbo].[polls] (
+		[id]
+	)
+GO
+
+
+--lets create new templategroup for Example-templates
+declare @example_groupId int
+select @example_groupId = max(group_id)+1 from templategroups
+
+insert into templategroups(group_id, group_name)
+values(@example_groupId,'Example-templates')
+
+
+--lets add default example template and then connect it to a templategroup
+declare @poll_form_templateId int
+select @poll_form_templateId = max(template_id)+1 from templates
+INSERT INTO templates ( template_id , template_name , simple_name , lang_prefix , no_of_txt , no_of_img , no_of_url )
+	values (@poll_form_templateId,'poll_form_template.html','poll_form_template','se',0,0,0)
+INSERT INTO templates_cref(group_id, template_id)
+	values (@example_groupId, @poll_form_templateId)
+	
+--lets add default example template and then connect it to a templategroup
+declare @poll_result_default_templateId int
+select @poll_result_default_templateId = max(template_id)+1 from templates
+INSERT INTO templates ( template_id , template_name , simple_name , lang_prefix , no_of_txt , no_of_img , no_of_url )
+	values (@poll_result_default_templateId,'poll_result_default_template.html','poll_result_default_template','se',0,0,0)
+INSERT INTO templates_cref(group_id, template_id)
+	values (@example_groupId, @poll_result_default_templateId)
+
+--lets add default example template and then connect it to a templategroup
+declare @poll_confirmation_templateId int
+select @poll_confirmation_templateId = max(template_id)+1 from templates
+INSERT INTO templates ( template_id , template_name , simple_name , lang_prefix , no_of_txt , no_of_img , no_of_url )
+	values (@poll_confirmation_templateId,'poll_confirmation_template.html','poll_confirmation_template','se',0,0,0)
+INSERT INTO templates_cref(group_id, template_id)
+	values (@example_groupId, @poll_confirmation_templateId)
+
+print ' OBS !!!!! '
+print 'Följande åtgärder behöver genomföras efter detta script '
+print ''
+print 'Kopiera poll templates från mappen /poll/templates till WEB-INF/templates/text'
+print 'och byt namn på dem enligt följande:'
+print 'poll_form_template.html  till ' + convert (varchar(5), @poll_form_templateId) + '.html'
+print 'poll_result_default_template.html  till ' + convert (varchar(5), @poll_result_default_templateId) + '.html'
+print 'poll_confirmation_template.html  till ' + convert (varchar(5), @poll_confirmation_templateId) + '.html'
+
+GO
+
+-- 2003-03-13  Lennart Å
+
+/* Add columns email_from and email_subject to polls table */
+
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.polls
+	DROP CONSTRAINT DF_polls_popup_freq
+GO
+ALTER TABLE dbo.polls
+	DROP CONSTRAINT DF_polls_enable_cookie
+GO
+ALTER TABLE dbo.polls
+	DROP CONSTRAINT DF_polls_showresult
+GO
+CREATE TABLE dbo.Tmp_polls
+	(
+	id int NOT NULL IDENTITY (1, 1),
+	name int NULL,
+	description int NULL,
+	meta_id int NOT NULL,
+	popup_freq int NOT NULL,
+	set_cookie bit NOT NULL,
+	hide_result bit NOT NULL,
+	confirmation_text int NULL,
+	email_recipients int NULL,
+	email_from int NULL,
+	email_subject int NULL,
+	result_template int NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_polls ADD CONSTRAINT
+	DF_polls_popup_freq DEFAULT (0) FOR popup_freq
+GO
+ALTER TABLE dbo.Tmp_polls ADD CONSTRAINT
+	DF_polls_enable_cookie DEFAULT (0) FOR set_cookie
+GO
+ALTER TABLE dbo.Tmp_polls ADD CONSTRAINT
+	DF_polls_showresult DEFAULT (0) FOR hide_result
+GO
+SET IDENTITY_INSERT dbo.Tmp_polls ON
+GO
+IF EXISTS(SELECT * FROM dbo.polls)
+	 EXEC('INSERT INTO dbo.Tmp_polls (id, name, description, meta_id, popup_freq, set_cookie, hide_result, confirmation_text, email_recipients, result_template)
+		SELECT id, name, description, meta_id, popup_freq, set_cookie, hide_result, confirmation_text, email_recipients, result_template FROM dbo.polls TABLOCKX')
+GO
+SET IDENTITY_INSERT dbo.Tmp_polls OFF
+GO
+ALTER TABLE dbo.poll_questions
+	DROP CONSTRAINT FK_poll_questions_polls
+GO
+DROP TABLE dbo.polls
+GO
+EXECUTE sp_rename N'dbo.Tmp_polls', N'polls', 'OBJECT'
+GO
+ALTER TABLE dbo.polls ADD CONSTRAINT
+	PK_polls PRIMARY KEY CLUSTERED 
+	(
+	id
+	) ON [PRIMARY]
+
+GO
+COMMIT
+BEGIN TRANSACTION
+ALTER TABLE dbo.poll_questions WITH NOCHECK ADD CONSTRAINT
+	FK_poll_questions_polls FOREIGN KEY
+	(
+	poll_id
+	) REFERENCES dbo.polls
+	(
+	id
+	)
+GO
+COMMIT
+
+-- 2003-05-20 Kreiger
+
+print ' OBS !!!!! '
+print 'Följande åtgärder behöver genomföras efter detta script '
+print ''
+print '1. Du MÅSTE köra hela "sprocs.sql" som finns i "dist" katalogen'
+print ''
+print '2. Kopiera poll templates från mappen /poll/templates till WEB-INF/templates/text'
+print 'och byt namn på dem enligt anvisningar, se tidigare print utskrift i detta resultat:'
+
+GO

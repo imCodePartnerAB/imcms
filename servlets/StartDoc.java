@@ -5,6 +5,7 @@ import javax.servlet.http.*;
 import java.rmi.* ;
 
 import imcode.util.* ;
+import imcode.util.poll.* ;
 import imcode.server.* ;
 
 /**
@@ -135,14 +136,35 @@ public class StartDoc extends HttpServlet {
 
 	return user ;
     }
+	
 
     static void incrementSessionCounter(IMCServiceInterface imcref, User user, HttpServletRequest req) throws IOException {
-	if (!( "user".equalsIgnoreCase(user.getLoginName())
-	       && req.getParameter("no_count")!=null) 
-	    ) {
-	    // Only increase the login counter if the user
-	    // is 'user' and has a 'no_count' request parameter.
-	    imcref.incCounter() ;
-	}
+		if (!( "user".equalsIgnoreCase(user.getLoginName())
+		       && req.getParameter("no_count")!=null) ) {
+		    // Only increase the login counter if the user
+		    // is 'user' and has a 'no_count' request parameter.
+		    imcref.incCounter() ;
+		}
+		
+		// check if we have to push out a popup window to the client
+		// one reason to do so is if we have a poll with a frequence variable > 0  
+		
+		// Get a new PollHandlingSystem 
+		PollHandlingSystem poll = imcref.getPollHandlingSystem();
+		
+		// Get all meta_id that have a poll included
+		HttpSession session = req.getSession( true );
+		String[][] polls = poll.getAllPolls();
+		for ( int i=0; polls != null && i < polls.length; i++){ 
+			//Get PollParameters from db
+			String[] poll_param = poll.getPollParameters(polls[i][3]); 
+			int set_cookie = Integer.parseInt( poll_param[5] );
+			int popupFrequency = Integer.parseInt( poll_param[4] ); 
+			int sessionCounter = imcref.getSessionCounter() ;
+			
+			if (popupFrequency > 0 && sessionCounter % popupFrequency == 0) {
+			    session.setAttribute("open poll popup", polls[i][3]) ;
+			}
+		}
     }
 }

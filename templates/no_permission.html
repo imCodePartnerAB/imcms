@@ -1,52 +1,198 @@
 <html>
 <head>
-<title>Du &auml;r utloggad</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Allers Annonssajt</title>
+	
+
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+/* SNIFFER */
+
+var platf = navigator.platform;
+var ua = navigator.userAgent;
+
+var is_NS = (document.layers) ? 1 : 0;
+var is_IE = (document.all) ? 1 : 0;
+var is_Moz = (document.getElementById) ? 1 : 0;
+
+var is_Gecko = inStr(ua,'Gecko');
+var is_Opera = inStr(ua,'Opera');
+var is_Windows = inStr(platf,'Win32');
+var is_Mac = inStr(platf,'Mac');
+
+function inStr(str,val,cas) {
+	var ret;
+	if (cas) { /* Case sensitive */
+		ret = (str.indexOf(val) != -1) ? true : false;
+	} else { /* Not Case sensitive */
+		str = str.toUpperCase();
+		val = val.toUpperCase();
+		ret = (str.indexOf(val) != -1) ? true : false;
+	}
+	return ret;
+}
+
+/* WRITE CSS */
+
+var inputSize, strCSS, strJS;
+
+if (is_Windows && (is_IE || is_Moz)) {
+	strCSS = '<LI'+'NK REL="Stylesheet" TYPE="text/css" HREF="/css/style_win_ie.css">';
+	strJS = '<scr'+'ipt language="JavaScript" src="/inc/include.js" type="text\/javascript"><\/scr'+'ipt>';
+	inputSize = (is_Moz) ? 20 : 24;
+} else if (!is_Windows && !is_IE) {
+	strCSS = '<LI'+'NK REL="Stylesheet" TYPE="text/css" HREF="/css/style_mac_ns.css">';
+	strJS = '<scr'+'ipt language="JavaScript" src="/inc/include_mac.js" type="text\/javascript"><\/scr'+'ipt>';
+	inputSize = (is_Moz) ? 20 : 15;
+} else if (!is_Windows && is_IE) {
+	strCSS = '<LI'+'NK REL="Stylesheet" TYPE="text/css" HREF="/css/style_mac_ie.css">';
+	strJS = '<scr'+'ipt language="JavaScript" src="/inc/include_mac.js" type="text\/javascript"><\/scr'+'ipt>';
+	inputSize = 17;
+} else {
+	strCSS = '<LI'+'NK REL="Stylesheet" TYPE="text/css" HREF="/css/style_win_ns.css">';
+	strJS = '<scr'+'ipt language="JavaScript" src="/inc/include.js" type="text\/javascript"><\/scr'+'ipt>';
+	inputSize = 12;
+}
+
+document.writeln(strJS);
+document.writeln(strCSS);
+
+/* CHANGE INPUT-FIELDS */
+
+function initInputSize() {
+	if (!is_NS) {
+		for (var theForm = 0; theForm < 3; theForm++) {
+			if (document.forms[theForm]) {
+				if (document.forms[theForm].elements) {
+					var f = document.forms[theForm];
+					var objAllElements = f.elements;
+					var nrOfElements = objAllElements.length;
+					for (var i = 0; i < nrOfElements; i++) {
+						if (f.elements[i]) {
+							if (f.elements[i].tagName) {
+								if (f.elements[i].tagName.toString().indexOf('INPUT') != -1) {
+									if (f.elements[i].size == 12) f.elements[i].size = inputSize;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+function goStartPage() {
+	if (parent.opener) {
+		window.close();
+		parent.opener.document.location = '/servlet/StartDoc';
+	} else {
+		document.location = '/servlet/StartDoc';
+	}
+}
+//-->
+</SCRIPT><noscript><LINK REL="Stylesheet" TYPE="text/css" HREF="/css/style_win_ns.css"></noscript>
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="document.forms[0].name.focus()">
+<body leftmargin=0 marginheight="0" topmargin=0 marginwidth="0" bgcolor="#ffffff" onLoad="initInputSize();">
 
-<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
-<tr bgcolor="#333366">
-	<td width="5%">&nbsp;</td>
-	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"><b>V&auml;lkommen!</b></font></td>
-	<td width="5%">&nbsp;</td>
-</tr>
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
 <tr>
-	<td colspan="4">&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="4" align="center">
-	<font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#cc0000">Du har inte beh&ouml;righet till det h&auml;r dokumentet!</font></td>
-</tr>
-<tr>
-	<td colspan="4">&nbsp;</td>
-</tr>
-<tr>
-	<td width="5%">&nbsp;</td>
-	<td colspan="2" align="center">
-	<table border="0" cellpadding="1" cellspacing="0">
-	<form action="@servleturl@/VerifyUser" method="post">
+	<td colspan="5" class="dark_beigebg" valign="top" height="25">
+	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Namn:</font></td>
-		<td><input type="text" name="name" size="15"></td>
+		<td COLSPAN="2"><img src="/images/clear.gif" width="1" height="6" alt="" border="0"></td>
 	</tr>
 	<tr>
-		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&ouml;senord:&nbsp;</font></td>
-		<td><input type="password" name="passwd" size="15"></td>
+		<TD><img src="/images/clear.gif" width="10" height="1" alt="" border="0"></TD>
+		<td valing="top" class="liten_vit_rub">LOGGA IN</td>
+	</tr>
+	</table></td>
+</tr>
+<tr>
+	<td colspan="5"><img src="/images/clear.gif" width="1" height="25" alt="" border="0"></td>
+</tr>
+<tr>
+	<td width="25"><img src="/images/clear.gif" width="25" height="1" alt="" border="0"></td>
+	<td width="198" class="greybg">
+	<table border="0" cellspacing="0" cellpadding="0" widht="198">
+	<form action="/servlet/VerifyUser" method="post">
+	<tr>
+		<td colspan="2"><img src="/images/clear.gif" width="1" height="16" alt="" border="0"></td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" name="Logga in" value="Logga in">&nbsp;<a href="javascript:openHelp('54');"><img alt="&Ouml;ppna hj&auml;lpsidan" border="0" height="21" src="@imageurl@/se/helpimages/btn_help_round.gif" width="19"></a></td>
+		<td><img src="/images/clear.gif" width="21" height="1" alt="" border="0"><br></td>
+		<td><font class="liten_grey_rub">E-postadress</font></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="/images/clear.gif" width="1" height="6" alt="" border="0"></td>
+	</tr>
+	<tr>
+		<td><img src="/images/clear.gif" width="1" height="1" alt="" border="0"><br></td>
+		<td><input name="name" type="text" value="" size="12"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="/images/clear.gif" width="1" height="6" alt="" border="0"></td>
+	</tr>
+	<tr>
+		<td><img src="/images/clear.gif" width="21" height="1" alt="" border="0"><br></td>
+		<td><font class="liten_grey_rub">Lösenord</font></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="/images/clear.gif" width="1" height="6" alt="" border="0"></td>
+	</tr>
+	<tr>
+		<td><img src="/images/clear.gif" width="1" height="1" alt="" border="0"><br></td>
+		<td><input name="passwd" type="password" value="" size="12"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="/images/clear.gif" width="1" height="14" alt="" border="0"></td>
+	</tr>
+	<tr>
+		<td><img src="/images/clear.gif" width="1" height="1" alt="" border="0"><br></td>
+		<td><input type="image" value="Logga in" src="/images/knapp_logga_in_beige.gif" border="0"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="/images/clear.gif" width="1" height="19" alt="" border="0"></td>
 	</tr>
 	</form>
 	</table></td>
-	<td width="5%">&nbsp;</td>
-</tr>
-<tr>
-	<td colspan="4">&nbsp;</td>
+	<td width="41"><img src="/images/clear.gif" width="41" height="1" alt="" border="0"></td>
+	<td width="216" valign="top"><font class="mellan_svart_rub">Skapa ny användare</font><br><br>Har du inte redan en användare hos oss, registrera dig nu.<br><br><br>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><a href="/shop/register.jsp"><img src="/images/pil_grey.gif" width="18" height="18" alt="" border="0"></a></td>
+		<td width="7"><img src="/images/clear.gif" width="7" height="1" alt="" border="0"></td>
+		<td><a href="/shop/register.jsp">Jag vill skapa ny användare</a></td>
+	</tr>
+	<tr>
+		<td colspan="3"><img src="/images/clear.gif" width="1" height="5" alt="" border="0"></td>
+	</tr>
+	<tr>
+		<td><a href="/servlet/PasswordMailReminder"><img src="/images/pil_grey.gif" width="18" height="18" alt="" border="0"></a></td>
+		<td width="7"><img src="/images/clear.gif" width="7" height="1" alt="" border="0"></td>
+		<td><a href="/servlet/PasswordMailReminder">Jag har glömt mitt lösenord</a></td>
+	</tr>
+	<tr>
+		<td colspan="3"><img src="/images/clear.gif" width="1" height="5" alt="" border="0"></td>
+	</tr>
+	<tr>
+		<td><a href="javascript: goStartPage();"><img src="/images/pil_grey.gif" width="18" height="18" alt="" border="0"></a></td>
+		<td width="7"><img src="/images/clear.gif" width="7" height="1" alt="" border="0"></td>
+		<td><a href="javascript: goStartPage();">Jag vill gå till startsidan</a></td>
+	</tr>
+	</table></td>
+	<td><img src="/images/clear.gif" width="1" height="1" alt="" border="0"></td>
 </tr>
 </table>
+
+<SCRIPT language="JavaScript1.2">
+<!--
+document.forms[0].elements["name"].focus();
+//-->
+</SCRIPT>
+
 
 </body>
 </html>

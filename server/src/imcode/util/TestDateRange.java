@@ -38,72 +38,74 @@ public class TestDateRange extends TestCase {
     }
 
     public void testEquals() {
-	Assert.assertEquals(range10to10,range10to10) ;
-	Assert.assertEquals(range20to30,range20to30) ;
+	assertEquals(range10to10,range10to10) ;
+	assertEquals(range20to30,range20to30) ;
     }
 
     public void testGets() {
-	Assert.assertEquals(range10to10.getStartDate(),date10) ;
-	Assert.assertEquals(range10to10.getEndDate(),date10) ;
+	assertEquals(range10to10.getStartDate(),date10) ;
+	assertEquals(range10to10.getEndDate(),date10) ;
     }
 
     public void testContains() {
-	Assert.assertTrue(!range10to10.contains(date10)) ;
-	Assert.assertTrue(range10to20.contains(date10)) ;
-	Assert.assertTrue(!range10to20.contains(date20)) ;
-	Assert.assertTrue(range10to30.contains(date20)) ;
-	Assert.assertTrue(!range10to30.contains(date30)) ;
+	assertTrue(!range10to10.contains(date10)) ;
+	assertTrue(range10to20.contains(date10)) ;
+	assertTrue(!range10to20.contains(date20)) ;
+	assertTrue(range10to30.contains(date20)) ;
+	assertTrue(!range10to30.contains(date30)) ;
+	assertTrue(!range10to30.contains(date40)) ;
+	assertTrue(!range20to30.contains(date10)) ;
     }
 
     public void testZeroWidthOverlap() {
-	Assert.assertTrue(!range10to10.overlap(range10to10)) ;
-	Assert.assertTrue(!range10to10.overlap(range10to20)) ;
-	Assert.assertTrue(!range10to10.overlap(range10to30)) ;
-	Assert.assertTrue(!range10to10.overlap(range10to40)) ;
-	Assert.assertTrue(!range10to10.overlap(range20to20)) ;
-	Assert.assertTrue(!range10to10.overlap(range20to30)) ;
+	assertTrue(!range10to10.overlap(range10to10)) ;
+	assertTrue(!range10to10.overlap(range10to20)) ;
+	assertTrue(!range10to10.overlap(range10to30)) ;
+	assertTrue(!range10to10.overlap(range10to40)) ;
+	assertTrue(!range10to10.overlap(range20to20)) ;
+	assertTrue(!range10to10.overlap(range20to30)) ;
 
-	Assert.assertTrue(!range10to20.overlap(range10to10)) ;
-	Assert.assertTrue(!range10to20.overlap(range20to20)) ;
+	assertTrue(!range10to20.overlap(range10to10)) ;
+	assertTrue(!range10to20.overlap(range20to20)) ;
 
-	Assert.assertTrue(!range10to30.overlap(range10to10)) ;
-	Assert.assertTrue(range10to30.overlap(range20to20)) ;
+	assertTrue(!range10to30.overlap(range10to10)) ;
+	assertTrue(range10to30.overlap(range20to20)) ;
 
-	Assert.assertTrue(!range10to40.overlap(range10to10)) ;
-	Assert.assertTrue(range10to40.overlap(range20to20)) ;
+	assertTrue(!range10to40.overlap(range10to10)) ;
+	assertTrue(range10to40.overlap(range20to20)) ;
 
-	Assert.assertTrue(!range20to20.overlap(range10to10)) ;
-	Assert.assertTrue(!range20to20.overlap(range10to20)) ;
-	Assert.assertTrue(range20to20.overlap(range10to30)) ;
-	Assert.assertTrue(range20to20.overlap(range10to40)) ;
-	Assert.assertTrue(!range20to20.overlap(range20to20)) ;
-	Assert.assertTrue(!range20to20.overlap(range20to30)) ;
+	assertTrue(!range20to20.overlap(range10to10)) ;
+	assertTrue(!range20to20.overlap(range10to20)) ;
+	assertTrue(range20to20.overlap(range10to30)) ;
+	assertTrue(range20to20.overlap(range10to40)) ;
+	assertTrue(!range20to20.overlap(range20to20)) ;
+	assertTrue(!range20to20.overlap(range20to30)) ;
 
-	Assert.assertTrue(!range20to30.overlap(range20to20)) ;
-	Assert.assertTrue(!range20to30.overlap(range10to10)) ;
+	assertTrue(!range20to30.overlap(range20to20)) ;
+	assertTrue(!range20to30.overlap(range10to10)) ;
     }
 
     public void testOverlap() {
 
-	Assert.assertTrue(range10to20.overlap(range10to20)) ;
-	Assert.assertTrue(range10to20.overlap(range10to30)) ;
-	Assert.assertTrue(range10to20.overlap(range10to40)) ;
-	Assert.assertTrue(!range10to20.overlap(range20to30)) ;
+	assertTrue(range10to20.overlap(range10to20)) ;
+	assertTrue(range10to20.overlap(range10to30)) ;
+	assertTrue(range10to20.overlap(range10to40)) ;
+	assertTrue(!range10to20.overlap(range20to30)) ;
 
-	Assert.assertTrue(range10to30.overlap(range10to20)) ;
-	Assert.assertTrue(range10to30.overlap(range10to30)) ;
-	Assert.assertTrue(range10to30.overlap(range10to40)) ;
-	Assert.assertTrue(range10to30.overlap(range20to30)) ;
+	assertTrue(range10to30.overlap(range10to20)) ;
+	assertTrue(range10to30.overlap(range10to30)) ;
+	assertTrue(range10to30.overlap(range10to40)) ;
+	assertTrue(range10to30.overlap(range20to30)) ;
 
-	Assert.assertTrue(range10to40.overlap(range10to20)) ;
-	Assert.assertTrue(range10to40.overlap(range10to30)) ;
-	Assert.assertTrue(range10to40.overlap(range10to40)) ;
-	Assert.assertTrue(range10to40.overlap(range20to30)) ;
+	assertTrue(range10to40.overlap(range10to20)) ;
+	assertTrue(range10to40.overlap(range10to30)) ;
+	assertTrue(range10to40.overlap(range10to40)) ;
+	assertTrue(range10to40.overlap(range20to30)) ;
 
-	Assert.assertTrue(!range20to30.overlap(range10to20)) ;
-	Assert.assertTrue(range20to30.overlap(range10to30)) ;
-	Assert.assertTrue(range20to30.overlap(range10to40)) ;
-	Assert.assertTrue(range20to30.overlap(range20to30)) ;
+	assertTrue(!range20to30.overlap(range10to20)) ;
+	assertTrue(range20to30.overlap(range10to30)) ;
+	assertTrue(range20to30.overlap(range10to40)) ;
+	assertTrue(range20to30.overlap(range20to30)) ;
 
     }
 

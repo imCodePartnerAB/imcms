@@ -22,6 +22,8 @@ import imcode.server.parser.* ;
 
 import imcode.util.FileCache ;
 import imcode.util.fortune.* ;
+import imcode.util.shop.* ;
+import imcode.util.poll.*;
 
 import imcode.readrunner.* ;
 
@@ -198,7 +200,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	       private String zip;				//varchar 15
 	       private String country;			//varchar 30
 	       private String county_council;	//varchar 30
-	       private String emailAddress;	//varchar 50
+	       private String emailAddress;	    //varchar 50
+	       private String workPhone;       //varchar 25
+	       private String mobilePhone;     //varchar 25
+	       private String homePhone;       //varchar 25
 	       private int lang_id;
 	       private int user_type;
 	       private boolean active ;		//int
@@ -212,24 +217,46 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	    */
 
-	    user.setUserId       	( Integer.parseInt( user_data[0]  ) ) ;
-	    user.setLoginName    	( user_data[1] ) ;
-	    user.setPassword     	( user_data[2].trim() ) ;
-	    user.setFirstName    	( user_data[3] ) ;
-	    user.setLastName     	( user_data[4] ) ;
-	    user.setTitle	     	( user_data[5] ) ;
-	    user.setCompany		 	( user_data[6] ) ;
-	    user.setAddress      	( user_data[7] ) ;
-	    user.setCity         	( user_data[8] ) ;
-	    user.setZip          	( user_data[9] ) ;
-	    user.setCountry      	( user_data[10] ) ;
-	    user.setCountyCouncil 	( user_data[11] ) ;
-	    user.setEmailAddress 	( user_data[12] ) ;
-	    user.setLangId       	( Integer.parseInt( user_data[13] ) ) ;
-	    user.setUserType     	( Integer.parseInt( user_data[15] ) ) ;
-	    user.setActive       	( 0 != Integer.parseInt( user_data[16] ) ) ;
-	    user.setCreateDate   	( user_data[17] ) ;
-	    user.setLangPrefix   	( user_data[14] ) ;
+	    user.setUserId	( Integer.parseInt( user_data[0]  ) ) ;
+	    user.setLoginName	( user_data[1] ) ;
+	    user.setPassword	( user_data[2].trim() ) ;
+	    user.setFirstName	( user_data[3] ) ;
+	    user.setLastName	( user_data[4] ) ;
+	    user.setTitle		( user_data[5] ) ;
+	    user.setCompany			( user_data[6] ) ;
+	    user.setAddress	( user_data[7] ) ;
+	    user.setCity	( user_data[8] ) ;
+	    user.setZip	( user_data[9] ) ;
+	    user.setCountry	( user_data[10] ) ;
+	    user.setCountyCouncil	( user_data[11] ) ;
+	    user.setEmailAddress	( user_data[12] ) ;
+	    user.setLangId	( Integer.parseInt( user_data[13] ) ) ;
+	    user.setUserType	( Integer.parseInt( user_data[15] ) ) ;
+	    user.setActive	( 0 != Integer.parseInt( user_data[16] ) ) ;
+	    user.setCreateDate	( user_data[17] ) ;
+	    user.setLangPrefix	( user_data[14] ) ;
+
+	    String [][] phoneNbr = sqlProcedureMulti("GetUserPhoneNumbers " + user_data[0]) ;
+	    String workPhone = "";
+	    String mobilePhone = "";
+	    String homePhone = "";
+
+	    if ( phoneNbr != null ){
+		for (int i=0; i < phoneNbr.length; i++) {
+		    if ( ("2").equals( phoneNbr[i][3] ) ){
+			workPhone = phoneNbr[i][1];
+		    }
+		    else if ( ("3").equals( phoneNbr[i][3] ) ){
+			mobilePhone = phoneNbr[i][1];
+		    }
+		    else if ( ("1").equals( phoneNbr[i][3] ) ){
+			homePhone = phoneNbr[i][1];
+		    }
+		}
+	    }
+	    user.setWorkPhone		( workPhone );
+	    user.setMobilePhone		( mobilePhone );
+	    user.setHomePhone		( homePhone );
 
 	    String login_password_from_db = user.getPassword() ;
 	    String login_password_from_form = password ;
@@ -257,10 +284,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     **/
     public User getUserById(int userId) {
 
-	String[] user_data = sqlProcedure("GetUserInfo", new String[] { ""+userId } ) ;
+	String[] user_data = sqlProcedure("GetUserInfo ", new String[] { ""+userId } ) ;
 
-	user_data = sqlProcedure("GetUserByLogin", new String[] { user_data[1] } ) ;
-
+	user_data = sqlProcedure("GetUserByLogin ", new String[] { user_data[1] } ) ;
 
 	// if resultSet > 0 a user is found
 	if ( user_data.length > 0 ) {
@@ -367,7 +393,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	tags.put("doc_type",doctypeStr) ;
 
 	// if user is superadmin or useradmin lets add superadmin button
-	if ( checkAdminRights(user) || 	checkUserAdminrole( user.getUserId(), 2 ) ) {
+	if ( checkAdminRights(user) ||	checkUserAdminrole( user.getUserId(), 2 ) ) {
 	    tags.put("superadmin",superadmin.toString()) ;
 	} else {
 	    tags.put("superadmin","") ;
@@ -385,14 +411,45 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	return getMenuButtons(String.valueOf(meta_id),user) ;
     }
 
+
     /**
        Store the given IMCText in the DB.
-       @param user    The user
-       @param meta_id The id of the page
-       @param txt_no  The id of the text in the page.
-       @param text    The text.
+       @param user		The user
+       @param meta_id		The id of the page
+       @param txt_no		The id of the text in the page.
+       @param text		The text.
+       @param text_type		The text_type
+
+       Supported text_types is:
+
+       pollquestion-n		      where n represent the questíon number in this document
+
+       pollanswer-n-m		          where n represent the questíon number in this document
+       and m represent the answer number in question number n
+
+       pollpointanswer-n-m			  where n represent the questíon number in this document
+       and m represent the answer number in question number n
+
+       pollparameter-popup_frequency    default(0) when > 0 show this poll as a popup on every new session that is a multiple
+       of the frequens.
+
+       pollparameter-cookie			  default(0) user is allowed to fill in the poll more then once.
+       (1) = set cookie, if cookie exist on client don't allow more answers from that computer.
+
+       pollparameter-hideresults		  default(0) if 1 then we don't send result to browser only a confimation text.
+
+       pollparameter-confirmation_text  message to send back to browser as confirmation of poll participation.
+
+       pollparameter-email_recipients   email adress to reciver of result from free-text answers.
+
+       pollparameter-result_template    template to use when return the result
+
+       pollparameter-name			  name for this poll
+       pollparameter-description		  description for this poll
+
     **/
-    public void saveText(imcode.server.User user,int meta_id,int txt_no,IMCText text) {
+
+    public void saveText(imcode.server.User user,int meta_id,int txt_no,IMCText text, String text_type) {
 
 	org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util() ;
 
@@ -406,6 +463,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	this.updateLogs("Text " + txt_no +	" in  " + "[" + meta_id + "] modified by user: [" +
 			user.getFullName() + "]") ;
+
+	if ( !("").equals(text_type) ){
+
+	    if ( text_type.startsWith("poll") ) {
+		PollHandlingSystem poll = getPollHandlingSystem();
+		poll.savePollparameter(text_type, meta_id, txt_no, textstring);
+	    }
+	}
 
     }
 
@@ -923,7 +988,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String isFramesetDoc(int meta_id,User user) {
 	String sqlStr = "" ;
-	Vector frame_set = new Vector() ;
+	Vector frame_set ;
 	String html_str = "" ;
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
@@ -951,128 +1016,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc = null ;
 
 	return html_str ;
-
-    }
-
-    /**
-     * Search docs.
-     */
-    public Vector searchDocs(int meta_id,User user,String question_str,
-			     String search_type,String string_match,String search_area) {
-
-	// search_area : all,not_archived,archived
-
-	String sqlStr = "" ;
-	Vector tokens = new Vector() ;
-	Vector meta_docs = new Vector() ;
-
-	String match = "%" ;
-
-	if ( string_match.equals("match") )
-	    match = "" ;
-
-
-	StringTokenizer parser = new StringTokenizer(question_str.trim()," ") ;
-	while ( parser.hasMoreTokens() )
-	    tokens.addElement(parser.nextToken()) ;
-
-
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.getConnection() ;
-
-	if ( !search_type.equals("atc_icd10") ) {
-
-	    // text fields                 // texts.meta_id
-	    if (tokens.size() > 0)
-		sqlStr  += "select distinct meta.meta_id,meta.meta_headline,meta.meta_text from texts,meta where (" ;
-	    for ( int i = 0 ; i < tokens.size() ; i++ ) {
-		sqlStr += " text like  '%" + tokens.elementAt(i).toString() + match + "'"  ;
-		if ( i < tokens.size() -1 )
-		    sqlStr += " " + search_type + " " ;
-	    }
-
-	    sqlStr += ") " ;
-
-	    if (tokens.size() > 0) {
-		sqlStr += " and meta.meta_id = texts.meta_id" ;
-		sqlStr += " and meta.activate = 1 and meta.disable_search = 0\n" ;
-	    }
-
-	    if (search_area.equals("not_archived")) {
-		sqlStr += " and meta.archive = 0" ;
-	    }
-
-	    if (search_area.equals("archived")) {
-		sqlStr += " and meta.archive = 1" ;
-	    }
-
-
-
-	    if ( tokens.size() > 0 ) {
-		sqlStr += "\n union \n" ;
-	    }
-
-
-	    // meta_headline
-	    if (tokens.size() > 0)
-		sqlStr  += "select distinct meta_id,meta_headline,meta_text from meta where " ;
-	    for ( int i = 0 ; i < tokens.size() ; i++ ) {
-		sqlStr += " (meta_headline like  '%" + tokens.elementAt(i).toString() + match + "' " ;
-		sqlStr += " or meta_text like  '%" + tokens.elementAt(i).toString() + match + "' " ;
-		sqlStr += " or classification like '%" + tokens.elementAt(i).toString() + match + "') " ;
-
-		if ( i < tokens.size() -1 )
-		    sqlStr += " " + search_type + " " ;
-	    }
-
-
-	    sqlStr += " and activate = 1 and disable_search = 0\n" ;
-
-	    if (search_area.equals("not_archived")) {
-		sqlStr += " and meta.archive = 0" ;
-	    }
-
-	    if (search_area.equals("archived")) {
-		sqlStr += " and meta.archive = 1" ;
-	    }
-
-
-
-	    if ( tokens.size() > 0 ) {
-		sqlStr += " order by meta.meta_id" ;
-		dbc.setSQLString(sqlStr) ;
-		dbc.createStatement() ;
-		meta_docs = (Vector)dbc.executeQuery() ;
-
-		dbc.clearResultSet() ;
-	    }
-
-
-	} else {
-	    sqlStr  = "select distinct meta_id,meta_headline,meta_text from meta where " ;
-	    sqlStr += "classification = '" + question_str + "'";
-	    sqlStr += " and activate = 1 and disable_search = 0\n" ;
-
-	    if (search_area.equals("not_archived")) {
-		sqlStr += " and meta.archive = 0" ;
-	    }
-
-	    if (search_area.equals("archived")) {
-		sqlStr += " and meta.archive = 1" ;
-	    }
-
-	    dbc.setSQLString(sqlStr) ;
-	    dbc.createStatement() ;
-	    meta_docs = (Vector)dbc.executeQuery() ;
-	    dbc.clearResultSet() ;
-	}
-
-
-	//close connection
-	dbc.closeConnection() ;
-	dbc = null ;
-
-	return meta_docs ;
 
     }
 
@@ -1318,9 +1261,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String[] sqlProcedure(String procedure, String[] params, boolean trim) {
 	Vector data = new Vector() ;
 
-    DBConnect dbc = new DBConnect(m_conPool) ;
-    dbc.setTrim(trim) ;
-    dbc.getConnection() ;
+	DBConnect dbc = new DBConnect(m_conPool) ;
+	dbc.setTrim(trim) ;
+	dbc.getConnection() ;
 
 	dbc.setProcedure(procedure, params) ;
 	data = dbc.executeProcedure() ;
@@ -1369,15 +1312,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     /**
        Send a procedure to the database and return a string.
-       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
+       @deprecated Use {@link #sqlProcedureStr(String, String[])} instead.
     **/
     public String sqlProcedureStr(String procedure) {
-	Vector data = new Vector() ;
+	Vector data ;
 
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
-	//dbc.createStatement() ;
 	data = (Vector)dbc.executeProcedure() ;
 
 	dbc.clearResultSet() ;
@@ -1400,207 +1342,55 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 
     /**
-       Send a update procedure to the database
-       @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
+       Send a procedure to the database and return a string.
     **/
-    public int sqlUpdateProcedure(String procedure) {
-	return sqlUpdateProcedure(procedure, new String[] {}) ;
+    public String sqlProcedureStr(String procedure, String[] params) {
+	return sqlProcedureStr(procedure, params, true) ;
     }
-
-
-
     /**
-       Parse doc replace variables with data
-    */
-    public String  parseDoc(String htmlStr,java.util.Vector variables) {
-	String[] foo = new String[variables.size()] ;
-	return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
-    }
-
-
-    /**
-       Parse doc replace variables with data, uses two vectors
-    */
-    public String  parseDoc(String htmlStr,java.util.Vector variables,java.util.Vector data) {
-	String[] foo = new String[variables.size()] ;
-	String[] bar = new String[data.size()] ;
-	return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo),(String[])data.toArray(bar)) ;
-    }
-
-
-    /**
-       Parse doc replace variables with data , use template
-    */
-    public String parseDoc(java.util.List variables, String admin_template_name, String lang_prefix) {
-	try {
-	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/admin/"+admin_template_name)) ;
-	    if (variables == null) {
-		return htmlStr ;
+       Send a procedure to the database and return a string.
+    **/
+    public String sqlProcedureStr(String procedure, String[] params, boolean trim) {
+	if ( params.length > 0 ) {
+	    StringBuffer procedureBuffer = new StringBuffer(procedure) ;
+	    procedureBuffer.append(" ?") ;
+	    for (int i = 1; i < params.length; ++i) {
+		procedureBuffer.append(",?") ;
 	    }
-	    String[] foo = new String[variables.size()] ;
-	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
-	} catch (IOException ex) {
-	    log.error(ex.toString()) ;
-	    return "" ;
+	    procedure = procedureBuffer.toString() ;
 	}
-    }
-
-
-    /**
-       Parse doc replace variables with data , use template
-    */
-    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type) {
-	try {
-	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/"+doc_type+"/"+external_template_name)) ;
-	    if (variables == null) {
-		return htmlStr ;
-	    }
-	    String[] foo = new String[variables.size()] ;
-	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
-	} catch ( RuntimeException e ) {
-	    log.error("parseExternalDoc(Vector, String, String, String): RuntimeException", e );
-	    throw e ;
-	} catch ( IOException e ) {
-	    log.error("parseExternalDoc(Vector, String, String, String): IOException", e );
-	    return "" ;
-	}
-    }
-
-    /**
-       Parse doc replace variables with data , use template
-    */
-    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet) {
-	try {
-	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/"+doc_type+"/"+templateSet+"/"+external_template_name)) ;
-	    if (variables == null) {
-		return htmlStr ;
-	    }
-	    String[] foo = new String[variables.size()] ;
-	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
-	} catch ( RuntimeException e ) {
-	    log.error("parseExternalDoc(Vector, String, String, String): RuntimeException", e );
-	    throw e ;
-	} catch ( IOException e ) {
-	    log.error("parseExternalDoc(Vector, String, String, String): IOException", e );
-	    return "" ;
-	}
-    }
-
-    /**
-       @deprecated Ugly use {@link #parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)}
-       or something else instead.
-    */
-    public File getExternalTemplateFolder(int meta_id) {
-	Vector data = new Vector() ;
-
 	DBConnect dbc = new DBConnect(m_conPool) ;
-	String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id ;
-	dbc.setSQLString(sqlStr) ;
+	dbc.setTrim(trim) ;
 	dbc.getConnection() ;
-	dbc.createStatement() ;
-	data = (Vector)dbc.executeQuery() ;
+	dbc.setProcedure(procedure,params) ;
+	List data = dbc.executeProcedure() ;
 
 	dbc.clearResultSet() ;
 	dbc.closeConnection() ;
 	dbc = null ;
 
-	if ( Integer.parseInt(data.elementAt(0).toString()) > 100 ) {
-	    return new File(m_TemplateHome, (data.elementAt(1).toString() + "/" + data.elementAt(0).toString() + "/")) ;
-	} else {
-	    return new File(m_TemplateHome, (data.elementAt(1).toString() + "/")) ;
-	}
+	if (data != null) {
+
+	    if ( data.size() > 0) {
+		Object obj = data.get(0) ;
+		return
+		    null != obj
+		    ? obj.toString()
+		    : null ;
+	    } else {
+		return null ;
+	    }
+	} else
+	    return null ;
     }
 
 
     /**
-     * Return  templatehome.
-     */
-    public File getTemplateHome() {
-	return m_TemplateHome ;
-    }
-
-
-    /**
-     * Return url-path to images.
-     */
-    public String getImageUrl() {
-	return m_ImageUrl ;
-    }
-
-    /**
-     * Return file-path to images.
-     */
-    public File getImagePath() {
-	return m_ImagePath ;
-    }
-
-    /**
-     * Return  starturl.
-     */
-    public String getStartUrl() {
-	return m_StartUrl ;
-    }
-
-    /**
-     * Return  language.
-     */
-    public String getLanguage() {
-	return m_Language ;
-    }
-
-    /**
-     * Increment session counter.
-     */
-    public	int incCounter() {
-	m_SessionCounter += 1 ;
-	sqlUpdateProcedure( "IncSessionCounter" ) ;
-	return m_SessionCounter ;
-    }
-
-
-    /**
-     * Get session counter.
-     */
-    public	int getCounter() {
-	return m_SessionCounter ;
-    }
-
-
-    /**
-     * Set session counter.
-     */
-    public	int setCounter(int value) {
-	m_SessionCounter = value ;
-	this.sqlUpdateProcedure("SetSessionCounterValue '" + value +"'");
-	return m_SessionCounter ;
-    }
-
-
-    /**
-     * Set session counter date.
-     */
-    public	boolean setCounterDate(String date) {
-	m_SessionCounterDate = date ;
-	this.sqlUpdateProcedure("SetSessionCounterDate '" + date + "'") ;
-	return true ;
-    }
-
-
-    /**
-     * Get session counter date.
-     */
-    public	String getCounterDate() {
-	return m_SessionCounterDate ;
-    }
-
-    /**
-       Remove elements from a vector.
-    */
-    private Vector removeElement(Vector vec,int elements) {
-	Vector tempVec = new Vector() ;
-	for ( int i = 0 ; i  < vec.size() ; i+=(elements+1) )
-	    tempVec.addElement(vec.elementAt(i+elements)) ;
-	return tempVec ;
+       Send a update procedure to the database
+       @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
+    **/
+    public int sqlUpdateProcedure(String procedure) {
+	return sqlUpdateProcedure(procedure, new String[] {}) ;
     }
 
 
@@ -1803,9 +1593,55 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
     }
 
+    /**
+       Send a procedure to the database and return a 2-dimensional string array
+    **/
+    public String[][] sqlProcedureMulti(String procedure, String[] params) {
+	return sqlProcedureMulti(procedure, params, true) ;
+    }
 
     /**
-       Send a procedure to the database and return a multi string array
+       Send a procedure to the database and return a 2-dimensional string array
+    **/
+    public String[][] sqlProcedureMulti(String procedure, String[] params, boolean trim) {
+	Vector data = new Vector() ;
+
+	DBConnect dbc = new DBConnect(m_conPool) ;
+	dbc.setTrim(trim) ;
+	dbc.getConnection() ;
+	if ( params.length > 0 ) {
+	    StringBuffer procedureBuffer = new StringBuffer(procedure) ;
+	    procedureBuffer.append(" ?") ;
+	    for (int i = 1; i < params.length; ++i) {
+		procedureBuffer.append(",?") ;
+	    }
+	    procedure = procedureBuffer.toString() ;
+	}
+
+	dbc.setProcedure(procedure, params) ;
+	data = (Vector)dbc.executeProcedure() ;
+	int columns = dbc.getColumnCount() ;
+	dbc.clearResultSet() ;
+	dbc.closeConnection() ;
+	dbc = null ;
+
+	if ( data != null && columns > 0) {
+	    String result[][] = new String[data.size()/columns][columns] ;
+	    for ( int i = 0 ; i < data.size() ; i++ ) {
+		result[i / columns][i % columns] =
+		    null != data.elementAt(i)
+		    ? data.elementAt(i).toString()
+		    : null ;
+	    }
+	    return result ;
+	}
+	return null ;
+    }
+
+
+    /**
+       Send a procedure to the database and return a 2-dimensional string array
+       @deprecated Use {@link #sqlProcedureMulti(String, String[])} instead.
     **/
     public String[][] sqlProcedureMulti(String procedure) {
 
@@ -1876,6 +1712,200 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	return result ;
     }
 
+
+    /**
+       Parse doc replace variables with data
+    */
+    public String  parseDoc(String htmlStr,java.util.Vector variables) {
+	String[] foo = new String[variables.size()] ;
+	return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
+    }
+
+
+    /**
+       Parse doc replace variables with data, uses two vectors
+    */
+    public String  parseDoc(String htmlStr,java.util.Vector variables,java.util.Vector data) {
+	String[] foo = new String[variables.size()] ;
+	String[] bar = new String[data.size()] ;
+	return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo),(String[])data.toArray(bar)) ;
+    }
+
+
+    /**
+       Parse doc replace variables with data , use template
+    */
+    public String parseDoc(java.util.List variables, String admin_template_name, String lang_prefix) {
+	try {
+	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/admin/"+admin_template_name)) ;
+	    if (variables == null) {
+		return htmlStr ;
+	    }
+	    String[] foo = new String[variables.size()] ;
+	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
+	} catch (IOException ex) {
+	    log.error(ex.toString()) ;
+	    return "" ;
+	}
+    }
+
+
+    /**
+       Parse doc replace variables with data , use template
+    */
+    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type) {
+	try {
+	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/"+doc_type+"/"+external_template_name)) ;
+	    if (variables == null) {
+		return htmlStr ;
+	    }
+	    String[] foo = new String[variables.size()] ;
+	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
+	} catch ( RuntimeException e ) {
+	    log.error("parseExternalDoc(Vector, String, String, String): RuntimeException", e );
+	    throw e ;
+	} catch ( IOException e ) {
+	    log.error("parseExternalDoc(Vector, String, String, String): IOException", e );
+	    return "" ;
+	}
+    }
+
+    /**
+       Parse doc replace variables with data , use template
+    */
+    public String parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type, String templateSet) {
+	try {
+	    String htmlStr = fileCache.getCachedFileString(new File(m_TemplateHome,lang_prefix+"/"+doc_type+"/"+templateSet+"/"+external_template_name)) ;
+	    if (variables == null) {
+		return htmlStr ;
+	    }
+	    String[] foo = new String[variables.size()] ;
+	    return imcode.util.Parser.parseDoc(htmlStr,(String[])variables.toArray(foo)) ;
+	} catch ( RuntimeException e ) {
+	    log.error("parseExternalDoc(Vector, String, String, String): RuntimeException", e );
+	    throw e ;
+	} catch ( IOException e ) {
+	    log.error("parseExternalDoc(Vector, String, String, String): IOException", e );
+	    return "" ;
+	}
+    }
+
+    /**
+       @deprecated Ugly use {@link #parseExternalDoc(java.util.Vector variables, String external_template_name, String lang_prefix, String doc_type)}
+       or something else instead.
+    */
+    public File getExternalTemplateFolder(int meta_id) {
+	Vector data = new Vector() ;
+
+	DBConnect dbc = new DBConnect(m_conPool) ;
+	String sqlStr = "select doc_type,lang_prefix from meta where meta_id = " + meta_id ;
+	dbc.setSQLString(sqlStr) ;
+	dbc.getConnection() ;
+	dbc.createStatement() ;
+	data = (Vector)dbc.executeQuery() ;
+
+	dbc.clearResultSet() ;
+	dbc.closeConnection() ;
+	dbc = null ;
+
+	if ( Integer.parseInt(data.elementAt(0).toString()) > 100 ) {
+	    return new File(m_TemplateHome, (data.elementAt(1).toString() + "/" + data.elementAt(0).toString() + "/")) ;
+	} else {
+	    return new File(m_TemplateHome, (data.elementAt(1).toString() + "/")) ;
+	}
+    }
+
+
+    /**
+     * Return  templatehome.
+     */
+    public File getTemplateHome() {
+	return m_TemplateHome ;
+    }
+
+
+    /**
+     * Return url-path to images.
+     */
+    public String getImageUrl() {
+	return m_ImageUrl ;
+    }
+
+    /**
+     * Return file-path to images.
+     */
+    public File getImagePath() {
+	return m_ImagePath ;
+    }
+
+    /**
+     * Return  starturl.
+     */
+    public String getStartUrl() {
+	return m_StartUrl ;
+    }
+
+    /**
+     * Return  language.
+     */
+    public String getLanguage() {
+	return m_Language ;
+    }
+
+    /**
+     * Increment session counter.
+     */
+    public	int incCounter() {
+	m_SessionCounter += 1 ;
+	sqlUpdateProcedure( "IncSessionCounter" ) ;
+	return m_SessionCounter ;
+    }
+
+
+    /**
+     * Get session counter.
+     */
+    public	int getCounter() {
+	return m_SessionCounter ;
+    }
+
+
+    /**
+     * Set session counter.
+     */
+    public	int setCounter(int value) {
+	m_SessionCounter = value ;
+	this.sqlUpdateProcedure("SetSessionCounterValue '" + value +"'");
+	return m_SessionCounter ;
+    }
+
+
+    /**
+     * Set session counter date.
+     */
+    public	boolean setCounterDate(String date) {
+	m_SessionCounterDate = date ;
+	this.sqlUpdateProcedure("SetSessionCounterDate '" + date + "'") ;
+	return true ;
+    }
+
+
+    /**
+     * Get session counter date.
+     */
+    public	String getCounterDate() {
+	return m_SessionCounterDate ;
+    }
+
+    /**
+       Remove elements from a vector.
+    */
+    private Vector removeElement(Vector vec,int elements) {
+	Vector tempVec = new Vector() ;
+	for ( int i = 0 ; i  < vec.size() ; i+=(elements+1) )
+	    tempVec.addElement(vec.elementAt(i+elements)) ;
+	return tempVec ;
+    }
 
     /**
        get doctype
@@ -3016,5 +3046,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
 	return theFlags ;
     }
+
+    public PollHandlingSystem getPollHandlingSystem(){
+	return new PollHandlingSystemImpl(this);
+    }
+
+    public ShoppingOrderSystem getShoppingOrderSystem() {
+	return new ShoppingOrderSystemImpl(this) ;
+    }
+
 
 }

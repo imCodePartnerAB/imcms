@@ -45,10 +45,29 @@ INSERT INTO templategroups
  VALUES (1, 'Readrunner')
 INSERT INTO templates_cref
  VALUES(1,6)
+
+INSERT INTO templates 
+ VALUES (7,'poll_form_template.html', 'poll_form_template', 'se', 0,0,0)
+INSERT INTO templategroups
+ VALUES (2, 'Example-templates')
+INSERT INTO templates_cref
+ VALUES(2,7)
+  
+INSERT INTO templates 
+ VALUES (8,'poll_result_default_template.html', 'poll_result_default_template', 'se', 0,0,0)
+INSERT INTO templates_cref
+ VALUES(2,8)
+ 
+INSERT INTO templates 
+ VALUES (9,'poll_confirmation_template.html', 'poll_confirmation_template', 'se', 0,0,0)
+INSERT INTO templates_cref
+ VALUES(2,9)
+ 
+  
 INSERT INTO text_docs
  VALUES (1001, 1, 0, 1, -1, -1)
 INSERT INTO roles_rights
- VALUES (1,1001,3)
+ VALUES (2,1001,3)
 INSERT INTO texts
  VALUES( 1001, 1, '<h2>imCode imCMS</h2><br><a href="@loginurl@/">Logga in!</a>',1)
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )

@@ -87,6 +87,7 @@ public class AdminUser extends Administrator
 	String show = ( "null".equals(req.getParameter("showall"))) ? "1" : "0" ;
 
 	// Lets get all USERS from DB with firstname or lastname or login name like the searchString
+	// but not USER = 'user' 
 	String param = category + ", " + searchString + ", " + user.getUserId() + ", " + show ;
 	String[] usersArr = imcref.sqlProcedure("GetCategoryUsers " + param) ;
 	Vector usersV  = new Vector(java.util.Arrays.asList(usersArr)) ;

@@ -61,9 +61,14 @@ public class SaveText extends HttpServlet {
 	// get text
 	String text_string = req.getParameter( "text" ) ;
 
-	int text_type = Integer.parseInt(req.getParameter( "type" )) ;
+	int text_format = Integer.parseInt(req.getParameter( "format_type" )) ;
+	
+	String text_type = req.getParameter("txt_type") ; // ex. pollrequest-1
+	if ( text_type == null ){
+		text_type = "";
+	}
 
-	IMCText text = new IMCText(text_string,text_type) ;
+	IMCText text = new IMCText(text_string,text_format) ;
 
 	// Get the session
 	HttpSession session = req.getSession( true );
@@ -71,7 +76,7 @@ public class SaveText extends HttpServlet {
 	user.put("flags",new Integer(imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS)) ;
 
 	if( req.getParameter( "ok" )!=null ) {
-	    imcref.saveText(user,meta_id,txt_no,text) ;
+	    imcref.saveText(user,meta_id,txt_no,text, text_type) ;
 	}
 
 	String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;

@@ -2,8 +2,11 @@ package imcode.server ;
 
 import java.io.* ;
 import java.util.* ;
+
 import imcode.server.parser.ParserParameters ;
+
 import imcode.readrunner.* ;
+
 
 /**
  * Interface for the Imcode Net Server.
@@ -29,7 +32,7 @@ public interface IMCServiceInterface {
     /**
        Save a text field
     **/
-    void saveText(imcode.server.User user,int meta_id,int txt_no,IMCText text)
+    void saveText(imcode.server.User user,int meta_id,int txt_no,IMCText text, String text_type)
 	;
 
     /**
@@ -101,11 +104,6 @@ public interface IMCServiceInterface {
     String isFramesetDoc(int meta_id,User user)
 	;
 
-    // search docs
-    Vector searchDocs(int meta_id,User user,String question_str,
-		      String search_type,String string_match,String search_area)
-	;
-
     // check if external doc
     ExternalDocType isExternalDoc(int meta_id,User user)
 	;
@@ -144,12 +142,28 @@ public interface IMCServiceInterface {
     public String[] sqlProcedure(String procedure, String[] params)
 	;
 
+    // Send a procedure to the database and return a string array
+    public String[] sqlProcedure(String procedure, String[] params, boolean trim)
+	;
+
     // Send a procedure to the database and return a string
     public String sqlProcedureStr(String procedure)
 	;
 
+    // Send a procedure to the database and return a string
+    public String sqlProcedureStr(String procedure, String[] params)
+	;
+
+    // Send a procedure to the database and return a string
+    public String sqlProcedureStr(String procedure, String[] params, boolean trim)
+	;
+
     // Send a update procedure to the database
     public int sqlUpdateProcedure(String procedure)
+	;
+
+    // Send a update procedure to the database
+    public int sqlUpdateProcedure(String procedure, String[] params)
 	;
 
     // Parse doc replace variables with data, uses two vectors
@@ -285,6 +299,10 @@ public interface IMCServiceInterface {
     public String[][] sqlProcedureMulti(String procedure)
 	;
 
+    // Send a procedure to the database and return a multistring array
+    public String[][] sqlProcedureMulti(String procedure, String[] params)
+	;
+
     // Send a sqlQuery to the database and return a multistring array
     public String[][] sqlQueryMulti(String sqlQuery)
 	;
@@ -379,4 +397,9 @@ public interface IMCServiceInterface {
 
     public void unsetUserFlag(User user, String flagName);
 
+    /** Get an interface to the poll handling system **/
+    public imcode.util.poll.PollHandlingSystem getPollHandlingSystem();
+
+    /** Get an interface to the shopping order system **/
+    public imcode.util.shop.ShoppingOrderSystem getShoppingOrderSystem() ;
 }

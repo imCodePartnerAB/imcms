@@ -44,6 +44,11 @@ public class ChangeText extends HttpServlet {
 	if (label == null) {
 	    label = "" ;
 	}
+	
+	String text_type = req.getParameter("type") ;  // ex. pollquestion-1
+	if ( text_type == null ) {
+		text_type = "";
+	}
 
 	// Get the session
 	HttpSession session = req.getSession(true);
@@ -72,7 +77,7 @@ public class ChangeText extends HttpServlet {
 	}
 
 	IMCText text = imcref.getText(meta_id,txt_no) ;
-
+	
 	if ( null == text) {
 	    text = new IMCText("",IMCText.TEXT_TYPE_PLAIN) ;
 	}
@@ -94,17 +99,21 @@ public class ChangeText extends HttpServlet {
 	}
 	vec.add("#label#") ;
 	vec.add(label) ;
-	vec.add("#type#") ;
+	vec.add("#txt_format#") ;
 	vec.add(String.valueOf(text.getType())) ;
-	vec.add("#txt#") ;
+	vec.add("#txt#") ;  
 	vec.add(text_string) ;
 	vec.add("#meta_id#") ;
 	vec.add(String.valueOf(meta_id)) ;
 	vec.add("#servlet_url#") ;
 	vec.add(servlet_url) ;
-	vec.add("#txt_no#") ;
+	vec.add("#txt_no#") ;   // text number
 	vec.add(String.valueOf(txt_no)) ;
+	vec.add("#txt_type#") ; 
+	vec.add( text_type ) ;  
 	String outputString = imcref.parseDoc(vec,"change_text.html",user.getLangPrefix()) ;
 	out.write(outputString) ;
     }
+	
+	
 }

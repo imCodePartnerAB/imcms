@@ -28,6 +28,7 @@
     <property name="adminbuttons"          value="${imcmsimages}/admin"/>
     <property name="readrunner"	           value="${webroot}/readrunner"/>
     <property name="shop"	           value="${webroot}/shop"/>
+    <property name="poll"	           value="${webroot}/poll"/>
 
     <!-- 'WEB-INF' - Everything put here is private to the webapp -->
     <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
@@ -114,14 +115,14 @@
 	<filter token="readrunnercssurl"    value="${readrunnercssurl}"/>
 	<filter token="readrunnerjsurl"     value="${readrunnerjsurl}"/>
 
-    <filter token="db-driver"           value="${db-driver}"/>
-    <filter token="db-url"              value="${db-url}"/>
+	<filter token="db-driver"           value="${db-driver}"/>
+	<filter token="db-url"              value="${db-url}"/>
 	<filter token="db-host"             value="${db-host}"/>
 	<filter token="db-port"             value="${db-port}"/>
 	<filter token="db-name"             value="${db-name}"/>
 	<filter token="db-user"             value="${db-user}"/>
 	<filter token="db-pass"             value="${db-pass}"/>
-    <filter token="db-maxconnections"   value="${db-maxconnections}"/>
+	<filter token="db-maxconnections"   value="${db-maxconnections}"/>
 
 	<filter token="plugin-db-host"      value="${plugin-db-host}"/>
 	<filter token="plugin-db-port"      value="${plugin-db-port}"/>
@@ -148,8 +149,6 @@
 	<property name="admintemplates"       value="${languagetemplates}/admin"/>
 	<property name="searchtemplates"      value="${admintemplates}/search/original"/>
 
-	<property name="readrunnertemplates"  value="${admintemplates}/readrunner"/>
-
 	<!-- Paths for templates for the plugins -->
 	<property name="conference-templates" value="${languagetemplates}/102"/>
 	<property name="chat-templates"       value="${languagetemplates}/103"/>
@@ -163,7 +162,8 @@
 
     <!-- Checks that build.properties is up-to-date. -->
     <target name="check-build-properties"
-	    description="Checks that ${build.properties} is up-to-date.">
+	    description="Checks that ${build.properties} is up-to-date."
+	    unless="build-properties-up-to-date">
 
 	<uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
 	    <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
@@ -280,6 +280,8 @@
 	<java classname="junit.swingui.TestRunner" fork="yes">
 	    <classpath>
 		<pathelement path="${classes}"/>
+		<pathelement path="install/lib/log4j.jar"/>
+		<pathelement path="install/lib/commons-collections.jar"/>
 		<pathelement path="install/lib/junit.jar"/>
 	    </classpath>
 	</java>
@@ -390,7 +392,10 @@
 	    description="Copies the jar-files.">
 
 	<copy todir="${lib}">
-	    <fileset dir="install/lib" excludes="junit.jar"/>
+	    <fileset dir="install/lib" >
+			<exclude name = "junit.jar"/>
+			<exclude name = "servlet.jar"/>
+	    </fileset>	
 	</copy>
 
     </target>
@@ -413,7 +418,7 @@
 
     <!-- Creates the directories and copies the files that are to be public. -->
     <target name="web"
-	    depends="init,imagebrowse-images,adminbutton-images"
+	    depends="init"
 	    description="Creates the public web">
 	<mkdir dir="${images}"/>
 	<mkdir dir="${login}"/>
@@ -423,14 +428,15 @@
 	<mkdir dir="${imcmsimages}"/>
 
 	<copy file="templates/login/index.html" todir="${login}" filtering="true"/>
+
 	<copy todir="${images}">
-	    <fileset dir="install/htdocs/images">
-		<patternset>
-		    <include name="*.gif"/>
-		</patternset>
-	    </fileset>
-	    <fileset dir="install/htdocs/sv/resource"/>
+	    <fileset dir="install/htdocs/images" />
 	</copy>
+
+	<copy todir="${imcmsimages}">
+	    <fileset dir="install/htdocs/imcmsimages"/>
+	</copy>
+
 	<copy todir="${webroot}" filtering="true">
 	    <fileset dir="templates">
 		<patternset>
@@ -439,72 +445,40 @@
 		    <include name="*.jsp"/>
 		</patternset>
 	    </fileset>
+
+	    <!-- Copy swedish text-files -->
+	    <fileset dir="install/htdocs/sv">
+		<include name="css/**"/>
+		<include name="inc/**"/>
+		<include name="shop/**"/>
+		<include name="poll/**"/>
+		<exclude name="**/*.gif"/>
+		<exclude name="**/*.jpg"/>
+	    </fileset>
 	</copy>
-	<copy todir="${css}">
-	    <fileset dir="install/htdocs/css"/>
+	
+	<copy todir="${poll}/images" >
+		<fileset dir="install/htdocs/sv/poll/images">
+		<patternset>
+		    <include name="*.gif"/>
+			<include name="*.jpg"/>
+		</patternset>
+		</fileset>
+	</copy>
+	
+
+	<!-- Copy swedish navigation buttons for imagebrowse -->
+	<copy todir="${imcmsimages}/se/admin">
+	    <fileset dir="install/htdocs/sv/imagebrowse"/>
 	</copy>
 
-    </target>
-
-
-    <!-- Copies the adminbutton images. -->
-    <target name="adminbutton-images"
-	    depends="init"
-	    description="Copies the adminbutton images.">
-
-	<antcall target="adminbutton-images-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language" value="sv"/>
-	</antcall>
-
-	<antcall target="adminbutton-images-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language" value="en"/>
-	</antcall>
-
-    </target>
-
-
-    <!-- Copies the adminbutton images for one language. -->
-    <target name="adminbutton-images-lang"
-	    depends="language-properties"
-	    description="Copies the adminbutton images for one language.">
-
-	<copy todir="${adminbuttons}/${language}">
-	    <fileset dir="install/htdocs/${srclanguage}/adminbuttons">
+	<!-- Copy swedish adminbuttons -->
+	<copy todir="${adminbuttons}/sv">
+	    <fileset dir="install/htdocs/sv/adminbuttons">
 		<patternset>
 		    <include name="*.gif"/>
 		</patternset>
 	    </fileset>
-	</copy>
-
-    </target>
-
-    <!-- Copies the imagebrowse images. -->
-    <target name="imagebrowse-images"
-	    depends="init"
-	    description="Copies the imagebrowse images.">
-
-	<antcall target="imagebrowse-images-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language" value="se"/>
-	</antcall>
-
-	<antcall target="imagebrowse-images-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language" value="en"/>
-	</antcall>
-
-    </target>
-
-
-    <!-- Copies the imagebrowse images for one language. -->
-    <target name="imagebrowse-images-lang"
-	    depends="language-properties"
-	    description="Copies the image-browse images for one language.">
-
-	<copy todir="${images}/${language}/admin">
-	    <fileset dir="install/htdocs/${srclanguage}/imagebrowse"/>
 	</copy>
 
     </target>
@@ -542,10 +516,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="admintemplates-lang">
+	<!-- antcall target="admintemplates-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 
@@ -582,10 +556,6 @@
 
 	<copy todir="${searchtemplates}" filtering="true">
 	    <fileset dir="templates/${srclanguage}/search"/>
-	</copy>
-
-	<copy todir="${readrunnertemplates}" filtering="true">
-	    <fileset dir="templates/${srclanguage}/readrunner"/>
 	</copy>
 
 	<copy todir="${admintemplates}/shop" filtering="true">
@@ -656,10 +626,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="calender-templates-lang">
+	<!-- antcall target="calender-templates-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 
@@ -687,10 +657,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="calender-images-lang">
+	<!-- antcall target="calender-images-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 
@@ -701,7 +671,7 @@
 	    description="Copies the calender-images for one language."
 	    if="build-calender">
 
-	<copy todir="${images}/${language}/107">
+	<copy todir="${imcmsimages}/${language}/107">
 	    <fileset dir="templates/${srclanguage}/calender/images" includes="*"/>
 	</copy>
 
@@ -752,10 +722,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="conference-templates-lang">
+	<!-- antcall target="conference-templates-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 
@@ -784,10 +754,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="conference-images-lang">
+	<!-- antcall target="conference-images-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 
@@ -798,7 +768,7 @@
 	    description="Copies the conference-images for one language."
 	    if="build-conference">
 
-	<copy todir="${images}/${language}/102/original">
+	<copy todir="${imcmsimages}/${language}/102/original">
 	    <fileset dir="templates/${srclanguage}/conf/original/images" includes="*"/>
 	</copy>
 
@@ -849,10 +819,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="chat-templates-lang">
+	<!-- antcall target="chat-templates-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 
@@ -917,10 +887,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="billboard-templates-lang">
+	<!-- antcall target="billboard-templates-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 
@@ -952,10 +922,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="billboard-images-lang">
+	<!-- antcall target="billboard-images-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 
@@ -966,7 +936,7 @@
 	    description="Copies the billboard-images for one language."
 	    if="build-billboard">
 
-	<copy todir="${images}/${language}/104/original">
+	<copy todir="${imcmsimages}/${language}/104/original">
 	    <fileset dir="templates/${srclanguage}/billboard/original/images" includes="*"/>
 	</copy>
 
@@ -991,10 +961,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="postcard-templates-lang">
+	<!-- antcall target="postcard-templates-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 
@@ -1013,34 +983,11 @@
 
 
     <!-- Copies the files for the online-help. -->
-    <target name="help" depends="init,help-images"/>
-
-
-    <!-- The images for the online-help. -->
-    <target name="help-images"
-	    depends="init,web"
-	    description="Copies the help-images.">
-
-	<antcall target="help-images-lang">
-	    <param name="srclanguage" value="sv"/>
-	    <param name="language"    value="se"/>
-	</antcall>
-
-	<antcall target="help-images-lang">
-	    <param name="srclanguage" value="en"/>
-	    <param name="language"    value="en"/>
-	</antcall>
-
-    </target>
-
-
-    <!-- The images for the online-help for one language. -->
-    <target name="help-images-lang"
-	    depends="language-properties"
-	    description="Copies the help-images for one language.">
-
-	<copy todir="${images}/${language}/helpimages">
-	    <fileset dir="install/htdocs/${srclanguage}/helpimages" includes="*"/>
+    <target name="help" depends="init">
+    
+	<!-- Copy the swedish images for the online-help -->
+	<copy todir="${imcmsimages}/se/helpimages">
+	    <fileset dir="install/htdocs/sv/helpimages" includes="*"/>
 	</copy>
 
     </target>
@@ -1071,10 +1018,10 @@
 	    <param name="language"    value="se"/>
 	</antcall>
 
-	<antcall target="fortune-templates-lang">
+	<!-- antcall target="fortune-templates-lang">
 	    <param name="srclanguage" value="en"/>
 	    <param name="language"    value="en"/>
-	</antcall>
+	</antcall -->
 
     </target>
 

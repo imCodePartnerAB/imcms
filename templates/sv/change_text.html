@@ -1,87 +1,349 @@
-<HTML>
-<HEAD>
-<TITLE>Redigera text</TITLE>
-<SCRIPT language=JavaScript>
+<html>
+<head>
+<title>Redigera text</title>
+
+<SCRIPT LANGUAGE="JavaScript">
 <!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+/* BROWSER SNIFFER */
+
+var platf = navigator.platform;
+var ua = navigator.userAgent;
+
+var ns = (document.layers) ? 1 : 0;
+var ie = (document.all) ? 1 : 0;
+var moz = (document.getElementById) ? 1 : 0;
+
+var isGecko = inStr(ua,'Gecko');
+var isOpera = inStr(ua,'Opera');
+var isWindows = inStr(platf,'Win32');
+var isMac = inStr(platf,'Mac');
+
+var ie55 = (isWindows && ie && moz && (inStr(ua,'MSIE 5.5') || inStr(ua,'MSIE 6.0') || inStr(ua,'MSIE 6.5') || inStr(ua,'MSIE 7.0')) && !isOpera) ? 1 : 0;
+
+function inStr(str,val,cas) {
+	var ret;
+	if (cas) { /* Case sensitive */
+		ret = (str.indexOf(val) != -1) ? true : false;
+	} else { /* Not Case sensitive */
+		str = str.toUpperCase();
+		val = val.toUpperCase();
+		ret = (str.indexOf(val) != -1) ? true : false;
+	}
+	return ret;
+}
+
+/* HTML-EDITOR - OPEN FUNCTION */
+
+function openEditor(metaId,txtNr,sLabel) {
+	if(ie55) {
+		var sUrl = '/user/editor/editor.html?meta_id=' + metaId + '&txt=' + txtNr + '&label=' + sLabel;
+		var iWidth = 680;
+		var iHeight = 495;
+		var sMenu = 0;
+		var sScroll = 0;
+		var sStatus = 0;
+		var window_width = iWidth;
+		var window_height = iHeight;
+		if(screen.height < 700){ 
+			var window_top = 0;
+			var window_left = (screen.width-window_width)/2;
+		} else { 
+			var window_top = (screen.height-window_height)/2;
+			var window_left = (screen.width-window_width)/2;
+		}
+		sUrl = (location.search.indexOf('admin') != -1) ? sUrl + '?admin=1' : sUrl;
+		popWindow = window.open(sUrl,'Editor','resizable=no,menubar=' + sMenu + ',scrollbars=' + sScroll + ',status=' + sStatus + ',width=' + window_width + ',height=' + window_height + ',top=' + window_top + ',left=' + window_left + ',location=0,directories=0');
+		popWindow.focus();
+	} else {
+		var sMess = 'Du måste ha ';
+		sMess += (isWindows) ? '' : 'Windows och ';
+		sMess += 'Internet Explorer 5.5+ för att använda HTML-Editorn.';
+		alert(sMess);
+	}
+}
+
+
+function openHelp(id) {
+	window.open('GetDoc?meta_id=200&param=' + id,'help','scrollbars=yes,width=790,height=550');
 }
 //-->
 </SCRIPT>
-</HEAD>
-<BODY bgcolor="#FFFFFF">
-  <FORM METHOD="POST" ACTION="SaveText">
-    <TABLE align="center" cellpadding="2" cellspacing="0" border="0">
-	<TR bgcolor="#333366">
-	  <td width="5%">&nbsp;</td>
-	  <TD align="left" width="90%">
-	    <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><B>&nbsp;Redigera text</B> #txt_no# <B>på sida</B> #meta_id#</font>
-	  </TD>
-	  <td width="5%">&nbsp;</td>
-	</TR>
-	<tr bgcolor="#BABABA">
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">
-	    <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><B>#label#</B>&nbsp;</font>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<TR bgcolor="#BABABA">
-	  <td width="5%">&nbsp;</td>
-	  <TD bgcolor="#BABABA" width="90%">
-	    <textarea name="text" cols="70" rows="25" wrap="VIRTUAL">
-#txt#</textarea>
-	  </TD>
-	  <td width="5%">&nbsp;</td>
-	</TR>
-	<TR bgcolor="#BABABA">
-	  <td width="5%">&nbsp;</td>
-	  <TD valign="middle" align="left" bgcolor="#BABABA" width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Format:</font>
-	    <table border="0" width="100%">
-	      <tr>
-		<td align="left">
-		  <INPUT type="RADIO" NAME="type"  VALUE="0" #!html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vanlig text</font>&nbsp;&nbsp;
-		  <INPUT type="RADIO" NAME="type"  VALUE="1" #html#><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font>
-		</td>
-		<td align="right">
-		  <INPUT TYPE="RESET" VALUE="&Aring;terst&auml;ll">
-		</td>
-	      </tr>
-	    </table>
-	  </TD>
-	  <td width="5%">&nbsp;</td>
-	</TR>
-	<TR bgcolor="#BABABA">
-	  <td width="5%">&nbsp;</td>
-	  <TD valign="middle" align="left" bgcolor="#BABABA" width="90%">
-	    <table border="0">
-		<tr>
-		    <td>
-			<INPUT TYPE="SUBMIT" VALUE="  OK  " NAME="ok">
-		    </td>
-		    <td>
-			<INPUT TYPE="SUBMIT" VALUE="Avbryt" NAME="cancel">&nbsp;<a href="GetDoc?meta_id=36" target="_blank" onClick="openHelp('36'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-		    </td>
-		</tr>
-	    </table>
-	  </TD>
-	  <td width="5%">&nbsp;</td>
-	</TR>
-	<tr bgcolor="#BABABA">
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-    </TABLE>
-    <INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#meta_id#">
-    <INPUT TYPE="HIDDEN" NAME="txt_no" VALUE="#txt_no#">
-</FORM>
+</head>
+<body bgcolor="#FFFFFF">
 
-<!-- Focuses on textfield if browser supports javascript -->
-<script language="JavaScript">
+
+<table align="center" cellpadding="2" cellspacing="0" border="0">
+<form method="POST" action="SaveText">
+<tr bgcolor="#333366">
+	<td>&nbsp;</td>
+	<td align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">
+	<b>&nbsp;Redigera text</b> #txt_no# <b>på sida</b> #meta_id#</font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr bgcolor="#BABABA">
+	<td>&nbsp;</td>
+	<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>&nbsp;#label#</b></font></td>
+	<td>&nbsp;</td>
+</tr>
+<tr bgcolor="#BABABA">
+	<td>&nbsp;</td>
+	<td bgcolor="#BABABA" align="center">
+<textarea name="text" id="txtCont" cols="73" rows="18" wrap="VIRTUAL">
+#txt#</textarea></td>
+	<td>&nbsp;</td>
+</tr>
+<tr bgcolor="#BABABA">
+	<td>&nbsp;</td>
+	<td valign="middle" align="left" bgcolor="#BABABA">
+	<table border="0" width="100%">
+	<tr>
+		<td align="left">
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;Format:</font></td>
+			<td><input type="RADIO" name="type"  value="0" #!html#></td>
+			<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Vanlig text</font>&nbsp;&nbsp;</td>
+			<td><input type="RADIO" name="type"  value="1" #html#></td>
+			<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HTML</font></td>
+		</tr>
+		</table></td>
+		<td align="right"><input type="RESET" value="&Aring;terst&auml;ll"></td>
+	</tr>
+	</table></td>
+	<td>&nbsp;</td>
+</tr>
+<tr bgcolor="#BABABA">
+	<td>&nbsp;</td>
+	<td valign="middle" align="left" bgcolor="#BABABA">
+	<table border="0">
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="SUBMIT" value="  OK  " name="ok"></td>
+		<td><input type="SUBMIT" value="Avbryt" name="cancel"></td>
+		<td>&nbsp;</td>
+		<td><a href="GetDoc?meta_id=36" target="_blank" onClick="openHelp('36'); return false;"><img src="/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+	</tr>
+	</table></td>
+	<td>&nbsp;</td>
+</tr>
+<input type="HIDDEN" name="meta_id" value="#meta_id#">
+<input type="HIDDEN" name="txt_no" value="#txt_no#">
+<tr>
+	<td colspan="3" bgcolor="#ffffff">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3" bgcolor="#bababa">
+	<table border="0" cellpadding="2" cellspacing="0" width="100%">
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size=2><b>HTML-l&auml;ge?</b></font></td>
+		<td align="right">
+		
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="button" value="Koda radbrytningar" alt="Byt ut radbrytningar mot &lt;BR&gt; i HTML-läge." name="replaceCrLf" onclick="replaceBreaks();" width="130" style="width:130"></td>
+			<td>&nbsp;</td>
+			<td>
+<SCRIPT LANGUAGE="JavaScript">
 <!--
+var strLabel = '#label#';
+strLabel = strLabel.replace(/<[^>]*?>/gi, '');
+document.write('<input type="button" value="HTML-Editor" name="editorBtn" onClick="openEditor(\'#meta_id#\',\'#txt_no#\',strLabel)">');
+//-->
+</SCRIPT></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></td>
+</tr>
+</form>
+<form name="createLinkForm">
+<tr>
+	<td colspan="3" bgcolor="#ffffff">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="3" align=center bgcolor="#bababa">
+	<table border="0" cellpadding="2" cellspacing="0" width="100%">
+	<tr>
+		<td colspan="4"><font face="Verdana, Arial, Helvetica, sans-serif" size=2><b>Skapa länk</b></font></td>
+	</tr>
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Beskrivning:</font></td>
+		<td colspan="3"><input type="text" name="createLinkDesc" id="createLinkDesc" value="Det som syns på sidan!" size="59" maxlength="255"></td>
+	</tr>
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Länktyp:</font></td>
+		<td>
+		<select name="createLinkType" onChange="changeLinkType(document.forms.createLinkForm.createLinkType.options[document.forms.createLinkForm.createLinkType.selectedIndex].value)">
+			<option value="GetDoc">Befintligt dokument</option>
+			<option value="http">Annan websida</option>
+			<option value="mailto">Mailadress</option>
+			<option value="ftp">FTP länk</option>
+			<option value="#">Länk till &quot;ankare&quot;</option>
+			<option value="NAME">Skapa &quot;ankare&quot;</option>
+		</select></td>
+		<td nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Visa länken i:</font></td>
+		<td nowrap>
+		<select name="createLinkTargetTemp" onChange="document.forms.createLinkForm.createLinkTarget.value = document.forms.createLinkForm.createLinkTargetTemp.options[document.forms.createLinkForm.createLinkTargetTemp.selectedIndex].value; document.forms.createLinkForm.createLinkTarget.focus(); document.forms.createLinkForm.createLinkTarget.select()">
+			<option value="" selected>Samma fönster (Standard)</option>
+			<option value="_blank">Nytt fönster</option>
+			<option value="_top">Hela fönstret (utan frames)</option>
+			<option value="_self">Samma frame</option>
+			<option value="_parent">Parent frameset</option>
+			<option value="Skriv namnet!">Annan frame</option>
+		</select>&nbsp;<input type="text" name="createLinkTarget" value="" size="12" maxlength="50"></td>
+	</tr>
+	<tr>
+		<td colspan="4" nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size=2>
+		URL / adress / meta_id:</font></td>
+	</tr>
+	<tr>
+		<td><font size=1>&nbsp;</font></td>
+		<td colspan="3"><input type="text" name="createLinkValue" id="createLinkValue" value="Skriv nummer!" size="59" maxlength="100"></td>
+	</tr>
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size=2>Ev. CSS-class:</font></td>
+		<td><input type="text" name="createLinkCss" value="" size="12" maxlength="50"></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size=2></font></td>
+		<td><input type="button" value="Generera länk" onClick="createLink(); return false"></td>
+	</tr>
+	<tr>
+		<td colspan="4"><hr></td>
+	</tr>
+	<tr>
+		<td colspan="4" nowrap><font face="Verdana, Arial, Helvetica, sans-serif" size=2>
+		<b>Kod att klistra in / dra till rätt plats:</b></font></td>
+	</tr>
+	<tr>
+		<td colspan="4"><input type="text" name="theLinkCodeField" id="theLinkCodeField" value="" size="71"></td>
+	</tr>
+	</table></td>
+</tr>
+</form>
+</table>
+
+
+
+
+<script language=javascript>
+<!--
+var ie4 = (document.all) ? 1 : 0;
+var ns4 = (document.layers) ? 1 : 0;
+var ns6 = (document.getElementById) ? 1 : 0;
+var moz = (document.getElementById) ? 1 : 0;
+
+
+function changeLinkType(what) {
+	theField = document.forms.createLinkForm.createLinkValue;
+	theFieldDesc = document.forms.createLinkForm.createLinkDesc;
+	var defValDesc = 'Det som syns på sidan!';
+	switch (what) {
+		case 'GetDoc':
+			theField.value = 'Skriv nummer!';
+			theFieldDesc.value = defValDesc;
+		break
+		case 'http':
+			theField.value = 'http:/\/';
+			theFieldDesc.value = defValDesc;
+		break
+		case 'mailto':
+			theField.value = 'Skriv adressen!';
+			theFieldDesc.value = defValDesc;
+		break
+		case 'NAME':
+			theField.value = 'Skriv ankarnamn';
+			theFieldDesc.value = '';
+		break
+		case '#':
+			theField.value = 'Skriv ankarnamn';
+			theFieldDesc.value = defValDesc;
+		break
+		case 'ftp':
+			theField.value = 'ftp:/\/';
+			theFieldDesc.value = defValDesc;
+		break
+	}
+	theField.focus();
+	theField.select();
+}
+
+function createLink() {
+	var f = document.forms.createLinkForm;
+	var linkDesc = f.createLinkDesc.value;
+	var linkType = f.createLinkType.options[f.createLinkType.selectedIndex].value;
+	var linkTarget = f.createLinkTarget.value;
+	var linkValue = f.createLinkValue.value;
+	var linkClass = f.createLinkCss.value;
+	var theLinkCode = (linkType == 'NAME') ? '<A NAME=\"' : '<A HREF=\"';
+	if (linkType == 'NAME') {
+		theLinkCode += linkValue + '\"';
+		theLinkCode += '>' + linkDesc + '</A>';
+	} else {
+		if (linkType == 'GetDoc') {
+			theLinkCode += 'GetDoc?meta_id=' + linkValue + '\"';
+		} else if (linkType == 'mailto') {
+			theLinkCode += 'mailto:' + linkValue + '\"';
+		} else if (linkType == '#') {
+			if (linkValue.indexOf('#') == -1) linkValue = '#' + linkValue;
+			theLinkCode += linkValue + '\"';
+		} else {
+			theLinkCode += linkValue + '\"';
+		}
+		if (linkTarget != '') {
+			theLinkCode += ' TARGET=\"' + linkTarget + '\"';
+		}
+		if (linkClass != '') {
+			theLinkCode += ' CL\ASS=\"' + linkClass + '\"';
+		}
+		theLinkCode += '>' + linkDesc + '</A>';
+	}
+	//alert(theLinkCode);
+	f.theLinkCodeField.value = theLinkCode;
+	f.theLinkCodeField.focus();
+	f.theLinkCodeField.select();
+	if (!(document.forms[0].type[1].checked == 1)) {
+		if(confirm('Du måste välja HTML läge för att\nlägga in en länk i texten!\n\nVill du göra det nu?')){
+			document.forms[0].type[1].checked = 1;
+		}
+	}
+}
+
+if (moz) {
+	document.getElementById("createLinkDesc").style.width = 531;
+	document.getElementById("createLinkValue").style.width = 531;
+	document.getElementById("theLinkCodeField").style.width = 638;
+	document.getElementById("txtCont").style.width = 625;
+}
+
+function replaceBreaks() {
+	var f = document.forms[0];
+	var theText = f.text.value;
+	if (!(f.type[1].checked == 1)) {
+		if(confirm('Du måste välja HTML läge för att\nlägga in \"Break-taggar\" i texten!\n\nVill du göra det nu?')){
+			f.type[1].checked = 1;
+			doReplaceBreaks();
+		}
+	} else {
+		doReplaceBreaks();
+	}
+}
+
+function doReplaceBreaks() {
+	var f = document.forms[0];
+	var theText = f.text.value;
+	var tempText = theText.toUpperCase();
+	if (tempText.indexOf('<BR>') < 0) {
+		theText = theText.replace(/\r/g,"<BR>\r");
+		f.text.value = theText;
+	} else {
+		if (confirm('Du har redan \"<BR>\" i texten!\n\nVill du göra det ändå?')) {
+			theText = theText.replace(/\r/g,"<BR>\r");
+			f.text.value = theText;
+		}
+	}
+}
+
 document.forms[0].text.focus();
 //-->
 </script>
-</BODY>
-</HTML>
+</body>
+</html>

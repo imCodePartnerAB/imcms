@@ -3,6 +3,7 @@ package imcode.server.parser ;
 import java.io.* ;
 import java.util.* ;
 import java.net.* ;
+import javax.servlet.http.Cookie ;
 
 import org.apache.oro.text.regex.* ;
 import imcode.server.* ;
@@ -170,6 +171,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 										  documentRequest.getSessionId(),
 										  documentRequest.getUser(), included_meta_id, document) ;
 		    includedDocumentRequest.setUserAgent(documentRequest.getUserAgent()) ;
+		    includedDocumentRequest.setContextPath(documentRequest.getContextPath()) ;
 		    String documentStr = textDocParser.parsePage(includedDocumentRequest,-1,includeLevel-1,paramsToParse) ;
 		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
 		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
@@ -187,6 +189,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	} else if (null != (attributevalue = attributes.getProperty("url"))) { // If we have an attribute of the form url="url:url"
 	    try {
 		String urlStr = attributevalue ;
+		if ( urlStr.startsWith("/") ){  // lets add hostname if we got a relative path
+			urlStr = "http://" + documentRequest.getHostName() + urlStr;
+		}
 		URL url = new URL(urlStr) ;
 		String urlProtocol = url.getProtocol() ;
 		if ("file".equalsIgnoreCase(urlProtocol)) { // Make sure we don't have to defend against file://urls...
@@ -198,9 +203,19 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		if (null != attributes.getProperty("sendsessionid")) {
 		    urlConnection.setRequestProperty("Cookie","JSESSIONID="+sessionId) ;
 		}
+		if (null != attributes.getProperty("sendcookies")) {
+			Cookie[] requestCookies = documentRequest.getCookies() ;
+			for (int i = 0; requestCookies != null && i < requestCookies.length; ++i) {
+				Cookie theCookie = requestCookies[i] ;
+				if (!"JSESSIONID".equals(theCookie.getName())) {
+				urlConnection.setRequestProperty("Cookie",theCookie.getName()+"="+theCookie.getValue()) ;
+				}
+			}
+		}
 		if (null != attributes.getProperty("sendmetaid")) {
 		    urlConnection.setRequestProperty("X-Meta-Id",""+document.getMetaId()) ;
 		}
+
 		InputStreamReader urlInput = new InputStreamReader(urlConnection.getInputStream()) ;
 		int charsRead = -1 ;
 		final int URL_BUFFER_LEN = 16384 ;
@@ -237,6 +252,8 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 									      documentRequest.getRemoteAddr(),
 									      documentRequest.getSessionId(),
 									      documentRequest.getUser(), included_meta_id,document) ;
+		includedDocumentRequest.setUserAgent(documentRequest.getUserAgent()) ;
+		includedDocumentRequest.setContextPath(documentRequest.getContextPath()) ;
 		String documentStr = textDocParser.parsePage(includedDocumentRequest,-1,includeLevel-1,paramsToParse) ;         ;
 		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
 		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
@@ -257,6 +274,35 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
        @param attributes The attributes of the text tag
        @param patMat     A pattern matcher.
+
+       attributes:
+	- no	( int )   text number in document
+	- label ( String ) lable to show in write mode
+	- mode  ( read | write )
+	- filter ( String )
+	- type   (String)
+
+	Supported text_types is:
+
+	pollquestion-n	#where n represent the questíon number in this document
+
+	pollanswer-n-m		#where n represent the questíon number in this document
+	                         and m represent the answer number in question number n
+
+	pollpointanswer-n-m     #where n represent the questíon number in this document
+				 and m represent the answer number in question number n
+
+	pollparameter-popup_frequency
+	pollparameter-cookie
+	pollparameter-hideresults
+	pollparameter-confirmation_text
+	pollparameter-email_recipients
+	pollparameter-email_from
+	pollparameter-email_subject
+	pollparameter-result_template     #template to use when return the result
+	pollparameter-name
+	pollparameter-description
+
     **/
     public String tagText (Properties attributes, PatternMatcher patMat) {
 	String mode =  attributes.getProperty("mode") ;
@@ -290,6 +336,13 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    result = readrunnerFilter.filter(result,patMat,parserParameters.getReadrunnerParameters()) ;
 	}
 
+	String type = attributes.getProperty("type"); // get text type, ex. pollparameter-xxxx
+	if ( type == null ){
+		type = "";
+	}
+
+
+
 	String finalresult = result ;
 	if (textMode) {
 	    String label = attributes.getProperty("label","") ;
@@ -305,7 +358,8 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		"#text_id#",         noStr,
 		"#text#",            finalresult,
 		"#label_url#",       label_urlparam,
-		"#label#",           label
+		"#label#",           label,
+		"#type#",			 type
 	    } ;
 	    String langPrefix = documentRequest.getUser().getLangPrefix() ;
 	    File admin_template_file = new File(templatePath, langPrefix+"/admin/textdoc/admin_text.frag") ;
@@ -462,26 +516,12 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    }else if ( attrib.equals("city") ) {
 		result = user.getCity() ;
 	    }else if ( attrib.equals("workphone") ) {
-		int userId = documentRequest.getUser().getUserId() ;
-		String [][] phoneNbr = serverObject.sqlProcedureMulti("GetUserPhoneNumbers " + userId) ;
-		if ( phoneNbr != null ){
-		    for (int i=0; i < phoneNbr.length; i++) {
-			if ( ("2").equals( phoneNbr[i][3] ) ){
-			    result = phoneNbr[i][1];
-			}
-		    }
-		}
-	    }else if ( attrib.equals("mobilephone") ) {
-		int userId = documentRequest.getUser().getUserId() ;
-		String [][] phoneNbr = serverObject.sqlProcedureMulti("GetUserPhoneNumbers " + userId) ;
-		if ( phoneNbr != null ){
-		    for (int i=0; i < phoneNbr.length; i++) {
-			if ( ("3").equals( phoneNbr[i][3] ) ){
-			    result = phoneNbr[i][1];
-			}
-		    }
-		}
-	    }else if ( attrib.equals("email") ) {
+		result = user.getWorkPhone() ;
+		}else if ( attrib.equals("mobilephone") ) {
+		result = user.getMobilePhone() ;
+		}else if ( attrib.equals("homephone") ) {
+		result = user.getHomePhone() ;
+		}else if ( attrib.equals("email") ) {
 		result = user.getEmailAddress() ;
 	    }
 	}

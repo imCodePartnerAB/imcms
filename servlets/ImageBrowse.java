@@ -21,16 +21,14 @@ public class ImageBrowse extends HttpServlet {
     /**
        init
     */
-    public void init(ServletConfig config) throws ServletException
-    {
+    public void init(ServletConfig config) throws ServletException {
 	super.init(config) ;
     }
 
     /**
        doGet
     */
-    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
-    {
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
 	String host				= req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
@@ -42,8 +40,7 @@ public class ImageBrowse extends HttpServlet {
 	// Does the session indicate this user already logged in?
 	imcode.server.User user  = (imcode.server.User)session.getAttribute("logon.isDone");  // marker object
 
-	if (user == null)
-	    {
+	if (user == null) {
 		// No logon.isDone means he hasn't logged in.
 		// Save the request URL as the true target and redirect to the login page.
 		String scheme = req.getScheme();
@@ -59,8 +56,7 @@ public class ImageBrowse extends HttpServlet {
 	out.print(getPage(req,res)) ;
     }
 
-    public static String getPage(HttpServletRequest req, HttpServletResponse res) throws ServletException,IOException
-    {
+    public static String getPage(HttpServletRequest req, HttpServletResponse res) throws ServletException,IOException {
 	String host				= req.getHeader("Host") ;
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
@@ -78,39 +74,28 @@ public class ImageBrowse extends HttpServlet {
 	String img_dir_preset = req.getParameter("dirlist");//the dir to chow
 	String img_tag = "" ;
 
-	if (img_dir_preset == null)
-	    {//if img_dir_preset null then its first time, or a prew. of choosen image
-		img_dir_preset = req.getParameter("dirlist_preset") == null ? "":req.getParameter("dirlist_preset");
-	    }
+	if (img_dir_preset == null) {
+	    //if img_dir_preset null then its first time, or a prew. of choosen image
+	    img_dir_preset = req.getParameter("dirlist_preset") == null ? "":req.getParameter("dirlist_preset");
+	}
 
 
-	if (req.getParameter("PREVIOUS_IMG")!=null || req.getParameter("NEXT_IMG")!=null)
-	    {
-		session.removeAttribute("ImageBrowse.optionlist") ;
-		img_preset = null;
-	    }
+	if (req.getParameter("PREVIOUS_IMG")!=null || req.getParameter("NEXT_IMG")!=null) {
+	    session.removeAttribute("ImageBrowse.optionlist") ;
+	    img_preset = null;
+	}
 
 	//**handles the case when we have a image to show
-	if (img_preset == null)
-	    {
-		img_preset = "" ;
-	    }
-	else
-	    {
-		img_tag = "<img src='"+image_url+img_preset+"' align=\"top\">" ;
-	    }
-
+	if (img_preset == null) {
+	    img_preset = "" ;
+	} else {
+	    img_tag = "<img src='"+image_url+img_preset+"' align=\"top\">" ;
+	}
 
 	//*lets get some path we need later on
-	String canon_path = file_path.getCanonicalPath();//ex: C:\Tomcat3\webapps\imcms\images
-	String root_dir_parent = file_path.getParent();//ex: c:\Tomcat3\webapps\imcms
-	String root_dir_name = canon_path.substring(root_dir_parent.length());
-	if (root_dir_name.startsWith(File.separator))
-	    {
-		root_dir_name = root_dir_name.substring(File.separator.length());
-		//ex: root_dir_name = images
-	    }
-
+	String canon_path = file_path.getCanonicalPath(); //ex: C:\Tomcat3\webapps\imcms\images
+	String root_dir_parent = file_path.getParentFile().getCanonicalPath();  //ex: C:\Tomcat3\webapps\webapps\imcms
+	String root_dir_name = file_path.getName() ;
 
 	//*lets get all the folders in an ArrayList
 	List folderList = GetImages.getImageFolders(file_path, true);
@@ -136,16 +121,14 @@ public class ImageBrowse extends HttpServlet {
 	int max = 1000;//the nr of img th show at the time
 	int counter = 0; //the current startNr
 	int img_numbers = imgList.size();//the total numbers of img
-	if (startStr != null)
-	    {
-		counter = Integer.parseInt(startStr);
-	    }
+	if (startStr != null) {
+	    counter = Integer.parseInt(startStr);
+	}
 	//lest see if a previous button whas punshed
-	if (req.getParameter("PREVIOUS_IMG") != null)
-	    {
-		counter = counter - (max * 2);
-		if(counter<0) counter=0;
-	    }
+	if (req.getParameter("PREVIOUS_IMG") != null) {
+	    counter = counter - (max * 2);
+	    if(counter<0) counter=0;
+	}
 	// Lets bee ready to create buttons
 	VariableManager nextButtonVm = new VariableManager();
 	nextButtonVm.addProperty( "IMAGE_URL", image_url+ adminImgPath);
@@ -165,163 +148,134 @@ public class ImageBrowse extends HttpServlet {
 	//now we have to find out what buttons to show
 	boolean incButton = false;
 	boolean decButton = false;
-	if (counter > 0)
-	    {
-		HtmlGenerator previousButtonHtmlObj = new HtmlGenerator(templatePath,ImageBrowse.IMG_PREVIOUS_LIST_TEMPLATE );
-		previousButton = previousButtonHtmlObj.createHtmlString( prevButtonVm, req );
-	    }
-	if (img_numbers > counter+max)
-	    {
-		HtmlGenerator nextButtonHtmlObj = new HtmlGenerator(templatePath,ImageBrowse.IMG_NEXT_LIST_TEMPLATE );
-		nextButton = nextButtonHtmlObj.createHtmlString( nextButtonVm, req );
-	    }
+	if (counter > 0) {
+	    HtmlGenerator previousButtonHtmlObj = new HtmlGenerator(templatePath,ImageBrowse.IMG_PREVIOUS_LIST_TEMPLATE );
+	    previousButton = previousButtonHtmlObj.createHtmlString( prevButtonVm, req );
+	}
+	if (img_numbers > counter+max) {
+	    HtmlGenerator nextButtonHtmlObj = new HtmlGenerator(templatePath,ImageBrowse.IMG_NEXT_LIST_TEMPLATE );
+	    nextButton = nextButtonHtmlObj.createHtmlString( nextButtonVm, req );
+	}
 
 	//*lets create the image folder option list
-	for (int x=0; x<folderList.size(); x++)
-	    {
-		File fileObj = (File) folderList.get(x);
+	for (int x=0; x<folderList.size(); x++) {
+	    File fileObj = (File) folderList.get(x);
 
-		//ok lets set up the folder name to show and the one to put as value
-		String optionName = fileObj.getCanonicalPath();
-		//lets remove the start of the path so we end up at the rootdir.
-		if (optionName.startsWith(canon_path))
-		    {
-			optionName = optionName.substring(root_dir_parent.length()) ;
-			if (optionName.startsWith(File.separator))
-			    {
-				optionName = optionName.substring(File.separator.length()) ;
-			    }
-		    }else if(optionName.startsWith(File.separator))
-			{
-			    optionName = optionName.substring(File.separator.length()) ;
-			}
-		//the path to put in the option value
-		String optionPath = optionName;
-		if (optionPath.startsWith(root_dir_name))
-		    {
-			optionPath = optionPath.substring(root_dir_name.length());
-		    }
-		//ok now we have to replace all parent folders with a '-' char
-		StringTokenizer token = new StringTokenizer(optionName,"\\",false);
-		StringBuffer buff = new StringBuffer("");
-		while ( token.countTokens() > 1 )
-		    {
-			String temp = token.nextToken();
-			buff.append("&nbsp;&nbsp;-");
-		    }
-		if (token.countTokens() > 0)
-		    {
-			optionName = buff.toString()+token.nextToken();
-		    }
-		File urlFile = new File(optionName) ;
-		String fileName = urlFile.getName() ;
-		File parentDir = urlFile.getParentFile() ;
-		if (parentDir != null)
-		    {
-			optionName = parentDir.getPath()+"/" ;
-		    }
-		else
-		    {
-			optionName = "" ;
-		    }
-		//filepathfix ex: images\nisse\kalle.gif to images/nisse/kalle.gif
-		optionName = optionName.replace(File.separatorChar,'/')+fileName ;
-		StringTokenizer tokenizer = new StringTokenizer(optionName, "/", true);
-		StringBuffer filePathSb = new StringBuffer();
-		StringBuffer displayFolderName = new StringBuffer();
-		//the URLEncoder.encode() method replaces '/' whith "%2F" and the can't be red by the browser
-		//that's the reason for the while-loop.
-		while ( tokenizer.countTokens() > 0 )
-		    {
-			String temp = tokenizer.nextToken();
-			if (temp.length() > 1)
-			    {
-				filePathSb.append(java.net.URLEncoder.encode(temp));
-			    }else
-				{
-				    filePathSb.append(temp);
-				}
-		    }
-		optionName = optionName.replace('-','\\');//Gud strul
-		String parsedFilePath = filePathSb.toString() ;
-		folderOptions.append("<option value=\"" + optionPath + "\"" + (optionPath.equals(img_dir_preset)?" selected":"") + ">" + optionName + "</option>\r\n");
-	    }//end setUp option dir list
+	    //ok lets set up the folder name to show and the one to put as value
+	    String optionName = fileObj.getCanonicalPath();
+	    //lets remove the start of the path so we end up at the rootdir.
+	    if (optionName.startsWith(canon_path)) {
+		optionName = optionName.substring(root_dir_parent.length()) ;
+		if (optionName.startsWith(File.separator)) {
+		    optionName = optionName.substring(File.separator.length()) ;
+		}
+	    } else if(optionName.startsWith(File.separator)) {
+		optionName = optionName.substring(File.separator.length()) ;
+	    }
+	    //the path to put in the option value
+	    String optionPath = optionName;
+	    if (optionPath.startsWith(root_dir_name)) {
+		optionPath = optionPath.substring(root_dir_name.length());
+	    }
+	    //ok now we have to replace all parent folders with a '-' char
+	    StringTokenizer token = new StringTokenizer(optionName,"\\",false);
+	    StringBuffer buff = new StringBuffer("");
+	    while ( token.countTokens() > 1 ) {
+		String temp = token.nextToken();
+		buff.append("&nbsp;&nbsp;-");
+	    }
+	    if (token.countTokens() > 0) {
+		optionName = buff.toString()+token.nextToken();
+	    }
+	    File urlFile = new File(optionName) ;
+	    String fileName = urlFile.getName() ;
+	    File parentDir = urlFile.getParentFile() ;
+	    if (parentDir != null) {
+		optionName = parentDir.getPath()+"/" ;
+	    } else {
+		optionName = "" ;
+	    }
+	    //filepathfix ex: images\nisse\kalle.gif to images/nisse/kalle.gif
+	    optionName = optionName.replace(File.separatorChar,'/')+fileName ;
+	    StringTokenizer tokenizer = new StringTokenizer(optionName, "/", true);
+	    StringBuffer filePathSb = new StringBuffer();
+	    StringBuffer displayFolderName = new StringBuffer();
+	    //the URLEncoder.encode() method replaces '/' whith "%2F" and the can't be red by the browser
+	    //that's the reason for the while-loop.
+	    while ( tokenizer.countTokens() > 0 ) {
+		String temp = tokenizer.nextToken();
+		if (temp.length() > 1) {
+		    filePathSb.append(java.net.URLEncoder.encode(temp));
+		} else {
+		    filePathSb.append(temp);
+		}
+	    }
+	    optionName = optionName.replace('-','\\');//Gud strul
+	    String parsedFilePath = filePathSb.toString() ;
+	    folderOptions.append("<option value=\"" + optionPath + "\"" + (optionPath.equals(img_dir_preset)?" selected":"") + ">" + optionName + "</option>\r\n");
+	}//end setUp option dir list
 
 
 	//*lets create the image file option list
-	for(int i=counter; i< imgList.size() && i<counter+max;i++ )
-	    {
-		File fileObj = (File) imgList.get(i);
-		try
-		    {
-			String fileLen = "" + fileObj.length();
-		    } catch (SecurityException e)
-			{
-			    String fileLen = "Read ERROR";
-			}
-
-		String filePath = fileObj.getCanonicalPath() ;
-		if (filePath.startsWith(canon_path))
-		    {
-			filePath = filePath.substring(canon_path.length()) ;
-		    }
-		if (filePath.startsWith(File.separator))
-		    {
-			filePath = filePath.substring(File.separator.length()) ;
-		    }
-
-		//lets copy the path before we gets rid of parent-dirs in the string to show
-		//not whery sexy but it whill do fore now
-		String imagePath = filePath;
-		StringTokenizer token = new StringTokenizer(imagePath,"\\",false);
-		StringBuffer buff = new StringBuffer("");
-		while ( token.countTokens() > 1 )
-		    {
-			String temp = token.nextToken();
-			//do nothing just get rid of every token exept the image name
-		    }
-		if (token.countTokens() > 0)
-		    {
-			imagePath = buff.toString()+token.nextToken();
-		    }
-
-		File urlFile = new File(filePath) ;
-		String fileName = urlFile.getName() ;
-		File parentDir = urlFile.getParentFile() ;
-
-		if (parentDir != null)
-		    {
-			filePath = parentDir.getPath()+"/" ;
-		    }
-		else
-		    {
-			filePath = "" ;
-		    }
-
-
-		filePath = filePath.replace(File.separatorChar,'/')+fileName ;
-		StringTokenizer tokenizer = new StringTokenizer(filePath, "/", true);
-		StringBuffer filePathSb = new StringBuffer();
-		//the URLEncoder.encode() method replaces '/' whith "%2F" and the can't be red by the browser
-		//that's the reason for the while-loop.
-		while ( tokenizer.countTokens() > 0 )
-		    {
-			String temp = tokenizer.nextToken();
-			if (temp.length() > 1)
-			    {
-				filePathSb.append(java.net.URLEncoder.encode(temp));
-			    }else
-				{
-				    filePathSb.append(temp);
-				}
-		    }
-
-		String parsedFilePath = filePathSb.toString() ;
-
-		imageOptions.append("<option value=\"" + parsedFilePath + "\"" + (parsedFilePath.equals(img_preset)?" selected":"") + ">" + imagePath + "\t[" + fileObj.length() + "]</option>\r\n");
+	for(int i=counter; i< imgList.size() && i<counter+max;i++ ) {
+	    File fileObj = (File) imgList.get(i);
+	    try	{
+		String fileLen = "" + fileObj.length();
+	    } catch (SecurityException e) {
+		String fileLen = "Read ERROR";
 	    }
-	counter += max; //image counter
 
+	    String filePath = fileObj.getCanonicalPath() ;
+	    if (filePath.startsWith(canon_path)) {
+		filePath = filePath.substring(canon_path.length()) ;
+	    }
+	    if (filePath.startsWith(File.separator)) {
+		filePath = filePath.substring(File.separator.length()) ;
+	    }
+
+	    //lets copy the path before we gets rid of parent-dirs in the string to show
+	    //not whery sexy but it whill do fore now
+	    String imagePath = filePath;
+	    StringTokenizer token = new StringTokenizer(imagePath,"\\",false);
+	    StringBuffer buff = new StringBuffer("");
+	    while ( token.countTokens() > 1 ) {
+		String temp = token.nextToken();
+		//do nothing just get rid of every token exept the image name
+	    }
+	    if (token.countTokens() > 0) {
+		imagePath = buff.toString()+token.nextToken();
+	    }
+
+	    File urlFile = new File(filePath) ;
+	    String fileName = urlFile.getName() ;
+	    File parentDir = urlFile.getParentFile() ;
+
+	    if (parentDir != null) {
+		filePath = parentDir.getPath()+"/" ;
+	    } else {
+		filePath = "" ;
+	    }
+
+
+	    filePath = filePath.replace(File.separatorChar,'/')+fileName ;
+	    StringTokenizer tokenizer = new StringTokenizer(filePath, "/", true);
+	    StringBuffer filePathSb = new StringBuffer();
+	    //the URLEncoder.encode() method replaces '/' whith "%2F" and the can't be red by the browser
+	    //that's the reason for the while-loop.
+	    while ( tokenizer.countTokens() > 0 ) {
+		String temp = tokenizer.nextToken();
+		if (temp.length() > 1) {
+		    filePathSb.append(java.net.URLEncoder.encode(temp));
+		} else {
+		    filePathSb.append(temp);
+		}
+	    }
+
+	    String parsedFilePath = filePathSb.toString() ;
+
+	    imageOptions.append("<option value=\"" + parsedFilePath + "\"" + (parsedFilePath.equals(img_preset)?" selected":"") + ">" + imagePath + "\t[" + fileObj.length() + "]</option>\r\n");
+	}
+	counter += max; //image counter
 
 	//** ok now we have to set up the response page
 	// TEMPLATE ImageBrowse.html
