@@ -195,7 +195,7 @@
             description="Defines global filters.">
 
         <!-- Global filters -->
-        <filter token="apiuri"              value="${apiuri}"/>   
+        <filter token="apiuri"              value="${apiuri}"/>
         <filter token="defaultlanguage"     value="${defaultlanguage}"/>
         <filter token="rooturl"             value="${rooturl}"/>
         <filter token="servleturl"          value="${servleturl}"/>
@@ -684,27 +684,31 @@
     <target name="admintemplates" depends="init,tools,language-property-files" description="Copies and filters the admintemplates.">
 
         <mkdir dir="${admintemplates}"/>
-        <mkdir dir="${searchtemplates}"/>
-
         <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
                      starttoken="&lt;? " endtoken=" ?&gt;"
                      todir="${admintemplates}" filtering="true">
             <fileset dir="templates/sv">
-            <patternset>
-                <include name="adminbuttons/**"/>
-                <include name="docinfo/**"/>
-                <include name="permissions/**"/>
-                <include name="search/**"/>
-                <include name="sections/**"/>
-                <include name="shop/**"/>
-                <include name="textdoc/**"/>
-                <include name="*.htm"/>
-                <include name="*.html"/>
-                <include name="*.ini"/>
-                <include name="*.txt"/>
-            </patternset>
+                <patternset>
+                    <include name="adminbuttons/**"/>
+                    <include name="docinfo/**"/>
+                    <include name="permissions/**"/>
+                    <include name="sections/**"/>
+                    <include name="shop/**"/>
+                    <include name="textdoc/**"/>
+                    <include name="*.htm"/>
+                    <include name="*.html"/>
+                    <include name="*.ini"/>
+                    <include name="*.txt"/>
+                </patternset>
             </fileset>
         </imtranslate>
+
+        <mkdir dir="${searchtemplates}"/>
+        <imtranslate bundle="templates/imcms" bundlelanguage="${defaultlanguage}"
+                     starttoken="&lt;? " endtoken=" ?&gt;"
+                     todir="${searchtemplates}" filtering="true">
+            <fileset dir="templates/sv/search"/>
+         </imtranslate>
 
         <replace dir="${admintemplates}/adminbuttons" excludes="adminbuttons.html"
             token="&#10;" value=""/>
