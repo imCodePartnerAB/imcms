@@ -689,7 +689,7 @@ public class AdminUserProps extends Administrator {
             //save phone numbers from phonesV  ( phonesV : id, number, user_id, phonetype_id )
             if ( null != phonesV && phonesV.size() > 0 ) {
 
-                addPhonesToUser(userFromRequest, phonesV);
+                updateUserPhones(userFromRequest, phonesV);
             }
 
         } else {
@@ -1558,7 +1558,7 @@ public class AdminUserProps extends Administrator {
     } // End verifyPassword
 
     /**
-     * Creates a sql parameter array used to run sproc updateUser
+     * Creates a sql parameter array used to run sproc updateUserPhones
      */
     public static String[] extractUpdateUserSprocParametersFromProperties( Properties props ) {
 
@@ -1579,12 +1579,20 @@ public class AdminUserProps extends Administrator {
         return params;
     }
 
-    private void addPhonesToUser(UserDomainObject userToChange, Vector phonesV ){
+    private void updateUserPhones(UserDomainObject userToChange, Vector phonesV){
         final int PHONE_TYPE_OTHER_PHONE = 0;
         final int PHONE_TYPE_HOME_PHONE = 1;
         final int PHONE_TYPE_WORK_PHONE = 2;
         final int PHONE_TYPE_WORK_MOBILE = 3;
         final int PHONE_TYPE_FAX_PHONE = 4;
+
+
+        userToChange.setOtherPhone("");
+        userToChange.setHomePhone("");
+        userToChange.setWorkPhone("");
+        userToChange.setFaxPhone("");
+        userToChange.setMobilePhone("");
+
 
         for ( int i = 0; i < phonesV.size(); i++ ) {
             String[] aPhone = (String[])phonesV.elementAt( i );
