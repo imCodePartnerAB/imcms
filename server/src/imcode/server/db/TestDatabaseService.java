@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 public class TestDatabaseService extends Log4JConfiguredTestCase {
 
-    private final boolean testMimer = true;  // because it is so slow to test this database we need sometimes to turn those tests off.
+    private final boolean testMimer = true ;  // because it is so slow to test this database we need sometimes to turn those tests off.
 
     static final String DB_HOST = "localhost";
 
@@ -228,6 +228,12 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         dbService.sproc_AddNewuser( user );
         int rowCount = dbService.sproc_phoneNbrAdd( 3, "1234567", 0 );
         assertEquals( 1, rowCount );
+    }
+
+    public void test_sproc_GetPhonetypeName() {
+        assertEquals( "Annat", sqlServer.sproc_GetPhonetypeName(0,1));
+        assertEquals( "Annat", mySql.sproc_GetPhonetypeName(0,1));
+        if( testMimer ) assertEquals( "Annat", mimer.sproc_GetPhonetypeName(0,1));
     }
 
     public void test_sproc_AddUseradminPermissibleRoles() {

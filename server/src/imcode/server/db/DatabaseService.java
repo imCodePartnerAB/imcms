@@ -594,4 +594,16 @@ public class DatabaseService {
                                              new Integer(user_id), new Integer( phone_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
+
+    String sproc_GetPhonetypeName( int phonetype_id, int lang_id ) {
+        String sql = "select typename from phonetypes " +
+            "where phonetype_id = ? and lang_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer(phonetype_id), new Integer(lang_id) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return rs.getString(1);
+            }
+        } );
+        return (String)queryResult.get(0);
+    }
 }
