@@ -71,7 +71,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Contructs an IMCService object.
      */
     public IMCService( ConnectionPool conPool, Properties props ) {
-        super();
         m_conPool = conPool;
         initMemberFields( props );
         initAuthenticatorsAndUserAndRoleMappers( props );
@@ -179,7 +178,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             externalUserAndRoleMapperName = null;
         }
         imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( this );
-        externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator, externalUserAndRoleMapper, getDefaultLanguageAsIso639_1() );
+        externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator, externalUserAndRoleMapper, getDefaultLanguageAsIso639_2() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
