@@ -48,7 +48,7 @@ public class AddDoc extends HttpServlet {
         SimpleDateFormat formatter = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
         Date toDay = new Date();
         vec.add( "#start_date#" );
-        vec.add( null );
+        vec.add( "" );
         vec.add( "#end_date#" );
         vec.add( formatter.format( toDay ) );
 
