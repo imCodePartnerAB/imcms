@@ -4,8 +4,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 
-public abstract class HttpPageFlow {
+public abstract class HttpPageFlow implements Serializable {
 
     public static final String REQUEST_PARAMETER__PAGE = "page";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";

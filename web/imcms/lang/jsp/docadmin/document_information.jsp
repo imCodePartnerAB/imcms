@@ -173,7 +173,7 @@ function checkFocus() {
 		<tr>
 			<td width="85%"><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__IMAGE %>" size="40" maxlength="255" style="width: 100%"
 			value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMenuImage(), "" )) %>"></td>
-			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSE%>"
+			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
 			value=" <? install/htdocs/global/pageinfo/browse ?> "></td>
 		</tr>
 		<input type="hidden" name="<%=
@@ -492,7 +492,7 @@ function checkFocus() {
 			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= formatTime( document.getCreatedDatetime() ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?>
-			<%= formatUser(document.getCreator()) %></td>
+			<%= formatUser(document.getCreator()) %>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_creator_button ?>"></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -522,7 +522,7 @@ function checkFocus() {
 		null == publisher
 		? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_publisher ?>"
 		: formatUser(publisher)
-		%>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSE %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_publisher_button ?>"></td>
+		%>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_publisher_button ?>"></td>
 	</tr>
 	<tr>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
@@ -545,14 +545,11 @@ function checkFocus() {
 		<script language="javascript">
 		if (hasGetElementById) {
 			document.writeln('<td><input type="button" id="advanced_button2" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td>') ;
-			document.writeln('<td>&nbsp;</td>') ;
+			document.writeln('<td>&nbsp;&nbsp;</td>') ;
 		}
 		</script>
 		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>"
 		value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> "></td>
-		<td>&nbsp;</td>
-		<td><input type="RESET" class="imcmsFormBtn" name="reset"
-		value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2005 ?>"></td>
 		<td>&nbsp;</td>
 		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>"
 		value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2006 ?>"></td>

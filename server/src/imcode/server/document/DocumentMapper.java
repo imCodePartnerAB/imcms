@@ -906,7 +906,6 @@ public class DocumentMapper {
     private void sqlUpdateMeta(DocumentDomainObject document) {
         String headline = document.getHeadline();
         String text = document.getMenuText();
-        UserDomainObject publisher = document.getPublisher();
 
         StringBuffer sqlStr = new StringBuffer("update meta set ");
 
@@ -930,8 +929,14 @@ public class DocumentMapper {
         makeBooleanSqlUpdateClause("shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("show_meta", document.isVisibleInMenusForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues);
         makeBooleanSqlUpdateClause("permissions", document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(), sqlUpdateColumns, sqlUpdateValues);
+        UserDomainObject publisher = document.getPublisher();
         makeIntSqlUpdateClause("publisher_id", (publisher == null ? null : new Integer(publisher.getId())), sqlUpdateColumns,
                 sqlUpdateValues);
+        UserDomainObject creator = document.getCreator();
+        if (null != creator) {
+            makeIntSqlUpdateClause("owner_id", new Integer(creator.getId()), sqlUpdateColumns,
+                sqlUpdateValues);
+        }
         makeIntSqlUpdateClause("status", new Integer(document.getStatus()), sqlUpdateColumns, sqlUpdateValues);
 
         sqlStr.append(StringUtils.join(sqlUpdateColumns.iterator(), ","));

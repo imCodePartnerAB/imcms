@@ -53,9 +53,11 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     public static final String REQUEST_PARAMETER__MODIFIED_TIME = "modified_time";
     public static final String REQUEST_PARAMETER__PUBLISHER_ID = "publisher_id";
     public static final String REQUEST_PARAMETER__STATUS = "status";
-    public static final String REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSE = "browseForPublisher";
-    public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSE = "browseForMenuImage";
-    private static final String PAGE__USER_BROWSER = "user_browser";
+    public static final String REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSER = "browseForPublisher";
+    public static final String REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER = "browseForCreator";
+    public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "browseForMenuImage";
+    private static final String PAGE__PUBLISHER_USER_BROWSER = "publisher_user_browser";
+    private static final String PAGE__CREATOR_USER_BROWSER = "creator_user_browser";
     private static final String PAGE__IMAGE_BROWSER = "image_browser";
     public static final String PAGE__DOCUMENT_INFORMATION = "document_information";
 
@@ -72,8 +74,10 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
     }
 
     private void dispatchFromOtherPage( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
-        if ( PAGE__USER_BROWSER.equals( page ) ) {
-            dispatchFromUserBrowser( request, response );
+        if ( PAGE__PUBLISHER_USER_BROWSER.equals( page ) ) {
+            dispatchFromPublisherUserBrowser( request, response );
+        } else if ( PAGE__CREATOR_USER_BROWSER.equals( page ) ) {
+            dispatchFromCreatorUserBrowser( request, response );
         } else if ( PAGE__IMAGE_BROWSER.equals( page ) ) {
             dispatchFromImageBrowser( request, response );
         }
@@ -89,7 +93,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         dispatchToFirstPage( request, response );
     }
 
-    private void dispatchFromUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+    private void dispatchFromPublisherUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( request );
         if ( userBrowserFacade.isUserSelected() ) {
             document.setPublisher( userBrowserFacade.getSelectedUser() );
@@ -97,11 +101,24 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
         dispatchToFirstPage( request, response );
     }
 
+    private void dispatchFromCreatorUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( request );
+        if ( userBrowserFacade.isUserSelected() ) {
+            UserDomainObject selectedUser = userBrowserFacade.getSelectedUser();
+            if (null != selectedUser) {
+                document.setCreator( selectedUser );
+            }
+        }
+        dispatchToFirstPage( request, response );
+    }
+
     private void dispatchFromDocumentInformation( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         setDocumentAttributesFromRequestParameters( document, request );
-        if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSE ) ) {
-            dispatchToUserBrowser( request, response );
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSE ) ) {
+        if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSER ) ) {
+            dispatchToPublisherUserBrowser( request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER ) ) {
+            dispatchToCreatorUserBrowser( request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER ) ) {
             dispatchToImageBrowser( request, response );
         }
     }
@@ -112,11 +129,19 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
                                       + java.net.URLEncoder.encode( returnUrl ) ).forward( request, response );
     }
 
-    private void dispatchToUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+    private void dispatchToPublisherUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        dispatchToUserBrowser( request, response, PAGE__PUBLISHER_USER_BROWSER );
+    }
+
+    private void dispatchToCreatorUserBrowser( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        dispatchToUserBrowser( request, response, PAGE__CREATOR_USER_BROWSER );
+    }
+
+    private void dispatchToUserBrowser( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException {
         UserBrowserFacade userBrowserFacade = UserBrowserFacade.getInstance( request );
         userBrowserFacade.setSelectButton( UserBrowserFacade.SELECT_BUTTON__SELECT_USER );
         userBrowserFacade.setUsersAddable( false );
-        String returnUrl = createReturnUrlFromPage( request, PAGE__USER_BROWSER );
+        String returnUrl = createReturnUrlFromPage( request, page );
         userBrowserFacade.setForwardReturnUrl( returnUrl );
         userBrowserFacade.forward( request, response );
     }
