@@ -83,21 +83,21 @@ function setAdminTask() {
 </SCRIPT>
 </head>
 
-<body bgcolor="#FFFFFF">
+<body bgcolor="#ffffff">
 <center>
   <form method="post" action="SendMailServlet" name="mail">
     <br>
-    <table width="452" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
+    <table width="452" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffffff">
       <tr> 
-        <td colspan="3"><font face="Verdana, Arial, Helvetica, sans-serif" size="6" color="#000000"><b><i><font size="5">Janus 
+        <td colspan="3"><font face="Verdana, Arial, Helvetica, sans-serif" size="6" color="#000000"><b><i><font size="5"> 
           Konferens</font></i></b></font><br>
-          <img src="#IMAGE_URL#blueline.gif" width="452" height="8"></td>
+          <IMG height=8 src="#IMAGE_URL#blueline.gif" width=452></td>
       </tr>
       <tr> 
         <td colspan="3"> <br>
           <font face="Verdana, Arial, Helvetica, sans-serif" size="3"> Fyll i 
-          formul&auml;ret s&aring; registrerar vi dig omg&aring;ende. Vi kontaktar 
-          dig n&auml;r du &auml;r registrerad.<br>
+          formuläret så registrerar vi dig omgående. Vi kontaktar 
+          dig när du är registrerad.<br>
           <br>
           <input type="hidden" name="login_type" value="ADD_USER">
           <input type="hidden" name="to2" value="rickard.larsson@tjelvar.org">
@@ -106,14 +106,15 @@ function setAdminTask() {
       </tr>
       <tr> 
         <td width="39%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-          &nbsp;ANV&Auml;NDARNAMN</font></td>
+          &nbsp;ANVÄNDARNAMN</font></td>
         <td width="4%">&nbsp; </td>
         <td width="57%"> 
-          <input type="text" name="login_name" size="25">
+          <input name="login_name" size="25" 
+     >
         </td>
       </tr>
       <tr> 
-        <td width="39%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;L&Ouml;SENORD</font></td>
+        <td width="39%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;LÖSENORD</font></td>
         <td width="4%">&nbsp; </td>
         <td width="57%"> 
           <input type="password" name="password1" size="25">
@@ -121,7 +122,7 @@ function setAdminTask() {
       </tr>
       <tr> 
         <td width="39%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;VERIFIERA 
-          L&Ouml;SENORD </font></td>
+          LÖSENORD </font></td>
         <td width="4%">&nbsp; </td>
         <td width="57%"> 
           <input type="password" name="password2" size="25">
@@ -132,35 +133,40 @@ function setAdminTask() {
           / TITEL</font> </td>
         <td width="4%">&nbsp;</td>
         <td width="57%"> 
-          <input type="text" name="profession" size="25">
+          <input name="profession" size="25" 
+     >
         </td>
       </tr>
       <tr> 
-        <td width="39%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;F&Ouml;RNAMN</font></td>
+        <td width="39%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;FÖRNAMN</font></td>
         <td width="4%">&nbsp; </td>
         <td width="57%"> 
-          <input type="text" name="first_name" size="25">
+          <input name="first_name" size="25" 
+     >
         </td>
       </tr>
       <tr> 
         <td width="39%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;EFTERNAMN</font></td>
         <td width="4%">&nbsp; </td>
         <td width="57%"> 
-          <input type="text" name="last_name" size="25">
+          <input name="last_name" size="25" 
+     >
         </td>
       </tr>
       <tr> 
         <td width="39%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;ARBETSPLATS</font></td>
         <td width="4%">&nbsp;</td>
         <td width="57%"> 
-          <input type="text" name="work_adress" size="25">
+          <input name="work_adress" size="25" 
+     >
         </td>
       </tr>
       <tr> 
         <td width="39%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;ORT</font></td>
         <td width="4%">&nbsp; </td>
         <td width="57%"> 
-          <input type="text" name="city" size="25">
+          <input name="city" size="25" 
+     >
         </td>
       </tr>
       <tr> 
@@ -168,14 +174,16 @@ function setAdminTask() {
           ARBETE </font></td>
         <td width="4%">&nbsp;</td>
         <td width="57%"> 
-          <input type="text" name="phone" size="25">
+          <input name="phone" size="25" 
+     >
         </td>
       </tr>
       <tr> 
         <td width="39%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;EMAIL</font></td>
         <td width="4%">&nbsp;</td>
         <td width="57%"> 
-          <input type="text" name="from" size="25">
+          <input name="from" size="25" 
+     >
         </td>
       </tr>
       <tr> 
@@ -185,10 +193,10 @@ function setAdminTask() {
       </tr>
       <tr> 
         <td height="4" colspan="3"> <br>
-          <img src="#IMAGE_URL#blueline.gif" width="452" height="4"> </td>
+          <IMG height=4 src="#IMAGE_URL#blueline.gif" width=452> </td>
       </tr>
       <tr> 
-        <td width="39%"><a href="#SERVLET_URL#ConfLogin">Tillbaka till loginsidan</a></td>
+        <td width="39%"><A href="#SERVLET_URL#ConfLogin">Tillbaka till loginsidan</a></td>
         <td width="4%">&nbsp;</td>
         <td width="57%"> &nbsp; 
           <input name=saveNewUser type=submit value="OK">
@@ -197,7 +205,7 @@ function setAdminTask() {
       </tr>
     </table>
     <br>
-    <input type="text" name="subject" size="40">
+    <input name="subject" size="40" >
     <br>
   </form>
   <div align="center"> 
@@ -205,7 +213,7 @@ function setAdminTask() {
     <p>&nbsp;</p>
   </div>
 </center>
-<p>&nbsp; </p>
+<p> </p>
 </body>
 </html>
 
