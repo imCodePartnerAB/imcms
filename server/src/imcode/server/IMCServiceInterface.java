@@ -13,6 +13,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.db.ConnectionPool;
 import imcode.util.net.SMTP;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.VelocityContext;
 
 /**
  * Interface for the Imcode Net Server.
@@ -256,4 +257,6 @@ public interface IMCServiceInterface {
     Collator getDefaultLanguageCollator();
 
     VelocityEngine getVelocityEngine(UserDomainObject user);
+
+    VelocityContext getVelocityContext( UserDomainObject user );
 }

@@ -2,6 +2,7 @@ package imcode.util;
 
 import imcode.server.ApplicationServer;
 import imcode.server.WebAppGlobalConstants;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import org.apache.velocity.VelocityContext;
 
@@ -116,8 +117,10 @@ public class Utility {
 
     public static String evaluateVelocity( String template, HttpServletRequest request ) throws Exception {
         UserDomainObject user = getLoggedOnUser( request );
+        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        VelocityContext context = service.getVelocityContext(user) ;
         StringWriter out = new StringWriter() ;
-        ApplicationServer.getIMCServiceInterface().getVelocityEngine(user).evaluate( new VelocityContext(), out, "velocity", template ) ;
+        service.getVelocityEngine(user).evaluate( context, out, "velocity", template ) ;
         return out.toString() ;
     }
 

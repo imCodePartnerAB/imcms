@@ -5,6 +5,7 @@ import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.parser.AdminButtonParser;
 import imcode.server.user.UserDomainObject;
 
@@ -207,7 +208,7 @@ public class MetaDataParser {
                 }
             }
             // If the role has no permissions for this document, we put it away in a special html-optionlist.
-            if ( role_set_id == IMCConstants.DOC_PERM_SET_NONE ) {
+            if ( role_set_id == DocumentPermissionSetDomainObject.TYPE_ID__NONE ) {
                 roles_no_rights.append( "<option value=\"" + role_id + "\">" + role_name + "</option>" );
                 roles_rights.append( "<input type=\"hidden\" name=\"role_" + role_id + "\" value=\"4\">" );
                 // So... it's put away for later... we don't need it now.
@@ -217,18 +218,18 @@ public class MetaDataParser {
             vec2.add( "#role_name#" );
             vec2.add( role_name );
             vec2.add( "#user_role#" );
-            vec2.add( String.valueOf( IMCConstants.DOC_PERM_SET_FULL ).equals( role_permissions[i][3] ) ? "" : "*" );
+            vec2.add( String.valueOf( DocumentPermissionSetDomainObject.TYPE_ID__FULL ).equals( role_permissions[i][3] ) ? "" : "*" );
 
-            for ( int j = IMCConstants.DOC_PERM_SET_FULL; j <= IMCConstants.DOC_PERM_SET_NONE; ++j ) { // From DOC_PERM_SET_FULL to DOC_PERM_SET_NONE (0 to 4)
+            for ( int j = DocumentPermissionSetDomainObject.TYPE_ID__FULL; j <= DocumentPermissionSetDomainObject.TYPE_ID__NONE; ++j ) { // From DOC_PERM_SET_FULL to DOC_PERM_SET_NONE (0 to 4)
                 vec2.add( "#" + j + "#" );
                 if ( user_set_id <= role_set_id		// User has more privileged set_id than role
                      && ( user_set_id <= j
-                          && ( user_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_1
-                               || j != IMCConstants.DOC_PERM_SET_RESTRICTED_2
+                          && ( user_set_id != DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1
+                               || j != DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
                                || ( currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 )
                                   != 0 ) )			// User has more privileged set_id than this set_id
-                     && ( user_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_1
-                          || role_set_id != IMCConstants.DOC_PERM_SET_RESTRICTED_2
+                     && ( user_set_id != DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1
+                          || role_set_id != DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
                           || ( currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) )	// User has set_id 1, and may modify set_id 2?
                 {
                     vec2.add( "<input type=\"radio\" name=\"role_"
@@ -260,7 +261,7 @@ public class MetaDataParser {
             int doc_type = imcref.getDocType( meta_id );
             String default_templates = "";//the string containing default-templates-option-list
 
-            if ( user_set_id == IMCConstants.DOC_PERM_SET_FULL ) {
+            if ( user_set_id == DocumentPermissionSetDomainObject.TYPE_ID__FULL ) {
                 List perm_vec = new ArrayList();
                 if ( ( currentdoc_perms & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 ) != 0 ) {
                     perm_vec.add( "#permissions#" );
@@ -466,7 +467,7 @@ public class MetaDataParser {
         int currentdoc_perms = Integer.parseInt( current_permissions[2] );
 
         // Create an anonymous adminbuttonparser that retrieves the file from the server instead of from the disk.
-        AdminButtonParser adminButtonParser = new AdminButtonParser( "permissions/define_permission_" + doc_type + "_", ".html",
+        AdminButtonParser adminButtonParser = new AdminButtonParser( user, "permissions/define_permission_" + doc_type + "_", ".html",
                                                        user_set_id, user_perm_set ) {
             protected StringBuffer getContent( String name ) {
                 return new StringBuffer( imcref.getAdminTemplate( name, user, null ) );

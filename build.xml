@@ -395,8 +395,6 @@
 
         <property name="imcmsimageurl"      value="${imcmsurl}/${buildlanguage}/images"/>
 
-        <filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
-        <filter token="adminbuttonsurl"     value="${imcmsimageurl}/admin/adminbuttons"/>
         <filter token="htmleditorurl"       value="${imcmsurl}/${buildlanguage}/htmleditor"/>
         <filter token="imcmshtmlurl"        value="${imcmsurl}/${buildlanguage}/html"/>
         <filter token="imcmsjspurl"         value="${imcmsurl}/${buildlanguage}/jsp"/>

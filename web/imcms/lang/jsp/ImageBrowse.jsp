@@ -13,11 +13,9 @@
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text')">
-
 <vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
-</vel:velocity>
 
 <%
     ImageBrowse.FormData imageBrowseFormData;
@@ -35,14 +33,12 @@
     <td><input type="button" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2002 ?>" title="<? install/htdocs/sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
 </tr>
 </table>
-<vel:velocity>
 #gui_mid()
-</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <% if (null != imageBrowseFormData.getImageNumber()) { %>
 <tr>
 	<td colspan="3">
-        <vel:velocity>#gui_heading( "<? install/htdocs/sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormData.getImageNumber()%> <? install/htdocs/sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormData.getMetaId()%>" )</vel:velocity>
+        #gui_heading( "<? install/htdocs/sv/jsp/ImageBrowse.html/4/1 ?> <%=imageBrowseFormData.getImageNumber()%> <? install/htdocs/sv/jsp/ImageBrowse.html/4/2 ?> <%=imageBrowseFormData.getMetaId()%>" )
     </td>
 </tr>
 <% } %>
@@ -90,7 +86,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td colspan="3"><vel:velocity>#gui_hr( "blue" )</vel:velocity></td>
+	<td colspan="3">#gui_hr( "blue" )</td>
 </tr>
 <tr>
 	<td colspan="3" align="right">
@@ -106,7 +102,6 @@
 </tr>
 </table>
 </form>
-<vel:velocity>
 #gui_bottom()
 #gui_outer_end()
 </vel:velocity>

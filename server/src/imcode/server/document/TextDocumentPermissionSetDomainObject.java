@@ -4,15 +4,16 @@ import java.io.Serializable;
 
 public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject implements Serializable {
 
-    private boolean editMenus;
-    private boolean editTemplates;
-    private boolean editIncludes;
-    private boolean editImages;
     private TemplateGroupDomainObject[] allowedTemplateGroups = new TemplateGroupDomainObject[0];
     private int[] allowedDocumentTypeIds = new int[0];
 
-    public TextDocumentPermissionSetDomainObject( int permissionType ) {
-        super( permissionType );
+    private static final String PERMISSION_NAME__EDIT_MENUS = "editMenus";
+    private static final String PERMISSION_NAME__EDIT_TEMPLATES = "editTemplates";
+    private static final String PERMISSION_NAME__EDIT_INCLUDES = "editIncludes";
+    private static final String PERMISSION_NAME__EDIT_IMAGES = "editImages";
+
+    public TextDocumentPermissionSetDomainObject( int typeId ) {
+        super( typeId );
     }
 
     public boolean getEditTexts() {
@@ -24,35 +25,35 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     }
 
     public boolean getEditMenus() {
-        return editMenus;
+        return hasPermission( PERMISSION_NAME__EDIT_MENUS );
     }
 
     public void setEditMenus( boolean editMenus ) {
-        this.editMenus = editMenus;
+        setPermission( PERMISSION_NAME__EDIT_MENUS, editMenus);
     }
 
     public boolean getEditTemplates() {
-        return editTemplates;
+        return hasPermission( PERMISSION_NAME__EDIT_TEMPLATES );
     }
 
     public void setEditTemplates( boolean editTemplates ) {
-        this.editTemplates = editTemplates;
+        setPermission( PERMISSION_NAME__EDIT_TEMPLATES, editTemplates );
     }
 
     public boolean getEditIncludes() {
-        return editIncludes;
+        return hasPermission( PERMISSION_NAME__EDIT_INCLUDES );
     }
 
     public void setEditIncludes( boolean editIncludes ) {
-        this.editIncludes = editIncludes;
+        setPermission( PERMISSION_NAME__EDIT_INCLUDES, editIncludes );
     }
 
     public boolean getEditImages() {
-        return editImages;
+        return hasPermission( PERMISSION_NAME__EDIT_IMAGES );
     }
 
     public void setEditImages( boolean editImages ) {
-        this.editImages = editImages;
+        setPermission( PERMISSION_NAME__EDIT_IMAGES, editImages );
     }
 
     public void setFromBits ( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,

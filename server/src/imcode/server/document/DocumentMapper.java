@@ -134,7 +134,7 @@ public class DocumentMapper {
                                                             DocumentDomainObject parent ) {
         if (userIsSuperAdminOrFullAdminOnDocument( user, parent )) {
             return true;
-        } else if (userHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_RESTRICTED_2, parent )) {
+        } else if (userHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, parent )) {
             int userPermissionSetId = getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
             Integer[] documentTypeIds = getDocumentTypeIdsCreatableByRestrictedPermissionSetIdOnDocument( userPermissionSetId, parent );
             if (Arrays.asList( documentTypeIds ).contains( new Integer( documentTypeId ) )) {
@@ -146,14 +146,14 @@ public class DocumentMapper {
 
     private boolean userIsSuperAdminOrFullAdminOnDocument( UserDomainObject user, DocumentDomainObject parent ) {
         return user.isSuperAdmin()
-                || userHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_FULL, parent );
+                || userHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__FULL, parent );
     }
 
     public int getUsersPermissionBitsOnDocumentIfRestricted( int user_permission_set_id,
                                                              DocumentDomainObject document ) {
         int user_permission_set = 0;
-        if (IMCConstants.DOC_PERM_SET_RESTRICTED_1 == user_permission_set_id
-                || IMCConstants.DOC_PERM_SET_RESTRICTED_2 == user_permission_set_id) {
+        if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == user_permission_set_id
+                || DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == user_permission_set_id) {
             String sqlSelectPermissionBits = "SELECT permission_id FROM doc_permission_sets WHERE meta_id = ? AND set_id = ?";
             String permissionBitsString = service.sqlQueryStr( sqlSelectPermissionBits, new String[]{
                 "" + document.getId(), "" + user_permission_set_id
@@ -179,13 +179,29 @@ public class DocumentMapper {
         return documentTypeIds;
     }
 
+    public DocumentPermissionSetDomainObject getUsersMostPrivilegedPermissionSetOnDocument( UserDomainObject user, DocumentDomainObject document) {
+        int permissionSetId = getUsersMostPrivilegedPermissionSetIdOnDocument(user, document);
+        switch (permissionSetId) {
+            case DocumentPermissionSetDomainObject.TYPE_ID__FULL:
+                return DocumentPermissionSetDomainObject.FULL ;
+            case DocumentPermissionSetDomainObject.TYPE_ID__READ:
+                return DocumentPermissionSetDomainObject.READ ;
+            case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1:
+                return document.getPermissionSetForRestrictedOne() ;
+            case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
+                return document.getPermissionSetForRestrictedTwo() ;
+            default:
+                return null ;
+        }
+    }
+
     public int getUsersMostPrivilegedPermissionSetIdOnDocument( UserDomainObject user, DocumentDomainObject document ) {
         if (user.isSuperAdmin()) {
-            return IMCConstants.DOC_PERM_SET_FULL;
+            return DocumentPermissionSetDomainObject.TYPE_ID__FULL;
         }
         Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds();
         RoleDomainObject[] usersRoles = user.getRoles();
-        int mostPrivilegedPermissionSetIdFoundYet = IMCConstants.DOC_PERM_SET_NONE;
+        int mostPrivilegedPermissionSetIdFoundYet = DocumentPermissionSetDomainObject.TYPE_ID__NONE;
         for (int i = 0; i < usersRoles.length; i++) {
             RoleDomainObject usersRole = usersRoles[i];
             Integer permissionSetId = ((Integer) rolesMappedToPermissionSetIds.get( usersRole ));
@@ -212,9 +228,9 @@ public class DocumentMapper {
                 int permissionSetId = getUsersMostPrivilegedPermissionSetIdOnDocument( user, parent );
                 TemplateMapper templateMapper = service.getTemplateMapper();
                 TemplateDomainObject template = null;
-                if (IMCConstants.DOC_PERM_SET_RESTRICTED_1 == permissionSetId) {
+                if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == permissionSetId) {
                     template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetOne() );
-                } else if (IMCConstants.DOC_PERM_SET_RESTRICTED_2 == permissionSetId) {
+                } else if (DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == permissionSetId) {
                     template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo() );
                 }
                 if (null != template) {
@@ -682,11 +698,11 @@ public class DocumentMapper {
     }
 
     public boolean userHasAtLeastDocumentReadPermission( UserDomainObject user, DocumentDomainObject document ) {
-        return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_READ, document );
+        return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__READ, document );
     }
 
     public boolean userHasMoreThanReadPermissionOnDocument( UserDomainObject user, DocumentDomainObject document ) {
-        return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_RESTRICTED_2, document );
+        return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, document );
     }
 
     public boolean userHasPermissionToAddDocumentToMenu( UserDomainObject user, DocumentDomainObject document ) {

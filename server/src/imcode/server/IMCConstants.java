@@ -1,5 +1,7 @@
 package imcode.server ;
 
+import imcode.server.document.DocumentPermissionSetDomainObject;
+
 public interface IMCConstants {
 
     /* Permissions for restricted permission-sets 1 and 2, applicable for all document-types. */
@@ -49,24 +51,6 @@ public interface IMCConstants {
 
     /** Permission to change the includes of a text-document. **/
     public final static int PERM_EDIT_TEXT_DOCUMENT_INCLUDES   = (1 << 20) ; // 1048576
-
-
-    /* Document-Permission-sets. */
-
-    /** Permission to change everything for a document. **/
-    public final static int DOC_PERM_SET_FULL            = 0 ;
-
-    /** Permissions as given to restricted permission-set 1. **/
-    public final static int DOC_PERM_SET_RESTRICTED_1    = 1 ;
-
-    /** Permissions as given to restricted permission-set 2. **/
-    public final static int DOC_PERM_SET_RESTRICTED_2    = 2 ;
-
-    /** Read-only-permissions. **/
-    public final static int DOC_PERM_SET_READ            = 3 ;
-
-    /** No permissions. Not used in the db, but useful as a placeholder in code. **/
-    public final static int DOC_PERM_SET_NONE            = 4 ;
 
 
     /* Document-wide-permissions. */

@@ -1,4 +1,5 @@
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<vel:velocity>
 <html>
 <head>
 <title><? templates/login/index.html/1 ?></title>
@@ -10,10 +11,8 @@
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'name')">
-<vel:velocity>
 #gui_outer_start()
 #gui_head( "<? templates/login/index.html/2 ?>" )
-</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="0" width="310">
 <form>
 <tr>
@@ -30,14 +29,12 @@
 </tr>
 </form>
 </table>
-<vel:velocity>
 #gui_mid()
-</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="2" width="310">
 <tr>
 	<td colspan="2" nowrap><span class="imcmsAdmText">
 	<? templates/login/index.html/4 ?>
-	<img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="5"><? templates/login/index.html/1001 ?></span></td>
+	<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="5"><? templates/login/index.html/1001 ?></span></td>
 </tr>
 <tr>
 	<td colspan="2">&nbsp;</td>
@@ -74,7 +71,6 @@
 	</table></td>
 </tr>
 </table>
-<vel:velocity>
 #gui_bottom()
 #gui_outer_end()
 </vel:velocity>

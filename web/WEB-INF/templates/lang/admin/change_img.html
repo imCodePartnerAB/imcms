@@ -206,7 +206,7 @@ function checkLinkOnBlur() {
 var sUrl = "#imgUrl#"+"#imgRef#";
 var str  = "";
 if (sUrl.indexOf(".") < 0) {
-	str += "<img src=\"@imcmsimageurl@/admin/1x1.gif\" width=\"1\" height=\"1\" border=\"0\" style=\"display:none\">";
+	str += "<img src=\"$contextPath/imcms/$language/images/admin/1x1.gif\" width=\"1\" height=\"1\" border=\"0\" style=\"display:none\">";
 } else {
 	str += "<table id=\"imgTable\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"100%\">\n";
 	str += "<tr>\n";
@@ -346,8 +346,8 @@ document.write(str);
 	<input type="SUBMIT" class="imcmsFormBtn" name="cancel" value=" <? templates/sv/change_img.html/2008 ?> "></td>
 </tr>
 <tr>
-	<td><img src="@imcmsimageurl@/admin/1x1.gif" width="156" height="1"></td>
-	<td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="156" height="1"></td>
+	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 </tr>
 <input type="hidden" name="low_scr" value="#imgLowScr#">
 </form>

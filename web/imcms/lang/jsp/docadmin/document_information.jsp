@@ -66,7 +66,6 @@
 <vel:velocity>
 #gui_outer_start()
 #gui_head( '<? global/imcms_administration ?>' )
-</vel:velocity>
 <form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
@@ -75,9 +74,7 @@
     <td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2002 ?>" title="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(77)"></td>
 </tr>
 </table>
-<vel:velocity>
 #gui_mid()
-</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
         <input type="hidden"
             name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
@@ -94,14 +91,14 @@
     </tr>
     <tr>  
         <td>
-            <vel:velocity>#gui_heading( '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>' )</vel:velocity>
+            #gui_heading( '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>' )
         </td>
     </tr>
     <% } else { %>
         <input type="hidden" name="<%=DocumentComposer.REQUEST_ATTR_OR_PARAM__ACTION%>" value="<%=DocumentComposer.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
     <tr>
         <td>
-            <vel:velocity>#gui_heading( '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>' )</vel:velocity>
+            #gui_heading( '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>' )
         </td>
     </tr>
     <% } %>
@@ -147,7 +144,7 @@
 	</table>
 	<table border="0" cellspacing="0" cellpadding="0" width="656">
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_hr( 'cccccc' )</vel:velocity></td>
+		<td colspan="2">#gui_hr( 'cccccc' )</td>
 	</tr>
     <tr>
         <td class="imcmsAdmText">
@@ -258,15 +255,15 @@
         </td>
     </tr>
 	<tr>
-		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="96" height="1"></td>
-		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="556" height="1"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
 	</tr>
 	</table>
 </td>
 </tr>
 <tbody id="advanced">
 <tr>
-	<td>&nbsp;<br><vel:velocity>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?>" )</vel:velocity></td>
+	<td>&nbsp;<br>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?>" )</td>
 </tr>
 <tr>
 	<td>
@@ -295,7 +292,7 @@
         </td>
 	</tr>
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/26 ?></td>
@@ -306,7 +303,7 @@
 		&nbsp; <? install/htdocs/sv/jsp/docadmin/document_information.jsp/current_language ?> <%= LanguageMapper.getCurrentLanguageNameInUsersLanguage( service, user, document.getLanguageIso639_2() )%></td>
 	</tr>
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/29 ?></td>
@@ -317,7 +314,7 @@
 			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
 			if( !categoryType.hasImages() ) {%>
 		<div style="float: left; margin: auto 1em 1ex auto;">
-		<a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="3"><br>
+		<a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
 		<select name="<%= DocumentComposer.PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
 		<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
 		</select></div><%
@@ -357,7 +354,7 @@
 		} %></td>
 	</tr>
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/32 ?></td>
@@ -373,7 +370,7 @@
 		</tr>
 		</table>	</tr>
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/35 ?></td>
@@ -394,7 +391,7 @@
 		<input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__SEARCH_DISABLED %>" value="1" <% if (document.isSearchDisabled()) { %> checked<% } %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
 	</tr>
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/39 ?></td>
@@ -419,7 +416,7 @@
 	</tr>
     <% if( editingExistingDocument ) { %>
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/created ?></td>
@@ -459,7 +456,7 @@
 	</tr>
     <% } %>
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+		<td colspan="2">#gui_hr( "cccccc" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/42 ?></td>
@@ -479,7 +476,7 @@
 </tr>
 </tbody>
 	<tr>
-		<td><vel:velocity>#gui_hr( "blue" )</vel:velocity></td>
+		<td>#gui_hr( "blue" )</td>
 	</tr>
 	<tr>
 		<td><table border="0" cellspacing="0" cellpadding="0" width="100%">
@@ -503,14 +500,14 @@
 		</table></td>
 	</tr>
 	<tr>
-		<td><vel:velocity>#gui_hr( "blue" )</vel:velocity></td>
+		<td>#gui_hr( "blue" )</td>
 	</tr>
 <tr>
 	<td>&nbsp;</td>
 </tr>
 </table>
 </form>
-<vel:velocity>
+
 #gui_bottom()
 #gui_outer_end()
 </vel:velocity>

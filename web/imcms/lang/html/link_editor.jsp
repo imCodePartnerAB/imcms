@@ -13,7 +13,6 @@
 <vel:velocity>
 #gui_outer_start_noshade()
 #gui_head_noshade("<? global/imcms_administration ?>")
-</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="0">
 <form>
 <tr>
@@ -21,16 +20,14 @@
 </tr>
 </form>
 </table>
-<vel:velocity>
 #gui_mid_noshade()
-</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <form name="createLinkForm" onSubmit="return false">
 <tr>
 	<td>
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_heading( "<? install/htdocs/imcms/html/link_editor.jsp/4/1 ?>" )</vel:velocity></td>
+		<td colspan="2">#gui_heading( "<? install/htdocs/imcms/html/link_editor.jsp/4/1 ?>" )</td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/imcms/html/link_editor.jsp/5 ?></td>
@@ -77,7 +74,7 @@
 		<td><input type="text" name="createLinkCss" size="20" maxlength="50" style="width: 150" value=""></td>
 	</tr>
 	<tr>
-		<td colspan="2"><vel:velocity>#gui_hr( "blue" )</vel:velocity></td>
+		<td colspan="2">#gui_hr( "blue" )</td>
 	</tr>
 	<tr>
 		<td colspan="2" align="right">
@@ -90,20 +87,19 @@
 		</table></td>
 	</tr>
 	<tr>
-		<td colspan="2" nowrap>&nbsp;<br><vel:velocity>#gui_heading( "<? install/htdocs/imcms/html/link_editor.jsp/25/1 ?>" )</vel:velocity></td>
+		<td colspan="2" nowrap>&nbsp;<br>#gui_heading( "<? install/htdocs/imcms/html/link_editor.jsp/25/1 ?>" )</td>
 	</tr>
 	<tr>
 		<td colspan="2"><input type="text" name="theLinkCodeField" size="76" maxlength="255" style="width: 100%" value=""><div id="theLinkCodeFieldDiv"></div></td>
 	</tr>
 	<tr>
-		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="105" height="1"></td>
-		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="105" height="1"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="1"></td>
 	</tr>
 	</table></td>
 </tr>
 </form>
 </table>
-<vel:velocity>
 #gui_bottom_noshade()
 #gui_outer_end_noshade()
 </vel:velocity>

@@ -11,6 +11,8 @@ import java.io.Serializable;
 
 public class UserDomainObject extends Hashtable {
 
+    private String currentContextPath;
+
     UserDomainObject() {
         lazilyLoadedUserAttributes = new LazilyLoadedUserAttributes();
     }
@@ -449,6 +451,14 @@ public class UserDomainObject extends Hashtable {
 
     public String toString() {
         return "(user " + id + " \"" + getLazilyLoadedUserAttributes().loginName + "\")";
+    }
+
+    public void setCurrentContextPath( String currentContextPath ) {
+        this.currentContextPath = currentContextPath;
+    }
+
+    public String getCurrentContextPath() {
+        return currentContextPath;
     }
 
 }

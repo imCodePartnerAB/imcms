@@ -1,7 +1,5 @@
 package imcode.server;
 
-import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.DefaultContentManagementSystem;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.SqlHelpers;
 import imcode.server.document.*;
@@ -338,67 +336,23 @@ final public class IMCService implements IMCServiceInterface {
      */
     public String getAdminButtons( UserDomainObject user, DocumentDomainObject document ) {
         int user_permission_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
-        if ( user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ && !user.isUserAdmin() ) {
+        if ( user_permission_set_id >= DocumentPermissionSetDomainObject.TYPE_ID__READ && !user.isUserAdmin() ) {
             return "";
         }
-
-        // Get the users language prefix
-        String lang_prefix = user.getLanguageIso639_2();
 
         StringBuffer tempbuffer;
         StringBuffer templatebuffer;
-        StringBuffer superadmin;
-        int doc_type = document.getDocumentTypeId();
-        try {
+        DocumentPermissionSetDomainObject documentPermissionSet = documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document ) ;
+        String documentTypeName = sqlQueryStr( "select type from doc_types where doc_type = ?", new String[]{"" + document.getDocumentTypeId()} );
+        List parseVariables = Arrays.asList( new Object[] {
+            "user", user,
+            "document", document,
+            "documentPermissionSet", documentPermissionSet,
+            "statusicon", documentMapper.getStatusIconTemplate( document, user ),
+            "documentTypeName", documentTypeName
+        } ) ;
 
-            String tempbuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons" + doc_type + ".html";
-            String templatebuffer_filename = lang_prefix + "/admin/adminbuttons/adminbuttons.html";
-            String superadmin_filename = lang_prefix + "/admin/adminbuttons/superadminbutton.html";
-
-            tempbuffer =
-            new StringBuffer( fileCache.getCachedFileString( new File( templatePath, tempbuffer_filename ) ) );
-            templatebuffer =
-            new StringBuffer( fileCache.getCachedFileString( new File( templatePath, templatebuffer_filename ) ) );
-            superadmin =
-            new StringBuffer( fileCache.getCachedFileString( new File( templatePath, superadmin_filename ) ) );
-
-        } catch ( IOException e ) {
-            log.error( e.toString() );
-            return "";
-        }
-
-        int user_permission_set = documentMapper.getUsersPermissionBitsOnDocumentIfRestricted( user_permission_set_id, document );
-
-        AdminButtonParser doc_tags = new AdminButtonParser( new File( templatePath, lang_prefix
-                                                                                    + "/admin/adminbuttons/adminbutton"
-                                                                                    + doc_type
-                                                                                    + "_" ).toString(),
-                                                            ".html", user_permission_set_id, user_permission_set );
-
-        doc_tags.put( "getMetaId", "" + document.getId() );
-        Parser.parseTags( tempbuffer, '#', " <>\n\r\t", doc_tags, true, 1 );
-
-        AdminButtonParser tags = new AdminButtonParser( new File( templatePath, lang_prefix
-                                                                                + "/admin/adminbuttons/adminbutton_" ).toString(), ".html",
-                                                        user_permission_set_id, user_permission_set );
-
-        tags.put( "getMetaId", "" + document.getId() );
-        tags.put( "doc_buttons", tempbuffer.toString() );
-        tags.put( "statusicon", documentMapper.getStatusIconTemplate( document, user ) );
-
-        // if user is superadmin or useradmin lets add superadmin button
-        if ( user.isSuperAdmin() || user.isUserAdmin() ) {
-            tags.put( "superadmin", superadmin.toString() );
-        } else {
-            tags.put( "superadmin", "" );
-        }
-
-        String doctypeStr = sqlQueryStr( "select type from doc_types where doc_type = ?", new String[]{"" + doc_type} );
-        tags.put( "doc_type", doctypeStr );
-
-        Parser.parseTags( templatebuffer, '#', " <>\n\r\t", tags, true, 1 );
-
-        return templatebuffer.toString();
+        return getAdminTemplate( "adminbuttons/adminbuttons.html", user, parseVariables ) ;
     }
 
     /**
@@ -623,7 +577,7 @@ final public class IMCService implements IMCServiceInterface {
      * Parse doc replace variables with data , use template
      */
     public String getTemplateFromDirectory( String adminTemplateName, UserDomainObject user, List variables,
-                                                 String directory ) {
+                                            String directory ) {
         String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
         return getTemplate( langPrefix + "/" + directory + "/"
                             + adminTemplateName, user, variables );
@@ -633,7 +587,7 @@ final public class IMCService implements IMCServiceInterface {
      * Parse doc replace variables with data , use template
      */
     public String getTemplateFromSubDirectoryOfDirectory( String adminTemplateName, UserDomainObject user, List variables,
-                                                               String directory, String subDirectory ) {
+                                                          String directory, String subDirectory ) {
 
         String langPrefix = this.getUserLangPrefixOrDefaultLanguage( user );
 
@@ -645,29 +599,60 @@ final public class IMCService implements IMCServiceInterface {
     public String getTemplate( String path, UserDomainObject user, List variables ) {
         try {
             VelocityEngine velocity = getVelocityEngine( user );
-            VelocityContext context = new VelocityContext();
+            VelocityContext context = getVelocityContext( user );
+            if ( null != variables ) {
+                List parseDocVariables = new ArrayList( variables.size() ) ;
+                for ( Iterator iterator = variables.iterator(); iterator.hasNext(); ) {
+                    String key = (String)iterator.next();
+                    Object value = iterator.next();
+                    context.put( key, value );
+                    if (value instanceof String) {
+                        parseDocVariables.add(key) ;
+                        parseDocVariables.add(value) ;
+                    }
+                }
+                variables = parseDocVariables ;
+            }
             StringWriter stringWriter = new StringWriter();
             velocity.mergeTemplate( path, WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252, context, stringWriter );
-            String result = stringWriter.toString() ;
-            if (null != variables) {
+            String result = stringWriter.toString();
+            if ( null != variables ) {
                 result = Parser.parseDoc( result, (String[])variables.toArray( new String[variables.size()] ) );
             }
-            return result ;
+            return result;
         } catch ( Exception e ) {
-            throw new RuntimeException( e );
+            throw new RuntimeException( "getTemplate(\"" + path + "\") : "+e.getMessage(), e );
         }
     }
 
     private synchronized VelocityEngine createVelocityEngine( UserDomainObject user ) throws Exception {
         VelocityEngine velocity = new VelocityEngine();
-        log.debug( "createVelocityEngine", new Throwable()) ;
+        log.debug( "createVelocityEngine", new Throwable() );
         velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath.getCanonicalPath() );
-        velocity.setProperty( VelocityEngine.VM_LIBRARY, user.getLanguageIso639_2()+"/gui.vm");
-        velocity.setProperty( VelocityEngine.VM_LIBRARY_AUTORELOAD, "true");
+        velocity.setProperty( VelocityEngine.VM_LIBRARY, user.getLanguageIso639_2() + "/gui.vm" );
+        velocity.setProperty( VelocityEngine.VM_LIBRARY_AUTORELOAD, "true" );
         velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem" );
-        velocity.setProperty( "runtime.log.logsystem.log4j.category", "velocity");
+        velocity.setProperty( "runtime.log.logsystem.log4j.category", "velocity" );
         velocity.init();
         return velocity;
+    }
+
+    public VelocityEngine getVelocityEngine( UserDomainObject user ) {
+        try {
+            if ( velocityEngine == null ) {
+                velocityEngine = createVelocityEngine( user );
+            }
+            return velocityEngine;
+        } catch ( Exception e ) {
+            throw new RuntimeException( e );
+        }
+    }
+
+    public VelocityContext getVelocityContext( UserDomainObject user ) {
+        VelocityContext context = new VelocityContext();
+        context.put( "contextPath", user.getCurrentContextPath() );
+        context.put( "language", user.getLanguageIso639_2() );
+        return context;
     }
 
     /**
@@ -1314,17 +1299,6 @@ final public class IMCService implements IMCServiceInterface {
             return Collator.getInstance( new Locale( LanguageMapper.convert639_2to639_1( defaultLanguageAsIso639_2 ) ) );
         } catch ( LanguageMapper.LanguageNotSupportedException e ) {
             throw new RuntimeException( e );
-        }
-    }
-
-    public VelocityEngine getVelocityEngine(UserDomainObject user) {
-        try {
-            if (velocityEngine == null) {
-                velocityEngine = createVelocityEngine( user ) ;
-            }
-            return velocityEngine ;
-        } catch ( Exception e ) {
-            throw new RuntimeException( e ) ;
         }
     }
 

@@ -4,7 +4,6 @@ import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
 import com.imcode.imcms.api.RequestConstants;
 import imcode.server.ApplicationServer;
-import imcode.server.IMCService;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -28,8 +27,9 @@ public class ImcmsSetupFilter implements Filter {
         if ( user == null ) {
             String ip = request.getRemoteAddr();
             user = getUserUserOrIpLoggedInUser( ip );
-            session.setAttribute( LOGGED_IN_USER, user );  // just a marker object
+            session.setAttribute( LOGGED_IN_USER, user );
         }
+        user.setCurrentContextPath(((HttpServletRequest)request).getContextPath()) ;
 
         initRequestWithApi( user, request );
 

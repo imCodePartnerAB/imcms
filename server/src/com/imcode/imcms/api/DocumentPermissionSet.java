@@ -6,11 +6,11 @@ import imcode.server.document.TemplateGroupDomainObject;
 
 public class DocumentPermissionSet {
 
-    public final static int FULL = DocumentPermissionSetDomainObject.FULL;
-    public final static int RESTRICTED_1 = DocumentPermissionSetDomainObject.RESTRICTED_1;
-    public final static int RESTRICTED_2 = DocumentPermissionSetDomainObject.RESTRICTED_2;
-    public final static int READ = DocumentPermissionSetDomainObject.READ;
-    public final static int NONE = DocumentPermissionSetDomainObject.NONE;
+    public final static int FULL = DocumentPermissionSetDomainObject.TYPE_ID__FULL;
+    public final static int RESTRICTED_1 = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1;
+    public final static int RESTRICTED_2 = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2;
+    public final static int READ = DocumentPermissionSetDomainObject.TYPE_ID__READ;
+    public final static int NONE = DocumentPermissionSetDomainObject.TYPE_ID__NONE;
 
     private DocumentPermissionSetDomainObject internalDocPermSet;
 

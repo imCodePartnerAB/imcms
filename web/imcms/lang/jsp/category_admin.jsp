@@ -12,11 +12,9 @@
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">
-
 <vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
-</vel:velocity>
 <%
     AdminCategories.FormData formData = (AdminCategories.FormData)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
     StringBuffer messageToUser = new StringBuffer("");
@@ -48,9 +46,7 @@
     </tr>
 </form>
 </table>
-<vel:velocity>
 #gui_mid()
-</vel:velocity>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="main" action="AdminCategories" method="post">
 <%
@@ -86,7 +82,7 @@
     }
  %>
 <tr>
-    <td colspan="2"><vel:velocity>#gui_heading( "<%=heading%>" )</vel:velocity></td>
+    <td colspan="2">#gui_heading( "<%=heading%>" )</td>
 </tr>
 <tr>
     <td colspan="2">
@@ -341,7 +337,7 @@
 </tr>
 
 <tr>
-    <td colspan="2"><vel:velocity>#gui_hr( "blue" )</vel:velocity></td>
+    <td colspan="2">#gui_hr( "blue" )</td>
 </tr>
 <tr>
     <td colspan="2" align="right">
@@ -365,7 +361,6 @@
 </tr>
 </form>
 </table>
-<vel:velocity>
 #gui_bottom()
 #gui_outer_end()
 </vel:velocity>

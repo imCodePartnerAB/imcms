@@ -1,2 +1,2 @@
 <a href="ChangeImage?meta_id=#meta_id#&img=#content_id#&label=#label_url#" class="imcms_label">#label#
-<img src="@imcmsimageurl@/admin/ico_image.gif" border="0"><img src="@imcmsimageurl@/admin/ico_txt.gif" border="0"></a>
+<img src="$contextPath/imcms/$language/images/admin/ico_image.gif" border="0"><img src="$contextPath/imcms/$language/images/admin/ico_txt.gif" border="0"></a>

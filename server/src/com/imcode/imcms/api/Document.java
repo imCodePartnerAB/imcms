@@ -53,20 +53,20 @@ public class Document {
             RoleDomainObject role = (RoleDomainObject)rolePermissionTuple.getKey();
             int permissionType = ( (Integer)rolePermissionTuple.getValue() ).intValue();
             switch ( permissionType ) {
-                case IMCConstants.DOC_PERM_SET_FULL:
-                    result.put( role.getName(), documentPermissionSetMapper.createFullPermissionSet() );
+                case DocumentPermissionSetDomainObject.TYPE_ID__FULL:
+                    result.put( role.getName(), DocumentPermissionSetDomainObject.FULL );
                     break;
-                case IMCConstants.DOC_PERM_SET_RESTRICTED_1:
-                case IMCConstants.DOC_PERM_SET_RESTRICTED_2:
+                case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1:
+                case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
                     result.put( role.getName(),
                                 documentPermissionSetMapper.createRestrictedPermissionSet( internalDocument,
                                                                                            permissionType,
                                                                                            false ) );
                     break;
-                case IMCConstants.DOC_PERM_SET_READ:
-                    result.put( role.getName(), documentPermissionSetMapper.createReadPermissionSet() );
+                case DocumentPermissionSetDomainObject.TYPE_ID__READ:
+                    result.put( role.getName(), DocumentPermissionSetDomainObject.READ );
                     break;
-                case IMCConstants.DOC_PERM_SET_NONE:
+                case DocumentPermissionSetDomainObject.TYPE_ID__NONE:
                     break;
                 default:
                     log.warn( "A missing mapping in DocumentPermissionSetMapper" );

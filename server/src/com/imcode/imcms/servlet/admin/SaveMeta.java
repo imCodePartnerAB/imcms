@@ -5,6 +5,7 @@ import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.MetaDataParser;
@@ -103,7 +104,7 @@ public class SaveMeta extends HttpServlet {
 
             boolean permissionSettingSucceded = false;
 
-            final boolean userHasFullPermissionsForThisDocument = IMCConstants.DOC_PERM_SET_FULL == userSetId;
+            final boolean userHasFullPermissionsForThisDocument = DocumentPermissionSetDomainObject.TYPE_ID__FULL == userSetId;
             final boolean userHasEditPermissionsBitSetForThisDocument = 0
                                                                         != ( userPermSet
                                                                              & IMCConstants.PERM_EDIT_PERMISSIONS );
@@ -119,10 +120,10 @@ public class SaveMeta extends HttpServlet {
                     final boolean restrictedOneMaySetPermissionsForRestrictedTwo = 0
                                                                                    != ( currentDocPerms
                                                                                         & IMCConstants.DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 );
-                    final boolean userHasRestrictedOne = IMCConstants.DOC_PERM_SET_RESTRICTED_1 == userSetId;
-                    final boolean currentSetIdForRoleIsRestrictedTwo = IMCConstants.DOC_PERM_SET_RESTRICTED_2
+                    final boolean userHasRestrictedOne = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == userSetId;
+                    final boolean currentSetIdForRoleIsRestrictedTwo = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
                                                                        == currentSetIdForRole;
-                    final boolean newSetIdForRoleIsRestrictedTwo = IMCConstants.DOC_PERM_SET_RESTRICTED_2
+                    final boolean newSetIdForRoleIsRestrictedTwo = DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2
                                                                    == newSetIdForRole;
                     final boolean userHasAtLeastAsPrivilegedCurrentSetIdAsRole = userSetId <= currentSetIdForRole;
                     if ( userHasAtLeastAsPrivilegedCurrentSetIdAsRole ) {
@@ -206,23 +207,23 @@ public class SaveMeta extends HttpServlet {
         // FIXME: They should be merged into one table.
         int[] metatable_restrictions = {
             //	set_id,	permission_bitmask
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO
                                                     | IMCConstants.PERM_EDIT_PERMISSIONS, //"shared",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"disable_search",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"archive",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"disable_search",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"archive",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO
                                                     | IMCConstants.PERM_EDIT_PERMISSIONS, //"show_meta",
-            IMCConstants.DOC_PERM_SET_FULL, IMCConstants.PERM_EDIT_PERMISSIONS, //"permissions",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO
+            DocumentPermissionSetDomainObject.TYPE_ID__FULL, IMCConstants.PERM_EDIT_PERMISSIONS, //"permissions",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO
                                                     | IMCConstants.PERM_EDIT_PERMISSIONS, //"meta_headline",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO, //"meta_text",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO, //"meta_image",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"activated_datetime",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"archived_datetime",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"frame_name",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"target"
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"lang_prefix",
-            IMCConstants.DOC_PERM_SET_RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"publisher_id",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO, //"meta_text",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_HEADLINE | IMCConstants.PERM_EDIT_DOCINFO, //"meta_image",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"activated_datetime",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"archived_datetime",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"frame_name",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"target"
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"lang_prefix",
+            DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, IMCConstants.PERM_EDIT_DOCINFO, //"publisher_id",
         };
 
         HashMap inputMap = new HashMap();

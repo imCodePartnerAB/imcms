@@ -35,14 +35,30 @@
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelLogo"><? templates/sv/adminbuttons/adminbuttons.html/1 ?> &nbsp;</font></td>
 		<td id="adminPanelTd1_2" width="50%" align="center" nowrap>
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" class="adminPanelText">
-		<b>Id:</b> #getMetaId# &nbsp; <b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b> #doc_type# &nbsp;</font></td>
-		<td id="adminPanelTd1_3" width="25%" align="right">#statusicon#</td>
+		<b>Id:</b> $document.Id &nbsp; <b><? templates/sv/adminbuttons/adminbuttons.html/1001 ?>:</b> $documentTypeName &nbsp;</font></td>
+		<td id="adminPanelTd1_3" width="25%" align="right">$statusicon</td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
 	<td class="adminPanelTd2" align="center" nowrap>
-	<a href="BackDoc" id="admHrefBackdoc"><img src="@adminbuttonsurl@/foregaende.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2001 ?>" id="admBtnBackdoc" border="0"></a>#doc_buttons##1##4#<a href="LogOut" id="admHrefLoggaut"><img src="@adminbuttonsurl@/loggaut.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2002 ?>" id="admBtnLoggaut" border="0"></a>#superadmin#<a href="javascript:void(0)" onClick="openHelpW(1);return(false)" target="_blank"  id="admHrefHelp"><img src="@adminbuttonsurl@/help.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>" id="admBtnHelp" border="0"></a></td>
+        <a href="BackDoc" id="admHrefBackdoc"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/foregaende.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2001 ?>" id="admBtnBackdoc" border="0"></a>#*
+        *#<a href="GetDoc?meta_id=$document.Id" id="admHrefNormal"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/normal.gif" alt="<? templates/sv/adminbuttons/adminbutton2_0.html/2001 ?>" id="admBtnNormal" border="0"></a>#*
+        *##if( $document.getDocumentTypeId() == 2 )#*
+             *##if( $documentPermissionSet.getEditTexts() )<a href="AdminDoc?meta_id=$document.Id&flags=65536" id="admHrefText"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_text.gif" alt="<? templates/sv/adminbuttons/adminbutton2_65536.html/2001 ?>" id="admBtnText" border="0"></a>#end#*
+             *##if( $documentPermissionSet.getEditImages() )<a href="AdminDoc?meta_id=$document.Id&flags=131072" id="admHrefBild"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/btn_image.gif" alt="<? templates/sv/adminbuttons/adminbutton2_131072.html/2001 ?>" id="admBtnBild" border="0"></a>#end#*
+             *##if( $documentPermissionSet.getEditMenus() )<a href="AdminDoc?meta_id=$document.Id&flags=262144" id="admHrefLank"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/meny.gif" alt="<? templates/sv/adminbuttons/adminbutton2_262144.html/2001 ?>" id="admBtnLank" border="0"></a>#end#*
+             *##if( $documentPermissionSet.getEditTemplates() )<a href="AdminDoc?meta_id=$document.Id&flags=524288" id="admHrefUtseende"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/utseende.gif" alt="<? templates/sv/adminbuttons/adminbutton2_524288.html/2001 ?>" id="admBtnUtseende" border="0"></a>#end#*
+             *##if( $documentPermissionSet.getEditIncludes() )<a href="AdminDoc?meta_id=$document.Id&flags=1048576" id="admHrefInclude"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/include.gif" alt="<? templates/sv/adminbuttons/adminbutton2_1048576.html/2001 ?>" id="admBtnInclude" border="0"></a>#end#*
+        *##else#*
+             *##if( $documentPermissionSet.getEdit() )<a href="AdminDoc?meta_id=$document.Id&flags=65536" id="admHrefRedigera"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/redigera.gif" alt="<? templates/sv/adminbuttons/adminbutton7_65536.html/2001 ?>" id="admBtnRedigera" border="0"></a>#end#*
+        *##end#*
+        *##if( $documentPermissionSet.getEditDocumentInformation() )<a href="AdminDoc?meta_id=$document.Id&flags=1" id="admHrefDokinfo"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/dokinfo.gif" alt="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>" id="admBtnDokinfo" border="0"></a>#end#*
+        *##if( $documentPermissionSet.getEditPermissions() )<a href="AdminDoc?meta_id=$document.Id&flags=4" id="admHrefRattigheter"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/rattigheter.gif" alt="<? templates/sv/adminbuttons/adminbutton_4.html/2001 ?>" id="admBtnRattigheter" border="0"></a>#end#*
+        *#<a href="LogOut" id="admHrefLoggaut"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/loggaut.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2002 ?>" id="admBtnLoggaut" border="0"></a>#*
+        *##if ( $user.isSuperAdmin() )<a href="AdminManager" target="_blank" id="admHrefAdmin"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/admin.gif" alt="<? templates/sv/adminbuttons/superadminbutton.html/2001 ?>" id="admBtnAdmin" border="0"></a>#end#*
+        *#<a href="javascript:void(0)" onClick="openHelpW(1);return(false)" target="_blank"  id="admHrefHelp"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/help.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>" id="admBtnHelp" border="0"></a>
+	</td>
 </tr>
 </table></div>
 <SCRIPT language=JavaScript>

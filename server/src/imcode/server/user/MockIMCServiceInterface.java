@@ -16,6 +16,7 @@ import java.util.*;
 import java.text.Collator;
 
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.VelocityContext;
 
 class MockIMCServiceInterface extends MockObject implements IMCServiceInterface {
 
@@ -333,6 +334,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     }
 
     public VelocityEngine getVelocityEngine( UserDomainObject user ) {
+        return null;  // TODO
+    }
+
+    public VelocityContext getVelocityContext( UserDomainObject user ) {
         return null;  // TODO
     }
 
