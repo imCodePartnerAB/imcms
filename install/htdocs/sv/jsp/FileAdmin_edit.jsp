@@ -199,7 +199,174 @@ A:link, A:visited, A:active { color:#000099; text-decoration:none; }
 </STYLE>
 
 <script language="JavaScript">
-<? sv/jsp/FileAdmin_edit.jsp/2 ?>
+<!--
+function closeIt() {
+	window.close();
+	if (parent.opener) parent.opener.focus();
+}
+
+var isMoz = (document.getElementById);
+var isIE  = (document.all);
+var isNS  = (document.layers);
+
+var win = window;
+var n   = 0;
+
+function findIt(str) {
+	var txt, i, found;
+	if (isMoz && str != "") {
+		txt = win.document.getElementById("txtField").createTextRange();
+		for (i = 0; i <= n && (found = txt.findText(str)) != false; i++) {
+			txt.moveStart("character", 1);
+			txt.moveEnd("textedit");
+		}
+		if (found) {
+			txt.moveStart("character", -1);
+			txt.findText(str);
+			txt.select();
+			txt.scrollIntoView();
+			n++;
+		} else {
+			if (n > 0) {
+				n = 0;
+				findIt(str);
+			} else {
+				alert("Not found.");
+			}
+		}
+		document.forms.editForm.searchString.value  = str;
+		document.forms.resetForm.searchString.value = str;
+	}
+	if (isIE && isMoz) document.getElementById("btnSearch").setActive(); // focus btn - for [Enter] support
+}
+
+function doSave() {
+	if (confirm("<? sv/jsp/FileAdmin_edit.jsp/2/1 ?>")) {
+		return true;
+	}
+	return false;
+}
+
+function doReset() {
+	var f = document.forms.resetForm;
+	var theSel = f.resetFile.options[f.resetFile.selectedIndex].value;
+	if (theSel != "") {
+		var theText = (theSel == "org") ? "<? sv/jsp/FileAdmin_edit.jsp/2/2 ?>" : "<? sv/jsp/FileAdmin_edit.jsp/2/3 ?>";
+		if (confirm("<? sv/jsp/FileAdmin_edit.jsp/2/4 ?>" + theText + "\n\n<? sv/jsp/FileAdmin_edit.jsp/2/5 ?>")) {
+			f.submit();
+		} else {
+			f.resetFile.selectedIndex = 0;
+		}
+	}
+	return false;
+}
+
+/* onLoad-function */
+
+function checkSaved(ch) {
+	if (isMoz) {<%
+		if (!isReadonly) { %>
+		var isSaved = <%= isSaved %>;
+		var el = document.getElementById("btnSave");
+		if (isSaved && !ch) {
+			el.style.cursor = "default";
+			el.style.filter = "progid:DXImageTransform.Microsoft.BasicImage( Rotation=0,Mirror=0,Invert=1,XRay=0,Grayscale=1,Opacity=0.60)";
+			el.disabled = 1;
+		} else {
+			el.style.cursor = (isIE) ? "hand" : "pointer";
+			el.style.filter = "";
+			el.disabled = 0;
+		}<%
+		} %>
+		resize<? sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field();
+		loopMess(0);
+	}
+}
+
+function resize<? sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field() {
+	if (isMoz) {
+		var el<? sv/jsp/FileAdmin_edit.jsp/2/8 ?> = document.getElementById("txtField");
+		var availW = 0;
+		var availH = 0;
+		if (isIE) {
+			availW = parseInt(document.body.offsetWidth);
+			availH = parseInt(document.body.offsetHeight);
+		} else {
+			availW = parseInt(innerWidth);
+			availH = parseInt(innerHeight);
+		}
+		if (availW > 0) el<? sv/jsp/FileAdmin_edit.jsp/2/8 ?>.style.width = availW - 13;
+		if (availH > 0) el<? sv/jsp/FileAdmin_edit.jsp/2/8 ?>.style.height = availH - 72;
+	}
+}
+
+var errMess = <% if (!sError.equals("")) { %>1<% } else { %>2<% } %>;
+
+function loopMess(stopit) {
+	if (isMoz) {
+		if (stopit) {
+			window.clearTimeout(oTimer);
+			if (errMess) {
+				errMess = 0;
+				return;
+			} else if (isIE) {
+				errMess = 2;
+			}
+		}
+		var el = document.getElementById("messId");
+		var colorRed   = "#cc0000";
+		var colorGreen = "#009900";
+		var oTimer;
+		if (errMess == 2) {
+			el.style.color = colorGreen;
+			el.innerHTML = "<? sv/jsp/FileAdmin_edit.jsp/2/6 ?><i><% if (isReadonly) { %><? sv/jsp/FileAdmin_edit.jsp/2/7 ?><% } else { %><? sv/jsp/FileAdmin_edit.jsp/2/8 ?><% } %> <% if (isTempl) { %><? sv/jsp/FileAdmin_edit.jsp/2/9 ?><% } else { %><? sv/jsp/FileAdmin_edit.jsp/2/10 ?><% } %></i> <? sv/jsp/FileAdmin_edit.jsp/2/11 ?><% if (isIE) { %> <? sv/jsp/FileAdmin_edit.jsp/2/12 ?><% } %>";
+			errMess = 3;<%
+			if (!isReadonly) { %>
+			oTimer = window.setTimeout("loopMess()", 5000);<%
+			} %>
+		} else if (errMess == 3) {
+			el.style.color = colorGreen;
+			el.innerHTML = "<? sv/jsp/FileAdmin_edit.jsp/2/13 ?>";
+			errMess = 4;
+			oTimer = window.setTimeout("loopMess()", 5000);
+		} else if (errMess == 4) {
+			el.style.color = colorGreen;
+			el.innerHTML = "<? sv/jsp/FileAdmin_edit.jsp/2/14 ?>";
+			errMess = <% if (!sError.equals("")) { %>1<% } else { %>2<% } %>;
+			oTimer = window.setTimeout("loopMess()", 5000);
+		} else if (errMess == 1) {
+			el.style.color = colorRed;
+			el.innerHTML = "<%= sError %>";
+			errMess = 2;
+			oTimer = window.setTimeout("loopMess()", 10000);
+		}
+	}
+}
+
+function toggleFontSize() {
+	if (isMoz) {
+		var el = document.getElementById("txtField");
+		if (window.event) {
+			if (window.event.shiftKey) {
+				el.style.fontFamily = (el.style.fontFamily.indexOf("Courier") != -1) ? "Verdana, Geneva, sans-serif" : "'Courier New', Courier, monospace";
+				return;
+			}
+		}
+		var theSize = (el.style.fontSize) ? parseInt(el.style.fontSize) : 11;
+		if (theSize == 11) {
+			el.style.fontSize = "13px";
+		} else if (theSize == 13) {
+			el.style.fontSize = "15px";
+		} else if (theSize == 15) {
+			el.style.fontSize = "17px";
+		} else if (theSize == 17) {
+			el.style.fontSize = "10px";
+		} else if (theSize == 10) {
+			el.style.fontSize = "11px";
+		}
+	}
+}
+//-->
 </script>
 
 </head>
