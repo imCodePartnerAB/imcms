@@ -22,7 +22,7 @@ This is a map of the format (RoleName,DocumentPermissionSet)<br><br>
 This is the mapping for document <%= metaId %>:<br>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
-    DocumentService documentMapper = imcmsSystem.getDocumentMapper();
+    DocumentService documentMapper = imcmsSystem.getDocumentService();
     Document doc = documentMapper.getDocument(metaId);
     Map permissionsMap = doc.getAllRolesMappedToPermissions();
     Set roles = permissionsMap.keySet();

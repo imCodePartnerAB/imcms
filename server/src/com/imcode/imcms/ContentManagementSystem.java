@@ -2,35 +2,40 @@ package com.imcode.imcms;
 
 import imcode.server.IMCService;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentPermissionSetMapper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 
 public class ContentManagementSystem  {
 
-    private UserService userMapper;
-    private DocumentService docMapper;
-    private User accessingUser;
+    private UserAndRoleService userService;
+    private DocumentService documentService;
+    private User currentUser;
 
     public ContentManagementSystem( IMCService service, imcode.server.user.UserDomainObject accessor ) {
-        accessingUser = new User( accessor );
+        currentUser = new User( accessor );
+
+        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
 
         ImcmsAuthenticatorAndUserMapper imcmsAAUM = new ImcmsAuthenticatorAndUserMapper( service );
         String[] roleNames = imcmsAAUM.getRoleNames( accessor );
+
         DocumentMapper documentMapper = new DocumentMapper( service, imcmsAAUM );
+
         SecurityChecker securityChecker = new SecurityChecker( documentMapper, accessor, roleNames );
 
-        userMapper = new UserService( securityChecker, imcmsAAUM );
-        docMapper = new DocumentService( securityChecker, documentMapper );
+        userService = new UserAndRoleService( securityChecker, imcmsAAUM );
+        documentService = new DocumentService( securityChecker, documentMapper, documentPermissionSetMapper );
     }
 
-    public UserService getUserMapperBean(){
-        return userMapper;
+    public UserAndRoleService getUserService(){
+        return userService;
     }
 
-    public DocumentService getDocumentMapper(){
-        return docMapper;
+    public DocumentService getDocumentService(){
+        return documentService;
     }
 
-    public User getAccessionUser() {
-        return accessingUser;
+    public User getCurrentUser() {
+        return currentUser;
     }
 }

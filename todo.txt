@@ -22,8 +22,9 @@ API:et (prio)
 (2) Skapa/ändra docinfo för valfri sida
 (2) Ange formatmall och format-grupp för valfri sida
 (2) Ange documentnummer för valfri sida och valfri includ tag
-(2) API: förhindra tilldelning av User (döpa om? mejla Hillar och Lennart)
+(?) API: förhindra tilldelning av User (döpa om? mejla Hillar och Lennart)
 (3) Visa/tilldela vilka roller en användare som är user admin får administrera
+
 (4) Hantering av extern användare, useradmin.jsp, och rollerna, useradmin
 (4) Visa behöriga användare för viss sida
 (4) Gör det möjligt att öppna upp säkerheten

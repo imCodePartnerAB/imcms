@@ -22,4 +22,36 @@ public class DocumentPermissionSet {
     public String toString() {
         return internalDocPermSet.toString();
     }
+
+        public boolean getEditHeadline() {
+        return internalDocPermSet.getEditHeadline();
+    }
+
+    public boolean getEditDocumentInformation() {
+        return internalDocPermSet.getEditDocumentInformation();
+    }
+
+    public boolean getEditPermissions() {
+        return internalDocPermSet.getEditPermissions();
+    }
+
+    public boolean getEditTexts() {
+        return internalDocPermSet.getEditTexts();
+    }
+
+    public boolean getEditMenues() {
+        return internalDocPermSet.getEditMenues();
+    }
+
+    public boolean getEditTemplates() {
+        return internalDocPermSet.getEditTemplates();
+    }
+
+    public boolean getEditIncludes() {
+        return internalDocPermSet.getEditIncludes();
+    }
+
+    public boolean getEditPictures() {
+        return internalDocPermSet.getEditPictures();
+    }
 }

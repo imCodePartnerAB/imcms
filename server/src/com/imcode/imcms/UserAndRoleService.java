@@ -2,12 +2,12 @@ package com.imcode.imcms;
 
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 
-public class UserService {
+public class UserAndRoleService {
 
     private SecurityChecker securityChecker;
     private ImcmsAuthenticatorAndUserMapper internalMapper;
 
-    public UserService( SecurityChecker securityChecker, ImcmsAuthenticatorAndUserMapper mapper ) {
+    public UserAndRoleService( SecurityChecker securityChecker, ImcmsAuthenticatorAndUserMapper mapper ) {
         this.securityChecker = securityChecker;
         this.internalMapper = mapper;
     }

@@ -2,11 +2,12 @@ package com.imcode.imcms;
 
 import imcode.server.IMCText;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.DocumentPermissionSetMapper;
 
 public class TextDocument extends Document {
 
-    TextDocument( SecurityChecker securityChecker,  imcode.server.document.DocumentDomainObject document, DocumentMapper documentMapper ) {
-        super( securityChecker, document, documentMapper );
+    TextDocument( SecurityChecker securityChecker,  imcode.server.document.DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
+        super( securityChecker, document, documentMapper, permissionSetMapper );
     }
 
     public TextDocument.TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {

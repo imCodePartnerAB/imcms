@@ -3,6 +3,7 @@ package com.imcode.imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentPermissionSetMapper;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,11 +14,13 @@ public class Document {
     SecurityChecker securityChecker;
     DocumentDomainObject internalDocument;
     DocumentMapper internalDocumentMapper;
+    DocumentPermissionSetMapper internalDocumentPermissionSetMapper;
 
-    public Document( SecurityChecker securityChecker, DocumentDomainObject document, DocumentMapper mapper ) {
+    public Document( SecurityChecker securityChecker, DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
         this.securityChecker = securityChecker;
         this.internalDocument = document;
-        this.internalDocumentMapper = mapper;
+        this.internalDocumentMapper = documentMapper;
+        this.internalDocumentPermissionSetMapper = permissionSetMapper;
     }
 
     /**
@@ -25,7 +28,7 @@ public class Document {
      */
     public Map getAllRolesMappedToPermissions() throws NoPermissionException {
         securityChecker.hasEditPermission( internalDocument );
-        Map rolesMappedToPermissionsIds = internalDocumentMapper.getAllRolesMappedToPermissions( internalDocument );
+        Map rolesMappedToPermissionsIds = internalDocumentPermissionSetMapper.getAllRolesMappedToPermissions( internalDocument );
         Map result = wrapDomainObjectsInMap( rolesMappedToPermissionsIds );
         return result;
     }

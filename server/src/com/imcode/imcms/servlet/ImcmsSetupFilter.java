@@ -19,18 +19,18 @@ public class ImcmsSetupFilter implements Filter {
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
 
         HttpSession session = ((HttpServletRequest)request).getSession( true );
-        UserDomainObject accessor = (UserDomainObject)session.getAttribute( USER );
+        UserDomainObject currentUser = (UserDomainObject)session.getAttribute( USER );
 
-        initRequestWithImcmsSystemAPI( accessor, request );
+        initRequestWithImcmsSystemAPI( currentUser, request );
 
         chain.doFilter( request, response );
     }
 
-    private void initRequestWithImcmsSystemAPI( UserDomainObject accessor, ServletRequest request ) {
-        if( null != accessor ) {
+    private void initRequestWithImcmsSystemAPI( UserDomainObject currentUser, ServletRequest request ) {
+        if( null != currentUser ) {
             try {
                 IMCService service = (IMCService)IMCServiceRMI.getIMCServiceInterface( (HttpServletRequest)request );
-                ContentManagementSystem imcmsSystem = new ContentManagementSystem( service, accessor );
+                ContentManagementSystem imcmsSystem = new ContentManagementSystem( service, currentUser );
                 request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
             } catch( IOException e ) {
                 log.fatal( "Unable to get service object.", e );

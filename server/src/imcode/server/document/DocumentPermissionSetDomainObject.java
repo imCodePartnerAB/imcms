@@ -2,8 +2,6 @@ package imcode.server.document;
 
 import imcode.server.IMCConstants;
 
-import org.apache.log4j.Logger;
-
 public class DocumentPermissionSetDomainObject {
     public static final String RESTRICTED_1 = "Restricted One";
     public static final String RESTRICTED_2 = "Restricted Two";
@@ -21,8 +19,6 @@ public class DocumentPermissionSetDomainObject {
     private boolean editTemplates;
     private boolean editIncludes;
     private boolean editPictures;
-
-    private static Logger log = Logger.getLogger( DocumentPermissionSetDomainObject.class );
 
     public DocumentPermissionSetDomainObject( int permissionType ) {
         this( permissionType, false, false, false, false, false, false, false, false, false );
@@ -98,6 +94,38 @@ public class DocumentPermissionSetDomainObject {
         buff.append( "editTexts=" + editTexts );
         buff.append( ")" );
         return buff.toString();
+    }
+
+    public boolean getEditHeadline() {
+        return editHeadline;
+    }
+
+    public boolean getEditDocumentInformation() {
+        return editDocumentInformation;
+    }
+
+    public boolean getEditPermissions() {
+        return editPermissions;
+    }
+
+    public boolean getEditTexts() {
+        return editTexts;
+    }
+
+    public boolean getEditMenues() {
+        return editMenues;
+    }
+
+    public boolean getEditTemplates() {
+        return editTemplates;
+    }
+
+    public boolean getEditIncludes() {
+        return editIncludes;
+    }
+
+    public boolean getEditPictures() {
+        return editPictures;
     }
 
     void setPermissionType( int permissionType ) {

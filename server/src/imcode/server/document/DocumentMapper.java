@@ -12,20 +12,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 public class DocumentMapper {
-    private IMCService service;
-    private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
-    private static Logger log = Logger.getLogger( DocumentMapper.class );
-    private static final String DATE_FORMATING_STRING = "yyyy-MM-dd HH:mm:ss";
-
     /**
      * Stored procedure names used in this class
      */
-    private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
     private static final String SPROC_GET_TEST_DOC_DATA = "GetTextDocData";
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
     private static final String SPROC_GET_FILE_NAME = "GetFileName";
@@ -33,8 +25,11 @@ public class DocumentMapper {
     private static final String SPROC_GET_USER_PERMISSION_SET = "GetUserPermissionSet";
     private static final String SPROC_GET_TEXT = "GetText";
     private static final String SPROC_INSERT_TEXT = "InsertText";
-    private static final String SPROC_GET_PERMISSION_SET = "GetPermissionSet";
-    //    private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
+
+    private IMCService service;
+    private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
+    private static Logger log = Logger.getLogger( DocumentMapper.class );
+    private static final String DATE_FORMATING_STRING = "yyyy-MM-dd HH:mm:ss";
 
     /**
      *
@@ -51,61 +46,26 @@ public class DocumentMapper {
     //    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "GetTemplateGroupsWithPermissions";
     //    private static final String SPROC_GET_ROLES_DOC_PERMISSONS = "getrolesdocpermissions";
 
-    private static class PermissionTuple {
-        int permissionId;
-        boolean hasPermission;
-
-        public PermissionTuple( int permissionId, boolean hasPermission ) {
-            this.permissionId = permissionId;
-            this.hasPermission = hasPermission;
-        }
-    }
-
-    /**
-     * @param metaId
-     * @param permissionSetId
-     * @param langPrefix
-     * @return PermissionTuple[]
-     */
-    private PermissionTuple[] sprocGetPermissionSet( int metaId, int permissionSetId, String langPrefix ) {
-        String[] sqlParams = {String.valueOf( metaId ), String.valueOf( permissionSetId ), langPrefix};
-        String[] sqlResult = service.sqlProcedure( SPROC_GET_PERMISSION_SET, sqlParams );
-        PermissionTuple[] result = new PermissionTuple[sqlResult.length / 3];
-        for( int i = 0, r = 0; i < sqlResult.length; i = i + 3, r++ ) {
-            int permissionId = Integer.parseInt( sqlResult[i] );
-            String permissionDescriptionStr = sqlResult[i + 1];
-            boolean hasPermission = Integer.parseInt( sqlResult[i + 2] ) == 1;
-            result[r] = new PermissionTuple(permissionId,hasPermission);
-        }
-        return result;
-    }
-
-    private String[] sprocGetUserPermissionSet( int metaId, int userId ) {
+    private static String[] sprocGetUserPermissionSet( IMCService service, int metaId, int userId ) {
         String[] sqlParams = {String.valueOf( metaId ), String.valueOf( userId )};
         String[] sqlResult = service.sqlProcedure( SPROC_GET_USER_PERMISSION_SET, sqlParams );
         return sqlResult;
     }
 
     /** @return the filename for a fileupload-internalDocument, or null if the internalDocument isn't a fileupload-docuemnt. **/
-    private String sprocGetFilename( int meta_id ) {
+    private static String sprocGetFilename( IMCService service, int meta_id ) {
         String[] params = new String[]{String.valueOf( meta_id )};
         return service.sqlProcedureStr( SPROC_GET_FILE_NAME, params );
     }
 
-    private String[] sprocGetUserRolesDocPermissions( int metaId ) {
-        String[] params = {String.valueOf( metaId ), null};
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS, params );
-        return sprocResult;
-    }
-
-    private String[] sprocGetDocumentInfo( int metaId ) {
+    private static String[] sprocGetDocumentInfo( IMCService service,  int metaId ) {
         String[] params = new String[]{String.valueOf( metaId )};
         String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, params );
         return result;
     }
 
     /** @return the section for a internalDocument, or null if there was none **/
-    private String sprocSectionGetInheritId( int meta_id ) {
+    private static String sprocSectionGetInheritId( IMCService service,  int meta_id ) {
         String[] section_data = service.sqlProcedure( SPROC_SECTION_GET_INHERIT_ID, new String[]{String.valueOf( meta_id )} );
 
         if( section_data.length < 2 ) {
@@ -114,7 +74,7 @@ public class DocumentMapper {
         return section_data[1];
     }
 
-    private void sprocInsertText( int meta_id, int txt_no, IMCText text, String textstring ) {
+    private static void sprocInsertText( IMCService service, int meta_id, int txt_no, IMCText text, String textstring ) {
         String[] params = new String[]{"" + meta_id, "" + txt_no, "" + text.getType(), textstring};
         service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
     }
@@ -123,7 +83,7 @@ public class DocumentMapper {
      Set the modified datetime of a internalDocument to now
      @param meta_id The id of the internalDocument
      **/
-    private void sqlTouchDocument( int meta_id ) {
+    private static void sqlTouchDocument( IMCService service, int meta_id ) {
         Date date = new Date();
         SimpleDateFormat dateformat = new SimpleDateFormat( DATE_FORMATING_STRING );
         service.sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
@@ -148,7 +108,7 @@ public class DocumentMapper {
     public DocumentDomainObject getDocument( int metaId ) {
         DocumentDomainObject document = null;
         try {
-            String[] result = sprocGetDocumentInfo( metaId );
+            String[] result = sprocGetDocumentInfo( service, metaId );
 
             //lets start and do some controlls of the resulted data
             if( result == null || result.length < 25 ) {
@@ -171,7 +131,7 @@ public class DocumentMapper {
 
             document.setArchived( result[12] == "0" ? false : true );
 
-            document.setSection( sprocSectionGetInheritId( metaId ) );
+            document.setSection( sprocSectionGetInheritId( service, metaId ) );
 
             try {
                 document.setCreatedDatetime( dateform.parse( result[16] ) );
@@ -202,7 +162,7 @@ public class DocumentMapper {
                 document.setArchivedDatetime( null );
             }
             if( document.getDocumentType() == IMCConstants.DOCTYPE_FILE ) {
-                document.setFilename( sprocGetFilename( metaId ) );
+                document.setFilename( sprocGetFilename( service, metaId ) );
             }
             if( document.getDocumentType() == IMCConstants.DOCTYPE_TEXT ) {
                 String[] textdoc_data = sprocGetTestDocData( metaId );
@@ -221,24 +181,6 @@ public class DocumentMapper {
 
     }
 
-    public Map getAllRolesMappedToPermissions( DocumentDomainObject document ) {
-        Map result = new HashMap();
-        String[] sprocResult = sprocGetUserRolesDocPermissions( document.getMetaId() );
-        int columnsResult = 4;
-        for( int i = 0; i < sprocResult.length; i += columnsResult ) {
-            // String roleId = sprocResult[i];
-            String roleName = sprocResult[i + 1];
-            String userPermissionSetId = sprocResult[i + 2];
-            DocumentPermissionSetDomainObject docPermSetDO = new DocumentPermissionSetDomainObject( Integer.parseInt( userPermissionSetId ) );
-            if( docPermSetDO.getPermissionType() == IMCConstants.DOC_PERM_SET_RESTRICTED_1 || docPermSetDO.getPermissionType() == IMCConstants.DOC_PERM_SET_RESTRICTED_2 ) {
-                PermissionTuple[] permissionMapping = sprocGetPermissionSet( document.getMetaId(), docPermSetDO.getPermissionType(), "en" );
-                mapPermissions( docPermSetDO, permissionMapping );
-            }
-            result.put( roleName, docPermSetDO );
-        }
-        return result;
-    }
-
     public boolean hasAdminPermissions( DocumentDomainObject document, UserDomainObject user ) {
 
         boolean result = false;
@@ -249,7 +191,7 @@ public class DocumentMapper {
             result = true;
         } else {
 
-            String[] sqlResult = sprocGetUserPermissionSet( document.getMetaId(), user.getUserId() );
+            String[] sqlResult = sprocGetUserPermissionSet( service, document.getMetaId(), user.getUserId() );
             Vector perms = new Vector( Arrays.asList( sqlResult ) );
 
             if( perms.size() > 0 ) {
@@ -299,10 +241,10 @@ public class DocumentMapper {
         String textstring = text.getText();
 
         // update text
-        sprocInsertText( meta_id, txt_no, text, textstring );
+        sprocInsertText( service, meta_id, txt_no, text, textstring );
 
         // update the date
-        sqlTouchDocument( meta_id );
+        sqlTouchDocument( service, meta_id );
 
         service.updateLogs( "Text " + txt_no + " in  " + "[" + meta_id + "] modified by user: [" + user.getFullName() + "]" );
 
@@ -315,57 +257,5 @@ public class DocumentMapper {
         }
     }
 
-    private final static int EDIT_HEADLINE_PERMISSON_ID = 1;
-    private final static int EDIT_DOCINFO_PERMISSON_ID = 2;
-    private final static int EDIT_PERMISSIONS_PERMISSON_ID = 4;
-    private final static int EDIT_TEXTS_PERMISSON_ID = 65536;
-    private final static int EDIT_PICTURES_PERMISSON_ID = 131072;
-    private final static int EDIT_MENUES_PERMISSON_ID = 262144;
-    private final static int EDIT_TEMPLATE_PERMISSON_ID = 524288;
-    private final static int EDIT_INCLUDE_PERMISSON_ID = 1048576;
-    /*
-        private final static Integer[] permissionIds = new Integer[]{ new Integer( EDIT_HEADLINE_PERMISSON_ID ),
-                                                              new Integer( EDIT_DOCINFO_PERMISSON_ID ),
-                                                              new Integer( EDIT_PERMISSIONS_PERMISSON_ID ),
-                                                              new Integer( EDIT_TEXTS_PERMISSON_ID ),
-                                                              new Integer( EDIT_PICTURES_PERMISSON_ID ),
-                                                              new Integer( EDIT_MENUES_PERMISSON_ID ),
-                                                              new Integer( EDIT_TEMPLATE_PERMISSON_ID ),
-                                                              new Integer( EDIT_INCLUDE_PERMISSON_ID) };   */
-
-    static void mapPermissions( DocumentPermissionSetDomainObject docPermSetDO, PermissionTuple[] permissionMapping ) {
-
-        for( int i = 0; i < permissionMapping.length; i++ ) {
-            switch( permissionMapping[i].permissionId ) {
-                case EDIT_HEADLINE_PERMISSON_ID:
-                    docPermSetDO.setEditHeadline( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_DOCINFO_PERMISSON_ID:
-                    docPermSetDO.setEditDocumentInformation( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_PERMISSIONS_PERMISSON_ID:
-                    docPermSetDO.setEditPermissions( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_TEXTS_PERMISSON_ID:
-                    docPermSetDO.setEditTexts( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_PICTURES_PERMISSON_ID:
-                    docPermSetDO.setEditPictures( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_MENUES_PERMISSON_ID:
-                    docPermSetDO.setEditMenues( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_TEMPLATE_PERMISSON_ID:
-                    docPermSetDO.setEditTemplates( permissionMapping[i].hasPermission );
-                    break;
-                case EDIT_INCLUDE_PERMISSON_ID:
-                    docPermSetDO.setEditIncludes( permissionMapping[i].hasPermission );
-                    break;
-                default:
-                    log.warn( "Missing permission_id in mapPermissions()" );
-                    break;
-            }
-        }
-    }
 }
 

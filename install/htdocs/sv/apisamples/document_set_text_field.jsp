@@ -3,7 +3,7 @@
 
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
-    DocumentService documentMapper = imcmsSystem.getDocumentMapper() ;
+    DocumentService documentMapper = imcmsSystem.getDocumentService() ;
     int metaId = 1001 ;
     TextDocument document = (TextDocument)documentMapper.getDocument(metaId) ;
 

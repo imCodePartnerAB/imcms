@@ -2,7 +2,7 @@
 Users with role "<%= RoleConstants.USERS %>"
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
-    UserService userMapper = imcmsSystem.getUserMapperBean();
+    UserAndRoleService userMapper = imcmsSystem.getUserService();
     User[] usersWithASpecificRole = userMapper.getAllUserWithRole( RoleConstants.USERS );
 %>
 <%= java.util.Arrays.asList( usersWithASpecificRole ) %>

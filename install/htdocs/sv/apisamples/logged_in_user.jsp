@@ -3,7 +3,7 @@
                  com.imcode.imcms.User"%>
 <%
 ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
-User accessingUser = imcmsSystem.getAccessionUser();
+User accessingUser = imcmsSystem.getCurrentUser();
 %>
 
 You are logged in as "<%=accessingUser.getLoginName()%>"
