@@ -8,14 +8,13 @@
 -->
 <html>
 <head>
-<title> - ReadRunner(TM)
-</title>
+<title> - ReadRunner(TM) </title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 
 <script language="javascript">
 <!--
-var RRlayers = #quotecount# ;
+var RRlayers = #quotecount#;
 //-->
 </script>
 
@@ -32,19 +31,17 @@ document.write('<ba'+'se href="' + server + '">');
 
 var infoWin = window.open(server + 'readrunner/rr_reader_popup-mess.html','infoWin',
 'resizable=no,scrollbars=0,status=0,menu=0,width=500,height=200,left=' + (screen.width-500)/2 + ',top=' + (screen.height-200)/2 + '');
-checkInfoWin();
-//infoWin.focus();
 
 function checkInfoWin() {
-	if (infoWin) {
-		try {
-			infoWin.focus();
-		} catch(e) {}
-	}
+	try {
+		infoWin.focus();
+	} catch(e) {}
 }
 
+checkInfoWin();
+
 function checkLocal() {
-	document.getElementById("save").style.visibility = (/file:/.test(document.location.toString())) ? 'hidden' : 'visible';
+	document.getElementById("save").style.visibility = (/file\:/.test(document.location.toString())) ? 'hidden' : 'visible';
 }
 
 function debugRR(code) {
@@ -82,6 +79,7 @@ function debugRR(code) {
 	<img src="readrunner/images/line_left.gif" width="6" height="28" alt="" border="0"></div>
 	<div id="rrTopTextLay">
 	<table border="0" cellpadding="0" cellspacing="0">
+	<form name="form1">
 	<tr>
 		<td nowrap class="rrTopText">Hastighet: <span class="rrTopText" id="rrSpeedLay"></span> tkn/s &#150; <span class="rrTopText" id="rrSpeedWordsLay"></span> ord/min &nbsp; &nbsp;</td>
 		<td><button id="save" class="btnNorm" onClick="clickBtn('save')"
@@ -94,7 +92,6 @@ function debugRR(code) {
 	
 	<div id="RRpanelBtnDiv" style="position:absolute; top:2" align="right">
 	<table border="0" cellpadding="0" cellspacing="0">
-	<form name="form1">
 	<tr>
 		<td><SCRIPT LANGUAGE="JavaScript">
 <!--
@@ -178,13 +175,12 @@ document.write('<a id="menulink" href="' + server + 'readrunner/rr_reader.html?m
 <!-- End Content -->
 </div>
 
-<form name="rrdownl" method="POST" action="servlet/Readrunner" target="topframe">
 
+<form name="rrdownl" method="POST" action="servlet/Readrunner" target="topframe">
 <input type="hidden" name="text" value="#text#">
 <input type="hidden" name="meta_id" value="#meta_id#">
 <input type="hidden" name="download" value="1">
 </form>
-
 
 
 <!-- * Buffer * -->

@@ -114,8 +114,12 @@ function infoPopHide() {
 
 /* *************** Copy to buffer ************** */
 
+var RRhasPause = 0;
+
 function RRinitWorm(){
 	document.getElementById("RRbufferDiv").innerHTML = document.getElementById("RRcontentDiv").innerHTML;
+	// check once, if there are <pause> tags
+	RRhasPause = (/\<PAUS[^\>]*\>/gi.test(document.getElementById("RRbufferDiv").innerHTML)) ? 1 : 0;
 	//document.body.onScroll = "updateScreenSize();"
 }
 
@@ -292,41 +296,54 @@ function RRworm() {
 /* ***************** The Pauses ***************** */
 
 function RRwait(divID,didScroll) {
-	var f = document.forms.form1;
 	var thePause = 0;
 	if (runMode == "stop") {
 		call = "RRnothing()";
 		enableMouseClick();
 	} else if (RRobj.filters[0].status == 2) {
 	
-		call = "RRwait(" + divID + "," + didScroll + ")";
+		call = "RRwait()";
 		enableMouseClick();
 	} else {
 		call = (RRcounter > RRlayers) ? "RRquit()" : "RRworm()";
 		enableMouseClick();
 	}
-	if (divID != null && (f.cbp1.checked || f.cbp2.checked || f.cbp3.checked || f.cbp4.checked)) {
+	if (divID != null && (form1.cbp1.checked || form1.cbp2.checked || form1.cbp3.checked || form1.cbp4.checked)) {
 		RRobj = document.all.tags("Q").item(divID-1);
 		var theText = RRobj.innerText;
 		
-		if (f.cbp3.checked) { // ***** skiljetecken ****
+		if (form1.cbp3.checked) { // ***** skiljetecken ****
 			if (/[,;:–\/-]\s*$/g.test(theText)) thePause = paus3;
 		}
-		if (f.cbp2.checked) { //   ***** stopptecken *****
+		if (form1.cbp2.checked) { //   ***** stopptecken *****
 			if (/[\.!\?]\s*$/g.test(theText)) thePause = paus2;
 		}
 		
-		if (f.cbp1.checked && divID < RRlayers) { // ***** radbrytning *****
+		if (form1.cbp1.checked && divID < RRlayers) { // ***** radbrytning *****
 			var thisY = parseInt(RRobj.offsetTop);
 			var nextY = parseInt(document.all.tags("Q").item(divID).offsetTop);
 			var thisH = parseInt(RRobj.offsetHeight);
 			var nextH = parseInt(document.all.tags("Q").item(divID).offsetHeight);
 			thePause = (nextY != thisY || nextH != thisH) ? paus1 : thePause;
 		}
-		if (f.cbp4.checked) { // ***** scrollning *****
+		if (form1.cbp4.checked) { // ***** scrollning *****
 			if (didScroll) thePause = paus4;
 		}
 		thePause *= 1.6; //                                  ***** Adjust factor *****
+	}
+	if (divID != null && RRhasPause) { // if there are <paus> tags
+		var RRobjHTML = RRobj.innerHTML;
+		if (/\<PAUS[^\>]*\>/gi.test(RRobjHTML)) { // if <Q> ... </Q> contains <paus> - then pause
+			var RRpauseTag = /\<PAUS[^\>]*\>/gi.exec(RRobjHTML);
+			if (/\([1-9]{1}[0-9]{0,1}\)/g.test(RRpauseTag)) { // if has numeric pause (wait specific time)
+				var RRtimerPause = /[1-9][0-9]*/i.exec(RRpauseTag);
+				if (parseInt(RRtimerPause) > 0) thePause = RRtimerPause * 1200;
+			} else { // else pause
+				runMode = "stop";
+				call = "RRnothing()";
+				enableMouseClick();
+			}
+		}
 	}
 	
 	if (parseInt(thePause) > 0) {
@@ -334,7 +351,6 @@ function RRwait(divID,didScroll) {
 	} else {
 		setTimeout(call, 0);
 	}
-	//window.status = 'Pause: ' + thePause + '  divID: ' + divID + ' theText: ' + theText + ' pauses: ' + paus1 + '/' + paus2 + '/' + paus3 + '/' + paus4 + '' + f.cbp1.checked + f.cbp2.checked + f.cbp3.checked + f.cbp4.checked;
 }
 
 

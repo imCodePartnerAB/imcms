@@ -118,8 +118,12 @@ function RRremovePaddings() {
 
 /* *************** Copy to buffer ************** */
 
+var RRhasPause = 0;
+
 function RRinitWorm(){
 	document.getElementById("RRbufferDiv").innerHTML = document.getElementById("RRcontentDiv").innerHTML;
+	// check once, if there are <pause> tags
+	RRhasPause = (/\<PAUS[^\>]*\>/gi.test(document.getElementById("RRbufferDiv").innerHTML)) ? 1 : 0;
 	//document.body.onScroll = "updateScreenSize();"
 }
 
@@ -310,6 +314,20 @@ function RRwait(divID,didScroll) {
 			if (didScroll) thePause = paus4;
 		}
 		thePause *= 1.6; //                                  ***** Adjust factor *****
+	}
+	if (divID != null && RRhasPause) { // if there are <paus> tags
+		var RRobjHTML = RRobj.innerHTML;
+		if (/\<PAUS[^\>]*\>/gi.test(RRobjHTML)) { // if <Q> ... </Q> contains <paus> - then pause
+			var RRpauseTag = /\<PAUS[^\>]*\>/gi.exec(RRobjHTML);
+			if (/\([1-9]{1}[0-9]{0,1}\)/g.test(RRpauseTag)) { // if has numeric pause (wait specific time)
+				var RRtimerPause = /[1-9][0-9]*/i.exec(RRpauseTag);
+				if (parseInt(RRtimerPause) > 0) thePause = RRtimerPause * 1200;
+			} else { // else pause
+				runMode = "stop";
+				call = "RRnothing()";
+				enableMouseClick();
+			}
+		}
 	}
 	
 	if (parseInt(thePause) > 0) {

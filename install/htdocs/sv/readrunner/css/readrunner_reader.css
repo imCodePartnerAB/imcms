@@ -2,8 +2,8 @@
 
 
 .rrTopLogo { position:absolute; left:12; top:0; }
-.rrTopLogoText { font: 18px Arial Black; color:#999999; text-decoration:none; }
-.rrTopText { font: bold 12px Verdana, sans-serif; color:#999999; }
+.rrTopLogoText { font: 18px Arial Black; color:#444444; text-decoration:none; }
+.rrTopText { font: bold 12px Verdana, sans-serif; color:#333333; }
 #rrTopTextLay { position:absolute; left:12; top:2; }
 
 #RRcontentDiv { position:relative; left:-5; top:-5; font: 13px Verdana, Geneva, Arial, Helvetica, sans-serif; color: #000000; }
@@ -69,4 +69,4 @@ SPAN.menuCont { color:#990099; }
 SPAN.menuContAct { color:#FF00FF; }
 SPAN.saveCont { color:#998800; }
 SPAN.saveContAct { color:#CCBB00; }
-SPAN.btnDim { color:#999999; }
+SPAN.btnDim { color:#666666; }
