@@ -164,8 +164,8 @@ public class DocumentPermissionSetMapper {
     }
 
     private DocumentPermissionSetDomainObject createRestricedPermissionSet( DocumentDomainObject document, int permissionType, String langPrefix ) {
-        DocumentPermissionSetMapper.PermissionTuple[] permissionMapping = sprocGetPermissionSet( service, document.getMetaId(),  permissionType, langPrefix );
         DocumentPermissionSetDomainObject result = new DocumentPermissionSetDomainObject( document, permissionType );
+        DocumentPermissionSetMapper.PermissionTuple[] permissionMapping = sprocGetPermissionSet( service, document.getMetaId(),  permissionType, langPrefix );
         for( int i = 0; i < permissionMapping.length; i++ ) {
             switch( permissionMapping[i].permissionId ) {
                 case EDIT_HEADLINE_PERMISSON_ID:

@@ -482,6 +482,10 @@ public class DocumentMapper {
         sqlUpdateMeta( service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline, image, modifiedDatetime, target, text, archived );
         updateSection( service, document, section );
 
+        // Restricted One and Two
+
+
+
         // TEXT_DOC
         updateTextDoc( service, document.getMetaId(), template, menuSortOrder, templateGroupId );
 

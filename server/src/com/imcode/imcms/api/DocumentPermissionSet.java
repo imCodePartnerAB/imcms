@@ -54,4 +54,50 @@ public class DocumentPermissionSet {
     public String[] getEditableMenuDocumentTypeNames() {
         return internalDocPermSet.getEditableMenuNames();
     }
+
+    // set
+
+    // todo
+    /*
+    public void setEditableMenuNames( boolean b ) {
+        internalDocPermSet.setEditableMenuNames( b );
+    }
+    public void setEditMenuesPermission( boolean b ) {
+        internalDocPermSet.setEditMenues( b );
+    }
+
+    public void setEditableTemplateGroupNames( boolean b ) {
+        internalDocPermSet.setEditableTemplateGroupNames( b );
+    }
+    public void setEditTemplatesPermission( boolean b ) {
+        internalDocPermSet.setEditTemplates( b );
+    }
+
+    public void setPermissionTypePermission( boolean b ) {
+        internalDocPermSet.setPermissionType( b );
+    }
+    */
+
+    public void setEditDocumentInformationPermission( boolean b ) {
+        internalDocPermSet.setEditDocumentInformation( b );
+    }
+    public void setEditHeadlinePermission( boolean b ) {
+        internalDocPermSet.setEditHeadline( b );
+    }
+    public void setEditIncludesPermission( boolean b ) {
+        internalDocPermSet.setEditIncludes( b );
+    }
+    public void setEditPermissionsPermission( boolean b ) {
+        internalDocPermSet.setEditPermissions( b );
+    }
+    public void setEditPicturesPermission( boolean b ) {
+        internalDocPermSet.setEditPictures( b );
+    }
+    public void setEditTextsPermission( boolean b ) {
+        internalDocPermSet.setEditTexts( b );
+    }
+
+    public void setEditRolePermissionsPermission( boolean b ) {
+        internalDocPermSet.setEditPermissions( b );
+    }
 }

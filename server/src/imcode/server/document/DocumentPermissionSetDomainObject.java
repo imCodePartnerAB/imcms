@@ -123,47 +123,48 @@ public class DocumentPermissionSetDomainObject {
         return editMenuesNames;
     }
 
-    void setPermissionType( int permissionType ) {
+    public void setPermissionType( int permissionType ) {
         this.permissionType = permissionType;
     }
 
-    void setEditHeadline( boolean editHeadline ) {
+    public void setEditHeadline( boolean editHeadline ) {
         this.editHeadline = editHeadline;
     }
 
-    void setEditDocumentInformation( boolean editDocumentInformation ) {
+    public void setEditDocumentInformation( boolean editDocumentInformation ) {
         this.editDocumentInformation = editDocumentInformation;
     }
 
-    void setEditPermissions( boolean editPermissions ) {
+    public void setEditPermissions( boolean editPermissions ) {
         this.editPermissions = editPermissions;
     }
 
-    void setEditTexts( boolean editTexts ) {
+    public void setEditTexts( boolean editTexts ) {
         this.editTexts = editTexts;
     }
 
-    void setEditMenues( boolean editMenues ) {
+    public void setEditMenues( boolean editMenues ) {
         this.editMenues = editMenues;
     }
 
-    void setEditTemplates( boolean editTemplates ) {
+    public void setEditTemplates( boolean editTemplates ) {
         this.editTemplates = editTemplates;
     }
 
-    void setEditIncludes( boolean editIncludes ) {
+    public void setEditIncludes( boolean editIncludes ) {
         this.editIncludes = editIncludes;
     }
 
-    void setEditPictures( boolean editPictures ) {
+    public void setEditPictures( boolean editPictures ) {
         this.editPictures = editPictures;
     }
 
-    void setEditableMenuNames( String[] names ) {
+    public void setEditableMenuNames( String[] names ) {
         this.editMenuesNames = names;
     }
 
-    void setEditableTemplateGroupNames( String[] names ) {
+    public void setEditableTemplateGroupNames( String[] names ) {
         this.editTemplatesNames = names;
     }
+
 }

@@ -52,6 +52,12 @@ public class Document {
         return result;
     }
 
+    public DocumentPermissionSet getPermissionSetRestrictedTwo() {
+        DocumentPermissionSetDomainObject restrictedTwo = documentPermissionMapper.getPermissionSetRestrictedTwo( internalDocument );
+        DocumentPermissionSet result = new DocumentPermissionSet( restrictedTwo );
+        return result;
+    }
+
     public String getHeadline() {
         return internalDocument.getHeadline();
     }

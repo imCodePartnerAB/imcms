@@ -6,7 +6,7 @@
     int documentId = 1001;
     Document document = documentService.getTextDocument( documentId );
     DocumentPermissionSet restrictedOne = document.getPermissionSetRestrictedOne();
-    if( restrictedOne != null ){%>
+%>
 
 In document <%=documentId%> the permission set "<%=restrictedOne.getType()%>" has the following rights:
 <ul>
@@ -39,7 +39,6 @@ In document <%=documentId%> the permission set "<%=restrictedOne.getType()%>" ha
             }%>
             </ul> <%
         }
-    }
 %>
 
 
