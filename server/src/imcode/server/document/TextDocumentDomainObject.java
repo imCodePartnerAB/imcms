@@ -40,21 +40,21 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         }
     }
 
-    private LazilyLoadedTextDocumentAttributes lazilyLoadedAttributes = null;
+    private LazilyLoadedTextDocumentAttributes lazilyLoadedTextDocumentAttributes = null;
 
     public synchronized LazilyLoadedTextDocumentAttributes getLazilyLoadedTextDocumentAttributes() {
-        if ( null == lazilyLoadedAttributes ) {
-            lazilyLoadedAttributes = new LazilyLoadedTextDocumentAttributes();
+        if ( null == lazilyLoadedTextDocumentAttributes ) {
+            lazilyLoadedTextDocumentAttributes = new LazilyLoadedTextDocumentAttributes();
             DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
             documentMapper.initLazilyLoadedTextDocumentAttributes( this );
         }
-        return lazilyLoadedAttributes;
+        return lazilyLoadedTextDocumentAttributes;
     }
 
     public Object clone() throws CloneNotSupportedException {
         TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
-        if ( null != lazilyLoadedAttributes ) {
-            clone.lazilyLoadedAttributes = (LazilyLoadedTextDocumentAttributes)lazilyLoadedAttributes.clone();
+        if ( null != lazilyLoadedTextDocumentAttributes ) {
+            clone.lazilyLoadedTextDocumentAttributes = (LazilyLoadedTextDocumentAttributes)lazilyLoadedTextDocumentAttributes.clone();
         }
         return clone;
     }
