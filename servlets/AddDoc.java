@@ -8,6 +8,7 @@ import javax.servlet.http.*;
 import imcode.util.*;
 import imcode.external.diverse.*;
 import imcode.server.*;
+import imcode.server.db.DatabaseService;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
@@ -256,7 +257,7 @@ public class AddDoc extends HttpServlet {
 
         //**************** section index word stuff *****************
         //lets get the section stuff from db
-        String[] parent_section = DatabaseAccessor.sprocSectionGetInheritId( imcref, Integer.parseInt(meta_id) );
+        DatabaseService.Table_section parent_section = DatabaseAccessor.sprocSectionGetInheritId( imcref, Integer.parseInt(meta_id) );
         //lets add the stuff that ceep track of the inherit section id and name
         if( parent_section == null ) {
             vec.add( "#current_section_id#" );
@@ -265,9 +266,9 @@ public class AddDoc extends HttpServlet {
             vec.add( imcref.parseDoc( null, MetaDataParser.SECTION_MSG_TEMPLATE, lang_prefix ) );
         } else {
             vec.add( "#current_section_id#" );
-            vec.add( parent_section[0] );
+            vec.add( ""+parent_section.section_id );
             vec.add( "#current_section_name#" );
-            vec.add( parent_section[1] );
+            vec.add( parent_section.section_name );
         }
 
         //lets build the option list used when the admin whants to breake the inherit chain
@@ -281,7 +282,7 @@ public class AddDoc extends HttpServlet {
             }
             if( parent_section != null ) {
                 if( parent_section != null )
-                    selected = parent_section[0];
+                    selected = ""+parent_section.section_id;
             }
 
             option_list = Html.createHtmlCode( "ID_OPTION", selected, onlyTemp );
