@@ -32,7 +32,7 @@ public class ConfForum extends Conference {
 			ConfError err = new ConfError(req,res,header,1) ;
 			*/
 			return;
-		} 
+		}
 
 
 		String htmlFile = HTML_TEMPLATE ;
@@ -40,10 +40,10 @@ public class ConfForum extends Conference {
 
 		// 	log("Parametrar var: " + params.toString()) ;
 
-		// Lets get an user object  
+		// Lets get an user object
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
-		
+
 		if ( !isUserAuthorized( req, res, user ) ) {
 			return;
 		}
@@ -58,7 +58,7 @@ public class ConfForum extends Conference {
 		String servletHome = MetaInfo.getServletPath(req) ;
 
 		// Lets get serverinformation
-		String host = req.getHeader("Host") ;	
+		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
 
@@ -67,16 +67,16 @@ public class ConfForum extends Conference {
 		String sqlAnswer[] = rmi.execSqlProcedure(confPoolServer, sqlStoredProc ) ;
 		Vector forumV = super.convert2Vector(sqlAnswer) ;
 
-		// Lets fill the select box	
+		// Lets fill the select box
 		String forumList = Html.createHtmlCode("ID_OPTION", "", forumV ) ;
 
 		// Lets build the Responsepage
 		VariableManager vm = new VariableManager() ;
 		vm.addProperty( "FORUM_LIST", forumList ) ;
 		vm.addProperty( "ADMIN_LINK_HTML", this.ADMIN_LINK_TEMPLATE );
-		
+
 		this.sendHtml(req,res,vm, htmlFile) ;
-		log("ConfForum OK") ;
+		//log("ConfForum OK") ;
 		return ;
 	}
 
@@ -112,6 +112,6 @@ public class ConfForum extends Conference {
 
 	public void log( String str) {
 		super.log(str) ;
-		System.out.println("ConfForum: " + str ) ;	
+		System.out.println("ConfForum: " + str ) ;
 	}
 } // End of class

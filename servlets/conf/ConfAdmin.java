@@ -165,8 +165,8 @@ public class ConfAdmin extends Conference {
 			// Lets copy the original folders to the new foldernames
 			String metaId = super.getMetaId(req) ;
 			FileManager fileObj = new FileManager() ;
-			String templateSrc = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + "ORIGINAL/" ;
-			String imageSrc = rmi.getExternalImageHomeFolder(host,imcServer, metaId) + "ORIGINAL/" ;
+			String templateSrc = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + "original/" ;
+			String imageSrc = rmi.getExternalImageHomeFolder(host,imcServer, metaId) + "original/" ;
 			String templateTarget = MetaInfo.getExternalTemplateFolder(imcServer, metaId) + newLibName + "/" ;
 			String imageTarget = rmi.getExternalImageHomeFolder(host,imcServer, metaId) + newLibName + "/" ;
 

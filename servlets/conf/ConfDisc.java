@@ -1075,8 +1075,8 @@ public class ConfDisc extends Conference {
 			return null ;
 			}
 
-		log("FROM: " + p.getProperty("FR_DATE")) ;
-		log("TO: " + p.getProperty("TO_DATE")) ;
+		//log("FROM: " + p.getProperty("FR_DATE")) ;
+		//log("TO: " + p.getProperty("TO_DATE")) ;
 
 		return p ;
 	}

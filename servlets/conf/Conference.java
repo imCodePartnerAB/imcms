@@ -454,7 +454,7 @@ public class Conference extends HttpServlet {
 		String sqlQ = "GetTemplateLib " + meta_id ;
 		String libName = RmiConf.execSqlProcedureStr(server, sqlQ) ;
 		if( libName == null) {
-			libName = "Original" ;
+			libName = "original" ;
 			//log(sqlQ + ": fungerar inte!") ;
 		}
 		libName += "/" ;
