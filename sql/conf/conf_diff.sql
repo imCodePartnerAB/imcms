@@ -2,18 +2,15 @@
 -- Revision 
 
 
-
-
 --Changed name on the templatelib and the procedures that adds new one
-
 GO
 UPDATE A_templates
 SET A_templates.template_lib = 'original'
 WHERE A_templates.template_lib = 'Original'
 GO
-
 GO
 ALTER PROCEDURE A_AddNewTemplateLib 
+
 /*
  Lets add the templatelibrary where all the templates is situated on hd. This 
 function is used when the administrator adds a new conference. Used from sp
@@ -35,13 +32,10 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
-
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
 GO
-
-
 GO
 ALTER PROCEDURE A_GetTemplateLib
 /*
@@ -63,11 +57,24 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
-
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
 GO
-
-
 -- 2001-10-24
+
+-- ************* Here is imCMS v1_5_0-pre10 tagged  *******************************
+
+-- did changes to procedure so that it changes an conferences templateset to another one
+ALTER PROCEDURE A_SetTemplateLib
+/*
+ Used when an admin wants to change the conferences template set to another one
+*/
+	@meta_id int , 
+	 @new_lib_id varchar(50) 
+AS
+UPDATE A_conf_templates
+SET template_id= @new_lib_id
+WHERE conf_id = @meta_id
+GO
+-- 2002-01-23

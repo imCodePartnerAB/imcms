@@ -262,22 +262,11 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_UpdateRe
 drop procedure [dbo].[A_UpdateReply]
 GO
 
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_deleteConf]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[A_deleteConf]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_getArchiveDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[A_getArchiveDate]
-GO
-
-if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[A_getConference_metaId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[A_getConference_metaId]
-GO
-
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 CREATE PROCEDURE A_AddNewConf
@@ -299,6 +288,7 @@ INSERT INTO A_conference (meta_id, name)
 VALUES (@meta_id, @confName)
 -- Lets create the templates library path as well
 EXEC A_AddNewTemplateLib @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -309,6 +299,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -335,6 +326,7 @@ SELECT @thisDiscussionId = @@identity
 UPDATE A_replies
 SET A_replies.parent_id = @thisDiscussionId
 WHERE A_replies.reply_id = @firstReplyId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -345,6 +337,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -367,6 +360,7 @@ DECLARE @newForumId int
 SELECT @newForumId  = @@identity
 
 EXEC A_linkForumToConf @meta_id, @newForumId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -377,6 +371,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -397,6 +392,7 @@ VALUES  ( @template_lib )
 SELECT  @thisTemplateId = @@identity
 INSERT INTO A_conf_templates ( conf_id , template_id )
 VALUES (@meta_id, @thisTemplateId )
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -407,6 +403,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -436,6 +433,7 @@ SET count_replies =  @nbrOfRepliesInDisc
 WHERE A_discussion.discussion_id = @theDiscussionId
 -- Lets update the discussions lastModified date 
 EXEC A_UpdateDiscussionModifyDate @theDiscussionId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -446,6 +444,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -458,6 +457,7 @@ This function is used when an admin creates a new templateset.
 AS
 INSERT INTO A_TEMPLATES (template_lib)
 VALUES  ( @newTemplateLib)
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -468,6 +468,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 
 CREATE PROCEDURE A_AdminStatistics1
@@ -520,6 +521,7 @@ IF ( @listMode  = 2 ) BEGIN
 	AND disc.last_mod_date >@fromDate AND disc.last_mod_date < @toDate	
 	GROUP BY A_forum.forum_id, A_forum.forum_name
 END
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -530,6 +532,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS OFF 
 GO
+
 
 
 CREATE PROCEDURE A_AdminStatistics2
@@ -578,6 +581,7 @@ IF ( @listMode  = 2 ) BEGIN
 	AND disc.reply_id = A_replies.reply_id
 	AND disc.last_mod_date >@fromDate AND disc.last_mod_date < @toDate	
 END
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -588,6 +592,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -605,6 +610,7 @@ FROM A_CONF_USERS usr, A_conference c
 WHERE usr.user_id = @wanted_user_id
 --AND usr.conf_id = c.meta_id
 --AND c.meta_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -615,6 +621,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -669,6 +676,7 @@ END
 INSERT INTO CONF_USERS_CROSSREF ( conf_id,  user_id, last_login_date )
 VALUES ( @conf_id, @user_id,  GETDATE() )
 */
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -679,6 +687,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -687,6 +696,7 @@ CREATE PROCEDURE A_ConfUsersGetReplyDate AS
 
 
 SELECT * FROM A_conf_users
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -697,6 +707,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -716,6 +727,7 @@ FROM A_conf_users_crossref crossref
 WHERE crossref.user_id = @user_id 
 AND crossref.conf_id = @meta_id
 return @retVal
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -726,6 +738,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -745,6 +758,7 @@ WHERE crossref.user_id = @user_id
 AND crossref.conf_id = @meta_id
 SELECT @retVal =  ISNULL( @retVal , 0) 
 SELECT @retVal AS 'UserLevel'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -755,6 +769,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -776,6 +791,7 @@ WHERE userCross.user_id = @user_id
 AND userCross.conf_id = @meta_id
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'UserLevel'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -786,6 +802,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -803,6 +820,7 @@ SET
 	replies_order =  @newSortOrder
 WHERE A_conf_users_crossref.user_id = @user_id
 AND A_conf_users_crossref.conf_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -813,6 +831,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -842,6 +861,7 @@ AND d.forum_id = f.forum_id
 AND f.forum_id = cf.forum_id
 AND cf.conf_id  = @meta_id
 -- conf_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -852,6 +872,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -877,6 +898,7 @@ UPDATE A_conf_users_crossref
 	SET  A_conf_users_crossref.last_login_date = GETDATE()
 WHERE A_conf_users_crossref.user_id = @user_id
 AND A_conf_users_crossref.conf_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -887,6 +909,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -912,6 +935,7 @@ AND A_conference.meta_id = @meta_id
 --AND conf_users.user_id = conf_users_crossref.user_id
 --AND conf_users_crossref.conf_id = conference.meta_id
 --AND conference.meta_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -922,6 +946,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -948,6 +973,7 @@ DECLARE @ss varchar(2)
 SELECT @ss = DATEPART(ss, @aFullDate)
 SELECT @year +'-'+ @month +'-'+ @day + ' ' +@hh + ':' + @mm + ':' + @ss
 /* SELECT 'Datum: ', @year +'-'+ @month +'-'+ @day */
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -958,6 +984,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -976,6 +1003,7 @@ conference and forum, that link must be removed before the forum can be deleted
  DELETE
  FROM A_forum
  WHERE forum_id = @aForumId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -986,6 +1014,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1004,6 +1033,7 @@ WHERE A_discussion.discussion_id = @aDiscId
 -- Lets delete all replies for the discussion
 DELETE FROM A_REPLIES
 WHERE A_replies.parent_id = @aDiscId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1014,6 +1044,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1031,6 +1062,7 @@ AS
  DELETE
  FROM A_forum
  WHERE forum_id = @aForumId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1041,6 +1073,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1080,6 +1113,7 @@ END ELSE  IF( @firstReply = @replyId AND @nbrOfReplies > 1 ) BEGIN
 END ELSE BEGIN
 	PRINT 'VI KAN INTE TA BORT FÖRSTA OCH ENDA INLÄGGET!' 
 END
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1090,6 +1124,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1111,6 +1146,7 @@ AND f.forum_id = cf.forum_id
 AND cf.conf_id = @meta_id
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'forum'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1121,6 +1157,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1140,6 +1177,7 @@ FROM A_conference
 WHERE meta_id = @newMetaId
 SELECT @returnVal = ISNULL(@returnVal, 1) 
 SELECT @returnVal AS 'FoundMetaId'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1150,6 +1188,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1168,6 +1207,7 @@ FROM A_templates
 WHERE template_lib = @newLibName
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'TemplateLib'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1178,6 +1218,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1194,6 +1235,7 @@ FROM A_conf_users cu , A_conf_users_crossref crossref
 WHERE cu.user_id = crossref.user_id
 AND crossref.conf_id = @meta_id
 ORDER BY last_name
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1204,6 +1246,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1219,6 +1262,7 @@ AS
 SELECT d.discussion_id
 FROM A_discussion d
 WHERE d.forum_id = @aForumId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1229,6 +1273,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1263,6 +1308,7 @@ AND disc.reply_id = A_replies.reply_id
 AND usr.user_id = A_replies.user_id
 AND ( DATEDIFF( ss , disc.last_mod_date , @lastLoginDate ) > 0 )
 ORDER BY disc.discussion_id DESC
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1273,6 +1319,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1290,6 +1337,7 @@ WHERE A_conf_forum.conf_id = @meta_id
 AND A_conf_forum.forum_id  = A_forum.forum_id 
 
 ORDER BY A_forum.forum_name
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1300,6 +1348,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1315,6 +1364,7 @@ SELECT f.forum_id , f.forum_name + ' ('+ RTRIM(CONVERT(char(10), f.discs_to_show
 FROM A_forum f,  A_conf_forum cf
 WHERE f.forum_id = cf.forum_id
 AND cf.conf_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1325,6 +1375,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1353,6 +1404,7 @@ AND disc.reply_id = A_replies.reply_id
 AND usr.user_id = A_replies.user_id
 AND ( DATEDIFF( ss , disc.last_mod_date , @lastLoginDate ) < 0 )
 ORDER BY disc.create_date DESC
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1363,6 +1415,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1388,6 +1441,7 @@ AND usr.user_id = A_replies.user_id
 --AND ( DATEDIFF( ss , replies.create_date , @lastLoginDate ) > 0 )
 AND ( DATEDIFF( ss , disc.last_mod_date , @lastLoginDate ) > 0 )
 ORDER BY disc.create_date DESC
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1398,6 +1452,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1480,6 +1535,7 @@ ELSE BEGIN
 	ORDER BY rep.create_date DESC
 END
 */
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1490,6 +1546,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1532,6 +1589,7 @@ ELSE BEGIN
  	AND usr.user_id = rep.user_id 
 	ORDER BY rep.create_date DESC
 END
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1542,6 +1600,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1554,6 +1613,7 @@ to create the list where the admin can choose among current templatelibs
 -- Get all templatelibs for all confernences
 SELECT DISTINCT t.template_lib , t.template_lib
 FROM A_templates t
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1564,6 +1624,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1574,6 +1635,7 @@ This function is used from AdminIpAcces servlet to generate a list
 */
 SELECT user_id, last_name + ', ' + first_name from A_users
 ORDER BY last_name
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1584,6 +1646,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1624,6 +1687,7 @@ ELSE IF (@argument = 3 ) BEGIN
 	AND cu.user_id = crossref.user_id 
 	AND crossref.conf_id = @meta_id
 END
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1634,6 +1698,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1655,6 +1720,7 @@ DECLARE @ss varchar(2)
 SELECT @ss = DATEPART(ss,GETDATE())
 SELECT @year +'-'+ @month +'-'+ @day + ' ' +@hh + ':' + @mm + ':' + @ss
 /* SELECT 'Datum: ', @year +'-'+ @month +'-'+ @day */
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1665,6 +1731,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1691,6 +1758,7 @@ END ELSE BEGIN
 	WHERE r.parent_id = @discussion_id
 	ORDER BY reply_id
 END
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1701,6 +1769,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1750,6 +1819,7 @@ AND cf.forum_id  = f.forum_id
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'FirstForumId'
 */
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1760,6 +1830,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1777,6 +1848,7 @@ FROM A_forum f
 WHERE f.forum_id = @forum_id
 SELECT @returnVal =  ISNULL(@returnVal, 'Not found') 
 SELECT @returnVal AS 'Forum_name'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1787,6 +1859,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1810,6 +1883,7 @@ AND A_forum.forum_id = disc.forum_id
 AND disc.reply_id = A_replies.reply_id
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'LastDiscussionId'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1820,6 +1894,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1841,6 +1916,7 @@ AND crossref.conf_id = @meta_id
 --WHERE cu.user_id = @user_id
 --AND cu.user_id = crossref.user_id 
 --AND crossref.conf_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1851,6 +1927,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1872,6 +1949,7 @@ AND crossref.conf_id = @meta_id
 --WHERE cu.user_id = @user_id
 --AND cu.user_id = crossref.user_id 
 --AND crossref.conf_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1882,6 +1960,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1896,6 +1975,7 @@ AS
 SELECT COUNT (DISTINCT discussion_id)
 FROM A_discussion
 WHERE A_discussion.forum_id = @forum_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1906,6 +1986,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1923,6 +2004,7 @@ FROM A_forum f
 WHERE f.forum_id = @forum_id
 SELECT @returnVal =  ISNULL(@returnVal, 20) 
 SELECT @returnVal AS 'FirstForumId'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1933,6 +2015,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1951,6 +2034,7 @@ WHERE t.template_lib = @aTemplateLibName
 -- Lets validate for null
 SELECT @returnVal = ISNULL(  @returnVal , -1 )
 SELECT @returnVal AS 'TemplateId'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1961,6 +2045,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -1980,6 +2065,7 @@ AND ct.conf_id = c.meta_id
 AND c.meta_id = @meta_id
 SELECT @returnVal =  ISNULL(@returnVal, 'original') 
 SELECT @returnVal AS 'TemplateLib'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -1990,6 +2076,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2007,6 +2094,7 @@ WHERE t.template_id = @template_id
 AND t.template_id = ct.template_id
 AND ct.conf_id = c.meta_id
 AND c.meta_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2020,10 +2108,12 @@ GO
 
 
 
+
 /****** Object:  Stored Procedure dbo.GetTime    Script Date: 2000-10-27 17:39:27 ******/
 CREATE PROCEDURE A_GetTime AS
 
 SELECT SUBSTRING( CONVERT(char(20),GETDATE(),20),1, 20) AS 'Now'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2034,6 +2124,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2058,6 +2149,7 @@ END ELSE BEGIN
 END
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'UserName'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2068,6 +2160,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2093,6 +2186,7 @@ VALUES ( @user_id, @toDay, @headline, @text, @reply_level)
 SELECT  @returnReplyId = @@identity
 /* Lets return the reply_id */
 RETURN @returnReplyId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2103,6 +2197,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2114,6 +2209,7 @@ CREATE PROCEDURE A_LinkForumToConf
 AS
 INSERT INTO A_conf_forum (conf_id, forum_id, sort_number )
 VALUES  (@conf_id, @forum_id, 1 )
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2124,6 +2220,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2145,6 +2242,7 @@ FROM A_conf_users cu, A_conf_users_crossref crossref, A_conference c
 WHERE cu.user_id = @user_id
 AND cu.user_id = crossref.user_id 
 AND crossref.conf_id = @meta_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2155,6 +2253,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2169,6 +2268,7 @@ AS
 UPDATE A_forum
 SET A_forum.forum_name = @forum_name
 WHERE A_forum.forum_id = @forum_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2179,6 +2279,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2288,6 +2389,7 @@ BEGIN
 	AND crossref.conf_id = @meta_id
 END
 */
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2298,6 +2400,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2339,6 +2442,7 @@ IF ( @foundRole = 0  ) BEGIN
 END ELSE BEGIN	
 	PRINT 'Rollen fanns - gör ingenting'
 END
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2349,6 +2453,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2372,6 +2477,7 @@ AND A_conf_selfreg_crossref.selfreg_id = @selfRegId
 DELETE
 FROM A_selfreg_roles
 WHERE A_selfreg_roles.selfreg_id = @selfRegId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2382,6 +2488,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2397,6 +2504,7 @@ FROM A_selfreg_roles sr , A_conf_selfreg_crossref ref, A_conference c
 WHERE sr.selfreg_id = ref.selfreg_id
 AND ref.meta_id = c.meta_id
 AND c.meta_id = @theMetaId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2407,6 +2515,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2424,6 +2533,7 @@ FROM A_selfreg_roles sr , A_conf_selfreg_crossref ref, A_conference c
 WHERE sr.selfreg_id = ref.selfreg_id
 AND ref.meta_id = c.meta_id
 AND c.meta_id = @theMetaId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2434,6 +2544,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2448,6 +2559,7 @@ AS
 UPDATE A_forum 
 SET discs_to_show = @newNbrToShow
 WHERE forum_id = @forum_id
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2458,6 +2570,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2465,17 +2578,13 @@ GO
 CREATE PROCEDURE A_SetTemplateLib
 /*
  Used when an admin wants to change the conferences template set to another one
-Lets set a template lib name for a meta id
 */
 	@meta_id int , 
-	 @newLibName varchar(50) 
+	 @new_lib_id varchar(50) 
 AS
-UPDATE A_TEMPLATES
-SET template_lib = @newLibName
-FROM A_conference c , A_conf_templates ct , A_templates t
-WHERE t.template_id = ct.template_id
-AND ct.conf_id = c.meta_id
-AND c.meta_id = @meta_id
+UPDATE A_conf_templates
+SET template_id= @new_lib_id
+WHERE conf_id = @meta_id
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2486,6 +2595,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2493,6 +2603,7 @@ GO
 CREATE PROCEDURE A_TestConfDb
 AS
 select 'Hurra Conferensen db svarar!'
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2503,6 +2614,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2521,6 +2633,7 @@ SELECT @toDay = GETDATE()
 UPDATE A_DISCUSSION 
 SET  A_discussion.last_mod_Date = GETDATE()
 WHERE A_discussion.discussion_id =  @theDiscussionId
+
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
@@ -2531,6 +2644,7 @@ SET QUOTED_IDENTIFIER OFF
 GO
 SET ANSI_NULLS ON 
 GO
+
 
 
 
@@ -2549,66 +2663,7 @@ UPDATE A_replies
 	SET headline = @header , text = @text
 	FROM A_replies rep
 WHERE rep.reply_id = @reply_id
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
 
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-
-
-CREATE PROCEDURE A_deleteConf
- @meta_id int 
-AS
-DELETE  from A_conference WHERE meta_id  = @meta_id
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-
-
-CREATE PROCEDURE A_getArchiveDate
- @forum_id int,
- @retVal int
-AS
- SELECT @retVal = archive_time
- FROM A_forum
- WHERE forum_id = @forum_id   
- RETURN @retVal
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-
-
-CREATE PROCEDURE A_getConference_metaId
- @meta_id int
-AS
- SELECT meta_id
- FROM A_conference
- WHERE meta_id = @meta_id
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
