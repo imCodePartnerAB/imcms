@@ -1,8 +1,6 @@
 import java.io.*;
-import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.rmi.* ;
 
 import imcode.server.* ;
 import imcode.util.* ;
@@ -10,8 +8,6 @@ import imcode.util.* ;
    Verify a user.
 */
 public class VerifyUser extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     /**
        init()
@@ -37,18 +33,11 @@ public class VerifyUser extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
 		IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
-		String start_url        	= imcref.getStartUrl() ;
 		String servlet_url       	= Utility.getDomainPref( "servlet_url",host ) ;
-		String admin_url       		= Utility.getDomainPref( "admin_url",host ) ;
 		String access_denied_url   	= Utility.getDomainPref( "access_denied_url",host ) ;
 
 		imcode.server.user.UserDomainObject user ;
 		res.setContentType( "text/html" );
-		PrintWriter out = res.getWriter( );
-		String test = "" ; 
-		String type = "";
-		String version = "" ;
-		String plattform = "" ;
 
 		String scheme = req.getScheme( );
 		String serverName = req.getServerName( );

@@ -187,7 +187,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Verify a Internet/Intranet user. User data retrived from SQL Database.
      */
-
     public UserDomainObject verifyUser( String login, String password ) {
         UserDomainObject result = null;
 

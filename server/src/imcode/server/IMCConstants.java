@@ -145,4 +145,5 @@ public interface IMCConstants {
     /** Properties file for host properties **/
     public final static String HOST_PROPERTIES           = "host.properties" ;
 
+    int PASSWORD_MINIMUM_LENGTH = 4;
 }
