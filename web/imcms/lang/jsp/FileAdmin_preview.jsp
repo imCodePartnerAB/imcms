@@ -12,7 +12,7 @@ String acceptedExtPattern = "/" +
 	"|(\\.LOG+)" +
 	"/i" ;
 
-String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/" ; // path to buttons (with trailing /)
+String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ; // path to buttons (with trailing /)
 
 /* *******************************************************************
  *           INIT                                                    *
@@ -25,8 +25,6 @@ String thisPage = request.getContextPath() + request.getServletPath();
 
 String zoom       = "" ;
 String defZoom    = "1.0" ;
-
-boolean isStat    = (request.getParameter("isStat") != null) ? true : false ;
 
 if (request.getParameter("zoom") != null) {
 	zoom            = " style=\"zoom:" + request.getParameter("zoom") + "\"" ;
@@ -49,6 +47,7 @@ if (request.getParameter("border") != null) {
 }
 
 File webRoot    = imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath() ;
+File fn = new File(webRoot, file) ;
 
 /* Is image? */
 Perl5Util re       = new Perl5Util() ;
@@ -63,7 +62,7 @@ boolean hasGetElementById = re.match("/Gecko/i", uAgent) ;
 boolean isMac = re.match("/Mac/i", uAgent) ;
 
 /* if Stat-Report - Read file and show it */
-File fn = new File(webRoot, file) ;
+boolean isStat    = (request.getParameter("isStat") != null) ? true : false ;
 
 if (isStat && frame.equalsIgnoreCase("MAIN")) {
 
@@ -86,7 +85,7 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 	theButtons = "<table border=0 bgcolor=\"#d6d3ce\" align=\"right\">\n<tr>" ;
 	if (hasGetElementById && !hasDocumentAll && !isMac) {
 		hasInlineButtons = true ;
-		theButtons += "\n	<td><a href=\"javascript: find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td>" ;
+         theButtons += "\n   <td><a href=\"#\" onClick=\"find(); return false\"><img align=\"absmiddle\" src=\"" + IMG_PATH + "btn_find.gif\" border=\"0\" alt=\"Sök!\"></a></td>" ;
 	}
 	if (isMac) {
 		hasInlineButtons = true ;
@@ -104,14 +103,7 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 	return ;
 }
 
-/* Get size */
-
-String image_ref = fn.getCanonicalPath() ;
-
-    BufferedImage image = ImageIO.read( new File(image_ref) );
-    ImageSize imagefile = new ImageSize( image.getWidth(), image.getHeight() ) ;
-int width = imagefile.getWidth() ;
-int height = imagefile.getHeight() ;
+/* Get formated file size */
 
 String size  = "" ;
 double iSize = 0 ;
@@ -141,23 +133,23 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 <head>
 <title></title>
 
-
-
 </head>
 <body marginwidth="10" marginheight="10" leftmargin="10" topmargin="10" bgcolor="#ffffff">
 
 <div align="center"><%
+
 if (isImage) {
+    BufferedImage image = ImageIO.read( fn );
 	%><div style="padding: 5 0 <%
 	if (hasBorder) {
 		%>5<%
 	} else {
 		%>6<%
-	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;">&quot;<%= request.getContextPath() + "/"+file %>&quot;<%
-	if (width > 0 && height > 0 && !size.equals("")) {
+	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;">&quot;<%= file %>&quot;<%
+	if (image.getWidth() > 0 && image.getHeight() > 0 && !size.equals("")) {
 		%> (<%
-		if (width > 0 && height > 0) {
-			%><%= width + "x" + height %><%
+		if (image.getWidth() > 0 && image.getHeight() > 0) {
+			%><%= image.getWidth() + "x" + image.getHeight() %><%
 		}
 		if (!size.equals("")) {
 			%><%= size %><%
@@ -178,8 +170,6 @@ if (isImage) {
 <html>
 <head>
 <title></title>
-
-
 
 <STYLE TYPE="text/css">
 <!--

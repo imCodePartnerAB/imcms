@@ -25,10 +25,6 @@ var moz   = (document.getElementById) ? 1 : 0;
 var gecko = (moz && !ie) ? 1 : 0;
 var isMac = (/mac/i.test(navigator.platform)) ? 1 : 0;
 
-aDir = new Array(3); // absolutedir[iside]
-aDir[0] = "";
-aDir[1] = "";
-aDir[2] = "";
 wDir = new Array(3); // webdir[iside]
 wDir[0] = "";
 wDir[1] = "";
@@ -185,7 +181,7 @@ function isSysFold(iside) {
 
 function isHiddenFold(iside) {
 	re = new RegExp(pao, 'g');
-	var sfile = (getFile(iside).indexOf(":") != -1) ? getFile(iside) : aDir[iside] + "\\" + getFile(iside);
+	var sfile = (getFile(iside).indexOf(":") != -1) ? getFile(iside) : wDir[iside] + "\\" + getFile(iside);
 	return re.test(sfile);
 }
 
@@ -203,7 +199,7 @@ function isEditFileText(iside) {
 
 function isStatFile(iside) {
 	re = new RegExp(par, 'gi');
-	var sfile = (getFile(iside).indexOf(":") != -1) ? getFile(iside) : aDir[iside] + "\\" + getFile(iside);
+	var sfile = (getFile(iside).indexOf(":") != -1) ? getFile(iside) : wDir[iside] + "\\" + getFile(iside);
 	return re.test(sfile);
 }
 
@@ -232,7 +228,7 @@ function dblClickAction(iside) {
 
 function previewFile(iside) {
 	var form = document.forms[0];
-	var sdir = (iside == 2) ? form.dir2w.value : form.dir1w.value;
+	var sdir = (iside == 2) ? form.dir2.value : form.dir1.value;
 	var sfile = getFile(iside);
 	sfile = wDir[iside] + sfile;
 	if (isStatFile(iside)) { // stat
@@ -256,7 +252,7 @@ function previewFile(iside) {
 
 function openFile(iside) {
 	var f = document.forms[0];
-	var sdir = (iside == 2) ? f.dir2w.value : f.dir1w.value;
+	var sdir = (iside == 2) ? f.dir2.value : f.dir1.value;
 	var sfile = getFile(iside);
 	sfile = wDir[iside] + sfile;
 	window.open(imC_PATH + sfile);
@@ -264,7 +260,7 @@ function openFile(iside) {
 
 function editFile(iside,readonlyFlag) {
 	var f = document.forms[0];
-	var sdir = (iside == 2) ? f.dir2w.value : f.dir1w.value;
+	var sdir = (iside == 2) ? f.dir2.value : f.dir1.value;
 	var sfile = getFile(iside);
 	sfile = wDir[iside] + sfile;
 	readonlyFlag = (readonlyFlag) ? "&readonly=1" : "";
@@ -323,8 +319,7 @@ function setSelectedFolder(iside) {
 <form method="post" action="FileAdmin" enctype="multipart/form-data">
 <input type="hidden" name="dir1" value="#dir1#">
 <input type="hidden" name="dir2" value="#dir2#">
-<input type="hidden" name="dir1w" value="#dir1#">
-<input type="hidden" name="dir2w" value="#dir2#">
+
 <tr>
 	<td><input class="imcmsFormBtn" height="22" type="submit" name="cancel" value="<? templates/sv/FileAdmin.html/2022 ?>">
 	<input class="imcmsFormBtn" type="button" value="<? global/help ?>" onClick="openHelpW('2'); return false;"></td>
@@ -492,11 +487,8 @@ if (gecko && !isMac) {
  * Put them in an easy accessable, array[what_side] array.
  */
 
-var actDir1 = document.forms[0].dir1.value;
-var actDir2 = document.forms[0].dir2.value;
-
-wDir[1] = actDir1;
-wDir[2] = actDir2;
+wDir[1] = document.forms[0].dir1.value;
+wDir[2] = document.forms[0].dir2.value;
 
 /*
  * make the file-select's wider.
