@@ -12,7 +12,8 @@ SOURCE  = \
           IMCServiceRMI.java \
           Prefs.java \
           Parser.java \
-          MetaDataParser.java 
+          MetaDataParser.java \
+          ImageFileMetaData.java
 
 RMI_SOURCE = 
 
