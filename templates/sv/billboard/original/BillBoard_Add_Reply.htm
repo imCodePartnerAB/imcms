@@ -6,29 +6,6 @@
 	
 <Script Language=JavaScript>
 <!--
-function AddLink()
-        {
-		document.forms[0].ADDTEXT.focus();
-          var DaLink
-          DaLink = prompt('Ange webadress, tex www.dn.se','');
-          if (DaLink)
-            {
-              FooStr = DaLink.toUpperCase();
-              I = FooStr.indexOf('HTTP://');
-  
-              DisplayURL = DaLink
-
-              if (I < 0)
-                AddStr = 'http://';
-              else
-                {
-                AddStr = '';
-                DisplayURL = DaLink.substr(0,I) + DaLink.substr(I+7,DaLink.length);
-                }
-              document.forms[0].ADDTEXT.value = document.forms[0].ADDTEXT.value + ' <L>'  + DaLink  + '</L> ' ;
-            }
-			 document.forms[0].ADDTEXT.focus();
-        }
 
        function DoPreview()
         {
@@ -70,71 +47,62 @@ function AddLink()
 </Script>
   </Head>
 
-<body bgcolor="#ffffff" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onload="this.FocusField();">
+<body bgcolor="#ffffff" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onLoad="this.FocusField();">
 <table width="320" cellpadding="0" cellspacing="0" border="0">
   <tr> 
-    <td width="285" valign="center" bgcolor="#333999" height="20"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#ffffff">&nbsp;&nbsp;<b>AVDELNING: 
-      #CURRENT_SECTION_NAME#</b></font> </td>
-    <td width="35" bgcolor="#333999">&nbsp; </td>
+	<td width="285" valign="center" bgcolor="#333999" height="20">
+  		<font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#ffffff">&nbsp;&nbsp; AVDELNING: #CURRENT_SECTION_NAME#</font>
+	</td>
+	<td width="35" bgcolor="#333999">&nbsp;</td>
   </tr>
   <tr> 
-    <td width="285" height="3"><IMG height=3 src="#IMAGE_URL#1pix.gif" width=1></td>
+	<td width="285" height="3"><IMG height="3" src="#IMAGE_URL#1pix.gif" width="1"></td>
   </tr>
 </table>
 <form method="post" action="#SERVLET_URL#BillBoardAdd" target=_parent name="NewMsgForm" onsubmit="if(ValidateFields() == true){return true;}else{return false;};">
-  <table border=0 width="270" cellpadding="0" cellspacing="0">
-  	<tr> 
-      <td colspan=2 valign=top>
-	  	&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#000000">&nbsp;SKICKA
-        SVAR&nbsp;&nbsp;</font>
-	  </td>	  	
+<table border="0" width="270" cellpadding="0" cellspacing="0">
+  	<tr>
+	<td colspan="2" valign="top">	&nbsp;&nbsp;
+		   <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#000000">&nbsp;SKICKA SVAR&nbsp;&nbsp;</font>
+	  </td>
     </tr>
     <tr> 
-      <td valign=top colspan=2> <br>
-        &nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">RUBRIK</font> 
-        <br>
-        &nbsp;
-        <input name="ADDHEADER" maxlength=50 size=30 >
-        <br>
-        <br>
+	<td valign="top" colspan="2"><br>&nbsp;&nbsp;
+	   <font face="Verdana, Arial, Helvetica, sans-serif" size="2">RUBRIK</font><br>&nbsp;
+	   <input name="ADDHEADER" maxlength="50" size="30"><br><br>
       </td>
     </tr>
     <tr valign="top"> 
-      <td colspan=2>&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">TEXT</font>
-        <font face="Verdana, Arial, Helvetica, sans-serif" size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Infoga:&nbsp;&nbsp;<A href="javascript:AddLink()">länk</A> 
-        <BR>&nbsp; <TEXTAREA cols=30 name=ADDTEXT rows=10 wrap=Virtual></TEXTAREA></font>
+	<td colspan="2">&nbsp;&nbsp;
+	   <font face="Verdana, Arial, Helvetica, sans-serif" size="2">TEXT</font><BR>&nbsp;
+		<TEXTAREA cols="30" name="ADDTEXT" rows="10" wrap="Virtual"></TEXTAREA></font>
       </td>
     </tr>
 	<tr valign="top"> 
-      <td valign=top colspan=2>
-        &nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">E-POST</font> 
-        <br>
-        &nbsp;
-        <input name="ADDEPOST" maxlength=50 size=30 >
-		<br>
+	<td valign="top" colspan="2">	&nbsp;&nbsp;
+	   <font face="Verdana, Arial, Helvetica, sans-serif" size="2">E-POST</font><br>&nbsp;
+	   <input name="ADDEPOST" maxlength="50" size="30"><br>
 		 <hr>
       </td>
 	</tr>
     <tr valign="top"> 
       <td height="30"> 
-        <div align="right"> &nbsp;&nbsp; <font size=3> 
+	<div align="right">	&nbsp;&nbsp;
+		   <font size=3>
           <input type="hidden" name="ADDTYPE" value="#ADD_TYPE#">
-          <input type="hidden" name="ADD1" value="Lägg till">
-          </font> <font size=3>
-          <input type="hidden" name="CANCEL1" value="Avbryt">
-          </font> 
-          <input type="image" border="0" name="ADD" src="#IMAGE_URL#billBoard_send.gif" width="52" height="18">
- </form>&nbsp;
- 	</td>
- 	<td height="30"> 
- <form method="post" action="#SERVLET_URL#BillBoardAdd" target=_parent name="NewMsgForm">
-       
-		  &nbsp;<input type="image" border="0" name="CANCEL" src="#IMAGE_URL#billBoard_cancel.gif" width="52" height="18">
-          <font size=3> </font> </div>
-      </td>
+		   <input type="hidden" name="ADD1" value="Lägg till"></font>
+		   <font size=3>
+		   <input type="hidden" name="CANCEL1" value="Avbryt"></font>
+		   <input type="image" border="0" name="ADD" src="#IMAGE_URL#billBoard_send.gif" width="52" height="18">&nbsp;
+	</td></form>
+ 	<td height="30">
+	<form method="post" action="#SERVLET_URL#BillBoardAdd" target=_parent name="NewMsgForm">   &nbsp;
+   	<input type="image" border="0" name="CANCEL" src="#IMAGE_URL#billBoard_cancel.gif" width="52" height="18">
+   	<font size=3></font>
+	</div>
+	</form></td>
     </tr>
   </table>
-</form>
   <br>
 </body>
 </html>

@@ -92,7 +92,12 @@ function init() {
 	}
 	/* do a "Save" */
 	theSavedCodeDiv.innerHTML = editorDiv.innerHTML;
-	document.frames['changeTextFrame'].document.forms[0].text.value = editorDiv.innerHTML
+	if (document.frames['changeTextFrame']) {
+		if (document.frames['changeTextFrame'].document.forms[0]) {
+			if (document.frames['changeTextFrame'].document.forms[0].text)
+				document.frames['changeTextFrame'].document.forms[0].text.value = editorDiv.innerHTML
+		}
+	}
 	
 	/* focus */
 	if (editorDiv) editorDiv.focus();
@@ -284,12 +289,32 @@ function fixHTML(inStr) {
 	for (var i = 0; i < arrWrongPaths.length; i++) {
 		if (arrWrongPaths[i] != "") {
 			re = new RegExp(arrWrongPaths[i], "gi");
-			inStr = inStr.replace(re, "/");
+			inStr = inStr.replace(re, imcRootPath + "/");
 		}
 	}
+	re = new RegExp("(" + imcRootPath + ")+", "gi");
+	inStr = inStr.replace(re, imcRootPath);
 	if (strRightPath != "") {
 		re = new RegExp(strRightPath, "gi");
 		inStr = inStr.replace(re, "/");
+	}
+	
+	/* Fix all anchor jumps */
+	
+	re = new RegExp("#", "gi") ;
+	if (re.test(inStr)) {
+		re = /"[^"]*?#[^"]*?"/gi ;
+		arrMatches = inStr.match(re) ;
+		if (arrMatches) {
+			for (var i = 0; i < arrMatches.length; i++) {
+				var sTemp = arrMatches[i] ;
+				re = new RegExp("http:|GetDoc", "gi") ;
+				if (!re.test(sTemp)) {
+					sTemp = "\"#" + sTemp.split("#")[1] ;
+					inStr = inStr.replace(arrMatches[i], sTemp) ;
+				}
+			}
+		}
 	}
 	
 	return inStr

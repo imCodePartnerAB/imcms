@@ -128,8 +128,7 @@ public class ChangeImage extends HttpServlet {
         }//end while loop
         session.setAttribute( "imageFolderOptionList", folderOptions.toString() );
 
-        String[] sql = imcref.sqlQuery( "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images\n" +
-                                        "where meta_id = ? and name = ?", new String[]{"" + meta_id, "" + img_no} );
+        String[] sql = imcref.sqlQuery( "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images\n" + "where meta_id = ? and name = ?", new String[]{"" + meta_id, "" + img_no} );
 
         Vector vec = new Vector();
 

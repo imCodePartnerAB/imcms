@@ -36,10 +36,11 @@ var isAdmin = (getParam2('admin')) ? 1 : 0;
  *         PATH TO THE SERVLETS:   include "/imcms/" if in use.                              *
  ******************************************************************************************* */
 
+var imcRootPath = "@rooturl@";
 var servletPath = "@servleturl@/";
 
     /* ------------------------------------------------------------------- *
-     *         the host. may not be empty.                                 *
+     *         the host. may not be empty. include "/imcms/" if in use.    *
      * ------------------------------------------------------------------- */
 
 var strRightPath = "http://" + location.host + "@rooturl@/";
@@ -51,9 +52,11 @@ var strRightPath = "http://" + location.host + "@rooturl@/";
 	/* leave one empty ("") if there are no "dev-domains" */
 arrWrongPaths = new Array();
 arrWrongPaths[0] = "http://" + location.host + "@rooturl@/";
-/* arrWrongPaths[1] = "http://tommy.imcode.com:8080/"; */
+arrWrongPaths[1] = "http://" + location.host + "/";
+//arrWrongPaths[2] = "http://mydev.domain.com:8080@rooturl@/";
 
-	/* servlets that will be "HREF-fixed" in the editor - (ie:  href="BackDoc"  ->  href="/servlet/BackDoc") */
+
+	/* servlets that will be "HREF-fixed" in the editor - (ie:  href="BackDoc"  ->  href="@servleturl@/BackDoc") */
 arrServletNames = new Array();
 arrServletNames[0] = "GetDoc";
 arrServletNames[1] = "AdminDoc";
@@ -63,15 +66,15 @@ arrServletNames[3] = "SearchDocuments";
 /* Examples:
         <a href="GetDoc?meta_id=1234">link</a> AND
 		    <img src="../images/image.gif" ... >
-		    ...is replaced by MS-HTML to...
+		    ...is replaced by MS-HTML (Microsoft Stupid HTML-functions) to...
 		    <a href="http://www.Editor-Domain.com/htmleditor/GetDoc?meta_id=1234">link</a> AND
 		    <img src="http://www.Editor-Domain.com/htmleditor/images/image.gif" ... >
 		    ...because it "fixes" the link "to work".
 		    All the "Wrong" paths will be replaced with the right one.
-		    On [Save] and on [Preview] the right path is replaced with "/" or /servlet/GetDoc....
+		    On [Save] and on [Preview] the right path is replaced with "@rooturl@/" or @servleturl@/GetDoc....
 		    The result:
-		    <a href="/servlet/GetDoc?meta_id=1234">link</a> AND
-		    <img src="/images/image.gif" ... >
+		    <a href="@servleturl@/GetDoc?meta_id=1234">link</a> AND
+		    <img src="@rooturl@/images/image.gif" ... >
 */
 
 /* *******************************************************************************************
@@ -79,9 +82,8 @@ arrServletNames[3] = "SearchDocuments";
  ******************************************************************************************* */
 
 arrCssPaths = new Array();
-arrCssPaths[0] = "/css/imcms_win_ie.css";
-arrCssPaths[1] = "/css/style_win_ie.css";
-arrCssPaths[2] = "";
+arrCssPaths[0] = "@rooturl@/css/style_win_ie.css";
+arrCssPaths[1] = "";
 
 /* *******************************************************************************************
  *         PATH TO THE WORD-SPECIFIC STYLESHEET(S):                                          *
@@ -292,3 +294,7 @@ if (isAdmin) {
 	showHelpFullBtn = 1;
 	showHelpSubjectBtn = 1;
 }
+
+
+
+

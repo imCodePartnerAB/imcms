@@ -109,8 +109,8 @@ public class ConfLogin extends Conference {
             }
 
             // Lets get all users in this conference from db
-            String[] usersArr = confref.sqlQuery( "A_GetAllConfUsersInList", new String[]{"" + params.getMetaId()} );
-            Vector usersV = super.convert2Vector( usersArr );
+            String[] usersArr = confref.sqlProcedure("A_GetAllConfUsersInList", new String[]{""+params.getMetaId()} );
+            Vector usersV = super.convert2Vector(usersArr);
             VariableManager vm = new VariableManager();
             String usersOption = Html.createHtmlOptionList( "", usersV );
             vm.addProperty( "USERS_MENU", usersOption );

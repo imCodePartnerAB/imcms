@@ -362,7 +362,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
         int discIndexPos = this.getDiscIndex( req );
         //log("DOGET discindex: " + discIndexPos) ;
         int showDiscsCounter = 0;
-        if ( sqlAnswer != null ) {
+        if ( sqlAnswer.length > 0 ) {
 
             // Lets build our tags vector.
             Vector tagsV = this.buildTags();

@@ -79,17 +79,15 @@ boolean isMac = re.match("/Mac/i", uAgent) ;
     ie: &Aring; in code would have been Å in the editfield.
     Now &amp;Aring; in code and &Aring; in editfield. Thereby saved correctly. */
 String[] fuckedUpUmling = new String[] {
- "&([A-Za-z0-9]{2,6});", "&amp;$1;",
- "&#(\\d{2,4});", "&amp;#$1;"
+ "&", "&amp;"
 } ;
 
  /* replace back. If any of them where in a script-block, they would have been rendered and saved wrongly.
-    ie: &amp;nbsp; will be replaced with &nbsp; */
+    ie: &amp;nbsp; will be replaced with &nbsp; 
 String[] fuckedUpUmlingBack = new String[] {
- "&amp;([A-Za-z0-9]{2,6});", "&$1;",
- "&amp;#(\\d{2,4});", "&#$1;"
+ "&amp;", "&#$1;"
 } ;
-
+*/
 /* SAVE IT */
 
 Writer fileOut  = null ;
@@ -102,9 +100,9 @@ if (doSave) {
 			sError = "<b>OBS!</b> Filen fanns inte längre så den blev skapad." ;
 		}
 		session.setAttribute("fileSaved", fileSrc) ;
-		for (int i = 0; i < fuckedUpUmlingBack.length; i = i + 2) {
+		/*for (int i = 0; i < fuckedUpUmlingBack.length; i = i + 2) {
 			fileSrc = fileSrc.replaceAll(fuckedUpUmlingBack[i],fuckedUpUmlingBack[i+1]) ;
-		}
+		}*/
 		fileOut = new FileWriter(fn) ;
 		fileOut.write(fileSrc) ;
 		isSaved = true ;

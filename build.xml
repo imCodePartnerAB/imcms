@@ -132,6 +132,24 @@
     <!-- versionnumber : imCMS version without sufix, only the number ( 1.7.4) -->
     <property name="versionnumber"         value=""/>
 
+    <!-- A handy target to have everything else depend on, just in case. -->
+    <target name="init" depends="reformatproperties,global-filters" description="Handy target for everything else to depend on.">
+
+        <!-- Record the build to a log-file. -->
+        <record name="${basedir}/build.log"/>
+
+        <tstamp/>
+
+        <dependset>
+            <srcfileset file="${basedir}/build.xml"/>
+            <targetfileset dir="${build}"/>
+        </dependset>
+
+        <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
+
+    </target>
+
+
     <!-- A target to use for reformat a properties   -->
     <target name="reformatproperties" >
         <taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpath="install/lib/ant-contrib-0.5.jar"/>
@@ -149,24 +167,6 @@
                  global="true"
                  casesensitive="false" />
         <echo message="${versionnumber}" />
-
-    </target>
-
-
-    <!-- A handy target to have everything else depend on, just in case. -->
-    <target name="init" depends="reformatproperties,global-filters" description="Handy target for everything else to depend on.">
-
-        <!-- Record the build to a log-file. -->
-        <record name="${basedir}/build.log"/>
-
-        <tstamp/>
-
-        <dependset>
-            <srcfileset file="${basedir}/build.xml"/>
-            <targetfileset dir="${build}"/>
-        </dependset>
-
-        <available classname="junit.framework.Test" classpathref="libraries" property="junit-available"/>
 
     </target>
 
@@ -338,8 +338,13 @@
     </target>
 
 
-    <!-- Install the webapp, bypassing the war-file -->
-    <target name="install" depends="init,build,check-deployroot" description="Copies the webapp directly into the webapp-directory in the deployroot.">
+    <!-- Install the war-file -->
+    <target name="install-war" depends="init,dist,check-deployroot,check-webappname" description="Copies the WAR-package into the deployroot.">
+        <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
+    </target>
+
+
+    <target name="nobuild-install" depends="init,check-deployroot" description="Install files already built, without running 'build' first." >
 	    <copy todir="${webapproot}">
 	        <fileset dir="${build}"/>
 	    </copy>
@@ -348,12 +353,10 @@
         </copy>
     </target>
 
-
-    <!-- Install the war-file -->
-    <target name="install-war" depends="init,dist,check-deployroot,check-webappname" description="Copies the WAR-package into the deployroot.">
-        <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
-    </target>
-
+    <!-- Install the webapp, bypassing the war-file -->
+    <target name="install"
+            depends="init,build,nobuild-install"
+            description="Copies the webapp directly into the webapp-directory in the deployroot." />
 
     <!-- Delete everything built by the 'build'-target. -->
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -364,7 +367,6 @@
 
     </target>
 
-
     <target name="clean-build" depends="init,clean,build" description="Runs targets clean and build."/>
 
     <target name="clean-install" depends="init,clean,install" description="Runs targets clean and install."/>
@@ -374,7 +376,6 @@
         <delete dir="${webapproot}"/>
         <delete file="${deployroot}/${warfile}"/>
     </target>
-
 
     <!-- Run JUnit-tests -->
     <target name="test" depends="server" description="Runs JUnit-tests.">
@@ -803,5 +804,9 @@
             overwrite="yes"/>
     </target>
 
+
+    <target name="templates-web-nobuild-install"
+            depends="init,templates,web,nobuild-install"
+            description="Run targets 'templates', 'web', and 'nobuild-install'" />
 
   </project>

@@ -193,7 +193,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
             String htmlConferenceElement = imcref.parseDoc( null, TEMPLATE_CONF_ELEMENT, languagePrefix );
             String htmlForumElement = imcref.parseDoc( null, TEMPLATE_FORUM_ELEMENT, languagePrefix );
 
-            String[][] listOfBillBoards = imcref.sqlQueryMulti( "ListBillBoards", new String[0] );//ListConferenses
+            String[][] listOfBillBoards = imcref.sqlQueryMulti( "ListBillBoards", new String[0] );
 
             // lets create conferencelist
             StringBuffer conferencesListTag = new StringBuffer();

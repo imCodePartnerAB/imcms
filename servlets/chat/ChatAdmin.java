@@ -187,7 +187,7 @@ public class ChatAdmin extends Administrator {
 	    String htmlChatElement = imcref.parseDoc( null, TEMPLATE_CONF_ELEMENT, languagePrefix );
 	    String htmlForumElement = imcref.parseDoc( null, TEMPLATE_FORUM_ELEMENT, languagePrefix );
 
-            String[][] listOfChats = imcref.sqlQueryMulti("ListChats", new String[0]);
+            String[][] listOfChats = imcref.sqlProcedureMulti("ListChats", new String[0]);
 
             // lets create chatlist
             StringBuffer chatListTag = new StringBuffer();

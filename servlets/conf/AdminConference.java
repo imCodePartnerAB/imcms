@@ -194,7 +194,7 @@ public class AdminConference extends Administrator {
             String htmlConferenceElement = imcref.parseDoc( null, TEMPLATE_CONF_ELEMENT, languagePrefix );
             String htmlForumElement = imcref.parseDoc( null, TEMPLATE_FORUM_ELEMENT, languagePrefix );
 
-            String[][] listOfConferences = imcref.sqlQueryMulti( "ListConferences", new String[0] );
+            String[][] listOfConferences = imcref.sqlProcedureMulti( "ListConferences", new String[0] );
 
             // lets create conferencelist
             StringBuffer conferencesListTag = new StringBuffer();

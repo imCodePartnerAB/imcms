@@ -25,16 +25,15 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- Templates in use by this servlet:
- existing_doc.html     = the startpage
- existing_doc_hit.html = One record hit html
- existing_doc_res.html = summary page for all hits on the search
-
- **/
+ * Templates in use by this servlet:
+ * existing_doc.html     = the startpage
+ * existing_doc_hit.html = One record hit html
+ * existing_doc_res.html = summary page for all hits on the search
+ */
 
 public class GetExistingDoc extends HttpServlet {
 
-    private static Logger log = Logger.getLogger(GetExistingDoc.class.getName());
+    private static Logger log = Logger.getLogger( GetExistingDoc.class.getName() );
 
     /**
      * doPost()
@@ -118,10 +117,10 @@ public class GetExistingDoc extends HttpServlet {
 
             String start_date = req.getParameter( "start_date" );
             String end_date = req.getParameter( "end_date" );
-            if (end_date.trim().indexOf(":") < 0 ){
+            if ( end_date.trim().indexOf( ":" ) < 0 ) {
                 end_date = end_date + " 23:59";
             }
-            String include_docs[] = req.getParameterValues("include_doc");
+            String include_docs[] = req.getParameterValues( "include_doc" );
 
             sortBy = req.getParameter( "sortBy" );
             userId = "" + user.getUserId();
@@ -137,7 +136,7 @@ public class GetExistingDoc extends HttpServlet {
             // we are able to determine if the sortorder is okay.
 
             // Lets fix the sortby list, first get the displaytexts from the database
-            String[][] sortOrder = imcref.sqlProcedureMulti("SortOrder_GetExistingDocs", new String[] {langPrefix});
+            String[][] sortOrder = imcref.sqlProcedureMulti( "SortOrder_GetExistingDocs", new String[]{langPrefix} );
             Vector sortOrderV = new Vector( Arrays.asList( sortOrder ) );
             Hashtable sortOrderHash = convert2Hashtable( sortOrder );
             if ( sortOrderHash.containsKey( sortBy ) == false ) {
@@ -148,8 +147,7 @@ public class GetExistingDoc extends HttpServlet {
             // parse searchString, replaces SPACE with RETURN and EMPTY with RETURN
             while ( searchString.indexOf( " " ) != -1 ) {
                 int spaceIndex = searchString.indexOf( " " );
-                searchString = searchString.substring( 0, spaceIndex )
-                        + "\r" + searchString.substring( spaceIndex + 1, searchString.length() );
+                searchString = searchString.substring( 0, spaceIndex ) + "\r" + searchString.substring( spaceIndex + 1, searchString.length() );
             }
             if ( searchString.equals( "" ) )
                 searchString = "\r";
@@ -186,25 +184,7 @@ public class GetExistingDoc extends HttpServlet {
             }
 
             // FIXME: Maximum number of hits is 1000.
-            String[][] sqlResults = imcref.sqlProcedureMulti("SearchDocs", new String[] {
-                userId,
-                searchString,
-                searchPrep,
-                doctype,
-                fromDoc,
-                "1000",
-                sortBy,
-                created_date_start,
-                created_date_end,
-                changed_date_start,
-                changed_date_end,
-                activated_date_start,
-                activated_date_end,
-                archived_date_start,
-                archived_date_end,
-                "1",
-                "0"
-            } );
+            String[][] sqlResults = imcref.sqlProcedureMulti( "SearchDocs", new String[]{userId, searchString, searchPrep, doctype, fromDoc, "1000", sortBy, created_date_start, created_date_end, changed_date_start, changed_date_end, activated_date_start, activated_date_end, archived_date_start, archived_date_end, "1", "0"} );
             Vector outVector = new Vector();
 
             // Lets get the resultpage fragment used for an result
@@ -222,8 +202,7 @@ public class GetExistingDoc extends HttpServlet {
             Vector tmpV = new Vector();
             tmpV.add( "#searchResults#" );
             tmpV.add( searchResults.toString() );
-            searchResults.replace( 0, searchResults.length(),
-                                   imcref.parseDoc( tmpV, "existing_doc_res.html", langPrefix ) );
+            searchResults.replace( 0, searchResults.length(), imcref.parseDoc( tmpV, "existing_doc_res.html", langPrefix ) );
 
             // Lets parse out hidden fields
             outVector.add( "#meta_id#" );
@@ -239,22 +218,31 @@ public class GetExistingDoc extends HttpServlet {
             // Lets get the date used in the html page, otherwise, use todays date
             String startDateStr = ( req.getParameter( "start_date" ) == null ) ? "" : ( req.getParameter( "start_date" ) );
             String endDateStr = ( req.getParameter( "end_date" ) == null ) ? "" : ( req.getParameter( "end_date" ) );
-            Date startDate = new Date();
-            Date endDate = new Date();
+            Date startDate = null;
+            Date endDate = null;
             SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM-dd" );
 
             try {
                 startDate = formatter.parse( startDateStr );
-                endDate = formatter.parse( endDateStr );
             } catch ( ParseException e ) {
                 // we failed to parse the startdatestring, however, we have already take care of that circumstance
             }
+            try {
+                endDate = formatter.parse( endDateStr );
+            } catch ( ParseException e ) {
+                // we failed to parse the startdatestring, however, we have already take care of that circumstance
+                endDate = new Date();
+            }
 
             outVector.add( "#start_date#" );
-            outVector.add( formatter.format( startDate ) );
+            if ( startDate == null ) {
+                outVector.add( "" );
+            } else {
+                outVector.add( formatter.format( startDate ) );
+            }
+
             outVector.add( "#end_date#" );
             outVector.add( formatter.format( endDate ) );
-
 
             if ( docTypes != null ) {
                 // Lets take care of the document types. Get those who were selected
@@ -348,7 +336,7 @@ public class GetExistingDoc extends HttpServlet {
 
                     // Fetch all doctypes from the db and put them in an option-list
                     // First, get the doc_types the current user may use.
-                    String[] user_dt = imcref.sqlProcedure("GetDocTypesForUser", new String[] { ""+meta_id, ""+user.getUserId(), user.getLangPrefix() });
+                    String[] user_dt = imcref.sqlProcedure( "GetDocTypesForUser", new String[]{"" + meta_id, "" + user.getUserId(), user.getLangPrefix()} );
                     HashSet user_doc_types = new HashSet();
 
                     // I'll fill a HashSet with all the doc-types the current user may use,
@@ -358,12 +346,11 @@ public class GetExistingDoc extends HttpServlet {
                     }
 
                     String sqlStr = "select doc_type from meta where meta_id = ?";
-                    String doc_type = imcref.sqlQueryStr(sqlStr, new String[] {""+existing_meta_id});
+                    String doc_type = imcref.sqlQueryStr( sqlStr, new String[]{"" + existing_meta_id} );
 
                     // Add the document in menu if user is admin for the document OR the document is shared.
                     boolean sharePermission = imcref.checkUserDocSharePermission( user, existing_meta_id );
-                    if ( user_doc_types.contains( doc_type )
-                            && sharePermission ) {
+                    if ( user_doc_types.contains( doc_type ) && sharePermission ) {
                         imcref.addExistingDoc( meta_id, user, existing_meta_id, doc_menu_no );
                     }
 
@@ -415,7 +402,7 @@ public class GetExistingDoc extends HttpServlet {
     private static Hashtable convert2Hashtable( String[][] arr ) {
 
         Hashtable h = new Hashtable();
-        for ( int i = 0; i < arr.length; i ++ ) {
+        for ( int i = 0; i < arr.length; i++ ) {
             h.put( arr[i][0], arr[i][1] );
         }
         return h;
@@ -444,8 +431,7 @@ public class GetExistingDoc extends HttpServlet {
      * Parses all the searchhits and returns an StringBuffer
      */
 
-    private static StringBuffer parseSearchResults( IMCServiceInterface imcref, String oneRecHtmlSrc,
-                                                    String[][] sqlResults, Hashtable allDocTypesHash ) {
+    private static StringBuffer parseSearchResults( IMCServiceInterface imcref, String oneRecHtmlSrc, String[][] sqlResults, Hashtable allDocTypesHash ) {
         StringBuffer searchResults = new StringBuffer( 1024 );
         int docTypeIndex = 1;  // Index of where the doctype id is placed in one record array
 

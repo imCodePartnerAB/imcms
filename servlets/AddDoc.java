@@ -79,10 +79,10 @@ public class AddDoc extends HttpServlet {
             // Lets get todays date
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             Date toDay = new Date();
-            vec.add("#start_date#");
-            vec.add(formatter.format(toDay));
-            vec.add("#end_date#");
-            vec.add(formatter.format(toDay));
+            vec.add( "#start_date#" );
+            vec.add( null );
+            vec.add( "#end_date#" );
+            vec.add( formatter.format( toDay ) );
 
             vec.add("#searchstring#");
             vec.add("");

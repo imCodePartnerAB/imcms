@@ -15,21 +15,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Vector;
 
-/**
- * Save image data.
- */
 public class SaveImage extends HttpServlet implements imcode.server.IMCConstants {
 
-    /**
-     * init()
-     */
     public void init( ServletConfig config ) throws ServletException {
         super.init( config );
     }
 
-    /**
-     * doPost()
-     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
@@ -197,10 +188,17 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         // get imageref
         String image_ref = req.getParameter( "imageref" );
         image.setImageRef( image_ref );
+        if( "".equals(image_ref ) ){  // remove width and height if user removes image ref
+                image.setImageWidth(0);
+                image.setImageHeight(0);
+        }
 
         // get image_name
         String image_name = req.getParameter( "image_name" );
-        image.setImageName( image_name );
+        if( null != image_name ) {
+            image_name = image_name.trim();
+            image.setImageName( image_name );
+        }
 
         // get image_align
         String image_align = req.getParameter( "image_align" );
