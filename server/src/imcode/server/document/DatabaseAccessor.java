@@ -43,7 +43,6 @@ public class DatabaseAccessor {
     // these are found to be used elseware in
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
-    private static final String SPROC_GET_USER_PERMISSION_SET = "GetUserPermissionSet";
     private static final String SPROC_GET_TEXT = "GetText";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
@@ -70,12 +69,6 @@ public class DatabaseAccessor {
         String s = (value!=null?"'" + value + "'":"NULL");
         String str = columnName + " = " + s + ", ";
         return str;
-    }
-
-    static String[] sprocGetUserPermissionSet( IMCService service, int metaId, int userId ) {
-        String[] sqlParams = {String.valueOf( metaId ), String.valueOf( userId )};
-        String[] sqlResult = service.sqlProcedure( SPROC_GET_USER_PERMISSION_SET, sqlParams );
-        return sqlResult;
     }
 
     /** @return the filename for a fileupload-document, or null if the document isn't a fileupload-docuemnt. **/

@@ -98,7 +98,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
                 result.setLangPrefix( langPrefix.lang_prefix );
             }
 
-            DatabaseService.MoreThanOneTable_phones_phonetypes[] phoneNumbers = service.getDatabaseService().sproc_GetUserPhoneNumbers( user_data.user_id );
+            DatabaseService.JoinedTables_phones_phonetypes[] phoneNumbers = service.getDatabaseService().sproc_GetUserPhoneNumbers( user_data.user_id );
             if( phoneNumbers != null ) {
                 for( int i = 0; i < phoneNumbers.length; i++ ) {
                     if( 2 == phoneNumbers[i].phonetype_id ) {
@@ -337,12 +337,4 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         service.sqlUpdateProcedure( modifyUserProcedureName, params );
     }
 
-    public static Vector sprocGetUserPermissionSet( DBConnect dbc, String meta_id_str, String user_id_str ) {
-        dbc.getConnection();
-        dbc.createStatement();
-        dbc.setProcedure( "GetUserPermissionSet", new String[]{meta_id_str, user_id_str} );
-        Vector user_permission_set = (Vector)dbc.executeProcedure();
-        dbc.clearResultSet();
-        return user_permission_set;
-    }
 }

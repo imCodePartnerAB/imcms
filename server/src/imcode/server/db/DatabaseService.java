@@ -505,14 +505,14 @@ public abstract class DatabaseService {
         return (Table_phone[])queryResult.toArray( new Table_phone[queryResult.size()] );
     }
 
-    public static class MoreThanOneTable_phones_phonetypes {
+    public static class JoinedTables_phones_phonetypes {
         private int phone_id;
         public String number;
         private int user_id;
         public int phonetype_id;
         private String typename;
 
-        MoreThanOneTable_phones_phonetypes( ResultSet rs ) throws SQLException {
+        JoinedTables_phones_phonetypes( ResultSet rs ) throws SQLException {
             phone_id = rs.getInt( "phone_id" );
             number = rs.getString( "number" );
             user_id = rs.getInt( "user_id" );
@@ -523,7 +523,7 @@ public abstract class DatabaseService {
 
     // todo: Do we realy need to return user_id?
     // todo: This should be able to be used instead of sproc_GetUserPhones, why not?
-    public MoreThanOneTable_phones_phonetypes[] sproc_GetUserPhoneNumbers( int user_id ) {
+    public JoinedTables_phones_phonetypes[] sproc_GetUserPhoneNumbers( int user_id ) {
         String sql = "SELECT phones.phone_id, phones.number, phones.user_id, phones.phonetype_id, phonetypes.typename " +
             "FROM phones " +
             "INNER JOIN users ON phones.user_id = users.user_id " +
@@ -532,10 +532,10 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{new Integer( user_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new MoreThanOneTable_phones_phonetypes( rs );
+                return new JoinedTables_phones_phonetypes( rs );
             }
         } );
-        return (MoreThanOneTable_phones_phonetypes[])queryResult.toArray( new MoreThanOneTable_phones_phonetypes[queryResult.size()] );
+        return (JoinedTables_phones_phonetypes[])queryResult.toArray( new JoinedTables_phones_phonetypes[queryResult.size()] );
     }
 
     int sproc_DocumentDelete( final int meta_id ) {
@@ -675,7 +675,7 @@ public abstract class DatabaseService {
         return (PartOfTable_document[])queryResult.toArray( new PartOfTable_document[queryResult.size()] );
     }
 
-    static class MoreThanOneTable_meta_childs {
+    static class JoinedTables_meta_childs {
         private int to_meta_id;
         private int menu_sort;
         private int manual_sort_order;
@@ -692,7 +692,7 @@ public abstract class DatabaseService {
         private Timestamp archived_datetime;
         private String filename;
 
-        MoreThanOneTable_meta_childs( ResultSet rs ) throws SQLException {
+        JoinedTables_meta_childs( ResultSet rs ) throws SQLException {
             to_meta_id = rs.getInt( "to_meta_id" );
             menu_sort = rs.getInt( "menu_sort" );
             manual_sort_order = rs.getInt( "manual_sort_order" );
@@ -718,7 +718,7 @@ public abstract class DatabaseService {
     // todo WARNING, i anropande kod måste en förändring ske!
     // todo Den bortkommenterade reden nedan beräknar om man har rätt att editera eller ej.
     // todo Se till att göra den kollen på annat sätt efteråt för varje dokument.
-    MoreThanOneTable_meta_childs[] sproc_getChilds( int meta_id, int user_id ) {
+    JoinedTables_meta_childs[] sproc_getChilds( int meta_id, int user_id ) {
         Integer sortOrder = getMenuSortOrder( meta_id );
         String sql =
             "select to_meta_id, c.menu_sort,manual_sort_order, doc_type," +
@@ -762,10 +762,10 @@ public abstract class DatabaseService {
 
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new MoreThanOneTable_meta_childs( rs );
+                return new JoinedTables_meta_childs( rs );
             }
         } );
-        return (MoreThanOneTable_meta_childs[])queryResult.toArray( new MoreThanOneTable_meta_childs[queryResult.size()] );
+        return (JoinedTables_meta_childs[])queryResult.toArray( new JoinedTables_meta_childs[queryResult.size()] );
     }
 
     private Integer getMenuSortOrder( int meta_id ) {
@@ -1241,17 +1241,17 @@ public abstract class DatabaseService {
         }
     }
 
-    static class MoreThanOneTable_meta_browser_docs {
+    static class JoinedTables_meta_browser_docs {
         private int to_meta_id;
         String meta_headline;
 
-        MoreThanOneTable_meta_browser_docs( ResultSet rs ) throws SQLException {
+        JoinedTables_meta_browser_docs( ResultSet rs ) throws SQLException {
             to_meta_id = rs.getInt( "to_meta_id" );
             meta_headline = rs.getString( "meta_headline" );
         }
     }
 
-    MoreThanOneTable_meta_browser_docs[] sproc_getBrowserDocChilds( int meta_id, int user_id ) {
+    JoinedTables_meta_browser_docs[] sproc_getBrowserDocChilds( int meta_id, int user_id ) {
         String sql = "SELECT DISTINCT to_meta_id, meta_headline FROM browser_docs bd JOIN meta m " +
             "ON  bd.to_meta_id = m.meta_id AND bd.meta_id = ? " +
             "LEFT JOIN roles_rights rr ON rr.meta_id = m.meta_id AND rr.set_id < 4 " +
@@ -1260,10 +1260,10 @@ public abstract class DatabaseService {
         Object[] paramValues = new Object[]{new Integer( meta_id ), new Integer( user_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new MoreThanOneTable_meta_browser_docs( rs );
+                return new JoinedTables_meta_browser_docs( rs );
             }
         } );
-        return (MoreThanOneTable_meta_browser_docs[])queryResult.toArray( new MoreThanOneTable_meta_browser_docs[queryResult.size()] );
+        return (JoinedTables_meta_browser_docs[])queryResult.toArray( new JoinedTables_meta_browser_docs[queryResult.size()] );
     }
 
     private int insertInto_browser_docs( SQLTransaction transaction, Table_browser_docs tableData ) throws SQLException {
@@ -1962,26 +1962,26 @@ public abstract class DatabaseService {
         return ((Integer)queryResult.get( 0 )).intValue();
     }
 
-    static class MoreThanOneTable_langprefixes_language {
+    static class JoinedTables_langprefixes_language {
         private int lang_id;
         private String language;
 
-        MoreThanOneTable_langprefixes_language( ResultSet rs ) throws SQLException {
+        JoinedTables_langprefixes_language( ResultSet rs ) throws SQLException {
             lang_id = rs.getInt( "lang_id" );
             language = rs.getString( "language" );
         }
     }
 
-    MoreThanOneTable_langprefixes_language[] sproc_GetLanguageList( String lang_prefix ) {
+    JoinedTables_langprefixes_language[] sproc_GetLanguageList( String lang_prefix ) {
         String sql = "SELECT lp.lang_id , lang.language FROM lang_prefixes lp, languages lang " +
             "WHERE lp.lang_prefix = lang.lang_prefix AND lang.user_prefix = ? ";
         Object[] paramValues = new Object[]{lang_prefix};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new MoreThanOneTable_langprefixes_language( rs );
+                return new JoinedTables_langprefixes_language( rs );
             }
         } );
-        return (MoreThanOneTable_langprefixes_language[])queryResult.toArray( new MoreThanOneTable_langprefixes_language[queryResult.size()] );
+        return (JoinedTables_langprefixes_language[])queryResult.toArray( new JoinedTables_langprefixes_language[queryResult.size()] );
     }
 
     static class Table_templates {
@@ -2653,11 +2653,11 @@ public abstract class DatabaseService {
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
-    public static class MoreThanOneTable_sort_by_display_name {
+    public static class JoinedTables_sort_by_display_name {
         String sort_by_type;
         String display_name;
 
-        public MoreThanOneTable_sort_by_display_name( ResultSet rs ) throws SQLException {
+        public JoinedTables_sort_by_display_name( ResultSet rs ) throws SQLException {
             sort_by_type = rs.getString("sort_by_type");
             display_name = rs.getString("display_name");
         }
@@ -2668,22 +2668,22 @@ public abstract class DatabaseService {
      * the sortorder options  display text for that language.
      * Example: SortOrder_GetExistingDocs 'se'.
      */
-    MoreThanOneTable_sort_by_display_name[] sproc_SortOrder_GetExistingDocs( String lang_prefix ) {
+    JoinedTables_sort_by_display_name[] sproc_SortOrder_GetExistingDocs( String lang_prefix ) {
         String sql = "SELECT sType.sort_by_type , display.display_name FROM lang_prefixes lang " +
             "INNER JOIN display_name display ON display.lang_id = lang.lang_id AND lang.lang_prefix = ? " +
             "INNER JOIN sort_by sType ON sType.sort_by_id = display.sort_by_id";
         Object[] paramValues = new Object[]{ lang_prefix };
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new MoreThanOneTable_sort_by_display_name(rs);
+                return new JoinedTables_sort_by_display_name(rs);
             }
         } );
-        return (MoreThanOneTable_sort_by_display_name[])queryResult.toArray(new MoreThanOneTable_sort_by_display_name[queryResult.size()]);
+        return (JoinedTables_sort_by_display_name[])queryResult.toArray(new JoinedTables_sort_by_display_name[queryResult.size()]);
     }
 
     // getUserPermissionSetForDocument() and isRestricted1MorePriviligedThanRestricted2ForDocument
     // replaces the sproc GetUserPermissionSet
-    boolean isRestricted1MorePriviligedThanRestricted2ForDocument( int meta_id ) {
+    public boolean isRestricted1MorePriviligedThanRestricted2ForDocument( int meta_id ) {
         String sql = "SELECT permissions FROM meta WHERE meta_id = ? ";
         Object[] paramValues = new Object[] { new Integer( meta_id ) };
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -2695,12 +2695,12 @@ public abstract class DatabaseService {
         return 1 == (1 & permissionBitvector) ;
     }
 
-    public static class MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref {
-        int set_id;
-        int permission_id;
+    public static class JoinedTables_permissions {
+        public int set_id;
+        public int permission_id;
 
-        public MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref(){}
-        public MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref( ResultSet rs ) throws SQLException {
+        public JoinedTables_permissions(){}
+        public JoinedTables_permissions( ResultSet rs ) throws SQLException {
             set_id = rs.getInt("set_id");
             permission_id = rs.getInt("permission_id");
         }
@@ -2720,12 +2720,12 @@ public abstract class DatabaseService {
 
     // getUserPermissionSetForDocument() and isRestricted1MorePriviligedThanRestricted2ForDocument
     // replaces the sproc GetUserPermissionSet
-    MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref
-        getUserPermissionSetForDocument( Integer metaId, Integer userId ) {
+    public JoinedTables_permissions
+        getUserPermissionSetForDocument( int meta_id, int user_id ) {
 
         // Check if user is superadmin
-        if( sproc_CheckAdminRights( userId.intValue() ) ) {
-            MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref result = new MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref();
+        if( sproc_CheckAdminRights( user_id ) ) {
+            JoinedTables_permissions result = new JoinedTables_permissions();
             result.set_id = 0;
             result.permission_id = 0;
             return result;
@@ -2741,17 +2741,18 @@ public abstract class DatabaseService {
                 "ON dps.meta_id = ? " +
                 "AND dps.set_id = rr.set_id " +
             "ORDER BY rr.set_id";
-        Object[] paramValues = new Object[]{ userId , metaId, metaId };
+        Integer metaId = new Integer(meta_id);
+        Object[] paramValues = new Object[]{ new Integer(user_id) , metaId, metaId };
 
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref(rs);
+                return new JoinedTables_permissions(rs);
             }
         } );
         if( queryResult.isEmpty() ) {
             return null;
         } else {
-            return (MoreThanOneTable_roles_rights_doc_permission_sets_user_roles_crossref)queryResult.get(0);
+            return (JoinedTables_permissions)queryResult.get(0);
         }
     }
 }

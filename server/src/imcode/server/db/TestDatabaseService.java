@@ -139,9 +139,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_getUserPermissionSetForDocument( DatabaseService databaseService ) {
-        assertNotNull( databaseService.getUserPermissionSetForDocument( new Integer(DOC_TEST_FIRST_ID), new Integer(USER_TEST_ID) ) );
-        assertNull( databaseService.getUserPermissionSetForDocument( new Integer(DOC_TEST_FIRST_ID), new Integer(USER_ID_NON_EXISTING) ) );
-        assertNull( databaseService.getUserPermissionSetForDocument( new Integer(DOC_NON_EXISTING_ID), new Integer(USER_TEST_ID) ) );
+        assertNotNull( databaseService.getUserPermissionSetForDocument( DOC_TEST_FIRST_ID, USER_TEST_ID ) );
+        assertNull( databaseService.getUserPermissionSetForDocument( DOC_TEST_FIRST_ID, USER_ID_NON_EXISTING) );
+        assertNull( databaseService.getUserPermissionSetForDocument( DOC_NON_EXISTING_ID, USER_TEST_ID) );
     }
 
     private void test_sproc_SortOrder_GetExistingDocs( DatabaseService databaseService ) {
@@ -361,7 +361,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_getChilds( DatabaseService dbService ) {
-        DatabaseService.MoreThanOneTable_meta_childs[] children = dbService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID );
+        DatabaseService.JoinedTables_meta_childs[] children = dbService.sproc_getChilds( DOC_TEST_ID_DETACHED, USER_ADMIN_ID );
         assertEquals( 0, children.length );
 
         children = dbService.sproc_getChilds( DOC_TEST_FIRST_ID, USER_ADMIN_ID );

@@ -45,7 +45,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private String m_ServletUrl;			   // servlet url
     private String m_ImageUrl;            // image folder
     private String m_Language = "";      // language
-    private static final int DEFAULT_STARTDOCUMENT = 1001;
 
     private SystemData sysData;
 
@@ -280,13 +279,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      Returns the menubuttonrow
      */
     public String getMenuButtons( String meta_id, UserDomainObject user ) {
+        int meta_id_int = Integer.parseInt( meta_id );
+
         // Get the users language prefix
         String lang_prefix = user.getLangPrefix();
 
         // Find out what permissions the user has
-        String[] permissions = sqlProcedure( "GetUserPermissionSet", new String[]{String.valueOf( meta_id ), String.valueOf( user.getUserId() )} );
+        DatabaseService.JoinedTables_permissions permissions = m_databaseService.getUserPermissionSetForDocument( meta_id_int, user.getUserId() );
 
-        if( permissions.length == 0 ) {
+        if( null == permissions ) {
             return "";
         }
 
@@ -309,8 +310,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             return "";
         }
 
-        int user_permission_set_id = Integer.parseInt( permissions[0] );
-        int user_permission_set = Integer.parseInt( permissions[1] );
+        int user_permission_set_id = permissions.set_id;
+        int user_permission_set = permissions.permission_id;
 
         // Replace #getMetaId# with meta_id
 
@@ -1459,30 +1460,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return documentMapper.hasAdminPermissions( document, user );
     }
 
-    /**
-     checkDocRights
-     */
     public boolean checkDocRights( int meta_id, UserDomainObject user ) {
-        try {
-            DBConnect dbc = new DBConnect( m_conPool );
-            dbc.getConnection();
-
-            String sqlStr = "GetUserPermissionSet";
-            String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
-            dbc.setProcedure( sqlStr, sqlAry );
-            Vector perms = dbc.executeProcedure();
-            dbc.clearResultSet();
-            dbc.closeConnection();
-
-            if( perms.size() > 0 && Integer.parseInt( (String)perms.elementAt( 0 ) ) < 4 ) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch( RuntimeException ex ) {
-            log.error( "Exception in checkDocRights(int,User)", ex );
-            throw ex;
-        }
+        DatabaseService.JoinedTables_permissions perms = m_databaseService.getUserPermissionSetForDocument( meta_id, user.getUserId() );
+        return (null != perms) && (perms.set_id < 4);
     }
 
     /**
@@ -1492,30 +1472,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @param permission A bitmap containing the permissions.
      */
     public boolean checkDocAdminRightsAny( int meta_id, UserDomainObject user, int permission ) {
-        try {
-            DBConnect dbc = new DBConnect( m_conPool );
-            dbc.getConnection();
+        DatabaseService.JoinedTables_permissions perms = m_databaseService.getUserPermissionSetForDocument( meta_id, user.getUserId() );
 
-            String sqlStr = "GetUserPermissionSet";
-            String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
-            dbc.setProcedure( sqlStr, sqlAry );
-            Vector perms = dbc.executeProcedure();
-            dbc.clearResultSet();
-            dbc.closeConnection();
+        int set_id = perms.set_id;
+        int set = perms.permission_id;
 
-            int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
-            int set = Integer.parseInt( (String)perms.elementAt( 1 ) );
-
-            if( perms.size() > 0 && set_id == 0		// User has full permission for this document
-                || (set_id < 3 && ((set & permission) > 0))	// User has at least one of the permissions given.
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch( RuntimeException ex ) {
-            log.error( "Exception in checkDocAdminRightsAny(int,User,int)", ex );
-            throw ex;
+        if( null != perms && set_id == 0		// User has full permission for this document
+            || (set_id < 3 && ((set & permission) > 0))	// User has at least one of the permissions given.
+        ) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -1526,33 +1493,21 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      @param permission	A bitmap containing the permissions.
      */
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permission ) {
-        try {
-            DBConnect dbc = new DBConnect( m_conPool );
-            dbc.getConnection();
-            String sqlStr = "GetUserPermissionSet";
-            String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
-            dbc.setProcedure( sqlStr, sqlAry );
-            Vector perms = dbc.executeProcedure();
-            dbc.clearResultSet();
-            dbc.closeConnection();
 
-            if( perms.size() == 0 ) {
-                return false;
-            }
+        DatabaseService.JoinedTables_permissions perms = m_databaseService.getUserPermissionSetForDocument( meta_id, user.getUserId() );
+        if( null == perms ) {
+            return false;
+        }
 
-            int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
-            int set = Integer.parseInt( (String)perms.elementAt( 1 ) );
+        int set_id = perms.set_id;
+        int set = perms.permission_id;
 
-            if( set_id == 0		// User has full permission for this document
-                || (set_id < 3 && ((set & permission) == permission))	// User has all the permissions given.
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch( RuntimeException ex ) {
-            log.error( "Exception in checkDocAdminRights(int,User,int)", ex );
-            throw ex;
+        if( set_id == 0		// User has full permission for this document
+            || (set_id < 3 && ((set & permission) == permission))	// User has all the permissions given.
+        ) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -1564,36 +1519,22 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
      */
     public int getUserHighestPermissionSet( int meta_id, int user_id ) {
-        try {
-            DBConnect dbc = new DBConnect( m_conPool );
-            dbc.getConnection();
-            String sqlStr = "GetUserPermissionSet";
-            String[] sqlAry = {String.valueOf( meta_id ), String.valueOf( user_id )};
-            dbc.setProcedure( sqlStr, sqlAry );
-            Vector perms = dbc.executeProcedure();
-            dbc.clearResultSet();
-            dbc.closeConnection();
+        DatabaseService.JoinedTables_permissions perms = m_databaseService.getUserPermissionSetForDocument( meta_id, user_id );
+        if( null == perms ) {
+            return IMCConstants.DOC_PERM_SET_NONE;//nothing was returned so give no rights at all.
+        }
 
-            if( perms.size() == 0 ) {
-                return IMCConstants.DOC_PERM_SET_NONE;//nothing was returned so give no rights at all.
-            }
+        int set_id = perms.set_id;
 
-            int set_id = Integer.parseInt( (String)perms.elementAt( 0 ) );
+        switch( set_id ) {
+            case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this document
+            case IMCConstants.DOC_PERM_SET_RESTRICTED_1: // User has restricted 1 permission for this document
+            case IMCConstants.DOC_PERM_SET_RESTRICTED_2: // User has restricted 2 permission for this document
+            case IMCConstants.DOC_PERM_SET_READ:         // User has only read permission for this document
+                return set_id;                          // We have a valid permission-set-id. Return it.
 
-            switch( set_id ) {
-                case IMCConstants.DOC_PERM_SET_FULL:         // User has full permission for this document
-                case IMCConstants.DOC_PERM_SET_RESTRICTED_1: // User has restricted 1 permission for this document
-                case IMCConstants.DOC_PERM_SET_RESTRICTED_2: // User has restricted 2 permission for this document
-                case IMCConstants.DOC_PERM_SET_READ:         // User has only read permission for this document
-                    return set_id;                          // We have a valid permission-set-id. Return it.
-
-                default:                                     // We didn't get a valid permission-set-id.
-                    return DOC_PERM_SET_NONE;               // User has no permission at all for this document
-            }
-
-        } catch( RuntimeException ex ) {
-            log.error( "Exception in getUserHighestPermissionSet(int,int)", ex );
-            throw ex;
+            default:                                     // We didn't get a valid permission-set-id.
+                return DOC_PERM_SET_NONE;               // User has no permission at all for this document
         }
     }
 

@@ -85,11 +85,10 @@ public class DocumentMapper {
             result = true;
         } else {
 
-            String[] sqlResult = DatabaseAccessor.sprocGetUserPermissionSet( service, document.getMetaId(), user.getUserId() );
-            Vector perms = new Vector( Arrays.asList( sqlResult ) );
+            DatabaseService.JoinedTables_permissions perms = service.getDatabaseService().getUserPermissionSetForDocument( document.getMetaId(), user.getUserId() );
 
-            if( perms.size() > 0 ) {
-                int userPermissionSetId = Integer.parseInt( (String)perms.elementAt( 0 ) );
+            if( null != perms ) {
+                int userPermissionSetId = perms.set_id;
                 switch( userPermissionSetId ) {
                     case IMCConstants.DOC_PERM_SET_FULL:
                     case IMCConstants.DOC_PERM_SET_RESTRICTED_1:

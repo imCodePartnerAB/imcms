@@ -13,7 +13,6 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.db.DBConnect;
 import imcode.server.db.DatabaseService;
 import imcode.server.db.sql.ConnectionPool;
@@ -104,17 +103,14 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String param_value = paramsToParse.getParameter();
             String extparam_value = paramsToParse.getExternalParameter();
 
-            DBConnect dbc = new DBConnect( connPool );
-
-            Vector user_permission_set = ImcmsAuthenticatorAndUserMapper.sprocGetUserPermissionSet( dbc, meta_id_str, user_id_str );
-            if( user_permission_set == null ) {
-                dbc.closeConnection();
-                log.error( "parsePage: sprocGetUserPermissionSet returned null" );
-                return ("sprocGetUserPermissionSet returned null");
+            DatabaseService.JoinedTables_permissions user_permission_set = serverObject.getDatabaseService().getUserPermissionSetForDocument( meta_id, user_id );
+            if( null == user_permission_set ) {
+                log.error( "parsePage: getUserPermissionSetForDocument returned null" );
+                return ("getUserPermissionSetForDocument returned null");
             }
 
-            int user_set_id = Integer.parseInt( (String)user_permission_set.elementAt( 0 ) );
-            int user_perm_set = Integer.parseInt( (String)user_permission_set.elementAt( 1 ) );
+            int user_set_id = user_permission_set.set_id;
+            int user_perm_set = user_permission_set.permission_id;
 
             boolean textmode = false;
             boolean imagemode = false;
@@ -131,6 +127,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 includemode = (flags & PERM_DT_TEXT_EDIT_INCLUDES) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_EDIT_INCLUDES) != 0);
             }
 
+            DBConnect dbc = new DBConnect( connPool );
             Vector included_docs = DatabaseAccessor.sprocGetIncludes( dbc, meta_id );
 
             String template_id = "" + myDoc.getTemplate().getId();

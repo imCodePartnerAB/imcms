@@ -7,6 +7,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.db.DatabaseService;
 
 public class SavePermissions extends HttpServlet {
 
@@ -57,12 +58,6 @@ public class SavePermissions extends HttpServlet {
 
             // User pressed ok.
 
-            // Here i fetch the current users set-id and the document-permissions for this document (Whether set-id 1 is more privileged than set-id 2.)
-            String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet " + meta_id + ", " + user.getUserId() );
-            int user_set_id = Integer.parseInt( current_permissions[0] );
-            int user_perm_set = Integer.parseInt( current_permissions[1] );
-            int currentdoc_perms = Integer.parseInt( current_permissions[2] );
-
             // I'll make a hashmap to store the users extended permissions in.
             // The hashmap will map permission_ids to hashsets containing permission_data.
             HashMap perm_ex_data_map = new HashMap();
@@ -82,6 +77,12 @@ public class SavePermissions extends HttpServlet {
 
             // Delete all extended permissions for this permissionset.
             imcref.sqlUpdateProcedure( "Delete" + newstr + "DocPermissionSetEx " + meta_id + "," + set_id );
+
+            DatabaseService.JoinedTables_permissions current_permissions = imcref.getDatabaseService().getUserPermissionSetForDocument( meta_id, user.getUserId() );
+            int user_set_id = current_permissions.set_id;
+            int user_perm_set = current_permissions.permission_id;
+            // todo: use the boolean value directly instead
+            int currentdoc_perms = imcref.getDatabaseService().isRestricted1MorePriviligedThanRestricted2ForDocument(meta_id)?1:0;
 
             // Read checkboxes and OR the values into an int, which is stored in the db.
             for( int i = 0; perms != null && i < perms.length; ++i ) {

@@ -5,6 +5,7 @@ import java.util.* ;
 import java.text.* ;
 
 import imcode.server.* ;
+import imcode.server.db.DatabaseService;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.external.diverse.* ;
@@ -23,9 +24,9 @@ public class MetaDataParser {
 	IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost(host) ;
 
 	// Now watch as i fetch the permission_set for the user...
-	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
-	int currentuser_set_id = Integer.parseInt(current_permissions[0]) ;
-	int currentuser_perms = Integer.parseInt(current_permissions[1]) ;
+	DatabaseService.JoinedTables_permissions current_permissions = imcref.getDatabaseService().getUserPermissionSetForDocument( Integer.parseInt(meta_id), user.getUserId() );
+	int currentuser_set_id = current_permissions.set_id ;
+	int currentuser_perms = current_permissions.permission_id ;
 
 	if (currentuser_set_id == 0 || (currentuser_perms & 2) != 0) {
 	    return getMetaDataFromDb(meta_id, parent_meta_id, user, host, "adv_change_meta.html", false) ;
@@ -369,10 +370,9 @@ public class MetaDataParser {
 	// Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
 	String[][] role_permissions = imcref.sqlProcedureMulti("GetUserRolesDocPermissions "+meta_id+","+user.getUserId()) ;
 
-	// Now watch as i fetch the permission_set for the user...
-	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
-	int user_set_id = Integer.parseInt(current_permissions[0]) ;
-	int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;		// A bitvector containing the permissions for this document. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
+	DatabaseService.JoinedTables_permissions current_permissions = imcref.getDatabaseService().getUserPermissionSetForDocument( Integer.parseInt(meta_id), user.getUserId()) ;
+	int user_set_id = current_permissions.set_id ;
+	int currentdoc_perms = current_permissions.permission_id ;		// A bitvector containing the permissions for this document. (For example if Set-id 1 is more privileged than Set-id 2 (bit 0))
 
 	StringBuffer roles_no_rights = new StringBuffer() ;
 	for ( int i=0 ; i<role_permissions.length  ; ++i ) {
@@ -434,8 +434,6 @@ public class MetaDataParser {
 
 	    Vector ftr = new Vector() ;
 
-	    StringBuffer define_sets = new StringBuffer() ;
-
 	    int doc_type = imcref.getDocType(Integer.parseInt(meta_id)) ;
 		String default_templates = "";//the string containing default-templates-option-list
 
@@ -455,7 +453,7 @@ public class MetaDataParser {
 		    ftr.add("#new_set_2#") ;       ftr.add(imcref.parseDoc(null,"permissions/new_set_2_button.html",lang_prefix)) ;
 			//ok lets setup the default_template-option-lists for restricted 1 & 2
 
-			default_templates = getDefaultTemplateOptionList(imcref, user, temp_default_templates, meta_id, lang_prefix, true );
+			default_templates = getDefaultTemplateOptionList(imcref, temp_default_templates, meta_id, lang_prefix, true );
 			ftr.add("#default_templates#");ftr.add(default_templates);
 		} else {
 		    ftr.add("#new_set_1#") ;       ftr.add("") ;
@@ -472,7 +470,7 @@ public class MetaDataParser {
 		ftr.add("#new_set_1#") ;       ftr.add("") ;
 		ftr.add("#set_2#") ;           ftr.add(imcref.parseDoc(null,"permissions/set_2_button.html",lang_prefix)) ;
 		if (doc_type == DocumentDomainObject.DOCTYPE_TEXT) {
-			default_templates = getDefaultTemplateOptionList(imcref, user, temp_default_templates, meta_id, lang_prefix, false );
+			default_templates = getDefaultTemplateOptionList(imcref, temp_default_templates, meta_id, lang_prefix, false );
 
 		    ftr.add("#new_set_2#") ;   ftr.add(imcref.parseDoc(null,"permissions/new_set_2_button.html",lang_prefix)) ;
 		} else {
@@ -492,8 +490,7 @@ public class MetaDataParser {
 
     } // End of getRolesFromDb
 
-	private static synchronized String getDefaultTemplateOptionList(IMCServiceInterface imcref, imcode.server.user.UserDomainObject user, String[] def_templates, String meta_id, String lang_prefix, boolean restr_1 )throws IOException
-	{
+	private static synchronized String getDefaultTemplateOptionList(IMCServiceInterface imcref, String[] def_templates, String meta_id, String lang_prefix, boolean restr_1 ) {
 		String returnValue = "";
 		//ok lets setup the default_template-option-lists for restricted 1 & 2
 		String[][] templates = imcref.sqlProcedureMulti("GetTemplates") ;
@@ -614,11 +611,10 @@ public class MetaDataParser {
 
 	}
 
-	// Here i fetch the current users set-id and the document-permissions for this document (Whether set-id 1 is more privileged than set-id 2.)
-	String[] current_permissions = imcref.sqlProcedure("GetUserPermissionSet "+meta_id+", "+user.getUserId()) ;
-	int user_set_id = Integer.parseInt(current_permissions[0]) ;
-	int user_perm_set = Integer.parseInt(current_permissions[1]) ;
-	int currentdoc_perms = Integer.parseInt(current_permissions[2]) ;
+	// Here i fetch the current users set-id and the document-permissions for this document
+	DatabaseService.JoinedTables_permissions current_permissions = imcref.getDatabaseService().getUserPermissionSetForDocument( meta_id, user.getUserId()) ;
+	int user_set_id = current_permissions.set_id ;
+	int user_perm_set = current_permissions.permission_id;
 
 	// Create an anonymous adminbuttonparser that retrieves the file from the server instead of from the disk.
 	AdminButtonParser vec = new AdminButtonParser("permissions/define_permission_"+doc_type+"_",".html",user_set_id,user_perm_set) {
@@ -665,6 +661,8 @@ public class MetaDataParser {
 	String[] doctypes = imcref.sqlProcedure("GetDocTypesWith"+newstr+"Permissions "+meta_id+","+set_id+",'"+lang_prefix+"'") ;
 	// We allocate a string to contain the option-list
 	String options_doctypes = "" ;
+    // todo: use the boolean value directly instead:
+    int currentdoc_perms = imcref.getDatabaseService().isRestricted1MorePriviligedThanRestricted2ForDocument( meta_id )?1:0;
 	for ( int i=0 ; i<doctypes.length ; i+=3 ) {
 	    // Check if the current user may set this doc-type for any set-id
 	    if (
@@ -728,7 +726,7 @@ public class MetaDataParser {
 	// That is, the doc-specific
 	StringBuffer doc_specific = new StringBuffer(imcref.parseDoc(null,"permissions/define_permissions_"+doc_type+".html",lang_prefix)) ;
 
-	Parser.parseTags(doc_specific, '#', " <>\"\n\r\t",(Map)vec,true,1) ;
+	Parser.parseTags(doc_specific, '#', " <>\"\n\r\t",vec,true,1) ;
 
 	vec.put("doc_rights",doc_specific.toString()) ;
 
@@ -744,7 +742,7 @@ public class MetaDataParser {
 
 	vec.setPrefix("permissions/define_permission_") ;
 
-	return Parser.parseTags(complete,'#', " <>\"\n\r\t",(Map)vec,true,1).toString() ;
+	return Parser.parseTags(complete,'#', " <>\"\n\r\t",vec,true,1).toString() ;
     }
 
 } // End of class

@@ -8,7 +8,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
-import imcode.server.document.DocumentMapper;
+import imcode.server.db.DatabaseService;
 import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
 
@@ -61,12 +61,9 @@ public class SaveMeta extends HttpServlet {
 
         String classification = req.getParameter( "classification" );
 
-        // Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
-        // Now watch as i fetch the permission_set for the user...
-        String[] current_permissions = sprocGetUserPermissionSet( imcref, user, meta_id );
-        int user_set_id = Integer.parseInt( current_permissions[0] );	// The users set_id
-        int user_perm_set = Integer.parseInt( current_permissions[1] );	// The users permission_set for that id
-        int currentdoc_perms = Integer.parseInt( current_permissions[2] );	// The docspecific permissions for this doc.
+        DatabaseService.JoinedTables_permissions current_permissions = imcref.getDatabaseService().getUserPermissionSetForDocument( meta_id_int, user.getUserId() );
+        int user_set_id = current_permissions.set_id; // The users set_id
+        int user_perm_set = current_permissions.permission_id;	// The users permission_set for that id
 
         // Check if the user has any business in here whatsoever.
 
@@ -95,6 +92,9 @@ public class SaveMeta extends HttpServlet {
                 continue;							     // skip to the next role.
             }
             int new_set_id = Integer.parseInt( new_set_id_str );
+             // todo: use the boolean value directly instead
+            int currentdoc_perms = imcref.getDatabaseService().isRestricted1MorePriviligedThanRestricted2ForDocument( meta_id_int )?1:0;
+
             if( (// May the user edit permissions at all?
                 user_set_id == 0				// If user has set_id == 0...
                 || (user_perm_set & 4) != 0)	// ...or the user may edit permissions for this document
@@ -420,11 +420,6 @@ public class SaveMeta extends HttpServlet {
 
     public static void sprocUpdateDefaultTemplates( IMCServiceInterface imcref, String meta_id, String template1, String template2 ) {
         imcref.sqlUpdateProcedure( "UpdateDefaultTemplates" + " '" + meta_id + "','" + template1 + "','" + template2 + "'" );
-    }
-
-    public static String[] sprocGetUserPermissionSet( IMCServiceInterface imcref, UserDomainObject user, String meta_id ) {
-        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet" + " " + meta_id + ", " + user.getUserId() );
-        return current_permissions;
     }
 
     public static String[][] sprocGetRolesDocPermissions( IMCServiceInterface imcref, String meta_id ) {
