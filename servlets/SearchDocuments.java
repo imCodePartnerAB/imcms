@@ -12,11 +12,271 @@ import imcode.util.* ;
 public class SearchDocuments extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
+	
+	//default templates located in templates/search/  it means they are not in the langue stuff
+	//and if they not wanted just add the one you want too use and supplie the names in hidden fields
+	//when calling doPost
+	private final static String HIT_LINE_TEMPLATE = "list.html";
+	private final static String HIT_PAGE_TEMPLATE = "result.html";
+	private final static String NO_HIT_PAGE_TEMPLATE = "no_hit.html";
+	
 
     /**
        doPost()
     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+	
+		String action = req.getParameter("action");
+		if (action != null){
+			if (action.equals("user_search")){
+				this.doUserSearch(req,res);
+				return;
+			}
+		}else {
+			//is depricated and sould bee removed or fixed so it uses a stored procedure on search
+			//instead of the UGLY sql-string that might not work because there is no controll if there
+			//has been any changes in the database. 
+			//The doJanusSearch method can only bee used as an bad-example how not to do sql-stuff.
+			this.doJanusSearch(req,res);
+			return;
+		}
+	} // End of doPost
+
+
+    /**
+       doGet()
+    */
+    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+		//this method isn't realy needed if you sets up an usual text-doc that makes the call to the
+		//doPost method with action = doUserSearch
+		//its many profits with that because then the you can design a search template and get it to all meta-ids
+		//if its a orinary text-document then a low-admin can change texts and stuff on the search engine page
+		//and so on!
+		this.getJanusSearchPage(req,res);
+		return ;
+    } // End of doGet
+	
+	/**
+		Performes a search among documents, used in usermode
+		and its only list dokuments the user is allowed to see
+		@Author Peter Östergren
+	*/
+	public void doUserSearch( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+		String host 			= req.getHeader("Host") ;
+        String imcserver 		= Utility.getDomainPref("adminserver",host) ;
+        HttpSession session 	= req.getSession(true);
+		imcode.server.User user	= (imcode.server.User) session.getAttribute("logon.isDone");
+        
+		//we must have a user obj, even if its a user extern object, so lets get one, or get rid of the req
+        if (user == null) {
+            String ip = req.getRemoteAddr( ) ;
+			user = StartDoc.ipAssignUser( ip, host ) ;
+			if (user == null) {
+				res.sendRedirect(req.getContextPath()+"/servlet/StartDoc") ;
+           		return ;
+			}
+        }
+		
+		StringBuffer sqlBuff = new StringBuffer("SearchDocs ");
+		
+		//this is the params we can get fram the browser
+		String searchString 	= req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
+		searchString 	= imcode.server.HTMLConv.toHTML(searchString);
+        String fromDoc			= req.getParameter("fromDoc") == null? "1":req.getParameter("fromDoc");
+		String maxHits			= req.getParameter("maxHits") == null? "1000":req.getParameter("maxHits");
+        String searchPrep 		= req.getParameter("search_prep") == null? "and":req.getParameter("search_prep");
+        String sortBy 			= req.getParameter("sortBy") == null? "meta_headline":req.getParameter("sortBy");
+		
+		//not in use for the moment but needed to setup advanced search in the future
+		//String start_date		= req.getParameter("start_date") == null? "":req.getParameter("start_date");
+		//String stop_date		= req.getParameter("stop_date") == null? "":req.getParameter("stop_date");
+		//String[] doctypesArr	= req.getParameter("doctypes");
+		
+		//ok the rest of params we need to set up search sql
+		String doctypes 		= "2,5,6,7,8";
+		String created_start	= "";
+		String create_stop		= "";
+        String changed_start	= "";
+		String changed_stop 	= "";
+        String activated_start 	= "";
+		String activated_stop 	= "";
+        String archived_start 	= "";
+		String archived_stop 	= "";
+		
+		// parse searchString, replaces SPACE with RETURN and EMPTY with RETURN
+        while (searchString.indexOf(" ") != -1){
+	        int spaceIndex = searchString.indexOf(" ");
+	        searchString = searchString.substring(0, spaceIndex)
+	        + "\r" + searchString.substring(spaceIndex+1, searchString.length());
+	    }
+        if(searchString.equals(""))
+        	searchString = "\r";
+		
+		String result_line = req.getParameter("template_list")==null? HIT_LINE_TEMPLATE:req.getParameter("template_list");
+		String result_page = req.getParameter("template")==null? HIT_PAGE_TEMPLATE:req.getParameter("template");
+		String result_no_hit_line = req.getParameter("template_no_hit")==null?NO_HIT_PAGE_TEMPLATE:req.getParameter("template_no_hit");
+		
+		//lets get the template strings
+		String oneRecHtmlSrc = IMCServiceRMI.getSearchTemplate(imcserver ,result_line);
+		String resultHtmlSrc = IMCServiceRMI.getSearchTemplate(imcserver ,result_page);
+		String noHitHtmlStr = IMCServiceRMI.getSearchTemplate(imcserver ,result_no_hit_line);		
+		
+		//lets set up the sql-params stringBuffer 
+		sqlBuff.append(user.getUserId());			//@user_id INT,
+		sqlBuff.append(",'"+searchString+"'");		//@keyword_string VARCHAR(128)
+	 	sqlBuff.append(",'"+searchPrep+"'");		//@and_mode VARCHAR(3)
+	 	sqlBuff.append(",'"+doctypes+"'");			//@doc_types_string VARCHAR(30)
+	 	sqlBuff.append(","+fromDoc);				//@fromdoc INT
+	 	sqlBuff.append(","+maxHits);				//@num_docs INT
+	 	sqlBuff.append(",'"+sortBy+"'");			//@sortorder VARCHAR(256)
+	 	sqlBuff.append(",'"+created_start+"'");		//@created_startdate DATETIME
+		sqlBuff.append(",'"+create_stop+"'");		//@created_enddate DATETIME,
+		sqlBuff.append(",'"+changed_start+"'");		//@modified_startdate DATETIME,
+		sqlBuff.append(",'"+changed_stop+"'");		//@modified_enddate DATETIME,
+		sqlBuff.append(",'"+activated_start+"'");	//@activated_startdate DATETIME,
+		sqlBuff.append(",'"+activated_stop+"'");	//@activated_enddate DATETIME,
+		sqlBuff.append(",'"+created_start+"'");		//@archived_startdate DATETIME,
+		sqlBuff.append(",'"+archived_stop+"'");		//@archived_enddate DATETIME,
+		sqlBuff.append(",'1'");						//@only_addable TINYINT
+  	
+  		//System.out.println("SQL: " + sqlBuff.toString()) ;
+		String[][] sqlResults = IMCServiceRMI.sqlProcedureMulti(imcserver, sqlBuff.toString());
+		String hits = "";
+		if (sqlResults != null) {
+			hits = ""+sqlResults.length;
+		}
+				
+		StringBuffer buff = SearchDocuments.parseSearchResults(imcserver,oneRecHtmlSrc,sqlResults);		
+		//System.out.println(buff.toString());
+		//if there isnt any hitts lets add the no hit message		
+		if (buff.length()==0) {		
+			buff.append(noHitHtmlStr);
+		}
+		
+		//now we only have to fix the page to send back to brawser
+		res.setContentType("text/html") ;
+		ServletOutputStream out = res.getOutputStream();
+		
+		String[] paramArr = {"#search_list#",buff.toString(),
+							"#nrhits#",hits,
+							"#searchstring#",searchString};
+		
+		out.println(Parser.parseDoc(resultHtmlSrc,paramArr ));
+		
+	}//end doUserSearch method
+	
+		
+	
+	/**
+		@Author Peter Östergren
+	*/
+	private static StringBuffer parseSearchResults(String imcserver, String oneRecHtmlSrc,
+      String[][] sqlResults) throws java.io.IOException{
+		StringBuffer searchResults = new StringBuffer("") ;
+		
+       	// Lets parse the searchresults
+        String[] oneRecVariables = SearchDocuments.getSearchHitVector() ;
+        for(int i = 0 ; i < sqlResults.length; i++ ) {
+            String[] oneRec = sqlResults[i] ;
+            String[] tmpVecData = new String[oneRecVariables.length] ;
+		
+            // Lets parse one record
+            for(int k = 0 ; k < oneRec.length; k++ ) {           
+            	if( oneRec[k].equalsIgnoreCase(""))
+                	tmpVecData[k] = "&nbsp;" ;
+                else
+                	tmpVecData[k] = oneRec[k] ;
+			}
+			searchResults.append(Parser.parseDoc(oneRecHtmlSrc,oneRecVariables, tmpVecData )) ;
+		}
+      	return searchResults ;
+	}
+	
+	/**
+      Returns all possible variables that might be used when parse the oneRecLine to the
+      search page
+	  @Author Peter Östergren  		
+     */
+    private static String[] getSearchHitVector() {
+        String[] strArr =  {"#meta_id#",
+							"#doc_type#",
+							"#meta_headline#",
+							"#meta_text#",
+							"#date_created#",
+							"#date_modified#",
+							"#date_activated#",
+							"#date_archived#",
+							"#archive#",
+							"#shared#",
+							"#show_meta#",
+							"#disable_search#",
+							"#doc_count"} ;
+       return strArr;
+    }
+	
+	/**
+       init()
+    */
+    public void init (ServletConfig config) throws ServletException {
+		super.init(config);
+    }
+
+    /**
+       Log to log file
+    */
+    public void log(String str) {
+		super.log(str) ;
+		//System.out.println("SearchDocuments: "+str);
+    }
+	
+	
+	//************** Do not use anything belowe this line its ugly and depricated  *********************
+	//************** but we cant remove it because there is some janus stuff in it *********************
+	/**
+       @deprecated Do not use! Its no garanti that it vill work at all!
+    */
+	public void getJanusSearchPage( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+		String host 				= req.getHeader("Host") ;
+		String imcserver 			= Utility.getDomainPref("adminserver",host) ;
+		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
+		String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
+
+		imcode.server.User user ;
+		String htmlStr = "" ;
+		res.setContentType( "text/html" );
+		PrintWriter out = res.getWriter( );
+
+	 	// Get the session
+		HttpSession session = req.getSession( true );
+		// Does the session indicate this user already logged in?
+		Object done = session.getAttribute( "logon.isDone" );  // marker object
+		user = (imcode.server.User)done ;
+
+		if( done == null ) {
+		    // No logon.isDone means he hasn't logged in.
+		    // Save the request URL as the true target and redirect to the login page.
+		    session.setAttribute( "login.target",
+				      HttpUtils.getRequestURL( req ).toString( ) );
+		    String scheme = req.getScheme( );
+		    String serverName = req.getServerName( );
+		    int p = req.getServerPort( );
+		    String port = (p == 80) ? "" : ":" + p;
+		    res.sendRedirect( scheme + "://" + serverName + port + start_url ) ;
+		    return ;
+		}
+		// Lets get the html file we use as template
+
+		Properties props = this.getSummaryProps(servlet_url) ;
+		String langPrefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
+		htmlStr = IMCServiceRMI.parseDoc(imcserver,convert(props),"search_documents.html",langPrefix);
+		out.print( htmlStr ) ;
+		return;
+	}
+	/**
+       @deprecated Do not use! Its no garanti that it vill work at all!
+    */	
+	public void doJanusSearch( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+		
 	String host 				= req.getHeader("Host") ;
 	String imcserver 			= Utility.getDomainPref("adminserver",host) ;
 	String start_url        	= Utility.getDomainPref( "start_url",host ) ;
@@ -78,13 +338,13 @@ public class SearchDocuments extends HttpServlet {
 	HttpSession session = req.getSession( true );
 
 	// Does the session indicate this user already logged in?
-	Object done = session.getValue( "logon.isDone" );  // marker object
+	Object done = session.getAttribute( "logon.isDone" );  // marker object
 	user = (imcode.server.User)done ;
 
 	if( done == null ) {
 	    // No logon.isDone means he hasn't logged in.
 	    // Save the request URL as the true target and redirect to the login page.
-	    session.putValue( "login.target",
+	    session.setAttribute( "login.target",
 			      HttpUtils.getRequestURL( req ).toString( ) );
 	    String scheme = req.getScheme( );
 	    String serverName = req.getServerName( );
@@ -222,52 +482,11 @@ public class SearchDocuments extends HttpServlet {
 
 	// Lets redirect to the doGetpage
 	//    this.doGet(req,res) ;
-    } // End of doPost
-
-
-    /**
-       doGet()
-    */
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-	String host 				= req.getHeader("Host") ;
-	String imcserver 			= Utility.getDomainPref("adminserver",host) ;
-	String start_url        	= Utility.getDomainPref( "start_url",host ) ;
-	String servlet_url        	= Utility.getDomainPref( "servlet_url",host ) ;
-
-	imcode.server.User user ;
-	String htmlStr = "" ;
-	res.setContentType( "text/html" );
-	PrintWriter out = res.getWriter( );
-
- 	// Get the session
-	HttpSession session = req.getSession( true );
-	// Does the session indicate this user already logged in?
-	Object done = session.getValue( "logon.isDone" );  // marker object
-	user = (imcode.server.User)done ;
-
-	if( done == null ) {
-	    // No logon.isDone means he hasn't logged in.
-	    // Save the request URL as the true target and redirect to the login page.
-	    session.putValue( "login.target",
-			      HttpUtils.getRequestURL( req ).toString( ) );
-	    String scheme = req.getScheme( );
-	    String serverName = req.getServerName( );
-	    int p = req.getServerPort( );
-	    String port = (p == 80) ? "" : ":" + p;
-	    res.sendRedirect( scheme + "://" + serverName + port + start_url ) ;
-	    return ;
+ 
+	
 	}
-	// Lets get the html file we use as template
-
-	Properties props = this.getSummaryProps(servlet_url) ;
-	String langPrefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
-	htmlStr = IMCServiceRMI.parseDoc(imcserver,convert(props),"search_documents.html",langPrefix);
-	out.print( htmlStr ) ;
-	return ;
-    } // End of doGet
-
     /**
-       Lets build the sql string we will use for the question
+       @deprecated Do not use! Its no garanti that it vill work at all!
     */
     public String buildSqlStr(String question_str, String search_type,
 			      String search_prep,String string_match,String search_area) {
@@ -421,7 +640,7 @@ public class SearchDocuments extends HttpServlet {
 	    }
 	    if ( tokens.size() > 0 ) {
 		sqlStr += "ORDER BY date_modified DESC" ;
-
+	
 	    }
 	    /// END OF SEARCH AMONG ALL FIELDS
 	} else {
@@ -488,7 +707,7 @@ public class SearchDocuments extends HttpServlet {
 
 	    }
 	} // End else
-
+	System.out.println("sql: "+sqlStr);
 
 	return sqlStr ;
 
@@ -499,7 +718,7 @@ public class SearchDocuments extends HttpServlet {
 
 
     /**
-       Parses one record and returns a string
+       @deprecated Do not use! No garranti that it will work.
     */
     protected String parseOneRecord(String imcserver, String servletUrl, Vector dataV, String htmlFile
 				    , String langPrefix) {
@@ -545,7 +764,7 @@ public class SearchDocuments extends HttpServlet {
     }
 
     /**
-       Returns a standard vector with empty meta_id, meta_headline, meta_text
+       @deprecated Do not use! Its no garanti that it vill work at all!
     */
     protected Properties getSummaryProps(String servlet_url) {
 	Properties p = new Properties() ;
@@ -572,7 +791,7 @@ public class SearchDocuments extends HttpServlet {
 
 
     /**
-       Help class. Converts a property to a vector
+       @deprecated Do not use! Its no garanti that it vill work at all!
     */
     protected Vector convert(Properties p ) {
 	Vector v = new Vector();
@@ -590,24 +809,7 @@ public class SearchDocuments extends HttpServlet {
     }
 
     /**
-       init()
-    */
-    public void init (ServletConfig config) throws ServletException {
-
-		super.init(config);
-    }
-
-    /**
-       Log to log file
-    */
-    public void log(String str) {
-		super.log(str) ;
-		//System.out.println("SearchDocuments: "+str);
-    }
-
-    /**
-       Examines a text, and watches for ' signs, which will extended with another ' sign
-	   It also changes all comma signs (,) to spaces ( )
+       @deprecated Do not use! Its no garanti that it vill work at all!
     */
     public String verifySqlText(String str ) { 
 	StringBuffer buf =  new StringBuffer(str) ;
@@ -621,5 +823,6 @@ public class SearchDocuments extends HttpServlet {
 	str = buf.toString() ;
 	return str ;
     }
-
+	
+	
 } // End class
