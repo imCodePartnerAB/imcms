@@ -1,16 +1,7 @@
-Hillar:
-- Språkstödet i permissions? API:et bara på engelska?
-- När ska datumet ändras i dokument? Inte när man pillar på medtadata?
-
-Christoffer:
-- Säkerheten och *.jsp sidor. Ska vi lägga loginfilter på alla *.jsp sidor? Eller *.*, går det?
-
 Hasse
 - Se till att ingenting i API:et är mer public än det behöver vara
 - Gå igenom API klasserna så att de är dokumenterade och logiska namn
 - Stavningskontrollera API:et
-
-- Språkparameter i API:et där det behövs. Javas inbyggda?
 
 - Gå igenom och kolla vad taggarna heter och hänvisa till i api:et?
 - Namnen på rättigheterna, jämför med htmls sidan, är det samma som i databasen. På engelska och svenska?
@@ -23,7 +14,13 @@ PostgreSQL är open source och stödjer stored procedures
 Hillar, prioritera
 
 API:et (prio)
-(2) Skapa behörighet på viss sida
+
+(1) Tagga upp det som jag skickade till Volvo.
+(1,5) Fixa till att ändra datum etc på document.
+(1,5) Snygga till byggningen av API:et
+(1) Snygga till Mapper klasserna så de använder databasen på ett vettigt sätt, varför används inte transkationer?
+
+(2) Skapa behörighet på viss sida.
 (2) Ange documentnummer för valfri sida och valfri includ tag
 (2) API: förhindra tilldelning av User (döpa om? mejla Hillar och Lennart) Går ej att fixa idag annat än att gå in i dabasen.
 
