@@ -20,8 +20,8 @@ public class TestForMissingLanguageProperties extends PropertiesBaseTestCase {
     private final static String END_TOKEN = " ?>";
     private String[] propertyFilenames = {"imcms_swe.properties", "imcms_eng.properties"};
 
-    public void testHtdocs() throws IOException {
-        testDir( new File( "install/htdocs" ) );
+    public void testWeb() throws IOException {
+        testDir( new File( "web" ) );
     }
 
     public void testSql() throws IOException {
