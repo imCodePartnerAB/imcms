@@ -215,7 +215,7 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 		String aSectionId = params.getProperty("SECTION_ID") ;
 		currSection = "" + billref.sqlProcedureStr("B_GetSectionName " + aSectionId) ;
 		//log("S currSection ="+currSection);
-		//lets get metaId befor buildSearchDateParams destroys that info (happens if error in dateformat)
+		//lets get metaId befor buildSearchDateParams destroys that info (happens if error in DATE_FORMAT)
 		String metaId = params.getProperty("META_ID");
 		//log("S metaid= "+metaId);
 		// Lets validate the searchdates. If not correct then get a message and show user

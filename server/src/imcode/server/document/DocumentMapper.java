@@ -25,6 +25,7 @@ public class DocumentMapper {
     private static final String SPROC_GET_USER_PERMISSION_SET = "GetUserPermissionSet";
     private static final String SPROC_GET_TEXT = "GetText";
     private static final String SPROC_INSERT_TEXT = "InsertText";
+    public static final String SPROC_UPDATE_PARENTS_DATE_MODIFIED = "UpdateParentsDateModified";
 
     private IMCService service;
     private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
@@ -257,5 +258,20 @@ public class DocumentMapper {
         }
     }
 
+    public void saveHeadline( DocumentDomainObject document ) {
+        String sqlStr = "update meta set meta_headline = '" + document.getHeadline() + "'where meta_id = " + document.getMetaId();
+        service.sqlUpdateQuery( sqlStr );
+    }
+
+    public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date date, Date time ) {
+        String modifiedDateStr = IMCConstants.DATE_FORMAT.format( date );
+        String modifiedTimeStr = IMCConstants.DATE_FORMAT.format( time );
+        String modifiedTimeDateStr = modifiedDateStr  + " " + modifiedTimeStr;
+        String sqlStr = "update meta set date_modified ='"+ modifiedTimeDateStr + "' where meta_id = "+meta_id ;
+        service.sqlUpdateQuery(sqlStr) ;
+        // Update the date_modified for all parents.
+        String[] params = new String[]{ String.valueOf(meta_id)};
+        service.sqlUpdateProcedure( SPROC_UPDATE_PARENTS_DATE_MODIFIED, params) ;
+    }
 }
 

@@ -13,13 +13,13 @@ import java.util.Set;
 public class Document {
     SecurityChecker securityChecker;
     DocumentDomainObject internalDocument;
-    DocumentMapper dockumentMapper;
+    DocumentMapper documentMapper;
     DocumentPermissionSetMapper documentPermissionMapper;
 
     public Document( SecurityChecker securityChecker, DocumentDomainObject document, DocumentMapper documentMapper, DocumentPermissionSetMapper permissionSetMapper ) {
         this.securityChecker = securityChecker;
         this.internalDocument = document;
-        this.dockumentMapper = documentMapper;
+        this.documentMapper = documentMapper;
         this.documentPermissionMapper = permissionSetMapper;
     }
 
@@ -68,5 +68,10 @@ public class Document {
 
     public String getMenuImageURL() {
         return internalDocument.getImage();
+    }
+
+    public void setHeadline( String headline ) {
+        internalDocument.setHeadline( headline );
+        documentMapper.saveHeadline( internalDocument );
     }
 }

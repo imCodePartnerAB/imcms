@@ -519,4 +519,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public ShoppingOrderSystem getShoppingOrderSystem() {
       return null;
    }
+
+    public void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date date, Date time ) {
+    }
 }

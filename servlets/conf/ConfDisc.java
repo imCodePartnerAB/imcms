@@ -195,7 +195,7 @@ public class ConfDisc extends Conference {
 			String sqlForumName = "A_GetForumName " + aForumId ;
 			currForum = "" + confref.sqlProcedureStr("A_GetForumName " + aForumId) ;
 
-			//lets get metaId befor buildSearchDateParams destroys that info (happens if error in dateformat)
+			//lets get metaId befor buildSearchDateParams destroys that info (happens if error in DATE_FORMAT)
 			String metaId = params.getProperty("META_ID");
 
 			// Lets validate the searchdates. If not correct then get a message and show user

@@ -271,9 +271,9 @@ public class AddDoc extends HttpServlet {
 	// Lets fix the date information (date_created, modified etc)
 	Date dt = imcref.getCurrentDate() ;
 	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd") ;
-	//		checks += "<input type=hidden name=\"date_created\" value=\""+dateformat.format(dt)+"\">" ;
-	//		checks += "<input type=hidden name=\"date_modified\" value=\""+dateformat.format(dt)+"\">" ;
-	//		checks += "<input type=hidden name=\"activated_date\" value=\""+dateformat.format(dt)+"\">" ;
+	//		checks += "<input type=hidden name=\"date_created\" value=\""+DATE_FORMAT.format(dt)+"\">" ;
+	//		checks += "<input type=hidden name=\"date_modified\" value=\""+DATE_FORMAT.format(dt)+"\">" ;
+	//		checks += "<input type=hidden name=\"activated_date\" value=\""+DATE_FORMAT.format(dt)+"\">" ;
 
 	vec.add("#activated_date#") ;
 	vec.add(dateformat.format(dt)) ;
@@ -281,7 +281,7 @@ public class AddDoc extends HttpServlet {
 	vec.add("#activated_time#") ;
 	vec.add(dateformat.format(dt)) ;
 
-	//		checks += "<input type=hidden name=\"activated_time\" value=\""+dateformat.format(dt)+"\">"	;
+	//		checks += "<input type=hidden name=\"activated_time\" value=\""+DATE_FORMAT.format(dt)+"\">"	;
 
 	vec.add("#checks#") ;
 	vec.add(checks) ;

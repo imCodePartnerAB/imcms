@@ -1,5 +1,7 @@
 package imcode.server ;
 
+import java.text.SimpleDateFormat;
+
 public interface IMCConstants {
 
     final static String CVS_REV = "$Revision$" ;
@@ -146,4 +148,6 @@ public interface IMCConstants {
     public final static String HOST_PROPERTIES           = "host.properties" ;
 
     int PASSWORD_MINIMUM_LENGTH = 4;
+    SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd" );
+    SimpleDateFormat TIME_FORMAT = new SimpleDateFormat( "HH:mm" );
 }

@@ -1,5 +1,6 @@
 Hillar:
 - Språkstödet i permissions? API:et bara på engelska?
+- När ska datumet ändras i dokument? Inte när man pillar på medtadata?
 
 Christoffer:
 - Säkerheten och *.jsp sidor. Ska vi lägga loginfilter på alla *.jsp sidor? Eller *.*, går det?

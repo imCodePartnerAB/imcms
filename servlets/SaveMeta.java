@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.text.DateFormat ;
 import java.text.SimpleDateFormat ;
 import java.text.ParseException ;
 import javax.servlet.*;
@@ -8,6 +7,7 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.UserDomainObject;
 
 import org.apache.log4j.Category;
 
@@ -15,9 +15,6 @@ import org.apache.log4j.Category;
    Save meta from metaform.
 */
 public class SaveMeta extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
 
     private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
 
@@ -38,7 +35,7 @@ public class SaveMeta extends HttpServlet {
 	String start_url	= imcref.getStartUrl() ;
 	String servlet_url	= Utility.getDomainPref( "servlet_url",host ) ;
 
-	imcode.server.user.UserDomainObject user ;
+	UserDomainObject user ;
 
 	// Check if user logged on
 	if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
@@ -245,13 +242,15 @@ public class SaveMeta extends HttpServlet {
 	//ok here we check if the modifieddate is requested to bee changed
 	String modified_date = req.getParameter("date_modified");
 	String modified_time = req.getParameter("modified_time");
-	String modified_datetime = null;
+	Date modifiedDate = null;
+    Date modifiedTime = null;
 	if ( modified_date != null && modified_time != null ) {
-	    modified_datetime = modified_date + ' ' + modified_time ;
 	    try {
-		dateformat.parse(modified_datetime);
+		    modifiedDate = dateformat.parse(modified_date);
+            modifiedTime = timeformat.parse(modified_time);
 	    } catch (ParseException ex) {
-		modified_datetime = null ;
+            modifiedDate = null;
+            modifiedTime = null;
 	    }
 	}
 
@@ -405,10 +404,9 @@ public class SaveMeta extends HttpServlet {
 	    sqlStr = "update meta set date_created ='"+created_datetime+ "' where meta_id = "+meta_id ;
 	    imcref.sqlUpdateQuery(sqlStr) ;
 	}
-	if (modified_datetime != null) {
+	if ( null != modifiedDate && null != modifiedTime ) {
 	    //we did got a ok date so lets save it to db
-	    sqlStr = "update meta set date_modified ='"+modified_datetime+ "' where meta_id = "+meta_id ;
-	    imcref.sqlUpdateQuery(sqlStr) ;
+        imcref.updateModifiedDatesOnDocumentAndItsParent( meta_id_int, modifiedDate, modifiedTime );
 	}
 
 	// Update the date_modified for all parents.

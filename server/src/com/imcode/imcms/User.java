@@ -1,13 +1,15 @@
 package com.imcode.imcms;
 
+import imcode.server.user.UserDomainObject;
+
 public class User {
-    private imcode.server.user.UserDomainObject internalUser;
+    private UserDomainObject internalUser;
 
     imcode.server.user.UserDomainObject getInternalUser() {
         return internalUser;
     }
 
-    public User( imcode.server.user.UserDomainObject internalUser ) {
+    public User( UserDomainObject internalUser ) {
         this.internalUser = internalUser;
     }
 
