@@ -262,13 +262,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     //Check if user has a special adminRole
     public boolean checkUserAdminrole( int userId, int adminRole ) {
-        String[] adminrole = sqlProcedure( "checkUserAdminrole ", new String[]{"" + userId, "" + adminRole} );
-        if( adminrole.length > 0 ) {
-            if( ("" + adminRole).equals( adminrole[0] ) ) {
-                return true;
-            }
-        }
-        return false;
+        return m_databaseService.sproc_checkUserAdminrole(userId, adminRole) ;
     }
 
     public String parsePage( DocumentRequest documentRequest, int flags, ParserParameters paramsToParse ) throws IOException {
