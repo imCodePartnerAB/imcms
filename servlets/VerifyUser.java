@@ -48,11 +48,6 @@ public class VerifyUser extends HttpServlet {
 		// Get the user's name and password
 		String name = req.getParameter( "name" );
 		String passwd = req.getParameter( "passwd" );
-//		String domain = req.getParameter( "domain" ) ;
-//		if ( domain == null ) {
-//			domain = "" ;
-//		}
-
 		String value = req.getHeader( "User-Agent" ) ; 
 
 		// Check the name and password for validity
@@ -60,51 +55,11 @@ public class VerifyUser extends HttpServlet {
 
 		// add browser info to user
 
-		// IE                            	
-//		if( value.indexOf( "MSIE" ) != -1 ) {
-//			type = "MSIE" ;
-//			version = "-1" ;
-//
-//			if( value.indexOf( "MSIE 3" ) != -1 )
-//				version = "3" ; 
-//			if( value.indexOf( "MSIE 4" ) != -1 )
-//				version = "4" ; 
-//			if( value.indexOf( "MSIE 5" ) != -1 )
-//				version = "5" ; 
-//
-//			if( value.indexOf( "Windows" ) != -1 )
-//				plattform = "PC" ;
-//			else
-//				plattform = "Mac" ;
-//
-//		} // NS
-//		else {
-//			type = "NS" ;
-//			version = "-1" ;
-//
-//			if( value.indexOf( "Mozilla/3" ) != -1 )
-//				version = "3"; 
-//			if( value.indexOf( "Mozilla/4" ) != -1 )
-//				version = "4"; 
-//			if( value.indexOf( "Mozilla/5" ) != -1 )
-//				version = "5" ; 
-//
-//			if( value.indexOf( "Win" ) != -1 )
-//				plattform = "PC" ;
-//			else
-//				plattform = "Mac" ;
-//
-//		}
 
 		if( user == null ) {
 			res.sendRedirect(access_denied_url) ;              
 			return ;
-//			out.println( "<HTML><HEAD><TITLE>Access Denied</TITLE></HEAD>" );
-//			out.println( "<BODY>Ditt användarid eller lösenord är felaktigt.<BR>" );
-//			out.println( "Vill du <A HREF=\"" + admin_url + "\">försöka igen?</A>" );
-//			out.println( "</BODY></HTML>" );
 		} else {
-//			user.setBrowserInfo( type,version,plattform ) ;
 
 			// Valid login.  Make a note in the session object.
 			HttpSession session = req.getSession( true );
@@ -112,7 +67,6 @@ public class VerifyUser extends HttpServlet {
 			session.putValue("browser_id",value) ;
 
 			// Try redirecting the client to the page he first tried to access
-		//	try {
 				String target = (String) session.getValue("login.target");
 				if (target != null) {
 					session.removeValue("login.target") ;
@@ -120,7 +74,6 @@ public class VerifyUser extends HttpServlet {
 					return ;
 				}
 				//return;
-		//	} catch (Exception ignored) {} */
 
 			user.setLoginType("verify") ;
 
