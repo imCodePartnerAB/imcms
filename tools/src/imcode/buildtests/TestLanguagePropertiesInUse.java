@@ -36,20 +36,20 @@ public class TestLanguagePropertiesInUse extends TestCase {
         return propertyKeysInUse;
     }
 
-    private void checkPropertiesFiles( File[] propertiesFilenames, Set propertyKeysInUse ) throws IOException {
-        for ( int i = 0; i < propertiesFilenames.length; i++ ) {
-            File propertiesFile = propertiesFilenames[i] ;
+    private void checkPropertiesFiles( File[] propertiesFiles, Set propertyKeysInUse ) throws IOException {
+        for ( int i = 0; i < propertiesFiles.length; i++ ) {
+            File propertiesFile = propertiesFiles[i] ;
             checkPropertiesFile( propertiesFile, propertyKeysInUse );
         }
     }
 
     private void checkPropertiesFile( File propertiesFile, Set propertyKeysInUse ) throws IOException {
         Properties properties = loadPropertiesFile( propertiesFile );
-        Set propertyKeys = new HashSet( properties.keySet() );
-        propertyKeys.removeAll( propertyKeysInUse );
-        if ( !propertyKeys.isEmpty() ) {
-            String listOfLineNumbersOfPropertyKeysInFile = createListOfLineNumbersOfPropertyKeysInFile( propertyKeys, propertiesFile );
-            fail( propertyKeys.size() + " of " + properties.keySet().size() + " keys are superfluous: "+SystemUtils.LINE_SEPARATOR+listOfLineNumbersOfPropertyKeysInFile );
+        Set superfluousPropertyKeys = new HashSet( properties.keySet() );
+        superfluousPropertyKeys.removeAll( propertyKeysInUse );
+        if ( !superfluousPropertyKeys.isEmpty() ) {
+            String listOfLineNumbersOfPropertyKeysInFile = createListOfLineNumbersOfPropertyKeysInFile( superfluousPropertyKeys, propertiesFile );
+            fail( superfluousPropertyKeys.size() + " of " + properties.keySet().size() + " keys are superfluous: "+SystemUtils.LINE_SEPARATOR+listOfLineNumbersOfPropertyKeysInFile );
         }
     }
 
