@@ -1,51 +1,61 @@
 <html>
 <head>
-<title>Rättigheter för begränsad behörighet</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<title>Rättigheter för begränsad behörighet</title>
+
+<link rel="stylesheet" href="@rooturl@/imcms/css/imcms_admin_ns.css" type="text/css">
+<script src="@rooturl@/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
+
+</head>
 <body bgcolor="#FFFFFF">
+
+<script>
+imcmsGui("outer_start", null);
+imcmsGui("head", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="0">
 <form method="post" action="SavePermissions">
-  <table border="0" cellspacing="0" cellpadding="2" width="450" align="center">
-	<tr valign="middle" bgcolor="#333366"> 
-	  <td colspan=5> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;<b><font color="#FFFFFF">R&auml;ttigheter 
-		f&ouml;r begr&auml;nsad beh&ouml;righet #set_id#, f&ouml;r nya dokument 
-		<input type=HIDDEN name=set_id value="#set_id#">
-		<input type=HIDDEN name=meta_id value="#meta_id#">
-		<input type=hidden value="new" name="new">
-		</font><font color="#FFFFFF"> </font></b></font> </td>
-	</tr>
+<input type="hidden" name="set_id" value="#set_id#">
+<input type="hidden" name="meta_id" value="#meta_id#">
+<input type="hidden" value="new" name="new">
+<tr>
+	<td><input type="submit" class="imcmsFormBtn" name="cancel" value="Avbryt"></td>
+</tr>
+</table>
+<script>
+imcmsGui("mid", null);
+</script>
+<table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<tr> 
+	<td colspan="3"><script>imcHeading("Rättigheter för begränsad behörighet #set_id#, för nya dokument",656);</script></td>
+</tr>
 #1#
 #2#
 #4#	
 #doc_rights# 
-	<tr> 
-	  <td valign="top" height="8" bgcolor="#BABABA" width="5%">&nbsp;</td>
-	  <td valign="top" height="8" bgcolor="#BABABA">&nbsp;</td>
-	  <td valign="middle" height="8" bgcolor="#BABABA" align="center" colspan="2">&nbsp;</td>
-	  <td valign="middle" height="8" bgcolor="#BABABA" align="center" width="5%">&nbsp;</td>
+<tr>
+	<td colspan="3"><script>hr("100%",656,"blue");</script></td>
+</tr>
+<tr>
+	<td colspan="3" align="right">
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><input type="submit" class="imcmsFormBtn" name="ok" value="OK"></td>
+		<td>&nbsp;</td>
+		<td><input type="reset" class="imcmsFormBtn" name="Reset" value="Återställ"></td>
+		<td>&nbsp;</td>
+		<td><input type="submit" class="imcmsFormBtn" name="cancel" value="Avbryt"></td>
 	</tr>
-	<tr> 
-	  <td valign="top" height="8" bgcolor="#BABABA" width="5%">&nbsp; </td>
-	  <td valign="top" height="8" bgcolor="#BABABA"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		<input type=submit value="OK" name="ok">
-		<input type="reset" name="Reset" value="&Aring;terst&auml;ll">
-		<input type=submit value="Avbryt" name="cancel">
-		</font></td>
-	  <td valign="middle" height="8" bgcolor="#BABABA" align="center" colspan="2">&nbsp; 
-	  </td>
-	  <td valign="middle" height="8" bgcolor="#BABABA" align="center" width="5%">&nbsp; 
-	  </td>
-	</tr>
-	<tr> 
-	  <td valign="top" height="8" bgcolor="#BABABA" width="5%">&nbsp; </td>
-	  <td valign="top" height="8" bgcolor="#BABABA">&nbsp; </td>
-	  <td valign="middle" height="8" bgcolor="#BABABA" align="center" colspan="2">&nbsp; 
-	  </td>
-	  <td valign="middle" height="8" bgcolor="#BABABA" align="center" width="5%">&nbsp; 
-	  </td>
-	</tr>
-  </table>
-  </form>
+	</table></td>
+</tr>
+</form>
+</table>
+<script>
+imcmsGui("bottom", null);
+imcmsGui("outer_end", null);
+</script>
+
 </body>
 </html>

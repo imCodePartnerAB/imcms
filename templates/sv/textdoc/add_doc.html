@@ -1,29 +1,18 @@
-<FORM METHOD="POST" ACTION="AddDoc">
-<HR width=150>
-  <TABLE BORDER = 0>
-	<TR> 
-	  <TD><font size="1" face="Verdana, Arial, Helvetica, sans-serif"> L&auml;gg till l&auml;nk:</font></TD>
-	</TR>
-
-	<TR> 
-	  <TD> 
-		<NOBR>
-		<SELECT NAME="edit_menu" size="1">
-			#doc_types#
-		</SELECT><INPUT TYPE="SUBMIT" VALUE="OK" NAME="submit">&nbsp; <a href="GetDoc?meta_id=79" target="_blank" onClick="openHelp('79'); return false;"><img src="@imcmsimageurl@/se/helpimages/btn_help_round_white-bg.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></NOBR>
-	  </TD>
-	  <SCRIPT language=JavaScript>
-		<!--
-		function openHelp(id){
-			window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-		}
-		//-->
-		</SCRIPT>
-	</TR>
-	<INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#getMetaId#">
-	<INPUT TYPE="HIDDEN" name="doc_menu_no" VALUE="#doc_menu_no#">
-	<INPUT TYPE="HIDDEN" NAME="txt_max" VALUE="9">
-	<INPUT TYPE="HIDDEN" NAME="img_max" VALUE="9">
-  </TABLE>
-</FORM>
-
+<table border="0" cellspacing="0" cellpadding="3" bgcolor="#f5f5f7" style="border: 1px solid #e1ded9">
+<tr bgcolor="#20568D">
+	<td colspan="2" align="center">
+	<span style="font: bold 9pt Tahoma,Verdana,sans-serif; color:#ffffff">L&auml;gg till l&auml;nk</span></td>
+</tr>
+<form method="POST" action="AddDoc">
+<input type="HIDDEN" name="meta_id" value="#getMetaId#">
+<input type="HIDDEN" name="doc_menu_no" value="#doc_menu_no#">
+<input type="HIDDEN" name="txt_max" value="9">
+<input type="HIDDEN" name="img_max" value="9">
+<tr> 
+	<td>
+	<select name="edit_menu" size="1" style="font: 9pt Tahoma,Verdana,sans-serif">
+	#doc_types#
+	</select></td>
+	<td align="right"><input type="SUBMIT" value=" OK " name="submit" style="font: 9pt Tahoma,Verdana,sans-serif; height:20"></td>
+</tr>
+</form>
