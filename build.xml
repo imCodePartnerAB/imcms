@@ -1,0 +1,178 @@
+<project name="imCMS" default="dist" basedir=".">
+
+  <property name="build"          value="./build"/>
+  
+  <property name="webroot"        value="${build}"/>
+
+  <property name="images"         value="${webroot}/images"/>
+  <property name="login"          value="${webroot}/login"/>
+
+  <property name="adminbuttons"   value="${webroot}"/>
+  <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
+
+  <property name="conf"           value="${WEB-INF}/conf"/>
+  <property name="classes"        value="${WEB-INF}/classes"/>
+  <property name="lib"            value="${WEB-INF}/lib"/>
+  <property name="templates"      value="${WEB-INF}/templates"/>
+  <property name="includes"       value="${WEB-INF}/includes"/>
+  <property name="uploads"        value="${WEB-INF}/uploads"/>
+
+  <property name="admintemplates" value="${templates}/admin"/>
+  <property name="texttemplates"  value="${templates}/text"/>
+  <property name="demotemplates"  value="${texttemplates}/demo"/>
+
+  <property name="wardist" value="imcms.war"/>
+
+  <property file="build.properties"/>
+
+  <target name="dist"
+          depends="build"
+          description="Packages a complete distribution.">
+
+    <war warfile="${wardist}"
+         basedir="build"
+         webxml="install/web.xml"/>
+
+    <echo> Done packaging distribution. </echo>
+
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete file="${wardist}"/>
+  </target>
+
+  <target name="build"
+          depends="server,servlets,templates,libraries,web,conf,dir"
+	  description="Builds everything.">
+
+    <echo> Done build. </echo>
+
+  </target>
+
+  <target name="server"
+	  depends="dir"
+          description="Builds the server and utility classes.">
+
+    <echo> Building the server and the utility classes. </echo>
+    <mkdir dir="${classes}"/>
+    <javac srcdir="server/src" destdir="${classes}"/>
+    <echo> Done building the server and the utility classes. </echo>
+
+  </target>
+
+  <target name="servlets" 
+          depends="server"
+          description="Builds the servlets.">
+
+    <echo> Building the servlets. </echo>
+    <mkdir dir="${classes}"/>
+    <javac srcdir="servlets"
+           destdir="${classes}"
+           includes="*.java"
+           classpath="${classes}"/>
+    <echo> Done building the servlets. </echo>
+
+  </target>
+
+  <target name="libraries"
+          depends="dir"
+	  description="Copies the jar-files.">
+
+    <copy todir="${lib}">
+      <fileset dir="install/lib"/>
+    </copy>
+
+  </target>
+
+  <target name="conf"
+          description="Builds the config-directory.">
+    <copy todir="${conf}">
+      <fileset dir="install/conf">
+        <exclude name="policy"/>
+      </fileset>
+      <filterset>
+
+        <filter token="webapproot" value="${webapproot}"/>
+        <filter token="hostname" value="${hostname}"/>
+        <filter token="domainname" value="${domainname}"/>
+
+        <filter token="serverobject" value="${serverobject}"/>
+        <filter token="servleturl" value="${servleturl}"/>
+        <filter token="loginurl" value="${loginurl}"/>
+        <filter token="imageurl" value="${imageurl}"/>
+
+	<filter token="db-host" value="${db-host}"/>
+	<filter token="db-port" value="${db-port}"/>
+	<filter token="db-name" value="${db-name}"/>
+	<filter token="db-user" value="${db-user}"/>
+	<filter token="db-pass" value="${db-pass}"/>
+	<filter token="db-timeout" value="${db-timeout}"/>
+	<filter token="db-maxconnections" value="${db-maxconnections}"/>
+
+      </filterset>
+    </copy>
+    <echo> Copied conf-files. Don't forget to edit them! </echo>
+  </target>
+
+  <target name="web"
+          description="Creates the public web">
+    <mkdir dir="${images}"/>
+    <mkdir dir="${login}"/>
+    <copy file="templates/index.html" todir="${login}"/>
+
+    <copy todir="${adminbuttons}">
+      <fileset dir="install/htdocs/imcms">
+        <patternset>
+	  <include name="*.gif"/>
+	</patternset>
+      </fileset>
+    </copy>
+    <copy todir="${webroot}">
+      <fileset dir="templates">
+        <patternset>
+	  <include name="*.htm"/>
+	  <include name="*.html"/>
+	  <exclude name="index.html"/>
+	</patternset>
+      </fileset>
+    </copy>
+
+  </target>
+
+  <target name="templates"
+          depends="dir"
+	  description="Copies the templates.">
+
+    <mkdir dir="${admintemplates}"/>
+    <mkdir dir="${demotemplates}"/>
+
+    <copy todir="${admintemplates}/se/adminbuttons">
+      <fileset dir="templates/sv/adminbuttons"/>
+    </copy>
+    <copy todir="${admintemplates}/se/permissions">
+      <fileset dir="templates/sv/permissions"/>
+    </copy>
+    <copy todir="${admintemplates}/se">
+      <fileset dir="templates/sv">
+        <patternset>
+	  <include name="*.htm"/>
+	  <include name="*.html"/>
+	  <include name="*.ini"/>
+	  <include name="*.txt"/>
+	</patternset>
+      </fileset>
+    </copy>
+    <copy todir="${texttemplates}">
+      <fileset dir="templates/text"/>
+    </copy>
+
+  </target>
+
+  <target name="dir"
+          description="Creates directories necessary for imCMS.">
+    <mkdir dir="${includes}"/>
+    <mkdir dir="${uploads}"/>
+  </target>
+
+</project>
