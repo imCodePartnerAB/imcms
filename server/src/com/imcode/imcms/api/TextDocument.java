@@ -239,35 +239,6 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Set the current sort order of the menus in this textdocument.
-     *
-     * @param sortOrder One of {@link TextDocument.Menu#SORT_BY_HEADLINE},
-     *                  {@link TextDocument.Menu#SORT_BY_MODIFIED_DATETIME_DESCENDING},
-     *                  or {@link TextDocument.Menu#SORT_BY_MANUAL_ORDER_DESCENDING}.
-     * @throws NoPermissionException if the current user lacks permission to edit this owner.
-     * @deprecated Sort order is now per menu. Method Will be removed some time after version 1.8.4.
-     */
-    public void setMenuSortOrder(int sortOrder) throws NoPermissionException {
-        getSecurityChecker().hasEditPermission(this);
-        //((TextDocumentDomainObject)internalTextDocument).setMenuSortOrder(sortOrder);
-    }
-
-    /**
-     * Get the current sort order of the menus in this textdocument.
-     *
-     * @return the current sort order of the menus in this textdocument,
-     *         one of {@link TextDocument.Menu#SORT_BY_HEADLINE},
-     *         {@link TextDocument.Menu#SORT_BY_MODIFIED_DATETIME_DESCENDING},
-     *         or {@link TextDocument.Menu#SORT_BY_MANUAL_ORDER_DESCENDING}.
-     * @deprecated Sort order is now per menu. Method Will be removed some time after version 1.8.4.
-     */
-    public int getMenuSortOrder() throws NoPermissionException {
-        getSecurityChecker().hasAtLeastDocumentReadPermission(this);
-        //return ((TextDocumentDomainObject)internalTextDocument).getMenuSortOrder();
-        return TextDocument.Menu.SORT_BY_HEADLINE;
-    }
-
-    /**
      * Get the menu with the given index in the owner.
      *
      * @param menuIndexInDocument the index of the menu in the owner.
