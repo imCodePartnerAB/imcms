@@ -1711,6 +1711,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public	int setCounter(int value) {
 	m_SessionCounter = value ;
+	this.sqlProcedure("SetSessionCounterValue '" + value +"'");
 	return m_SessionCounter ;
     }
 
