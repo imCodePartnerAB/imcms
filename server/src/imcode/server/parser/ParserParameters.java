@@ -58,6 +58,6 @@ public class ParserParameters {
 	
 	public String getExternalParameter()
 	{
-		return	_externalParam == null ? "":_externalParam;;
+		return	_externalParam == null ? "":_externalParam;
 	}
 }
