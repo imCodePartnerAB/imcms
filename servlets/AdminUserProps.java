@@ -851,24 +851,32 @@ public class AdminUserProps extends Administrator {
 		}
 
 	    // Lets add the new users roles
+		String roleId[] = imcref.sqlProcedure ("GetRoleIdByRoleName Useradmin");
+		boolean isSelected = false; 
 	    for(int i = 0; i<rolesV.size(); i++) {
 			String aRole = rolesV.elementAt(i).toString() ;
 			imcref.sqlUpdateProcedure("AddUserRole " + newUserId + ", " + aRole) ;
+			if ( aRole.equals(roleId[0]) ){
+				isSelected = true; // role Useradmin is selected
+			}
 	    }
 		
 		// always let user get the role Users
-		String[] roleId = imcref.sqlProcedure ("GetRoleIdByRoleName Users");
+		roleId = imcref.sqlProcedure ("GetRoleIdByRoleName Users");
 		if ( roleId != null ){  
 			imcref.sqlUpdateProcedure("AddUserRole " + newUserId + ", " + Integer.parseInt(roleId[0])) ;
 		}
 		
-		// Lets get the useradmin_roles from htmlpage
-	    Vector useradminRolesV = this.getRolesParameters("useradmin_roles", req, res) ;
-	    
-		// Lets add the new useradmin roles.
-		for(int i = 0; i<useradminRolesV.size(); i++) {
-			String aRole = useradminRolesV.elementAt(i).toString();
-			imcref.sqlUpdateProcedure("AddUseradminPermissibleRoles  " + newUserId + ", " + aRole) ;
+		if ( isSelected ){  // role Useradmin is selected
+		
+			// Lets get the useradmin_roles from htmlpage
+		    Vector useradminRolesV = this.getRolesParameters("useradmin_roles", req, res) ;
+		    
+			// Lets add the new useradmin roles.
+			for(int i = 0; i<useradminRolesV.size(); i++) {
+				String aRole = useradminRolesV.elementAt(i).toString();
+				imcref.sqlUpdateProcedure("AddUseradminPermissibleRoles  " + newUserId + ", " + aRole) ;
+			}
 		}
 			
 		
@@ -1183,30 +1191,42 @@ public class AdminUserProps extends Administrator {
 					imcref.sqlUpdateProcedure("DelUserRoles " + userToChangeId + ", " + Integer.parseInt(rolesArr[i]) ) ;
 				}  	
 			}
-			
+			String roleId[] = imcref.sqlProcedure ("GetRoleIdByRoleName Useradmin");
+			boolean isSelected = false; 
 			for(int i = 0; i<rolesV.size(); i++) {
 				String aRole = rolesV.elementAt(i).toString();
 				imcref.sqlUpdateProcedure("AddUserRole  " + userToChangeId + ", " + aRole) ;
+				if ( aRole.equals(roleId[0]) ){
+					isSelected = true; // role Useradmin is selected
+				}
 		    }
 			
 			
 			// always let user get the role Users
-			String[] roleId = imcref.sqlProcedure ("GetRoleIdByRoleName Users");
+			roleId = imcref.sqlProcedure ("GetRoleIdByRoleName Users");
 			if ( roleId != null ){  
 				imcref.sqlUpdateProcedure("AddUserRole " + userToChangeId + ", " + Integer.parseInt(roleId[0])) ;
 			}
 			
-			// Lets get the useradmin_roles from htmlpage
-	    	Vector useradminRolesV = this.getRolesParameters("useradmin_roles", req, res) ;
-	    	if( useradminRolesV == null) return ;
+			
 		
 		    // Lets add the new useradmin roles. but first, delete the current roles
 		    // and then add the new ones
-		    imcref.sqlUpdateProcedure("DeleteUseradminPermissibleRoles " + userToChangeId ) ;
-		    for(int i = 0; i<useradminRolesV.size(); i++) {
-				String aRole = useradminRolesV.elementAt(i).toString();
-				imcref.sqlUpdateProcedure("AddUseradminPermissibleRoles  " + userToChangeId + ", " + aRole) ;
-		    }
+			// but only if role Useradmin is selected
+			
+			imcref.sqlUpdateProcedure("DeleteUseradminPermissibleRoles " + userToChangeId ) ;			
+		
+			if ( isSelected ){ // role Useradmin is selected
+			
+				// Lets get the useradmin_roles from htmlpage
+		    	Vector useradminRolesV = this.getRolesParameters("useradmin_roles", req, res) ;
+		    	if( useradminRolesV == null) return ;
+					    
+			    for(int i = 0; i<useradminRolesV.size(); i++) {
+					String aRole = useradminRolesV.elementAt(i).toString();
+					imcref.sqlUpdateProcedure("AddUseradminPermissibleRoles  " + userToChangeId + ", " + aRole) ;
+			    }
+			}
 			
 			// Lets add Readrunner user data
 			if ( null != session.getAttribute("tempRRUserData") ){

@@ -45,6 +45,22 @@ function evalPrepareAdd() {
 		alert(msg)
 		return false
 	}
+
+	// ( only neded for ns4) 
+	if ( document.forms[0].useradmin_roles ){
+		var index = document.forms[0].useradmin_roles.selectedIndex;
+		if ( index > -1 ){
+			var list = document.forms[0].roles;
+			for ( i = 0 ; i < list.length ; i++ ){
+				if ( list.options[i].text == "Useradmin"  &&  !list.options[i].selected ){
+					var msg = "Du har valt roller för useradmin utan att dela ut rollen 'Useradmin' !\n";
+					msg += "Valda roller för Useradmin kommer EJ att sparas!"; 
+					alert(msg); 
+				}
+			}
+		}
+	}
+
 	return true
 }
 
