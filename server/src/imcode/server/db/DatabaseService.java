@@ -16,8 +16,6 @@ import java.io.*;
  * /Hasse
  */
 
-// todo: generell fråga, borde loggningen ligga i denna klass?
-
 public abstract class DatabaseService {
     private static final char END_OF_COMMAND = ';';
     private static final String DROP_TABLES = "1.droptables.sql";
@@ -337,22 +335,6 @@ public abstract class DatabaseService {
         View_TemplateGroup( int id, String simpleName ) {
             this.id = id;
             this.simpleName = simpleName;
-        }
-
-        public boolean equals( Object o ) {
-            if( this == o )
-                return true;
-            if( !(o instanceof View_TemplateGroup) )
-                return false;
-
-            final View_TemplateGroup viewTemplateGroup = (View_TemplateGroup)o;
-
-            if( id != viewTemplateGroup.id )
-                return false;
-            if( simpleName != null ? !simpleName.equals( viewTemplateGroup.simpleName ) : viewTemplateGroup.simpleName != null )
-                return false;
-
-            return true;
         }
     }
 
@@ -2107,5 +2089,16 @@ public abstract class DatabaseService {
         } else {
             return (Table_lang_prefixes)queryResult.get( 0 );
         }
+    }
+
+    int sproc_GetRoleIdByRoleName( String role_name ) {
+        String sql = "SELECT role_id FROM roles WHERE role_name like ? ";
+        Object[] paramValues = new Object[]{ role_name };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer(rs.getInt( "role_id" ));
+            }
+        } );
+        return ((Integer)queryResult.get(0)).intValue();
     }
 }

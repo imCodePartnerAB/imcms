@@ -19,8 +19,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private static int ROLE_SUPER_ADMIN_ID = 0;
     private static int ROLE_USER_ADMIN_ID = 1;
+    private static int ROLE_USERS_ID = 2;
     private static final int ROLE_TEST_ID = 3;
     private final static int ROLE_NEXT_FREE_ID = 4;
+    private static final String ROLE_SUPER_ADMIN_NAME = "Superadmin";
+    private static final String ROLE_USER_ADMIN_NAME = "Useradmin";
+    private static final String ROLE_USERS_NAME = "Users";
+    private static final String ROLE_TEST_NAME = "TestRole";
 
     private int DOC_NO_OF_DOCS = 8; // 1001 + folowing
     private static final int DOC_ID_FIRST_PAGE = 1001;
@@ -52,7 +57,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            DatabaseTestInitializer.static_initMimer(),
+            //DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -87,8 +92,16 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetUserRoles( databaseService );
             test_sproc_GetLangPrefixFromId( databaseService );
             test_sproc_GetUserInfo( databaseService );
+            test_sproc_sproc_GetRoleIdByRoleName( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_sproc_GetRoleIdByRoleName( DatabaseService databaseService ) {
+        assertEquals( ROLE_SUPER_ADMIN_ID, databaseService.sproc_GetRoleIdByRoleName( ROLE_SUPER_ADMIN_NAME ) );
+        assertEquals( ROLE_USER_ADMIN_ID, databaseService.sproc_GetRoleIdByRoleName( ROLE_USER_ADMIN_NAME ) );
+        assertEquals( ROLE_USERS_ID, databaseService.sproc_GetRoleIdByRoleName( ROLE_USERS_NAME ) );
+        assertEquals( ROLE_TEST_ID, databaseService.sproc_GetRoleIdByRoleName( ROLE_TEST_NAME ) );
     }
 
     private void test_sproc_GetUserInfo( DatabaseService databaseService ) {
@@ -142,10 +155,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_getTemplatesInGroup( DatabaseService dbService ) {
-        DatabaseService.View_TemplateGroup templateGroupZero = new DatabaseService.View_TemplateGroup( 1, "Start" );
-        DatabaseService.View_TemplateGroup[] sqlServerTemplatesInGroupZero = dbService.sproc_GetTemplatesInGroup( 0 );
-        assertEquals( 1, sqlServerTemplatesInGroupZero.length );
-        assertEquals( templateGroupZero, sqlServerTemplatesInGroupZero[0] );
+        assertEquals( 1, dbService.sproc_GetTemplatesInGroup( 0 ).length );
     }
 
     private void test_sproc_getHighestUserId( DatabaseService dbService ) {

@@ -44,10 +44,10 @@ getlanguagelist.prc
 getlanguages.prc
 getmenudocchilds.prc
 getmetapathinfo.prc
-getnooftemplates.prc
+
 getpermissionset.prc
 getreadrunneruserdataforuser.prc
-getroleidbyrolename.prc
+
 getrolesdocpermissions.prc
 gettemplategroups.prc
 gettemplategroupsforuser.prc
