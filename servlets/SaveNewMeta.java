@@ -69,7 +69,7 @@ public class SaveNewMeta extends HttpServlet {
             "meta_image", null,
             "frame_name", "",
             "target", null,
-            "publisher_id", "",
+            "publisher_id", null,
         };
 
         Properties metaprops = new Properties();
@@ -174,6 +174,9 @@ public class SaveNewMeta extends HttpServlet {
                 String columnName = (String) propkeys.nextElement();
                 String columnValue = metaprops.getProperty(columnName);
                 sqlInsertColumnNames.add(columnName);
+                if (checkForNullPublisherId(columnName, columnValue, sqlInsertValues)) {
+                    continue ;
+                }
                 sqlInsertValues.add(columnValue);
             }
 
@@ -240,6 +243,18 @@ public class SaveNewMeta extends HttpServlet {
             String htmlStr = AdminDoc.adminDoc( parentMetaId, parentMetaId, user, req, res );
             out.write( htmlStr );
         }
+    }
+
+    private boolean checkForNullPublisherId(String columnName, String columnValue, ArrayList sqlInsertValues) {
+        if ("publisher_id".equals(columnName)) {
+            try {
+                Integer.parseInt(columnValue) ;
+            } catch (NumberFormatException ex) {
+                sqlInsertValues.add(null) ;
+                return true ;
+            }
+        }
+        return false ;
     }
 
 
