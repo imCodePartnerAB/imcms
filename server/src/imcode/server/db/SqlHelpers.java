@@ -61,14 +61,14 @@ public class SqlHelpers {
     public static String[] sqlQuery(ConnectionPool conPool, String sqlQuery, String[] parameters) {
         DBConnect dbc = new DBConnect( conPool );
         dbc.setSQLString(sqlQuery, parameters);
-        List data = (List)dbc.executeQuery();
+        List data = dbc.executeQuery();
         return createStringArrayFromSqlResults(data) ;
     }
 
     public static String sqlQueryStr(ConnectionPool conPool, String sqlStr, String[] params) {
         DBConnect dbc = new DBConnect(conPool);
         dbc.setSQLString(sqlStr, params);
-        List data = (List) dbc.executeQuery();
+        List data = dbc.executeQuery();
         return createStringFromSqlResults(data);
     }
 
@@ -76,8 +76,8 @@ public class SqlHelpers {
         DBConnect dbc = new DBConnect(conPool);
         dbc.setSQLString(sqlQuery, params);
 
-        List data = (List) dbc.executeQuery();
-        String[] meta = (String[]) dbc.getMetaData();
+        List data = dbc.executeQuery();
+        String[] meta = dbc.getMetaData();
         return createHashtableOfStringArrayFromSqlResults(data, meta) ;
     }
 
@@ -85,7 +85,7 @@ public class SqlHelpers {
         DBConnect dbc = new DBConnect(conPool);
         dbc.setSQLString(sqlQuery, params);
 
-        List data = (List) dbc.executeQuery();
+        List data = dbc.executeQuery();
         int columns = dbc.getColumnCount();
 
         return create2DStringArrayFromSqlResults(data,columns) ;
