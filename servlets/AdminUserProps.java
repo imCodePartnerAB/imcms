@@ -299,7 +299,7 @@ public class AdminUserProps extends Administrator {
             log( "session has been invalidated so no need to remove parameters" );
         }
 
-        String outputString = imcref.parseDoc( vec, HTML_RESPONSE, userToChange.getLangPrefix() );
+        String outputString = imcref.parseDoc( vec, HTML_RESPONSE, user.getLangPrefix() );
         out.write( outputString );
     }
 
