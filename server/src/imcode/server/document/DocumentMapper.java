@@ -13,6 +13,7 @@ import imcode.util.FileUtility;
 import imcode.util.IdNamePair;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.map.LazyMap;
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -52,7 +53,9 @@ public class DocumentMapper {
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
 
-    private Map documentCache = LazyMap.decorate( new HashMap(), new Transformer() {
+    private static final int DOCUMENT_CACHE_MAX_SIZE = 100;
+
+    private Map documentCache = LazyMap.decorate( new LRUMap(DOCUMENT_CACHE_MAX_SIZE), new Transformer() {
         public Object transform( Object input ) {
             DocumentDomainObject document = getDocumentFromDb( ( (Integer)input ).intValue() );
             document.loadAllLazilyLoaded();
