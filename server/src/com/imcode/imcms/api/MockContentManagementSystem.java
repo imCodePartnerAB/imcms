@@ -1,8 +1,9 @@
 package com.imcode.imcms.api;
 
 import imcode.server.ImcmsServices;
+import imcode.server.user.UserDomainObject;
 
-class MockContentManagementSystem extends ContentManagementSystem {
+public class MockContentManagementSystem extends ContentManagementSystem {
 
     private ImcmsServices imcmsServices;
     private User currentUser;
@@ -48,5 +49,9 @@ class MockContentManagementSystem extends ContentManagementSystem {
 
     public void setCurrentUser( User user ) {
         currentUser = user;
+    }
+
+    public void setCurrentInternalUser( UserDomainObject user ) {
+        currentUser = new User( user );
     }
 }

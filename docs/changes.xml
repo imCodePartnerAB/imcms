@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
 <changesets>
 
 <changeset version="2.1.0">
@@ -130,6 +131,13 @@
     </changes>
 
     <changes for="API-using developers">
+        <change>
+            <p>
+                Added package <package>com.imcode.imcms.api.contrib</package>,
+                containing class <class>DateTextFieldTextDocumentComparator</class>,
+                contributed by Anders Flodell and Pontus Amberg at Vetenskapsrådet.
+            </p>
+        </change>
         <change>
             <p>
                 Made it possible to edit categories through the API.
