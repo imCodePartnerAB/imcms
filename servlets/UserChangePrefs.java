@@ -106,7 +106,7 @@ public class UserChangePrefs extends Administrator {
 
 
 	// ************* Verfiy username and password **************
-	if(req.getParameter("verifyUser") != null) {
+	if(req.getParameter("authenticate") != null) {
 	    String loginName = (req.getParameter("login_name")==null) ? "" : (req.getParameter("login_name")) ;
 	    String password = (req.getParameter("password")==null) ? "" : (req.getParameter("password")) ;
 
@@ -143,7 +143,7 @@ public class UserChangePrefs extends Administrator {
 	    // ok, redirect to myself
 	    res.sendRedirect("UserChangePrefs?changeUser=on");
 	    return ;
-	} // end verifyUser
+	} // end authenticate
 
 
 	///*********** Lets get the users information ************
@@ -274,25 +274,7 @@ public class UserChangePrefs extends Administrator {
 	String country_council = (req.getParameter("country_council")==null) ? "" : (req.getParameter("country_council")) ;
 	String email = (req.getParameter("email")==null) ? "" : (req.getParameter("email")) ;
 	String lang_id = (req.getParameter("lang_id")==null) ? "" : (req.getParameter("lang_id")) ;
-	//	String user_type = (req.getParameter("user_type")==null) ? "" : (req.getParameter("user_type")) ;
-	//	String active = (req.getParameter("active")==null) ? "0" : (req.getParameter("active")) ;
 
-	//String admin_mode = (req.getParameter("admin_mode")==null) ? "NOT_USED" : (req.getParameter("admin_mode")) ;
-	//String user_mode = (req.getParameter("user_mode")==null) ? "NOT_USED" : (req.getParameter("user_mode")) ;
-
-	/*
-	// Lets fix those fiels which arent mandatory
-	if( address.trim().equals("")) address = "--" ;
-	if( city.trim().equals("")) city = "--" ;
-	if( zip.trim().equals("")) zip = "--" ;
-	if( country.trim().equals("")) country = "--" ;
-	if( country_council.trim().equals("")) country_council = "--" ;
-	if( email.trim().equals("")) email = "--" ;
-	if( title.trim().equals("")) title = "--" ;
-	if( company.trim().equals("")) company = "--" ;
-	*/
-
-	//	userInfo.setProperty("login_name", login_name) ;
 	userInfo.setProperty("password1", password1) ;
 	userInfo.setProperty("password2", password2) ;
 	userInfo.setProperty("first_name", first_name) ;
@@ -306,14 +288,7 @@ public class UserChangePrefs extends Administrator {
 	userInfo.setProperty("country_council", country_council) ;
 	userInfo.setProperty("email", email) ;
 	userInfo.setProperty("lang_id", lang_id) ;
-	//	userInfo.setProperty("user_type", user_type) ;
-	//	userInfo.setProperty("active", active) ;
 
-	//	userInfo.setProperty("admin_mode", admin_mode) ;
-	//	userInfo.setProperty("user_mode", user_mode) ;
-
-
-	//	this.log("UserInfo:" + userInfo.toString()) ;
 	return userInfo ;
     }
 

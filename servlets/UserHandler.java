@@ -55,7 +55,7 @@ public class UserHandler extends Administrator {
 	sqlStr +=	"'" + (params.getProperty("country_council")).trim() + "', ";
 	sqlStr +=	"'" + (params.getProperty("email")).trim() + "', "  ;
 
-	// Default values for admin_mode, last_page, archive_mode, lang_id
+	// Default values for internal, last_page, archive_mode, lang_id
 	sqlStr +=	"0" + ", ";
 	sqlStr += "1001" + ", ";
 	sqlStr +=	"0" + ", ";
@@ -139,7 +139,7 @@ public class UserHandler extends Administrator {
 	p.setProperty("country_council", "") ;
 	p.setProperty("email", "") ;
 
-	p.setProperty("admin_mode", "") ;
+	p.setProperty("internal", "") ;
 	p.setProperty("last_page", "") ;
 	p.setProperty("archive_mode", "") ;
 	p.setProperty("lang_id", "") ;

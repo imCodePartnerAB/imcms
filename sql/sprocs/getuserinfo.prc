@@ -26,7 +26,7 @@ AS
 	country,        -- Unused?
 	county_council, -- Unused?
 	email,
-	admin_mode,     -- Unused?
+	internal,
 	last_page,      -- Unused?
 	archive_mode,   -- Unused?
 	users.lang_id,

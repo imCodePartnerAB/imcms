@@ -203,7 +203,7 @@ public class AdminUserProps extends Administrator {
 	    	
     	log("Changeuser") ;
     	
-   	 	// lets first try to get userId from the session if we has been redirectet from verifyUser 
+   	 	// lets first try to get userId from the session if we has been redirectet from authenticate
     	String userToChangeId = getCurrentUserId(req,res);
 		
     	// Lets check if the user has right to do changes  

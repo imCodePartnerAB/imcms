@@ -1260,6 +1260,29 @@ COMMIT
 
 -- 2003-05-20 Kreiger
 
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+EXECUTE sp_rename N'dbo.users.admin_mode', N'Tmp_internal', 'COLUMN'
+GO
+EXECUTE sp_rename N'dbo.users.Tmp_internal', N'internal', 'COLUMN'
+GO
+DECLARE @v sql_variant
+SET @v = N'Used to determine if this user is hanlded by Imcms instead of an external directory'
+EXECUTE sp_addextendedproperty N'MS_Description', @v, N'user', N'dbo', N'table', N'users', N'column', N'internal'
+GO
+COMMIT
+
+-- 2003-06-13 Hasse och Kreiger
+
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '
 print ''
