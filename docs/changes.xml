@@ -3,12 +3,21 @@
 
 <changeset version="2.1.1">
 
+    <changes for="users">
+        <change>
+            <p>
+                Fixed a problem where a user would lose all his roles when editing himself.
+            </p>
+            <bug id="2925"/>
+        </change>
+    </changes>
+
     <changes for="API-using developers">
         <change>
             <p>
                 There was a mistake made with the
                 <method>ContentManagementSystem.runAsSuperadmin(ContentManagementSystemRunnable)</method>
-                so it actually did not work at all.
+                method so it actually did not work at all.
             </p>
             <bug id="2901"/>
         </change>
