@@ -79,7 +79,7 @@ rooturl = /${webappname}
 
 
 # The imCMS documents is usually on the imCMS public site, http://doc.imcms.net/
-# If you want to install a local server for handling (modifing) the documents
+# If you want to install a local server for handling (modifying) the documents
 # change this:
 
 documentation-host = doc.imcms.net
@@ -118,7 +118,7 @@ log4j-config = log4j-nodebug.xml
 tomcat-admin-username = admin
 tomcat-admin-password =
 tomcat-webapp-manager-url = http://localhost:8080/manager
-tomcat-deployroot-local-directory = 
+tomcat-deployroot-local-directory =
 
 
 # If you want to include an addon under addons/ in the build, name the directory here.

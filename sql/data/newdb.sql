@@ -32,7 +32,7 @@ INSERT INTO user_roles_crossref
 
 SET IDENTITY_INSERT meta ON
 INSERT INTO meta (meta_id, doc_type, meta_headline,                meta_text, meta_image, owner_id, permissions, shared, show_meta, lang_prefix,         date_created,                    date_modified,                   disable_search, archived_datetime, target,  activate, status, publication_start_datetime,      publication_end_datetime)
- VALUES           (1001,   2,        '<? sql/sql/newdb.sql/1 ?>',  '',        '',         1,        0,           0,      0,         '@defaultlanguage@', convert(char(10),getDate(),120), convert(char(10),getDate(),120), 0,              null,              '_self', 1,        2,      convert(char(10),getDate(),120), null)
+ VALUES           (1001,   2,        '<? sql/sql/newdb.sql/headline_1001 ?>',  '',        '',         1,        0,           0,      0,         '@defaultlanguage@', convert(char(10),getDate(),120), convert(char(10),getDate(),120), 0,              null,              '_self', 1,        2,      convert(char(10),getDate(),120), null)
 SET IDENTITY_INSERT meta OFF
 INSERT INTO templates
  VALUES (1,'demo.html', 'demo', '<? sql/default_lang ?>', 1,1,1)
@@ -46,9 +46,9 @@ INSERT INTO text_docs
 INSERT INTO roles_rights
  VALUES (2,1001,3)
 INSERT INTO texts
- VALUES( 1001, 1, '<? sql/sql/newdb.sql/17 ?>',1)
+ VALUES( 1001, 1, '<? sql/sql/newdb.sql/text_1001_1 ?>',1)
 INSERT INTO texts
- VALUES( 1001, 2, '<a href="@rooturl@/login/" title="<? sql/sql/newdb.sql/7 ?>"><b><? sql/sql/newdb.sql/2 ?>!</b></a><br><br><br><a href="@rooturl@/servlet/SearchDocuments" target="_blank" title="<? sql/sql/newdb.sql/8 ?>"><b><? sql/sql/newdb.sql/4 ?></b></a><br><? sql/sql/newdb.sql/9 ?> <i> <? sql/sql/newdb.sql/10 ?></i><br><br><a href="@documentationwebappurl@/" target="_blank" title="<? sql/sql/newdb.sql/11 ?>"><b><? sql/sql/newdb.sql/5 ?></b></a><br><? sql/sql/newdb.sql/12 ?><br><br><a href="http://www.imcms.net" target="_blank" title="<? sql/sql/newdb.sql/13 ?> www.imcms.net"><b><? sql/sql/newdb.sql/14 ?></b></a><br><? sql/sql/newdb.sql/15 ?><br><br><a href="@rooturl@/imcms/docs/apisamples/"  target="_blank" title="<? sql/sql/newdb.sql/13 ?>API-samples"><b><? sql/sql/newdb.sql/6 ?></b></a><br><? sql/sql/newdb.sql/16 ?>',1)
+ VALUES( 1001, 2, '<? sql/sql/newdb.sql/text_1001_2 ?>',1)
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , align , alt_text , low_scr , imgurl , linkurl, type )
 values (1001,0,0,0,0,0,3,'','_blank','top','','','imCMSpower.gif','http://www.imcms.net','0')
 

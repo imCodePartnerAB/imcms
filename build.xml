@@ -314,7 +314,7 @@
         <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
         <imtranslate bundle="imcms" bundlelanguage="${defaultlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
-            todir="${dist}" filtering="true">
+            todir="${sql}" filtering="true">
             <fileset file="${tmp}/imcms${versionfilesuffix}.sql"/>
         </imtranslate>
     </target>
@@ -388,7 +388,7 @@
         </copy>
 
         <copy todir="${docs}">
-            <fileset dir="${basedir}" includes="*.TXT"/>
+            <fileset dir="${basedir}" includes="*.TXT" excludes="${srcincludes}"/>
         </copy>
 
         <!-- Create empty files needed by fortune -->
