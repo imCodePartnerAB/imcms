@@ -21,7 +21,7 @@ public class PageDispatcher extends HttpServlet {
         r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( r );
 
-        Page page = Page.removeFromRequest(request) ;
+        Page page = Page.fromRequest(request) ;
         if ( null != page ) {
             page.dispatch( request, response );
         } else {

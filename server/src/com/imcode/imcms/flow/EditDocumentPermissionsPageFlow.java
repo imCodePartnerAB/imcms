@@ -1,7 +1,6 @@
 package com.imcode.imcms.flow;
 
 import imcode.server.document.DocumentDomainObject;
-import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,8 +23,13 @@ public class EditDocumentPermissionsPageFlow extends EditDocumentPageFlow {
     protected void dispatchToFirstPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
         DispatchCommand okCommand = new DispatchCommand() {
             public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-                saveDocumentCommand.saveDocument( document, Utility.getLoggedOnUser( request ));
-                returnCommand.dispatch( request, response );
+                saveDocumentAndReturn( request, response );
+            }
+        };
+
+        DispatchCommand returnCommand = new DispatchCommand() {
+            public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                dispatchReturn( request, response );
             }
         };
         DocumentPermissionsPage documentPermissionsPage = new DocumentPermissionsPage( document, okCommand, returnCommand );

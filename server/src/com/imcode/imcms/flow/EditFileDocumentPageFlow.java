@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -305,7 +306,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
         }
     }
 
-    public interface MimeTypeRestriction {
+    public interface MimeTypeRestriction extends Serializable {
 
         boolean allows( String mimeType );
 

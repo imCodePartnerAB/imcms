@@ -34,10 +34,12 @@ public abstract class OkCancelPage extends Page {
     }
 
     protected void dispatchOk( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        Page.removeFromRequest( request );
         okCommand.dispatch( request, response );
     }
 
     protected void dispatchCancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        removeFromSession(request) ;
         cancelCommand.dispatch( request, response );
     }
 

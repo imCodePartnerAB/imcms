@@ -13,11 +13,9 @@ public class HttpSessionUtils {
 
     private final static Logger log = Logger.getLogger( HttpSessionUtils.class.getName() );
 
-    private static int totalSessionObjectCount = 0 ;
-
     private static final String SESSION_ATTRIBUTE_NAME__SESSION_MAP = HttpSessionUtils.class.getName() + ".sessionMap";
 
-    private static final int MAX_COUNT__SESSION_OBJECTS = 5;
+    private static final int MAX_COUNT__SESSION_OBJECTS = 7;
 
     private HttpSessionUtils() {
     }
@@ -25,13 +23,21 @@ public class HttpSessionUtils {
     public static void setSessionAttributeAndSetNameInRequestAttribute( final Serializable objectToAddToSession,
                                                                         HttpServletRequest request,
                                                                         final String sessionAttributeNameRequestAttributeName ) {
-        String sessionAttributeName = getSessionAttributeNameFromRequest( request, sessionAttributeNameRequestAttributeName );
-        HttpSession session = request.getSession();
-        if ( null == sessionAttributeName || null == session.getAttribute( sessionAttributeName ) ) {
+        String sessionAttributeName ;
+        if (objectToAddToSession instanceof HttpSessionAttribute) {
+            sessionAttributeName = ((HttpSessionAttribute)objectToAddToSession).getSessionAttributeName() ;
+        } else {
+            sessionAttributeName = getSessionAttributeNameFromRequest( request, sessionAttributeNameRequestAttributeName );
+        }
+        if ( null == sessionAttributeName || !objectToAddToSession.equals( get( request, sessionAttributeName ) ) ) {
             sessionAttributeName = createUniqueNameForObject( objectToAddToSession );
             put( request, sessionAttributeName, objectToAddToSession );
-            request.setAttribute( sessionAttributeNameRequestAttributeName, sessionAttributeName );
         }
+        request.setAttribute( sessionAttributeNameRequestAttributeName, sessionAttributeName );
+    }
+
+    private static Object get( HttpServletRequest request, String sessionAttributeName ) {
+        return getSessionMap(request).get( sessionAttributeName );
     }
 
     public static void put( HttpServletRequest request, String sessionAttributeName,
@@ -39,14 +45,13 @@ public class HttpSessionUtils {
         LRUMap sessionMap = getSessionMap( request );
         if (sessionMap.isFull()) {
             log.debug( "SessionMap is full. Least recently used object will be evicted.") ;
-        } else {
-            totalSessionObjectCount++;
+        }
+        if (objectToAddToSession instanceof HttpSessionAttribute) {
+            ((HttpSessionAttribute)objectToAddToSession).setSessionAttributeName(sessionAttributeName) ;
         }
         sessionMap.put( sessionAttributeName, objectToAddToSession );
-        log.debug( "Put in session: \"" + sessionAttributeName + "\": " + objectToAddToSession.getClass() + ". Sizes: "
-                   + sessionMap.size()
-                   + "/"
-                   + totalSessionObjectCount );
+        log.debug( "Put in session: \"" + sessionAttributeName + "\": " + objectToAddToSession.getClass() + ". Size: "
+                   + sessionMap.size() );
     }
 
     private static LRUMap getSessionMap( HttpServletRequest request ) {
@@ -70,7 +75,7 @@ public class HttpSessionUtils {
         Map sessionMap = getSessionMap( request );
         Object sessionAttribute = sessionMap.get( sessionAttributeName );
         if ( null == sessionAttribute ) {
-            remove( request, sessionAttributeName );
+            removeSessionAttribute( request, sessionAttributeName );
         }
         return sessionAttribute;
     }
@@ -78,16 +83,15 @@ public class HttpSessionUtils {
     public static Object removeSessionAttributeWithNameInRequest( HttpServletRequest request,
                                                                   String requestAttributeOrParameterName ) {
         String sessionAttributeName = getSessionAttributeNameFromRequest( request, requestAttributeOrParameterName );
-        return remove( request, sessionAttributeName );
+        return removeSessionAttribute( request, sessionAttributeName );
     }
 
-    private static Object remove( HttpServletRequest request, String sessionAttributeName ) {
+    public static Object removeSessionAttribute( HttpServletRequest request, String sessionAttributeName ) {
         Map sessionMap = getSessionMap( request );
         Object object = sessionMap.remove( sessionAttributeName );
         if ( null != object ) {
-            totalSessionObjectCount-- ;
             log.debug( "Removed from session: \"" + sessionAttributeName + "\": " + object.getClass()
-                       + ". Sizes: " + sessionMap.size() + "/" + totalSessionObjectCount );
+                       + ". Size: " + sessionMap.size() );
         }
         return object;
     }

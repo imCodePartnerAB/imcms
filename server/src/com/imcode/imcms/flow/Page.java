@@ -2,6 +2,7 @@ package com.imcode.imcms.flow;
 
 import imcode.util.Html;
 import imcode.util.HttpSessionUtils;
+import imcode.util.HttpSessionAttribute;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -9,9 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 
-public abstract class Page implements Serializable {
+public abstract class Page implements Serializable, HttpSessionAttribute {
 
     public static final String IN_REQUEST = "page";
+
+    private String sessionAttributeName;
 
     public static String htmlHidden( HttpServletRequest request ) {
         return Html.hidden( IN_REQUEST, getPageSessionNameFromRequest( request ) ) ;
@@ -38,4 +41,15 @@ public abstract class Page implements Serializable {
 
     public abstract void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException ;
 
+    public String getSessionAttributeName() {
+        return sessionAttributeName ;
+    }
+
+    public void setSessionAttributeName( String sessionAttributeName ) {
+        this.sessionAttributeName = sessionAttributeName;
+    }
+
+    protected void removeFromSession( HttpServletRequest request ) {
+        HttpSessionUtils.removeSessionAttribute( request, getSessionAttributeName() ) ;
+    }
 }

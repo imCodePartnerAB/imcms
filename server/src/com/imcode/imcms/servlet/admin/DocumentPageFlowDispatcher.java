@@ -1,11 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
-import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
@@ -27,8 +24,6 @@ public class DocumentPageFlowDispatcher extends HttpServlet {
         r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( r );
 
-        ImcmsServices service = Imcms.getServices();
-        DocumentMapper documentMapper = service.getDocumentMapper();
         UserDomainObject user = Utility.getLoggedOnUser( request );
 
         DocumentPageFlow pageFlow = DocumentPageFlow.fromRequest( request );

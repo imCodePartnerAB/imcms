@@ -69,18 +69,16 @@
                 </tr>
                 <%
                     SortedSet allRoles = new TreeSet(Arrays.asList(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getAllRoles())) ;
+                    allRoles.remove( RoleDomainObject.SUPERADMIN ) ;
                     Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds() ;
                     for ( Iterator iterator = rolesMappedToPermissionSetIds.entrySet().iterator(); iterator.hasNext(); ) {
                         Map.Entry entry = (Map.Entry)iterator.next();
                         RoleDomainObject role = (RoleDomainObject)entry.getKey();
                         int permissionSetId = ((Integer)entry.getValue()).intValue() ;
-                        if (DocumentPermissionSetDomainObject.TYPE_ID__NONE == permissionSetId) {
+                        if (DocumentPermissionSetDomainObject.TYPE_ID__NONE == permissionSetId || role.equals( RoleDomainObject.SUPERADMIN )) {
                             continue ;
                         }
                         allRoles.remove( role ) ;
-                        if (role.equals( RoleDomainObject.SUPERADMIN )) {
-                            continue ;
-                        }
                         %>
                         <tr align="center">
                             <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRole( role )) { %>*<% } else { %>&nbsp;<% } %></td>
