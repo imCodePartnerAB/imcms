@@ -66,8 +66,7 @@ public class SearchDocuments extends HttpServlet {
 		StringBuffer sqlBuff = new StringBuffer("SearchDocsIndex ");
 		
 		//this is the params we can get fram the browser
-		String searchStringOrg 	= req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
-		String searchString 	= imcode.server.HTMLConv.toHTML(searchStringOrg);
+		String searchString 	= req.getParameter("question_field") == null? "":req.getParameter("question_field") ;
         String fromDoc			= req.getParameter("fromDoc") == null? "1":req.getParameter("fromDoc");
 		String maxHits			= req.getParameter("maxHits") == null? "1000":req.getParameter("maxHits");
         String searchPrep 		= req.getParameter("search_prep") == null? "and":req.getParameter("search_prep");
@@ -293,7 +292,7 @@ public class SearchDocuments extends HttpServlet {
 			Vector tags = new Vector();
 			tags.add("#search_list#");		tags.add(buff.toString());
 			tags.add("#nrhits#");			tags.add(""+hits);
-			tags.add("#searchstring#");		tags.add(searchStringOrg);
+			tags.add("#searchstring#");		tags.add(searchString);
 			tags.add("#page_buttons#");		tags.add(buttonsSetupHtml.toString());
 			tags.add("#hitsNo#");			tags.add(noOfHit+"");
 			tags.add("#section_list#");		tags.add(option_list);
