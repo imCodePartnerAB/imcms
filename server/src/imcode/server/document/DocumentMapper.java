@@ -768,6 +768,9 @@ public class DocumentMapper {
 
         document.saveNewDocument( this, user );
 
+        document.setPermissionSetForRestrictedOne( document.getPermissionSetForRestrictedOneForNewDocuments() );
+        document.setPermissionSetForRestrictedTwo( document.getPermissionSetForRestrictedTwoForNewDocuments() );
+
         saveDocument( document, user );
     }
 

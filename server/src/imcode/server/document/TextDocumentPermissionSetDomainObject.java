@@ -7,6 +7,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     private boolean editIncludes;
     private boolean editImages;
     private TemplateGroupDomainObject[] allowedTemplateGroups;
+    private int[] allowedDocumentTypeIds;
 
     public TextDocumentPermissionSetDomainObject( int permissionType ) {
         super( permissionType );
@@ -53,8 +54,8 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     }
 
     public void setFromBits ( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
-                              int permissionBits ) {
-        documentPermissionSetMapper.setTextDocumentPermissionSetFromBits( document, this, permissionBits );
+                              int permissionBits, boolean forNewDocuments ) {
+        documentPermissionSetMapper.setTextDocumentPermissionSetFromBits( document, this, permissionBits, forNewDocuments );
     }
 
     public void setAllowedTemplateGroups( TemplateGroupDomainObject[] allowedTemplateGroupNames ) {
@@ -63,6 +64,14 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
 
     public TemplateGroupDomainObject[] getAllowedTemplateGroups() {
         return allowedTemplateGroups;
+    }
+
+    public void setAllowedDocumentTypeIds( int[] allowedDocumentTypeIds ) {
+        this.allowedDocumentTypeIds = allowedDocumentTypeIds;
+    }
+
+    public int[] getAllowedDocumentTypeIds() {
+        return allowedDocumentTypeIds;
     }
 
 }

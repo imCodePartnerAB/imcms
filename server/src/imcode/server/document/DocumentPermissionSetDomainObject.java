@@ -27,10 +27,6 @@ public class DocumentPermissionSetDomainObject {
     private boolean editPermissions;
     private boolean edit;
 
-    private boolean forNewDocuments ;
-
-    private int[] allowedDocumentTypeIds;
-
     public DocumentPermissionSetDomainObject( int permissionType ) {
         this.permissionType = permissionType;
     }
@@ -111,22 +107,6 @@ public class DocumentPermissionSetDomainObject {
     public void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
                              int permissionBits ) {
         documentPermissionSetMapper.setDocumentPermissionSetFromBits( document, this, permissionBits) ;
-    }
-
-    public void setAllowedDocumentTypeIds( int[] allowedDocumentTypeIds ) {
-        this.allowedDocumentTypeIds = allowedDocumentTypeIds;
-    }
-
-    public int[] getAllowedDocumentTypeIds() {
-        return allowedDocumentTypeIds;
-    }
-
-    public boolean isForNewDocuments() {
-        return forNewDocuments;
-    }
-
-    public void setForNewDocuments( boolean forNewDocuments ) {
-        this.forNewDocuments = forNewDocuments;
     }
 
 }

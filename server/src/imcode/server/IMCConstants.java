@@ -2,16 +2,13 @@ package imcode.server ;
 
 public interface IMCConstants {
 
-    /* Documenttypes */
-
-
     /* Permissions for restricted permission-sets 1 and 2, applicable for all document-types. */
 
     /** Permission to edit the headline, text, and image of a document. **/
     public final static int PERM_EDIT_HEADLINE           = (1 << 0) ; // 1
 
     /** Permission to edit all docinfo for a document. **/
-    public final static int PERM_EDIT_DOCINFO            = (1 << 1) ; // 2
+    public final static int PERM_EDIT_DOCINFO            = PERM_EDIT_HEADLINE ; // 2
 
     /** Permission to set permissions for a document. **/
     public final static int PERM_EDIT_PERMISSIONS        = (1 << 2) ; // 4
