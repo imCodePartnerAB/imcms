@@ -96,8 +96,7 @@ public class SearchDocuments extends HttpServlet {
 		String activate			= "1"; // only activated document
 
 		// lets set up the search string
-		StringTokenizer token = new StringTokenizer(searchString," \"+-",true);
-		searchString = buildSearchString(token, true)  ;
+		searchString = buildSearchString(searchString)  ;
 
 		//lets set up the sql-params stringBuffer
 		sqlBuff.append(user.getUserId());			//@user_id INT,
@@ -409,13 +408,14 @@ public class SearchDocuments extends HttpServlet {
 	/**
 		@Author Peter Östergren
 	*/
-	private String buildSearchString(StringTokenizer token,boolean first)	{
+	private String buildSearchString(String searchString)	{
+		StringTokenizer token = new StringTokenizer(searchString," \"+-",true);
 		StringBuffer buff = new StringBuffer();
 		while (token.hasMoreTokens()) {
 			String str = token.nextToken();
-			if(str.equals(" ")){
-				buff.append(buildSearchString(token,false));
-			}else {
+			if (" ".equals(str)) {
+				continue ;
+			}
 				if (str.equals("\"")) {
 					buff.append("\"");
 					boolean found = false;
@@ -429,35 +429,13 @@ public class SearchDocuments extends HttpServlet {
 						}
 						if(found)buff.append(",");
 					}
-					if(!first) return buff.toString();
 				}else if(str.equals("+")) {
-					if ( !first ) {
-						return "\"and\",";
-						
-					}else {
 						buff.append("\"and\",");
-						
-					}
 				}else if(str.equals("-")) {
-					if ( !first ) {
-						return "\"not\",";
-						
-					}else {
 						buff.append("\"not\",");
-						
-					}
 				}else {
-					if ( !first ) {
-						return "\""+str+"\",";
-						
-						
-					}else {
 						buff.append("\""+str+"\",");
-						
-					}
-
 				}
-			}
 		}
 		if (buff.length() > 0 )	{
 			String lastChar = buff.substring(buff.length()-1);
