@@ -1,0 +1,57 @@
+<html>
+<head>
+<script language="JavaScript">
+<!--
+function deleteConfirm(){
+	if(confirm("Varning! Anslaget kommer att raderas," +"\n" +"och kan inte återskapas! Fortsätta?"))
+		return true
+	else
+		return false
+
+}
+function confirmDeleteReply(){
+	if(confirm("Anslaget kommer att sparas om! Fortsätta?"))
+		return true
+	else 
+		return false
+
+}
+//-->
+</script>
+
+<title>Conference - Message</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr bgcolor="#9999FF"> 
+    <td width="60%" nowrap bgcolor="#FFFFFF">&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">ADMINISTRERA 
+      INL&Auml;GG</font></td>
+    <td height="12" width="40%" nowrap align="center" bgcolor="#FFFFFF">&nbsp;</td>
+  </tr>
+</table>
+<form method="post" action="#SERVLET_URL#BillBoardAdmin" target="_parent" name="DeleteReply">
+  <p>#REPLIES_RECORDS# <br>
+  </p>
+  <table width="100%" border="0" cellpadding="0" cellspacing="0">
+    <tr> 
+      <td width="70%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+        &nbsp;<input type="submit" name="DELETE_REPLY" value="TA BORT" onClick="if(deleteConfirm()==false) return false; return true;">
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="submit" name="RESAVE_REPLY" value="SPARA OM" onClick="if(confirmDeleteReply()==false)return false; return true;">
+        </font> </td>
+      <td width="30%">&nbsp; </td>
+    </tr>
+  </table>
+  </form>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr> 
+    <td width="27%">&nbsp;&nbsp;<a href="#SERVLET_URL#BillBoardHelp?helpmode=admin&amp;helparea=Reply#Reply" target="_BillBoardHelp"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">HJ&Auml;LP</font></a> 
+    </td>
+    <td width="73%">#SECTION_UNADMIN_LINK#</td>
+  </tr>
+</table>
+<p>&nbsp; </p>
+</body>
+</html>
