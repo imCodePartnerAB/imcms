@@ -464,22 +464,22 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return request.getContextPath() + "/servlet/GetDoc?meta_id=" + getId();
     }
 
-    public PublicationStatus getPublicationStatus() {
-        DocumentDomainObject.PublicationStatus publicationStatus = null ;
+    public LifeCyclePhase getLifeCyclePhase() {
+        DocumentDomainObject.LifeCyclePhase lifeCyclePhase = null ;
         if ( DocumentDomainObject.STATUS_NEW == getStatus() ) {
-            publicationStatus = PublicationStatus.NEW;
+            lifeCyclePhase = LifeCyclePhase.NEW;
         } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == getStatus() ) {
-            publicationStatus = PublicationStatus.DISAPPROVED;
+            lifeCyclePhase = LifeCyclePhase.DISAPPROVED;
         } else if ( isActive() ) {
-            publicationStatus = PublicationStatus.PUBLISHED;
+            lifeCyclePhase = LifeCyclePhase.PUBLISHED;
         } else if ( isNoLongerPublished() ) {
-            publicationStatus = PublicationStatus.UNPUBLISHED;
+            lifeCyclePhase = LifeCyclePhase.UNPUBLISHED;
         } else if ( isArchived() ) {
-            publicationStatus = PublicationStatus.ARCHIVED;
+            lifeCyclePhase = LifeCyclePhase.ARCHIVED;
         } else {
-            publicationStatus = PublicationStatus.APPROVED;
+            lifeCyclePhase = LifeCyclePhase.APPROVED;
         }
-        return publicationStatus ;
+        return lifeCyclePhase ;
     }
 
     public static class Attributes implements Cloneable, Serializable {
@@ -525,18 +525,18 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     }
 
-    public static class PublicationStatus {
+    public static class LifeCyclePhase {
 
-        public static final PublicationStatus NEW = new PublicationStatus("new");
-        public static final PublicationStatus DISAPPROVED = new PublicationStatus("disapproved");
-        public static final PublicationStatus PUBLISHED = new PublicationStatus("published");
-        public static final PublicationStatus UNPUBLISHED = new PublicationStatus("unpublished");
-        public static final PublicationStatus ARCHIVED = new PublicationStatus("archived");
-        public static final PublicationStatus APPROVED = new PublicationStatus("approved");
+        public static final LifeCyclePhase NEW = new LifeCyclePhase("new");
+        public static final LifeCyclePhase DISAPPROVED = new LifeCyclePhase("disapproved");
+        public static final LifeCyclePhase PUBLISHED = new LifeCyclePhase("published");
+        public static final LifeCyclePhase UNPUBLISHED = new LifeCyclePhase("unpublished");
+        public static final LifeCyclePhase ARCHIVED = new LifeCyclePhase("archived");
+        public static final LifeCyclePhase APPROVED = new LifeCyclePhase("approved");
 
         private final String name;
 
-        private PublicationStatus( String name ) {
+        private LifeCyclePhase( String name ) {
             this.name = name ;
         }
 

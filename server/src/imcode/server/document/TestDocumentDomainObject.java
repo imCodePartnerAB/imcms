@@ -30,16 +30,16 @@ public class TestDocumentDomainObject extends TestCase {
     }
 
     public void testGetPublicationStatus() throws Exception {
-        assertEquals( DocumentDomainObject.PublicationStatus.NEW, document.getPublicationStatus() ) ;
+        assertEquals( DocumentDomainObject.LifeCyclePhase.NEW, document.getLifeCyclePhase() ) ;
         document.setStatus( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED );
-        assertEquals( DocumentDomainObject.PublicationStatus.DISAPPROVED, document.getPublicationStatus() );
+        assertEquals( DocumentDomainObject.LifeCyclePhase.DISAPPROVED, document.getLifeCyclePhase() );
         document.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
-        assertEquals( DocumentDomainObject.PublicationStatus.APPROVED, document.getPublicationStatus() );
+        assertEquals( DocumentDomainObject.LifeCyclePhase.APPROVED, document.getLifeCyclePhase() );
         document.setPublicationStartDatetime( new Date( 0 ) );
-        assertEquals( DocumentDomainObject.PublicationStatus.PUBLISHED, document.getPublicationStatus() );
+        assertEquals( DocumentDomainObject.LifeCyclePhase.PUBLISHED, document.getLifeCyclePhase() );
         document.setArchivedDatetime( new Date( 0 ) );
-        assertEquals( DocumentDomainObject.PublicationStatus.ARCHIVED, document.getPublicationStatus() );
+        assertEquals( DocumentDomainObject.LifeCyclePhase.ARCHIVED, document.getLifeCyclePhase() );
         document.setPublicationEndDatetime( new Date( 0 ) );
-        assertEquals( DocumentDomainObject.PublicationStatus.UNPUBLISHED, document.getPublicationStatus() );
+        assertEquals( DocumentDomainObject.LifeCyclePhase.UNPUBLISHED, document.getLifeCyclePhase() );
     }
 }

@@ -18,9 +18,9 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
@@ -126,26 +126,16 @@ public class AdminManager extends Administrator {
             html_admin_part = service.getAdminTemplate( HTML_USERADMINTASK, loggedOnUser, null ); //if useradmin
         }
 
-        List documents_new = new LinkedList();        // STATUS = NEW
-        List documents_modified = new LinkedList();    //MODIFIED_DATETIME > CREATED_DATETIME
-        List documents_archived_less_then_one_week = new LinkedList();    //ARCHIVED_DATETIME < 7 days
-        List documents_publication_end_less_then_one_week = new LinkedList();  //PUBLICATION_END_DATETIME < 7 days
-        List documents_not_changed_in_six_month = new LinkedList();
-
         DocumentIndex index = documentMapper.getDocumentIndex();
-        BooleanQuery booleanQuery = new BooleanQuery();
-        Query restrictingQuery = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + "" ) );
-        booleanQuery.add( restrictingQuery, true, false );
 
-        DocumentDomainObject[] documentsFound = index.search( booleanQuery, loggedOnUser );
+        Query query = new TermQuery( new Term( DocumentIndex.FIELD__CREATOR_ID, loggedOnUser.getId() + "" ) );
+        DocumentDomainObject[] documentsFound = index.search( query, loggedOnUser );
 
-        addFoundDocumentsToCorrespondingList( documentsFound, documents_archived_less_then_one_week, documents_publication_end_less_then_one_week, documents_not_changed_in_six_month, documents_modified, documents_new );
-
-        AdminManagerSubreport newDocumentsSubreport = createNewDocumentsSubreport( documents_new );
-        AdminManagerSubreport modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documents_modified );
-        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documents_archived_less_then_one_week );
-        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documents_publication_end_less_then_one_week );
-        AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documents_not_changed_in_six_month );
+        AdminManagerSubreport newDocumentsSubreport = createNewDocumentsSubreport( documentsFound );
+        AdminManagerSubreport modifiedDocumentsSubreport = createModifiedDocumentsSubreport( documentsFound );
+        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documentsFound );
+        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documentsFound );
+        AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documentsFound );
 
         AdminManagerSubreport[] subreports = {
             newDocumentsSubreport,
@@ -238,58 +228,139 @@ public class AdminManager extends Administrator {
         adminManagerPage.forward( request, response, loggedOnUser );
     }
 
-    private AdminManagerSubreport createModifiedDocumentsSubreport( List documents_modified ) {
+    private AdminManagerSubreport createModifiedDocumentsSubreport( DocumentDomainObject[] documentsFound ) {
+        List modifiedDocuments = new ArrayList();
+        Date oneWeekAgo = getDateOneWeekAgo();
+        for ( int i = 0; i < documentsFound.length; i++ ) {
+            DocumentDomainObject document = documentsFound[i];
+            boolean createdInPastWeek = !document.getCreatedDatetime().before( oneWeekAgo );
+            boolean modifiedInPastWeek = !document.getModifiedDatetime().before( oneWeekAgo );
+            if ( modifiedInPastWeek && !createdInPastWeek ) {
+                modifiedDocuments.add( document );
+            }
+        }
+
         AdminManagerSubreport modifiedDocumentsSubreport = new AdminManagerSubreport();
         modifiedDocumentsSubreport.setName( "modified" );
-        modifiedDocumentsSubreport.setDocuments( documents_modified );
+        modifiedDocumentsSubreport.setDocuments( modifiedDocuments );
         modifiedDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5" ) );
-        Date oneWeekAgo = getDateOneWeekAgo();
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__MODIFIED, oneWeekAgo, null );
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__MODIFIED, oneWeekAgo, null, null );
         modifiedDocumentsSubreport.setSearchQueryString( dateSearchQueryString );
         return modifiedDocumentsSubreport;
     }
 
-    private AdminManagerSubreport createNewDocumentsSubreport( List documents_new ) {
+    private AdminManagerSubreport createNewDocumentsSubreport( DocumentDomainObject[] documentsFound ) {
+        List newDocuments = new ArrayList();
+
+        Date oneWeekAgo = getDateOneWeekAgo();
+        for ( int i = 0; i < documentsFound.length; i++ ) {
+            DocumentDomainObject document = documentsFound[i];
+            boolean createdInPastWeek = !document.getCreatedDatetime().before( oneWeekAgo );
+            if ( createdInPastWeek ) {
+                newDocuments.add( document );
+            }
+        }
+
         AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
         newDocumentsSubreport.setName( "new" );
-        newDocumentsSubreport.setDocuments( documents_new );
+        newDocumentsSubreport.setDocuments( newDocuments );
         newDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1" ) );
-        Date oneWeekAgo = getDateOneWeekAgo();
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__CREATED, oneWeekAgo, null );
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__CREATED, oneWeekAgo, null, null );
         newDocumentsSubreport.setSearchQueryString( dateSearchQueryString );
         return newDocumentsSubreport;
     }
 
     private AdminManagerSubreport createDocumentsUnmodifiedForSixMonthsSubreport(
-            List documents_not_changed_in_six_month ) {
+            DocumentDomainObject[] documentsFound ) {
+        DocumentDomainObject.LifeCyclePhase[] phases = new DocumentDomainObject.LifeCyclePhase[]{
+            DocumentDomainObject.LifeCyclePhase.APPROVED, DocumentDomainObject.LifeCyclePhase.NEW,
+            DocumentDomainObject.LifeCyclePhase.PUBLISHED, DocumentDomainObject.LifeCyclePhase.ARCHIVED, 
+        };
+        Date sixMonthsAgo = getDateSixMonthsAgo();
+        List documentsUnchangedForSixMonths = new ArrayList();
+        for ( int i = 0; i < documentsFound.length; i++ ) {
+            DocumentDomainObject document = documentsFound[i];
+            DocumentDomainObject.LifeCyclePhase phase = document.getLifeCyclePhase();
+            if ( ArrayUtils.contains( phases, phase ) && document.getModifiedDatetime().before( sixMonthsAgo ) ) {
+                documentsUnchangedForSixMonths.add( document );
+            }
+        }
+
         AdminManagerSubreport documentsUnchangedForSixMonthsSubreport = new AdminManagerSubreport();
         documentsUnchangedForSixMonthsSubreport.setName( "unchangedForSixMonths" );
-        documentsUnchangedForSixMonthsSubreport.setDocuments( documents_not_changed_in_six_month );
+        documentsUnchangedForSixMonthsSubreport.setDocuments( documentsUnchangedForSixMonths );
         documentsUnchangedForSixMonthsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4" ) );
         documentsUnchangedForSixMonthsSubreport.setSortorder( "MODR" );
-        Date sixMonthsAgo = getDateSixMonthsAgo();
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__MODIFIED, null, sixMonthsAgo );
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__MODIFIED, null, sixMonthsAgo, phases );
         documentsUnchangedForSixMonthsSubreport.setSearchQueryString( dateSearchQueryString );
         return documentsUnchangedForSixMonthsSubreport;
     }
 
-    private AdminManagerSubreport createDocumentsArchivedWithinOneWeekSubreport(
-            List documents_archived_less_then_one_week ) {
-        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = new AdminManagerSubreport();
-        documentsArchivedWithinOneWeekSubreport.setName( "archivedWithinOneWeek" );
-        documentsArchivedWithinOneWeekSubreport.setDocuments( documents_archived_less_then_one_week );
-        documentsArchivedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2" ) );
-        documentsArchivedWithinOneWeekSubreport.setSortorder( "ARCR" );
+    private AdminManagerSubreport createDocumentsArchivedWithinOneWeekSubreport( DocumentDomainObject[] documentsFound ) {
+        DocumentDomainObject.LifeCyclePhase[] phases = new DocumentDomainObject.LifeCyclePhase[]{
+            DocumentDomainObject.LifeCyclePhase.APPROVED,
+            DocumentDomainObject.LifeCyclePhase.PUBLISHED
+        };
+        List documentsArchivedWithinOneWeek = new ArrayList();
         Date lastMidnight = getDateLastMidnight();
         Date oneWeekAhead = getDateOneWeekAhead();
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__ARCHIVED, lastMidnight, oneWeekAhead );
+        for ( int i = 0; i < documentsFound.length; i++ ) {
+            DocumentDomainObject document = documentsFound[i];
+            DocumentDomainObject.LifeCyclePhase phase = document.getLifeCyclePhase();
+            Date archivedDatetime = document.getArchivedDatetime();
+            if ( ArrayUtils.contains( phases, phase ) && null != archivedDatetime
+                 && !archivedDatetime.before( lastMidnight )
+                 && archivedDatetime.before( oneWeekAhead ) ) {
+                documentsArchivedWithinOneWeek.add( document );
+            }
+        }
+        AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = new AdminManagerSubreport();
+        documentsArchivedWithinOneWeekSubreport.setName( "archivedWithinOneWeek" );
+        documentsArchivedWithinOneWeekSubreport.setDocuments( documentsArchivedWithinOneWeek );
+        documentsArchivedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2" ) );
+        documentsArchivedWithinOneWeekSubreport.setSortorder( "ARCR" );
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__ARCHIVED, lastMidnight, oneWeekAhead, phases );
         documentsArchivedWithinOneWeekSubreport.setSearchQueryString( dateSearchQueryString );
         return documentsArchivedWithinOneWeekSubreport;
     }
 
-    private String createDateSearchQueryString( String dateType, Date startDate, Date endDate ) {
+    private AdminManagerSubreport createDocumentsUnpublishedWithinOneWeekSubreport(
+            DocumentDomainObject[] documentsFound ) {
+        DocumentDomainObject.LifeCyclePhase[] phases = new DocumentDomainObject.LifeCyclePhase[]{
+            DocumentDomainObject.LifeCyclePhase.APPROVED,
+            DocumentDomainObject.LifeCyclePhase.ARCHIVED, DocumentDomainObject.LifeCyclePhase.PUBLISHED
+        };
+        Date lastMidnight = getDateLastMidnight();
+        Date oneWeekAhead = getDateOneWeekAhead();
+        List documentsUnpublishedWithinOneWeek = new ArrayList();
+        for ( int i = 0; i < documentsFound.length; i++ ) {
+            DocumentDomainObject document = documentsFound[i];
+            DocumentDomainObject.LifeCyclePhase phase = document.getLifeCyclePhase();
+            Date publicationEndDatetime = document.getPublicationEndDatetime();
+            if ( ArrayUtils.contains( phases, phase ) && null != publicationEndDatetime
+                 && !publicationEndDatetime.before( lastMidnight )
+                 && publicationEndDatetime.before( oneWeekAhead ) ) {
+                documentsUnpublishedWithinOneWeek.add( document );
+            }
+        }
+
+        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = new AdminManagerSubreport();
+        documentsUnpublishedWithinOneWeekSubreport.setName( "unpublishedWithinOneWeek" );
+        documentsUnpublishedWithinOneWeekSubreport.setDocuments( documentsUnpublishedWithinOneWeek );
+        documentsUnpublishedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3" ) );
+        documentsUnpublishedWithinOneWeekSubreport.setSortorder( "PUBER" );
+        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__PUBLICATION_END, lastMidnight, oneWeekAhead, phases );
+        documentsUnpublishedWithinOneWeekSubreport.setSearchQueryString( dateSearchQueryString );
+        return documentsUnpublishedWithinOneWeekSubreport;
+    }
+
+    private String createDateSearchQueryString( String dateType, Date startDate, Date endDate,
+                                                DocumentDomainObject.LifeCyclePhase[] lifeCyclePhases ) {
         String result = SearchDocumentsPage.REQUEST_PARAMETER__DATE_TYPE + "="
                         + dateType;
+
+        result += "&"+SearchDocumentsPage.REQUEST_PARAMETER__USER_RESTRICTION+"="+SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER ;
+
         if ( null != startDate ) {
             result += "&"
                       + SearchDocumentsPage.REQUEST_PARAMETER__START_DATE
@@ -302,21 +373,14 @@ public class AdminManager extends Administrator {
                       + SearchDocumentsPage.REQUEST_PARAMETER__END_DATE
                       + "=" + Utility.formatDate( endDate );
         }
-        return result;
-    }
+        if ( null != lifeCyclePhases ) {
+            for ( int i = 0; i < lifeCyclePhases.length; i++ ) {
+                DocumentDomainObject.LifeCyclePhase phase = lifeCyclePhases[i];
+                result += "&" + SearchDocumentsPage.REQUEST_PARAMETER__PHASE + "=" + phase;
+            }
+        }
 
-    private AdminManagerSubreport createDocumentsUnpublishedWithinOneWeekSubreport(
-            List documents_publication_end_less_then_one_week ) {
-        AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = new AdminManagerSubreport();
-        documentsUnpublishedWithinOneWeekSubreport.setName( "unpublishedWithinOneWeek" );
-        documentsUnpublishedWithinOneWeekSubreport.setDocuments( documents_publication_end_less_then_one_week );
-        documentsUnpublishedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3" ) );
-        documentsUnpublishedWithinOneWeekSubreport.setSortorder( "PUBER" );
-        Date lastMidnight = getDateLastMidnight();
-        Date oneWeekAhead = getDateOneWeekAhead();
-        String dateSearchQueryString = createDateSearchQueryString( SearchDocumentsPage.DATE_TYPE__PUBLICATION_END, lastMidnight, oneWeekAhead );
-        documentsUnpublishedWithinOneWeekSubreport.setSearchQueryString( dateSearchQueryString );
-        return documentsUnpublishedWithinOneWeekSubreport;
+        return result;
     }
 
     public static class DatesSummarySearchResultColumn implements DocumentFinder.SearchResultColumn {
@@ -409,53 +473,6 @@ public class AdminManager extends Administrator {
         return calendar.getTime();
     }
 
-    private void addFoundDocumentsToCorrespondingList( DocumentDomainObject[] documentsFound,
-                                                       List documents_archived_less_then_one_week,
-                                                       List documents_publication_end_less_then_one_week,
-                                                       List documents_not_changed_in_six_month, List modifiedDocuments,
-                                                       List newDocuments ) {
-        Date lastMidnight = getDateLastMidnight();
-        Date oneWeekAhead = getDateOneWeekAhead();
-        Date oneWeekAgo = getDateOneWeekAgo();
-        Date sixMonthAgo = getDateSixMonthsAgo();
-
-        for ( int i = 0; i < documentsFound.length; i++ ) {
-            DocumentDomainObject document = documentsFound[i];
-
-            Date archivedDatetime = document.getArchivedDatetime();
-            Date publicationEndDatetime = document.getPublicationEndDatetime();
-            Date modifiedDatetime = document.getModifiedDatetime();
-            Date createdDatetime = document.getCreatedDatetime();
-
-            if ( null != archivedDatetime
-                 && !archivedDatetime.before( lastMidnight )
-                 && archivedDatetime.before( oneWeekAhead ) ) {
-                documents_archived_less_then_one_week.add( document );
-            }
-
-            if ( null != publicationEndDatetime
-                 && !publicationEndDatetime.before( lastMidnight )
-                 && publicationEndDatetime.before( oneWeekAhead ) ) {
-                documents_publication_end_less_then_one_week.add( document );
-            }
-
-            if ( modifiedDatetime.before( sixMonthAgo ) ) {
-                documents_not_changed_in_six_month.add( document );
-            }
-
-            boolean createdInPastWeek = !createdDatetime.before( oneWeekAgo );
-            if ( createdInPastWeek ) {
-                newDocuments.add( document );
-            }
-
-            boolean modifiedInPastWeek = !modifiedDatetime.before( oneWeekAgo );
-            if ( modifiedInPastWeek && !createdInPastWeek ) {
-                modifiedDocuments.add( document );
-            }
-
-        }
-    }
-
     private Date getDateLastMidnight() {
         return getDateTruncated( 0 );
     }
@@ -465,7 +482,7 @@ public class AdminManager extends Administrator {
     }
 
     private Date getDateOneWeekAhead() {
-        return getDateTruncated( +8 );
+        return getDateTruncated( +7 );
     }
 
     private Date getDateOneWeekAgo() {

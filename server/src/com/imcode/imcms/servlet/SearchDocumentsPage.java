@@ -40,19 +40,19 @@ public class SearchDocumentsPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID = "toedit";
     public static final String REQUEST_PARAMETER__SEARCH_BUTTON = "search";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
-    public static final String REQUEST_PARAMETER__PERMISSION = "permission";
+    public static final String REQUEST_PARAMETER__USER_RESTRICTION = "permission";
     public static final String REQUEST_PARAMETER__DATE_TYPE = "date_type";
     public static final String REQUEST_PARAMETER__START_DATE = "start_date";
     public static final String REQUEST_PARAMETER__END_DATE = "end_date";
     public static final String REQUEST_PARAMETER__SORT_ORDER = "sort_order";
-    public static final String REQUEST_PARAMETER__STATUS = "status_id";
+    public static final String REQUEST_PARAMETER__PHASE = "phase";
 
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
 
     private String queryString;
     private Set sections = new HashSet();
-    private String[] statuses;
+    private String[] phases;
     private String userDocumentsRestriction;
     private String dateTypeRestriction;
     private Date startDate;
@@ -108,10 +108,10 @@ public class SearchDocumentsPage extends OkCancelPage {
             } catch ( NumberFormatException nfe ) {
             }
 
-            statuses = Utility.getParameterValues( request, REQUEST_PARAMETER__STATUS );
+            phases = Utility.getParameterValues( request, REQUEST_PARAMETER__PHASE );
         }
 
-        String userDocumentsRestrictionParameter = request.getParameter( REQUEST_PARAMETER__PERMISSION );
+        String userDocumentsRestrictionParameter = request.getParameter( REQUEST_PARAMETER__USER_RESTRICTION );
         if ( null != userDocumentsRestrictionParameter ) {
             userDocumentsRestriction = userDocumentsRestrictionParameter;
         }
@@ -183,14 +183,14 @@ public class SearchDocumentsPage extends OkCancelPage {
             newQuery.add( sectionQueries, true, false );
         }
 
-        BooleanQuery statusQueries = new BooleanQuery();
-        for ( int i = 0; i < statuses.length; i++ ) {
-            String status = statuses[i];
-            Query statusQuery = new TermQuery( new Term( DocumentIndex.FIELD__STATUS, "" + status ) );
-            statusQueries.add( statusQuery, false, false );
+        BooleanQuery phaseQueries = new BooleanQuery();
+        for ( int i = 0; i < phases.length; i++ ) {
+            String phase = phases[i];
+            Query phaseQuery = new TermQuery( new Term( DocumentIndex.FIELD__PHASE, "" + phase ) );
+            phaseQueries.add( phaseQuery, false, false );
         }
-        if ( statuses.length > 0 ) {
-            newQuery.add( statusQueries, true, false );
+        if ( phases.length > 0 ) {
+            newQuery.add( phaseQueries, true, false );
         }
 
         if ( USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals( userDocumentsRestriction ) ) {
@@ -204,8 +204,10 @@ public class SearchDocumentsPage extends OkCancelPage {
         }
 
         if ( null != startDate || null != endDate ) {
-            Date calculatedStartDate = null == startDate ? new Date( 0 ) : startDate;
-            Date calculatedEndDate = null == endDate ? new Date( 1000L * 365 * 24 * 60 * 60 * 1000 ) : new Date( endDate.getTime() + DateUtils.MILLIS_IN_DAY );
+            Date luceneMinDate = new Date( 0 );
+            Date luceneMaxDate = new Date( 1000L * 365 * 24 * 60 * 60 * 1000 );
+            Date calculatedStartDate = null == startDate ? luceneMinDate : startDate;
+            Date calculatedEndDate = null == endDate ? luceneMaxDate : new Date( endDate.getTime() + DateUtils.MILLIS_IN_DAY );
 
             String dateField;
             if ( DATE_TYPE__PUBLICATION_END.equals( dateTypeRestriction ) ) {
@@ -334,8 +336,8 @@ public class SearchDocumentsPage extends OkCancelPage {
         this.documentFinder = documentFinder;
     }
 
-    public String[] getStatuses() {
-        return statuses;
+    public String[] getPhases() {
+        return phases;
     }
 
     public String getFormattedStartDate() {

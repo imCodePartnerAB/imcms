@@ -1,34 +1,25 @@
 <%@ page import="com.imcode.imcms.servlet.SearchDocumentsPage,
                  org.apache.commons.lang.StringEscapeUtils,
                  org.apache.commons.lang.StringUtils,
-                 imcode.util.Html,
                  java.util.Arrays,
                  org.apache.commons.collections.Transformer,
                  imcode.server.document.DocumentMapper,
                  imcode.server.Imcms,
                  imcode.server.document.SectionDomainObject,
                  com.imcode.imcms.servlet.superadmin.AdminManager,
-                 imcode.util.Utility,
                  com.imcode.imcms.flow.Page,
                  imcode.server.document.DocumentDomainObject,
                  org.apache.commons.lang.ArrayUtils,
-                 imcode.util.ToStringPairArrayTransformer,
                  java.util.Set,
-                 imcode.server.user.UserDomainObject"%>
+                 imcode.server.user.UserDomainObject,
+                 imcode.util.*"%>
 <%
     SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage) Page.fromRequest(request) ;
     int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;
-    String[] statuses = searchDocumentsPage.getStatuses() ;
+    String[] phases = searchDocumentsPage.getPhases() ;
     UserDomainObject user = Utility.getLoggedOnUser( request );
     String IMG_PATH  = request.getContextPath()+"/imcms/"+user.getLanguageIso639_2()+"/images/admin/" ;
 %>
-
-<%!
-    boolean isSelected(String a, String[] values) {
-        return ArrayUtils.contains( values, a ) ;
-    }
-%>
-
     <%= Page.htmlHidden(request) %>
     <table border="0" cellspacing="0" cellpadding="2" width="656">
         <tr>
@@ -64,7 +55,7 @@
             <td height="20"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/3 ?></td>
 
             <td colspan="3">
-                <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__PERMISSION %>">
+                <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__USER_RESTRICTION %>">
                     <% String userDocumentsRestriction = searchDocumentsPage.getUserDocumentsRestriction() ; %>
                     <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__NONE %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__NONE.equals( userDocumentsRestriction ) ? "selected" : "" %>></option>
                     <option value="<%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER %>" <%= SearchDocumentsPage.USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals( userDocumentsRestriction ) ? "selected" : "" %>><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/permission_option1 ?></option>
@@ -78,18 +69,22 @@
             <td colspan="3">
             <table border="0" cellspacing="0" cellpadding="2">
             <tr>
-                <td><input id="status_new" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.NEW %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.NEW, statuses) ? "checked" : "" %> ></td>
-                <td><label for="status_new"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/new ?></label></td>
-                <td><input id="status_disapproved" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.DISAPPROVED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.DISAPPROVED, statuses) ? "checked" : "" %> ></td>
-                <td><label for="status_disapproved"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/disapproved ?></label></td>
-                <td><input id="status_approved" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.APPROVED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.APPROVED, statuses) ? "checked" : "" %> ></td>
-                <td><label for="status_approved"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/approved ?></label></td>
-                <td><input id="status_published" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.PUBLISHED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.PUBLISHED, statuses) ? "checked" : "" %> ></td>
-                <td><label for="status_published"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/published ?></label></td>
-                <td><input id="status_archived" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.ARCHIVED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.ARCHIVED, statuses) ? "checked" : "" %> ></td>
-                <td><label for="status_archived"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/archived ?></label></td>
-                <td><input id="status_unpublished" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__STATUS %>" value="<%= DocumentDomainObject.PublicationStatus.UNPUBLISHED %>" <%= isSelected(""+DocumentDomainObject.PublicationStatus.UNPUBLISHED, statuses) ? "checked" : "" %> ></td>
-                <td><label for="status_unpublished"><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/status/unpublished ?></label></td>
+                <%
+                    DocumentDomainObject.LifeCyclePhase[] allPhases = new DocumentDomainObject.LifeCyclePhase[] {
+                        DocumentDomainObject.LifeCyclePhase.NEW,
+                        DocumentDomainObject.LifeCyclePhase.DISAPPROVED,
+                        DocumentDomainObject.LifeCyclePhase.APPROVED,
+                        DocumentDomainObject.LifeCyclePhase.PUBLISHED,
+                        DocumentDomainObject.LifeCyclePhase.ARCHIVED,
+                        DocumentDomainObject.LifeCyclePhase.UNPUBLISHED
+                    };
+                    for ( int i = 0; i < allPhases.length; i++ ) {
+                        DocumentDomainObject.LifeCyclePhase phase = allPhases[i];
+                        %><td><input id="phase_<%= phase %>" type="checkbox" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__PHASE %>" value="<%= phase %>"
+                        <%= ArrayUtils.contains( phases, "" + phase ) ? "checked" : "" %> ></td>
+                        <td><label for="phase_<%= phase %>"><%= new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager_search.jsp/phase/" + phase ).toLocalizedString( request ) %></label></td><%
+                    }
+                %>
             </tr>
             </table></td>
         </tr>

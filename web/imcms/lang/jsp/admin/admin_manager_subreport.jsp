@@ -17,7 +17,7 @@
         <td colspan="2"><img src="<%= imagesPath %>/1x1.gif" width="1" height="25"></td>
     </tr>
     <tr>
-        <td nowrap><span class="imcmsAdmHeading" ><%= StringEscapeUtils.escapeHtml( subreportHeading.toLocalizedString( request ) ) %> (<%= documents.size() %> <? web/imcms/lang/jsp/admin/admin_manager.jsp/10 ?>)</span></td>
+        <td><span class="imcmsAdmHeading" ><%= StringEscapeUtils.escapeHtml( subreportHeading.toLocalizedString( request ) ) %><br>(<%= documents.size() %> <? web/imcms/lang/jsp/admin/admin_manager.jsp/10 ?>)</span></td>
         <td align="right">
             <table border="0" cellspacing="0" cellpadding="0">
                 <tr>

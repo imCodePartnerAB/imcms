@@ -25,6 +25,7 @@ public interface DocumentIndex {
     String FIELD__PUBLICATION_END_DATETIME = "publication_end_datetime";
     String FIELD__PUBLICATION_START_DATETIME = "publication_start_datetime";
     String FIELD__STATUS = "status";
+    String FIELD__PHASE = "phase" ;
     String FIELD__MIME_TYPE = "mime_type";
     String FIELD__CREATOR_ID = "creator_id";
     String FIELD__PUBLISHER_ID = "publisher_id";

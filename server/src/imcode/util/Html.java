@@ -107,20 +107,20 @@ public class Html {
     }
 
     private static final Object[][] STATUS_TEMPLATE_PAIRS = {
-        {DocumentDomainObject.PublicationStatus.NEW, "status/new.frag"},
-        {DocumentDomainObject.PublicationStatus.DISAPPROVED, "status/disapproved.frag"},
-        {DocumentDomainObject.PublicationStatus.PUBLISHED, "status/published.frag"},
-        {DocumentDomainObject.PublicationStatus.UNPUBLISHED, "status/unpublished.frag"},
-        {DocumentDomainObject.PublicationStatus.ARCHIVED, "status/archived.frag"},
-        {DocumentDomainObject.PublicationStatus.APPROVED, "status/approved.frag"},
+        {DocumentDomainObject.LifeCyclePhase.NEW, "status/new.frag"},
+        {DocumentDomainObject.LifeCyclePhase.DISAPPROVED, "status/disapproved.frag"},
+        {DocumentDomainObject.LifeCyclePhase.PUBLISHED, "status/published.frag"},
+        {DocumentDomainObject.LifeCyclePhase.UNPUBLISHED, "status/unpublished.frag"},
+        {DocumentDomainObject.LifeCyclePhase.ARCHIVED, "status/archived.frag"},
+        {DocumentDomainObject.LifeCyclePhase.APPROVED, "status/approved.frag"},
     };
 
     public static String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
-        DocumentDomainObject.PublicationStatus publicationStatus = document.getPublicationStatus();
+        DocumentDomainObject.LifeCyclePhase lifeCyclePhase = document.getLifeCyclePhase();
         String statusIconTemplateName = null;
         for ( int i = 0; i < STATUS_TEMPLATE_PAIRS.length; i++ ) {
             Object[] statusTemplatePair = STATUS_TEMPLATE_PAIRS[i];
-            if (publicationStatus.equals( statusTemplatePair[0 ])) {
+            if (lifeCyclePhase.equals( statusTemplatePair[0 ])) {
                 statusIconTemplateName = (String)statusTemplatePair[1] ;
                 break ;
             }
