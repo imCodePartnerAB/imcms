@@ -15,7 +15,7 @@ function openHelp(id){
       <tr> 
         <td valign=top align="center">
 	<BR> 
-          <FORM ACTION="../servlet/VerifyUser" METHOD=POST>
+          <FORM ACTION="@servleturl@/VerifyUser" METHOD=POST>
 	    <TABLE BORDER=1 cellpadding="0" cellspacing="0" width="200">
     	      <TR bgcolor="#333366"> 
         	<TD COLSPAN=2 align="center"> <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="3"><b>V&auml;lkommen !</b></font>  </TD>
@@ -47,7 +47,7 @@ function openHelp(id){
 	    </form>
 	    <br><br>
 
-	<div align="center"> <a href="/servlet/PasswordMailReminder">Glömt ditt lösenord? Klicka här.</a></div>
+	<div align="center"> <a href="@servleturl@/PasswordMailReminder">Glömt ditt lösenord? Klicka här.</a></div>
 	
 </td>
       </tr>
