@@ -7,8 +7,8 @@
 	
 %><%!
 
-public String EDITOR_URL   = "/imcms/htmlarea/" ;
-public String SERVLET_PATH = "/servlet/" ;
+public String EDITOR_URL   = "$contextPath/imcms/htmlarea/" ;
+public String SERVLET_PATH = "$contextPath/servlet/" ;
 
 private ContentManagementSystem imcmsSystem ;
 private DocumentService documentService ;
@@ -44,9 +44,6 @@ documentService = imcmsSystem.getDocumentService() ;
 imcref          = Imcms.getServices() ;
 userService     = imcmsSystem.getUserService() ;
 User user       = imcmsSystem.getCurrentUser() ;
-
-EDITOR_URL   = request.getContextPath() + EDITOR_URL ;
-SERVLET_PATH = request.getContextPath() + SERVLET_PATH ;
 
 /* *******************************************************************************************
  *         LANGUAGE                                                                          *
