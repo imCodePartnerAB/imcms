@@ -7,41 +7,41 @@ import imcode.util.* ;
 
 public class ChangeDiagramCoordinator extends HttpServlet {
 		String HTML_TEMPLATE ; 				// The template file to generate the html page
-			
+
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
-                               throws ServletException, IOException {    
-    
+                               throws ServletException, IOException {
+
     // Lets get the parameters and validate them
-    	
+
     	MetaInfo metaInf = new MetaInfo() ;
     	Properties params = metaInf.getParameters(req) ;
-    
+
     	if (metaInf.checkParameters(params) == false) {
 	 		  String msg = "The parameters was not correct in call to ChangeDiagramCoordinator." + "<BR>" ;
 	 		  msg += "The parameters was: " + params.toString() ;
 	 		  Error err = new Error(req,res, "ERROR.HTM", msg) ;
 	 		  err = null ;
 	 		  return ;
-	 		} 
-  	  
+	 		}
+
   // Lets check that we still have a session, well need to pass it later to Janus
 	// Get the session
     HttpSession session = req.getSession(true);
     // Does the session indicate this user already logged in?
     Object done = session.getValue("logon.isDone");  // marker object
     imcode.server.User user = (imcode.server.User) done ;
-   
+
     if (done == null) {
       // No logon.isDone means he hasn't logged in.
       // Save the request URL as the true target and redirect to the login page.
       session.putValue("login.target", HttpUtils.getRequestURL(req).toString());
       String serverName = MetaInfo.getServerName(req) ;
-      String startUrl = MetaInfo.getStartUrl() ;
+      String startUrl = MetaInfo.getStartUrl(req) ;
      // log("StartUrl: " + serverName + startUrl) ;
       res.sendRedirect(serverName + startUrl);
       return  ;
-    } 
- 	  
+    }
+
   	  String url = metaInf.getServletPath(req) ;
  			VariableManager vm = new VariableManager() ;
  // Lets add the information needed for the Change Metadata, tillbaka till MetaData
@@ -62,10 +62,10 @@ public class ChangeDiagramCoordinator extends HttpServlet {
 		  htmlObj.sendToBrowser(req,res,htm) ;
 			htmlObj = null ;
 			vm = null ;
-			return ;	
-				
-  } // end of doGet 
-	
+			return ;
+
+  } // end of doGet
+
 /**
 	Redirect to a new URL
 **/
@@ -76,12 +76,12 @@ public class ChangeDiagramCoordinator extends HttpServlet {
 
 
 /**
-	Opens the appropriate method, POST/GET 
+	Opens the appropriate method, POST/GET
 **/
 
 public void service (HttpServletRequest req, HttpServletResponse res)
 	  throws ServletException, IOException {
-	
+
 		String action = req.getMethod() ;
 	//	log("Action:" + action) ;
 		if(action.equals("POST")) {
@@ -95,19 +95,19 @@ public void service (HttpServletRequest req, HttpServletResponse res)
 	/**
 		Detects inital parameters like paths and filenames.
 	*/
-	
+
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
     HTML_TEMPLATE = "ChangeDiagramCoordinator.htm" ;
   }
-  
+
 /**
 	Log function, will work for both servletexec and Apacheservers
 **/
 
 public void log( String str) {
 			super.log(str) ;
-		  System.out.println("ChangeDiagramCoordinator: " + str ) ;	
+		  System.out.println("ChangeDiagramCoordinator: " + str ) ;
 	}
 
 } // End of class

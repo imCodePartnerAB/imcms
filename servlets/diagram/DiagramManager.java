@@ -22,7 +22,7 @@ public class DiagramManager extends HttpServlet {
             // Save the request URL as the true target and redirect to the login page.
             session.putValue("login.target", HttpUtils.getRequestURL(req).toString());
             String serverName = MetaInfo.getServerName(req) ;
-            String startUrl = MetaInfo.getStartUrl() ;
+            String startUrl = MetaInfo.getStartUrl(req) ;
             // log("StartUrl: " + serverName + startUrl) ;
             res.sendRedirect(serverName + startUrl);
             return  ;
