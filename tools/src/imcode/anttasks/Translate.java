@@ -22,7 +22,7 @@ public class Translate extends Task {
     private String startToken;
     private String endToken;
 
-    private String bundle;
+    private File bundle;
     private String bundleLanguage;
     private List fileSets = new ArrayList();
 
@@ -43,7 +43,7 @@ public class Translate extends Task {
         this.toDir = toDir;
     }
 
-    public void setBundle( String bundle ) {
+    public void setBundle( File bundle ) {
         this.bundle = bundle;
     }
 
@@ -202,7 +202,7 @@ public class Translate extends Task {
     }
 
     private void loadBundle() {
-        File bundleFile = new File( bundle + '_' + bundleLanguage + ".properties" );
+        File bundleFile = new File( bundle.getPath() + '_' + bundleLanguage + ".properties" );
         bundleFileLastModified = bundleFile.lastModified();
         try {
             bundleProperties.load( new FileInputStream( bundleFile ) );
