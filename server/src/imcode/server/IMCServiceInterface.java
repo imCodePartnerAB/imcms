@@ -360,11 +360,7 @@ public interface IMCServiceInterface {
 
     public void setPollList(String pollListName, List pollList) throws IOException ;
 
-    public imcode.server.parser.Document getDocument(int meta_id) ;
-
-    public String getSection(int meta_id) ;
-
-    public String getFilename(int meta_id) ;
+    public imcode.server.document.Document getDocument(int meta_id) ;
 
     public Template getTemplate(int meta_id) ;
 

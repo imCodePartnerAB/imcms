@@ -3,6 +3,7 @@ package imcode.server.parser ;
 import org.apache.oro.text.regex.* ;
 
 import org.apache.log4j.Category;
+import imcode.server.document.Document;
 
 /** Stores all info about a menuitem **/
 public class MenuItem extends Document {

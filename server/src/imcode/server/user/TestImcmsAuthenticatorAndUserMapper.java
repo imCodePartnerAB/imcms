@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 
+import com.imcode.imcms.Role;
+
 public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
    private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
    private MockIMCServiceInterface mockImcmsService;
@@ -45,12 +47,12 @@ public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
 
    public void testUserRoleUsers() {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_USER );
-      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE} );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{Role.USERS} );
 
       String loginName = "user";
       User user = imcmsAAUM.getUser( loginName );
       String[] roleNames = imcmsAAUM.getRoleNames( user );
-      assertTrue( Arrays.asList( roleNames ).contains( ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE ) );
+      assertTrue( Arrays.asList( roleNames ).contains( Role.USERS ) );
       mockImcmsService.verify();
    }
 
@@ -58,8 +60,8 @@ public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETALLROLES, new String[]{"0", "Superadmin", "1", "Useradmin"} );
 
       String[] roles = imcmsAAUM.getAllRoleNames();
-      assertTrue( Arrays.asList( roles ).contains( ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE ) );
-      assertTrue( Arrays.asList( roles ).contains( ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_ADMIN_ROLE ) );
+      assertTrue( Arrays.asList( roles ).contains( Role.USERS) );
+      assertTrue( Arrays.asList( roles ).contains( Role.SUPERADMIN ) );
       mockImcmsService.verify();
    }
 

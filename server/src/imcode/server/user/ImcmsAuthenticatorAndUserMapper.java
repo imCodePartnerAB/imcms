@@ -3,6 +3,8 @@ package imcode.server.user;
 import imcode.server.IMCServiceInterface;
 import org.apache.log4j.Logger;
 
+import com.imcode.imcms.Role;
+
 import java.util.*;
 
 public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
@@ -31,12 +33,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
    private static final String SPROC_PHONE_NBR_ADD = "phoneNbrAdd";
    private static final String SPROC_DEL_PHONE_NR = "DelPhoneNr";
 
-
-
    private IMCServiceInterface service;
-   final static String ALWAYS_EXISTING_USERS_ROLE = "Users";
-   final static String ALWAYS_EXISTING_ADMIN_ROLE = "Superadmin";
-
    private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
 
    public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service ) {
@@ -206,13 +203,14 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
    public String[] getAllRoleNames() {
       String[] roleNamesMinusUsers = service.sqlProcedure( SPROC_GET_ALL_ROLES );
+
       Set roleNamesSet = new HashSet() ;
       for( int i = 0; i < roleNamesMinusUsers.length; i+=2 ) {
          String roleName = roleNamesMinusUsers[i+1] ;
          roleNamesSet.add(roleName) ;
       }
 
-      roleNamesSet.add(ALWAYS_EXISTING_USERS_ROLE) ;
+      roleNamesSet.add(Role.USERS) ;
 
       String[] roleNames = (String[])roleNamesSet.toArray(new String[roleNamesSet.size()]);
       return roleNames;
@@ -297,5 +295,11 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       String[] sprocParameters = new String[] { String.valueOf(userId) };
       service.sqlUpdateProcedure( SPROC_DEL_PHONE_NR, sprocParameters );
    }
+
+    public boolean hasSuperAdminRole( User user ) {
+        String[] userRoleNames = this.getRoleNames( user );
+        boolean userHasSuperAdminRole = Arrays.asList( userRoleNames ).contains( Role.SUPERADMIN );
+        return userHasSuperAdminRole;
+    }
 
 }

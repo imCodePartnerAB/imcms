@@ -25,7 +25,7 @@ import javax.servlet.ServletOutputStream;
 import imcode.util.* ;
 import imcode.util.log.* ;
 import imcode.server.* ;
-import imcode.server.parser.Document;
+import imcode.server.document.Document;
 import imcode.server.parser.ParserParameters;
 import imcode.util.IMCServiceRMI;
 

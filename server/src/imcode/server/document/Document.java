@@ -1,17 +1,12 @@
-package imcode.server.parser ;
+package imcode.server.document ;
 
 import java.util.Date ;
-import java.text.DateFormat ;
-import java.text.SimpleDateFormat ;
-import java.sql.SQLException ;
 
 import imcode.server.* ;
 
 /** Stores all info about a text-document. **/
 
 public class Document implements IMCConstants {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     private int metaId ;
     private int documentType ;
@@ -33,79 +28,6 @@ public class Document implements IMCConstants {
     private Template template ;
     private int templateGroupId ;
     private int menuSortOrder ;
-
-    protected Document() {
-
-    }
-
-    public Document(IMCServiceInterface serverObject, int meta_id) throws IndexOutOfBoundsException, SQLException {
-	String[] result =	serverObject.sqlProcedure("GetDocumentInfo "+meta_id);
-	int columns = 0;
-
-	//lets start and do some controlls of the resulted data
-	if (result == null || result.length < 25) {
-	    throw new IndexOutOfBoundsException("No such document: "+meta_id);
-	}
-
-	DateFormat dateform = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
-	//ok lets set all the document stuff
-	try {
-	    setMetaId( Integer.parseInt(result[0]));
-	    setDocumentType(Integer.parseInt(result[2]));
-	} catch(NumberFormatException nfe) {
-	    throw new SQLException("SQL: GetDocumentInfo "+meta_id+" returned corrupt data! '"+result[0]+"' '"+result[2]+"'");
-	}
-	setHeadline(result[3]);
-	setText(result[4]);
-	setImage(result[5]);
-	setTarget(result[21]);
-
-	setArchived(result[12]=="0"?false:true);
-
-	setSection(serverObject.getSection(meta_id)) ;
-
-	try {
-	    setCreatedDatetime(dateform.parse(result[16]));
-	} catch (NullPointerException npe) {
-	    setCreatedDatetime(null);
-	} catch (java.text.ParseException pe) {
-	    setCreatedDatetime(null);
-	}
-	try {
-	    setModifiedDatetime(dateform.parse(result[17]));
-	} catch (NullPointerException npe) {
-	    setModifiedDatetime(null);
-	} catch (java.text.ParseException pe) {
-	    setModifiedDatetime(null);
-	}
-	try {
-	    setActivatedDatetime(dateform.parse(result[23]));
-	} catch (NullPointerException npe) {
-	    setActivatedDatetime(null);
-	} catch (java.text.ParseException pe) {
-	    setActivatedDatetime(null);
-	}
-	try {
-	    setArchivedDatetime(dateform.parse(result[24]));
-	} catch (NullPointerException npe) {
-	    setArchivedDatetime(null);
-	} catch (java.text.ParseException pe) {
-	    setArchivedDatetime(null);
-	}
-	if (getDocumentType()==DOCTYPE_FILE) {
-	    setFilename(serverObject.getFilename(meta_id));
-	}
-	if (getDocumentType()==DOCTYPE_TEXT) {
-	    String[] textdoc_data = serverObject.sqlProcedure("GetTextDocData",new String[] {String.valueOf(meta_id)}) ;
-
-	    if (textdoc_data.length >= 4) {
-		setTemplate(new Template(Integer.parseInt(textdoc_data[0]), textdoc_data[1])) ;
-		setMenuSortOrder(Integer.parseInt(textdoc_data[2])) ;
-		setTemplateGroupId(Integer.parseInt(textdoc_data[3])) ;
-	    }
-	}
-    }
-
 
 
     /**

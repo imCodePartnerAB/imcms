@@ -106,7 +106,7 @@ public class SaveSort extends HttpServlet {
 		    // Build an option-list
 		    StringBuffer fileMetaIds = new StringBuffer() ;
 		    for (int i=0; i<file_meta_ids.length; ++i) {
-			imcode.server.parser.Document doc = imcref.getDocument(Integer.parseInt(file_meta_ids[i])) ;
+			imcode.server.document.Document doc = imcref.getDocument(Integer.parseInt(file_meta_ids[i])) ;
 			fileMetaIds.append("<option>["+file_meta_ids[i]+"] "+doc.getHeadline()+"</option>") ;
 		    }
 		    Vector vec = new Vector() ;

@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest ;
 
 import imcode.server.parser.* ;
 import imcode.server.user.User;
+import imcode.server.document.Document;
 
 /**
    This class exists to store data about requests for documents in.

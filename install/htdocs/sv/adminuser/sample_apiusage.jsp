@@ -45,3 +45,4 @@ Users with role "<%= Role.USERS %>"
 %>
 <%= java.util.Arrays.asList( usersWithASpecificRole ) %>
 
+

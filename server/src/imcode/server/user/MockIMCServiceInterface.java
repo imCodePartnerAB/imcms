@@ -4,7 +4,7 @@ import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
 import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.*;
-import imcode.server.parser.Document;
+import imcode.server.document.Document;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
