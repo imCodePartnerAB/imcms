@@ -1,8 +1,10 @@
 import java.io.*;
 import java.util.*;
+import java.lang.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.*;
+import imcode.external.chat.*;
 import imcode.util.* ;
 
 public class ChatCreator extends ChatBase
@@ -27,12 +29,10 @@ public class ChatCreator extends ChatBase
 		Properties params = super.getSessionParameters(req) ;
 		if (super.checkParameters(req, res, params) == false) return ;
 
-log("Get chatParams");
 		// Lets get the new chat parameters
 		Properties chatParams = this.getNewChatParameters(req) ;
 		if (super.checkParameters(req, res, chatParams) == false) return ;
 
-log("ChatParams ok");
 		// Lets get an user object
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) return ;
@@ -57,11 +57,13 @@ log("ChatParams ok");
 		//get the msgTypes
 		RmiConf rmi = new RmiConf(user) ;
 		String[] msgTypes = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypes");
+		String[] msgTypesId = rmi.execSqlProcedure(chatPoolServer, "GetMsgTypesId");
 		Vector msgTypeV = new Vector();
+	
 		for(int i =0;i<msgTypes.length;i++)
 		{
 			log("Stringmsgtype: " + msgTypes[i] );
-			msgTypeV.add(" ");
+			msgTypeV.add(msgTypesId[i]);
 			msgTypeV.add(msgTypes[i]);
 		}
 
@@ -76,8 +78,8 @@ log("ChatParams ok");
 		}
 		
 		//get existing rooms
-		
 		Vector roomsV = ( (Vector)session.getValue("roomList")==null ) ? new Vector() : (Vector)session.getValue("roomList");
+		
 		Vector newMsgTypeV = ( (Vector)session.getValue("newMsgTypes")==null ) ? new Vector() : (Vector)session.getValue("newMsgTypes");
 		
 		
@@ -115,8 +117,7 @@ log("ChatParams ok");
 					}
 					
 					//add room to session
-					session.putValue("roomList",roomsV);
-					
+					session.putValue("roomList",roomsV);					
 					
 					vm.addProperty("chatRoom"," ");
 				}
@@ -186,21 +187,33 @@ log("ChatParams ok");
 
 			// Lets add a new Chat to DB
 			// AddNewChat @meta_id int, @chatName varchar(255)
-
-
 			String chatName = chatParams.getProperty("chatName");
 			String sqlQ = "AddNewChat " + metaId + ", '" + chatName + "'" ;
 			log("AddNewChat sql:" + sqlQ ) ;
 			rmi.execSqlUpdateProcedure(chatPoolServer, sqlQ) ;
 			
-			//Lets get the highest roomId
-			String roomId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxRoomId");
+			session.putValue("chatName",chatName);
+			session.putValue("chatId",metaId);
+			
+			// Lets add the new rooms to the chat
+			for (int i=0;i<roomsV.size();i+=2)
+			{
+				//Lets get the highest roomId
+				String roomId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxRoomId");
+				roomsV.set(i,roomId);
 
-			// Lets add a new room to the chat
-			String newRsql = "AddNewRoom " +  " '" +roomId + "', " + req.getParameter("chatRoom");//chatParams.getProperty("roomList");
-			log("AddNewRoom sql:" + newRsql ) ;
-			rmi.execSqlUpdateProcedure(chatPoolServer, newRsql) ;
-
+				String newRsql = "AddNewRoom " +  " '" +roomId + "', " + roomsV.get(i+1);//chatParams.getProperty("roomList");
+				log("AddNewRoom sql:" + newRsql ) ;
+				rmi.execSqlUpdateProcedure(chatPoolServer, newRsql) ;
+		
+				//add room to connection db
+				rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewChatRoom " + " '"+ metaId + "' , '" + roomId + "' ") ;
+				
+				log("RoomsV: " + roomsV.get(i+1) +" RoomId: " + roomsV.get(i));
+				
+			}
+			
+			session.putValue("roomList",roomsV);
 		
 		/*	// Lets get the administrators user_id
 			String user_id = user.getString("user_id") ;
@@ -215,6 +228,43 @@ log("ChatParams ok");
 			rmi.execSqlUpdateProcedure(chatPoolServer, confUsersAddSql) ;
 
 		*/
+			// Lets add the new msgTypes to the chat
+			for (int i=0;i<newMsgTypeV.size();i++)
+			{
+				//save newMsgTypes to db
+				
+				//Lets get the highest msgId
+				String msgTypeId = rmi.execSqlProcedureStr(chatPoolServer, "GetMaxMsgTypeId");
+				
+				String newMsql = "AddNewMsgType " +  " '" + msgTypeId + "', " + newMsgTypeV.get(i);
+				log("AddNewMsgType sql:" + newMsql ) ;
+				rmi.execSqlUpdateProcedure(chatPoolServer, newMsql) ;
+				
+				
+				//add newTypes to msgTypesV
+				msgTypeV.add( msgTypeId );
+				msgTypeV.add( newMsgTypeV.get(i) );
+
+				//add msgType to connection db
+				rmi.execSqlUpdateProcedure(chatPoolServer,"AddNewRoomMsg " + " '"+ msgTypeId + "' , '" + metaId + "' ") ;
+				
+			//	log("newMsgV: " + newMsgTypeV.get(i));// +" RoomId: " + roomsV.get(i));
+				
+			}
+			
+			for (int i=0;i<msgTypeV.size();i++)
+			{
+				log("msgType: " + msgTypeV.get(i) );
+			}
+			
+			session.putValue("msgTypes",msgTypeV);
+			
+		//	Chat theChat = new Chat((Integer.valueOf(metaId)).intValue(),chatName,roomsV);
+		//	theChat._name=chatName;
+			
+		//	ServletContext context = getServletContext() ;
+		//	context.setAttribute(metaId,theChat);
+			
 			// Ok, were done creating the conference. Lets tell Janus system to show this child.
 			rmi.activateChild(imcServer, metaId) ;
 
