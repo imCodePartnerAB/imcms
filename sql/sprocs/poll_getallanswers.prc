@@ -17,7 +17,7 @@ Get all answer for one question
 */
 
 
-CREATE PROCEDURE dbo.Poll_GetAllAnswers
+CREATE PROCEDURE Poll_GetAllAnswers
 	@question_id int
 		
 AS

@@ -269,7 +269,7 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
                 document = new ConferenceDocumentDomainObject();
                 break;
             case DOCTYPE_BILLBOARD:
-                document = new BilboardDocumentDomainObject();
+                document = new BillboardDocumentDomainObject();
                 break;
         }
 

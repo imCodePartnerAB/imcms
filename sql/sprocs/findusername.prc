@@ -8,7 +8,7 @@ drop procedure [dbo].[FindUserName]
 GO
 
 
-CREATE PROCEDURE [FindUserName] 
+CREATE PROCEDURE FindUserName
  @userName varchar(50)
 AS
 /*

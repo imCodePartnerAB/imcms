@@ -7,7 +7,7 @@ GO
 SET ANSI_NULLS OFF 
 GO
 
-CREATE PROCEDURE [dbo].[GetRoleIdByRoleName]
+CREATE PROCEDURE GetRoleIdByRoleName
 	@roleName varchar(30)
 
  AS

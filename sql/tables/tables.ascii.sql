@@ -394,21 +394,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[users]') a
 drop table [dbo].[users]
 GO
 
-exec sp_fulltext_database N'enable'
-
-GO
-
-
-if exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
-exec sp_fulltext_catalog N'full_text_index', N'drop'
-
-GO
-
-if not exists (select * from dbo.sysfulltextcatalogs where name = N'full_text_index')
-exec sp_fulltext_catalog N'full_text_index', N'create'
-
-GO
-
 CREATE TABLE [dbo].[browser_docs] (
 	[meta_id] [int] NOT NULL ,
 	[to_meta_id] [int] NOT NULL ,
@@ -976,15 +961,6 @@ ALTER TABLE [dbo].[texts] WITH NOCHECK ADD
 	)  ON [PRIMARY]
 GO
 
-exec sp_fulltext_table N'[dbo].[texts]', N'create', N'full_text_index', N'PK_texts'
-GO
-
-exec sp_fulltext_column N'[dbo].[texts]', N'text', N'add', 1053
-GO
-
-exec sp_fulltext_table N'[dbo].[texts]', N'activate'
-GO
-
 ALTER TABLE [dbo].[user_flags] WITH NOCHECK ADD
 	CONSTRAINT [PK_user_flags] PRIMARY KEY  CLUSTERED
 	(
@@ -1067,15 +1043,6 @@ ALTER TABLE [dbo].[classification] WITH NOCHECK ADD
 	)  ON [PRIMARY]
 GO
 
-exec sp_fulltext_table N'[dbo].[classification]', N'create', N'full_text_index', N'PK_classification'
-GO
-
-exec sp_fulltext_column N'[dbo].[classification]', N'code', N'add', 1053
-GO
-
-exec sp_fulltext_table N'[dbo].[classification]', N'activate'
-GO
-
 ALTER TABLE [dbo].[doc_permission_sets] WITH NOCHECK ADD
 	CONSTRAINT [PK_doc_permission_sets] PRIMARY KEY  NONCLUSTERED
 	(
@@ -1154,18 +1121,6 @@ ALTER TABLE [dbo].[meta] WITH NOCHECK ADD
 	(
 		[meta_id]
 	)  ON [PRIMARY]
-GO
-
-exec sp_fulltext_table N'[dbo].[meta]', N'create', N'full_text_index', N'PK_meta'
-GO
-
-exec sp_fulltext_column N'[dbo].[meta]', N'meta_headline', N'add', 1053
-GO
-
-exec sp_fulltext_column N'[dbo].[meta]', N'meta_text', N'add', 1053
-GO
-
-exec sp_fulltext_table N'[dbo].[meta]', N'activate'
 GO
 
 ALTER TABLE [dbo].[meta_classification] WITH NOCHECK ADD

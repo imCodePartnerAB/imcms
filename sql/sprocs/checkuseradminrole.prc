@@ -10,7 +10,7 @@ GO
 
 
 
-CREATE      PROCEDURE  dbo.checkUserAdminrole 
+CREATE      PROCEDURE  CheckUserAdminrole
 	@userId int,
 	@adminRole int
  AS

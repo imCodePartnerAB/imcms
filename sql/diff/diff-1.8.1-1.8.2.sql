@@ -392,9 +392,26 @@ GO
 
 DROP PROCEDURE AddBrowserStatistics
 DROP PROCEDURE AddScreenStatistics
+DROP PROCEDURE AddStatistics
+DROP PROCEDURE AddStatisticsCount
+DROP PROCEDURE AddVersionStatistics
+DROP PROCEDURE CheckExistsInMenu
 DROP PROCEDURE Classification_Get_All
 DROP PROCEDURE Classification_convert
 DROP PROCEDURE Classification_fix
 DROP PROCEDURE ClassificationAdd
+DROP PROCEDURE CountDocByType
+DROP PROCEDURE DelUser
+DROP PROCEDURE ExistingDocsGetSelectedMetaIds
+DROP PROCEDURE GetLangPrefix
+DROP PROCEDURE GetLanguages
+DROP PROCEDURE GetMetaPathInfo
+DROP PROCEDURE GetNoOfTemplates
+DROP PROCEDURE GetTextNumber
+DROP PROCEDURE GetUserCreateDate
+DROP PROCEDURE GetUserId
+DROP PROCEDURE SearchDocs
+DROP PROCEDURE SearchDocsIndex
 
 -- 2004-03-05 Kreiger
+

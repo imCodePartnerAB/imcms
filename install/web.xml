@@ -494,11 +494,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewMeta</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveNewMeta</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveNewUrlDoc</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveNewUrlDoc</servlet-class>
     </servlet>
@@ -1046,11 +1041,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveNewFrameset</servlet-name>
         <url-pattern>/servlet/SaveNewFrameset</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveNewMeta</servlet-name>
-        <url-pattern>/servlet/SaveNewMeta</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

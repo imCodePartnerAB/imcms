@@ -10,6 +10,7 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
+import imcode.server.ExternalDocType;
 import imcode.server.document.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
@@ -353,7 +354,18 @@ public class DocumentComposer extends HttpServlet {
         saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( externalDocument, newDocumentParentInformation, user, request );
         final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
         DocumentMapper.sqlUpdateDocumentActivated( service, externalDocument.getId(), false );
-        SaveNewMeta.redirectToExternalDocType( service, externalDocument.getId(), user, newDocumentParentInformation.parentId, response );
+        redirectToExternalDocType( service, externalDocument.getId(), user, newDocumentParentInformation.parentId, response );
+    }
+
+    public static void redirectToExternalDocType( IMCServiceInterface imcref, int metaId,
+            UserDomainObject user, int parentMetaId, HttpServletResponse res ) throws IOException {
+        // check if external doc
+        ExternalDocType ex_doc;
+        ex_doc = imcref.isExternalDoc( metaId, user );
+        String paramStr = "?meta_id=" + metaId + "&";
+        paramStr += "parent_meta_id=" + parentMetaId + "&";
+        paramStr += "cookie_id=" + "1A" + "&action=new";
+        res.sendRedirect( ex_doc.getCallServlet() + paramStr );
     }
 
     public void processNewUrlDocumentInformation( HttpServletRequest request, HttpServletResponse response,

@@ -8,7 +8,7 @@ drop procedure [dbo].[FindMetaId]
 GO
 
 
-CREATE PROCEDURE [FindMetaId]
+CREATE PROCEDURE FindMetaId
  @meta_id int
  AS
 /**

@@ -8,7 +8,7 @@ drop procedure [dbo].[GetAllUsers]
 GO
 
 
-CREATE PROCEDURE [GetAllUsers] AS
+CREATE PROCEDURE GetAllUsers AS
 /**
 	DOCME: Document me!
 **/

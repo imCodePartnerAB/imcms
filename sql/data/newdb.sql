@@ -31,8 +31,8 @@ INSERT INTO user_roles_crossref
  VALUES(2,2)
 
 SET IDENTITY_INSERT meta ON
-INSERT INTO meta (meta_id, description, doc_type, meta_headline, meta_text, meta_image, owner_id, permissions, shared, expand, show_meta, help_text_id, archive, status_id, lang_prefix, classification, date_created, date_modified, sort_position, menu_position, disable_search, activated_datetime, archived_datetime, target,  frame_name, activate)
- VALUES           (1001,    '',          2,        '<? sql/sql/newdb.sql/1 ?>',  '',        '',         1,        0,           0,      1,      0,         1,            0,       1,         '@defaultlanguage@',        '',             convert(char(10),getDate(),120),    convert(char(10),getDate(),120),     1,             1,             0,              convert(char(10),getDate(),120),   null,        '_self',  '',         1)
+INSERT INTO meta (meta_id, doc_type, meta_headline,                meta_text, meta_image, owner_id, permissions, shared, show_meta, lang_prefix,         date_created,                    date_modified,                   disable_search, archived_datetime, target,  activate, status, publication_start_datetime,      publication_end_datetime)
+ VALUES           (1001,   2,        '<? sql/sql/newdb.sql/1 ?>',  '',        '',         1,        0,           0,      0,         '@defaultlanguage@', convert(char(10),getDate(),120), convert(char(10),getDate(),120), 0,              null,              '_self', 1,        2,      convert(char(10),getDate(),120), null)
 SET IDENTITY_INSERT meta OFF
 INSERT INTO templates
  VALUES (1,'demo.html', 'demo', '<? sql/default_lang ?>', 1,1,1)

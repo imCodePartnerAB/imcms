@@ -9,6 +9,7 @@ package imcode.server.document;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
+import imcode.util.DateConstants;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -27,6 +28,8 @@ import org.apache.lucene.search.Query;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
 public class DocumentIndex {
 
@@ -245,7 +248,8 @@ public class DocumentIndex {
             try {
                 indexDocument.add( unStoredKeyword( fieldName, date ) );
             } catch ( RuntimeException re ) {
-                log.warn( "Indexing field "+fieldName+" of document " + documentId, re ) ;
+                DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING) ;
+                log.warn( "Failed to index date '"+dateFormat.format(date)+"' in field '"+fieldName+"' of document " + documentId, re ) ;
             }
         }
     }

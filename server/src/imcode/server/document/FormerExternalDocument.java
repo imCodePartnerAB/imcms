@@ -1,7 +1,6 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
-import com.imcode.imcms.servlet.admin.SaveNewMeta;
 import imcode.server.user.UserDomainObject;
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;

@@ -11,7 +11,7 @@ GO
 
 
 
-CREATE PROCEDURE [dbo].[DocumentDelete] 
+CREATE PROCEDURE DocumentDelete
 	@meta_id int
 AS
 /*

@@ -16,7 +16,7 @@ Get all polls
 */
 
 
-CREATE PROCEDURE dbo.Poll_GetAll
+CREATE PROCEDURE Poll_GetAll
 		
 AS
 	SELECT *

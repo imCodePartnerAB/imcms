@@ -1252,7 +1252,10 @@ public class DocumentMapper {
     }
 
     private int sqlCreateNewRowInMetaCopyParentData( IMCServiceInterface service, int parentId ) {
-        final String columnsToBeCopied = "description,doc_type,meta_headline,meta_text,meta_image,owner_id,permissions,shared,expand,show_meta,help_text_id,archive,status_id,lang_prefix,classification,date_created,date_modified,sort_position,menu_position,disable_search,target,frame_name,activate,activated_datetime,archived_datetime";
+        final String columnsToBeCopied = "doc_type,meta_headline,meta_text,meta_image,"
+                                         + "owner_id,permissions,shared,show_meta,lang_prefix,"
+                                         + "date_created,date_modified,disable_search,target,activate,"
+                                         + "archived_datetime,status,publication_start_datetime,publication_end_datetime";
 
         String metaId = service.sqlQueryStr( "insert into meta (" + columnsToBeCopied + ")\n" + "select "
                                              + columnsToBeCopied

@@ -16,7 +16,7 @@ Insert a new poll question
 */
 
 
-CREATE PROCEDURE dbo.Poll_AddQuestion
+CREATE PROCEDURE Poll_AddQuestion
 	@poll_id int, 
 	@question_no int,
 	@text_id int 

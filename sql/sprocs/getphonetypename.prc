@@ -10,7 +10,7 @@ GO
 
 
 
-CREATE  PROCEDURE [dbo].[GetPhonetypeName]
+CREATE  PROCEDURE GetPhonetypeName
 	@phonetype_id int,
 	@lang_id int
  AS

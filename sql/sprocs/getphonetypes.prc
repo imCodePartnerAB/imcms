@@ -7,7 +7,7 @@ GO
 SET ANSI_NULLS OFF 
 GO
 
-CREATE PROCEDURE [dbo].[GetPhonetypes]
+CREATE PROCEDURE GetPhonetypes
 	@lang_id int
 
  AS
