@@ -28,12 +28,12 @@ public class DBConnect {
     Log log = Log.getLog("server") ;
 
     // constructor
-    DBConnect(imcode.server.InetPoolManager conPool) {
+    public DBConnect(imcode.server.InetPoolManager conPool) {
 	this.conPool = conPool ;
     }
 
     // constructor
-    DBConnect(imcode.server.InetPoolManager conPool,String sqlString) {
+    public DBConnect(imcode.server.InetPoolManager conPool,String sqlString) {
 	this.conPool = conPool ;
 	strSQLString = sqlString ;
     }
