@@ -112,11 +112,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             String[] included_docs = DocumentMapper.sprocGetIncludes( service, meta_id );
 
-            TemplateDomainObject documentTemplate = document.getTextDocumentTemplate();
+            TemplateDomainObject documentTemplate = document.getTemplate();
             int documentTemplateId = documentTemplate.getId();
             String simple_name = documentTemplate.getName();
-            int sort_order = document.getTextDocumentMenuSortOrder();
-            String group_id = "" + document.getTextDocumentTemplateGroupId();
+            int sort_order = document.getMenuSortOrder();
+            String group_id = "" + document.getTemplateGroupId();
 
             if ( template_name != null ) {
                 //lets validate that the template exists before we changes the original one
@@ -126,7 +126,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                         int temp_template = Integer.parseInt( vectT[0] );
                         if ( temp_template > 0 ) {
                             documentTemplateId = temp_template;
-                            document.setTextDocumentTemplate( service.getTemplateMapper().getTemplateById( documentTemplateId ) );
+                            document.setTemplate( service.getTemplateMapper().getTemplateById( documentTemplateId ) );
                         }
                     } catch ( NumberFormatException nfe ) {
                         //do nothing, we keep the original template

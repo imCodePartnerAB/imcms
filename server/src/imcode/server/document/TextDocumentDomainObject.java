@@ -19,53 +19,53 @@ import java.util.Map;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
-    private int textDocumentMenuSortOrder;
-    private TemplateDomainObject textDocumentTemplate;
-    private int textDocumentTemplateGroupId;
-    private int textDocumentDefaultTemplateIdForRestrictedPermissionSetOne;
-    private int textDocumentDefaultTemplateIdForRestrictedPermissionSetTwo;
+    private int menuSortOrder;
+    private TemplateDomainObject template;
+    private int templateGroupId;
+    private int defaultTemplateIdForRestrictedPermissionSetOne;
+    private int defaultTemplateIdForRestrictedPermissionSetTwo;
     private Map texts = new HashMap();
 
-    public int getTextDocumentMenuSortOrder() {
-        return textDocumentMenuSortOrder;
+    public int getMenuSortOrder() {
+        return menuSortOrder;
     }
 
-    public void setTextDocumentMenuSortOrder( int v ) {
-        this.textDocumentMenuSortOrder = v;
+    public void setMenuSortOrder( int v ) {
+        this.menuSortOrder = v;
     }
 
-    public TemplateDomainObject getTextDocumentTemplate() {
-        return textDocumentTemplate;
+    public TemplateDomainObject getTemplate() {
+        return template;
     }
 
-    public void setTextDocumentTemplate( TemplateDomainObject v ) {
-        this.textDocumentTemplate = v;
+    public void setTemplate( TemplateDomainObject v ) {
+        this.template = v;
     }
 
-    public int getTextDocumentTemplateGroupId() {
-        return textDocumentTemplateGroupId;
+    public int getTemplateGroupId() {
+        return templateGroupId;
     }
 
-    public void setTextDocumentTemplateGroupId( int v ) {
-        this.textDocumentTemplateGroupId = v;
+    public void setTemplateGroupId( int v ) {
+        this.templateGroupId = v;
     }
 
-    public void setTextDocumentDefaultTemplateIdForRestrictedPermissionSetOne(
-            int textDocumentDefaultTemplateIdForRestrictedPermissionSetOne ) {
-        this.textDocumentDefaultTemplateIdForRestrictedPermissionSetOne = textDocumentDefaultTemplateIdForRestrictedPermissionSetOne;
+    public void setDefaultTemplateIdForRestrictedPermissionSetOne(
+            int defaultTemplateIdForRestrictedPermissionSetOne ) {
+        this.defaultTemplateIdForRestrictedPermissionSetOne = defaultTemplateIdForRestrictedPermissionSetOne;
     }
 
-    public int getTextDocumentDefaultTemplateIdForRestrictedPermissionSetOne() {
-        return textDocumentDefaultTemplateIdForRestrictedPermissionSetOne;
+    public int getDefaultTemplateIdForRestrictedPermissionSetOne() {
+        return defaultTemplateIdForRestrictedPermissionSetOne;
     }
 
-    public void setTextDocumentDefaultTemplateIdForRestrictedPermissionSetTwo(
-            int textDocumentDefaultTemplateIdForRestrictedPermissionSetTwo ) {
-        this.textDocumentDefaultTemplateIdForRestrictedPermissionSetTwo = textDocumentDefaultTemplateIdForRestrictedPermissionSetTwo;
+    public void setDefaultTemplateIdForRestrictedPermissionSetTwo(
+            int defaultTemplateIdForRestrictedPermissionSetTwo ) {
+        this.defaultTemplateIdForRestrictedPermissionSetTwo = defaultTemplateIdForRestrictedPermissionSetTwo;
     }
 
-    public int getTextDocumentDefaultTemplateIdForRestrictedPermissionSetTwo() {
-        return textDocumentDefaultTemplateIdForRestrictedPermissionSetTwo;
+    public int getDefaultTemplateIdForRestrictedPermissionSetTwo() {
+        return defaultTemplateIdForRestrictedPermissionSetTwo;
     }
 
     public int getDocumentTypeId() {

@@ -17,6 +17,7 @@ import imcode.util.shop.ShoppingOrderSystemImpl;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.util.*;
@@ -537,22 +538,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Archive childs for a menu.
      */
     public void archiveChilds( int meta_id, UserDomainObject user, String childsThisMenu[] ) {
-        StringBuffer childStr = new StringBuffer( '[' );
 
+        Date now = getCurrentDate() ;
         for ( int i = 0; i < childsThisMenu.length; i++ ) {
-            String sqlStr = "update meta\n"
-                            + "set archive = 1\n"
-                            + "where meta_id = ?";
-
-            sqlUpdateQuery( sqlStr, new String[]{childsThisMenu[i]} );
-            childStr.append( childsThisMenu[i] );
-            if ( i < childsThisMenu.length - 1 ) {
-                childStr.append( ',' );
+            DocumentDomainObject document = documentMapper.getDocument(Integer.parseInt( childsThisMenu[i])) ;
+            document.setArchivedDatetime( now );
+            try {
+                documentMapper.saveDocument( document );
+            } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
+                throw new RuntimeException( e ) ;
             }
         }
-        childStr.append( ']' );
 
-        this.updateLogs( "Childs " + childStr + " from " +
+        this.updateLogs( "Childs [" + StringUtils.join( childsThisMenu, ", ") + "] from " +
                          "[" + meta_id + "] archived by user: [" +
                          user.getFullName() + "]" );
     }

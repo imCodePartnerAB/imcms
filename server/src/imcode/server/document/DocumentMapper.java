@@ -369,11 +369,11 @@ public class DocumentMapper {
             int defaultTemplateIdForRestrictedPermissionSetTwo = Integer.parseInt( sqlResult[4] );
 
             TemplateDomainObject template = service.getTemplateMapper().getTemplateById( template_id );
-            document.setTextDocumentTemplate( template );
-            document.setTextDocumentMenuSortOrder( sort_order );
-            document.setTextDocumentTemplateGroupId( group_id );
-            document.setTextDocumentDefaultTemplateIdForRestrictedPermissionSetOne( defaultTemplateIdForRestrictedPermissionSetOne );
-            document.setTextDocumentDefaultTemplateIdForRestrictedPermissionSetTwo( defaultTemplateIdForRestrictedPermissionSetTwo );
+            document.setTemplate( template );
+            document.setMenuSortOrder( sort_order );
+            document.setTemplateGroupId( group_id );
+            document.setDefaultTemplateIdForRestrictedPermissionSetOne( defaultTemplateIdForRestrictedPermissionSetOne );
+            document.setDefaultTemplateIdForRestrictedPermissionSetTwo( defaultTemplateIdForRestrictedPermissionSetTwo );
         }
 
         String sqlSelectTexts = "SELECT name, text, type FROM texts WHERE meta_id = ?" ;
@@ -646,16 +646,18 @@ public class DocumentMapper {
         return metaId;
     }
 
-    void saveNewTextDocument( TextDocumentDomainObject document ) {
+    void saveNewTextDocument( TextDocumentDomainObject textDocument ) {
         String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, sort_order, default_template_1, default_template_2) VALUES (?,?,?,?,?,?)";
         service.sqlUpdateQuery( sqlTextDocsInsertStr,
                                 new String[]{
-                                    "" + document.getId(), "" + document.getTextDocumentTemplate().getId(),
-                                    "" + document.getTextDocumentTemplateGroupId(),
-                                    "" + document.getTextDocumentMenuSortOrder(),
-                                    "" + document.getTextDocumentDefaultTemplateIdForRestrictedPermissionSetOne(),
-                                    "" + document.getTextDocumentDefaultTemplateIdForRestrictedPermissionSetTwo()
+                                    "" + textDocument.getId(), "" + textDocument.getTemplate().getId(),
+                                    "" + textDocument.getTemplateGroupId(),
+                                    "" + textDocument.getMenuSortOrder(),
+                                    "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
+                                    "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo()
                                 } );
+
+        updateTextDocumentTexts( textDocument );
     }
 
     void saveNewUrlDocument( UrlDocumentDomainObject document ) {
@@ -1529,15 +1531,21 @@ public class DocumentMapper {
     void saveTextDocument( TextDocumentDomainObject textDocument ) {
         String sqlStr = "UPDATE text_docs SET template_id = ?, sort_order = ?, group_id = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
-            "" + textDocument.getTextDocumentTemplate().getId(),
-            "" + textDocument.getTextDocumentMenuSortOrder(),
-            "" + textDocument.getTextDocumentTemplateGroupId(),
+            "" + textDocument.getTemplate().getId(),
+            "" + textDocument.getMenuSortOrder(),
+            "" + textDocument.getTemplateGroupId(),
             "" + textDocument.getId()
         } );
 
-        String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?" ;
-        service.sqlUpdateQuery( sqlDeleteTexts, new String[] {""+textDocument.getId()}) ;
+        updateTextDocumentTexts( textDocument );
+    }
 
+    private void updateTextDocumentTexts( TextDocumentDomainObject textDocument ) {
+        deleteTextDocumentTexts( textDocument );
+        insertTextDocumentTexts( textDocument );
+    }
+
+    private void insertTextDocumentTexts( TextDocumentDomainObject textDocument ) {
         String sqlInsertTexts = "INSERT INTO texts (meta_id, name, text, type) VALUES(?,?,?,?)" ;
         Map texts = textDocument.getTexts() ;
         for ( Iterator iterator = texts.keySet().iterator(); iterator.hasNext(); ) {
@@ -1545,6 +1553,11 @@ public class DocumentMapper {
             TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)texts.get(textIndex) ;
             service.sqlUpdateQuery( sqlInsertTexts, new String[] {""+textDocument.getId(), ""+textIndex, text.getText(), ""+text.getType()}) ;
         }
+    }
+
+    private void deleteTextDocumentTexts( TextDocumentDomainObject textDocument ) {
+        String sqlDeleteTexts = "DELETE FROM texts WHERE meta_id = ?" ;
+        service.sqlUpdateQuery( sqlDeleteTexts, new String[] {""+textDocument.getId()}) ;
     }
 
     void saveUrlDocument( UrlDocumentDomainObject urlDocument ) {

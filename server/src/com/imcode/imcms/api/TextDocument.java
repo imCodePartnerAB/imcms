@@ -71,7 +71,7 @@ public class TextDocument extends Document {
     }
 
     public Template getTemplate() {
-        TemplateDomainObject template = ((TextDocumentDomainObject)internalDocument).getTextDocumentTemplate();
+        TemplateDomainObject template = ((TextDocumentDomainObject)internalDocument).getTemplate();
         Template result = new Template(template);
         return result;
     }
@@ -79,7 +79,7 @@ public class TextDocument extends Document {
     public void setTemplate(TemplateGroup templateGroup, Template template) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
         setTemplateInternal( template );
-        ((TextDocumentDomainObject)internalDocument).setTextDocumentTemplateGroupId( templateGroup.getId() );
+        ((TextDocumentDomainObject)internalDocument).setTemplateGroupId( templateGroup.getId() );
     }
 
     /**
@@ -95,7 +95,7 @@ public class TextDocument extends Document {
 
     private void setTemplateInternal(Template newTemplate) {
         TemplateDomainObject internalTemplate = newTemplate.getInternal();
-        ((TextDocumentDomainObject)internalDocument).setTextDocumentTemplate(internalTemplate);
+        ((TextDocumentDomainObject)internalDocument).setTemplate(internalTemplate);
     }
 
     public Document getInclude(int includeIndexInDocument) throws NoPermissionException {
@@ -130,7 +130,7 @@ public class TextDocument extends Document {
      */
     public void setMenuSortOrder(int sortOrder) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        ((TextDocumentDomainObject)internalDocument).setTextDocumentMenuSortOrder(sortOrder);
+        ((TextDocumentDomainObject)internalDocument).setMenuSortOrder(sortOrder);
     }
 
     /**
@@ -143,7 +143,7 @@ public class TextDocument extends Document {
      */
     public int getMenuSortOrder() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        return ((TextDocumentDomainObject)internalDocument).getTextDocumentMenuSortOrder();
+        return ((TextDocumentDomainObject)internalDocument).getMenuSortOrder();
     }
 
     /**

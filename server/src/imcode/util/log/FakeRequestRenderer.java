@@ -65,7 +65,7 @@ public class FakeRequestRenderer implements ObjectRenderer {
         result.append( lossyUrlEncode( headline ) );
         result.append( '/' );
         if ( document instanceof TextDocumentDomainObject ) {
-            TemplateDomainObject template = ((TextDocumentDomainObject)document).getTextDocumentTemplate();
+            TemplateDomainObject template = ((TextDocumentDomainObject)document).getTemplate();
             result.append( lossyUrlEncode( template.getName() ) );
         }
         result.append( '/' );
