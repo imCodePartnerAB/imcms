@@ -34,7 +34,7 @@
         if (null == datetime) {
             return "" ;
         }
-        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATETIME_FORMAT_NO_SECONDS_FORMAT_STRING ) ;
+        DateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING+"'&nbsp;'"+DateConstants.TIME_FORMAT_NO_SECONDS_STRING ) ;
         return dateFormat.format(datetime) ;
     }
 
@@ -186,7 +186,7 @@ imcmsGui("mid", null);
                                         value="<%= StringEscapeUtils.escapeHtml( formatTime(document.getPublicationStartDatetime()) ) %>">
                                 </td>
                                 <td>
-                                    <%= formatDatetime( publicationStartDatetime ) %>&nbsp;
+                                    &nbsp;(<%= formatDatetime( publicationStartDatetime ) %>)
                                 </td>
                             </tr>
                         </table>
@@ -215,7 +215,7 @@ imcmsGui("mid", null);
                                     value="<%= StringEscapeUtils.escapeHtml( formatTime(archivedDatetime) ) %>">
                             </td>
                             <td>
-                                <%= formatDatetime( archivedDatetime ) %>&nbsp;
+                                &nbsp;(<%= formatDatetime( archivedDatetime ) %>)
                             </td>
                         </tr>
                         </table>
@@ -244,7 +244,7 @@ imcmsGui("mid", null);
                                     value="<%= StringEscapeUtils.escapeHtml( formatTime(publicationEndDatetime) ) %>">
                             </td>
                             <td>
-                                <%= formatDatetime( publicationEndDatetime ) %>&nbsp;
+                                &nbsp;(<%= formatDatetime( publicationEndDatetime ) %>)
                             </td>
                         </tr>
                         </table>
