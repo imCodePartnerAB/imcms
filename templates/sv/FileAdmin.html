@@ -341,7 +341,8 @@ if (ie || moz) {
 }
 
 function openHelpW(id){
-	window.open('@documentationurl@/GetDoc?meta_id=' + id,'help');
+	var helpMetaId = parseInt(<? helpDocumentationMetaIdStartIndex ?>) + id;
+	window.open("@documentationurl@/GetDoc?meta_id=" + helpMetaId,"help");
 }
 //-->
 </script>
@@ -475,7 +476,8 @@ if (gecko && !isMac) {
 	document.write("<input type=\"file\" name=\"file\" class=\"formMid\" size=\"20\" style=\"width:380\">");
 }
 //-->
-</script><noscript><input type="file" name="file" class="formMid" size="20"></noscript></span></td>
+</script>
+<noscript><input type="file" name="file" class="formMid" size="20"></noscript></span></td>
   <td align="right"><input class="formBtn" height="22" type="submit" name="upload2" value="<? sv/FileAdmin.html/2016 ?>"></td>
   <td><img src="@imcmsimageurl@/admin/1x1.gif" width="1" height="1"></td>
 </tr>
