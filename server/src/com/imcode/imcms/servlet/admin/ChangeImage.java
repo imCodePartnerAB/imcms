@@ -99,11 +99,7 @@ public class ChangeImage extends HttpServlet {
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_ADD_RESTRICTED_IMAGE_BUTTON ) ) {
             goToImageAdder( documentMapper, document, user, image, imageIndex, request, response );
         } else {
-            if( "".equals( request.getParameter( REQUEST_PARAMETER__IMAGE_URL ))){
-                document.removeImage( imageIndex);
-            }else{
-                document.setImage( imageIndex, image );
-            }
+            document.setImage( imageIndex, image );
             documentMapper.saveDocument( document, user );
             imcref.updateMainLog( "ImageRef " + imageIndex + " =" + image.getUrlPathRelativeToContextPath() +
                                   " in  " + "[" + document.getId() + "] modified by user: [" +

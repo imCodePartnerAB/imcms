@@ -16,7 +16,7 @@ public class ImcmsImageUtils {
 
     public static String getImageHtmlTag( ImageDomainObject image, HttpServletRequest request ) {
         StringBuffer imageTagBuffer = new StringBuffer( 96 );
-        if ( !"".equals( image.getUrlPathRelativeToContextPath() ) ) {
+        if ( image.getSize() > 0) {
 
             if ( StringUtils.isNotBlank( image.getLinkUrl() ) ) {
                 imageTagBuffer.append( "<a href=\"" ).append( StringEscapeUtils.escapeHtml( image.getLinkUrl() ) ).append( "\"" );

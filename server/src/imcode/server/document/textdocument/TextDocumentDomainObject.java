@@ -72,10 +72,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         getLazilyLoadedTextDocumentAttributes().images.clear();
     }
 
-    public void removeImage(int imageIndex ) {
-        getLazilyLoadedTextDocumentAttributes().images.remove(new Integer( imageIndex ));
-    }
-
     public void removeAllIncludes() {
         getLazilyLoadedTextDocumentAttributes().includes.clear();
     }
