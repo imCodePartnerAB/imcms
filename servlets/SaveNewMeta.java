@@ -74,7 +74,7 @@ public class SaveNewMeta extends HttpServlet {
 	    "meta_headline",	        null,
 	    "meta_text",		null,
 	    "meta_image",		null,
-	    "frame_name",		null,
+	    "frame_name",		"",
 	    "target",			null
 	} ;
 
@@ -100,7 +100,17 @@ public class SaveNewMeta extends HttpServlet {
 	    inputMap.put(metatable[i],req.getParameter(metatable[i])) ;
 
 	}
-
+	
+	// If target is set to '_other', it means the real target is in 'frame_name'.
+	// In this case, set target to the value of frame_name.
+	String target = (String)inputMap.get("target") ;
+	String frame_name = (String)inputMap.get("frame_name") ;
+	if ( "_other".equals(target) && frame_name != null && !"".equals(frame_name) ) {
+    	inputMap.put("target",frame_name) ;
+   	}
+	inputMap.remove("frame_name") ;  // we only need to store frame_name in db column "target"
+		
+	
 	SimpleDateFormat datetimeformat = new SimpleDateFormat("yyyy-MM-dd HH:mm") ;
 	Date dt = IMCServiceRMI.getCurrentDate(imcserver) ;
 
@@ -130,16 +140,19 @@ public class SaveNewMeta extends HttpServlet {
 		archived_datetime = null ;
 	    }
 	}
-
+	
+	
+	
 	for ( int i=0 ; i<metatable.length ; i+=2 ) {
 	    String tmp = (String)inputMap.get(metatable[i]) ;
 	    if ( tmp != null) {
-		metaprops.setProperty(metatable[i],tmp) ;
+			metaprops.setProperty(metatable[i],tmp) ;
 	    } else {
-		metaprops.setProperty(metatable[i],metatable[i+1]) ;
+			metaprops.setProperty(metatable[i],metatable[i+1]) ;
 	    }
 	}
-
+	
+	
 	// Check if user logged on
 	if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
 	    return ;
@@ -166,18 +179,15 @@ public class SaveNewMeta extends HttpServlet {
 	    }
 	    return ;
 	}
-
+	
+		
 
 	// Lets fix the date information (date_created, modified etc)
 	metaprops.setProperty("date_modified",datetimeformat.format(dt)) ;
 	metaprops.setProperty("date_created",datetimeformat.format(dt)) ;
 	metaprops.setProperty("owner_id",String.valueOf(user.getInt("user_id"))) ;
-
-	// Check if user logged on
-	if( (user=Check.userLoggedOn( req,res,start_url ))==null ) {
-	    return ;
-	}
-
+	
+	
 	if( req.getParameter( "cancel" ) != null ) {
 	    byte[] tempbytes = AdminDoc.adminDoc(Integer.parseInt(parent_meta_id),Integer.parseInt(parent_meta_id),host,user,req,res) ;
 	    if ( tempbytes != null ) {

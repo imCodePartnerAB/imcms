@@ -224,7 +224,19 @@ public class SaveMeta extends HttpServlet {
 			archived_datetime = null ;
 		    }
 		}
+		
+		
+		// If target is set to '_other', it means the real target is in 'frame_name'.
+		// In this case, set target to the value of frame_name.
+		String target = (String)inputMap.get("target") ;
+		String frame_name = (String)inputMap.get("frame_name") ;
+		if ( "_other".equals(target) && frame_name != null && !"".equals(frame_name) ) {
+     		inputMap.put("target",frame_name) ;
+		}
+     	inputMap.remove("frame_name") ;  // we only need to store frame_name in db column "target"
 
+		
+				
 		// Loop through all meta-table-properties
 		// Checking permissions as we go.
 		// All alterations of the inputdata must happen before this
