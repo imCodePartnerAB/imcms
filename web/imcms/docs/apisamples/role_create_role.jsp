@@ -12,6 +12,7 @@ Before:<br>
 <%
    String roleName = "Test role";
    Role role = userService.createNewRole( roleName );
+   role.setPasswordMailPermission( false );
    userService.saveRole( role );
 %><br>
 After adding a new role named "<%= role.getName() %>":<br>

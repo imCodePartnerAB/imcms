@@ -32,7 +32,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
                                                    + "create_date, external "
                                                    + "FROM users";
 
-    private static final String SQL_SELECT_ALL_ROLES = "SELECT role_id, role_name, admin_role FROM roles";
+    private static final String SQL_SELECT_ALL_ROLES = "SELECT roles.role_id, roles.role_name, roles.admin_role, roles.permissions FROM roles";
     private static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
     private static final String SQL_SELECT_ROLE_BY_ID = SQL_SELECT_ALL_ROLES + " WHERE role_id = ?";
 
@@ -119,7 +119,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     }
 
     private RoleDomainObject[] getRolesForUser( UserDomainObject user ) {
-        String sqlStr = "SELECT roles.role_id, role_name, roles.admin_role FROM roles, user_roles_crossref"
+        String sqlStr = SQL_SELECT_ALL_ROLES+", user_roles_crossref"
                         + " WHERE user_roles_crossref.role_id = roles.role_id"
                         + " AND user_roles_crossref.user_id = ?";
         String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + user.getId()} );
@@ -352,10 +352,27 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     }
 
     public synchronized RoleDomainObject addRole( String roleName ) {
-        String insertSql = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,0,0) "
+        RoleDomainObject role = new RoleDomainObject( 0, roleName, 0 );
+        saveNewRole( role );
+        return role ;
+    }
+
+    private void saveNewRole( RoleDomainObject role ) {
+        String insertSql = "INSERT INTO roles (role_name, permissions, admin_role) VALUES(?,?,0) "
                            + "SELECT @@IDENTITY";
-        int newRoleId = Integer.parseInt( service.sqlQueryStr( insertSql, new String[] { roleName } ) ) ;
-        return getRoleById( newRoleId );
+        int unionOfPermissionSetIds = getUnionOfRolePermissionIds( role );
+        int newRoleId = Integer.parseInt( service.sqlQueryStr( insertSql, new String[] { role.getName(), ""+unionOfPermissionSetIds } ) ) ;
+        role.setId( newRoleId );
+    }
+
+    private int getUnionOfRolePermissionIds( RoleDomainObject role ) {
+        int unionOfPermissionSetIds = 0 ;
+        RoleDomainObject.RolePermissionDomainObject[] rolePermissions = role.getPermissions() ;
+        for ( int i = 0; i < rolePermissions.length; i++ ) {
+            RoleDomainObject.RolePermissionDomainObject rolePermission = rolePermissions[i];
+            unionOfPermissionSetIds |= rolePermission.getId() ;
+        }
+        return unionOfPermissionSetIds;
     }
 
     public void deleteRole( RoleDomainObject role ) {
@@ -390,9 +407,25 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
             int roleId = Integer.parseInt( sqlResult[0] );
             String roleName = sqlResult[1];
             int adminRoleId = Integer.parseInt( sqlResult[2] );
+            int unionOfRolePermissionIds = Integer.parseInt(sqlResult[3]) ;
             role = new RoleDomainObject( roleId, roleName, adminRoleId );
+            for ( int i = 0; i < RoleDomainObject.ALL_ROLE_PERMISSIONS.length; i++ ) {
+                RoleDomainObject.RolePermissionDomainObject rolePermission = RoleDomainObject.ALL_ROLE_PERMISSIONS[i];
+                addPermissionIfPermissionBitIsSet( role, unionOfRolePermissionIds, rolePermission );
+            }
         }
         return role;
+    }
+
+    private void addPermissionIfPermissionBitIsSet( RoleDomainObject role, int unionOfRolePermissionIds,
+                                                    RoleDomainObject.RolePermissionDomainObject permission ) {
+        if ( bitIsSet( unionOfRolePermissionIds, permission.getId() ) ) {
+            role.addPermission( permission );
+        }
+    }
+
+    private boolean bitIsSet( int unionOfRolePermissionIds, int bitValue ) {
+        return 0 != (unionOfRolePermissionIds & bitValue);
     }
 
     public void sqlUpdateUserRoles( UserDomainObject tempUser ) {
@@ -463,11 +496,15 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
 
     public void saveRole( RoleDomainObject role ) {
         if (0 == role.getId()) {
-            RoleDomainObject newRole = addRole( role.getName() ) ;
-            role.setId(newRole.getId()) ;
+            saveNewRole(role) ;
         } else {
-            service.sqlUpdateQuery( "UPDATE roles SET role_name = ? WHERE role_id = ?", new String[] { role.getName(), ""+role.getId() } ) ;
+            saveExistingRole( role );
         }
+    }
+
+    private void saveExistingRole( RoleDomainObject role ) {
+        int unionOfRolePermissionIds = getUnionOfRolePermissionIds( role );
+        service.sqlUpdateQuery( "UPDATE roles SET role_name = ?, permissions = ? WHERE role_id = ?", new String[] { role.getName(), ""+unionOfRolePermissionIds, ""+role.getId() } ) ;
     }
 
     public void saveUser( UserDomainObject user ) {
