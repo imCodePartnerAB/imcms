@@ -29,7 +29,7 @@ public class ChangeImage extends HttpServlet {
 	    doGet(req,res) ;
 	    return ;
 	}
-
+	
 	HttpSession session = req.getSession(true);
 	imcode.server.User user = (imcode.server.User)session.getValue("logon.isDone");
 
@@ -117,7 +117,102 @@ public class ChangeImage extends HttpServlet {
 			return ;
 		}
 		//log ("c") ;
-	
+		
+		
+		
+		//*lets get some path we need later on
+		File file_path = new File(image_path);
+		String canon_path = file_path.getCanonicalPath();//ex: C:\Tomcat3\webapps\imcms\images
+		String root_dir_parent = file_path.getParent();//ex: c:\Tomcat3\webapps\imcms
+		String root_dir_name = canon_path.substring(root_dir_parent.length());
+		if (root_dir_name.startsWith(File.separator))
+		{
+			root_dir_name = root_dir_name.substring(File.separator.length());
+			//ex: root_dir_name = images
+		}		
+		//*lets get the dirlist, and add the rootdir to it
+		List imageFolders = GetImages.getImageFolders(file_path, true) ;
+		imageFolders.add(0,file_path);
+				
+		//ok we have the list, now lets setup the option list
+		StringBuffer folderOptions = new StringBuffer();
+		for(int i=0;i<imageFolders.size();i++)
+		{
+			File fileObj = (File) imageFolders.get(i);						
+			//ok lets set up the folder name to show and the one to put as value
+			String optionName = fileObj.getCanonicalPath();
+			//lets remove the start of the path so we end up at the rootdir. 
+			if (optionName.startsWith(canon_path))
+			{
+				optionName = optionName.substring(root_dir_parent.length()) ;
+				if (optionName.startsWith(File.separator))
+				{
+					optionName = optionName.substring(File.separator.length()) ;
+				}
+			}else if(optionName.startsWith(File.separator))
+			{
+				optionName = optionName.substring(File.separator.length()) ;
+			}			
+			//the path to put in the option value
+			String optionPath = optionName;
+			if (optionPath.startsWith(root_dir_name))
+			{
+				optionPath = optionPath.substring(root_dir_name.length());
+			}
+			System.out.println("optionPath: "+optionPath);
+			//ok now we have to replace all parent folders with a '-' char
+			StringTokenizer token = new StringTokenizer(optionName,"\\",false);
+			StringBuffer buff = new StringBuffer("");
+			if (token.countTokens() > 2)
+			{
+				//lets only allowe one dir down from imageroot
+				break;
+			}
+			while ( token.countTokens() > 1 )
+			{
+				String temp = token.nextToken();
+				buff.append("&nbsp;&nbsp;-");				
+			}			
+			if (token.countTokens() > 0)
+			{
+				optionName = buff.toString()+token.nextToken();
+			}			
+			File urlFile = new File(optionName) ;
+			String fileName = urlFile.getName() ;
+			File parentDir = urlFile.getParentFile() ;			
+			if (parentDir != null)
+			{
+				optionName = parentDir.getPath()+"/" ;
+			}
+			else
+			{
+				optionName = "" ;
+			}			
+			//filepathfix ex: images\nisse\kalle.gif to images/nisse/kalle.gif
+			optionName = optionName.replace(File.separatorChar,'/')+fileName ;			
+			StringTokenizer tokenizer = new StringTokenizer(optionName, "/", true);
+			StringBuffer filePathSb = new StringBuffer();
+			StringBuffer displayFolderName = new StringBuffer();
+			//the URLEncoder.encode() method replaces '/' whith "%2F" and the can't be red by the browser
+			//that's the reason for the while-loop. 
+			while ( tokenizer.countTokens() > 0 )
+			{
+				String temp = tokenizer.nextToken();
+				if (temp.length() > 1)
+				{	
+					filePathSb.append(java.net.URLEncoder.encode(temp));
+				}else
+				{
+					filePathSb.append(temp);
+				}
+			}	
+			optionName = optionName.replace('-','\\');//Gud strul					
+			String parsedFilePath = filePathSb.toString() ;
+			folderOptions.append("<option value=\"" + optionPath + "\">" + optionName + "</option>\r\n");	
+			session.setAttribute("imageFolderOptionList",folderOptions.toString());
+		}//end for loop
+		
+				
 		
 		String sqlStr = "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images where meta_id = "+meta_id+" and name = "+img_no ;
 		String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr) ;
@@ -234,7 +329,7 @@ public class ChangeImage extends HttpServlet {
 			vec.add("#imgRefLink#") ;
 			vec.add(sql[12]) ;
 		} else {
-						
+								
 			vec.add("#imgName#") ;
 			vec.add("") ;
 			vec.add("#imgRef#") ;
@@ -275,6 +370,11 @@ public class ChangeImage extends HttpServlet {
 		vec.add(String.valueOf(meta_id)) ;
 		vec.add("#img_no#") ;
 		vec.add(String.valueOf(img_no)) ;
+		
+		
+		vec.add("#folders#");
+		vec.add(folderOptions.toString());
+		
 		//log ("e") ;
 		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 		//log ("f") ;		

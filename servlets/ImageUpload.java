@@ -32,7 +32,7 @@ public class ImageUpload extends HttpServlet {
 		File file_path 				= new File(Utility.getDomainPref( "image_path", host ));
 		String image_url			= Utility.getDomainPref( "image_url",host ) ;
 		String image_path			= Utility.getDomainPref( "image_path",host ) ;
-
+			
 		imcode.server.User user ; 
 
 		// Check if user logged on
@@ -61,8 +61,9 @@ public class ImageUpload extends HttpServlet {
 		String contentType = req.getContentType() ;
 		MultipartFormdataParser mp = new MultipartFormdataParser(new String(buffer,"8859_1"),contentType) ;
 		String file = mp.getParameter("file") ;
-		String filename = mp.getFilename("file") ;
-		
+		String filename = mp.getFilename("file") ;		
+		String folder = mp.getParameter("folder");//ex: /se
+		if(folder==null)folder="";
 		//submitted with Browse Images button, no ImageUpload (M Wallin)
 		if (mp.getParameter("browse_images") != null) 
 		{ // Browse Image Library
@@ -80,7 +81,7 @@ public class ImageUpload extends HttpServlet {
 		
 				
 		File fn = new File(filename) ;
-		fn = new File (file_path,fn.getName()) ;
+		fn = new File (file_path+folder,fn.getName()) ;
 
 		if (file.length() > 0) {
 			if ( fn.exists() ) {
@@ -99,6 +100,14 @@ public class ImageUpload extends HttpServlet {
 			fos.write(file.getBytes("8859_1")) ;
 			fos.close() ;
 		}
+		String folderOptList = (String)session.getAttribute("imageFolderOptionList");
+		StringBuffer buff = new StringBuffer(folderOptList);
+		int countX =folderOptList.indexOf(folder);
+		if(countX > 0)	
+			buff.insert(countX+folder.length()+1,"selected");
+		
+		if(folderOptList==null)folderOptList="";
+		
 		//String htmlStr = IMCServiceRMI.interpretAdminTemplate(imcserver,meta_id,user,"change_img.html",img_no,0,0,0) ;
 		//out.println(htmlStr) ;
 		String image_ref = fn.getName() ;
@@ -144,6 +153,10 @@ public class ImageUpload extends HttpServlet {
 		vec.add(String.valueOf(meta_id)) ;
 		vec.add("#img_no#") ;
 		vec.add(String.valueOf(img_no)) ;
+		
+		vec.add("#folders#");
+		vec.add(buff.toString());
+		
 		String lang_prefix = IMCServiceRMI.sqlQueryStr(imcserver, "select lang_prefix from lang_prefixes where lang_id = "+user.getInt("lang_id")) ;
 		String htmlStr = IMCServiceRMI.parseDoc(imcserver,vec,"change_img.html", lang_prefix) ;
 		out.print(htmlStr) ;
