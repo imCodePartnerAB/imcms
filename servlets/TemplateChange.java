@@ -410,7 +410,11 @@ public class TemplateChange extends HttpServlet {
 		temp = IMCServiceRMI.sqlProcedure(imcserver, "getTemplategroups") ;
 		String temps = "" ;
 		for (int i = 0; i < temp.length; i+=2) {
-			temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
+			if ( grp_id.equals(temp[i]) ){
+				temps += "<option selected value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
+			} else {
+				temps += "<option value=\""+temp[i]+"\">"+temp[i+1]+"</option>" ;
+			}
 		}
 		Vector vec = new Vector() ;
 		vec.add("#templategroups#") ;
