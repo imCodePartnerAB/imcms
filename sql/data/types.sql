@@ -14,6 +14,7 @@ INSERT INTO doc_types VALUES(7, 'se', 'HTML-dokument')
 INSERT INTO doc_types VALUES(8, 'se', 'Fil')
 INSERT INTO doc_types VALUES(101, 'se', 'Diagram')
 INSERT INTO doc_types VALUES(102, 'se', 'Konferens')
+INSERT INTO doc_types VALUES(103, 'se', 'Chatt')
 
 INSERT INTO doc_types VALUES(2, 'uk', 'Text-document')
 INSERT INTO doc_types VALUES(5, 'uk', 'URL-document')
@@ -22,6 +23,7 @@ INSERT INTO doc_types VALUES(7, 'uk', 'HTML-document')
 INSERT INTO doc_types VALUES(8, 'uk', 'File')
 INSERT INTO doc_types VALUES(101, 'uk', 'Diagram')
 INSERT INTO doc_types VALUES(102, 'uk', 'Conference')
+INSERT INTO doc_types VALUES(103, 'uk', 'Chat')
 
 INSERT INTO user_types VALUES(0, 'Anonyma användare', 'se')
 INSERT INTO user_types VALUES(1, 'Autentiserade användare', 'se')
@@ -40,8 +42,8 @@ INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(131072,2,'se','Ändra bild')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(262144,2,'se','Ändra meny')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(524288,2,'se','Ändra utseende')
-INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'se','Ändra include')
-																											 
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'se','Ändra include')																											 
+
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,2,'uk','Edit texts')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,5,'uk','Edit')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,6,'uk','Edit')
@@ -144,7 +146,6 @@ INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (7, 'date_activated')
 INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (8, 'meta_text')
 INSERT INTO SORT_BY ( sort_by_id, sort_by_type ) VALUES (9, 'archive')
 SET IDENTITY_INSERT SORT_BY OFF
-
 
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(1,1,'Rubrik')
 INSERT INTO display_name ( sort_by_id, lang_id, display_name ) VALUES(1,2,'Meta headline')
