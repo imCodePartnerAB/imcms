@@ -62,6 +62,10 @@ if exists (select * from sysobjects where id = object_id(N'[dbo].[DeleteDocPermi
 drop procedure [dbo].[DeleteDocPermissionSetEx]
 GO
 
+if exists (select * from sysobjects where id = object_id(N'[dbo].[DeleteInclude]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[DeleteInclude]
+GO
+
 if exists (select * from sysobjects where id = object_id(N'[dbo].[DeleteNewDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[DeleteNewDocPermissionSetEx]
 GO
@@ -903,6 +907,17 @@ CREATE PROCEDURE DeleteDocPermissionSetEx @meta_id INT, @set_id INT AS
 DELETE FROM  doc_permission_sets_ex
 WHERE  meta_id = @meta_id
   AND set_id = @set_id
+
+GO
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+GO
+
+SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+GO
+
+CREATE PROCEDURE DeleteInclude @meta_id INT, @include_id INT AS
+
+DELETE FROM includes WHERE meta_id = @meta_id AND include_id = @include_id
 
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
