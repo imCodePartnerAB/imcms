@@ -69,7 +69,7 @@ final public class IMCService implements IMCServiceInterface {
     private Properties langproperties_swe;
     private Properties langproperties_eng;
 
-    private VelocityEngine velocityEngine;
+    private Map velocityEngines = new TreeMap() ;
 
     static {
         mainLog.info( "Main log started." );
@@ -613,11 +613,11 @@ final public class IMCService implements IMCServiceInterface {
         }
     }
 
-    private synchronized VelocityEngine createVelocityEngine( UserDomainObject user ) throws Exception {
+    private synchronized VelocityEngine createVelocityEngine( String languageIso639_2 ) throws Exception {
         VelocityEngine velocity = new VelocityEngine();
         log.debug( "createVelocityEngine", new Throwable() );
         velocity.setProperty( VelocityEngine.FILE_RESOURCE_LOADER_PATH, templatePath.getCanonicalPath() );
-        velocity.setProperty( VelocityEngine.VM_LIBRARY, user.getLanguageIso639_2() + "/gui.vm" );
+        velocity.setProperty( VelocityEngine.VM_LIBRARY, languageIso639_2 + "/gui.vm" );
         velocity.setProperty( VelocityEngine.VM_LIBRARY_AUTORELOAD, "true" );
         velocity.setProperty( VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem" );
         velocity.setProperty( "runtime.log.logsystem.log4j.category", "velocity" );
@@ -627,8 +627,11 @@ final public class IMCService implements IMCServiceInterface {
 
     public VelocityEngine getVelocityEngine( UserDomainObject user ) {
         try {
+            String languageIso639_2 = user.getLanguageIso639_2();
+            VelocityEngine velocityEngine = (VelocityEngine)velocityEngines.get(languageIso639_2) ;
             if ( velocityEngine == null ) {
-                velocityEngine = createVelocityEngine( user );
+                velocityEngine = createVelocityEngine( languageIso639_2 );
+                velocityEngines.put(languageIso639_2, velocityEngine) ;
             }
             return velocityEngine;
         } catch ( Exception e ) {
