@@ -384,4 +384,17 @@ public class DocumentDomainObject implements IMCConstants {
         return rolesMappedToPermissionSetIds;
     }
 
+    public CategoryDomainObject[] getCategoriesOfType(String typeName) {
+        CategoryDomainObject[] categories = getCategories() ;
+        List categoriesOfType = new ArrayList() ;
+        for (int i = 0; i < categories.length; i++) {
+            CategoryDomainObject category = categories[i];
+            if (typeName.equalsIgnoreCase(category.getTypeName())) {
+               categoriesOfType.add(category);
+            }
+        }
+        final CategoryDomainObject[] arrayOfCategoriesOfType = new CategoryDomainObject[categoriesOfType.size()];
+        return (CategoryDomainObject[]) categoriesOfType.toArray(arrayOfCategoriesOfType) ;
+    }
+
 }

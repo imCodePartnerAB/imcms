@@ -29,4 +29,8 @@ public class CategoryDomainObject {
         return typeName;
     }
 
+    public String toString() {
+        return typeName+": "+name ;
+    }
+
 }

@@ -18,7 +18,7 @@ public class Category {
     }
 
     public String toString() {
-        return internalCategory.getTypeName()+": "+internalCategory.getName() ;
+        return internalCategory.toString() ;
     }
 
     public String getName() {
