@@ -1,32 +1,23 @@
 
-import java.util.*;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.IOException;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.File;
-
-import javax.servlet.ServletException;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpUtils;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.ServletOutputStream;
-
-import imcode.util.*;
 import imcode.server.*;
-import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.parser.ParserParameters;
-import imcode.util.IMCServiceRMI;
-
-import org.apache.log4j.*;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.oro.text.perl.Perl5Util;
+import org.apache.oro.text.regex.Util;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.*;
+import java.io.*;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Stack;
+import java.util.Vector;
+import java.util.regex.Pattern;
 
 /**
  Get a internalDocument = Parse data from database.
@@ -216,7 +207,8 @@ public class GetDoc extends HttpServlet {
             case 5:	//URL-doc
                 imcode.server.Table url_doc = imcref.isUrlDoc( meta_id, user );
                 String temp = url_doc.getString( "url_ref" );
-                if( temp.indexOf( "://" ) == -1 ) {
+                Perl5Util regexp = new Perl5Util();
+                if( !regexp.match("m!^\\w+:|^[/.]!", temp) ) {
                     temp = "http://" + temp;
                 }
                 res.sendRedirect( temp );
