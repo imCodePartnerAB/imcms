@@ -22,7 +22,7 @@ public class PollWriter {
 
     public void writePoll(Poll thePoll) throws IOException {
 	// Get the DateRange of the Poll
-	Quote aQuote = new Quote() ;
+	Quote aQuote = new Quote(null,thePoll.getDateRange()) ;
 	aQuote.setDateRange(thePoll.getDateRange()) ;
 
 	StringBuffer textBuffer = new StringBuffer(thePoll.getQuestion()) ;

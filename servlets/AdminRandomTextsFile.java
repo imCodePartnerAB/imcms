@@ -12,13 +12,13 @@ import imcode.util.fortune.*;
 public class AdminRandomTextsFile extends Administrator implements imcode.server.IMCConstants{
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
-	
-	private final static String HTML_TEMPLATE 	= "admin_random_texts_file.html" ;
-	private final static String OPTION_LINE 	= "option_line.frag" ;
-	private final static String DATE_ERROR 		= "date_err_msg.frag" ;
-	private final static String TEXT_ERROR 		= "text_err_msg.frag" ;
+
+	private final static String HTML_TEMPLATE	= "admin_random_texts_file.html" ;
+	private final static String OPTION_LINE	= "option_line.frag" ;
+	private final static String DATE_ERROR		= "date_err_msg.frag" ;
+	private final static String TEXT_ERROR		= "text_err_msg.frag" ;
 	private final static SimpleDateFormat dateForm = new SimpleDateFormat("yyMMdd");
-	
+
 	/**
 	The GET method creates the html page when this side has been
 	redirected from somewhere else.
@@ -31,9 +31,9 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	/**
 	doPost
 	*/
-	public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{ 
+	public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
 		// Lets get the server this request was aimed for
-		String host = req.getHeader("Host") ;	
+		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("adminserver",host) ;
 
 		HttpSession session = req.getSession();
@@ -52,27 +52,27 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 		if (req.getParameter("back")!=null)	{
 			res.sendRedirect("AdminRandomTexts") ;
 			return;
-		}	
+		}
 
 		List lines = (List)session.getAttribute("lines");
 		String date1 = "";
 		String date2 = "";
 		String text  = "";
 
-		if (req.getParameter("save")!=null)	{	
+		if (req.getParameter("save")!=null)	{
 			System.out.println("rockar det fett");
-			addLineToList(req,lines);			
+			addLineToList(req,lines);
 
 			String readFile = (String)session.getAttribute("file");
 			IMCServiceRMI.setQuoteList(imcServer, readFile+".txt", lines);
 
-			//tillbaks till 
-			res.sendRedirect("AdminRandomTexts") ;								  
+			//tillbaks till
+			res.sendRedirect("AdminRandomTexts") ;
 			return;
-			
+
 		}
 		else{
-			String options 		= IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(),DOCTYPE_FORTUNES+"");
+			String options		= IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(),DOCTYPE_FORTUNES+"");
 			String errMsgDate	= IMCServiceRMI.parseExternalDoc(imcServer, null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 			String errMsgTxt	= IMCServiceRMI.parseExternalDoc(imcServer, null, TEXT_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
 
@@ -81,66 +81,66 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 				date1 = req.getParameter("date1").trim();
 				date2 = req.getParameter("date2").trim();
 				text  = req.getParameter("text").trim();
-				
+
 				boolean ok = true;
 				if( !checkDate(date1) )	{
 					date1=errMsgDate;
 					ok = false;
 				}
-				
+
 				if( !checkDate(date2) )	{
 					date2=errMsgDate;
-					ok = false;				
+					ok = false;
 				}
-				
+
 				if( text.length()<1 ){
 					text=errMsgTxt;
 					ok = false;
 				}
-				
+
 				if( ok ){
 					addLineToList(req,lines);
 					date1 = "";
 					date2 = "";
 					text  = "";
-				}				
-			}	
+				}
+			}
 
 
 			if (req.getParameter("edit")!=null){
 				//hämta raden som är markerad
 				String row = req.getParameter("AdminFile") ;
-			
-				//lägg till en eventuellt redan uppflyttad rad	
+
+				//lägg till en eventuellt redan uppflyttad rad
 				addLineToList(req,lines);
-				
+
 				if (!row.equals("No_Choice")){
 					Integer theRow = Integer.decode(row);
-					Quote quote = (Quote)lines.get(theRow.intValue());	
+					Quote quote = (Quote)lines.get(theRow.intValue());
 					DateRange dates = quote.getDateRange();
-					
+
 					date1 = dateForm.format(dates.getStartDate());
 					date2 = dateForm.format(dates.getEndDate());
-					text  = quote.getText(); 
-					lines.remove(quote);				
+					text  = quote.getText();
+					lines.remove(quote);
 				}
-			
-			}	
 
-			if (req.getParameter("remove")!=null){									
+			}
+
+			if (req.getParameter("remove")!=null){
 				//hämta de rader som ska tas bort
 				String rows[] = req.getParameterValues("AdminFile") ;
 				//ta bort de som ska raderas
 				for(int i=0;i<rows.length;i++){
-					if (!rows[i].equals("No_Choice")){						
-						lines.remove( lines.get(Integer.parseInt(rows[i])) );	
+					if (!rows[i].equals("No_Choice")){
+						lines.remove( lines.get(Integer.parseInt(rows[i])) );
 					}
 				}
-			
+
 			}
-			
+
 			session.setAttribute("lines",lines);
-			
+
 			StringBuffer buff = createOptionList(req,lines, imcServer, user );
 
 			//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
@@ -160,8 +160,8 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 			out.print(parsed);
 			return;
 		}
-	} 
-	
+	}
+
 	private void addLineToList(HttpServletRequest req, List lines) throws ServletException, IOException{
 		String	date1 = (req.getParameter("date1")).trim();
 		String	date2 = (req.getParameter("date2")).trim();
@@ -169,11 +169,9 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 
 		if( checkDate(date1) && checkDate(date2) && text.length()>1 ){
 			try {
-				Quote quote = new Quote();			
 				DateRange range = new DateRange(dateForm.parse(date1), dateForm.parse(date2));
-				
-				quote.setDateRange(range);
-				quote.setText(text);
+				Quote quote = new Quote(text,range);
+
 				lines.add(quote);
 			}catch(ParseException pe) {
 				//this will newer happen sense we already succeded parsing the dates
@@ -190,16 +188,16 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 			Quote quote = (Quote) iter.next();
 			DateRange dates = quote.getDateRange();
 			buff.append("<option value=\""  + counter++ + "\" > "+dateForm.format(dates.getStartDate()) +" "+dateForm.format(dates.getEndDate())+" "+ quote.getText() + "</option>");
-		}	
+		}
 		return buff;
 	}
 
-	private boolean checkDate(String dateStr){	
+	private boolean checkDate(String dateStr){
 		try
 		{
-			dateForm.parse(dateStr);	
+			dateForm.parse(dateStr);
 		}catch(java.text.ParseException pe){
-			return false;	
+			return false;
 		}
 		return true;
 	}
@@ -209,7 +207,7 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
 	**/
 	public void log( String str){
 		super.log(str) ;
-		System.out.println("AdminRandomTextsFile: " + str ) ;	
+		System.out.println("AdminRandomTextsFile: " + str ) ;
 	}
 
 } // End of class

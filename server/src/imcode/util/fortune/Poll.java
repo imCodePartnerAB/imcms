@@ -17,8 +17,9 @@ public class Poll {
     private String question ;
     private Map answers = Collections.synchronizedMap(new HashMap()) ;
 
-    public Poll(String question) {
+    public Poll(String question, DateRange dateRange) {
 	this.question = question ;
+	this.dateRange = dateRange ;
     }
 
     // Add one answer.

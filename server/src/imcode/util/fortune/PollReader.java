@@ -55,8 +55,7 @@ public class PollReader {
 	String question = tokenizer.nextToken() ;
 
 	// Create the poll
-	Poll thePoll = new Poll(question) ;
-	thePoll.setDateRange(aQuote.getDateRange()) ;
+	Poll thePoll = new Poll(question,aQuote.getDateRange()) ;
 
 	// Collect and parse all answers with their counts
 	while ( tokenizer.hasMoreTokens() ) {
@@ -73,12 +72,8 @@ public class PollReader {
 		try {
 		    // Split the token into an answer and a count.
 		    String answer = token.substring(0,tokenIndex) ;
-			System.out.println("answer "+answer);
-			
 		    String answerCountString = token.substring(tokenIndex+2) ;
-			System.out.println("answerCountString "+answerCountString);
 		    int answerCount = Integer.parseInt(answerCountString) ;
-			System.out.println("answerCount "+answerCount);
 		    // Set the answercount in this poll.
 		    thePoll.setAnswerCount(answer,answerCount) ;
 		} catch (NumberFormatException ignored) {

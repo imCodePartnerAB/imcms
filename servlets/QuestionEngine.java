@@ -41,13 +41,26 @@ public class QuestionEngine extends HttpServlet
 
 	Date now = new Date() ;
 
-	if ( pollList.isEmpty() || !((Poll)pollList.get(0)).getDateRange().contains( now ) ) {
-	    // There was no poll, or it wasn't longer current, replace it.
+	if ( pollList.isEmpty() ) {
+	    // There was no poll, get one.
 	    pollList = this.getNewQuestion(imcserver,inFile) ;
 	}
 
 	// So... the Poll.
 	Poll thePoll = (Poll) pollList.get(0) ;
+
+	if ( ! thePoll.getDateRange().contains( now ) ) {
+
+	    // The poll was no longer current, archive it...
+	    List pollStatsList = IMCServiceRMI.getPollList(imcserver,inFile+".stat.txt") ;
+	    pollStatsList.add(thePoll) ;
+	    IMCServiceRMI.setPollList(imcserver,inFile+".stat.txt",pollStatsList) ;
+
+	    // ... and replace it.
+	    pollList = this.getNewQuestion(imcserver,inFile) ;
+	    thePoll = (Poll)pollList.get(0) ;
+
+	}
 
 	// The question...
 	String question = thePoll.getQuestion() ;
@@ -79,10 +92,9 @@ public class QuestionEngine extends HttpServlet
     public List getNewQuestion(String imcserver,String inFile) throws ServletException, IOException
     {
 
-	List questionList = IMCServiceRMI.getQuoteList(imcserver,inFile+".txt") ;
+	List questionList = IMCServiceRMI.getQuoteList(imcserver,inFile+".poll.txt") ;
 
 	Date date = new Date();
-
 	Iterator qIterator = questionList.iterator() ;
 
 	while ( qIterator.hasNext() ) {
@@ -92,7 +104,7 @@ public class QuestionEngine extends HttpServlet
 		String questionString = aPollQuestion.getText() ;
 
 		List newPollList = new LinkedList() ;
-		newPollList.add(new Poll(questionString)) ;
+		newPollList.add(new Poll(questionString,aPollQuestion.getDateRange())) ;
 		IMCServiceRMI.setPollList(imcserver,inFile+".current.txt",newPollList) ;
 		return newPollList ;
 	    }
@@ -100,7 +112,8 @@ public class QuestionEngine extends HttpServlet
 
 	// We didn't find a question/poll... what to do, what to do?
 	List newPollList = new LinkedList() ;
-	newPollList.add(new Poll("")) ;
+	DateRange dateRange = new DateRange(new Date(0),new Date(0)) ;
+	newPollList.add(new Poll("",dateRange)) ;
 	return newPollList ;
 
     }

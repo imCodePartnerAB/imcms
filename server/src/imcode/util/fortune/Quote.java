@@ -10,6 +10,11 @@ public class Quote {
     private String text ;
     private DateRange dateRange ;
 
+    public Quote(String text, DateRange dateRange) {
+	this.text = text ;
+	this.dateRange = dateRange ;
+    }
+
     /**
        get-method for text
 

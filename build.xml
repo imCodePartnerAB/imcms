@@ -631,7 +631,7 @@
     <mkdir dir="${fortunes}"/>
 
     <!-- Create empty files needed by fortune -->
-    <touch file="${fortunes}/poll.txt"    millis="0"/>
+    <touch file="${fortunes}/poll.poll.txt"    millis="0"/>
     <touch file="${fortunes}/quotes.txt"  millis="0"/>
   </target>
 

@@ -103,10 +103,7 @@ public class QuoteReader extends BufferedReader {
 	Parser.parseDoc(textBuffer,replacements) ;
 
 	// Create the Quote.
-	Quote theQuote = new Quote() ;
-
-	theQuote.setDateRange(dateRange) ;
-	theQuote.setText(textBuffer.toString()) ;
+	Quote theQuote = new Quote(textBuffer.toString(),dateRange) ;
 
 	// Return the Quote.
 	return theQuote ;
