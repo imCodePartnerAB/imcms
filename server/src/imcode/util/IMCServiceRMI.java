@@ -4,14 +4,24 @@ import java.io.* ;
 import java.rmi.* ;
 import java.net.* ;
 import java.util.* ;
-import imcode.util.* ;
+//import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.User ;
+import imcode.server.Table ;
+import imcode.server.ExternalDocType ;
+import imcode.server.LoginUser ;
+import imcode.server.Image ;
+import imcode.server.SystemData ;
+
+import imcode.server.IMCServiceInterface ;
 import java.rmi.registry.* ;
+
 /**
 	Class to keep track on the RMI-interface to the ImCode netserver.
 	All calls are identical to those in IMCServiceInterface, with the exception that you add one parameter in front of each.
 	That parameter is a string to indicate the server to use, defined in netservers.cfg.
 */
+
 public class IMCServiceRMI {
 	static Hashtable interfaces ;	// Keeps track of servers. "ip:port"=interface
 
@@ -874,9 +884,9 @@ public class IMCServiceRMI {
 		}
 	}
 
-        /*
-
-        */
+        /**
+        *
+        **/
       	public static Hashtable ExistingDocsGetMetaIdInfo (String server,String[] meta_id) throws IOException {
                 IMCServiceInterface imc = getInterface( server ) ;
 		try {
@@ -884,6 +894,31 @@ public class IMCServiceRMI {
 		} catch ( IOException ex ) {
 			imc = renewInterface(server) ;
 			return imc.ExistingDocsGetMetaIdInfo(meta_id) ;
+		}
+	}
+
+
+         public static String[] getDocumentTypesInList(String server,String langPrefixStr)  throws IOException {
+                IMCServiceInterface imc = getInterface( server ) ;
+		try {
+			return imc.getDocumentTypesInList(langPrefixStr) ;
+		} catch ( IOException ex ) {
+			imc = renewInterface(server) ;
+			return imc.getDocumentTypesInList(langPrefixStr) ;
+		}
+	}
+
+        /**
+         *
+         *
+         */
+    	public static Hashtable getDocumentTypesInHash (String server,String langPrefixStr)  throws IOException {
+                IMCServiceInterface imc = getInterface( server ) ;
+		try {
+			return imc.getDocumentTypesInHash(langPrefixStr) ;
+		} catch ( IOException ex ) {
+			imc = renewInterface(server) ;
+			return imc.getDocumentTypesInHash(langPrefixStr) ;
 		}
 	}
 
