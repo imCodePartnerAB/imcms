@@ -65,48 +65,6 @@ public class StartDoc extends HttpServlet {
 				value = "" ;
 			}
 			session.putValue("browser_id",value) ;
-			// add browser info to user
-
-			// IE
-//			if( value.indexOf( "MSIE" ) != -1 ) {
-//				type = "MSIE" ;
-//				version = "-1" ;
-//
-//				if( value.indexOf( "MSIE 3" ) != -1 )
-//					version = "3" ;
-//				if( value.indexOf( "MSIE 4" ) != -1 )
-//					version = "4" ;
-//				if( value.indexOf( "MSIE 5" ) != -1 )
-//					version = "5" ;
-//
-//				if( value.indexOf( "Windows" ) != -1 )
-//					plattform = "PC" ;
-//				else
-//					plattform = "Mac" ;
-//
-//			} else {
-//				type = "NS" ;
-//				version = "-1" ;
-//
-//				if( value.indexOf( "Mozilla/3" ) != -1 )
-//					version = "3";
-//				if( value.indexOf( "Mozilla/4" ) != -1 )
-//					version = "4";
-//				if( value.indexOf( "Mozilla/5" ) != -1 )
-//					version = "5" ;
-//
-//				if( value.indexOf( "Win" ) != -1 )
-//					plattform = "PC" ;
-//				else
-//					plattform = "Mac" ;
-//			}
-
-			// Get the session
-//			session = req.getSession( true );
-
-			// Does the session indicate this user already logged in?
-//			done = session.getValue( "logon.isDone" );  // marker object
-//			user = (imcode.server.User)done ;
 
 			if( user == null ) {
 				// No logon.isDone means he hasn't logged in.
@@ -129,63 +87,15 @@ public class StartDoc extends HttpServlet {
 		}
 
 
-//		String sqlStr = "select start_meta_id from domains where domain_name = '"+domain+"'" ;
-//		String meta_id_str = IMCServiceRMI.sqlQueryStr(imcserver,sqlStr) ;
-//		try {
-//			meta_id = Integer.parseInt(meta_id_str) ;
-//		} catch ( NumberFormatException nfe ) {
-//			meta_id = IMCServiceRMI.getDefaultHomePage(imcserver) ;
-//		} catch ( NullPointerException ne ) {
-			meta_id = IMCServiceRMI.getDefaultHomePage(imcserver) ;
-//		}
+		meta_id = IMCServiceRMI.getDefaultHomePage(imcserver) ;
+
 		String scheme = req.getScheme( );
 		String serverName = req.getServerName( );
 		int p = req.getServerPort( );
 		String port = (p == 80 || p == 443) ? "" : ":" + p;
 		Utility.redirect(req,res,"GetDoc?meta_id="+meta_id) ;
-//		byte[] tempbytes = GetDoc.getDoc(meta_id,meta_id,host,req,res) ;
-//		if ( tempbytes != null ) {
-//			out.write(tempbytes) ;
-//		}
 
 		return ;
-		/*
-		imcode.server.Table url_doc = IMCServiceRMI.isUrlDoc( imcserver,meta_id,user ) ;
-
-		if( url_doc != null ) {
-			if( user.getBoolean( "admin_mode" ) ) {
-				htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver, meta_id,user,"change_meta.html",5,meta_id,0,0 ) ;
-			} else {
-				String scheme = req.getScheme( );
-				String serverName = url_doc.getString( "url_ref" ) ;
-				res.sendRedirect( serverName ) ;
-			}
-		} else {
-			// check if browser_doc
-			int old_meta_id = meta_id ;
-			meta_id = IMCServiceRMI.isBrowserDoc( imcserver,meta_id,user ) ;
-			if( user.getBoolean( "admin_mode" ) && meta_id != old_meta_id ) {
-				htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver,old_meta_id,user,"change_browser_doc.html",6,meta_id,0,0 ) ;
-			} else {
-				// check if frameset_doc
-				String html_str_temp = IMCServiceRMI.isFramesetDoc( imcserver,meta_id,user ) ;
-				if( html_str_temp != null ) {
-					if( !user.getBoolean( "admin_mode" ) )
-						htmlStr = html_str_temp ;
-					else
-						htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver,meta_id,user,"change_frameset.html",7,meta_id,0,0 ) ;
-				} else {
-					// interpret
-					user.archiveOff( ) ;
-					user.adminModeOff( ) ;
-					htmlStr = IMCServiceRMI.interpretTemplate( imcserver,meta_id,user ) ;
-					user.setLastMetaId( meta_id ) ;
-				}
-			}
-		}
-		out.println( htmlStr ) ;
-		log ("Time: "+(System.currentTimeMillis() - time) ) ;
-		*/
 	}
 
 	/**
