@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.billboard;
 
-import imcode.external.diverse.HtmlGenerator;
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;

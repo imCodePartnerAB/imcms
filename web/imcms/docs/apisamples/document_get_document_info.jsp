@@ -19,6 +19,7 @@ Status: The document is <% if (Document.STATUS_PUBLICATION_APPROVED != document.
 Publication start datetime: <%=document.getPublicationStartDatetime()%>
 Archived datetime: <%=document.getArchivedDatetime()%>
 Publication end datetime: <%=document.getPublicationEndDatetime()%>
+Visible in menu for unauthorized users: <%= document.isVisibleInMenusForUnauthorizedUsers() %>
 Sections:
 <%
      Section[] sections = document.getSections();

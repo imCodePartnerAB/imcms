@@ -378,6 +378,16 @@ public class Document {
         return internalDocument.getStatus() ;
     }
 
+    public void setVisibleInMenusForUnauthorizedUsers(boolean visibleInMenusForUnauthorizedUsers) throws NoPermissionException {
+        securityChecker.hasEditPermission( this ) ;
+        internalDocument.setVisibleInMenusForUnauthorizedUsers( visibleInMenusForUnauthorizedUsers );
+    }
+
+    public boolean isVisibleInMenusForUnauthorizedUsers() throws NoPermissionException {
+        securityChecker.hasAtLeastDocumentReadPermission( this ); ;
+        return internalDocument.isVisibleInMenusForUnauthorizedUsers();
+    }
+
     public abstract static class Comparator extends ChainableReversibleNullComparator {
 
         public int compare( Object o1, Object o2 ) {

@@ -1,11 +1,9 @@
 package imcode.external.diverse;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.File;
+import java.util.Vector;
 
-public class ParseServlet /* extends HttpServlet */ {
+public class ParseServlet  {
 
     private String htmlStr;
 

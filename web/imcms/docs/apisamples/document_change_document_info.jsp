@@ -14,6 +14,8 @@
     document.setArchivedDatetime( new Date() );
     document.setStatus( Document.STATUS_PUBLICATION_APPROVED );
 
+    document.setVisibleInMenusForUnauthorizedUsers( false );
+
     int sectionId = 1;
     Section section = documentService.getSection( sectionId );
     if (null != section) {
@@ -46,5 +48,4 @@
     // don't forget to save your changes!
     documentService.saveChanges( document );
 %>
-Done changing the headline, menutext, menuimageurl, activatedDatetime, archivedDatetime, language, publisher and adding a category to
-document <a href="../servlet/GetDoc?meta_id=<%= documentId %>"><%= documentId %></a>.
+Done changing document <a href="../servlet/GetDoc?meta_id=<%= documentId %>"><%= documentId %></a>.

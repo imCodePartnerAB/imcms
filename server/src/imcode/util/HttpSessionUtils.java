@@ -21,7 +21,7 @@ public class HttpSessionUtils {
     }
 
     public static String createUniqueNameForObject(Object object) {
-        return Integer.toHexString( object.getClass().hashCode() )+RandomStringUtils.randomAlphanumeric( 4 ) ;
+        return Integer.toString( object.getClass().hashCode(), Character.MAX_RADIX )+RandomStringUtils.randomAlphanumeric( 4 ) ;
     }
 
     public static Object getSessionAttributeWithNameInRequest( HttpServletRequest request,
