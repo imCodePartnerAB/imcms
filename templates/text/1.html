@@ -9,7 +9,17 @@
 <!-- 
 TD { font: x-small Verdana,Geneva,sans-serif; color:#000000; }
 .small { font: xx-small Verdana,Geneva,sans-serif; color:#666666; }
-TT { font: x-small "Courier New", Courier, monospace; color:#888888; }
+PRE, TT { font: x-small "Courier New", Courier, monospace; color:#888888; }
+
+A:link    { color:#0000cc; }
+A:visited { color:#9900aa; }
+A:active  { color:#cc0000; }
+A:hover   { color:#0000ff; }
+
+.greylink A:link, .greylink A:visited { color:#888888; text-decoration:none; }
+.greylink A:active, .greylink A:hover { color:#8888ff; text-decoration:underline; }
+
+.infoTbl { border-width: 1px; border-style: solid; border-color: #f0f0f0 #cccccc #cccccc #f0f0f0; }
 -->
 </STYLE>
 
@@ -30,13 +40,13 @@ TT { font: x-small "Courier New", Courier, monospace; color:#888888; }
 	<?imcms:image no='1' label='<? text/1.html/1 ?> 1'?>
 	<?imcms:text no='1' label='Text 1' post='<br><br>'?>
 	
-	
 	<?imcms:menu no="1" label='<? text/1.html/2 ?> 1'?>
 	<table border="0" cellspacing="0" cellpadding="3">
 	<?imcms:menuloop?>
 	<tr valign="top">
 		<td>#menuitemimage#</td>
-		<td align="right"><tt>#menuitemtreesortkey# [#menuitemlinkonly##menuitemmetaid##/menuitemlinkonly#]</tt></td>
+		<td><tt>#menuitemtreesortkey#</tt></td>
+		<td align="right" class="greylink"><tt>[#menuitemlinkonly##menuitemmetaid##/menuitemlinkonly#]</tt></td>
 		<td class="small">#menuitemlink##menuitemheadline##/menuitemlink#<div>#menuitemtext#</div></td>
 	</tr>
 	<?/imcms:menuloop?>
@@ -46,16 +56,36 @@ TT { font: x-small "Courier New", Courier, monospace; color:#888888; }
 	<?imcms:text no='2' label='Text 2' pre='<br>'?>
 	<?imcms:image no='2' label='<? text/1.html/1 ?> 2' post='<br>'?>
 	
+	<br clear="all">
+	<table border="0" cellspacing="0" cellpadding="2" bgcolor="#ffffff" class="infoTbl" align="center" 
+		onDblClick="if (this) if (this.style) this.style.display = 'none';">
+	<tr valign="top">
+		<td>&nbsp;&nbsp;</td>
+		<td>
+		&nbsp;<br>
+
+<b>Info meta_id <?imcms:metaid?>:</b>
+
+<? text/1.html/4 ?></td>
+		<td>&nbsp;&nbsp;</td>
+	</tr>
+	</table>
+	
+	
+	<div align="center">
+	&nbsp;<br>
+	
+	<i>#metaHeadline#</i><br>
+	
+	Powered by imCode imCMS<br>
+	
 	<?imcms:image no="3" label='<? text/1.html/1 ?> 3'?>
 	
-	<br clear="all">
-	<b>Info <?imcms:metaid?>:</b>
-#metaHeadline# - Powered by imCode imCMS
-	
-	<div align="center">#changePage##adminMode#</div></td>
+	#changePage##adminMode#</div></td>
 </tr>
 </table>
 
 </body>
 </html>
 <!--/IMSCRIPT-->
+<? text/1.html/1 ?>
