@@ -127,7 +127,7 @@ function showHelpLayer(what){
 		case 'Preview':
 			helpImageIcon = 'images/btn_preview.gif';
 			helpHeading = '<? sv/htmleditor/scripts/editor_help.js/7 ?>';
-			helpContent = '<? sv/htmleditor/scripts/editor_help.js/8 ?>';
+			helpContent = '<? sv/htmleditor/scripts/editor_help.js/8/1 ?><br><br><? sv/htmleditor/scripts/editor_help.js/8/2 ?><br><br><? sv/htmleditor/scripts/editor_help.js/8/3 ?>';
 			break;
 		case 'Undo':
 			helpImageIcon = 'images/btn_undo.gif';
