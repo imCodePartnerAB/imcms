@@ -58,16 +58,16 @@ public class AdminCategories extends HttpServlet{
         String adminMode = req.getParameter("adminMode") == null ? "default" : req.getParameter("adminMode");
 
         CategoryTypeDomainObject categoryTypeToEdit = null ;
-        if(req.getParameter("category_type") != null){
-                categoryTypeToEdit = service.getDocumentMapper().getCategoryTypeById(Integer.parseInt(req.getParameter("category_type")));
+        if(req.getParameter("select_category_type") != null){
+                categoryTypeToEdit = service.getDocumentMapper().getCategoryTypeById(Integer.parseInt(req.getParameter("select_category_type")));
         }
 
         CategoryDomainObject categoryToEdit = null;
-        if(req.getParameter("categories") != null){
-                categoryToEdit = service.getDocumentMapper().getCategoryById(Integer.parseInt(req.getParameter("categories")));
+        if(req.getParameter("categories") != null && req.getParameter("select_category_type_to_edit") == null ) {
+            categoryToEdit = service.getDocumentMapper().getCategoryById(Integer.parseInt(req.getParameter("categories")));
         }
 
-
+        // ----  Add category type  ---------
         if(req.getParameter("add_category_type") != null || req.getParameter("category_type_add") != null){
 
             if(req.getParameter("category_type_add") != null && !req.getParameter("name").trim().equals("")){
@@ -75,6 +75,7 @@ public class AdminCategories extends HttpServlet{
             }
         }
 
+        // ----  Edit category type  ---------
         if(req.getParameter("edit_category_type") != null ||
                 adminMode.equals("editCategoryTypeMode") ) {
 
@@ -84,11 +85,11 @@ public class AdminCategories extends HttpServlet{
                 service.getDocumentMapper().updateCategoryType(categoryTypeToEdit);
             }
 
-            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToEdit != null ? categoryTypeToEdit.getId()+"" : null) );
+            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToEdit) );
             formBean.setCategoryTypeToEdit(categoryTypeToEdit);
-
         }
 
+        // ----  Delete category type  ---------
         if(req.getParameter("delete_category_type") != null ||
                 adminMode.equals("deleteCategoryTypeMode")){
 
@@ -103,33 +104,59 @@ public class AdminCategories extends HttpServlet{
             formBean.setCategoryTypeToEdit(categoryTypeToEdit);
             formBean.setNumberOfCategories(numberOfCategories);
             formBean.setMsgToUser(msg.toString());
-            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToEdit != null ? categoryTypeToEdit.getId()+"" : null));
+            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToEdit));
         }
 
+        // ----  Add category  ---------
         if(req.getParameter("add_category") != null || adminMode.equals("addCategoryMode")){
 
+            CategoryTypeDomainObject categoryTypeToAddTo = null ;
             if(req.getParameter("category_add") != null && !req.getParameter("name").trim().equals("")){
-                service.getDocumentMapper().addCategoryToDb(categoryTypeToEdit, req.getParameter("name").trim(), req.getParameter("description"), req.getParameter("icon"));
+                if(req.getParameter("add_to_category_type") != null){
+                    categoryTypeToAddTo = service.getDocumentMapper().getCategoryTypeById(Integer.parseInt(req.getParameter("add_to_category_type")));
+                }
+
+                if( isUniqueName(service, categoryTypeToAddTo, req.getParameter("name") ) ) {
+                    service.getDocumentMapper().addCategoryToDb(categoryTypeToAddTo, req.getParameter("name").trim(), req.getParameter("description"), req.getParameter("icon"));
+                    formBean.setUniqueName(true);
+                }else{
+                    formBean.setUniqueName(false);
+                    formBean.setCategoryTypeToEdit(categoryTypeToAddTo);
+                }
             }
-            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, null));
+            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToAddTo));
         }
 
+        // ----  Edit category  ---------
         if(req.getParameter("edit_category") != null ||
                 adminMode.equals("editCategoryMode") ) {
+
+            boolean nameIsUnique = true;
+            if(req.getParameter("category_save") != null ){
+                CategoryTypeDomainObject categoryTypeToAddTo = null ;
+                if(req.getParameter("add_to_category_type") != null){
+                    categoryTypeToAddTo = service.getDocumentMapper().getCategoryTypeById(Integer.parseInt(req.getParameter("add_to_category_type")));
+                }
+                if( !req.getParameter("oldName").toLowerCase().equals(req.getParameter("name").toLowerCase())) {
+                    if( !isUniqueName(service, categoryTypeToAddTo, req.getParameter("name") ) ) {
+                        nameIsUnique = false;
+                    }
+                }
+                if( nameIsUnique ) {
+                    categoryToEdit.setName(req.getParameter("name"));
+                    categoryToEdit.setType(categoryTypeToAddTo);
+                    categoryToEdit.setImage(req.getParameter("icon"));
+                    categoryToEdit.setDescription(req.getParameter("description"));
+                    service.getDocumentMapper().updateCategory(categoryToEdit);
+                    categoryToEdit = null;
+                }
+            }
 
             if(categoryTypeToEdit != null ) {
                 formBean.setCategoriesOptionList(createHtmlOptionListOfCategoriesForOneType(service, categoryTypeToEdit, categoryToEdit != null ? categoryToEdit.getId()+"" : null));
             }
-
-            if(req.getParameter("category_save") != null ){
-                categoryToEdit.setName(req.getParameter("name"));
-                categoryToEdit.setType(categoryTypeToEdit);
-                categoryToEdit.setImage(req.getParameter("icon"));
-                categoryToEdit.setDescription(req.getParameter("description"));
-                service.getDocumentMapper().updateCategory(categoryToEdit);
-            }
-
-            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToEdit != null ? categoryTypeToEdit.getId()+"" : null));
+            formBean.setUniqueName(nameIsUnique);
+            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToEdit));
             formBean.setCategoryTypeToEdit(categoryTypeToEdit);
             if(req.getParameter("select_category_type_to_edit") != null ) {
                 formBean.setCategoryToEdit(null);
@@ -139,13 +166,9 @@ public class AdminCategories extends HttpServlet{
 
         }
 
-         if(req.getParameter("delete_category") != null ||
+        // ----  Delete category  ---------
+        if(req.getParameter("delete_category") != null ||
                 adminMode.equals("deleteCategoryMode")){
-
-            if(categoryTypeToEdit != null ) {
-
-                formBean.setCategoriesOptionList(createHtmlOptionListOfCategoriesForOneType(service, categoryTypeToEdit, categoryToEdit != null ? categoryToEdit.getId()+"" : null));
-            }
 
             StringBuffer msg = new StringBuffer("");
             String[] documentsOfOneCategory = null;
@@ -162,6 +185,7 @@ public class AdminCategories extends HttpServlet{
                     documentsOfOneCategory = null;
                 }
             }
+
             if(categoryTypeToEdit != null ) {
                 formBean.setCategoriesOptionList(createHtmlOptionListOfCategoriesForOneType(service, categoryTypeToEdit, categoryToEdit != null ? categoryToEdit.getId()+"" : null));
             }
@@ -169,9 +193,39 @@ public class AdminCategories extends HttpServlet{
             formBean.setCategoryToEdit(categoryToEdit);
             formBean.setDocumentsOfOneCategory(documentsOfOneCategory);
             formBean.setMsgToUser(msg.toString());
-            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToEdit != null ? categoryTypeToEdit.getId()+"" : null));
+            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToEdit));
         }
 
+        // ----  Show category  ---------
+        if(req.getParameter("view_category") != null ||
+                adminMode.equals("showCategoryMode") ) {
+
+         /*  if(req.getParameter("category_save") != null ){
+                CategoryTypeDomainObject categoryTypeToAddTo = null ;
+                if(req.getParameter("add_to_category_type") != null){
+                    categoryTypeToAddTo = service.getDocumentMapper().getCategoryTypeById(Integer.parseInt(req.getParameter("add_to_category_type")));
+                }
+                categoryToEdit.setName(req.getParameter("name"));
+                categoryToEdit.setType(categoryTypeToAddTo);
+                categoryToEdit.setImage(req.getParameter("icon"));
+                categoryToEdit.setDescription(req.getParameter("description"));
+                service.getDocumentMapper().updateCategory(categoryToEdit);
+                categoryToEdit = null;
+            }
+        */
+            if(categoryTypeToEdit != null ) {
+                formBean.setCategoriesOptionList(createHtmlOptionListOfCategoriesForOneType(service, categoryTypeToEdit, categoryToEdit != null ? categoryToEdit.getId()+"" : null));
+            }
+
+            formBean.setCategoryTypesOptionList(createHtmlOptionListOfCategoryTypes(service, categoryTypeToEdit));
+            formBean.setCategoryTypeToEdit(categoryTypeToEdit);
+            if(req.getParameter("select_category_type_to_edit") != null ) {
+                formBean.setCategoryToEdit(null);
+            }else{
+                formBean.setCategoryToEdit(categoryToEdit);
+            }
+
+        }
 
         formBean.setAdminMode(adminMode);
         req.setAttribute( ADMIN_CATEGORIES_BEAN, formBean );
@@ -180,12 +234,12 @@ public class AdminCategories extends HttpServlet{
     }
 
 
-    public String createHtmlOptionListOfCategoryTypes( IMCServiceInterface imcref, String selectedType ) {
+    private String createHtmlOptionListOfCategoryTypes(IMCServiceInterface imcref, CategoryTypeDomainObject selectedType) {
 
         CategoryTypeDomainObject[] categoryTypes = imcref.getDocumentMapper().getAllCategoryTypes();
         String temps = "";
         for ( int i = 0; i < categoryTypes.length; i++ ) {
-            boolean selected = selectedType != null && selectedType.equals(""+ categoryTypes[i].getId() );
+            boolean selected = selectedType != null && selectedType.getId() == categoryTypes[i].getId() ;
            temps += "<option value=\""
                      + categoryTypes[i].getId()
                      + "\""
@@ -196,9 +250,9 @@ public class AdminCategories extends HttpServlet{
         return temps;
     }
 
-    public String createHtmlOptionListOfCategoriesForOneType( IMCServiceInterface imcref, CategoryTypeDomainObject categoryType,  String selectedCategory ) {
+    private String createHtmlOptionListOfCategoriesForOneType( IMCServiceInterface service, CategoryTypeDomainObject categoryType,  String selectedCategory ) {
 
-        CategoryDomainObject[] categories = imcref.getDocumentMapper().getAllCategoriesOfType(categoryType);
+        CategoryDomainObject[] categories = service.getDocumentMapper().getAllCategoriesOfType(categoryType);
         String temps = "";
         for ( int i = 0; i < categories.length; i++ ) {
             boolean selected = selectedCategory != null && selectedCategory.equals(""+ categories[i].getId() );
@@ -212,6 +266,16 @@ public class AdminCategories extends HttpServlet{
         return temps;
     }
 
+    private boolean isUniqueName( IMCServiceInterface service, CategoryTypeDomainObject categoryType, String categoryName) {
+
+        CategoryDomainObject[] categories = service.getDocumentMapper().getAllCategoriesOfType(categoryType);
+        for(int i = 0; i < categories.length; i++) {
+            if(categories[i].getName().toLowerCase().equals(categoryName.trim().toLowerCase()) ){
+                return false;
+            }
+        }
+        return true;
+    }
 
     public static class AdminCategoriesBean {
 
@@ -223,6 +287,7 @@ public class AdminCategories extends HttpServlet{
         private int numberOfCategories;
         private String[] documentsOfOneCategory;
         private String msgToUser;
+        private boolean uniqueName;
 
 
 
@@ -290,6 +355,14 @@ public class AdminCategories extends HttpServlet{
 
         public void setMsgToUser(String msgToUser) {
             this.msgToUser = msgToUser;
+        }
+
+        public boolean getUniqueName() {
+            return uniqueName;
+        }
+
+        public void setUniqueName(boolean bool ) {
+            uniqueName = bool;
         }
     }
 }
