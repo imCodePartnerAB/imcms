@@ -1099,6 +1099,8 @@ GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
 GO
 
+
+
 --
 -- Procedure Create
 -- dbo.GetChilds
@@ -1119,7 +1121,7 @@ select  to_meta_id, c.menu_sort,manual_sort_order, doc_type,
   archive,target, left(convert (varchar,date_created,120),10), left(convert (varchar,date_modified,120),10),
   meta_headline,meta_text,meta_image,frame_name,
   activated_date+activated_time,archived_date+archived_time,
-  min(urc.role_id * ISNULL(dps.permission_id&~1,1) * ISNULL(rr.set_id,1)),
+  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),
   fd.filename
 from   childs c
 join   meta m    
@@ -1139,7 +1141,7 @@ join user_roles_crossref urc           -- This table tells us which users have w
       or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin
       or  (
         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
-       and ISNULL(dps.permission_id&~1,1) != 1
+       and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1
       )
      )
 left join fileupload_docs fd
@@ -1157,7 +1159,7 @@ select  to_meta_id, c.menu_sort,manual_sort_order, doc_type,
   archive,target, left(convert (varchar,date_created,120),10), left(convert (varchar,date_modified,120),10),
   meta_headline,meta_text,meta_image,frame_name,
   activated_date+activated_time,archived_date+archived_time,
-  min(urc.role_id * ISNULL(dps.permission_id&~1,1) * ISNULL(rr.set_id,1)),
+  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),
   fd.filename
 from   childs c
 join   meta m    
@@ -1177,7 +1179,7 @@ join user_roles_crossref urc           -- This table tells us which users have w
       or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin
       or  (
         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
-       and ISNULL(dps.permission_id&~1,1) != 1
+       and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1
       )
      )
 left join fileupload_docs fd
@@ -1195,7 +1197,7 @@ select  to_meta_id, c.menu_sort,manual_sort_order, doc_type,
   archive,target, left(convert (varchar,date_created,120),10), left(convert (varchar,date_modified,120),10),
   meta_headline,meta_text,meta_image,frame_name,
   activated_date+activated_time,archived_date+archived_time,
-  min(urc.role_id * ISNULL(dps.permission_id&~1,1) * ISNULL(rr.set_id,1)),
+  min(urc.role_id * ISNULL(~CAST(dps.permission_id AS BIT),1) * ISNULL(rr.set_id,1)),
   fd.filename
 from   childs c
 join   meta m    
@@ -1215,7 +1217,7 @@ join user_roles_crossref urc           -- This table tells us which users have w
       or  urc.role_id = 0      -- and also include the rows that tells us this user is a superadmin
       or  (
         m.show_meta != 0    -- and also include documents that are to be shown regardless of rights. (Visa även för obehöriga)
-       and ISNULL(dps.permission_id&~1,1) != 1
+       and ISNULL(~CAST(dps.permission_id AS BIT),1) != 1
       )
      )
 left join fileupload_docs fd
@@ -1227,6 +1229,9 @@ group by to_meta_id, c.menu_sort,manual_sort_order, doc_type,
   fd.filename
 order by  menu_sort,meta_headline
 end
+
+
+
 
 GO
 SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
