@@ -119,8 +119,8 @@ public class ApplicationServer {
         try {
 
             Class databaseClass = Class.forName(databaseServiceClass);
-            Constructor objConstructor = databaseClass.getConstructor( new Class[]{String.class, Integer.class, String.class, String.class, String.class } );
-            result = (DatabaseService)objConstructor.newInstance( new Object[]{ host, new Integer(port), databaseName, user, password });
+            Constructor objConstructor = databaseClass.getConstructor( new Class[]{String.class, Integer.class, String.class, String.class, String.class, Integer.class } );
+            result = (DatabaseService)objConstructor.newInstance( new Object[]{ host, new Integer(port), databaseName, user, password, new Integer(port) });
         } catch( Exception ex ) {
             log.fatal( "Failed to create database connection pool");
             log.fatal( "DatabaseServiceClass = " +databaseServiceClass );

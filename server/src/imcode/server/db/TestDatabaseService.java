@@ -64,7 +64,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            //DatabaseTestInitializer.static_initMimer(),
+            DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -163,7 +163,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private void test_sproc_systemdata( DatabaseService databaseService ) {
         assertEquals( DOC_FIRST_PAGE_ID, databaseService.sproc_StartDocGet() );
         assertEquals( "@webmaster-name@", databaseService.sproc_WebMasterGet_name() );
-        assertEquals( "@webmaster-email@", databaseService.sproc_WebMasterGet_email() );
+        assertEquals( "@webmaster-email@", databaseService.sproc_WebMasterGet_address() );
         assertEquals( "@servermaster-name@", databaseService.sproc_ServerMasterGet_name() );
         assertEquals( "@servermaster-email@", databaseService.sproc_ServerMasterGet_address() );
         assertEquals( "", databaseService.sproc_SystemMessageGet() );
@@ -285,8 +285,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void testIsFileDoc( DatabaseService dbService ) {
-        assertFalse( dbService.isFileDoc( DOC_TEST_FIRST_ID ) );
-        assertTrue( dbService.isFileDoc( DOC_TEST_FILE_UPLOAD_DOC_TYPE ) );
+        assertFalse( dbService.selectFrom_meta_isFileDoc( DOC_TEST_FIRST_ID ) );
+        assertTrue( dbService.selectFrom_meta_isFileDoc( DOC_TEST_FILE_UPLOAD_DOC_TYPE ) );
     }
 
     private int test_sproc_getAllRoles( DatabaseService dbService ) {
@@ -610,6 +610,53 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
+    public void test_sproc_StartDocSet() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 1, databaseService.sproc_StartDocSet( DOC_FIRST_PAGE_ID ) );
+            assertEquals( DOC_FIRST_PAGE_ID, databaseService.sproc_StartDocGet() );
+        }
+    }
+
+    public void test_sproc_SystemMessageSet() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 1, databaseService.sproc_SystemMessageSet( "blabla" ) );
+            assertEquals( "blabla", databaseService.sproc_SystemMessageGet() );
+        }
+    }
+
+    public void test_sproc_ServerMasterSet() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+
+            assertEquals( 1, databaseService.sproc_ServerMasterSet_name( "ServerMasterName" ) );
+            assertEquals( "ServerMasterName", databaseService.sproc_ServerMasterGet_name() );
+
+            assertEquals( 1, databaseService.sproc_ServerMasterSet_address( "ServerMasterAddress" ) );
+            assertEquals( "ServerMasterAddress", databaseService.sproc_ServerMasterGet_address() );
+        }
+    }
+
+    public void test_sproc_WebMasterSetSet() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+
+            assertEquals( 1, databaseService.sproc_WebMasterSet_name( "WebMasterName" ) );
+            assertEquals( "WebMasterName", databaseService.sproc_WebMasterGet_name() );
+
+            assertEquals( 1, databaseService.sproc_WebMasterSet_address( "WebMasterAddress" ) );
+            assertEquals( "WebMasterAddress", databaseService.sproc_WebMasterGet_address() );
+        }
+    }
+
+    public void test_sproc_UpdateParentsDateModified() {
+        for( int i = 0; i < databaseServices.length; i++ ) {
+            DatabaseService databaseService = databaseServices[i];
+            assertEquals( 1, databaseService.sproc_UpdateParentsDateModified( DOC_TEST_SECOND_ID ) );
+            assertEquals( 0, databaseService.sproc_UpdateParentsDateModified( DOC_TEST_FIRST_ID ) );
+        }
+    }
     // Below is helper functions to more than one test.
     private static DatabaseService.Table_users static_createDummyUser() {
         DatabaseService.Table_users user = new DatabaseService.Table_users( USER_NEXT_FREE_ID, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", false, DOC_FIRST_PAGE_ID, 0, 1, 1, true, new Timestamp( new java.util.Date().getTime() ) );

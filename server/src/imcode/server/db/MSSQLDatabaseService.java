@@ -12,14 +12,14 @@ public class MSSQLDatabaseService extends DatabaseService {
     private String TEXT_TYPE_INTERNATIONAL_SQL_SERVER = "NTEXT";
     private String TEXT_TYPE_SQL_SERVER = "TEXT";
 
-    public MSSQLDatabaseService( String hostName, Integer port, String databaseName, String user, String password ) {
+    public MSSQLDatabaseService( String hostName, Integer port, String databaseName, String user, String password, Integer maxConnectionCount  ) {
         super( Logger.getLogger( MSSQLDatabaseService.class ) );
         // log.debug( "Creating a 'SQL Server' database service");
         String jdbcDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
         String jdbcUrl = "jdbc:microsoft:sqlserver://";
         String serverUrl = jdbcUrl + hostName + ":" + port + ";DatabaseName=" + databaseName;
         String serverName = "SQL Server test server";
-        super.initConnectionPoolAndSQLProcessor( serverName, jdbcDriver, serverUrl, user, password );
+        super.initConnectionPoolAndSQLProcessor( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
     }
 
     ArrayList filterCreateCommands( ArrayList commands ) {

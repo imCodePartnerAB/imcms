@@ -1937,7 +1937,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         sd.setServerMaster( m_databaseService.sproc_ServerMasterGet_name() );
         sd.setServerMasterAddress( m_databaseService.sproc_ServerMasterGet_address() );
         sd.setWebMaster( m_databaseService.sproc_WebMasterGet_name() );
-        sd.setWebMasterAddress( m_databaseService.sproc_WebMasterGet_email() );
+        sd.setWebMasterAddress( m_databaseService.sproc_WebMasterGet_address() );
 
         return sd;
     }

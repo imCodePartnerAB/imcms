@@ -13,7 +13,7 @@ public class MySQLDatabaseService extends DatabaseService {
 
     private static final String TEXT_TYPE_MY_SQL = "TEXT";
 
-    public MySQLDatabaseService( String hostName, Integer port, String databaseName, String user, String password ) {
+    public MySQLDatabaseService( String hostName, Integer port, String databaseName, String user, String password, Integer maxConnectionCount  ) {
         super( Logger.getLogger( MySQLDatabaseService.class ) );
         // log.debug( "Creating a 'My SQL' database service");
         String jdbcDriver = "com.mysql.jdbc.Driver";
@@ -21,7 +21,7 @@ public class MySQLDatabaseService extends DatabaseService {
         String serverUrl = jdbcUrl + hostName + ":" + port + "/" + databaseName;
         String serverName = "MySql test server";
 
-        super.initConnectionPoolAndSQLProcessor( serverName, jdbcDriver, serverUrl, user, password );
+        super.initConnectionPoolAndSQLProcessor( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
     }
 
     ArrayList filterInsertCommands( ArrayList commands ) {

@@ -26,6 +26,26 @@ Kvar att undersöka/göra
 
 Sproc:ar kvar att flytta in i koden:
 (Ta bort den du håller på med)
+
+Det saknas poll tabeller i create scipten. Var finns dessa?
+poll_addanswer.prc
+poll_addnew.prc
+poll_addquestion.prc
+poll_getall.prc
+poll_getallanswers.prc
+poll_getallquestions.prc
+poll_getanswer.prc
+poll_getone.prc
+poll_getquestion.prc
+poll_increaseansweroption.prc
+poll_setanswerpoint.prc
+poll_setparameter.prc
+
+(Används av Conferens och andra system, vänta, eller skriva om så att de använder befintliga istället?) getuseridfromname.prc
+(Används av Conferens och andra system, vänta, eller skriva om så att de använder befintliga istället? getusernames.prc
+
+(Struntar i denna? Och kodar detta i servleten som visar innehållet?)userprefschange.prc
+
 classification_fix.prc
 deletenewdocpermissionsetex.prc
 deleteuseradminpermissibleroles.prc
@@ -40,8 +60,6 @@ getreadrunneruserdataforuser.prc
 getrolesdocpermissions.prc
 gettemplategroupswithpermissions.prc
 getuseradminpermissibleroles.prc
-(Används av Conferens och andra system, vänta, eller skriva om så att de använder befintliga istället?) getuseridfromname.prc
-(Används av Conferens och andra system, vänta, eller skriva om så att de använder befintliga istället? getusernames.prc
 Christoffer: getuserpermissionset.prc
 getuserpermissionsetex.prc
 getuserrolesdocpermissions.prc
@@ -57,18 +75,6 @@ listdocsbydate.prc
 listdocsgetinternaldoctypes.prc
 listdocsgetinternaldoctypesvalue.prc
 permissionsgetpermission.prc
-poll_addanswer.prc
-poll_addnew.prc
-poll_addquestion.prc
-poll_getall.prc
-poll_getallanswers.prc
-poll_getallquestions.prc
-poll_getanswer.prc
-poll_getone.prc
-poll_getquestion.prc
-poll_increaseansweroption.prc
-poll_setanswerpoint.prc
-poll_setparameter.prc
 removeuserfromrole.prc
 roleadmingetall.prc
 rolecheckconferenceallowed.prc
@@ -86,7 +92,6 @@ roleupdatename.prc
 roleupdatepermissions.prc
 searchdocs.prc
 searchdocsindex.prc
-servermasterset.prc
 setdocpermissionset.prc
 setdocpermissionsetex.prc
 setinclude.prc
@@ -102,14 +107,11 @@ shop_getshoppingitemsfororder.prc
 shop_getshoppingorderforuserbyid.prc
 shop_getshoppingordersforuser.prc
 sortorder_getexistingdocs.prc
-startdocset.prc
 systemmessageset.prc
 unsetuserflag.prc
 updatedefaulttemplates.prc
 updateparentsdatemodified.prc
 updatetemplatetextsandimages.prc
-userprefschange.prc
-webmasterset.prc
 
 Nedan är förändringar mot scriptet tables.ascii.sql
 * Splittat i två separata skript. Ett för drop table och ett för create table.

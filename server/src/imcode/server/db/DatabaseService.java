@@ -18,6 +18,7 @@ import imcode.server.db.sql.*;
  * /Hasse
  */
 
+// todo: Gå igenom alla modifierande sproc:ar och se till att transaktionshanteringen sköts rätt
 public abstract class DatabaseService {
     private static final char END_OF_COMMAND = ';';
     private static final String DROP_TABLES = "1.droptables.sql";
@@ -79,10 +80,9 @@ public abstract class DatabaseService {
         this.log = log;
     }
 
-    void initConnectionPoolAndSQLProcessor( String serverName, String jdbcDriver, String serverUrl, String user, String password ) {
-        int maxConnectionCount = 20;
+    void initConnectionPoolAndSQLProcessor( String serverName, String jdbcDriver, String serverUrl, String user, String password, Integer maxConnectionCount ) {
         try {
-            ConnectionPool connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
+            ConnectionPool connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount.intValue() );
             sqlProcessor = new SQLProcessorNoTransaction( connectionPool );
         } catch( Exception ex ) {
             log.fatal( "Couldn't initialize connection pool: serverName :' " + serverName + "', jdbcDriver : '" + jdbcDriver + "', serverUrl : " + serverUrl + "', user : '" + user + "', login_password :' " + password + "'" );
@@ -263,7 +263,7 @@ public abstract class DatabaseService {
     // todo: flytta in detta i addNewUser istället, och se till att det fungerar concurrently.
     // todo: kolla att det inte är highest+1 som förväntas.
     int sproc_getHighestUserId() {
-        throw new Error("Dont use this!");
+        throw new Error( "Dont use this!" );
     }
 
     int sproc_updateUser( Table_users userData ) {
@@ -285,8 +285,8 @@ public abstract class DatabaseService {
         private String type_name;
 
         public Table_user_types( ResultSet rs ) throws SQLException {
-            user_type = rs.getInt("user_type");
-            type_name = rs.getString("type_name");
+            user_type = rs.getInt( "user_type" );
+            type_name = rs.getString( "type_name" );
         }
     }
 
@@ -295,10 +295,10 @@ public abstract class DatabaseService {
     */
     Table_user_types[] sproc_GetUserTypes( String lang_prefix ) {
         String sql = "SELECT DISTINCT user_type, type_name FROM user_types WHERE lang_prefix = ? ";
-        Object[] paramValues = new Object[]{ lang_prefix };
-        ArrayList queryResult = sqlProcessor.executeQuery( sql,  paramValues, new ResultProcessor() {
+        Object[] paramValues = new Object[]{lang_prefix};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new Table_user_types(rs);
+                return new Table_user_types( rs );
             }
         } );
         return (Table_user_types[])queryResult.toArray( new Table_user_types[queryResult.size()] );
@@ -313,7 +313,7 @@ public abstract class DatabaseService {
         final SQLTransaction transcation = sqlProcessor.startTransaction();
         transcation.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                insertInto_phones( transcation, number, new Integer(userId), new Integer(phoneType) );
+                insertInto_phones( transcation, number, new Integer( userId ), new Integer( phoneType ) );
             }
         } );
         return transcation.getRowCount();
@@ -325,7 +325,7 @@ public abstract class DatabaseService {
         String primaryKeyColumnName = "phone_id";
         int newPhoneId = 1 + getMaxIntValue( transaction, tableName, primaryKeyColumnName );
         String sql = "INSERT INTO phones ( phone_id , number , user_id, phonetype_id ) VALUES ( ? , ?, ?, ? )";
-        Object[] paramValues = new Object[]{ new Integer( newPhoneId ), number, userId, phoneType };
+        Object[] paramValues = new Object[]{new Integer( newPhoneId ), number, userId, phoneType};
         return transaction.executeUpdate( sql, paramValues );
     }
 
@@ -542,7 +542,7 @@ public abstract class DatabaseService {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                Object[] paramValues = new Object[] { new Integer(meta_id) };
+                Object[] paramValues = new Object[]{new Integer( meta_id )};
                 transaction.executeUpdate( "delete from meta_classification where meta_id = ?", paramValues );
                 transaction.executeUpdate( "delete from childs where to_meta_id = 	?", paramValues );
                 transaction.executeUpdate( "delete from childs where meta_id =	?", paramValues );
@@ -856,14 +856,14 @@ public abstract class DatabaseService {
     int sproc_DelUserRoles( int user_id, int role_id ) {
         int rowCount = 0;
         if( role_id == -1 ) {
-            rowCount += deletaAllUserRoles( user_id );
+            rowCount += deleteFrom_user_roles( user_id );
         } else {
             rowCount += deleteFrom_user_roles( user_id, role_id );
         }
         return rowCount;
     }
 
-    private int deletaAllUserRoles( int user_id ) {
+    private int deleteFrom_user_roles( int user_id ) {
         String sql = "DELETE FROM user_roles_crossref WHERE user_id = ? ";
         Object[] paramValues = new Object[]{new Integer( user_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
@@ -934,7 +934,7 @@ public abstract class DatabaseService {
 
         for( int i = 0; i < childrensMetaIds.length; i++ ) {
             int meta_id = childrensMetaIds[i];
-            if( isFileDoc( meta_id ) ) {
+            if( selectFrom_meta_isFileDoc( meta_id ) ) {
                 fileDocs.add( new Integer( meta_id ) );
             } else {
                 notFileDocs.add( new Integer( meta_id ) );
@@ -959,7 +959,7 @@ public abstract class DatabaseService {
         return result;
     }
 
-    boolean isFileDoc( int meta_id ) {
+    boolean selectFrom_meta_isFileDoc( int meta_id ) {
         String sql = "SELECT meta_id FROM meta WHERE meta_id = ? AND doc_type = 8";
         Object[] paramValues = new Object[]{new Integer( meta_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -1356,24 +1356,24 @@ public abstract class DatabaseService {
         }
     }
 
-     /**
-      *
-      * @param meta_id
-      * @param name
-      * @return
-      */
-     public Table_texts sproc_getText( int meta_id, int name ) {
+    /**
+     *
+     * @param meta_id
+     * @param name
+     * @return
+     */
+    public Table_texts sproc_getText( int meta_id, int name ) {
         String sql = "SELECT meta_id, name, text, type, counter FROM texts WHERE meta_id = ? AND name = ? ";
-        Object[] paramValues = new Object[] { new Integer( meta_id ), new Integer( name ) };
+        Object[] paramValues = new Object[]{new Integer( meta_id ), new Integer( name )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new Table_texts(rs);
+                return new Table_texts( rs );
             }
         } );
         if( queryResult.isEmpty() ) {
             return null;
         } else {
-            return (Table_texts)queryResult.get(0);
+            return (Table_texts)queryResult.get( 0 );
         }
     }
 
@@ -2128,21 +2128,35 @@ public abstract class DatabaseService {
         return Integer.parseInt( selectFrom_sys_data( type_id ) );
     }
 
-    // todo: döp om sysdata_value så man förstår vad detta är för något...
+    int sproc_StartDocSet( int meta_id ) {
+        return update_sys_data( new Integer( 0 ), new Integer( meta_id ) );
+    }
+
     public int sproc_GetCurrentSessionCounter() {
         Integer type_id = new Integer( 1 );
         return Integer.parseInt( selectFrom_sys_data( type_id ) );
     }
 
-    // todo: returnera date objekt i stället? Ändra typen i databasen?
+    public int sproc_SetSessionCounterValue( int sysdata_value ) {
+        return update_sys_data( new Integer( 1 ), new Integer( sysdata_value ) );
+    }
+
     public String sproc_GetCurrentSessionCounterDate() {
         Integer type_id = new Integer( 2 );
         return selectFrom_sys_data( type_id );
     }
 
+    int sproc_SetSessionCounterDate( String counterDate ) {
+        return update_sys_data( new Integer( 2 ), counterDate );
+    }
+
     public String sproc_SystemMessageGet() {
         Integer type_id = new Integer( 3 );
         return selectFrom_sys_data( type_id );
+    }
+
+    int sproc_SystemMessageSet( String newMsg ) {
+        return update_sys_data( new Integer( 3 ), newMsg );
     }
 
     public String sproc_ServerMasterGet_name() {
@@ -2155,14 +2169,30 @@ public abstract class DatabaseService {
         return selectFrom_sys_data( type_id );
     }
 
+    int sproc_ServerMasterSet_name( String name ) {
+        return update_sys_data( new Integer( 4 ), name );
+    }
+
+    int sproc_ServerMasterSet_address( String address ) {
+        return update_sys_data( new Integer( 5 ), address );
+    }
+
     public String sproc_WebMasterGet_name() {
         Integer type_id = new Integer( 6 );
         return selectFrom_sys_data( type_id );
     }
 
-    public String sproc_WebMasterGet_email() {
+    public String sproc_WebMasterGet_address() {
         Integer type_id = new Integer( 7 );
         return selectFrom_sys_data( type_id );
+    }
+
+    int sproc_WebMasterSet_name( String name ) {
+        return update_sys_data( new Integer( 6 ), name );
+    }
+
+    int sproc_WebMasterSet_address( String address ) {
+        return update_sys_data( new Integer( 7 ), address );
     }
 
     private String selectFrom_sys_data( Integer type_id ) {
@@ -2174,14 +2204,6 @@ public abstract class DatabaseService {
             }
         } );
         return (String)queryResult.get( 0 );
-    }
-
-    public int sproc_SetSessionCounterValue( int sysdata_value ) {
-        return update_sys_data( new Integer( 1 ), new Integer( sysdata_value ) );
-    }
-
-    int sproc_SetSessionCounterDate( String counterDate ) {
-        return update_sys_data( new Integer( 2 ), counterDate );
     }
 
     private int update_sys_data( Integer type_id, Object sysdata_value ) {
@@ -2225,11 +2247,11 @@ public abstract class DatabaseService {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                Integer oldSectionId = new Integer(old_section_id);
-                Integer newSectionId = new Integer(new_section_id);
-                sectionDelete( transaction, oldSectionId );
+                Integer oldSectionId = new Integer( old_section_id );
+                Integer newSectionId = new Integer( new_section_id );
+                deleteFrom_section( transaction, oldSectionId );
                 String sql = "update meta_section set section_id = ? where section_id = ? ";
-                Object[] paramValues = new Object[]{ newSectionId, oldSectionId};
+                Object[] paramValues = new Object[]{newSectionId, oldSectionId};
                 transaction.executeUpdate( sql, paramValues );
             }
         } );
@@ -2286,13 +2308,13 @@ public abstract class DatabaseService {
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
                 Integer sectionId = new Integer( section_id );
-                sectionDelete( transaction, sectionId );
+                deleteFrom_section( transaction, sectionId );
             }
         } );
         return transaction.getRowCount();
     }
 
-    private int sectionDelete( SQLTransaction transaction, Integer sectionId ) throws SQLException {
+    private int deleteFrom_section( SQLTransaction transaction, Integer sectionId ) throws SQLException {
         int rowCount = deleteFrom_meta_section( transaction, sectionId );
         rowCount += deleteFrom_sections( transaction, sectionId );
         return rowCount;
@@ -2314,13 +2336,13 @@ public abstract class DatabaseService {
         final SQLTransaction transaction = sqlProcessor.startTransaction();
         transaction.executeAndCommit( new TransactionContent() {
             public void execute() throws SQLException {
-                changeSection( transaction, sectionData );
+                update_sections( transaction, sectionData );
             }
         } );
         return transaction.getRowCount();
     }
 
-    private int changeSection( SQLTransaction transaction, Table_section sectionData ) throws SQLException {
+    private int update_sections( SQLTransaction transaction, Table_section sectionData ) throws SQLException {
         String sql = "UPDATE sections set section_name= ? WHERE section_id = ? ";
         Object[] paramValues = new Object[]{sectionData.section_name, new Integer( sectionData.section_id )};
         return transaction.executeUpdate( sql, paramValues );
@@ -2334,7 +2356,7 @@ public abstract class DatabaseService {
                 if( null == textDocsToBeCopied ) {
                     insertInto_sections( transaction, sectionData );
                 } else {
-                    changeSection( transaction, sectionData );
+                    update_sections( transaction, sectionData );
                 }
             }
         } );
@@ -2467,7 +2489,7 @@ public abstract class DatabaseService {
      */
     // todo :  denna
     public Table_users sproc_GetUserByLogin( String login_name ) {
-        Integer user_id = getUserIdFromLoginName( login_name );
+        Integer user_id = selectFrom_users_getUserIdFromLoginName( login_name );
         if( user_id == null ) {
             return null;
         }
@@ -2477,7 +2499,7 @@ public abstract class DatabaseService {
 
     // todo: Denna returnerar lang_id istället för lang prefix
     // todo: anropa även sproc_GetLangPrefixFromId för denna information
-    private Integer getUserIdFromLoginName( String login_name ) {
+    private Integer selectFrom_users_getUserIdFromLoginName( String login_name ) {
         String sql = "SELECT user_id FROM users WHERE login_name = ? ";
         Object[] paramValues = new Object[]{login_name};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -2497,41 +2519,68 @@ public abstract class DatabaseService {
         String group_name;
 
         public Table_templategroups( ResultSet rs ) throws SQLException {
-            group_id = rs.getInt("group_id");
-            group_name = rs.getString("group_name");
+            group_id = rs.getInt( "group_id" );
+            group_name = rs.getString( "group_name" );
         }
     }
 
     public Table_templategroups[] sproc_getTemplategroups() {
-        String sql = "select group_id,group_name from templategroups order by group_name";
+        String sql = "SELECT group_id,group_name from templategroups order by group_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
-                return new Table_templategroups(rs);
+                return new Table_templategroups( rs );
             }
         } );
-        return (Table_templategroups[])queryResult.toArray( new Table_templategroups[ queryResult.size() ] );
+        return (Table_templategroups[])queryResult.toArray( new Table_templategroups[queryResult.size()] );
     }
 
     /**
      *
      * Nice query that fetches all templategroups a user may use in a document,
      * for easy insertion into an html-option-list, no less!
-    */
+     */
     public Table_templategroups[] sproc_GetTemplateGroupsForUser( int meta_id, int user_id ) {
         String sql = "SELECT distinct group_id,group_name FROM templategroups dt " +
             "JOIN  user_roles_crossref urc ON urc.user_id = ? " +
             "LEFT JOIN roles_rights rr ON rr.meta_id = ? AND rr.role_id = urc.role_id " +
             "LEFT JOIN doc_permission_sets dps ON dps.meta_id = rr.meta_id AND dps.set_id = rr.set_id " +
             "LEFT JOIN doc_permission_sets_ex dpse ON dpse.permission_data = dt.group_id " +
-                "AND (dpse.permission_id & dps.permission_id) > 0 AND dpse.meta_id = rr.meta_id " +
-                "AND dpse.set_id = rr.set_id AND dpse.permission_id = 524288 " + // = Change template
+            "AND (dpse.permission_id & dps.permission_id) > 0 AND dpse.meta_id = rr.meta_id " +
+            "AND dpse.set_id = rr.set_id AND dpse.permission_id = 524288 " + // = Change template
             "WHERE dpse.permission_data IS NOT NULL OR rr.set_id = 0 OR urc.role_id = 0 ORDER BY dt.group_name";
-        Object[] paramValues = new Object[]{ new Integer( user_id ), new Integer( meta_id) };
-        ArrayList queryResult = sqlProcessor.executeQuery(sql, paramValues, new ResultProcessor() {
+        Object[] paramValues = new Object[]{new Integer( user_id ), new Integer( meta_id )};
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
             public Object mapOneRow( ResultSet rs ) throws SQLException {
                 return new Table_templategroups( rs );
             }
         } );
-        return (Table_templategroups[])queryResult.toArray( new Table_templategroups[ queryResult.size() ] );
+        return (Table_templategroups[])queryResult.toArray( new Table_templategroups[queryResult.size()] );
+    }
+
+    int sproc_UpdateParentsDateModified( int meta_id ) {
+        Integer parent_meta_id = selectFrom_childs_getParentId( new Integer(meta_id) );
+
+        if( null == parent_meta_id ) {
+            return 0;
+        } else {
+            String sql = "UPDATE meta SET date_modified = ? WHERE meta_id = ? ";
+            Object[] paramValues = new Object[]{ new Timestamp( new java.util.Date().getTime()), parent_meta_id };
+            return sqlProcessor.executeUpdate( sql, paramValues );
+        }
+    }
+
+    private Integer selectFrom_childs_getParentId( Integer meta_id ) {
+        String sql = "SELECT meta_id FROM childs WHERE to_meta_id = ? ";
+        Object[] paramValues = new Object[]{ meta_id };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
+            public Object mapOneRow( ResultSet rs ) throws SQLException {
+                return new Integer( rs.getInt("meta_id"));
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (Integer)queryResult.get(0);
+        }
     }
 }

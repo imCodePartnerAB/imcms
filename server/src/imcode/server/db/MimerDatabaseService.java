@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class MimerDatabaseService extends DatabaseService {
 
-    public MimerDatabaseService( String hostName, Integer port, String databaseName, String user, String password ) {
+    public MimerDatabaseService( String hostName, Integer port, String databaseName, String user, String password, Integer maxConnectionCount ) {
         super( Logger.getLogger( MimerDatabaseService.class ) );
 
         // log.debug( "Creating a 'Mimer' database service");
@@ -17,7 +17,7 @@ public class MimerDatabaseService extends DatabaseService {
         String serverUrl = jdbcUrl + hostName + ":" + port + "/" + databaseName;
         String serverName = "Mimer test server";
 
-        super.initConnectionPoolAndSQLProcessor( serverName, jdbcDriver, serverUrl, user, password );
+        super.initConnectionPoolAndSQLProcessor( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
 
         // This is only needed to be done the first time
         // sqlProcessor.executeUpdate("CREATE DATABANK " + databaseName , null);
