@@ -290,15 +290,16 @@ public class DocumentComposer extends HttpServlet {
         String filename = fileItem.getName();
         final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
         Set predefinedMimeTypes = new HashSet( Arrays.asList( documentMapper.getAllMimeTypes() ) );
-        String[] mimeTypes = request.getParameterValues( PARAMETER__FILE_DOC__MIME_TYPE );
+        String[] mimeTypeParameters = request.getParameterValues( PARAMETER__FILE_DOC__MIME_TYPE );
         String mimeType = null;
-        for ( int i = 0; i < mimeTypes.length; i++ ) {
-            mimeType = mimeTypes[i].trim();
+        for ( int i = 0; i < mimeTypeParameters.length; i++ ) {
+            mimeType = mimeTypeParameters[i].trim().toLowerCase();
             if ( predefinedMimeTypes.contains( mimeType ) ) {
                 break;
             }
             if ( "".equals( mimeType ) ) {
                 if ( null != filename ) {
+                    filename = filename.toLowerCase() ;
                     mimeType = getServletContext().getMimeType( filename );
                 }
             } else if ( -1 == mimeType.indexOf( '/' ) ) {
