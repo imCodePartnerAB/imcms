@@ -49,22 +49,60 @@ public class ImageFileMetaData
 				if(panicCounter > 10)
 					panic = true; // panic out of this loop, something's wrong with this file!!!
 				int startOfBlock = dis.read(); // should be FF (255)
-				int blockType = dis.read(); // wish for  C0 (192)
+				int blockType = dis.read(); // wish for  C0-3 (192,193,194)
 				int lengthOfBlock = (dis.read()<<8) + dis.read();
-				if (blockType==192) // in case of a C0-block
+				if (blockType==192 || blockType==193 || blockType==194) // in case of a C0-C3-block
 				{
 					dis.read(); // dataPrecision byte of no interest
-					width = (dis.read()<<8) + dis.read();
-				 	height = (dis.read()<<8) + dis.read();
+					height = (dis.read()<<8) + dis.read();
+				 	width = (dis.read()<<8) + dis.read();
 					log.log(Log.INFO, "width: " + width);
 					log.log(Log.INFO, "height: " + height);
 					doLoop = false; // skip the loop
 				}
-				else // if NOT a C0-block, skip this block
+				else // if NOT a C0-3-block, skip this block
 					dis.skipBytes(lengthOfBlock -2);
 				} 
 				dis.close();
 			}
+			
+		else if (file.getName().endsWith(".png")) // ***************** A PNG-File
+		{
+			// PNG starts with 8 bytes (here in decimal): 137 80 78 71 13 10 26 10
+			//  indicating this is a PNG-file
+			// Then blocks in this format:
+			// 		Length: 4 bytes (not including itself, chunkType or CRC)
+			// 		ChunkType: 4 bytes
+			// 		ChunkData: ?
+			// 		CRC: 4 bytes
+			
+			// The first chunk is the IHDR (ImageHeader Chunk) containing:
+			// Width				4 bytes
+			// Height				4 bytes
+			// Bit depth			1 byte
+			// Color type			1 byte
+			// Compression method	1 byte
+			// Filter method		1 byte
+			// Interlace method		1 byte
+			
+			for(int slask=0;slask<8;slask++)
+						type += "" + dis.read() + " ";
+			if(type.equals("137 80 78 71 13 10 26 10 "))
+			{
+				dis.skipBytes(4); // skip the blockLength
+				String header = "";
+				for(int slask=0;slask<4;slask++)
+						header += (char)(dis.read());
+				if (header.equals("IHDR"))
+				{
+					width = (dis.read()<<32) + (dis.read()<<16) + (dis.read()<<8) + dis.read();
+					height = (dis.read()<<32) + (dis.read()<<16) + (dis.read()<<8) + dis.read();
+					dis.close();
+				}		
+			}		
+		
+		}
+		
 		else // unknown file-suffix
 			{ log.log(Log.ERROR, "Ogiltigt suffix"); }
 		}
