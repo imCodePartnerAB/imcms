@@ -21,7 +21,7 @@ public class Parser {
 		    length = tags[i].length() ;
 		    if (length > 0) {
 			for (int start = 0; (start = sb.toString().indexOf(tags[i],start))!=-1; start+=data[i].length()) {
-				sb.replace(start,start+length,data[i]) ;
+				sb.replace(start,start+length,(data[i]==null ? "" : data[i])) ;
 			}
 		    }
 		}

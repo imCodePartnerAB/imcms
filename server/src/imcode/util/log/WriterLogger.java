@@ -1,10 +1,8 @@
 package imcode.util.log ;
 
-import java.io.IOException ; 
+import java.io.IOException ;
 import java.io.Writer ;
 import java.util.Timer ;
-import java.text.DateFormat ;
-import java.text.SimpleDateFormat ;
 
 public class WriterLogger implements LogListener, LogLevels, Runnable  {
 
@@ -20,6 +18,9 @@ public class WriterLogger implements LogListener, LogLevels, Runnable  {
     /** The logcache */
     protected StringBuffer cache ;
 
+    /** The logformat */
+    protected LogFormat logformat ;
+
     /** The minimum loglevel to  keep in memory. */
     protected int flushLevel ;
 
@@ -29,22 +30,6 @@ public class WriterLogger implements LogListener, LogLevels, Runnable  {
     /** The maximum size of cache to keep in memory. */
     protected int logsize ;
 
-    protected DateFormat dateFormat = new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss.SSS]") ;
-
-    final static String EOL = System.getProperty("line.separator") ;
-
-    /** Contains human readable names for the loglevels, each with a nice prefix character so it is easily spottable in a long list. */  
-    protected final static String[] levelNames = {
-	"[*EMERGENCY]",
-	"[*CRITICAL ]",
-	"[+ERROR    ]",
-	"[+WARNING  ]",
-	"[-NOTICE   ]",
-	"[.INFO     ]",
-	"[ DEBUG    ]",
-	"[ WILD     ]",
-    } ;
-
     /**
        Creates a LogWriter that keeps a cache of events, and only writes them to a file when required.
        @param log        The file to log to.
@@ -53,9 +38,10 @@ public class WriterLogger implements LogListener, LogLevels, Runnable  {
        @param interval   The maximum time (in milliseconds) to keep the cache in memory.
        @param size       The maximum size of the cache, before it is flushed.
      */
-    public WriterLogger (Writer out, int logLevel, int flushLevel, int interval, int size) {
+    public WriterLogger (Writer out, LogFormat format, int logLevel, int flushLevel, int interval, int size) {
 	cache = new StringBuffer(size+128) ;
 
+	this.logformat = format ;
 	this.out = out ;
 	this.logsize = size ;
 	this.interval = interval ;
@@ -76,21 +62,7 @@ public class WriterLogger implements LogListener, LogLevels, Runnable  {
 	if (event.getLevel()>logLevel) { // Ignore greater events with loglevels greater than logLevel
 	    return ;
 	}
-	// If the object in the event is a Throwable, uses the message of the Throwable if available.
-	Object obj = event.getObject() ;
-	String trace = event.getTrace() ;
-	if (obj instanceof Throwable) {
-	    obj = ((Throwable)obj).getMessage() ;
-	    if (obj == null) {
-		obj = event.getObject() ;
-	    }
-	} else {
-	    trace = null ;
-	}
-	String log = ""+dateFormat.format(event.getTime())+levelNames[event.getLevel()]+"("+event.getLog().getName()+") "+event.getMessage()+(obj!=null?" Obj: "+obj:"")+(trace!=null?" Trace: "+trace:"")+EOL ;
-	//synchronized (cache) { // Make sure nothing is written to the cache while flushing it.
-	    cache.append(log) ;
-	    //}
+	cache.append(logformat.format(event)) ;
 	// Log immediately if necessary.
 	if (event.getLevel()<=flushLevel || cache.length()>logsize ) {
 	    timer.interrupt() ;
@@ -161,7 +133,7 @@ public class WriterLogger implements LogListener, LogLevels, Runnable  {
 	// Is this a valid loglevel?
 	if ( logLevel < EMERGENCY || logLevel > WILD ) {
 	    throw new IllegalArgumentException("Illegal loglevel.") ;
-  	}
+	}
 	this.logLevel = logLevel ;
     }
 }

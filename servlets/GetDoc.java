@@ -44,13 +44,32 @@ public class GetDoc extends HttpServlet {
 
     private static ServletContext sc ;
 
+    final static String EOL = System.getProperty("line.separator") ;
+    
     static Log trackLog = Log.getLog("accesslog") ;
 
     static {
 	try {
 	    String trackLogFilename = Prefs.get("accesslog","servlet.cfg") ;
 	    if (trackLogFilename != null) {
-		trackLog.addLogListener(new WriterLogger(new java.io.BufferedWriter(new java.io.FileWriter(trackLogFilename,true)),Log.INFO,Log.WARNING,60000,32768)) ;
+		LogFormat accesslogformat = new LogFormat() {
+			private java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("'#date#'[yyyy-MM-dd] '#time#'[HH:mm:ss.SSS]") ;
+			
+			public String format (LogEvent event) {
+			    String result = dateFormat.format(event.getTime()) ;
+			    Object obj = event.getObject() ;
+			    if (obj instanceof HttpSession) {
+				HttpSession session = (HttpSession)obj ;
+				result+=" #session#["+session.getId()+"]" ;
+				User user = (User)session.getValue("logon.isDone");  // marker object
+				if ( user != null ) {
+				    result+=" #user#["+user.getUserId()+"]" ;
+				}
+			    }
+			    return result+" #document#["+event.getMessage()+"]" + EOL ;
+			}
+		    } ;
+		trackLog.addLogListener(new WriterLogger(new java.io.BufferedWriter(new java.io.FileWriter(trackLogFilename,true)),accesslogformat,Log.INFO,Log.WARNING,60000,32768)) ;
 	    }
 	} catch (IOException ex) {
 	    System.err.println("Failed to set up access log. "+ex.getMessage()) ;
@@ -207,8 +226,10 @@ public class GetDoc extends HttpServlet {
 	    Utility.redirect( req,res,ex_doc.getCallServlet( ) + paramStr ) ;
 	    return null ;
 	}
-	//int doc_type = IMCServiceRMI.getDocType( imcserver,meta_id ) ;
-	trackLog.log(Log.INFO, "User: "+user.getInt("user_id")+" From: "+parent_meta_id+" To: "+meta_id+" DocType: "+doc_type_str) ;
+
+	// Log to accesslog
+	trackLog.log(Log.INFO, ""+meta_id,session) ;
+
 	switch( Integer.parseInt(doc_type_str) ) {
 
 	case 5:	//URL-doc

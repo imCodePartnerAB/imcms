@@ -1,8 +1,8 @@
-LIBDIR = /usr/local/lib/java
+LIBDIR = /usr/local/lib
 SRCDIR = .
 INSTALLDIR = install
 
-JARSPATH = $(LIBDIR)/jakarta-oro-2.0.2-dev-2.jar:$(LIBDIR)/jdbc2_0-stdext.jar:$(LIBDIR)/Opta2000.jar:$(LIBDIR)/jsdk.jar:$(LIBDIR)/jcchart400K.jar
+JARSPATH = $(LIBDIR)/jakarta-oro-2.0.2-dev-2.jar:$(LIBDIR)/jdbc2_0-stdext.jar:$(LIBDIR)/Opta2000.jar:$(LIBDIR)/servlet.jar:$(LIBDIR)/jcchart400K.jar
 IMCMSCLASSPATH = ../server/classes
 DIRSCLASSPATH = $(SRCDIR):$(SRCDIR)/diagram:$(SRCDIR)/conf
 CLASSPATH = $(JARSPATH):$(IMCMSCLASSPATH):$(DIRSCLASSPATH)
@@ -21,6 +21,7 @@ CLASSES = AddDoc.class \
           FileAdmin.class \
           GenericUpload.class \
           GetDoc.class \
+          GetDoc$1.class \
           GetExistingDoc.class \
           ImageBrowse.class \
           ImageUpload.class \
