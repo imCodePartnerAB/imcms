@@ -72,7 +72,6 @@ getusernames.prc
 getuserpassword.prc
 getuserpermissionset.prc
 getuserpermissionsetex.prc
-getuserroles.prc
 getuserrolesdocpermissions.prc
 getuserrolesids.prc
 getuserswhobelongstorole.prc

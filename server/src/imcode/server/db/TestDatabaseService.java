@@ -81,9 +81,15 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetText( databaseService );
             test_sproc_GetIncludes( databaseService );
             test_sproc_GetImgs( databaseService );
+            test_sproc_GetUserRoles( databaseService );
             testIsFileDoc( databaseService );
         }
     }
+
+    private void test_sproc_GetUserRoles( DatabaseService databaseService ) {
+	assertEquals( 2, databaseService.sproc_GetUserRoles( ROLE_TEST_ID ).length ) ;
+    }
+
     private void test_sproc_GetImgs(  DatabaseService databaseService  ) {
         assertEquals( 1, databaseService.sproc_getImages( DOC_TEST_FIRST_ID ).length );
     }

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.List;
 
 import java.sql.*;
 import java.io.*;
@@ -2024,4 +2025,20 @@ public abstract class DatabaseService {
         }
         return null;
     }
+
+    String[] sproc_GetUserRoles( int user_id ) {
+	String sql = "SELECT role_name from roles, user_roles_crossref "+
+	    "WHERE roles.role_id = user_roles_crossref.role_id AND user_roles_crossref.user_id = ?" ;
+	Object paramValues[] = new Object[] { new Integer( user_id ) } ;
+	List roleNames = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                String role_name = rs.getString("role_name");
+		return role_name ;
+            }
+        } );
+
+	return (String[])roleNames.toArray(new String[roleNames.size()]) ;
+
+    }
+
 }
