@@ -314,13 +314,30 @@ public class SaveNewMeta extends HttpServlet {
 
 	 // URL DOCUMENT
 			} else if( doc_type.equals("5") ) {
-				htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver, Integer.parseInt(parent_meta_id),user,"new_url_doc.html",5,Integer.parseInt(meta_id),0,Integer.parseInt(doc_menu_no) );
-				out.println( htmlStr ) ;
+				Vector vec = new Vector() ;
+				vec.add("#new_meta_id#") ;
+				vec.add(String.valueOf(meta_id)) ;
+				vec.add("#getMetaId#") ;
+				vec.add(String.valueOf(parent_meta_id)) ;
+				vec.add("#servlet_url#") ;
+				vec.add(servlet_url) ;
+				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_url_doc.html", lang_prefix) ;
+				//htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver, Integer.parseInt(parent_meta_id),user,"new_url_doc.html",5,Integer.parseInt(meta_id),0,Integer.parseInt(doc_menu_no) );
+				out.print( htmlStr ) ;
 				return ;
 
 	 // FRAMESET DOCUMENT
 			} else if( doc_type.equals("7") ) {
-				htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver, Integer.parseInt(parent_meta_id),user,"new_frameset.html",7,Integer.parseInt(meta_id),0,Integer.parseInt(doc_menu_no) );
+				Vector vec = new Vector() ;
+				vec.add("#new_meta_id#") ;
+				vec.add(String.valueOf(meta_id)) ;
+				vec.add("#getMetaId#") ;
+				vec.add(String.valueOf(parent_meta_id)) ;
+				vec.add("#servlet_url#") ;
+				vec.add(servlet_url) ;
+				htmlStr = IMCServiceRMI.parseDoc(imcserver, vec, "new_frameset.html", lang_prefix) ;
+
+				//htmlStr = IMCServiceRMI.interpretAdminTemplate( imcserver, Integer.parseInt(parent_meta_id),user,"new_frameset.html",7,Integer.parseInt(meta_id),0,Integer.parseInt(doc_menu_no) );
 				out.println( htmlStr ) ;
 				return ;
 
