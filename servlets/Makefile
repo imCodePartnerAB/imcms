@@ -3,7 +3,7 @@ SRCDIR = .
 INSTALLDIR = install
 
 JARSPATH = $(LIBDIR)/jakarta-oro-2.0.2-dev-2.jar:$(LIBDIR)/jdbc2_0-stdext.jar:$(LIBDIR)/Opta2000.jar:$(LIBDIR)/jsdk.jar:$(LIBDIR)/jcchart400K.jar
-IMCMSCLASSPATH = /home/kreiger/imCMS1.3/1.3/server/classes
+IMCMSCLASSPATH = ../server/classes
 DIRSCLASSPATH = $(SRCDIR):$(SRCDIR)/diagram:$(SRCDIR)/conf
 CLASSPATH = $(JARSPATH):$(IMCMSCLASSPATH):$(DIRSCLASSPATH)
 
