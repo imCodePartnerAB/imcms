@@ -4,6 +4,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.util.* ;
+import imcode.server.*;
 //import javax.swing.*; // (Använder ImageIcon)
 /**
   Edit imageref  - upload image to server.
@@ -138,11 +139,11 @@ public class ChangeImage extends HttpServlet {
 			//so the current "directory" or the "parent" must be equal to root_dir_name
 			//lets start and see if the parent is root_dir				
 			if (  root_dir_name.equals(fileObj.getParentFile().getName()) ){
-				optionValue = "\\"+fileObj.getName();
-				optionName = "&nbsp;&nbsp;\\"+fileObj.getName();
+				optionValue = HTMLConv.toHTML("\\"+fileObj.getName());
+				optionName = HTMLConv.toHTML("&nbsp;&nbsp;\\"+fileObj.getName());
 			}else if( root_dir_name.equals(fileObj.getName()) ){
 				optionValue = "";
-				optionName = fileObj.getName();
+				optionName = HTMLConv.toHTML(fileObj.getName());
 			}else{
 				continue;
 			}		
