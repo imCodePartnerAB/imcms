@@ -99,13 +99,14 @@ sub unescape {
 
     s{\\(u(\d{4})|.)}
     { 
-	    my $replacement = $1 ;
-	    if ($2) {
-	        $replacement = (chr hex $2) ;
+	my $replacement = $1 ;
+	my $unicode_value = $2 ;
+	if ($unicode_value) {
+	        $replacement = (chr hex $unicode_value) ;
     	} else {
-	        $replacement = $escapes{$1} if exists $escapes{$1} ;
-	    }
-	    $replacement ;
+	        $replacement = $escapes{$replacement} if exists $escapes{$replacement} ;
+	}
+	$replacement ;
     }seg;
 
     return $_;
@@ -128,9 +129,9 @@ sub escape_value {
     s!\r!\\r!g ;
     s!\t!\\t!g ;
     s!\A !\\ ! ;
-    s!([\x00-\x09\x0b-\x1f\x7f-\x{ffff}])!sprintf('\\u%04x',ord $1)!ge ;
-    s/\n(\s*)(?=(\S?))/ $2 ? "\\n$1\\\n\t\t" : "\\n" /ge and s/(?!<\s)\\\n\t\t\z// ;
-    s/^(\s*)([#!])/$1\\$2/mg ;
+    s!([\x00-\x09\x0b-\x1f\x{0100}-\x{ffff}])!sprintf('\\u%04x',ord $1)!ge ;
+    s/\n([^\n\S]*)(?=(\S?))/ $2 ? "\\n$1\\\n\t\t" : "\\n" /ge and s/(?!<\s)\\\n\t\t\z// ;
+    #s/^(\s*)([#!])/$1\\$2/mg ;
 
     return $_ ;
 }
