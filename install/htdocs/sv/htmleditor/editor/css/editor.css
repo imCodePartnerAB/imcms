@@ -1,0 +1,38 @@
+BODY { margin: 5 0 }
+TD, DIV, INPUT, BUTTON, SELECT { font: 10px Verdana; color:#000000 }
+
+BUTTON, .button, .hand { cursor:hand; filter:Alpha(Opacity=80) }
+BUTTON, .button { height: 23px }
+.button { width: 23px }
+.BUTTONdisabled, .nohand { cursor:default; filter:Alpha(Opacity=70) }
+.rub2 { font: bold 10px Verdana; color:red }
+.rub3 { font: italic 10px Verdana; color:blue }
+.fs1 { font: bold 11px Arial, Verdana; border: 2px groove; }
+.fs2 { font: 9px Arial, Verdana }
+
+
+
+.norm { font: 10px Verdana }
+.ingress { font: bold 10px Verdana }
+.heading { font: bold 12px Verdana }
+.headingBig { font: bold 14px Verdana; color:#333399 }
+
+
+.dim { font: 9px Verdana; color:#777777 }
+.code { font-family: inherit; font-weight: bold; color:#333399; background-color:#f0f0f0 }
+
+.fField { font: 11px Arial, sans-serif; height:21; text-align:right }
+.fDesc { font: 11px Arial, sans-serif }
+.fButton { font: 11px Arial, sans-serif; height:21; text-align:center }
+.fButtonSmall { font: bold 10px Verdana, sans-serif; height:19; text-align:center }
+.fFieldSmall { font: 10px Verdana, sans-serif }
+
+.imEditHelp { font: 10px Verdana; color:#000000 }
+.imEditHelpHeading { font: bold 12px Verdana; color:#000066 }
+.imEditHelpHeadingBig { font: bold 14px Verdana; color:#990000 }
+.imEditHelpCode { font: 11px Courier New,Courier,monospace; color:#333399 }
+A.imEditHelpLink:link, A.imEditHelpLink:visited { font: bold 10px Verdana; color:#333399; text-decoration:none }
+A.imEditHelpLink:active, A.imEditHelpLink:hover { font: bold 10px Verdana; color:#333399; text-decoration:underline }
+.imEditHelpLinkActive { font: bold 10px Verdana; color:#000033 }
+
+A { cursor:hand }

@@ -96,10 +96,12 @@ log4j-config = log4j-nodebug.xml
 # Which components to build.
 # Comment out any you don't want to build.
 
-#build-billboard
-#build-calender
-#build-chat
-#build-conference
-#build-fortune
-#build-postcard
-#build-shop
+build-billboard
+build-calender
+build-chat
+build-conference
+build-fortune
+build-postcard
+build-readrunner
+build-shop
+build-htmleditor

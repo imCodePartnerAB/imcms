@@ -12,8 +12,6 @@ import imcode.server.* ;
    Browse images in image-directory.
 **/
 public class ImageBrowse extends HttpServlet {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
 
     public final static String IMG_NEXT_LIST_TEMPLATE = "Admin_Img_List_Next.html";
     public final static String IMG_PREVIOUS_LIST_TEMPLATE = "Admin_Img_List_Previous.html";

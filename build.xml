@@ -26,7 +26,7 @@
     <property name="user"                  value="${webroot}/user"/>
     <property name="javascript"            value="${webroot}/javascript"/>
     <property name="adminbuttons"          value="${imcmsimages}/admin"/>
-    <property name="readrunner"	           value="${webroot}/readrunner"/>
+    <property name="readrunner"	   	   value="${webroot}/readrunner"/>
     <property name="shop"	           value="${webroot}/shop"/>
     <property name="poll"	           value="${webroot}/poll"/>
     <property name="apisamples"	           value="${webroot}/apisamples"/>
@@ -62,7 +62,7 @@
     <property name="imcmsimageurl"            value="${rooturl}/imcmsimages"/>
     <property name="adminbuttonsurl"          value="${imcmsimageurl}/admin"/>
     <property name="shopurl"                  value="${rooturl}/shop"/>
-
+    
     <property name="readrunnerurl"	  value="${rooturl}/readrunner"/>
     <property name="readrunnerimagesurl"  value="${readrunnerurl}/images"/>
     <property name="readrunnercssurl"     value="${readrunnerurl}/css"/>
@@ -106,6 +106,7 @@
 	<filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
 	<filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
 	<filter token="javascripturl"       value="${javascripturl}"/>
+	
 
 	<filter token="readrunnerurl"       value="${readrunnerurl}"/>
 	<filter token="readrunnerimagesurl" value="${readrunnerimagesurl}"/>
@@ -220,14 +221,16 @@
 
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
-    <target name="build" depends="init,
-                                  server,
-				  servlets,
-				  templates,
-				  libraries,
-				  web,conf,dir,sql,
-				  conference,chat,billboard,postcard,
-				  help,fortune,readrunner,calender,shop" description="Builds everything.">
+    <target name="build"
+	    depends="init,
+		     server,
+		     servlets,
+		     templates,
+		     libraries,
+		     web,conf,dir,sql,
+		     conference,chat,billboard,postcard,
+		     help,fortune,readrunner,calender,shop,html-editor"
+	    description="Builds everything.">
 
 	<copy todir="${WEB-INF}" file="install/web.xml"/>
 
@@ -937,5 +940,42 @@
 
     </target>
 
+
+    	
+
+    <!-- include html-editor. -->
+
+
+    <!-- Copies the html-editor files. -->
+    <target name="html-editor"
+	    depends="init"
+	    description="Copies the html-editor files."
+	    if="build-htmleditor">	
+
+	<antcall target="html-editor-lang">
+	    <param name="srclanguage" value="sv"/>
+	    <param name="language" value="se"/>
+          <param name="htmleditorurl" value="${webroot}/htmleditor"/>
+	</antcall>
+
+	
+
+    </target>
+    <target name="html-editor-lang"
+	depends="init, global-filters,language-properties"    	   	
+	description="Copies files for html-editor.">
+
+	<mkdir dir="${htmleditorurl}"/>
+	
+	<copy todir="${htmleditorurl}" filtering="true">
+		<fileset dir="install/htdocs/${srclanguage}/htmleditor/editor" excludes="images/*.jpg,images/*.gif"/> 
+	</copy>
+	<copy todir="${htmleditorurl}/images">
+		<fileset dir="install/htdocs/${srclanguage}/htmleditor/editor/images" includes="*.jpg,*.gif"/> 
+	</copy>
+	<copy todir="${admintemplates}" filtering="true"
+		file="install/htdocs/${srclanguage}/htmleditor/change_text.html"
+		overwrite="yes"/>
+    </target>	
 
 </project>
