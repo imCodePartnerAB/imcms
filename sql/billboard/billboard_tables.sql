@@ -160,10 +160,6 @@ ALTER TABLE [dbo].[B_templates] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [dbo].[B_billboard] WITH NOCHECK ADD 
-	CONSTRAINT [DF_B_billboard_subject] DEFAULT ('MÂBra:') FOR [subject]
-GO
-
 ALTER TABLE [dbo].[B_section] WITH NOCHECK ADD 
 	CONSTRAINT [DF_B_section_discs_to_show] DEFAULT (20) FOR [discs_to_show]
 GO

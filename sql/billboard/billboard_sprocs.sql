@@ -202,7 +202,9 @@ GO
 CREATE PROCEDURE B_AddNewBillBoard
 /* Lets add a new BillBoard.*/
  @meta_id int,
- @billBoardName varchar(255)
+ @billBoardName varchar(255),
+ @subject varchar(50)
+
 AS
 -- Lets check if theres already such an meta_id in the billboard
 DECLARE @returnVal int
@@ -213,11 +215,10 @@ IF NOT @returnVal IS NULL BEGIN
 	RETURN
 END
 -- Ok, there was no such meta_id in the database, Lets insert it	
-INSERT INTO B_billboard (meta_id, name)
-VALUES (@meta_id, @billBoardName)
+INSERT INTO B_billboard (meta_id, name,subject)
+VALUES (@meta_id, @billBoardName, @subject)
 -- Lets create the templates library path as well
 EXEC B_AddNewTemplateLib @meta_id
-
 GO
 SET QUOTED_IDENTIFIER OFF 
 GO
