@@ -42,7 +42,7 @@ langMap.put("Cancel", "Avbryt") ;
 <head>
 <title><%= lang("Create/edit link") %></title>
 
-<base href="http://<%= request.getHeader("Host") + SERVLET_PATH %>" id="baseUrl">
+<base href="http://<%= request.getHeader("Host") %>$contextPath/" id="baseUrl">
 
 <script language="javascript">
 <!--
@@ -129,7 +129,7 @@ function buildHref(sHref) {
 //-->
 </script>
 
-<script type="text/javascript" src="..<%= EDITOR_URL %>popups/popup.js"></script>
+<script type="text/javascript" src="<%= EDITOR_URL %>popups/popup.js"></script>
 
 <script type="text/javascript">
 //window.resizeTo(410, 200);
@@ -225,8 +225,8 @@ function onCancel() {
 
 </script>
 
-<link rel="stylesheet" type="text/css" href="../imcms/css/imcms_admin.css.jsp">
-<script src="../imcms/swe/scripts/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/swe/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body class="imcmsAdmBgCont" style="border:0; margin:0" onLoad="Init();">
@@ -282,7 +282,7 @@ function onCancel() {
 			</table></td>
 		</tr>
 		<tr>
-			<td colspan="2"><img src="/imcms/swe/images/admin/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
+			<td colspan="2"><img src="$contextPath/imcms/swe/images/admin/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
 		</tr>
 		<tr>
 			<td colspan="2">
@@ -296,8 +296,8 @@ function onCancel() {
 			</table></td>
 		</tr>
 		<tr>
-			<td><img src="/imcms/swe/images/admin/1x1.gif" width="110" height="1"></td>
-			<td><img src="/imcms/swe/images/admin/1x1.gif" width="1" height="1"></td>
+			<td><img src="$contextPath/imcms/swe/images/admin/1x1.gif" width="110" height="1"></td>
+			<td><img src="$contextPath/imcms/swe/images/admin/1x1.gif" width="1" height="1"></td>
 		</tr>
 		</table></td>
 	</tr>

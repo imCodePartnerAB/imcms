@@ -98,8 +98,8 @@ function onCancel() {
 
 </script>
 
-<link rel="stylesheet" type="text/css" href="/imcms/css/imcms_admin.css.jsp">
-<script src="/imcms/swe/scripts/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/swe/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body class="imcmsAdmBgCont" style="border:0; margin:0" onload="Init()">
@@ -179,7 +179,7 @@ function onCancel() {
 		</fieldset></td>
 	</tr>
 	<tr>
-		<td colspan="3"><img src="/imcms/swe/images/admin/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
+		<td colspan="3"><img src="$contextPath/imcms/swe/images/admin/1x1_20568d.gif" width="100%" height="1" vspace="8"></td>
 	</tr>
 	<tr>
 		<td colspan="3" align="right">
