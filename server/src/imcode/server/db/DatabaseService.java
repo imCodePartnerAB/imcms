@@ -412,8 +412,7 @@ public class DatabaseService {
     int sproc_AddNewuser( Table_users userData ) {
         String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date ) " +
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Object[] paramValues1 = new Object[]{ new Integer( userData.user_id ), userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.external ), new Integer(1001), new Integer(0), new Integer(userData.lang_id), new Integer(userData.user_type), new Integer( userData.active ), userData.create_date };
-        Object[] paramValues = paramValues1;
+        Object[] paramValues = new Object[]{ new Integer( userData.user_id ), userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.external ), new Integer(1001), new Integer(0), new Integer(userData.lang_id), new Integer(userData.user_type), new Integer( userData.active ), userData.create_date };
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
@@ -441,12 +440,12 @@ public class DatabaseService {
             "active = ?, " +
             "lang_id = ? " +
             "WHERE user_id = ?";
-       Object[] paramValues1 = new Object[]{ userData.login_name, userData.login_password, userData.first_name, userData.last_name,
+       Object[] paramValues = new Object[]{ userData.login_name, userData.login_password, userData.first_name, userData.last_name,
                                               userData.title, userData.company, userData.address, userData.city, userData.zip,
                                               userData.country, userData.county_council, userData.email,
                                               new Integer(userData.user_type), new Integer( userData.active ), new Integer(userData.lang_id),
                                              new Integer( userData.user_id ) };
-        return sqlProcessor.executeUpdate( sql, paramValues1 );
+        return sqlProcessor.executeUpdate( sql, paramValues );
     }
     /*
     This function adds a new phone numbers to the db. Used by AdminUserProps
@@ -485,11 +484,10 @@ public class DatabaseService {
     // todo: Split into two, depending on how it is used.
     int sproc_delUser( int user_id ) {
         String sqlUserRoles = "DELETE FROM user_roles_crossref WHERE user_id = " + user_id;
-        Object[] paramValues = null;
-        int rowsModified =  sqlProcessor.executeUpdate( sqlUserRoles, paramValues ) ;
+        int rowsModified =  sqlProcessor.executeUpdate( sqlUserRoles, null ) ;
 
         String sqlUsers = "DELETE FROM users WHERE user_id = " + user_id;
-        rowsModified +=  sqlProcessor.executeUpdate( sqlUsers, paramValues ) ;
+        rowsModified +=  sqlProcessor.executeUpdate( sqlUsers, null ) ;
 
         return rowsModified;
     }
