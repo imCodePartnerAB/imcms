@@ -24,27 +24,20 @@ imcmsGui("head", null);
 %>
 <table border="0" cellspacing="0" cellpadding="0">
 <form action="ImageBrowse">
-<input type="HIDDEN" name="caller" value="<%=imageBrowseFormData.getCaller()%>">
-<input type="HIDDEN" name="meta_id" value="<%=imageBrowseFormData.getMetaId()%>">
-<input type="HIDDEN" name="img_no" value="<%=imageBrowseFormData.getImageNumber()%>">
+<% if (null != imageBrowseFormData.getCaller() ) { %><input type="HIDDEN" name="caller" value="<%=imageBrowseFormData.getCaller()%>"><% } %>
+<% if (null != imageBrowseFormData.getMetaId() ) { %><input type="HIDDEN" name="meta_id" value="<%=imageBrowseFormData.getMetaId()%>"><% } %>
+<% if (null != imageBrowseFormData.getImageNumber() ) { %><input type="HIDDEN" name="img_no" value="<%=imageBrowseFormData.getImageNumber()%>"><% } %>
+<% if (null != imageBrowseFormData.getLabel() ) { %><input type="HIDDEN" name="label" value="<%=imageBrowseFormData.getLabel()%>"><% } %>
 <tr>
 	<td><input type="Submit" class="imcmsFormBtn" name="avbryt" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2001 ?>"></td>
 	<td>&nbsp;</td>
     <td><input type="button" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2002 ?>" title="<? install/htdocs/sv/jsp/ImageBrowse.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(44)"></td>
 </tr>
-</form>
 </table>
 <script>
 imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-<form action="ImageBrowse">
-<input type="HIDDEN" name="caller" value="<%=imageBrowseFormData.getCaller()%>">
-<input type="HIDDEN" name="meta_id" value="<%=imageBrowseFormData.getMetaId()%>">
-<input type="HIDDEN" name="img_no" value="<%=imageBrowseFormData.getImageNumber()%>">
-<INPUT TYPE="HIDDEN" NAME="label" VALUE="<%=imageBrowseFormData.getLabel()%>">
-<input type="HIDDEN" name="imglist" value="<%=imageBrowseFormData.getImageList()%>">
-<input type="HIDDEN" name="dirlist_preset" value="<%=imageBrowseFormData.getDirListPreset()%>">
 <% if (null != imageBrowseFormData.getImageNumber()) { %>
 <tr>
 	<td colspan="3"><script>
@@ -69,13 +62,6 @@ imcmsGui("mid", null);
 	&nbsp;<br><input type="submit" class="imcmsFormBtnSmall" name="change" value="<? install/htdocs/sv/jsp/ImageBrowse.html/2004 ?>"></td>
 	<td width="45%">
 	<table border="0" cellspacing="0" cellpadding="0">
-	</form>
-	<form name="imageForm" method="POST" action="ImageBrowse">
-	<input type="HIDDEN" name="caller" value="<%=imageBrowseFormData.getCaller()%>">
-	<input type="HIDDEN" name="meta_id" value="<%=imageBrowseFormData.getMetaId()%>">
-	<input type="HIDDEN" name="img_no" value="<%=imageBrowseFormData.getImageNumber()%>">
-    <input type="HIDDEN" name="dirlist_preset" value="<%=imageBrowseFormData.getDirListPreset()%>">
-    <input type="HIDDEN" name="label" value="<%=imageBrowseFormData.getLabel()%>">
 	<tr>
 		<td class="imcmsAdmText" align="right"><? install/htdocs/sv/jsp/ImageBrowse.html/7 ?></td>
 	</tr>
@@ -118,6 +104,7 @@ imcmsGui("mid", null);
 	</table></td>
 </tr>
 </table>
+</form>
 <script>
 imcmsGui("bottom", null);
 imcmsGui("outer_end", null);

@@ -150,14 +150,7 @@ public class DocumentComposer extends HttpServlet {
                 action = request.getParameter( PARAMETER__IMAGE_BROWSE_ORIGINAL_ACTION );
                 request.setAttribute( REQUEST_ATTR_OR_PARAM__ACTION, action );
                 String imageUrl = AdminDoc.getImageUri( request );
-                if ( ACTION__CREATE_NEW_DOCUMENT.equalsIgnoreCase( action ) ) {
-                    DocumentDomainObject parentDocument = documentMapper.getDocument( newDocumentParentInformation.parentId );
-                    DocumentDomainObject newDocument = createDocumentOfTypeFromParent( newDocumentParentInformation.documentTypeId, parentDocument );
-                    newDocument.setMenuImage( imageUrl );
-                    addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
-                    forwardToDocinfoPage( request, response, user );
-                    return;
-                } else {
+                if (null != request.getParameter( ImageBrowse.PARAMETER_BUTTON__OK)) {
                     document.setMenuImage( imageUrl );
                 }
             }

@@ -16,7 +16,8 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  imcode.server.document.*,
-                 com.imcode.imcms.servlet.admin.DocumentComposer"%><%
+                 com.imcode.imcms.servlet.admin.DocumentComposer,
+                                                          org.apache.commons.lang.ObjectUtils"%><%
 
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
@@ -122,7 +123,7 @@ imcmsGui("mid", null);
 		<tr>
 			<td>
                 <input type="text" name="<%= DocumentComposer.PARAMETER__IMAGE %>" size="85" maxlength="255" style="width: 100%"
-                    value="<%= StringEscapeUtils.escapeHtml( document.getMenuImage() ) %>">
+                    value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMenuImage(), "" )) %>">
             </td>
 			<td align="right">
                 <input type="submit" class="imcmsFormBtnSmall" name="<%= DocumentComposer.PARAMETER__GO_TO_IMAGE_BROWSE%>" value=" <? install/htdocs/global/pageinfo/browse ?> ">

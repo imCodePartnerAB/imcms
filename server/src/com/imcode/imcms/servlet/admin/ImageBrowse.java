@@ -10,7 +10,6 @@ import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,24 +25,31 @@ import java.util.StringTokenizer;
 public class ImageBrowse extends HttpServlet {
 
     // todo: make sure this is used in the jsp page.
-    public static final String IMAGE_BROWSE_BEAN = "imagebrowsebean";
+    public static final String REQUEST_ATTRIBUTE__IMAGE_BROWSE_FORM_DATA = "imagebrowseformdata";
 
     private final static String IMG_NEXT_LIST_TEMPLATE = "Admin_Img_List_Next.html";
     private final static String IMG_PREVIOUS_LIST_TEMPLATE = "Admin_Img_List_Previous.html";
 
-    private final static Logger log = Logger.getLogger( "ImageBrowse" );
+    private final static Logger log = Logger.getLogger( ImageBrowse.class.getName() );
     public static final String PARAMETER__CALLER = "caller";
+    public static final String PARAMETER_BUTTON__OK = "ok";
+    public static final String PARAMETER_BUTTON__PREVIEW = "preview";
+    public static final String PARAMETER_BUTTON__CANCEL = "cancel";
 
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException {
+    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException {
         doGet( req, res );
     }
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws IOException {
-        getPage( req, res, this.getServletContext() );
+    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws IOException, ServletException {
+        getPage( req, res );
     }
 
-    public static void getPage( HttpServletRequest request, HttpServletResponse response, ServletContext application )
-            throws IOException {
+    public static void getPage( HttpServletRequest request, HttpServletResponse response )
+            throws IOException, ServletException {
+        if (null != request.getParameter( PARAMETER_BUTTON__CANCEL) || null != request.getParameter( PARAMETER_BUTTON__OK )) {
+            request.getRequestDispatcher( request.getParameter( PARAMETER__CALLER )).forward( request, response );
+            return ;
+        }
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String image_url = imcref.getImageUrl();
         File file_path = Utility.getDomainPrefPath( "image_path" );
@@ -51,7 +57,7 @@ public class ImageBrowse extends HttpServlet {
         String meta_id = request.getParameter( "meta_id" );
         String img_no = request.getParameter( "img_no" );
         String img_preset = request.getParameter( "imglist" );//the choosen image to show
-        String img_dir_preset = request.getParameter( "dirlist" );//the dir to chow
+        String img_dir_preset = request.getParameter( "dirlist" );//the dir to show
 
         // get img label
         String label = request.getParameter( "label" );
@@ -260,37 +266,37 @@ public class ImageBrowse extends HttpServlet {
                     + "]</option>\r\n" );
         }
 
-        ImageBrowseBean formBean = new ImageBrowseBean();
+        FormData formData = new FormData();
 
         String caller = request.getParameter( PARAMETER__CALLER );
-        formBean.setCaller( caller );
+        formData.setCaller( caller );
 
-        formBean.setMetaId( meta_id );
-        formBean.setImageNumber( img_no );
-        formBean.setImageList( img_preset );
-        formBean.setDirListPreset( img_dir_preset );
-        formBean.setFolders( folderOptions.toString() );
-        formBean.setImagePreview( img_tag );
-        formBean.setLabel( label );
-        formBean.setNextButton( nextButton );
-        formBean.setPreviousButton( previousButton );
+        formData.setMetaId( meta_id );
+        formData.setImageNumber( img_no );
+        formData.setImageList( img_preset );
+        formData.setDirListPreset( img_dir_preset );
+        formData.setFolders( folderOptions.toString() );
+        formData.setImagePreview( img_tag );
+        formData.setLabel( label );
+        formData.setNextButton( nextButton );
+        formData.setPreviousButton( previousButton );
 
-        formBean.setOptions( imageOptions.toString() );
+        formData.setOptions( imageOptions.toString() );
 
         if ( counter > img_numbers ) {
             counter = img_numbers;
         }
-        formBean.setStartNumber( Integer.toString( counter - max + 1 ) );
-        formBean.setStopNumber( Integer.toString( counter ) );
-        formBean.setMaxNumber( Integer.toString( img_numbers ) );
+        formData.setStartNumber( Integer.toString( counter - max + 1 ) );
+        formData.setStopNumber( Integer.toString( counter ) );
+        formData.setMaxNumber( Integer.toString( img_numbers ) );
 
         // används denna? vec.add( "#SERVLET_URL#" );
 
-        request.setAttribute( IMAGE_BROWSE_BEAN, formBean );
+        request.setAttribute( REQUEST_ATTRIBUTE__IMAGE_BROWSE_FORM_DATA, formData );
 
         try {
             String forwardPath = "/imcms/swe/jsp/ImageBrowse.jsp";
-            RequestDispatcher rd = application.getRequestDispatcher( forwardPath );
+            RequestDispatcher rd = request.getRequestDispatcher( forwardPath );
             rd.forward( request, response );
         } catch ( ServletException ex ) {
             log.error( "Error while dispatching: " + ex.getMessage(), ex );
@@ -314,7 +320,7 @@ public class ImageBrowse extends HttpServlet {
         return templateLib;
     }
 
-    public static class ImageBrowseBean {
+    public static class FormData {
 
         private String metaId;
         private String imageNumber;
