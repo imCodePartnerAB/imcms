@@ -585,9 +585,11 @@ public class IMCServiceRMI {
 
     public static String getInclude(String server,String path) throws IOException {
 	IMCServiceInterface imc = getInterface( server ) ;
-
-	    return imc.getInclude(path) ;
-	
+	return imc.getInclude(path) ;
     }
 
+    public static String getFortune(String server,String path) throws IOException {
+	IMCServiceInterface imc = getInterface( server ) ;
+	return imc.getFortune(path) ;
+    }
 }

@@ -382,6 +382,8 @@ public interface IMCServiceInterface {
     public boolean checkUserDocSharePermission(User user, int meta_id)  ;
 
     public String getInclude(String path) throws IOException ;
+
+    public String getFortune(String path) throws IOException ;
     
     public File getInternalTemplateFolder(int meta_id) ;
 

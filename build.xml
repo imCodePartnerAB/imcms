@@ -15,6 +15,7 @@
   <property name="lib"            value="${WEB-INF}/lib"/>
   <property name="templates"      value="${WEB-INF}/templates"/>
   <property name="includes"       value="${WEB-INF}/includes"/>
+  <property name="fortunes"       value="${WEB-INF}/includes"/>
   <property name="uploads"        value="${WEB-INF}/uploads"/>
   <property name="logs"           value="${WEB-INF}/logs"/>
 
@@ -279,6 +280,7 @@
           depends="init"
           description="Creates some empty directories necessary for imCMS.">
     <mkdir dir="${includes}"/>
+    <mkdir dir="${fortunes}"/>
     <mkdir dir="${uploads}"/>
     <mkdir dir="${logs}"/>
   </target>

@@ -31,6 +31,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     
     private File m_TemplateHome ;           // template home
     private File m_IncludePath ;
+    private File m_FortunePath ;
     private int m_DefaultHomePage ;        // default home page
     private String m_ServletUrl  ;			   // servlet url
     private String m_ImageFolder ;            // image folder
@@ -65,6 +66,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String includePathString = props.getProperty("IncludePath").trim() ;
 	m_IncludePath       = imcode.util.Utility.getAbsolutePathFromString(includePathString) ;
 	log.log(Log.INFO, "IncludePath: " + m_IncludePath) ;
+
+	String fortunePathString = props.getProperty("FortunePath").trim() ;
+	m_FortunePath       = imcode.util.Utility.getAbsolutePathFromString(fortunePathString) ;
+	log.log(Log.INFO, "FortunePath: " + m_IncludePath) ;
 	    
 	try {
 	    m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument").trim()) ;    //FIXME: Get from DB
@@ -2722,6 +2727,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     **/
     public String getInclude(String path) throws IOException {
 	return fileCache.getCachedFileString(new File(m_IncludePath,path)) ;
+    }
+
+    /**
+       Return a file relative to the include-path.
+    **/
+    public String getFortune(String path) throws IOException {
+	return fileCache.getCachedFileString(new File(m_FortunePath,path)) ;
     }
 
     /**
