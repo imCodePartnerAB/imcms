@@ -225,12 +225,12 @@
     </head>
     <body onLoad="$bodyOnLoad">
         #gui_outer_start()
-        #gui_head( "<? global/administer ?> $titleAndHeading" )
+        #gui_head( "$titleAndHeading" )
         #gui_head_help_and_back_buttons( $helpPageNo  "$backServlet" "" "$action" )
         #gui_mid()
-        #end
+#end
 
-        #macro( gui_end_of_page )
+#macro( gui_end_of_page )
         #gui_bottom()
         #gui_outer_end()
     </body>
