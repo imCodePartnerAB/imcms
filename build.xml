@@ -98,7 +98,9 @@
 
   <target name="clean" description="Deletes everything for a fresh start.">
     <delete dir="${build}"/>
-    <delete file="${wardist}"/>
+    <delete>
+	<fileset dir="." includes="${wardist},${dist-sql},${help-sql},${sprocs-sql}"/>
+    </delete>
   </target>
 
   <target name="doc"
