@@ -14,9 +14,9 @@
 *               Getting Staring Using RMI (www.javasoft.com)                        *
 * Thanks to   : Andreas Bengtsson : Software Engineer : Entra Memtek Education AB   *
 *             : Hasse Brattberg   : Software Engineer : Entra Memtek Education AB   *
-*             : Roger Larsson     : HTML Programmer   : Visby Interactive Studios*  * 
+*             : Roger Larsson     : HTML Programmer   : Visby Interactive Studios*  *
 *-----------------------------------------------------------------------------------*
-* Last Update : 17:00 12-05-1999                                                    *					     
+* Last Update : 17:00 12-05-1999                                                    *
 *-----------------------------------------------------------------------------------*
 * REVISION HISTORY :                                                                *
 * 30-09-1999 : MI  : parseDoc                                                       *
@@ -44,7 +44,7 @@ import imcode.server.* ;
   Database connection pool for the Imcode Net Server
   */
 public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
-    //	ConnectionPool m_conPool ;            // our pool of connections 
+    //	ConnectionPool m_conPool ;            // our pool of connections
     imcode.server.InetPoolManager m_conPool ; // inet pool of connections
 
     /**
@@ -53,7 +53,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
     //	public IMCPool(ConnectionPool conPool,javax.swing.JTextArea output)
     public IMCPool(imcode.server.InetPoolManager conPool,Properties props) throws java.rmi.RemoteException {
 	super();
-	m_conPool = conPool ;  
+	m_conPool = conPool ;
     }
 
     /**
@@ -84,7 +84,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	    dbc = null ;
 	    data = null ;
 	    return null ;
-	}  
+	}
     }
 
 
@@ -151,7 +151,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
     /**
        Send a sql update query to the database
     */
-    public void sqlUpdateQuery(String sqlStr) {	
+    public void sqlUpdateQuery(String sqlStr) {
 	DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
 	dbc.getConnection() ;
 	dbc.createStatement() ;
@@ -194,12 +194,12 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	    data = null ;
 	    return null ;
 
-	}  
+	}
     }
 
 
     /**
-       Send a procedure to the database and return a string 
+       Send a procedure to the database and return a string
     */
     public String sqlProcedureStr(String procedure) throws  java.rmi.RemoteException {
 	Vector data = new Vector() ;
@@ -222,7 +222,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 		return data.elementAt(0).toString() ;
 	    } else {
 		return null ;
-	    }	
+	    }
 	} else {
 	    throw new java.rmi.RemoteException()  ;
 	}
@@ -230,9 +230,9 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 
 
     /**
-       Send a update procedure to the database 
+       Send a update procedure to the database
     */
-    public void sqlUpdateProcedure(String procedure) {	
+    public void sqlUpdateProcedure(String procedure) {
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
@@ -260,7 +260,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 
 		temp_str1 = htmlStr.substring(0,v_start) + variables.elementAt(i+1).toString() ;
 		temp_str2 = htmlStr.substring(v_start+(variables.elementAt(i).toString()).length(),htmlStr.length()) ;
-		htmlStr = temp_str1 + temp_str2 ; 
+		htmlStr = temp_str1 + temp_str2 ;
 		v_start = htmlStr.indexOf(variables.elementAt(i).toString()) ;
 	    }
 	}
@@ -283,7 +283,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	    while ( v_start != -1 ) {
 		temp_str1 = htmlStr.substring(0,v_start) + data.elementAt(i).toString() ;
 		temp_str2 = htmlStr.substring(v_start+(variables.elementAt(i).toString()).length(),htmlStr.length()) ;
-		htmlStr = temp_str1 + temp_str2 ; 
+		htmlStr = temp_str1 + temp_str2 ;
 		v_start = htmlStr.indexOf(variables.elementAt(i).toString()) ;
 	    }
 	}
@@ -314,9 +314,9 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	    String result[] = new String[data.size() + dbc.getColumnCount() + 1] ;
 
 	    // no of fields
-	    result[0] = dbc.getColumnCount() + "" ;  
+	    result[0] = dbc.getColumnCount() + "" ;
 
-	    // meta 
+	    // meta
 	    int i = 0 ;
 	    for ( i = 0 ; i < dbc.getColumnCount() ; i++ )
 		result[i+1] = meta.elementAt(i).toString() ;
@@ -350,15 +350,15 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
     public String[] sqlProcedureExt(String procedure) {
 
 	Vector data = new Vector() ;
-	Vector meta = new Vector() ;
-
+        //	Vector meta = new Vector() ;
+        String[] meta = new String[0] ;
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setProcedure(procedure) ;
 
 
-	data = (Vector)dbc.executeProcedure().clone() ;
-	meta = (Vector)dbc.getMetaData().clone() ;
+	data = (Vector)dbc.executeProcedure() ;
+	meta = (String[]) dbc.getMetaData() ;
 
 	if ( data != null && data.size() > 0 ) {
 
@@ -366,12 +366,12 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	    String result[] = new String[data.size() + dbc.getColumnCount() + 1] ;
 
 	    // no of fields
-	    result[0] = dbc.getColumnCount() + "" ;  
+	    result[0] = dbc.getColumnCount() + "" ;
 
-	    // meta 
+	    // meta
 	    int i = 0 ;
 	    for ( i = 0 ; i < dbc.getColumnCount() ; i++ )
-		result[i+1] = meta.elementAt(i).toString() ;
+		result[i+1] = meta[i] ;
 
 	    // data
 	    for ( int j = 0 ; j < data.size() ; j++ )
@@ -431,10 +431,10 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 		String temp_str[] = new String[data.size() / columns] ;
 		int counter = 0 ;
 
-		for ( int j =  i ; j < data.size()  ; j+=columns ) 
+		for ( int j =  i ; j < data.size()  ; j+=columns )
 		    temp_str[counter++] = data.elementAt(j).toString() ;;
 
-		result.put(meta.elementAt(i).toString(),temp_str) ;	
+		result.put(meta.elementAt(i).toString(),temp_str) ;
 	    }
 
 
@@ -443,7 +443,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	    return new Hashtable(1,0.5f)   ;
 	}
 
-    } 
+    }
 
 
 
@@ -482,12 +482,12 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 		int counter = 0 ;
 
 
-		for ( int j =  i ; j < data.size()  ; j+=columns ) 
+		for ( int j =  i ; j < data.size()  ; j+=columns )
 		    temp_str[counter++] = data.elementAt(j).toString() ;
 
 
 
-		result.put(meta.elementAt(i).toString(),temp_str) ;	
+		result.put(meta.elementAt(i).toString(),temp_str) ;
 	    }
 
 
@@ -507,11 +507,11 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
     */
     public boolean checkDocAdminRights(int meta_id, User user) {
 	String sqlStr = "" ;
-	// is user superadmin?	
+	// is user superadmin?
 	sqlStr  = "select role_id from users,user_roles_crossref\n" ;
 	sqlStr += "where users.user_id = user_roles_crossref.user_id\n" ;
 	sqlStr += "and user_roles_crossref.role_id = 0\n" ;
-	sqlStr += "and users.user_id = " + user.getInt("user_id") ;	
+	sqlStr += "and users.user_id = " + user.getInt("user_id") ;
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
 	dbc.setSQLString(sqlStr);
@@ -532,7 +532,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	sqlStr  = "select meta.meta_id from meta,roles_rights,user_roles_crossref " ;
 	sqlStr += "where meta.meta_id = " + meta_id ;
 	sqlStr += " and roles_rights.meta_id = meta.to_meta_id" ;
-	sqlStr += " and roles_rights.permission_id = 3" ; 
+	sqlStr += " and roles_rights.permission_id = 3" ;
 	sqlStr += " and roles_rights.role_id = user_roles_crossref.role_id" ;
 	sqlStr += " and user_roles_crossref.user_id =" + user.getInt("user_id") ;
 
@@ -547,7 +547,7 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	   sqlStr += " and meta.archive=" + user.getInt("archive_mode") ;
 	   sqlStr += " and meta.activate=1" ;
 	   sqlStr += " and user_rights.meta_id = childs.to_meta_id" ;
-	   sqlStr += " and user_rights.permission_id > 0" ; 
+	   sqlStr += " and user_rights.permission_id > 0" ;
 	   sqlStr += " and user_rights.user_id =" + user.getInt("user_id") ; */
 
 
@@ -561,13 +561,13 @@ public class IMCPool extends UnicastRemoteObject implements IMCPoolInterface {
 	if (hasAdminRights.size() >0)
 	    return true ;
 	else
-	    return false ; 
+	    return false ;
 
     }
 
 
     /**
-       Send a procedure to the database and return a multi string array 
+       Send a procedure to the database and return a multi string array
     */
     public String[][] sqlProcedureMulti(String procedure) {
 	Vector data = new Vector() ;
