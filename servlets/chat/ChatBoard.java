@@ -15,29 +15,29 @@ import imcode.external.chat.*;
 
 
 
-public class ChatBoard extends ChatBase {
+public class ChatBoard extends ChatBase
+{
 
-	
+
 	String HTML_TEMPLATE ;
-	
+
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
-									throws ServletException, IOException 
+	throws ServletException, IOException
 	{
 		//här ska det ännu fixas lite det är nog hit vi komer om användaren vill byta font storlek
 		//har dock skrivit lite om det i do get men det bör nog flyttas hit
 		log("someone is trying to acces by doPost!!! It's not allowed yet!");
-		
-		
+
+
 		return;
-		
+
 	} // DoPost
 
 	//*****  doGet  *****  doGet  *****  doGet  *****  doGet  *****  doGet  *****
-		
+
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException {
-	
-	
+	throws ServletException, IOException
+	{
 
 		// Lets validate the session, e.g has the user logged in to Janus?
 		//måste kolla så att metoden funkar i ChatBase
@@ -46,21 +46,29 @@ public class ChatBoard extends ChatBase {
 		// Lets get the standard SESSION parameters and validate them
 		//måste oxå kollas så att de funkar
 		Properties params = this.getSessionParameters(req) ;
-		if (super.checkParameters(req, res, params) == false) {
-			/*
-			String header = "ConfDisc servlet. " ;
+
+		log("params :"+params);
+
+		if (super.checkParameters(req, res, params) == false)
+		{
+
+			String header = "ChatBoard servlet. " ;
 			String msg = params.toString() ;
-			ChatError err = new ChatError(req,res,header,1) ;
-			*/
+			ChatError err = new ChatError(req,res,header,1212) ;
+
+			log("return i checkparameters");
 			return ;
 		}
 
 		// Lets get the user object
 		//måste kolla så att metoden funkar i ChatBase
 		imcode.server.User user = super.getUserObj(req,res) ;
+		log("user "+user);
 		if(user == null) return ;
 
-		if ( !isUserAuthorized( req, res, user ) ) {
+		if ( !isUserAuthorized( req, res, user ) )
+		{
+			log("user not authorized");
 			return;
 		}
 
@@ -72,28 +80,29 @@ public class ChatBoard extends ChatBase {
 		// Lets get the url to the servlets directory
 		//måste kolla så att det är till rätt server
 		String servletHome = MetaInfo.getServletPath(req) ;
+		log("servletHome = "+servletHome);
 
 		// Lets get parameters
 		String aMetaId = params.getProperty("META_ID") ;
-		int metaId = Integer.parseInt( aMetaId );
-		String aChatId = params.getProperty("CHAT_ID") ;//=id strängen för chatten
-		
-			
+		//		int metaId = Integer.parseInt( aMetaId );
+		String aChatId = params.getProperty("CHAT_ID") ;//=id strängen för chatten ????
+
+
 		//used to store all params to resend
 		//är inte så snygg men får duga så länge
 		StringBuffer paramString = new StringBuffer("?");
-		
+
 		//ok lets set up the font font size
 		//det här med ändringarna ska flyttas till doPost
-		int fontSize=3;
-		paramString.append("FONT_SIZE=\""+ fontSize +"\"");
-		/*if (req.getParameter("FONT_SIZE") != null)
+		int fontSize;
+		log("FONT_SIZE = "+req.getParameter("FONT_SIZE"));
+		if (req.getParameter("FONT_SIZE") != null)
 		{
 			String sizeStr = req.getParameter("FONT_SIZE");
 			try
 			{	
 				fontSize = Integer.parseInt(sizeStr);
-				
+
 				String sizeAction = req.getParameter("FONT");
 				if(sizeAction.equalsIgnoreCase("Inc"))
 				{
@@ -103,124 +112,121 @@ public class ChatBoard extends ChatBase {
 				{
 					if(fontSize > 1) fontSize--;
 				}
-				
+
 			}catch(NumberFormatException nfe)
 			{
 				fontSize = 3;
 				log("NumberFormatException in fontsize");
 			}
 			paramString.append("FONT_SIZE=\""+ fontSize +"\"");
-				
-		}
-		else
+
+		}else
 		{
-			String sizeStr = req.getParameter("FONT_SIZE");
-			try
-			{	
-				fontSize = Integer.parseInt(sizeStr);
-				
-			}catch(NumberFormatException nfe)
-			{
-				fontSize = 3;
-				log("NumberFormatException in fontsize");
-			}
+			fontSize = 3;
+
 			paramString.append("FONT_SIZE=\""+ fontSize +"\"");
-		}//end setting up the font size*/
-	
+		}//end setting up the font size
+		log("paramString = "+ paramString);
 		
 		//this buffer is used to store all the msgs to send to the page
-		StringBuffer sendMsgString = new StringBuffer();		
-		
+		StringBuffer sendMsgString = new StringBuffer("");		
+
 		//ok let's get all the messages and add them into the buffer			
-		if (req.getParameter("ROOM_ID") != null )	
+		if (true)//(req.getParameter("ROOM_ID") != null )
 		{ 
-		
+			log("nu är vi inne");	
 			HttpSession session = req.getSession(false) ;
-			if(session != null) 
+			if(session == null)
 			{
+				log("session was null so return");
 				return;
 			}
-			
-					
-			//lets get the Chat from ChatBase
-			imcode.external.chat.Chat myChat = super.getChat(aChatId);
-			if(myChat == null) return;
-			
-			//ok let's get the ChatMember from the session
-			ChatMember myMember = (ChatMember)session.getValue("ChatMember");
-			if(myMember == null) return;
-			//lets get the current group
-			ChatGroup myGroup = myMember.getMyGroup();
-			if( myGroup == null) return;
-			
-			
+
+			//ok lets get the Chat and stuff
+			Chat myChat = (Chat)session.getValue("theChat");
+			log("myChat = "+myChat);
+			ChatMember myMember = (ChatMember)session.getValue("theChatMember");
+			log("myMember = "+myMember);	
+			ChatGroup myGrupp = (ChatGroup)session.getValue("theRoom");		
+			log("myGrupp = "+myGrupp);
+
+
 			//lets get the ignore-list
-			 //doesnt have one yet
-			 
-			
+			//doesnt have one yet
+
+
 			//let's get all the messages		
-			ListIterator msgIter =  myMember.getMessages();		
-			
+			ListIterator msgIter =  myMember.getMessages();
+			log("antal i listan= "+myGrupp.getNoOffMessages());	
+		//	ListIterator msgIter =  myGrupp.getAllMessages();
+
+			log("msgIter = "+msgIter);
 			//lets fix the html-string to send
-			sendMsgString.append("<font size=\""+ fontSize+">");
+			sendMsgString.append("<font size=\""+ fontSize+"\">");
 			while(msgIter.hasNext())
 			{
+				log("msgIter.hasNext()");
 				ChatMsg tempMsg = (ChatMsg) msgIter.next();
 				//must check if it is a public msg
-				if (tempMsg.getReciever() == 1 ) 
+				if (tempMsg.getReciever() == 1 )
 				{
+					log("public: "+tempMsg.getReciever());
 					sendMsgString.append(tempMsg.getDateTime() +" : " +
-										myMember.getName() +"  "+
-										myGroup.getMsgTypeName(tempMsg.getMsgType()) +"  "+
-										myChat.getChatMember(tempMsg.getReciever()).getName() +" : "+
-										tempMsg.getMessage()	);
+						myMember.getName() +"  "+
+						//	myGroup.getMsgTypeName(tempMsg.getMsgType()) +"  "+
+						//	myChat.getChatMember(tempMsg.getReciever()).getName() +" : "+
+						tempMsg.getMessage()	);
 				}
 				//or if its a private one to this user
 				else if (tempMsg.getReciever() == myMember.getUserId())
 				{
+					log("private: ");
 					//obs här ska det nog in någon färgtagg på texten
 					sendMsgString.append(tempMsg.getDateTime() +" : " +
-										myMember.getName() +"  "+
-										myGroup.getMsgTypeName(tempMsg.getMsgType()) +"  "+
-										myChat.getChatMember(tempMsg.getReciever()).getName() +" : "+
-										tempMsg.getMessage()	);
+						myMember.getName() +"  "+
+						//	myGroup.getMsgTypeName(tempMsg.getMsgType()) +"  "+
+						//	myChat.getChatMember(tempMsg.getReciever()).getName() +" : "+
+						tempMsg.getMessage()	);
 				}
-				
+
 				sendMsgString.append("<br>");
 			}
 			sendMsgString.append("</font>");
 			paramString.append("&ROOM_ID=\""+ req.getParameter("ROOM_ID") +"\"");				
 		}//end if (req.getParameter("ROOM_ID") != null )	
-		
-	
+
+		log("sendMsgString= "+sendMsgString);
+		log("paramString ="+paramString);	
 
 		VariableManager vm = new VariableManager() ;
-		vm.addProperty("CHAT_MESSAGES", sendMsgString  );
-		
+		vm.addProperty("CHAT_MESSAGES", sendMsgString.toString()  );
+		//vm.addProperty("CHAT_MESSAGES", "stick"  );
+
+
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
 		//	this.showSession(req) ;
 		log("ChatBoard doGet är färdig") ;
-		
+
 	} //***  end DoGet  *****  end doGet  *****  end doGet *****  end doGet ***
 
 	/**
 	Returns the current discussion index. If somethings happens, zero will be returned.
 	*/
-/*	public int getDiscIndex( HttpServletRequest req) {
-		try {
-			HttpSession session = req.getSession(false) ;
-			if(session != null) {
-				String indexStr = (String) session.getValue("Conference.disc_index") ;
-				int anInt = Integer.parseInt(indexStr) ;
-				return anInt ;
-			}
-		} catch(Exception e ) {
-			log("GetDiscIndex failed!") ;
-			return 0 ;
-		}
-		return 0 ;
+	/*	public int getDiscIndex( HttpServletRequest req) {
+	try {
+	HttpSession session = req.getSession(false) ;
+	if(session != null) {
+	String indexStr = (String) session.getValue("Conference.disc_index") ;
+	int anInt = Integer.parseInt(indexStr) ;
+	return anInt ;
 	}
-*/
+	} catch(Exception e ) {
+	log("GetDiscIndex failed!") ;
+	return 0 ;
+	}
+	return 0 ;
+	}
+	*/
 
 
 	/**
@@ -228,16 +234,18 @@ public class ChatBoard extends ChatBase {
 	**/
 
 	public Properties getSessionParameters( HttpServletRequest req)
-	throws ServletException, IOException {
-		
-		log("OBS!!! getSessionParameters( HttpServletRequest req)");
+	throws ServletException, IOException
+	{
+
+		//		log("OBS!!! getSessionParameters( HttpServletRequest req)");
 		// Lets get the standard metainformation
 		Properties reqParams  = super.getSessionParameters(req) ;
 
 		// Lets get the session
 		HttpSession session = req.getSession(false) ;
-		if(session != null) {
-	/*		// Lets get the parameters we know we are supposed to get from the request object
+		if(session != null)
+		{
+			/*		// Lets get the parameters we know we are supposed to get from the request object
 			String forumId = ( (String) session.getValue("Conference.forum_id")==null) ? "" : ((String) session.getValue("Conference.forum_id")) ;
 			//	String discId = (	(String) session.getValue("Conference.forum_id")==null) ? "" : ((String) session.getValue("Conference.forum_id")) ;
 			String discId = (	(String) session.getValue("Conference.disc_id")==null) ? "" : ((String) session.getValue("Conference.disc_id")) ;
@@ -248,7 +256,7 @@ public class ChatBoard extends ChatBase {
 			reqParams.setProperty("LAST_LOGIN_DATE", lastLogindate) ;
 			reqParams.setProperty("FORUM_ID", forumId) ;
 			reqParams.setProperty("DISC_ID", discId) ;
-	 */
+			 */
 		}
 		return reqParams ;
 	}
@@ -261,7 +269,8 @@ public class ChatBoard extends ChatBase {
 	**/
 
 	public Properties getRequestParameters( HttpServletRequest req)
-	throws ServletException, IOException {
+	throws ServletException, IOException
+	{
 
 		log("OBS!!!Properties getRequestParameters( HttpServletRequest req)");
 		Properties reqParams = new Properties() ;
@@ -272,7 +281,8 @@ public class ChatBoard extends ChatBase {
 		String confForumId = req.getParameter("forum_id");
 		String discIndex = "" ;
 		HttpSession session = req.getSession(false) ;
-		if (session != null) {
+		if (session != null)
+		{
 			if(confForumId == null)
 				confForumId =	(String) session.getValue("Conference.forum_id") ;
 			discIndex = (String) session.getValue("Conference.disc_index") ;
@@ -288,81 +298,81 @@ public class ChatBoard extends ChatBase {
 	if the Properties object is null, if so it creates one, otherwise it uses the
 	object passed to it.
 	**/
-/*
+	/*
 	public Properties getSearchParameters( HttpServletRequest req, Properties params)
 	throws ServletException, IOException {
 
-		//Lets get the search criterias
-		String cat = (req.getParameter("CATEGORY")==null) ? "" : (req.getParameter("CATEGORY")) ;
-		String search = (req.getParameter("SEARCH")==null) ? "" : (req.getParameter("SEARCH")) ;
-		String fromDate = (req.getParameter("FR_DATE")==null) ? "" : (req.getParameter("FR_DATE")) ;
-		String fromVal = (req.getParameter("FR_VALUE")==null) ? "" : (req.getParameter("FR_VALUE")) ;
+	//Lets get the search criterias
+	String cat = (req.getParameter("CATEGORY")==null) ? "" : (req.getParameter("CATEGORY")) ;
+	String search = (req.getParameter("SEARCH")==null) ? "" : (req.getParameter("SEARCH")) ;
+	String fromDate = (req.getParameter("FR_DATE")==null) ? "" : (req.getParameter("FR_DATE")) ;
+	String fromVal = (req.getParameter("FR_VALUE")==null) ? "" : (req.getParameter("FR_VALUE")) ;
 
-			String toDate = (req.getParameter("TO_DATE")==null) ? "" : (req.getParameter("TO_DATE")) ;
-		String toVal = (req.getParameter("TO_VALUE")==null) ? "" : (req.getParameter("TO_VALUE")) ;
-		//	String searchButton = (req.getParameter("BUTTON_SEARCH")==null) ? "" : (req.getParameter("BUTTON_SEARCH")) ;
+	String toDate = (req.getParameter("TO_DATE")==null) ? "" : (req.getParameter("TO_DATE")) ;
+	String toVal = (req.getParameter("TO_VALUE")==null) ? "" : (req.getParameter("TO_VALUE")) ;
+	//	String searchButton = (req.getParameter("BUTTON_SEARCH")==null) ? "" : (req.getParameter("BUTTON_SEARCH")) ;
 
-		params.setProperty("CATEGORY", super.verifySqlText(cat.trim())) ;
-		params.setProperty("SEARCH", super.verifySqlText(search.trim())) ;
-		params.setProperty("FR_DATE", super.verifySqlText(fromDate.trim())) ;
-		params.setProperty("TO_DATE", super.verifySqlText(toDate.trim())) ;
-		params.setProperty("FR_VALUE", super.verifySqlText(fromVal.trim())) ;
-		params.setProperty("TO_VALUE", super.verifySqlText(toVal.trim())) ;
+	params.setProperty("CATEGORY", super.verifySqlText(cat.trim())) ;
+	params.setProperty("SEARCH", super.verifySqlText(search.trim())) ;
+	params.setProperty("FR_DATE", super.verifySqlText(fromDate.trim())) ;
+	params.setProperty("TO_DATE", super.verifySqlText(toDate.trim())) ;
+	params.setProperty("FR_VALUE", super.verifySqlText(fromVal.trim())) ;
+	params.setProperty("TO_VALUE", super.verifySqlText(toVal.trim())) ;
 
-		//	params.setProperty("BUTTON_SEARCH", searchButton) ;
-		return params ;
+	//	params.setProperty("BUTTON_SEARCH", searchButton) ;
+	return params ;
 	}
 
-*/
+	*/
 	/**
 	Builds the tagvector used for parse one record.
 	*/
-/*	protected Vector buildTags() {
+	/*	protected Vector buildTags() {
 
-		// Lets build our tags vector.
-		Vector tagsV = new Vector() ;
-		tagsV.add("#NEW_DISC_FLAG#") ;
-		tagsV.add("#DISC_ID#") ;
-		tagsV.add("#A_DATE#") ;
-		tagsV.add("#HEADLINE#") ;
-		tagsV.add("#C_REPLIES#") ;
-		tagsV.add("#FIRST_NAME#") ;
-		tagsV.add("#LAST_NAME#") ;
-		tagsV.add("#LAST_UPDATED#") ;    // The discussion_update date
-		tagsV.add("#REPLY_URL#") ;
-		return tagsV ;
+	// Lets build our tags vector.
+	Vector tagsV = new Vector() ;
+	tagsV.add("#NEW_DISC_FLAG#") ;
+	tagsV.add("#DISC_ID#") ;
+	tagsV.add("#A_DATE#") ;
+	tagsV.add("#HEADLINE#") ;
+	tagsV.add("#C_REPLIES#") ;
+	tagsV.add("#FIRST_NAME#") ;
+	tagsV.add("#LAST_NAME#") ;
+	tagsV.add("#LAST_UPDATED#") ;    // The discussion_update date
+	tagsV.add("#REPLY_URL#") ;
+	return tagsV ;
 	} // End of buildstags
-*/
+	*/
 
 	/**
 	show the tag and the according data
 	**/
-/*	protected void showIt(Vector tags, Vector data) {
+	/*	protected void showIt(Vector tags, Vector data) {
 
-		log("***********") ;
-		if(tags.size() != data.size()) {
-			log("Antalet stämmer inte ") ;
-			log("Tags: " + tags.size()) ;
-			log("Data: " + data.size()) ;
-			// return ;
-		}
+	log("***********") ;
+	if(tags.size() != data.size()) {
+	log("Antalet stämmer inte ") ;
+	log("Tags: " + tags.size()) ;
+	log("Data: " + data.size()) ;
+	// return ;
+	}
 
-		for (int i = 0 ; i < tags.size() ; i++) {
-			String aTag = ( String) tags.elementAt(i) ;
-			String aData = ( String) data.elementAt(i) ;
-			log("" + i + ": " + aTag +" --> " + aData) ;
+	for (int i = 0 ; i < tags.size() ; i++) {
+	String aTag = ( String) tags.elementAt(i) ;
+	String aData = ( String) data.elementAt(i) ;
+	log("" + i + ": " + aTag +" --> " + aData) ;
 
-		}
+	}
 
 
 	} // End of showit
 
-*/
+	*/
 	/**
 	Detects paths and filenames.
 	*/
 	public void init(ServletConfig config)
-						throws ServletException 
+	throws ServletException
 	{
 		super.init(config);
 		HTML_TEMPLATE = "Chat_Messages.htm" ;
@@ -371,7 +381,7 @@ public class ChatBoard extends ChatBase {
 	/**
 	Log function, will work for both servletexec and Apache
 	**/
-	public void log( String str) 
+	public void log( String str)
 	{
 		super.log(str) ;
 		System.out.println("ChatBoard: " + str ) ;
