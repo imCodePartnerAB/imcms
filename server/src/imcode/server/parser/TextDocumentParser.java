@@ -14,6 +14,7 @@ import org.apache.oro.text.regex.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.text.Collator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -370,7 +371,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
 
                 TemplateMapper templateMapper = service.getTemplateMapper();
-                TemplateGroupDomainObject[] templateGroups = templateMapper.getAllTemplateGroupsAvailableForUserOnDocument( user, meta_id ) ;
 
                 TemplateGroupDomainObject selected_group = user.getTemplateGroup();
 
@@ -502,6 +502,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String templateContents = templatebuffer.toString();
             StringBuffer result = new StringBuffer( templateContents.length() + 16384 ); // This value is the amount i expect the document to increase in size.
 
+            try {
+                String imcmsMessage = fileCache.getCachedFileString( new File(admintemplate_path, "textdoc/imcms_message.html") );
+                result.append(imcmsMessage);
+            } catch( FileNotFoundException ex ) {
+                // swallow
+            }
+
             MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( documentRequest, menus, menumode, tags );
             HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution( tags, numberedtags );
             ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, documentRequest, templatePath, Arrays.asList( included_docs ), includemode, includelevel, includePath, textMap, textmode, imageMap, imagemode );
@@ -556,9 +563,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 StringBuffer emphasized_result = new StringBuffer( returnresult.length() ); // A StringBuffer to hold the result
                 PatternMatcherInput emp_input = new PatternMatcherInput( returnresult );    // A PatternMatcherInput to match on
                 int last_html_offset = 0;
-                int current_html_offset = 0;
-                String non_html_tag_string = null;
-                String html_tag_string = null;
+                int current_html_offset;
+                String non_html_tag_string;
+                String html_tag_string;
                 while ( patMat.contains( emp_input, HTML_TAG_PATTERN ) ) {
                     current_html_offset = emp_input.getMatchBeginOffset();
                     non_html_tag_string = result.substring( last_html_offset, current_html_offset );
@@ -605,7 +612,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     private String getExistingDocumentName( File admintemplate_path ) throws IOException {
         String existing_doc_filename = ( new File( admintemplate_path, "textdoc/existing_doc_name.html" ) ).getPath();
-        String existing_doc_name = null;
+        String existing_doc_name;
 
         existing_doc_name = fileCache.getCachedFileString( new File( existing_doc_filename ) );
         return existing_doc_name;
