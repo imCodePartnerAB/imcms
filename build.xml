@@ -70,9 +70,6 @@
     <property name="imcmscssurl" value="${rooturl}/imcms/css"/>
     <property name="srcincludes" value="${basedir}/MANIFEST.TXT"/>
 
-    <!-- Where to install imCMS -->
-    <property name="webapproot" value="${deployroot}/${webappname}"/>
-
 
     <path id="libraries">
         <fileset dir="lib">
