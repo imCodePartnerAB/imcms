@@ -169,8 +169,8 @@ WHILE (@@FETCH_STATUS = 0) BEGIN
 		@archived_datetime,
 		@target,
 		@activate,
-		@status,
-		@publication_start_datetime,
+		0,
+		GETDATE(),
 		@publication_end_datetime
 	)
 	DECLARE @copy_id INT
