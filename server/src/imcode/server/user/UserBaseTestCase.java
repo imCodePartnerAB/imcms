@@ -12,7 +12,7 @@ abstract class UserBaseTestCase extends TestCase {
    static final String LOGIN_NAME_HASBRA = "hasbra";
    static final String LOGIN_NAME_ADMIN = "admin";
 
-   static final String DEFAULT_LANGUAGE = "se";
+   static final String DEFAULT_LANGUAGE = "en";
 
    static final String[] SQL_RESULT_ADMIN = {"1", "admin", "admin", "Admin", "Super", "", "", "", "", "", "", "", "", "1", DEFAULT_LANGUAGE, "1", "1", "2003-05-12 00:00:00", "0"};
    final static String[] SQL_RESULT_USER = {"2", "user", "user", "User", "Extern", "", "", "", "", "", "", "", "", "1", DEFAULT_LANGUAGE, "1", "1", "2003-05-12 00:00:00", "0"};

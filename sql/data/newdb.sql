@@ -17,8 +17,8 @@ INSERT INTO sys_data (sys_id, type_id, value)
  VALUES(7, 7, '@webmaster-email@')
 SET IDENTITY_INSERT sys_data OFF
 INSERT INTO users 
- VALUES (1,'admin', 'admin', 'Admin', 'Super','','','','','','','','',0,1001,0,1,1,1,convert(char(10),getDate(),120))
-INSERT INTO users VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',0,1001,0,1,1,1,convert(char(10),getDate(),120))
+ VALUES (1,'admin', 'admin', 'Admin', 'Super','','','','','','','','',0,1001,0,2,1,1,convert(char(10),getDate(),120))
+INSERT INTO users VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',0,1001,0,2,1,1,convert(char(10),getDate(),120))
 INSERT INTO roles 
  VALUES(0, 'Superadmin', 0, 1)
 INSERT INTO roles 

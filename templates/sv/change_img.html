@@ -155,7 +155,7 @@ writeFormField("FILE","file\" id=\"theFile",54,null,null,null);
 var sUrl = "#imgUrl##imgRef#";
 var str  = "";
 if (sUrl.indexOf(".") < 0) {
-	str += "<img src=\"@imcmsimageurl@/1x1.gif\" width=\"1\" height=\"1\" border=\"0\" style=\"display:none\">";
+	str += "<img src=\"@imcmsimageurllang@/admin/1x1.gif\" width=\"1\" height=\"1\" border=\"0\" style=\"display:none\">";
 } else {
 	str += "<table id=\"imgTable\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"100%\">\n";
 	str += "<tr>\n";
@@ -304,8 +304,8 @@ writeFormField("TEXT","target_name",10,20,null,"#target_name#");
 	<input type="button" class="imcmsFormBtn" name="Rensa" value="  Rensa  " onClick="doClear();"></td>
 </tr>
 <tr>
-	<td><img src="@imcmsimageurl@/1x1.gif" width="156" height="1"></td>
-	<td><img src="@imcmsimageurl@/1x1.gif" width="1" height="1"></td>
+	<td><img src="@imcmsimageurllang@/admin/1x1.gif" width="156" height="1"></td>
+	<td><img src="@imcmsimageurllang@/admin/1x1.gif" width="1" height="1"></td>
 </tr>
 <input type="hidden" name="low_scr" value="#imgLowScr#">
 </form>

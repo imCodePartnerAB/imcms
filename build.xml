@@ -24,6 +24,7 @@
     <!-- The webroot. Everything put here can be seen by any visitor. -->
     <property name="webroot"               value="${build}"/>
 
+    <property name="defaultlanguage"       value="en"/>
     <property name="images"                value="${webroot}/images"/>
     <property name="login"                 value="${webroot}/login"/>
     <property name="css"                   value="${webroot}/css"/>
@@ -37,7 +38,7 @@
     <property name="imcmsjsp"              value="${imcms}/jsp"/>
     <property name="imcmshtml"             value="${imcms}/html"/>
 
-    <property name="adminbuttons"          value="${imcmsimages}/admin"/>
+    <property name="adminbuttons"          value="${imcmsimages}/admin/${defaultlanguage}"/>
     <property name="readrunner"	   	       value="${webroot}/readrunner"/>
     <property name="shop"	               value="${webroot}/shop"/>
     <property name="htmleditor"            value="${webroot}/htmleditor"/>
@@ -60,7 +61,7 @@
     <property name="texttemplates"         value="${templates}/text"/>
     <property name="demotemplates"         value="${texttemplates}/demo"/>
 
-    <property name="languagetemplates"     value="${templates}/se"/>
+    <property name="languagetemplates"     value="${templates}/${defaultlanguage}"/>
     <property name="admintemplates"        value="${languagetemplates}/admin"/>
     <property name="searchtemplates"       value="${admintemplates}/search/original"/>
 
@@ -88,12 +89,13 @@
     <property name="jspurl"                   value="${rooturl}/jsp"/>
     <property name="postcardsurl"             value="${rooturl}/postcards"/>
     <property name="imcmsimageurl"            value="${rooturl}/imcms/images"/>
+    <property name="imcmsimageurllang"        value="${rooturl}/imcms/images/${defaultlanguage}"/>
     <property name="imcmshtmlurl"             value="${rooturl}/imcms/html"/>
     <property name="imcmsscripturl"           value="${rooturl}/imcms/scripts"/>
     <property name="imcmscssurl"              value="${rooturl}/imcms/css"/>
     <property name="imcmsjspurl"              value="${rooturl}/imcms/jsp"/>
     <property name="shopurl"                  value="${rooturl}/shop"/>
-    <property name="adminbuttonsurl"          value="${imcmsimageurl}/admin"/>
+    <property name="adminbuttonsurl"          value="${rooturl}/imcms/images/admin/${defaultlanguage}"/>
     <property name="readrunnerurl"	          value="${rooturl}/readrunner"/>
     <property name="readrunnerimagesurl"      value="${readrunnerurl}/images"/>
     <property name="readrunnercssurl"         value="${readrunnerurl}/css"/>
@@ -201,6 +203,7 @@
 	<filter token="postcardsurl"        value="${postcardsurl}"/>
 	<filter token="adminbuttonsurl"     value="${adminbuttonsurl}"/>
 	<filter token="imcmsimageurl"       value="${imcmsimageurl}"/>
+    <filter token="imcmsimageurllang"   value="${imcmsimageurllang}"/>
     <filter token="imcmshtmlurl"        value="${imcmshtmlurl}"/>
     <filter token="imcmsscripturl"      value="${imcmsscripturl}"/>
     <filter token="imcmscssurl"         value="${imcmscssurl}"/>
@@ -208,7 +211,7 @@
 	<filter token="javascripturl"       value="${javascripturl}"/>
     <filter token="jspurl"              value="${jspurl}"/>
 
-    <filter token="documentationurl"    value="http://${documentation-host}/${versionnumber}/servlet/"/>
+    <filter token="documentationurl"    value="http://${documentation-host}/${versionnumber}/servlet"/>
 
 	<filter token="readrunnerurl"       value="${readrunnerurl}"/>
 	<filter token="readrunnerimagesurl" value="${readrunnerimagesurl}"/>
@@ -523,8 +526,9 @@
         <fileset dir="install/htdocs/imcms/html"/>
     </copy>
 
-    <copy todir="${imcmsimages}">
+    <copy todir="${imcmsimages}/${defaultlanguage}/admin">
 	    <fileset dir="install/htdocs/imcms/images"/>
+        <fileset dir="install/htdocs/imcmsimages"/>
     </copy>
 
     <copy todir="${imcmscss}" filtering="true">
@@ -565,7 +569,7 @@
 		</fileset>
 	</copy>
 
-	<copy todir="${adminbuttons}/sv">
+	<copy todir="${adminbuttons}">
 	    <fileset dir="install/htdocs/sv/adminbuttons">
 		<patternset>
 		    <include name="*.gif"/>
@@ -573,7 +577,7 @@
 	    </fileset>
 	</copy>
 
-	<copy todir="${imcmsimages}/se/admin">
+	<copy todir="${imcmsimages}/${defaultlanguage}/admin">
 	    <fileset dir="install/htdocs/sv/imagebrowse"/>
         <fileset dir="install/htdocs/sv/fileadmin"/>
 	</copy>
@@ -692,7 +696,7 @@
             <fileset dir="templates/sv/conf" excludes="original/images/"/>
         </copy>
 
-        <copy todir="${imcmsimages}/se/102/original">
+        <copy todir="${imcmsimages}/${defaultlanguage}/102/original">
             <fileset dir="templates/sv/conf/original/images" includes="*"/>
         </copy>
 
@@ -752,7 +756,7 @@
             <fileset dir="templates/sv/billboard" excludes="original/"/>
         </copy>
 
-        <copy todir="${imcmsimages}/se/104/original">
+        <copy todir="${imcmsimages}/${defaultlanguage}/104/original">
             <fileset dir="templates/sv/billboard/original/images" includes="*"/>
         </copy>
 
