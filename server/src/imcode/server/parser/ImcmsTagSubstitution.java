@@ -13,11 +13,7 @@ import imcode.util.DateHelper;
 import imcode.util.FileCache;
 import imcode.readrunner.ReadrunnerFilter;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.log4j.Category;
 import org.apache.oro.text.regex.*;
@@ -185,7 +181,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
                     DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(),
                             documentRequest.getRemoteAddr(),
                             documentRequest.getSessionId(),
-                            documentRequest.getUser(), included_meta_id, document);
+                            documentRequest.getUser(), included_meta_id, document, documentRequest.getQueryString());
                     includedDocumentRequest.setUserAgent(documentRequest.getUserAgent());
                     includedDocumentRequest.setContextPath(documentRequest.getContextPath());
                     String documentStr = textDocParser.parsePage(includedDocumentRequest, -1, includeLevel - 1, paramsToParse);
@@ -204,6 +200,12 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
         } else if (null != (attributevalue = attributes.getProperty("url"))) { // If we have an attribute of the form url="url:url"
             try {
                 String urlStr = attributevalue;
+                if (-1 == urlStr.indexOf('?')) {
+                    urlStr += '?';
+                } else {
+                    urlStr += '&';
+                }
+                urlStr += documentRequest.getQueryString();
                 if (urlStr.startsWith("/")) {  // lets add hostname if we got a relative path
                     urlStr = "http://" + documentRequest.getHostName() + urlStr;
                 }
@@ -266,7 +268,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
                 DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(),
                         documentRequest.getRemoteAddr(),
                         documentRequest.getSessionId(),
-                        documentRequest.getUser(), included_meta_id, document);
+                        documentRequest.getUser(), included_meta_id, document, documentRequest.getQueryString());
                 includedDocumentRequest.setUserAgent(documentRequest.getUserAgent());
                 includedDocumentRequest.setContextPath(documentRequest.getContextPath());
                 String documentStr = textDocParser.parsePage(includedDocumentRequest, -1, includeLevel - 1, paramsToParse);

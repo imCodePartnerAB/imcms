@@ -7,7 +7,6 @@ import imcode.util.Utility;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.perl.Perl5Util;
-import org.apache.oro.text.regex.Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -17,7 +16,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 /**
  Get a internalDocument = Parse data from database.
@@ -125,7 +123,7 @@ public class GetDoc extends HttpServlet {
             }
         }
         try {
-            documentRequest = new DocumentRequest( imcref, req.getRemoteAddr(), session.getId(), user, meta_id, referringDocument );
+            documentRequest = new DocumentRequest( imcref, req.getRemoteAddr(), session.getId(), user, meta_id, referringDocument, req.getQueryString());
             documentRequest.setContextPath( req.getContextPath() );
             documentRequest.setUserAgent( req.getHeader( "User-agent" ) );
             documentRequest.setHostName( req.getHeader( "Host" ) );

@@ -112,7 +112,7 @@ public class AdminDoc extends HttpServlet {
         switch( doc_type ) {
 
             default:
-                DocumentRequest documentRequest = new DocumentRequest( imcref, req.getRemoteAddr(), req.getSession( true ).getId(), user, meta_id, null );
+                DocumentRequest documentRequest = new DocumentRequest( imcref, req.getRemoteAddr(), req.getSession( true ).getId(), user, meta_id, null, req.getQueryString());
                 documentRequest.setUserAgent( req.getHeader( "User-agent" ) );
                 documentRequest.setContextPath( req.getContextPath() );
                 documentRequest.setCookies( req.getCookies() );
