@@ -1106,7 +1106,8 @@
 	  </copy>
 
 	  <copy todir="${templates}/se/admin" filtering="true"
-	        file="templates/sv/readrunner/AdminUserResp.htm"/>
+	        file="templates/sv/readrunner/AdminUserResp.htm"
+		overwrite="yes"/>
 
 	  <mkdir dir="${readrunner}/preparsed"/>
   </target>

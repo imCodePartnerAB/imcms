@@ -201,8 +201,13 @@ public class MetaDataParser {
 		vec.add(dateFormat_date.format(theDate)) ;
 		vec.add("#activated_time#") ;
 		vec.add(dateFormat_time.format(theDate)) ;
-	}catch(java.text.ParseException pe) {
-		vec.add("#activated_date#") ;
+	} catch(NullPointerException pe) {
+	    vec.add("#activated_date#") ;
+	    vec.add("") ;
+	    vec.add("#activated_time#") ;
+	    vec.add("") ;
+	} catch(ParseException pe) {
+	    vec.add("#activated_date#") ;
 	    vec.add("") ;
 	    vec.add("#activated_time#") ;
 	    vec.add("") ;
@@ -214,8 +219,13 @@ public class MetaDataParser {
 		vec.add(dateFormat_date.format(theDate)) ;
 		vec.add("#archived_time#") ;
 		vec.add(dateFormat_time.format(theDate)) ;
-	}catch(java.text.ParseException pe) {
-		vec.add("#archived_date#") ;
+	}catch(NullPointerException pe) {
+	    vec.add("#archived_date#") ;
+	    vec.add("") ;
+	    vec.add("#archived_time#") ;
+	    vec.add("") ;
+	}catch(ParseException pe) {
+	    vec.add("#archived_date#") ;
 	    vec.add("") ;
 	    vec.add("#archived_time#") ;
 	    vec.add("") ;
@@ -227,8 +237,13 @@ public class MetaDataParser {
 		vec.add(dateFormat_date.format(theDate)) ;
 		vec.add("#created_time#") ;
 		vec.add(dateFormat_time.format(theDate)) ;
-	}catch(java.text.ParseException pe) {
-		vec.add("#date_created#") ;
+	}catch(NullPointerException pe) {
+	    vec.add("#date_created#") ;
+	    vec.add("") ;
+	    vec.add("#created_time#") ;
+	    vec.add("") ;
+	}catch(ParseException pe) {
+	    vec.add("#date_created#") ;
 	    vec.add("") ;
 	    vec.add("#created_time#") ;
 	    vec.add("") ;
@@ -240,7 +255,12 @@ public class MetaDataParser {
 		vec.add(dateFormat_date.format(theDate)) ;
 		vec.add("#modified_time#") ;
 		vec.add(dateFormat_time.format(theDate)) ;
-	}catch(java.text.ParseException pe) {
+	}catch(NullPointerException pe) {
+		vec.add("#date_modified#") ;
+	    vec.add("") ;
+	    vec.add("#modified_time#") ;
+	    vec.add("") ;
+	}catch(ParseException pe) {
 		vec.add("#date_modified#") ;
 	    vec.add("") ;
 	    vec.add("#modified_time#") ;

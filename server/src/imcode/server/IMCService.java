@@ -1141,43 +1141,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	if ( data != null ) {
 	    String result[] = new String[data.size()] ;
-	    for ( int i = 0 ; i < data.size() ; i++ )
-		result[i] = data.elementAt(i).toString() ;
-
-
-	    data = null ;
+	    for ( int i = 0 ; i < data.size() ; i++ ) {
+		result[i] =
+		    null != data.elementAt(i)
+		    ? data.elementAt(i).toString()
+		    : null ;
+	    }
 	    return result ;
-	} else
+	} else {
 	    return null ;
-    }
-
-
-    /**
-       Send a sqlquery to the database and return a string array.
-       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
-    **/
-    public String[] sqlQuery(String sqlQuery,String catalog) {
-
-	Vector data = new Vector() ;
-
-	DBConnect dbc = new DBConnect(m_conPool,sqlQuery) ;
-	dbc.getConnection() ;
-	dbc.createStatement() ;
-	data = (Vector)dbc.executeQuery(catalog) ;
-
-	dbc.clearResultSet() ;
-	dbc.closeConnection() ;
-	dbc = null ;
-
-	if ( data != null ) {
-	    String result[] = new String[data.size()] ;
-	    for ( int i = 0 ; i < data.size() ; i++ )
-		result[i] = data.elementAt(i).toString() ;
-
-	    data = null ;
-	    return result ;
-	} else
-	    return null ;
+	}
     }
 
 
@@ -1197,10 +1170,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc.closeConnection() ;
 	dbc = null ;
 
-	if ( data.size() > 0 )
-	    return data.elementAt(0).toString() ;
-	else
+	if ( data.size() > 0 ) {
+	    return
+		null != data.elementAt(0)
+		? data.elementAt(0).toString()
+		: null ;
+	} else {
 	    return null ;
+	}
     }
 
     /**
@@ -1307,7 +1284,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public int sqlUpdateProcedure(String procedure, String[] params) {
 	DBConnect dbc = new DBConnect(m_conPool) ;
 	dbc.getConnection() ;
-	if ( params.length > 0 ) {
+	if ( null != params && params.length > 0 ) {
 	    procedure += " ?" ;
 	    for (int i = 1; i < params.length; ++i) {
 		procedure += ",?" ;
@@ -1341,39 +1318,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	if (data != null) {
 
-	    if ( data.size() > 0)
-		return data.elementAt(0).toString() ;
-	    else
+	    if ( data.size() > 0) {
+		return
+		    null != data.elementAt(0)
+		    ? data.elementAt(0).toString()
+		    : null ;
+	    } else {
 		return null ;
-
+	    }
 	} else
 	    return null ;
     }
-
-
-    /**
-       Send a procedure to the database and return a int.
-       @deprecated Use {@link #sqlProcedure(String, String[])} instead.
-    **/
-    public int sqlProcedureInt(String procedure) {
-	Vector data = new Vector() ;
-
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.getConnection() ;
-	dbc.setProcedure(procedure) ;
-	//dbc.createStatement() ;
-	data = (Vector)dbc.executeProcedure() ;
-
-	dbc.clearResultSet() ;
-	dbc.closeConnection() ;
-	dbc = null ;
-	if ( data != null )
-	    return Integer.parseInt(data.elementAt(0).toString()) ;
-	else
-	    return -1 ;
-    }
-
-
 
 
     /**
@@ -1381,13 +1336,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @deprecated Use {@link #sqlUpdateProcedure(String, String[])} instead.
     **/
     public int sqlUpdateProcedure(String procedure) {
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.getConnection() ;
-	dbc.setProcedure(procedure) ;
-	int res = dbc.executeUpdateProcedure();
-	dbc.closeConnection() ;
-	dbc = null ;
-	return res;
+	return sqlUpdateProcedure(procedure, null) ;
     }
 
 
@@ -1615,7 +1564,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	    // data
 	    for ( int j = 0 ; j < data.size() ; j++ )
-		result[j+i+1] = data.elementAt(j).toString() ;
+		result[j+i+1] = 
+		    null != data.elementAt(j)
+		    ? data.elementAt(j).toString()
+		    : null ;
 
 	    dbc.clearResultSet() ;
 	    dbc.closeConnection() ;
@@ -1667,10 +1619,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	    // data
 	    for ( int j = 0 ; j < data.size() ; j++ )
-		result[j+i+1] = data.elementAt(j).toString() ;
-
-
-
+		result[j+i+1] =
+		    null != data.elementAt(j)
+			? data.elementAt(j).toString()
+			: null ;
 
 	    dbc.clearResultSet() ;
 	    dbc.closeConnection() ;
@@ -1719,7 +1671,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		int counter = 0 ;
 
 		for ( int j =  i ; j < data.size()  ; j+=columns )
-		    temp_str[counter++] = data.elementAt(j).toString() ;;
+		    temp_str[counter++] =
+			null != data.elementAt(j)
+			? data.elementAt(j).toString()
+			: null ;
 
 		result.put(meta[i],temp_str) ;
 	    }
@@ -1766,21 +1721,18 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 		int counter = 0 ;
 
 
-		for ( int j =  i ; j < data.size()  ; j+=columns )
-		    temp_str[counter++] = data.elementAt(j).toString() ;
-
-
-
+		for ( int j =  i ; j < data.size()  ; j+=columns ) {
+		    temp_str[counter++] =
+			null != data.elementAt(j)
+			? data.elementAt(j).toString()
+			: null ;
+		}
 		result.put(meta[i],temp_str) ;
 	    }
-
-
 	    return result ;
 	} else {
 	    return new Hashtable(1,0.5f)   ;
 	}
-
-
     }
 
 
@@ -1808,7 +1760,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String result[][] = new String[rows][columns] ;
 	for(int i = 0 ; i < rows ; i++) {
 	    for(int j = 0 ; j < columns ; j++) {
-		result[i][j] = data.elementAt(i * columns +  j).toString() ;
+		result[i][j] =
+			null != data.elementAt(i * columns +  j)
+			? data.elementAt(i * columns +  j).toString()
+			: null ;
 	    }
 
 	}
@@ -1830,35 +1785,27 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	dbc.getConnection() ;
 	dbc.createStatement() ;
 
-
 	data = (Vector)dbc.executeQuery() ;
 	int columns = dbc.getColumnCount() ;
 
 	if (columns == 0)
 	    return new String[0][0] ;
 
-
 	int rows = data.size() / columns ;
 	dbc.clearResultSet() ;
 	dbc.closeConnection() ;
 
-
-
-
 	String result[][] = new String[rows][columns] ;
 	for(int i = 0 ; i < rows ; i++) {
 	    for(int j = 0 ; j < columns ; j++) {
-		result[i][j] = data.elementAt(i * columns +  j).toString() ;
+		result[i][j] =
+		    null != data.elementAt(i * columns +  j)
+		    ? data.elementAt(i * columns +  j).toString()
+		    : null ;
 	    }
 
 	}
-
-
 	return result ;
-
-
-
-
     }
 
 
