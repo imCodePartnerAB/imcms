@@ -59,7 +59,10 @@ if ( set_cookie == 1 && meta_id != null){
 if( saveAnswers ) {
 	%>
 	<input type="submit" name="Save" value="<? sv/poll/pollForm_part_show.jsp/2001 ?>">&nbsp;&nbsp;<input type="reset" name="Reset" value="<? sv/poll/pollForm_part_show.jsp/2002 ?>">&nbsp;&nbsp;<input type="button" name="cancel" value="<? sv/poll/pollForm_part_show.jsp/2003 ?>" onclick="javascript:window.close()">
-	<? sv/poll/pollForm_part_show.jsp/2 ?>
+	<%
+}else{
+	%>
+	<? sv/poll/pollForm_part_show.jsp/2/1 ?><br><br>
 	<input type="button" name="cancel" value="<? sv/poll/pollForm_part_show.jsp/2004 ?>" onclick="javascript:window.close()">
 	<% 
 }

@@ -32,5 +32,5 @@
                 <%= makeOption(TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING, "Modified date/time", currentSortOrder) %>
                 <%= makeOption(TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING, "Manual order", currentSortOrder) %>
             </select>
-            <input type="submit" value="<? sv/apisamples/document_set_sortorder.jsp/2001 ?>">
+            <input type="submit" value="Set sort order of document <%= documentId %>">
         </form>

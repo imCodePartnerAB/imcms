@@ -88,10 +88,10 @@ private StringBuffer getQuestionResult(IMCServiceInterface imcref, PollHandlingS
 			 String vote_percent = total_votes > 0 ? ( option_count * 100 / total_votes ) + "%" : "0%";
 
 			oStr.append( "<tr><td valign='bottom' width='" + lable_width + "%'>" + option_text + "</td>\n" +
-			 "<td >&nbsp;&nbsp;<img src='" + image_url + "' height='" +  image_height + "' width='" + width + "' >&nbsp;<? sv/poll/pollResult_part.jsp/1001 ?></td></tr><tr><td colspan='2' width='100%'>&nbsp;</td></tr>\n");
+			 "<td >&nbsp;&nbsp;<img src='" + image_url + "' height='" +  image_height + "' width='" + width + "' >&nbsp;" + vote_percent + " (" + option_count + ")</td></tr><tr><td colspan='2' width='100%'>&nbsp;</td></tr>\n");
 		}
 		oStr.append("</table></td></tr>\n" );
-	    oStr.append("<tr><td><? sv/poll/pollResult_part.jsp/11 ?></td></tr>\n" );
+	    oStr.append("<tr><td><br><? sv/poll/pollResult_part.jsp/11/1 ?> " + total_votes + "</td></tr>\n" );
 	    oStr.append("<tr><td><hr></td></tr>\n\n");
 	}
 	return oStr;

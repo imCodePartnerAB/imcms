@@ -165,7 +165,7 @@ if (isImage) {
 		if (!size.equals("")) {
 			%><%= size %><%
 		} %>)<%
-	} %></div><? sv/jsp/FileAdmin_preview.jsp/1001 ?>><%
+	} %></div><img name="theImg" id="theImg" src="<%= imC_PATH + file %>"<%= border + zoom %>><%
 } else {
 	%><%
 } %></div>
@@ -251,7 +251,12 @@ function findIt(str) {
 <table border="0" cellspacing="0" cellpadding="0" width="100%" height="100%" style="border-bottom: 1px solid #828482">
 <tr>
 	<td nowrap><span class="imHeading">
-	&nbsp;<? sv/jsp/FileAdmin_preview.jsp/1002 ?> &nbsp;</span></td>
+	&nbsp;<%
+	if (isStat) {
+		%><? sv/jsp/FileAdmin_preview.jsp/1002/1 ?><%
+	} else {
+		%><? sv/jsp/FileAdmin_preview.jsp/1002/2 ?><% 
+	} %> &nbsp;</span></td>
 	
 	<td align="right"><%
 	if (isStat) {
@@ -278,7 +283,8 @@ function findIt(str) {
 	<input type="hidden" name="frame" value="main">
 	<input type="hidden" name="file" value="<%= file %>">
 	<tr>
-		<td class="norm"><? sv/jsp/FileAdmin_preview.jsp/1003 ?><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
+		<td class="norm">| &nbsp; <%
+		if (isIE) { %><span onDblClick="document.forms[0].zoom.selectedIndex = 3; document.forms[0].submit();"><? sv/jsp/FileAdmin_preview.jsp/16 ?></span>&nbsp;</td>
 		<td class="norm">
 		<select name="zoom" onChange="this.form.submit();">
 			<option value="0.25"<% if (defZoom.equals("0.25")) { %> selected<% } %>>25%
