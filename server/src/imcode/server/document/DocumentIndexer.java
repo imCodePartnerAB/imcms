@@ -60,8 +60,6 @@ public class DocumentIndexer {
     }
 
     private Document createIndexDocument( DocumentDomainObject document ) throws IOException {
-        if (document.)
-
         Document indexDocument = new Document();
         indexDocument.add( Field.Text( "headline", document.getHeadline() ) );
         indexDocument.add( Field.Keyword( "meta_id", "" + document.getMetaId() ) );
