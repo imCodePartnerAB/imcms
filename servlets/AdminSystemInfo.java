@@ -34,31 +34,40 @@ public class AdminSystemInfo extends Administrator {
   	}
 
 	// Lets get the system message from db
-  	RmiLayer rmi = new RmiLayer(user) ;
-  	String msg = rmi.execSqlProcedureStr(server, "SystemMessageGet") ;
-  	if(msg == null) {
-	    msg = "" ;
-	    log("No system message was returned from db") ;
-	}
-    
-  	String[] servermaster = rmi.execSqlProcedure(server, "ServerMasterGet") ;
-  	if(servermaster == null || servermaster.length < 2) {
-	    servermaster = new String[]{ "", "" } ;
-	    log("No ServerMaster was returned from db") ;
-	}
+  	//RmiLayer rmi = new RmiLayer(user) ;
 
-  	String[] webmaster = rmi.execSqlProcedure(server, "WebMasterGet") ;
-  	if(webmaster == null || webmaster.length < 2) {
-	    webmaster = new String[]{ "", "" } ;
-	    log("No WebMaster was returned from db") ;
-	}
+	imcode.server.SystemData sysData = IMCServiceRMI.getSystemData(server) ;
+	
+	String msg = sysData.getSystemMessage() ;
+//    	String msg = rmi.execSqlProcedureStr(server, "SystemMessageGet") ;
+//    	if(msg == null) {
+//  	    msg = "" ;
+//  	    log("No system message was returned from db") ;
+//  	}
+    
+//    	String[] servermaster = rmi.execSqlProcedure(server, "ServerMasterGet") ;
+//    	if(servermaster == null || servermaster.length < 2) {
+//  	    servermaster = new String[]{ "", "" } ;
+//  	    log("No ServerMaster was returned from db") ;
+//  	}
+
+//    	String[] webmaster = rmi.execSqlProcedure(server, "WebMasterGet") ;
+//    	if(webmaster == null || webmaster.length < 2) {
+//  	    webmaster = new String[]{ "", "" } ;
+//  	    log("No WebMaster was returned from db") ;
+//  	}
 
 
 	// Lets get the webmaster info from file
-	String webMaster = webmaster[0] ;
-   	String webMasterEmail = webmaster[1];
-  	String serverMaster = servermaster[0];
-  	String serverMasterEmail = servermaster[1] ;
+//  	String webMaster = webmaster[0] ;
+//     	String webMasterEmail = webmaster[1];
+//    	String serverMaster = servermaster[0];
+//    	String serverMasterEmail = servermaster[1] ;
+
+	String webMaster = sysData.getWebMaster() ;
+	String webMasterEmail = sysData.getWebMasterAddress() ;
+	String serverMaster = sysData.getServerMaster() ;
+	String serverMasterEmail = sysData.getServerMasterAddress() ;
 
 	/* 	// Lets get the properties from the imcserver.cfg file
 		String aPathFromFile = "" ;
@@ -139,11 +148,15 @@ public class AdminSystemInfo extends Administrator {
 	    String sysMsg = (req.getParameter("SYSTEM_MESSAGE")==null) ? "" : (req.getParameter("SYSTEM_MESSAGE")) ;
    
 	    // Lets build the users information into a string and add it to db 
-	    String sqlStr = "SystemMessageSet '" + sysMsg + "'" ;
-	    log("SystemMessage Sql: " + sqlStr ) ;
+//  	    String sqlStr = "SystemMessageSet '" + sysMsg + "'" ;
+//  	    log("SystemMessage Sql: " + sqlStr ) ;
     
-	    RmiLayer rmi = new RmiLayer(user) ;
-	    rmi.execSqlUpdateProcedure(server, sqlStr) ;
+	    imcode.server.SystemData sysData = IMCServiceRMI.getSystemData(server) ;
+	    sysData.setSystemMessage(sysMsg) ;
+
+	    IMCServiceRMI.setSystemData(server, sysData) ;
+	    //RmiLayer rmi = new RmiLayer(user) ;
+	    //rmi.execSqlUpdateProcedure(server, sqlStr) ;
     
 	    doGet(req, res) ;
 	    return ;
@@ -167,12 +180,17 @@ public class AdminSystemInfo extends Administrator {
 	    }
  
 	    // Lets build the users information into a string and add it to db 
-	    String sqlStr = "ServerMasterSet '" + serverMaster + "','"+serverMasterEmail+"'" ;
-	    log("ServerMaster Sql: " + sqlStr ) ;
+//  	    String sqlStr = "ServerMasterSet '" + serverMaster + "','"+serverMasterEmail+"'" ;
+//  	    log("ServerMaster Sql: " + sqlStr ) ;
     
-	    RmiLayer rmi = new RmiLayer(user) ;
-	    rmi.execSqlUpdateProcedure(server, sqlStr) ;
+//  	    RmiLayer rmi = new RmiLayer(user) ;
+//  	    rmi.execSqlUpdateProcedure(server, sqlStr) ;
 	    
+	    imcode.server.SystemData sysData = IMCServiceRMI.getSystemData(server) ;
+	    sysData.setServerMaster(serverMaster) ;
+	    sysData.setServerMasterAddress(serverMasterEmail) ;
+
+	    IMCServiceRMI.setSystemData(server, sysData) ;
  
 	    doGet(req, res) ;
 	    return ;
@@ -196,11 +214,16 @@ public class AdminSystemInfo extends Administrator {
 	    }
  
 	    // Lets build the users information into a string and add it to db 
-	    String sqlStr = "WebMasterSet '" + webMaster + "','"+webMasterEmail+"'" ;
-	    log("WebMaster Sql: " + sqlStr ) ;
+	    imcode.server.SystemData sysData = IMCServiceRMI.getSystemData(server) ;
+	    sysData.setWebMaster(webMaster) ;
+	    sysData.setWebMasterAddress(webMasterEmail) ;
+
+	    IMCServiceRMI.setSystemData(server,sysData) ;
+	    //String sqlStr = "WebMasterSet '" + webMaster + "','"+webMasterEmail+"'" ;
+	    //log("WebMaster Sql: " + sqlStr ) ;
     
-	    RmiLayer rmi = new RmiLayer(user) ;
-	    rmi.execSqlUpdateProcedure(server, sqlStr) ;
+	    //RmiLayer rmi = new RmiLayer(user) ;
+	    //rmi.execSqlUpdateProcedure(server, sqlStr) ;
  
 	    doGet(req, res) ;
 	    return ;
