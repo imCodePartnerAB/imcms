@@ -4,8 +4,6 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -20,7 +18,7 @@ import java.io.Writer;
 /**
  * Save textdocument in a document.
  */
-public class SaveText extends HttpServlet {
+public final class SaveText extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         req.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
@@ -43,7 +41,7 @@ public class SaveText extends HttpServlet {
         int txt_no = Integer.parseInt( req.getParameter( "txt_no" ) );
 
         // get textdocument
-        String text_string = req.getParameter( "textdocument" );
+        String text_string = req.getParameter( "text" );
 
         int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 
