@@ -241,15 +241,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String lang_prefix = user.getLangPrefix() ;
 
 	// Find out what permissions the user has
-	String sqlStr = "GetUserPermissionSet (?,?)" ;
-	DBConnect dbc = new DBConnect(m_conPool,sqlStr) ;
-	String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
-	dbc.setProcedure(sqlStr,sqlAry) ;
-	Vector permissions = (Vector)dbc.executeProcedure() ;
-	dbc.clearResultSet() ;
-	dbc.closeConnection() ;
+	String[] permissions = sqlProcedure("GetUserPermissionSet", new String[] {String.valueOf(meta_id),String.valueOf(user.getUserId())} ) ;
 
-	if (permissions.size() == 0) {
+	if (permissions.length == 0) {
 	    return "" ;
 	}
 
@@ -272,27 +266,25 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    return "" ;
 	}
 
-	int user_permission_set_id = Integer.parseInt((String)permissions.elementAt(0)) ;
-	int user_permission_set = Integer.parseInt((String)permissions.elementAt(1)) ;
+	int user_permission_set_id = Integer.parseInt(permissions[0]) ;
+	int user_permission_set = Integer.parseInt(permissions[1]) ;
 
 	// Replace #getMetaId# with meta_id
-	String doctype = dbc.sqlQueryStr("select type from doc_types where doc_type = "+doc_type) ;
 
 	imcode.util.AdminButtonParser doc_tags = new imcode.util.AdminButtonParser(new File(m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton"+doc_type+"_").toString(), ".html",user_permission_set_id,user_permission_set) ;
 
 	doc_tags.put("getMetaId",meta_id) ;
-
 	imcode.util.Parser.parseTags(tempbuffer,'#'," <>\n\r\t",(Map)doc_tags,true,1) ;
 
 	imcode.util.AdminButtonParser tags = new imcode.util.AdminButtonParser( new File(m_TemplateHome, lang_prefix + "/admin/adminbuttons/adminbutton_").toString(), ".html",user_permission_set_id,user_permission_set) ;
 
 	tags.put("getMetaId",meta_id) ;
 	tags.put("doc_buttons",tempbuffer.toString()) ;
-	tags.put("doc_type",doctype) ;
 
-	Vector temp = (Vector)dbc.sqlQuery("select user_id from user_roles_crossref where role_id = 0 and user_id = "+user.getUserId()) ;
+	String doctypeStr = sqlQueryStr("select type from doc_types where doc_type = "+doc_type) ;
+	tags.put("doc_type",doctypeStr) ;
 
-	if ( temp.size() > 0 ) {
+	if ( checkAdminRights(user) ) {
 	    tags.put("superadmin",superadmin.toString()) ;
 	} else {
 	    tags.put("superadmin","") ;
