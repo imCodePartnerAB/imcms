@@ -14,7 +14,11 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     public static final int TYPE_ID__READ = 3 ;
     public static final int TYPE_ID__NONE = 4 ;
 
-    public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject( TYPE_ID__READ ) ;
+    public static final DocumentPermissionSetDomainObject READ = new TextDocumentPermissionSetDomainObject( TYPE_ID__READ ) {
+        boolean hasPermission( String permissionName ) {
+            return false ;
+        }
+    };
 
     public static final DocumentPermissionSetDomainObject FULL = new TextDocumentPermissionSetDomainObject( TYPE_ID__FULL ) {
         public TemplateGroupDomainObject[] getAllowedTemplateGroups() {
@@ -23,6 +27,10 @@ public class DocumentPermissionSetDomainObject implements Serializable {
 
         public int[] getAllowedDocumentTypeIds() {
             return ApplicationServer.getIMCServiceInterface().getDocumentMapper().getAllDocumentTypeIds() ;
+        }
+
+        boolean hasPermission( String permissionName ) {
+            return true ;
         }
     };
 
@@ -52,12 +60,6 @@ public class DocumentPermissionSetDomainObject implements Serializable {
     }
 
     boolean hasPermission(String permissionName) {
-        if (TYPE_ID__FULL == typeId) {
-            return true ;
-        } else if (TYPE_ID__READ == typeId) {
-            return false ;
-        }
-
         Boolean b = (Boolean)permissionNamesMappedToBooleans.get(permissionName) ;
         if (null == b) {
             return false ;
@@ -135,7 +137,7 @@ public class DocumentPermissionSetDomainObject implements Serializable {
         setPermission( PERMISSION_NAME__EDIT, edit );
     }
 
-    public void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
+    void setFromBits( DocumentDomainObject document, DocumentPermissionSetMapper documentPermissionSetMapper,
                              int permissionBits, boolean forNewDocuments ) {
         documentPermissionSetMapper.setDocumentPermissionSetFromBits( this, permissionBits) ;
     }

@@ -1,5 +1,7 @@
 package imcode.server.document;
 
+import org.apache.commons.lang.ArrayUtils;
+
 public class TemplateGroupDomainObject implements Comparable {
     private int id;
     private String name;

@@ -7,6 +7,8 @@ import imcode.server.user.UserDomainObject;
 import java.io.File;
 import java.util.*;
 
+import org.apache.commons.lang.ArrayUtils;
+
 public class TemplateMapper {
 
     private static final String SPROC_GET_TEMPLATES_IN_GROUP = "GetTemplatesInGroup";
@@ -39,6 +41,11 @@ public class TemplateMapper {
 
     public String createHtmlOptionListOfTemplateGroups( TemplateGroupDomainObject selectedTemplateGroup ) {
         TemplateGroupDomainObject[] templateGroups = service.getTemplateMapper().getAllTemplateGroups();
+        return createHtmlOptionListOfTemplateGroups( templateGroups, selectedTemplateGroup );
+    }
+
+    public String createHtmlOptionListOfTemplateGroups( TemplateGroupDomainObject[] templateGroups,
+                                                         TemplateGroupDomainObject selectedTemplateGroup ) {
         String temps = "";
         for ( int i = 0; i < templateGroups.length; i++ ) {
             TemplateGroupDomainObject templateGroup = templateGroups[i];
@@ -272,6 +279,11 @@ public class TemplateMapper {
         service.sqlUpdateQuery( "declare @new_id int\n"
                                + "select @new_id = max(group_id)+1 from templategroups\n"
                                + "insert into templategroups values(@new_id,?)", new String[]{name} );
+    }
+
+    public boolean templateGroupContainsTemplate( TemplateGroupDomainObject templateGroup,
+                                                  TemplateDomainObject template ) {
+        return ArrayUtils.contains( getTemplatesInGroup( templateGroup ), template ) ;
     }
 
 }

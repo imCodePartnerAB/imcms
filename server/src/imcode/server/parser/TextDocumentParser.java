@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.perl.Perl5Util;
 import org.apache.oro.text.regex.*;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.io.IOException;
 import java.text.Collator;
@@ -90,17 +91,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                               && ( user_set_id == 0 || ( user_perm_set & PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0 );
             }
 
-            TemplateDomainObject documentTemplate = document.getTemplate();
-            int documentTemplateId = documentTemplate.getId();
+            String template = getTemplate( document, parserParameters );
 
-            String template_name = parserParameters.getTemplate();
-            if ( template_name != null ) {
-                TemplateMapper templateMapper = service.getTemplateMapper();
-                TemplateDomainObject template = templateMapper.getTemplateByName( template_name );
-                if ( null != template ) {
-                    documentTemplateId = template.getId();
-                }
-            }
+            StringBuffer result = new StringBuffer( template.length() + EXPECTED_CONTENT_BLOAT );
 
             Perl5Matcher patMat = new Perl5Matcher();
 
@@ -108,10 +101,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             Map menus = getMenus( document, user, menumode, datetimeFormatWithSeconds, parserParameters );
 
-            StringBuffer templatebuffer = new StringBuffer( service.getTemplateData( documentTemplateId ) );
-
-            String templateContents = templatebuffer.toString();
-            StringBuffer result = new StringBuffer( templateContents.length() + EXPECTED_CONTENT_BLOAT );
 
             String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
             result.append( imcmsMessage );
@@ -121,7 +110,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution( parserParameters, menus, menumode );
             ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
 
-            String returnresult = replaceTags( templateContents, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution, document, user );
+            String returnresult = replaceTags( template, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution, document, user );
 
             returnresult = applyEmphasis( documentRequest, user, returnresult, patMat, result );
             return returnresult;
@@ -129,6 +118,23 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             log.error( "Error occurred during parsing.", ex );
             throw ex;
         }
+    }
+
+    private String getTemplate( TextDocumentDomainObject document, ParserParameters parserParameters ) throws IOException {
+        TemplateDomainObject documentTemplate = document.getTemplate();
+        int documentTemplateId = documentTemplate.getId();
+
+        String template_name = parserParameters.getTemplate();
+        if ( template_name != null ) {
+            TemplateMapper templateMapper = service.getTemplateMapper();
+            TemplateDomainObject template = templateMapper.getTemplateByName( template_name );
+            if ( null != template ) {
+                documentTemplateId = template.getId();
+            }
+        }
+
+        String templateContents = service.getTemplateData( documentTemplateId );
+        return templateContents;
     }
 
     private String applyEmphasis( DocumentRequest documentRequest, UserDomainObject user, String returnresult,
@@ -217,18 +223,21 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             TemplateMapper templateMapper = service.getTemplateMapper();
 
-            TemplateGroupDomainObject selected_group = user.getTemplateGroup();
-            if ( null == selected_group ) {
-                selected_group = templateMapper.getTemplateGroupById( document.getTemplateGroupId() );
+            TemplateGroupDomainObject selectedTemplateGroup = user.getTemplateGroup();
+            if ( null == selectedTemplateGroup ) {
+                selectedTemplateGroup = templateMapper.getTemplateGroupById( document.getTemplateGroupId() );
             }
 
-            String group_name = selected_group.getName();
+            TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)service.getDocumentMapper().getUsersMostPrivilegedPermissionSetOnDocument( user, document ) ;
 
-            TemplateDomainObject[] templates = templateMapper.getTemplatesInGroup( selected_group );
+            TemplateGroupDomainObject[] allowedTemplateGroups = textDocumentPermissionSet.getAllowedTemplateGroups();
+            String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups( allowedTemplateGroups, selectedTemplateGroup );
 
-            String templatelist = templateMapper.createHtmlOptionListOfTemplates( templates, document.getTemplate() );
-
-            String grouplist = templateMapper.createHtmlOptionListOfTemplateGroups( selected_group );
+            TemplateDomainObject[] templates = new TemplateDomainObject[0] ;
+            if (ArrayUtils.contains( allowedTemplateGroups, selectedTemplateGroup )){
+                templates = templateMapper.getTemplatesInGroup( selectedTemplateGroup );
+            }
+            String templatesHtmlOptionList = templateMapper.createHtmlOptionListOfTemplates( templates, document.getTemplate() );
 
             // Oh! I need a set of tags to be replaced in the templatefiles we'll load...
             List temptags = new ArrayList();
@@ -236,13 +245,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             temptags.add( "#getMetaId#" );
             temptags.add( "" + document.getId() );
             temptags.add( "#group#" );
-            temptags.add( group_name );
+            temptags.add( selectedTemplateGroup.getName() );
             temptags.add( "#getTemplateGroups#" );
-            temptags.add( grouplist );
+            temptags.add( templateGroupsHtmlOptionList );
             temptags.add( "#simple_name#" );
             temptags.add( document.getTemplate().getName() );
             temptags.add( "#getTemplatesInGroup#" );
-            temptags.add( templatelist );
+            temptags.add( templatesHtmlOptionList );
 
             // Put templateadmintemplate in list of files to load.
             changeTemplateUi = service.getAdminTemplate( "textdoc/inPage_admin.html", user, temptags );
