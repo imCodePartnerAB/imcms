@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -599,7 +600,7 @@ public class DocumentComposer extends HttpServlet {
         redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId );
     }
 
-    public static class NewDocumentParentInformation {
+    public static class NewDocumentParentInformation implements Serializable {
 
         public int parentId;
         public int parentMenuNumber;

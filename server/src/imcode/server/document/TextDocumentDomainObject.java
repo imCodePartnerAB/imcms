@@ -13,6 +13,7 @@ import imcode.util.Parser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,7 +111,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         texts.clear() ;
     }
 
-    public static class Text {
+    public static class Text implements Serializable {
 
         protected String text;
         protected int type;

@@ -2,10 +2,12 @@ package imcode.server.document;
 
 import imcode.server.ApplicationServer;
 
+import java.io.Serializable;
+
 /**
  * @author kreiger
  */
-public class CategoryTypeDomainObject implements Comparable {
+public class CategoryTypeDomainObject implements Comparable, Serializable {
 
     private int id;
     private String name ;
