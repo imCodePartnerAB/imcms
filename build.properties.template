@@ -29,15 +29,14 @@ db-user =
 db-pass =
 db-maxconnections = 20
 
-db-driver = com.microsoft.jdbc.sqlserver.SQLServerDriver
-# Note that SelectMethod must be "cursor"!
-db-url-without-db-name = jdbc:microsoft:sqlserver://${db-host}:${db-port};SelectMethod=cursor;ProgramName=imCMS
+db-driver = net.sourceforge.jtds.jdbc.Driver
+db-url-without-db-name = jdbc:jtds:sqlserver://${db-host}:${db-port}/;AppName=imCMS
 db-url = ${db-url-without-db-name};DatabaseName=${db-name}
 
 
 # LDAP-authentication-parameters
 
-ldap-url = ldap://localhost:389/
+ldap-url = ldap://localhost:389/CN=Users,DC=example,DC=com
 ldap-bind-dn =
 ldap-password =
 ldap-test-user =
