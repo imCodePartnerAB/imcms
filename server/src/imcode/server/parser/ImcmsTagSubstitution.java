@@ -79,7 +79,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         this.parserParameters = parserParameters;
         this.documentRequest = parserParameters.getDocumentRequest();
         this.document = (TextDocumentDomainObject)documentRequest.getDocument();
-        this.service = textDocParser.getService();
+        this.service = documentRequest.getServerObject() ;
 
         this.includeMode = includemode;
         this.includeLevel = includelevel;

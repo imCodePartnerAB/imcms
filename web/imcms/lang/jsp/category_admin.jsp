@@ -118,9 +118,7 @@ imcmsGui("mid", null);
         </tr>
         <tr>
             <td>&nbsp;</td>
-            <td><script>
-                writeFormField("TEXT","name",30,50,null,null);
-            </script></td>
+            <td><input type="text" name="name" size="30" maxlength="50"></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -162,9 +160,7 @@ imcmsGui("mid", null);
         <% if(formData.getCategoryTypeToEdit() != null ){  %>
             <tr>
                 <td height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/new_name ?> &nbsp;</td>
-                <td><script>
-                    writeFormField("TEXT","name",30,50,null, "<%=formData.getCategoryTypeToEdit().getName()%>");
-                </script></td>
+                <td><input type="text" name="name" size="30" maxlength="50" value="<%=formData.getCategoryTypeToEdit().getName()%>"></td>
             </tr>
 
             <tr>

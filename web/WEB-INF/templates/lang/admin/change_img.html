@@ -203,7 +203,7 @@ function checkLinkOnBlur() {
 	<td colspan="2">
 <script language="JavaScript">
 <!--
-var sUrl = "#imgUrl##imgRef#";
+var sUrl = "#imgUrl#"+"#imgRef#";
 var str  = "";
 if (sUrl.indexOf(".") < 0) {
 	str += "<img src=\"@imcmsimageurl@/admin/1x1.gif\" width=\"1\" height=\"1\" border=\"0\" style=\"display:none\">";
@@ -211,7 +211,7 @@ if (sUrl.indexOf(".") < 0) {
 	str += "<table id=\"imgTable\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"100%\">\n";
 	str += "<tr>\n";
 	str += "	<td align=\"center\" bgcolor=\"#ffffff\">\n";
-	str += "	<img src=\"#imgUrl##imgRef#\" width=\"#imgWidth#\" height=\"#imgHeight#\" border=\"#imgBorder#\"></td>\n";
+	str += "	<img src=\"#imgUrl#"+"#imgRef#\" width=\"#imgWidth#\" height=\"#imgHeight#\" border=\"#imgBorder#\"></td>\n";
 	str += "</tr>\n";
 	str += "</table>";
 }
@@ -224,18 +224,14 @@ document.write(str);
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
-		<td><script>
-writeFormField("TEXT","imageref",50,255,350,"#imgRef#");
-</script></td>
+		<td><input type="text" name="imageref" size="50" maxlength="255" style="width: 350" value="#imgRef#"></td>
 		<td align="right"><input type="SUBMIT" class="imcmsFormBtnSmall" name="show_img" value="<? templates/sv/change_img.html/2006 ?>" style="width:110"></td>
 	</tr>
 	</table></td>
 </tr>
 <tr>
 	<td nowrap><? templates/sv/change_img.html/14 ?></td>
-	<td><script>
-writeFormField("TEXT","image_name",50,255,350,"#imgName#");
-</script></td>
+	<td><input type="text" name="image_name" size="50" maxlength="255" style="width: 350" value="#imgName#"></td>
 </tr>
 <tr>
 	<td nowrap><? templates/sv/change_img.html/16 ?></td>
@@ -258,17 +254,11 @@ writeFormField("TEXT","image_name",50,255,350,"#imgName#");
 		<td colspan="2"><? templates/sv/change_img.html/20 ?></td>
 	</tr>
 	<tr>
-		<td><script>
-writeFormField("TEXT","image_width",4,4,null,"#imgWidth#");
-</script></td>
+		<td><input type="text" name="image_width" size="4" maxlength="4" value="#imgWidth#"></td>
 		<td>&nbsp;<? templates/sv/change_img.html/1005 ?>&nbsp;</td>
-		<td><script>
-writeFormField("TEXT","image_height",4,4,null,"#imgHeight#");
-</script></td>
+		<td><input type="text" name="image_height" size="4" maxlength="4" value="#imgHeight#"></td>
 		<td>&nbsp;</td>
-		<td><script>
-writeFormField("TEXT","image_border",4,4,null,"#imgBorder#");
-</script></td>
+		<td><input type="text" name="image_border" size="4" maxlength="4" value="#imgBorder#"></td>
 		<td>&nbsp;</td>
 		<td><input type="checkbox" name="keepAspectRatio" value="yes" #keep_aspect#></td>
 		<td> <? templates/sv/change_img.html/24 ?></td>
@@ -280,15 +270,11 @@ writeFormField("TEXT","image_border",4,4,null,"#imgBorder#");
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><script>
-writeFormField("TEXT","v_space",4,4,null,"#imgVerticalSpace#");
-</script></td>
+		<td><input type="text" name="v_space" size="4" maxlength="4" value="#imgVerticalSpace#"></td>
 		<td>&nbsp;</td>
 		<td><? templates/sv/change_img.html/27 ?></td>
 		<td>&nbsp; &nbsp;</td>
-		<td><script>
-writeFormField("TEXT","h_space",4,4,null,"#imgHorizontalSpace#");
-</script></td>
+		<td><input type="text" name="h_space" size="4" maxlength="4" value="#imgHorizontalSpace#"></td>
 		<td>&nbsp;</td>
 		<td><? templates/sv/change_img.html/29 ?></td>
 	</tr>
@@ -312,9 +298,7 @@ writeFormField("TEXT","h_space",4,4,null,"#imgHorizontalSpace#");
 </tr>
 <tr>
 	<td nowrap><? templates/sv/change_img.html/41 ?></td>
-	<td><script>
-writeFormField("TEXT","alt_text",92,255,"100%","#imgAltText#");
-</script></td>
+	<td><input type="text" name="alt_text" size="92" maxlength="255" style="width: 100%" value="#imgAltText#"></td>
 </tr>
 <tr>
 	<td colspan="2">&nbsp;<br><script>imcHeading("<? templates/sv/change_img.html/43/1 ?>","656");</script></td>
@@ -332,9 +316,7 @@ writeFormField("TEXT","alt_text",92,255,"100%","#imgAltText#");
 		<td><label for="linkType1"><? templates/sv/change_img.html/4001 ?></label></td>
 	</tr>
 	</table></td>
-	<td><script>
-writeFormField("TEXT","imageref_link",92,255,"100%","#imgRefLink#\" onFocus=\"checkLinkOnFocus()\" onBlur=\"checkLinkOnBlur()");
-</script></td>
+	<td><input type="text" name="imageref_link" size="92" maxlength="255" style="width: 100%" value="#imgRefLink#\" onFocus=\"checkLinkOnFocus()\" onBlur=\"checkLinkOnBlur()"></td>
 </tr>
 <tr>
 	<td nowrap><? templates/sv/change_img.html/46 ?></td>

@@ -22,8 +22,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     private final static Logger log = Logger.getLogger( TextDocumentParser.class );
 
-    private final static Perl5Util perl5util = new Perl5Util();
-
     static Pattern HASHTAG_PATTERN = null;
     private static Pattern MENU_PATTERN = null;
     private static Pattern IMCMS_TAG_PATTERN = null;
@@ -53,13 +51,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
     public TextDocumentParser( IMCServiceInterface serverobject ) {
         this.service = serverobject;
-    }
-
-    /*
-       return a referens to IMCServerInterface used by TextDocumentParser
-    */
-    public IMCServiceInterface getService() {
-        return this.service;
     }
 
     public String parsePage( ParserParameters paramsToParse ) throws IOException {

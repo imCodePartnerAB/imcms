@@ -34,9 +34,7 @@ imcmsGui("mid_noshade", null);
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/imcms/html/link_editor.html/5 ?></td>
-		<td><script>
-writeFormField("TEXT","createLinkDesc",54,255,"100%","<? install/htdocs/imcms/html/link_editor.html/6/1 ?>");
-</script></td>
+		<td><input type="text" name="createLinkDesc" size="54" maxlength="255" style="width: 100%" value="<? install/htdocs/imcms/html/link_editor.html/6/1 ?>"></td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText"><? install/htdocs/imcms/html/link_editor.html/7 ?></td>
@@ -65,24 +63,18 @@ writeFormField("TEXT","createLinkDesc",54,255,"100%","<? install/htdocs/imcms/ht
 				<option value="Skriv namn!"><? install/htdocs/imcms/html/link_editor.html/19 ?></option>
 			</select></td>
 			<td>&nbsp;</td>
-			<td class="form" align="right"><script>
-writeFormField("TEXT","createLinkTarget",12,50,100,"");
-</script></td>
+			<td class="form" align="right"><input type="text" name="createLinkTarget" size="12" maxlength="50" style="width: 100" value=""></td>
 		</tr>
 		</table></td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap>
 		<? install/htdocs/imcms/html/link_editor.html/1002 ?> &nbsp;</td>
-		<td><script>
-writeFormField("TEXT","createLinkValue",54,100,"100%","<? install/htdocs/imcms/html/link_editor.html/21/1 ?>");
-</script></td>
+		<td><input type="text" name="createLinkValue" size="54" maxlength="100" style="width: 100%" value="<? install/htdocs/imcms/html/link_editor.html/21/1 ?>"></td>
 	</tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/imcms/html/link_editor.html/22 ?></td>
-		<td><script>
-writeFormField("TEXT","createLinkCss",20,50,150,"");
-</script></td>
+		<td><input type="text" name="createLinkCss" size="20" maxlength="50" style="width: 150" value=""></td>
 	</tr>
 	<tr>
 		<td colspan="2"><script>hr("100%",396,"blue");</script></td>
@@ -101,9 +93,7 @@ writeFormField("TEXT","createLinkCss",20,50,150,"");
 		<td colspan="2" nowrap>&nbsp;<br><script>imcHeading("<? install/htdocs/imcms/html/link_editor.html/25/1 ?>",396);</script></td>
 	</tr>
 	<tr>
-		<td colspan="2"><script>
-writeFormField("TEXT","theLinkCodeField",76,255,"100%","");
-</script><div id="theLinkCodeFieldDiv"></div></td>
+		<td colspan="2"><input type="text" name="theLinkCodeField" size="76" maxlength="255" style="width: 100%" value=""><div id="theLinkCodeFieldDiv"></div></td>
 	</tr>
 	<tr>
 		<td><img src="@imcmsimageurl@/admin/1x1.gif" width="105" height="1"></td>
