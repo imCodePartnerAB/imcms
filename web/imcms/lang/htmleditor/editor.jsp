@@ -899,36 +899,7 @@ if (showKBshortcuts) {
 //-->
 </script>
 <img src="images/1x1.gif" width="1" height="5">
-<table border="0" cellspacing="0" cellpadding="0" align="center" unselectable="on">
-<tr>
-	<td class="dim"><? install/htdocs/sv/htmleditor/editor/editor.jsp/115 ?></td>
-</tr>
-</table> 
-<!-- 
-<table border="0" cellspacing="0" cellpadding="0" align="center" unselectable="on">
-<tr>
-	<td><img src="images/btn_format_linebreak.gif" width="10" height="14" alt="" border="0"></td>
-	<td><img src="images/1x1.gif" width="10" height="1"></td>
-	<td class="dim" unselectable="on">abc<img src="images/1x1.gif" width="3" height="1"><SPAN STYLE="font: bold 11px Courier New; letter-spacing:-1px" unselectable="on">&lt;BR&gt;</SPAN></td>
-	<td><img src="images/1x1.gif" width="15" height="1"></td>
-	<td class="dim"><b><i unselectable="on">Shift + Enter</i></b></td>
-	<td><img src="images/1x1.gif" width="15" height="1"></td>
-	<td><img src="images/btn_format_f.gif" width="13" height="10" alt="" border="0"></td>
-	<td><img src="images/1x1.gif" width="10" height="1"></td>
-	<td class="dim"><i unselectable="on"><b>Ctrl + F</b> (Sv) / <b>Ctrl + B</b> (En)</i></td>
-</tr>
-<tr>
-	<td><img src="images/btn_format_paragraph.gif" width="10" height="14" alt="" border="0"></td>
-	<td><img src="images/1x1.gif" width="1" height="1"></td>
-	<td class="dim"><SPAN STYLE="font: bold 11px Courier New; letter-spacing:-1px" unselectable="on">&lt;P&gt;</SPAN><img src="images/1x1.gif" width="2" height="1">abc<img src="images/1x1.gif" width="3" height="1"><SPAN STYLE="font: bold 11px Courier New; letter-spacing:-1px" unselectable="on">&lt;/P&gt;</SPAN></td>
-	<td><img src="images/1x1.gif" width="1" height="1"></td>
-	<td class="dim"><b><i unselectable="on">Enter</i></b></td>
-	<td><img src="images/1x1.gif" width="15" height="1"></td>
-	<td><img src="images/btn_format_k.gif" width="13" height="10" alt="" border="0"></td>
-	<td><img src="images/1x1.gif" width="10" height="1"></td>
-	<td class="dim"><i unselectable="on"><b>Ctrl + K</b> (Sv) / <b>Ctrl + I</b> (En)</i></td>
-</tr>
-</table> --></div>
+</div>
 
 
 <!-- ***** Bottom Right panel ***** -->
