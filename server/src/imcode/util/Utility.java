@@ -52,17 +52,25 @@ public class Utility {
 	    domain = domain.substring(0,index) ;
 	}
 	domain = domain.trim() ;
-	StringTokenizer st = new StringTokenizer(Prefs.get("domains","servlet.cfg"),", ") ;
 	try {
+	    StringTokenizer st = new StringTokenizer(Prefs.get("domains","servlet.cfg"),", ") ;
 	    while ( st.hasMoreTokens() ) {
 		if (st.nextToken().trim().equals(domain)) {
 		    return Prefs.get(pref, Prefs.get(domain+".properties","servlet.cfg"));
 		}
 	    }
-	} catch (NullPointerException ex) {
-	    throw new IOException ("Domain \""+domain+".properties\" not found in servlet.cfg!") ;
+	} catch (NullPointerException ignored) {
+	    try {
+		return Prefs.get(pref, Prefs.get("default","servlet.cfg"));
+	    } catch (NullPointerException ex) {
+		throw new IOException ("\"domains\", \""+domain+".properties\", or \"default\" not found in servlet.cfg!") ;
+	    }
 	}
-	throw new IOException ("Domain \""+domain+"\" not found in servlet.cfg!") ;
+	try {
+	    return Prefs.get(pref, Prefs.get("default","servlet.cfg"));
+	} catch (NullPointerException ex) {
+	    throw new IOException ("Domain \""+domain+"\" or \"default\" not found in servlet.cfg!") ;
+	}
     }
 
     /**
