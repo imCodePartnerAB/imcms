@@ -274,8 +274,10 @@ public class ChangeImage extends HttpServlet {
             File imageFile = new File( image_path, image.getUrl() );
             Integer imageFileDocumentId = getDocumentIdFromImageUrl( imageUrl );
             if ( null != imageFileDocumentId ) {
-                FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentMapper.getDocument( imageFileDocumentId.intValue() );
-                imageData = getImageDataFromFileDocument( imageFileDocument );
+                DocumentDomainObject document = documentMapper.getDocument( imageFileDocumentId.intValue() );
+                if ( document instanceof FileDocumentDomainObject ) {
+                    imageData = getImageDataFromFileDocument( (FileDocumentDomainObject)document );
+                }
             } else if ( imageFile.isFile() ) {
                 imageData = new ImageParser().parseImageFile( imageFile );
             }
