@@ -34,21 +34,19 @@ public class ImageFileMetaData
 
 	try
 	    {
-		if(!file.exists())
-		    throw(new FileNotFoundException(file.getName()));
-		FileInputStream fis = new FileInputStream(file);
-		DataInputStream dis = new DataInputStream(fis);
+		DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 		if (file.getName().endsWith(".gif")) // ****************** A GIF-File
 		    {
-			for(int slask=0;slask<6;slask++)
-			    type += (char)(dis.read());
+			byte[] t = new byte[6] ;
+			dis.readFully(t);
+			type = new String(t,"8859_1") ;
 			if(!type.equals("GIF87a") && !type.equals("GIF89a")) {
 			    throw(new UnsupportedOperationException("Unsupported gif-type"));
 			}
 			width = (dis.read() + (dis.read()<<8));
 			height = (dis.read() + (dis.read()<<8));
-			log.log(Log.INFO, "width: " + width);
-			log.log(Log.INFO, "height: " + height);
+			//log.log(Log.INFO, "width: " + width);
+			//log.log(Log.INFO, "height: " + height);
 			dis.close();
 		    }
 
