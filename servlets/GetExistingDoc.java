@@ -45,7 +45,7 @@ public class GetExistingDoc extends HttpServlet {
 
         imcode.server.user.UserDomainObject user;
         String values[];
-        int existing_meta_id = 0;
+        int existing_meta_id;
 
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
@@ -53,7 +53,7 @@ public class GetExistingDoc extends HttpServlet {
         // Lets get the meta_id for the page were adding stuff to
         String tmpMetaIdS = req.getParameter( "meta_id_value" );
 
-        int meta_id = 0;
+        int meta_id;
 
         try {
             meta_id = Integer.parseInt( tmpMetaIdS );
@@ -81,7 +81,7 @@ public class GetExistingDoc extends HttpServlet {
         }
 
         // Lets get the doc_menu_number
-        int doc_menu_no = 0;
+        int doc_menu_no;
         try {
             doc_menu_no = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
         } catch ( NumberFormatException ex ) {
@@ -89,7 +89,7 @@ public class GetExistingDoc extends HttpServlet {
             return;
         }
 
-        StringBuffer searchResults = new StringBuffer();
+        StringBuffer searchResults;
 
         if ( ( req.getParameter( "cancel" ) != null ) || ( req.getParameter( "cancel.x" ) != null ) ) {
             String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
@@ -102,12 +102,12 @@ public class GetExistingDoc extends HttpServlet {
             // Lets do a search among existing documents.
             // Lets collect the parameters and build a sql searchstring
 
-            String fromDoc = "";
-            String userId = "";
-            String searchString = "";
-            String searchPrep = "";
-            String doctype = "";
-            String sortBy = "";
+            String fromDoc;
+            String userId;
+            String searchString;
+            String searchPrep;
+            String doctype;
+            String sortBy;
 
             searchString = imcode.server.HTMLConv.toHTML( req.getParameter( "searchstring" ) );
             searchPrep = req.getParameter( "search_prep" );
@@ -225,7 +225,7 @@ public class GetExistingDoc extends HttpServlet {
             String startDateStr = ( req.getParameter( "start_date" ) == null ) ? "" : ( req.getParameter( "start_date" ) );
             String endDateStr = ( req.getParameter( "end_date" ) == null ) ? "" : ( req.getParameter( "end_date" ) );
             Date startDate = null;
-            Date endDate = null;
+            Date endDate;
             SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM-dd" );
 
             try {
@@ -351,12 +351,11 @@ public class GetExistingDoc extends HttpServlet {
                         user_doc_types.add( user_dt[i] );
                     }
 
-                    String sqlStr = "select doc_type from meta where meta_id = ?";
-                    String doc_type = imcref.sqlQueryStr( sqlStr, new String[]{"" + existing_meta_id} );
+                    int doc_type = DocumentMapper.sqlGetDocTypeFromMeta(imcref, existing_meta_id);
 
                     // Add the document in menu if user is admin for the document OR the document is shared.
                     boolean sharePermission = imcref.checkUserDocSharePermission( user, existing_meta_id );
-                    if ( user_doc_types.contains( doc_type ) && sharePermission ) {
+                    if ( user_doc_types.contains( ""+doc_type ) && sharePermission ) {
                         try {
                             imcref.addExistingDoc( meta_id, user, existing_meta_id, doc_menu_no );
                         } catch (DocumentMapper.DocumentAlreadyInMenuException e) {

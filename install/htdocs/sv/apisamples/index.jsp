@@ -83,7 +83,7 @@ Get the first include from the document, <%= makeLink("document_get_include.jsp"
 Change the first include, <%= makeLink("document_set_include.jsp") %><br>
 Clear the first include, <%= makeLink("document_clear_include.jsp") %><br>
 <br>
-To create a new text dokument that is linked from the document above, <%= makeLink("document_create_new_text_document.jsp") %><br>
+To create different kinds of document that is linked from the document above, <%= makeLink("document_create_documents.jsp") %><br>
 <br>
 
 <h3>Documents and permissions </h3>

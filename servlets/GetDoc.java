@@ -244,10 +244,9 @@ public class GetDoc extends HttpServlet {
                 return htmlStr;
 
             case 8:	//fileupload-doc
-                String sqlStr = "select mime from fileupload_docs where meta_id = ?";
-                String mimetype = imcref.sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
-                sqlStr = "select filename from fileupload_docs where meta_id = ?";
-                String filename = imcref.sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
+                String[] sqlResult = DocumentMapper.sqlGetFromFileDocs( imcref, meta_id );
+                String filename = sqlResult[0];
+                String mimetype = sqlResult[1];
                 BufferedInputStream fr;
                 try {
                     fr =

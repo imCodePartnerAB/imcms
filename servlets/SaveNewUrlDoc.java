@@ -1,6 +1,8 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentMapper;
+import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,22 +29,13 @@ public class SaveNewUrlDoc extends HttpServlet {
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
 
-        // get meta_id
         String meta_id = req.getParameter( "meta_id" );
-        // get new_meta_id
         String new_meta_id = req.getParameter( "new_meta_id" );
-        // get url_ref
         String url_ref = req.getParameter( "url_ref" );
 
-        // Get the session
         HttpSession session = req.getSession( true );
-
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        user = (imcode.server.user.UserDomainObject)done;
-
-        if ( done == null ) {
-            // No logon.isDone means he hasn't logged in.
+        user = (UserDomainObject)session.getAttribute( "logon.isDone" );
+        if ( user == null ) {
             // Save the request URL as the true target and redirect to the login page.
             String scheme = req.getScheme();
             String serverName = req.getServerName();
@@ -65,15 +58,12 @@ public class SaveNewUrlDoc extends HttpServlet {
             return;
         }
 
-        String userLanguage = user.getLangPrefix();
-        String sqlStr = "insert into url_docs (meta_id, frame_name,target,url_ref,url_txt,lang_prefix)\n" +
-                "values (?,'','',?,'',?)\n" +
-                "update meta set activate = 1, target = ? where meta_id = ?";
-        imcref.sqlUpdateQuery( sqlStr, new String[]{new_meta_id, url_ref, userLanguage, target, new_meta_id} );
+        DocumentMapper.insertIntoUrlDocs(imcref, Integer.parseInt(new_meta_id), url_ref, target);
 
         String output = AdminDoc.adminDoc( Integer.parseInt( new_meta_id ), Integer.parseInt( new_meta_id ), user, req, res );
         if ( output != null ) {
             out.write( output );
         }
     }
+
 }

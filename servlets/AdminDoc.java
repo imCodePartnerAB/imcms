@@ -4,6 +4,7 @@ import imcode.server.DocumentRequest;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
@@ -227,19 +228,18 @@ public class AdminDoc extends HttpServlet {
                 break;
 
             case DocumentDomainObject.DOCTYPE_FILE:
-                sqlStr = "select mime from fileupload_docs where meta_id = ?";
-                String mimetype = imcref.sqlQueryStr( sqlStr, new String[]{""+meta_id} );
-                sqlStr = "select filename from fileupload_docs where meta_id = ?";
-                String filename = imcref.sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
+                String[] sqlResult = DocumentMapper.sqlGetFromFileDocs(imcref, meta_id );
+                String fileName = sqlResult[0];
+                String mimeType = sqlResult[1];
                 sqlStr = "select mime,mime_name from mime_types where lang_prefix = ? and mime != 'other'";
                 hash = imcref.sqlQueryHash( sqlStr, new String[]{lang_prefix} );
                 String mime[] = (String[])hash.get( "mime" );
                 String mime_name[] = (String[])hash.get( "mime_name" );
                 String optStr = "";
-                String other = mimetype;
+                String other = mimeType;
                 String tmp;
                 for( int i = 0; i < mime.length; i++ ) {
-                    if( mime[i].equals( mimetype ) ) {
+                    if( mime[i].equals( mimeType ) ) {
                         tmp = "\"" + mime[i] + "\" selected";
                         other = "";
                     } else {
@@ -249,7 +249,7 @@ public class AdminDoc extends HttpServlet {
                 }
                 Vector d = new Vector();
                 d.add( "#file#" );
-                d.add( filename );
+                d.add( fileName );
                 d.add( "#mime#" );
                 d.add( optStr );
                 d.add( "#other#" );

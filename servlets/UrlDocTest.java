@@ -43,14 +43,12 @@ public class UrlDocTest extends HttpServlet {
 			return ;
 		}
 
-		String lang_prefix = user.getLangPrefix() ;
-
 		out.print(imcref.parseDoc(null,"UrlDocTestHead.html", user)) ;
 		out.flush() ;
 		for ( int i = 0; meta_id != null && i<meta_id.length ; i++ ) {
 			String found = "green", reached = "green", ok = "red" ;
 			String tmp = url_ref[i] ;
-			URL url = null ;
+			URL url;
 			String reslt = null ;
 			try {
 				if ( tmp.indexOf("://") == -1 ) {
@@ -148,10 +146,10 @@ public class UrlDocTest extends HttpServlet {
 			st.nextToken() ;
 			return Integer.parseInt(st.nextToken()) ;
 		} catch ( NumberFormatException ex ) {
-			log.debug("Exception occured" + ex );	   
+			log.debug("Exception occured" + ex );
 			return 0 ;
 		} catch ( NullPointerException ex ) {
-			log.debug("Exception occured" + ex );	   
+			log.debug("Exception occured" + ex );
 			return 0 ;
 		}
 	}

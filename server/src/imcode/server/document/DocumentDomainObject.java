@@ -9,15 +9,23 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.sql.SQLException;
-
 import imcode.server.*;
 
-/** Stores all info about a internalDocument. **/
-
 public class DocumentDomainObject implements IMCConstants {
+
+    public final static int DOCTYPE_TEXT       = 2 ;
+    public final static int DOCTYPE_URL        = 5 ;
+    public final static int DOCTYPE_BROWSER    = 6 ;
+    public final static int DOCTYPE_HTML       = 7 ;
+    public final static int DOCTYPE_FILE       = 8 ;
+    public final static int DOCTYPE_LOWEST_EXTERNAL = 100;
+    public final static int DOCTYPE_DIAGRAM    = 101 ;
+    public final static int DOCTYPE_CONFERENCE = 102 ;
+    public final static int DOCTYPE_CHAT       = 103 ;
+    public final static int DOCTYPE_BILLBOARD  = 104 ;
+    public final static int DOCTYPE_POSTCARD   = 105 ;
+    public final static int DOCTYPE_FORTUNES   = 106 ;
+    public final static int DOCTYPE_CALENDER   = 107 ;
 
     // If an field is added, make sure to update DocumentMapper
     private int metaId;
@@ -45,26 +53,17 @@ public class DocumentDomainObject implements IMCConstants {
 
     /* Filedocs only */
     private String filename;
+    private String mime;
 
     /* Textdocs only */
     private TemplateDomainObject template;
     private int templateGroupId;
     private int menuSortOrder;
-    // If an field is added, make sure to update DocumentMapper
 
-    public final static int DOCTYPE_TEXT       = 2 ;
-    public final static int DOCTYPE_URL        = 5 ;
-    public final static int DOCTYPE_BROWSER    = 6 ;
-    public final static int DOCTYPE_HTML       = 7 ;
-    public final static int DOCTYPE_FILE       = 8 ;
-    public final static int DOCTYPE_LOWEST_EXTERNAL = 100;
-    public final static int DOCTYPE_DIAGRAM    = 101 ;
-    public final static int DOCTYPE_CONFERENCE = 102 ;
-    public final static int DOCTYPE_CHAT       = 103 ;
-    public final static int DOCTYPE_BILLBOARD  = 104 ;
-    public final static int DOCTYPE_POSTCARD   = 105 ;
-    public final static int DOCTYPE_FORTUNES   = 106 ;
-    public final static int DOCTYPE_CALENDER   = 107 ;
+    /* url documents only*/
+    private String urlRef;
+
+    // If an field is added, make sure to update DocumentMapper
 
     protected DocumentDomainObject() {
 
@@ -474,4 +473,19 @@ public class DocumentDomainObject implements IMCConstants {
         return searchDisabled;
     }
 
+    public String getUrlRef() {
+        return urlRef;
+    }
+
+    public void setUrlRef(String urlRef) {
+        this.urlRef = urlRef;
+    }
+
+    public String getMime() {
+        return mime;
+    }
+
+    public void setMime(String mime) {
+        this.mime = mime;
+    }
 }

@@ -23,29 +23,88 @@ public class DocumentService {
     }
 
     /**
+     * Used to get a document of any type. If you need a specific document, i.e. a TextDocument, use @see getTextDocument
+     * instead.
+     * @param documentId The id number of the document requested, also somtimes known as "meta_id"
+     * @return The document The type is usually a subclass to document, if there exist one.
+     * @throws com.imcode.imcms.api.NoPermissionException
+     *          If the current user dosen't have the rights to read this document.
+     */
+    public Document getDocument( int documentId ) throws NoPermissionException {
+        Document result;
+        DocumentDomainObject doc = documentMapper.getDocument( documentId );
+        switch( doc.getDocumentType() ) {
+            case DocumentDomainObject.DOCTYPE_TEXT:
+                result = new TextDocument( doc, securityChecker, this, documentMapper,
+                                                documentPermissionSetMapper, userAndRoleMapper );
+                break;
+            case DocumentDomainObject.DOCTYPE_URL:
+                result = new UrlDocument( doc, securityChecker, this, documentMapper,
+                                                documentPermissionSetMapper, userAndRoleMapper );
+                break;
+            default:
+                result = new Document( doc, securityChecker, this, documentMapper,
+                                                documentPermissionSetMapper, userAndRoleMapper );
+                break;
+        }
+        securityChecker.hasAtLeastDocumentReadPermission( result );
+        return result;
+    }
+
+
+    /**
      * @param documentId The id number of the document requested, also somtimes known as "meta_id"
      * @return The document
      * @throws com.imcode.imcms.api.NoPermissionException
      *          If the current user dosen't have the rights to read this document.
      */
     public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
-        imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument( documentId );
+        DocumentDomainObject doc = documentMapper.getDocument( documentId );
+        if( DocumentDomainObject.DOCTYPE_TEXT != doc.getDocumentType() ) {
+            throw new ClassCastException("The document (" + documentId + ") is not a TextDocument.");
+        }
         TextDocument result = new TextDocument( doc, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
         securityChecker.hasAtLeastDocumentReadPermission( result );
         return result;
     }
 
+    /**
+     * @param documentId The id number of the document requested, also somtimes known as "meta_id"
+     * @return The document
+     * @throws com.imcode.imcms.api.NoPermissionException
+     *          If the current user dosen't have the rights to read this document.
+     */
+    public UrlDocument getUrlDocument( int documentId ) throws NoPermissionException {
+        DocumentDomainObject doc = documentMapper.getDocument( documentId );
+        if( DocumentDomainObject.DOCTYPE_URL != doc.getDocumentType() ) {
+            throw new ClassCastException("The document (" + documentId + ") is not a TextDocument.");
+        }
+        UrlDocument result = new UrlDocument( doc, securityChecker, this, documentMapper,
+                                                documentPermissionSetMapper, userAndRoleMapper );
+        securityChecker.hasAtLeastDocumentReadPermission( result );
+        return result;
+    }
+
+    public UrlDocument createNewUrlDocument( int parentId, int parentMenuNumber )  throws NoPermissionException {
+        securityChecker.hasEditPermission( parentId );
+        UserDomainObject user = securityChecker.getCurrentLoggedInUser();
+        DocumentDomainObject newDoc = documentMapper.createNewUrlDocument( user, parentId, parentMenuNumber, DocumentDomainObject.DOCTYPE_URL, "", "" );
+        UrlDocument result = new UrlDocument( newDoc, securityChecker, this, documentMapper,
+                                                documentPermissionSetMapper, userAndRoleMapper );
+        return result;
+    }
+
     public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) throws NoPermissionException {
         securityChecker.hasEditPermission( parentId );
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, parentMenuNumber );
+        DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, DocumentDomainObject.DOCTYPE_TEXT, parentMenuNumber );
         TextDocument result = new TextDocument( newDoc, securityChecker, this, documentMapper,
                                                 documentPermissionSetMapper, userAndRoleMapper );
         return result;
     }
 
-    public void saveChanges( TextDocument document ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
+    public void saveChanges( Document document ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
         securityChecker.hasEditPermission( document );
         try {
             documentMapper.saveDocument( document.getInternal() );

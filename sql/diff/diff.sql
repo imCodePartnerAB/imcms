@@ -1484,6 +1484,12 @@ GO
 
 -- 2004-01-21  /Hasse
 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getfilename]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[GetFileName]
+GO
+
+-- 2004-02-11 /Hasse
+
 print ' OBS !!!!! '
 print 'Följande åtgärder behöver genomföras efter detta script '
 print ''
