@@ -1,6 +1,7 @@
 package imcode.server.user;
 
 import java.util.Hashtable;
+import java.util.Date;
 
 public class UserDomainObject extends Hashtable {
 
@@ -27,7 +28,7 @@ public class UserDomainObject extends Hashtable {
    private int lang_id;		//int
    private int user_type;		//int
    private boolean active;		//int
-   private String create_date;		//smalldatetime
+   private Date create_date;		//smalldatetime
 
    private String langPrefix;
 
@@ -316,14 +317,16 @@ public class UserDomainObject extends Hashtable {
    /**
     set create_date
     **/
-   public void setCreateDate( String create_date ) {
+   public void setCreateDate( Date create_date ) {
       this.create_date = create_date;
    }
 
    /**
     get create_date
     **/
-   public String getCreateDate() {
+   // todo: Denna returnerar numer ett Date objekt! Varning! Kontrollera att alla
+    // som använder denna metod är medvetna om detta.
+   public Date getCreateDate() {
       return this.create_date;
    }
 

@@ -297,7 +297,7 @@ public class AdminFortuneFile extends Administrator {
 
 
 
-		String parsed = imcref.parseExternalDoc( values, "AdminFortuneFile.htm" , imcref.getLanguage(), "admin");
+		String parsed = imcref.parseExternalDoc( values, "AdminFortuneFile.htm" , imcref.getDefaultLanguage(), "admin");
 		out.print(parsed);
 		return;
 

@@ -2,8 +2,6 @@ package imcode.server.document;
 
 import imcode.server.IMCConstants;
 
-import java.util.Date;
-
 /** Stores all info about a text-document. **/
 
 public class DocumentDomainObject implements IMCConstants {
@@ -12,10 +10,10 @@ public class DocumentDomainObject implements IMCConstants {
     int metaId;
     int documentType;
     boolean archived;
-    Date createdDatetime;
-    Date modifiedDatetime;
-    Date activatedDatetime;
-    Date archivedDatetime;
+    java.util.Date createdDatetime;
+    java.util.Date modifiedDatetime;
+    java.util.Date activatedDatetime;
+    java.util.Date archivedDatetime;
     String headline;
     String text;
     String image;
@@ -83,7 +81,7 @@ public class DocumentDomainObject implements IMCConstants {
      * @return value of archived.
      */
     public boolean isActive() {
-        Date now = new Date();
+        java.util.Date now = new java.util.Date();
         return (activatedDatetime == null || activatedDatetime.before( now )) && !isArchivedAtTime( now );
     }
 
@@ -93,11 +91,11 @@ public class DocumentDomainObject implements IMCConstants {
      * @return value of archived.
      */
     public boolean isArchived() {
-        Date now = new Date();
+        java.util.Date now = new java.util.Date();
         return isArchivedAtTime( now );
     }
 
-    private boolean isArchivedAtTime( Date time ) {
+    private boolean isArchivedAtTime( java.util.Date time ) {
         return archived || (archivedDatetime != null && archivedDatetime.before( time ));
     }
 
@@ -114,7 +112,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of createdDatetime.
      * @return value of createdDatetime.
      */
-    public Date getCreatedDateTime() {
+    public java.util.Date getCreatedDateTime() {
         return createdDatetime;
     }
 
@@ -122,7 +120,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Set the value of createdDatetime.
      * @param v  Value to assign to createdDatetime.
      */
-    public void setCreatedDatetime( Date v ) {
+    public void setCreatedDatetime( java.util.Date v ) {
         this.createdDatetime = v;
     }
 
@@ -130,7 +128,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of modifiedDatetime.
      * @return value of modifiedDatetime.
      */
-    public Date getModifiedDateTime() {
+    public java.util.Date getModifiedDateTime() {
         return modifiedDatetime;
     }
 
@@ -138,7 +136,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Set the value of modifiedDatetime.
      * @param v  Value to assign to modifiedDatetime.
      */
-    public void setModifiedDatetime( Date v ) {
+    public void setModifiedDatetime( java.util.Date v ) {
         this.modifiedDatetime = v;
     }
 
@@ -146,7 +144,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of archivedDatetime.
      * @return value of archivedDatetime.
      */
-    public Date getArchivedDateTime() {
+    public java.util.Date getArchivedDateTime() {
         return archivedDatetime;
     }
 
@@ -154,7 +152,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Set the value of archivedDatetime.
      * @param v  Value to assign to archivedDatetime.
      */
-    public void setArchivedDatetime( Date v ) {
+    public void setArchivedDatetime( java.util.Date v ) {
         this.archivedDatetime = v;
     }
 
@@ -162,7 +160,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of activatedDatetime.
      * @return value of activatedDatetime.
      */
-    public Date getActivatedDateTime() {
+    public java.util.Date getActivatedDateTime() {
         return activatedDatetime;
     }
 
@@ -170,7 +168,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Set the value of archivedDatetime.
      * @param v  Value to assign to archivedDatetime.
      */
-    public void setActivatedDatetime( Date v ) {
+    public void setActivatedDatetime( java.util.Date v ) {
         this.activatedDatetime = v;
     }
 

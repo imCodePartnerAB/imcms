@@ -6,6 +6,7 @@ import imcode.server.IMCText;
 import imcode.server.Table;
 import imcode.server.util.DateHelper;
 import imcode.server.db.DBConnect;
+import imcode.server.db.DatabaseService;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 
@@ -83,9 +84,8 @@ public class DatabaseAccessor {
         return service.sqlProcedureStr( SPROC_GET_FILE_NAME, params );
     }
 
-    static String[] sprocGetDocumentInfo( IMCService service, int metaId ) {
-        String[] params = new String[]{String.valueOf( metaId )};
-        String[] result = service.sqlProcedure( SPROC_GET_DOCUMENT_INFO, params );
+    static DatabaseService.Table_meta sprocGetDocumentInfo( IMCService service, int metaId ) {
+        DatabaseService.Table_meta result = service.getDatabaseService().sproc_GetDocumentInfo( metaId );
         return result;
     }
 
@@ -322,15 +322,15 @@ public class DatabaseAccessor {
     }
 
 
-    static String[] sprocTextDocData( IMCService service, DocumentDomainObject inout_document ) {
-        String[] textdoc_data1 = service.sqlProcedure( SPROC_TEXT_DOC_DATA, new String[]{String.valueOf( inout_document.getMetaId() )} );
-        return textdoc_data1;
+    static DatabaseService.Table_text_docs sprocTextDocData( IMCService service, DocumentDomainObject inout_document ) {
+        DatabaseService.Table_text_docs textdoc_data = service.getDatabaseService().sproc_GetTextDocData( inout_document.getMetaId() );
+        return textdoc_data;
     }
 
     // todo make sure all following sproc and sql mehtods has "package" visability and that the callers use the "API" instead.
-    public static String[] sprocSectionGetInheritId( IMCServiceInterface service, int meta_id ) {
-        String[] section_data = service.sqlProcedure( SPROC_SECTION_GET_INHERIT_ID, new String[]{String.valueOf( meta_id )} );
-        return section_data;
+    public static DatabaseService.Table_section sprocSectionGetInheritId( IMCServiceInterface service, int meta_id ) {
+        DatabaseService.Table_section sectionData = service.getDatabaseService().sproc_SectionGetInheritId( meta_id );
+        return sectionData;
     }
 
     public static void sprocUpdateInheritPermissions( IMCServiceInterface imcref, int meta_id, int parent_meta_id, int doc_type ) {

@@ -180,7 +180,10 @@ public abstract class DatabaseService {
         public boolean active;
         public Timestamp create_date;
 
-        Table_users( int user_id, String login_name, String login_password, String first_name, String last_name, String title, String company, String address, String city, String zip, String country, String county_council, String email, boolean external, int last_page, int archive_mode, int lang_id, int user_type, boolean active, Timestamp create_date ) {
+        Table_users( int user_id, String login_name, String login_password, String first_name, String last_name,
+                     String title, String company, String address, String city, String zip, String country,
+                     String county_council, String email, boolean external, int last_page, int archive_mode,
+                     int lang_id, int user_type, boolean active, Timestamp create_date ) {
             this.user_id = user_id;
             this.login_name = login_name;
             this.login_password = login_password;
@@ -228,7 +231,9 @@ public abstract class DatabaseService {
     }
 
     Table_users[] sproc_GetAllUsers_OrderByLastName() {
-        String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
+        String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip," +
+            "country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date " +
+            "from users ORDER BY last_name";
         ArrayList queryResult = sqlProcessor.executeQuery( sql, null, new SQLProcessor.ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
                 return new Table_users( rs );
@@ -239,8 +244,16 @@ public abstract class DatabaseService {
 
     // todo, ska man behöva stoppa in user_id här? Kan man inte bara få ett unikt?
     int sproc_AddNewuser( Table_users userData ) {
-        String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date ) " + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Object[] paramValues = new Object[]{new Integer( userData.user_id ), userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.external?1:0 ), new Integer( 1001 ), new Integer( 0 ), new Integer( userData.lang_id ), new Integer( userData.user_type ), new Integer( userData.active?1:0 ), userData.create_date};
+        String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, " +
+            "company, address, city, zip, country, county_council, email, external, last_page, archive_mode, " +
+            "lang_id, user_type, active, create_date ) " + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        Object[] paramValues = new Object[]{new Integer( userData.user_id ), userData.login_name,
+                                            userData.login_password, userData.first_name, userData.last_name,
+                                            userData.title, userData.company, userData.address, userData.city,
+                                            userData.zip, userData.country, userData.county_council, userData.email,
+                                            new Integer( userData.external?1:0 ), new Integer( 1001 ), new Integer( 0 ),
+                                            new Integer( userData.lang_id ), new Integer( userData.user_type ),
+                                            new Integer( userData.active?1:0 ), userData.create_date};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
@@ -261,7 +274,12 @@ public abstract class DatabaseService {
             "last_name = ?, " + "title = ?, " + "company = ?, " + "address =  ?, " + "city = ?, " + "zip = ?, " +
             "country = ?, " + "county_council =?, " + "email = ?, " + "user_type = ?, " + "active = ?, " +
             "lang_id = ? " + "WHERE user_id = ?";
-        Object[] paramValues = new Object[]{userData.login_name, userData.login_password, userData.first_name, userData.last_name, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.email, new Integer( userData.user_type ), new Integer( userData.active?1:0 ), new Integer( userData.lang_id ), new Integer( userData.user_id )};
+        Object[] paramValues = new Object[]{userData.login_name, userData.login_password, userData.first_name,
+                                            userData.last_name, userData.title, userData.company, userData.address,
+                                            userData.city, userData.zip, userData.country, userData.county_council,
+                                            userData.email, new Integer( userData.user_type ),
+                                            new Integer( userData.active?1:0 ), new Integer( userData.lang_id ),
+                                            new Integer( userData.user_id )};
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
@@ -282,7 +300,8 @@ public abstract class DatabaseService {
         return rowCount;
     }
 
-    private int insertInto_phones( SQLProcessor.SQLTransaction transaction, String number, int userId, int phoneType ) throws SQLException {
+    private int insertInto_phones( SQLProcessor.SQLTransaction transaction, String number, int userId, int phoneType )
+        throws SQLException {
         String tableName = "phones";
         String primaryKeyColumnName = "phone_id";
         int newPhoneId = 1 + getMaxIntValue( transaction, tableName, primaryKeyColumnName );
@@ -306,7 +325,8 @@ public abstract class DatabaseService {
         }
     }
 
-    // todo: ta bort från samtliga forreign key ställen (och inte bara från user_roles_crossref)? phones, user_flags_crossref, user_rights, useradmin_role_crossref
+    // todo: ta bort från samtliga forreign key ställen (och inte bara från user_roles_crossref)? phones,
+    // todo: user_flags_crossref, user_rights, useradmin_role_crossref
     // todo: Or Split into two, depending on how it is used.
     int sproc_delUser( int user_id ) {
         SQLProcessor.SQLTransaction trans = sqlProcessor.startTransaction();
@@ -993,33 +1013,33 @@ public abstract class DatabaseService {
         return (Table_doc_types[])queryResult.toArray( new Table_doc_types[queryResult.size()] );
     }
 
-    static class Table_meta {
-        int meta_id;
+    public static class Table_meta {
+        public int meta_id;
         private String description;
-        private int doc_type;
-        private String meta_headline;
-        private String meta_text;
-        private String meta_image;
+        public int doc_type;
+        public String meta_headline;
+        public String meta_text;
+        public String meta_image;
         private int owner_id;
         private int permissions;
         private int shared;
         private int expand;
         private int show_meta;
         private int help_text_id;
-        private int archive;
+        public boolean archive;
         private int status_id;
         private String lang_prefix;
         private String classification;
-        private Timestamp date_created;
-        private Timestamp date_modified;
+        public Timestamp date_created;
+        public Timestamp date_modified;
         private int sort_position;
         private int menu_position;
         private int disable_search;
-        private String target;
+        public String target;
         private String frame_name;
         private int activate;
-        private Timestamp activated_datetime;
-        private Timestamp archived_datetime;
+        public Timestamp activated_datetime;
+        public Timestamp archived_datetime;
 
         Table_meta( ResultSet rs ) throws SQLException {
             meta_id = rs.getInt( "meta_id" );
@@ -1034,7 +1054,7 @@ public abstract class DatabaseService {
             expand = rs.getInt( "expand" );
             show_meta = rs.getInt( "show_meta" );
             help_text_id = rs.getInt( "help_text_id" );
-            archive = rs.getInt( "archive" );
+            archive = rs.getInt( "archive" ) == 1;
             status_id = rs.getInt( "status_id" );
             lang_prefix = rs.getString( "lang_prefix" );
             classification = rs.getString( "classification" );
@@ -1051,7 +1071,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_meta sproc_GetDocumentInfo( int meta_id ) {
+    public Table_meta sproc_GetDocumentInfo( int meta_id ) {
         Table_meta result = selectFrom_meta( new Integer( meta_id ) );
         return result;
     }
@@ -1084,7 +1104,7 @@ public abstract class DatabaseService {
                                             tableData.meta_headline, tableData.meta_text, tableData.meta_image,
                                             new Integer( tableData.owner_id ), new Integer( tableData.permissions ),
                                             new Integer( tableData.shared ), new Integer( tableData.expand ), new Integer( tableData.show_meta ),
-                                            new Integer( tableData.help_text_id ), new Integer( tableData.archive ),
+                                            new Integer( tableData.help_text_id ), new Integer( tableData.archive?1:0 ),
                                             new Integer( tableData.status_id ), tableData.lang_prefix, tableData.classification,
                                             tableData.date_created, tableData.date_modified, new Integer( tableData.sort_position ),
                                             new Integer( tableData.menu_position ), new Integer( tableData.disable_search ),
@@ -1095,11 +1115,11 @@ public abstract class DatabaseService {
         return transaction.executeUpdate( sql, paramValues );
     }
 
-    static class Table_text_docs {
+    public static class Table_text_docs {
         private int meta_id;
-        private int template_id;
-        private int group_id;
-        private int sort_order;
+        public int template_id;
+        public int group_id;
+        public int sort_order;
         private int default_template_1;
         private int default_template_2;
 
@@ -1111,6 +1131,11 @@ public abstract class DatabaseService {
             default_template_1 = rs.getInt( "default_template_1" );
             default_template_2 = rs.getInt( "default_template_2" );
         }
+    }
+
+    // todo: this dosen't return the simple_name anymore.
+    public Table_text_docs sproc_GetTextDocData( int meta_id ) {
+        return selectFrom_text_docs( new Integer( meta_id ));
     }
 
     private Table_text_docs selectFrom_text_docs( Integer meta_id ) {
@@ -1819,7 +1844,7 @@ public abstract class DatabaseService {
         }
     }
 
-    String[] sproc_GetUserRoles( int user_id ) {
+    public String[] sproc_GetUserRoles( int user_id ) {
         String sql = "SELECT role_name from roles, user_roles_crossref " +
             "WHERE roles.role_id = user_roles_crossref.role_id AND user_roles_crossref.user_id = ?";
         Object paramValues[] = new Object[]{new Integer( user_id )};
@@ -1928,11 +1953,26 @@ public abstract class DatabaseService {
 
     static class Table_templates {
         private int template_id;
-        private String simple_name;
+        public String simple_name;
 
         Table_templates( ResultSet rs ) throws SQLException {
             template_id = rs.getInt( "template_id" );
             simple_name = rs.getString( "simple_name" );
+        }
+    }
+
+    public Table_templates selectFrom_templates( int template_id ) {
+        String sql = "select template_id, simple_name from templates WHERE template_id = ? ";
+        Object[] paramValues = new Object[]{ new Integer( template_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Table_templates( rs );
+            }
+        } );
+        if( queryResult.isEmpty() ) {
+            return null;
+        } else {
+            return (Table_templates)queryResult.get(0);
         }
     }
 
@@ -2115,9 +2155,9 @@ public abstract class DatabaseService {
         return rowCount;
     }
 
-    static class Table_section {
-        int section_id;
-        String section_name;
+    public static class Table_section {
+        public int section_id;
+        public String section_name;
 
         Table_section() {}
 
@@ -2127,7 +2167,7 @@ public abstract class DatabaseService {
         }
     }
 
-    Table_section sproc_SectionGetInheritId( int parent_meta_id ) {
+    public Table_section sproc_SectionGetInheritId( int parent_meta_id ) {
         String sql = "SELECT s.section_id, s.section_name " +
             "FROM sections s, meta_section ms, meta m " +
             "where m.meta_id=ms.meta_id and m.meta_id= ? and ms.section_id=s.section_id";

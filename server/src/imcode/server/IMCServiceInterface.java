@@ -6,6 +6,7 @@ import java.util.* ;
 import imcode.server.parser.ParserParameters ;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.db.DatabaseService;
 
 import imcode.readrunner.* ;
 
@@ -206,7 +207,7 @@ public interface IMCServiceInterface {
 	;
 
     // get language
-    public String getLanguage()
+    public String getDefaultLanguage()
 	;
 
     // get doctype
@@ -335,4 +336,6 @@ public interface IMCServiceInterface {
     void updateModifiedDatesOnDocumentAndItsParent( int metaId, Date dateTime );
 
     DocumentMapper getDocumentMapper();
+
+    DatabaseService getDatabaseService();
 }

@@ -16,6 +16,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.db.DBConnect;
 import imcode.server.db.ConnectionPool;
+import imcode.server.db.DatabaseService;
 import imcode.util.*;
 
 import org.apache.log4j.Category;
@@ -200,7 +201,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 return ("sprocGetImgs returned null");
             }
 
-            String[] sectionData = DatabaseAccessor.sprocSectionGetInheritId( serverObject,  meta_id );
+            DatabaseService.Table_section sectionData = DatabaseAccessor.sprocSectionGetInheritId( serverObject,  meta_id );
             if( sectionData == null ) {
                 dbc.closeConnection();
                 log.error( "parsePage: sprocSectionGetInheritId returned null" );

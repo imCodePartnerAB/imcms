@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.*;
+import imcode.server.db.DatabaseService;
 import imcode.server.util.DateHelper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
@@ -26,10 +27,10 @@ public class DocumentMapper {
     public DocumentDomainObject getDocument( int metaId ) {
         DocumentDomainObject document;
         try {
-            String[] result = DatabaseAccessor.sprocGetDocumentInfo( service, metaId );
+            DatabaseService.Table_meta metaData = DatabaseAccessor.sprocGetDocumentInfo( service, metaId );
 
             //lets start and do some controlls of the resulted data
-            if( result == null || result.length < 25 ) {
+            if( metaData == null ) {
                 throw new IndexOutOfBoundsException( "No such document: " + metaId );
             }
 
@@ -37,56 +38,29 @@ public class DocumentMapper {
             //ok lets set all the document stuff
             try {
                 document = new DocumentDomainObject();
-                document.setMetaId( Integer.parseInt( result[0] ) );
-                document.setDocumentType( Integer.parseInt( result[2] ) );
+                document.setMetaId( metaData.meta_id );
+                document.setDocumentType( metaData.doc_type );
             } catch( NumberFormatException nfe ) {
-                throw new SQLException( "SQL: GetDocumentInfo " + metaId + " returned corrupt data! '" + result[0] + "' '" + result[2] + "'" );
+                throw new SQLException( "SQL: GetDocumentInfo " + metaId + " returned corrupt data! '" + metaData.meta_id + "' '" + metaData.doc_type + "'" );
             }
-            document.setHeadline( result[3] );
-            document.setText( result[4] );
-            document.setImage( result[5] );
-            document.setTarget( result[21] );
+            document.setHeadline( metaData.meta_headline );
+            document.setText( metaData.meta_text );
+            document.setImage( metaData.meta_image );
+            document.setTarget( metaData.target );
 
-            // todo: this is always false? == "0" should be always false, use equals instead?
-            document.setArchived( result[12] == "0" ? false : true );
+            document.setArchived( metaData.archive );
 
-            String[] section_data = DatabaseAccessor.sprocSectionGetInheritId( service, metaId );
+            DatabaseService.Table_section section_data = DatabaseAccessor.sprocSectionGetInheritId( service, metaId );
 
-            String result11 = null;
-            if( section_data.length == 2 ) {
-                result11 = section_data[1];
+            if( null != section_data ) {
+                document.setSection( section_data.section_name );
             }
-            String sectionName = result11;
-            document.setSection( sectionName );
 
-            try {
-                document.setCreatedDatetime( dateform.parse( result[16] ) );
-            } catch( NullPointerException npe ) {
-                document.setCreatedDatetime( null );
-            } catch( ParseException pe ) {
-                document.setCreatedDatetime( null );
-            }
-            try {
-                document.setModifiedDatetime( dateform.parse( result[17] ) );
-            } catch( NullPointerException npe ) {
-                document.setModifiedDatetime( null );
-            } catch( ParseException pe ) {
-                document.setModifiedDatetime( null );
-            }
-            try {
-                document.setActivatedDatetime( dateform.parse( result[23] ) );
-            } catch( NullPointerException npe ) {
-                document.setActivatedDatetime( null );
-            } catch( ParseException pe ) {
-                document.setActivatedDatetime( null );
-            }
-            try {
-                document.setArchivedDatetime( dateform.parse( result[24] ) );
-            } catch( NullPointerException npe ) {
-                document.setArchivedDatetime( null );
-            } catch( ParseException pe ) {
-                document.setArchivedDatetime( null );
-            }
+            document.setCreatedDatetime( metaData.date_created );
+            document.setModifiedDatetime( metaData.date_modified );
+            document.setActivatedDatetime( metaData.activated_datetime );
+            document.setArchivedDatetime( metaData.archived_datetime );
+
             if( document.getDocumentType() == DocumentDomainObject.DOCTYPE_FILE ) {
                 document.setFilename( DatabaseAccessor.sprocGetFilename( service, metaId ) );
             }
@@ -310,8 +284,8 @@ public class DocumentMapper {
     }
 
     private void static_inheritSection( int from_parentId, int to_metaId ) {
-        String[] sectionId = DatabaseAccessor.sprocSectionGetInheritId( service, from_parentId );
-        DatabaseAccessor.sprocSectionAddCrossref( service, to_metaId, Integer.parseInt( sectionId[0] ) );
+        DatabaseService.Table_section sectionData = DatabaseAccessor.sprocSectionGetInheritId( service, from_parentId );
+        DatabaseAccessor.sprocSectionAddCrossref( service, to_metaId, sectionData.section_id );
     }
 
     private void static_inheritClassifications( int from_parentId, int to_newMetaId ) {
@@ -321,13 +295,11 @@ public class DocumentMapper {
 
     private static void static_initTextDoc( IMCService service, DocumentDomainObject inout_document ) {
         // all from the table text_doc
-        String[] textdoc_data1 = DatabaseAccessor.sprocTextDocData( service, inout_document );
-        String[] textdoc_data = textdoc_data1;
-        if( textdoc_data.length >= 4 ) {
-            int template_id = Integer.parseInt( textdoc_data[0] );
-            //String simple_name = textdoc_data[1];
-            int sort_order = Integer.parseInt( textdoc_data[2] );
-            int group_id = Integer.parseInt( textdoc_data[3] );
+        DatabaseService.Table_text_docs textdoc_data = DatabaseAccessor.sprocTextDocData( service, inout_document );
+        if( null != textdoc_data ) {
+            int template_id = textdoc_data.template_id;
+            int sort_order = textdoc_data.sort_order;
+            int group_id = textdoc_data.group_id;
             TemplateDomainObject template = TemplateMapper.getTemplate( service, template_id );
             inout_document.setTemplate( template );
             inout_document.setMenuSortOrder( sort_order );

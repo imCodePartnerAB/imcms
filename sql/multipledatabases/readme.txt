@@ -43,7 +43,6 @@ gettemplategroupsforuser.prc
 gettemplategroupswithnewpermissions.prc
 gettemplategroupswithpermissions.prc
 gettemplates.prc
-gettextdocdata.prc
 gettexts.prc
 getuseradminpermissibleroles.prc
 getusercreatedate.prc

@@ -4,6 +4,7 @@ import com.mockobjects.ExpectationList;
 import com.mockobjects.MockObject;
 import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.*;
+import imcode.server.db.DatabaseService;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -252,7 +253,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // get language
-   public String getLanguage() {
+   public String getDefaultLanguage() {
       return null;
    }
 
@@ -455,6 +456,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     }
 
     public DocumentMapper getDocumentMapper() {
+        return null;
+    }
+
+    public DatabaseService getDatabaseService() {
         return null;
     }
 }

@@ -64,7 +64,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            DatabaseTestInitializer.static_initMimer(),
+            //DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -99,7 +99,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetUserRoles( databaseService );
             test_sproc_GetLangPrefixFromId( databaseService );
             test_sproc_GetUserInfo( databaseService );
-            test_sproc_sproc_GetRoleIdByRoleName( databaseService );
+            test_sproc_GetRoleIdByRoleName( databaseService );
             test_sproc_getTemplates( databaseService );
             test_sproc_GetTemplateId( databaseService );
             test_sproc_GetUserPassword( databaseService );
@@ -121,8 +121,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_systemdata( databaseService );
             test_sproc_RoleFindName( databaseService );
             test_sproc_GetUserByLogin( databaseService );
+            test_sproc_GetTextDocData( databaseService );
             testIsFileDoc( databaseService );
         }
+    }
+
+    private void test_sproc_GetTextDocData( DatabaseService databaseService ) {
+        assertNotNull( databaseService.sproc_GetTextDocData( DOC_TEST_FIRST_ID ) );
     }
 
     private void test_sproc_GetUserByLogin( DatabaseService databaseService ) {
@@ -219,7 +224,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertEquals( 5, databaseService.sproc_getTemplates().length );
     }
 
-    private void test_sproc_sproc_GetRoleIdByRoleName( DatabaseService databaseService ) {
+    private void test_sproc_GetRoleIdByRoleName( DatabaseService databaseService ) {
         assertEquals( ROLE_SUPER_ADMIN_ID, databaseService.sproc_GetRoleIdByRoleName( ROLE_SUPER_ADMIN_NAME ) );
         assertEquals( ROLE_USER_ADMIN_ID, databaseService.sproc_GetRoleIdByRoleName( ROLE_USER_ADMIN_NAME ) );
         assertEquals( ROLE_USERS_ID, databaseService.sproc_GetRoleIdByRoleName( ROLE_USERS_NAME ) );

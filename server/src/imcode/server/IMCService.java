@@ -130,13 +130,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             e.printStackTrace();
         }
 
-        try {
-            m_SessionCounter = Integer.parseInt( this.sqlProcedureStr( "GetCurrentSessionCounter" ) );
-            m_SessionCounterDate = this.sqlProcedureStr( "GetCurrentSessionCounterDate" );
-        } catch( NumberFormatException ex ) {
-            log.fatal( "Failed to get SessionCounter from db.", ex );
-            throw ex;
-        }
+        m_SessionCounter = m_databaseService.sproc_GetCurrentSessionCounter();
+        m_SessionCounterDate = m_databaseService.sproc_GetCurrentSessionCounterDate();
 
         log.info( "SessionCounter: " + m_SessionCounter );
         log.info( "SessionCounterDate: " + m_SessionCounterDate );
@@ -178,7 +173,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             externalUserAndRoleMapperName = null;
         }
         imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( this );
-        externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator, externalUserAndRoleMapper, getLanguage() );
+        externalizedImcmsAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator, externalUserAndRoleMapper, getDefaultLanguage() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
@@ -1366,16 +1361,16 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Return  language.
      */
-    public String getLanguage() {
+    public String getDefaultLanguage() {
         return m_Language;
     }
 
     /**
      * Increment session counter.
      */
-    public int incCounter() {
+    public synchronized int incCounter() {
         m_SessionCounter += 1;
-        sqlUpdateProcedure( "IncSessionCounter" );
+        m_databaseService.sproc_SetSessionCounterValue( m_SessionCounter );
         return m_SessionCounter;
     }
 
@@ -1936,32 +1931,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /** Fetch the systemdata from the db */
     protected SystemData getSystemDataFromDb() {
 
-        /** Fetch everything from the DB */
-        String startDocument = this.sqlProcedureStr( "StartDocGet" );
-        String serverMaster[] = this.sqlProcedure( "ServerMasterGet" );
-        String webMaster[] = this.sqlProcedure( "WebMasterGet" );
-        String systemMessage = this.sqlProcedureStr( "SystemMessageGet" );
-
-        /** Create a new SystemData object */
         SystemData sd = new SystemData();
-
-        /** Store everything in the object */
-
-        sd.setStartDocument( startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt( startDocument ) );
-        sd.setSystemMessage( systemMessage );
-
-        if( serverMaster.length > 0 ) {
-            sd.setServerMaster( serverMaster[0] );
-            if( serverMaster.length > 1 ) {
-                sd.setServerMasterAddress( serverMaster[1] );
-            }
-        }
-        if( webMaster.length > 0 ) {
-            sd.setWebMaster( webMaster[0] );
-            if( webMaster.length > 1 ) {
-                sd.setWebMasterAddress( webMaster[1] );
-            }
-        }
+        sd.setStartDocument( m_databaseService.sproc_StartDocGet() );
+        sd.setSystemMessage( m_databaseService.sproc_SystemMessageGet() );
+        sd.setServerMaster( m_databaseService.sproc_ServerMasterGet_name() );
+        sd.setServerMasterAddress( m_databaseService.sproc_ServerMasterGet_address() );
+        sd.setWebMaster( m_databaseService.sproc_WebMasterGet_name() );
+        sd.setWebMasterAddress( m_databaseService.sproc_WebMasterGet_email() );
 
         return sd;
     }
@@ -2243,5 +2219,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     public DocumentMapper getDocumentMapper() {
         return documentMapper;
+    }
+
+    public DatabaseService getDatabaseService() {
+        return m_databaseService;
     }
 }
