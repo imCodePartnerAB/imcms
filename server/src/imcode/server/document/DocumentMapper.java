@@ -499,8 +499,6 @@ public class DocumentMapper {
 
     public void initLazilyLoadedDocumentAttributes( DocumentDomainObject document ) {
 
-        addCategoriesFromDatabaseToDocument( document );
-
         document.setSections( getSections( document.getId() ) );
 
         document.setKeywords( getKeywords( document.getId() ) );
@@ -526,6 +524,12 @@ public class DocumentMapper {
 
         document.setPermissionSetForRestrictedOneForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedOneForNewDocuments( document ) );
         document.setPermissionSetForRestrictedTwoForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedTwoForNewDocuments( document ) );
+
+    }
+
+    public void initLazilyLoadedDocumentCategories( DocumentDomainObject document ) {
+
+        addCategoriesFromDatabaseToDocument( document );
 
     }
 
