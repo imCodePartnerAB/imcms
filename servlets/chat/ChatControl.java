@@ -214,7 +214,7 @@ public class ChatControl extends ChatBase
 	    return;
 	}
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(req) ;

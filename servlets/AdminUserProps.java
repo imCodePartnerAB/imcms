@@ -438,7 +438,7 @@ public class AdminUserProps extends Administrator {
      * POST
      **/
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        String host = req.getHeader( "Host" );
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         // Lets validate the session

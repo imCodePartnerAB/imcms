@@ -34,8 +34,8 @@ public class ShowDiagram extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-	String host = req.getHeader("Host") ;
-	String file_path = Utility.getDomainPref("diagram_path",host) ;
+
+	String file_path = Utility.getDomainPref("diagram_path" ) ;
 	ServletOutputStream out = res.getOutputStream( );  // binary output!
 
 	Frame frame = null;

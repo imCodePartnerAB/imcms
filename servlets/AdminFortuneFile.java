@@ -32,7 +32,7 @@ public class AdminFortuneFile extends Administrator {
     {
 
 	// Lets get the server this request was aimed for
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession();
@@ -55,7 +55,7 @@ public class AdminFortuneFile extends Administrator {
 		//String fortune_path = Utility.getDomainPref("FortunePath",host);
 
 
-		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+		File fortune_path = Utility.getDomainPrefPath("FortunePath" );
 		String readFile = (String)session.getAttribute("file");
 		File file = new File(fortune_path,readFile + ".txt");
 		BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );

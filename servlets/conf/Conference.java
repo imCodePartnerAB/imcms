@@ -183,7 +183,7 @@ public class Conference extends HttpServlet {
 	imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) done ;
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
 
 	if (done == null) {
 	    // No logon.isDone means he hasn't logged in.
@@ -896,7 +896,7 @@ public class Conference extends HttpServlet {
 	throws ServletException, IOException {
 
 	// Lets get serverinformation
-	String host = req.getHeader( "Host" ) ;
+	
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession( true );

@@ -29,9 +29,9 @@ public class QuestionEngine extends HttpServlet
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
     {
 
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+	File fortune_path = Utility.getDomainPrefPath("FortunePath" );
 
 	res.setContentType("text/html");
 	PrintWriter out = res.getWriter();

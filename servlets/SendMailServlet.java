@@ -58,7 +58,7 @@ public class SendMailServlet extends HttpServlet {
 	String param = req.getParameter("param");
 
 	/* server info */
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String lang_prefix = imcref.getLanguage() ;
 	SystemData sysData	= imcref.getSystemData();
@@ -151,9 +151,9 @@ public class SendMailServlet extends HttpServlet {
 
 
 	/* mailserver info */
-	String mailserver = Utility.getDomainPref( "smtp_server", host );
-	String stringMailPort = Utility.getDomainPref( "smtp_port", host );
-	String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
+	String mailserver = Utility.getDomainPref( "smtp_server" );
+	String stringMailPort = Utility.getDomainPref( "smtp_port" );
+	String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
 
 	// Handling of default-values is another area where java can't hold a candle to perl.
 	int mailport = 25 ;

@@ -90,8 +90,8 @@ public class PostcardServlet extends HttpServlet {
 	String host					= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url			= imcref.getStartUrl() ;
-	String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
-	File image_folder_path      = Utility.getDomainPrefPath( "image_path", host );
+	String no_permission_url	= Utility.getDomainPref( "no_permission_url" ) ;
+	File image_folder_path      = Utility.getDomainPrefPath( "image_path" );
 	SystemData sysData			= imcref.getSystemData();
 
 	File templateLib  = getExternalTemplateFolder(req);
@@ -202,7 +202,7 @@ public class PostcardServlet extends HttpServlet {
 	//ok lets save the bottom frame page, incase it has been removed
 	//by some stupid sysAdmin¨
 	String bottomString = imcref.parseExternalDoc( new Vector(),POSTCARD_BOTTOM,imcref.getLanguage(),"105");
-	File imagePathFile = imcode.util.Utility.getDomainPrefPath("image_path",host);
+	File imagePathFile = imcode.util.Utility.getDomainPrefPath("image_path" );
 
 	File postcardFolder = new File(imagePathFile.getParent(),POSTCARD_FOLDER);
 	File bottomFile = new File(postcardFolder,"bottom.html");
@@ -288,9 +288,9 @@ public class PostcardServlet extends HttpServlet {
 	/* mailserver info */
 	String host					= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	String mailserver			= Utility.getDomainPref( "smtp_server", host );
-	String stringMailPort		= Utility.getDomainPref( "smtp_port", host );
-	String stringMailtimeout	= Utility.getDomainPref( "smtp_timeout", host );
+	String mailserver			= Utility.getDomainPref( "smtp_server" );
+	String stringMailPort		= Utility.getDomainPref( "smtp_port" );
+	String stringMailtimeout	= Utility.getDomainPref( "smtp_timeout" );
 	File templateLib			= getExternalTemplateFolder(req);
 
 	res.setContentType("text/html");

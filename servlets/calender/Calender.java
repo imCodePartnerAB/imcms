@@ -53,7 +53,7 @@ public class Calender extends HttpServlet
     {
 	HttpSession session = req.getSession(false);
 	Properties prop = new Properties();
-	String host = req.getHeader("Host");
+
 	String meta_id = req.getParameter("meta_id");
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 

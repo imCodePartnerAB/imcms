@@ -19,7 +19,8 @@ public class TemplateChange extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        String host = req.getHeader( "host" );
+
+        String host = req.getServerName() ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 

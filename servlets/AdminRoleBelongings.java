@@ -112,8 +112,8 @@ public class AdminRoleBelongings extends Administrator {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
-	String host = req.getHeader("host") ;
-	String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
+
+	String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
 	// Lets validate the session
 	if (super.checkSession(req,res) == false) return ;

@@ -102,7 +102,7 @@ public class PasswordMailReminder extends HttpServlet {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
 	/* server info */
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String deafultLanguagePrefix = imcref.getLanguage();
 
@@ -126,7 +126,7 @@ public class PasswordMailReminder extends HttpServlet {
 	String emptyString = "";
 
 	/* server info */
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String hostName = emptyString;
 	try {
@@ -143,9 +143,9 @@ public class PasswordMailReminder extends HttpServlet {
 	String mailFrom = eMailServerMaster;
 	String deafultLanguagePrefix = imcref.getLanguage();
 
-	String mailserver = Utility.getDomainPref( "smtp_server", host );
-	String stringMailPort = Utility.getDomainPref( "smtp_port", host );
-	String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
+	String mailserver = Utility.getDomainPref( "smtp_server" );
+	String stringMailPort = Utility.getDomainPref( "smtp_port" );
+	String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
 
 	// Handling of default-values is another area where java can't hold a candle to perl.
 	int mailport = 25 ;
@@ -241,14 +241,15 @@ public class PasswordMailReminder extends HttpServlet {
 	    }
 
 	    Vector parsVector = new Vector();
+        String host = req.getServerName() ;
 
 	    parsVector.add( "#username#" );
 	    parsVector.add( postedLoginName );
 	    parsVector.add( "#email#" );
 	    parsVector.add( userEmail );
 	    parsVector.add( "#host#" );
-	    parsVector.add( host );				
-		
+	    parsVector.add( host );
+
 
 	    String serverMasterMessage = imcref.parseDoc( parsVector, serverMasterMailBody,
 							  deafultLanguagePrefix);

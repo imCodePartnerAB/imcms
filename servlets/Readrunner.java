@@ -33,9 +33,9 @@ public class Readrunner extends HttpServlet {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url = imcref.getStartUrl() ;
-	String host = req.getHeader("host") ;
-	File   readrunnerPath = Utility.getDomainPrefPath("readrunner_preparsed_path",host) ;
-	String readrunnerUrl = Utility.getDomainPref("readrunner_preparsed_url",host) ;
+
+	File   readrunnerPath = Utility.getDomainPrefPath("readrunner_preparsed_path" ) ;
+	String readrunnerUrl = Utility.getDomainPref("readrunner_preparsed_url" ) ;
 
 	UserDomainObject user ;
 	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
@@ -114,6 +114,7 @@ public class Readrunner extends HttpServlet {
 	    Random rand = new Random() ;  // Use a random number to make it hard to guess the filenames.
 	    File tempFile = File.createTempFile("readrunner"+rand.nextInt(),".html",readrunnerPath) ;
 
+        String host = req.getServerName() ;
 	    // Set up replacement of a couple of #tags#
 	    Vector vec = new Vector() ;
 	    vec.add("#host#") ;           vec.add(host) ;
@@ -193,9 +194,9 @@ public class Readrunner extends HttpServlet {
 		toAddress += " "+otherToAddresses ;
 	    }
 
-	    mailserver = Utility.getDomainPref( "smtp_server", host );
-	    String stringMailPort = Utility.getDomainPref( "smtp_port", host );
-	    String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
+	    mailserver = Utility.getDomainPref( "smtp_server" );
+	    String stringMailPort = Utility.getDomainPref( "smtp_port" );
+	    String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
 
 	    // Handling of default-values is another area where java can't hold a candle to perl.
 	    try {

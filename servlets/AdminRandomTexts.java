@@ -30,7 +30,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 
 	res.setContentType("text/html");
 	Writer out = res.getWriter();
-	String host = req.getHeader("host") ;
+
 
 	// Lets get the server this request was aimed for
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
@@ -60,7 +60,7 @@ public class AdminRandomTexts extends Administrator implements imcode.server.IMC
 	}
 
 	//get fortunefiles
-	File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+	File fortune_path = Utility.getDomainPrefPath("FortunePath" );
 	File files[] = fortune_path.listFiles();
 
 	StringBuffer options = new StringBuffer() ;

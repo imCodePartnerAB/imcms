@@ -114,8 +114,8 @@ public class AdminListDocs extends Administrator {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
-	String host = request.getHeader("Host") ;
-	String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
+
+	String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
 	// Lets validate the session
 	if (super.checkSession( request , response ) == false) return ;

@@ -41,7 +41,7 @@ public class ConfHelp extends Conference {
 	if ( isUserAuthorized( req, res, user ) ) {
 
 	    // Lets get serverinformation
-	    String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	    // Lets get a VariableManager

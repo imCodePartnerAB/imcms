@@ -71,7 +71,7 @@ public class BillBoardCreator extends BillBoard
 		}
 
 		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 

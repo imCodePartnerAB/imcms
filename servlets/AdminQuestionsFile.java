@@ -38,7 +38,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
     public void doPost(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException{
 
 	// Lets get the server this request was aimed for
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession();

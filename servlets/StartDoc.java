@@ -20,7 +20,7 @@ public class StartDoc extends HttpServlet {
        doGet()
     */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-	String host = req.getHeader("host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 
@@ -47,6 +47,7 @@ public class StartDoc extends HttpServlet {
 	    // If the user comes from a known IP-address,
 	    // log him in directly.
 	    String ip = req.getRemoteAddr( ) ;
+        String host = req.getServerName() ;
 	    user = ipAssignUser( ip, host ) ;
 
 	    // Valid login.  Make a note in the session object.
@@ -136,7 +137,7 @@ public class StartDoc extends HttpServlet {
 
 	return user ;
     }
-	
+
 
     static void incrementSessionCounter(IMCServiceInterface imcref, UserDomainObject user, HttpServletRequest req) throws IOException {
 		if (!( "user".equalsIgnoreCase(user.getLoginName())
@@ -145,23 +146,23 @@ public class StartDoc extends HttpServlet {
 		    // is 'user' and has a 'no_count' request parameter.
 		    imcref.incCounter() ;
 		}
-		
+
 		// check if we have to push out a popup window to the client
-		// one reason to do so is if we have a poll with a frequence variable > 0  
-		
-		// Get a new PollHandlingSystem 
+		// one reason to do so is if we have a poll with a frequence variable > 0
+
+		// Get a new PollHandlingSystem
 		PollHandlingSystem poll = imcref.getPollHandlingSystem();
-		
+
 		// Get all meta_id that have a poll included
 		HttpSession session = req.getSession( true );
 		String[][] polls = poll.getAllPolls();
-		for ( int i=0; polls != null && i < polls.length; i++){ 
+		for ( int i=0; polls != null && i < polls.length; i++){
 			//Get PollParameters from db
-			String[] poll_param = poll.getPollParameters(polls[i][3]); 
+			String[] poll_param = poll.getPollParameters(polls[i][3]);
 			int set_cookie = Integer.parseInt( poll_param[5] );
-			int popupFrequency = Integer.parseInt( poll_param[4] ); 
+			int popupFrequency = Integer.parseInt( poll_param[4] );
 			int sessionCounter = imcref.getSessionCounter() ;
-			
+
 			if (popupFrequency > 0 && sessionCounter % popupFrequency == 0) {
 			    session.setAttribute("open poll popup", polls[i][3]) ;
 			}

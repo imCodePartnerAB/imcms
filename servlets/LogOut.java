@@ -23,7 +23,7 @@ public class LogOut extends HttpServlet {
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-		String login_url        	= Utility.getDomainPref( "admin_url",host ) ;
+		String login_url        	= Utility.getDomainPref( "admin_url" ) ;
 		String start_url        	= imcref.getStartUrl() ;
 		res.setContentType("text/html") ;
 		ServletOutputStream out = res.getOutputStream () ;
@@ -31,7 +31,7 @@ public class LogOut extends HttpServlet {
 		Object done = session.getAttribute("logon.isDone");  // marker object
 		imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done ;
 		if ( user == null ) {
-			res.sendRedirect(start_url) ;              
+			res.sendRedirect(start_url) ;
 			return ;
 		}
 		Vector vec = new Vector() ;

@@ -56,8 +56,8 @@ public class AdminFortunes extends Administrator {
 	}
 
 	//get fortunefiles
-	String host = req.getHeader("host") ;
-	File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+
+	File fortune_path = Utility.getDomainPrefPath("FortunePath" );
 	File files[] = fortune_path.listFiles();
 
 	String options = "<option value=\"No_Choice\" selected>-- V&auml;lj Fil --</option>";
@@ -133,8 +133,8 @@ public class AdminFortunes extends Administrator {
 	    {
 		String options = "";
 
-		String host = req.getHeader("Host") ;
-		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+
+		File fortune_path = Utility.getDomainPrefPath("FortunePath" );
 		File file = new File(fortune_path,whichFile + "statistics.txt");
 		if (file.exists())
 		    {	//öppna filen med detta namnet, om det finns en statisticsfil, annars skriv felmeddelande	//öppna filen med detta namnet, om det finns en statisticsfil, annars skriv felmeddelande

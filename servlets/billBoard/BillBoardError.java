@@ -202,7 +202,7 @@ public class BillBoardError extends BillBoard
 		VariableManager vm, String htmlFile ) throws ServletException, IOException
 	{
 
-		String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 

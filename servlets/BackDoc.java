@@ -26,7 +26,7 @@ public class BackDoc extends HttpServlet {
 	String host				= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
-	String no_permission_url	= Utility.getDomainPref( "no_permission_url",host ) ;
+	String no_permission_url	= Utility.getDomainPref( "no_permission_url" ) ;
 	// Find the start-page
 	int start_doc = imcref.getSystemData().getStartDocument() ;
 
@@ -37,7 +37,7 @@ public class BackDoc extends HttpServlet {
 	if ( (user=Check.userLoggedOn(req,res,start_url))==null ) {
 	    return ;
 	}
-	String top = req.getParameter("top"); 
+	String top = req.getParameter("top");
 	Stack history = (Stack)user.get("history") ;
 
 	int tmp_meta_id = 0 ;
@@ -45,10 +45,10 @@ public class BackDoc extends HttpServlet {
 	int meta_id = 0 ;
 
 	if ( !history.empty() ) {
-	
-		if ( top == null ){ 
-			// pop the first value from the history stack and true it away 
-			// because that is the current meta_id 
+
+		if ( top == null ){
+			// pop the first value from the history stack and true it away
+			// because that is the current meta_id
 	    	tmp_meta_id = ((Integer)history.peek()).intValue() ;			// Get the top value
 	    	doc_type = imcref.getDocType(tmp_meta_id ) ;	// Get the doc_type
 

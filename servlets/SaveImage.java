@@ -31,7 +31,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String start_url	= imcref.getStartUrl() ;
 	String image_url			= imcref.getImageUrl() ;
-	File image_path			= Utility.getDomainPrefPath( "image_path",host ) ;
+	File image_path			= Utility.getDomainPrefPath( "image_path" ) ;
 
 	imcode.server.user.UserDomainObject user ;
 	String htmlStr = "" ;

@@ -63,8 +63,8 @@ public class AdminQuestions extends Administrator  implements imcode.server.IMCC
 	}
 
 	//get fortunefiles
-	String host = req.getHeader("host") ;
-	File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+
+	File fortune_path = Utility.getDomainPrefPath("FortunePath" );
 	File files[] = fortune_path.listFiles();
 
 	StringBuffer options = new StringBuffer() ;

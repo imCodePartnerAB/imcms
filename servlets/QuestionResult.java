@@ -26,7 +26,7 @@ public class QuestionResult extends HttpServlet
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-		String host = req.getHeader("Host");
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 		//get answer

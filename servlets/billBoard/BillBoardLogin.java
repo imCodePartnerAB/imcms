@@ -65,7 +65,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 		//log("Logintype är nu: " + loginType) ;
 
 		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
@@ -123,7 +123,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
 		//log("tmp: " + tmp) ;
 
 		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 

@@ -68,9 +68,9 @@ public class GetDoc extends HttpServlet {
     public static String getDoc( int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res ) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
-        String host = req.getHeader( "host" );
-        String no_permission_url = Utility.getDomainPref( "no_permission_url", host );
-        File file_path = Utility.getDomainPrefPath( "file_path", host );
+
+        String no_permission_url = Utility.getDomainPref( "no_permission_url" );
+        File file_path = Utility.getDomainPrefPath( "file_path" );
 
         Vector vec = new Vector();
         SystemData sysData = imcref.getSystemData();
@@ -83,6 +83,8 @@ public class GetDoc extends HttpServlet {
         if( user == null ) {
             // Check the name and password for validity
             String ip = req.getRemoteAddr();
+            String host = req.getServerName() ;
+            
             user = StartDoc.ipAssignUser( ip, host );
 
             // Valid login.  Make a note in the session object.

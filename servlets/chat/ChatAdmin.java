@@ -61,8 +61,8 @@ public class ChatAdmin extends Administrator{
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	String host = request.getHeader("host") ;
-	String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
+
+	String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
 	// lets get ready for errors
 	String deafultLanguagePrefix = imcref.getLanguage();
@@ -133,8 +133,8 @@ public class ChatAdmin extends Administrator{
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface chatref = IMCServiceRMI.getChatIMCPoolInterface(request) ;
 
-	String host = request.getHeader( "Host" );
-	String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
+
+	String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 	boolean noErrors = true;
 
 	/*

@@ -24,7 +24,7 @@ public class QuotPicEngine extends HttpServlet {
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException {
 
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	res.setContentType("text/html");
@@ -87,7 +87,7 @@ public class QuotPicEngine extends HttpServlet {
 	    }
 	}
 
-	
+
 	out.write(theText) ;
 
 	out.close();

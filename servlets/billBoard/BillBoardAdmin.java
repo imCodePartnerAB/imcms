@@ -99,7 +99,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	Properties params = this.getStandardParameters(req) ;
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
@@ -575,7 +575,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	}
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 

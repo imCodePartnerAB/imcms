@@ -67,9 +67,9 @@ public class AdminConference extends Administrator {
     protected void doPost( HttpServletRequest request, HttpServletResponse response )
     throws ServletException, IOException {
 
-        String host = request.getHeader( "Host" );
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-        String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
+        String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
         // lets get ready for errors
         String deafultLanguagePrefix = imcref.getLanguage( );
@@ -142,9 +142,9 @@ public class AdminConference extends Administrator {
      */
     private void listConferences( HttpServletRequest request, HttpServletResponse response, String languagePrefix ) throws ServletException, IOException {
 
-        String host = request.getHeader( "Host" );
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-        String eMailServerMaster = Utility.getDomainPref( "servermaster_email", host );
+        String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
         boolean noErrors = true;
 
 	/*

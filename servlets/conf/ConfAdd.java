@@ -43,7 +43,7 @@ public class ConfAdd extends Conference {
 	addType = req.getParameter("ADDTYPE") ;
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 
@@ -189,7 +189,7 @@ public class ConfAdd extends Conference {
 	}
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface confref = IMCServiceRMI.getConfIMCPoolInterface(req) ;
 

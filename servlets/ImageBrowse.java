@@ -58,7 +58,7 @@ public class ImageBrowse extends HttpServlet {
 	String host				= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	String image_url                = imcref.getImageUrl() ;
-	File file_path                  = Utility.getDomainPrefPath( "image_path", host );
+	File file_path                  = Utility.getDomainPrefPath( "image_path" );
 
 	// Get the session
 	HttpSession session = req.getSession(false);

@@ -79,7 +79,7 @@ public class BillBoardForum extends BillBoard {//ConfForum
 		String discIndex = params.getProperty("DISC_INDEX") ;
 
 		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 		IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 

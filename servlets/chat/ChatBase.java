@@ -289,7 +289,7 @@ public class ChatBase extends HttpServlet {
 	    // Save the request URL as the true target and redirect to the login page.
 	    session.setAttribute("login.target", HttpUtils.getRequestURL(req).toString());
 	    String serverName = MetaInfo.getServerName(req) ;
-	    String host = req.getHeader("host") ;
+
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	    String startUrl = imcref.getStartUrl() ;
@@ -662,7 +662,7 @@ public class ChatBase extends HttpServlet {
     {
 
 	// Lets get serverinformation
-	String host = req.getHeader( "Host" ) ;
+
 
 	HttpSession session = req.getSession( true );
 
@@ -702,7 +702,7 @@ public class ChatBase extends HttpServlet {
     {
 
 	// Lets get serverinformation
-	String host = req.getHeader( "Host" ) ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession( true );

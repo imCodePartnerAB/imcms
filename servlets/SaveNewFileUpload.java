@@ -12,10 +12,10 @@ public class SaveNewFileUpload extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        String host = req.getHeader( "Host" );
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
-        File file_path = Utility.getDomainPrefPath( "file_path", host );
+        File file_path = Utility.getDomainPrefPath( "file_path" );
 
         imcode.server.user.UserDomainObject user;
 

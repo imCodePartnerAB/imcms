@@ -39,7 +39,7 @@ public class SearchDocuments extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        String host = req.getHeader( "Host" );
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         HttpSession session = req.getSession( true );
         imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)session.getAttribute( "logon.isDone" );
@@ -47,6 +47,7 @@ public class SearchDocuments extends HttpServlet {
         //we must have a user obj, even if its a user extern object, so lets get one, or get rid of the req
         if ( user == null ) {
             String ip = req.getRemoteAddr();
+            String host = req.getServerName() ;
             user = StartDoc.ipAssignUser( ip, host );
             if ( user == null ) {
                 res.sendRedirect( "StartDoc" );
@@ -331,7 +332,7 @@ public class SearchDocuments extends HttpServlet {
      doGet()
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        String host = req.getHeader( "Host" );
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 

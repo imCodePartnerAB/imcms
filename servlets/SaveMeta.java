@@ -32,7 +32,7 @@ public class SaveMeta extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        String host = req.getHeader( "Host" );
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
@@ -291,6 +291,7 @@ public class SaveMeta extends HttpServlet {
         // We also need a name for this temporary variable... i think i shall call it... (Drumroll, please...) "temp_perm_settings" !
         //
 
+        String host = req.getServerName() ;
         if( req.getParameter( "define_set_1" ) != null ) {	// If user want's to edit permission-set 1
             user.put( "temp_perm_settings", new Object[]{String.valueOf( meta_id ), metaprops, temp_permission_settings, temp_default_templates} );
             out.write( MetaDataParser.parsePermissionSet( meta_id_int, user, host, 1, false ) );

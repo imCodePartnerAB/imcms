@@ -33,7 +33,7 @@ public class VerifyUser extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		String host 				= req.getHeader("Host") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-		String access_denied_url   	= Utility.getDomainPref( "access_denied_url",host ) ;
+		String access_denied_url   	= Utility.getDomainPref( "access_denied_url" ) ;
 
 		imcode.server.user.UserDomainObject user ;
 		res.setContentType( "text/html" );

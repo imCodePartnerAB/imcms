@@ -180,7 +180,7 @@ public class BillBoard extends HttpServlet { //Conference
 	imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) done ;
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
@@ -290,7 +290,7 @@ public class BillBoard extends HttpServlet { //Conference
     {
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
@@ -584,7 +584,7 @@ public class BillBoard extends HttpServlet { //Conference
 	String metaId = params.getProperty("META_ID") ;
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
@@ -641,7 +641,7 @@ public class BillBoard extends HttpServlet { //Conference
 	}
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
@@ -681,7 +681,7 @@ public class BillBoard extends HttpServlet { //Conference
 	throws ServletException, IOException
     {
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
@@ -725,7 +725,7 @@ public class BillBoard extends HttpServlet { //Conference
 	throws ServletException, IOException
     {
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
@@ -834,7 +834,7 @@ public class BillBoard extends HttpServlet { //Conference
     {
 
 	// Lets get serverinformation
-	String host = req.getHeader( "Host" ) ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession( true );
@@ -868,7 +868,7 @@ public class BillBoard extends HttpServlet { //Conference
     {
 
 	// Lets get serverinformation
-	String host = req.getHeader( "Host" ) ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
 	HttpSession session = req.getSession( true );

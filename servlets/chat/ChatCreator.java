@@ -52,7 +52,7 @@ public class ChatCreator extends ChatBase
 	    }
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
 
 	String action = req.getParameter("action");
 

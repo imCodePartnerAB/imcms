@@ -78,7 +78,7 @@ public class BillBoardAdd extends BillBoard	{
 	addType = req.getParameter("ADDTYPE") ;
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
@@ -410,7 +410,7 @@ public class BillBoardAdd extends BillBoard	{
 	    }
 
 	// Lets get serverinformation
-	String host = req.getHeader("Host") ;
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 	IMCPoolInterface billref = IMCServiceRMI.getBillboardIMCPoolInterface(req) ;
 
@@ -537,7 +537,7 @@ public class BillBoardAdd extends BillBoard	{
 	String emptyString = "";
 
 	/* server info */
-	String host = req.getHeader("Host") ;
+
 	String hostName = emptyString;
 	try {
 	    hostName = InetAddress.getLocalHost().getHostName();
@@ -546,9 +546,9 @@ public class BillBoardAdd extends BillBoard	{
 	}
 
 	/* mailserver info */
-	String mailserver = Utility.getDomainPref( "smtp_server", host );
-	String stringMailPort = Utility.getDomainPref( "smtp_port", host );
-	String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
+	String mailserver = Utility.getDomainPref( "smtp_server" );
+	String stringMailPort = Utility.getDomainPref( "smtp_port" );
+	String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
 
 	// Handling of default-values is another area where java can't hold a candle to perl.
 	int mailport = 25 ;

@@ -10,7 +10,7 @@ public class ReDirecter extends HttpServlet {
     private final static int METAID_OFFSET=1;
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-	String host = req.getHeader("host");
+
 	String[] pathElements = split(req.getPathInfo(),'/',false);
 
 	if (pathElements.length > METAID_OFFSET) {

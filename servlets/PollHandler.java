@@ -180,11 +180,11 @@ public class PollHandler extends HttpServlet {
 
     private void sendMail (IMCServiceInterface imcref, HttpServletRequest req, String[] poll_param, String meta_id, TreeMap textQuestions, TreeMap textAnswers) throws IOException {
 
-		String host = req.getHeader("Host") ;
+
 		
-		String mailServer = Utility.getDomainPref( "smtp_server", host );
-		String stringMailPort = Utility.getDomainPref( "smtp_port", host );
-		String stringMailtimeout = Utility.getDomainPref( "smtp_timeout", host );
+		String mailServer = Utility.getDomainPref( "smtp_server" );
+		String stringMailPort = Utility.getDomainPref( "smtp_port" );
+		String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
 
 		// Handling of default-values is another area where java can't hold a candle to perl.
 		int mailport = 25 ;

@@ -25,7 +25,7 @@ public class AdminDoc extends HttpServlet {
      doGet()
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        String host = req.getHeader( "Host" );
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
@@ -61,9 +61,9 @@ public class AdminDoc extends HttpServlet {
     }
 
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req, HttpServletResponse res ) throws IOException {
-
+        String host = req.getServerName() ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String host = req.getHeader( "host" );
+
 
         String htmlStr = "";
         String lang_prefix = user.getLangPrefix();

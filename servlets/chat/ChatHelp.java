@@ -40,7 +40,7 @@ public class ChatHelp extends ChatBase
 	    {
 
 		// Lets get serverinformation
-		String host = req.getHeader("Host") ;
+
 
 
 		// Lets detect which helparea the user wants
