@@ -7,6 +7,7 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
+import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletException;
@@ -38,7 +39,7 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveUrlDocument(this) ;
+        documentMapper.saveUrlDocument( this );
     }
 
     public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {

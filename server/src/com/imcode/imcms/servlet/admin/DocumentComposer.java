@@ -380,7 +380,7 @@ public class DocumentComposer extends HttpServlet {
                 }
             } else {
                 newDocument = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
-                newDocument.setDocumentProperties( (DocumentDomainObject.DocumentProperties)parent.getDocumentProperties().clone() );
+                newDocument.setAttributes( (DocumentDomainObject.Attributes)parent.getAttributes().clone() );
             }
         } catch ( CloneNotSupportedException e ) {
             throw new ServletException( e );

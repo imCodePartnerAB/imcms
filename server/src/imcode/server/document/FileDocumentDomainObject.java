@@ -7,6 +7,7 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
+import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
 import imcode.util.InputStreamSource;
 
@@ -42,7 +43,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     public InputStreamSource getInputStreamSource() {
-        return inputStreamSource ;
+        return inputStreamSource;
     }
 
     public int getDocumentTypeId() {
@@ -58,15 +59,15 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveFileDocument( this ) ;
+        documentMapper.saveFileDocument( this );
     }
 
     public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveNewFileDocument(this);
+        documentMapper.saveNewFileDocument( this );
     }
 
     public void initDocument( DocumentMapper documentMapper ) {
-        documentMapper.initFileDocument(this);
+        documentMapper.initFileDocument( this );
     }
 
 }

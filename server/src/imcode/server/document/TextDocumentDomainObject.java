@@ -7,6 +7,7 @@
 package imcode.server.document;
 
 import com.imcode.imcms.servlet.admin.DocumentComposer;
+import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 
@@ -20,44 +21,74 @@ import java.util.Map;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
 
-    private TemplateDomainObject template;
-    private int templateGroupId;
-    private int defaultTemplateIdForRestrictedPermissionSetOne;
-    private int defaultTemplateIdForRestrictedPermissionSetTwo;
-    private Map texts = new HashMap();
-    private Map images = new HashMap();
-    private Map includes = new HashMap();
+    private class LazilyLoadedTextDocumentAttributes implements Serializable, Cloneable {
+
+        private TemplateDomainObject template;
+        private int templateGroupId;
+        private int defaultTemplateIdForRestrictedPermissionSetOne;
+        private int defaultTemplateIdForRestrictedPermissionSetTwo;
+        private Map texts = new HashMap();
+        private Map images = new HashMap();
+        private Map includes = new HashMap();
+
+        public Object clone() throws CloneNotSupportedException {
+            LazilyLoadedTextDocumentAttributes clone = (LazilyLoadedTextDocumentAttributes)super.clone();
+            clone.texts = new HashMap( texts );
+            clone.images = new HashMap( images );
+            clone.includes = new HashMap( includes );
+            return clone;
+        }
+    }
+
+    private LazilyLoadedTextDocumentAttributes lazilyLoadedAttributes = null;
+
+    public synchronized LazilyLoadedTextDocumentAttributes getLazilyLoadedTextDocumentAttributes() {
+        if ( null == lazilyLoadedAttributes ) {
+            lazilyLoadedAttributes = new LazilyLoadedTextDocumentAttributes();
+            DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+            documentMapper.initLazilyLoadedTextDocumentAttributes( this );
+        }
+        return lazilyLoadedAttributes;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
+        if ( null != lazilyLoadedAttributes ) {
+            clone.lazilyLoadedAttributes = (LazilyLoadedTextDocumentAttributes)lazilyLoadedAttributes.clone();
+        }
+        return clone;
+    }
 
     public TemplateDomainObject getTemplate() {
-        return template;
+        return getLazilyLoadedTextDocumentAttributes().template;
     }
 
     public void setTemplate( TemplateDomainObject v ) {
-        this.template = v;
+        this.getLazilyLoadedTextDocumentAttributes().template = v;
     }
 
     public int getTemplateGroupId() {
-        return templateGroupId;
+        return getLazilyLoadedTextDocumentAttributes().templateGroupId;
     }
 
     public void setTemplateGroupId( int v ) {
-        this.templateGroupId = v;
+        this.getLazilyLoadedTextDocumentAttributes().templateGroupId = v;
     }
 
     public void setDefaultTemplateIdForRestrictedPermissionSetOne( int defaultTemplateIdForRestrictedPermissionSetOne ) {
-        this.defaultTemplateIdForRestrictedPermissionSetOne = defaultTemplateIdForRestrictedPermissionSetOne;
+        this.getLazilyLoadedTextDocumentAttributes().defaultTemplateIdForRestrictedPermissionSetOne = defaultTemplateIdForRestrictedPermissionSetOne;
     }
 
     public int getDefaultTemplateIdForRestrictedPermissionSetOne() {
-        return defaultTemplateIdForRestrictedPermissionSetOne;
+        return getLazilyLoadedTextDocumentAttributes().defaultTemplateIdForRestrictedPermissionSetOne;
     }
 
     public void setDefaultTemplateIdForRestrictedPermissionSetTwo( int defaultTemplateIdForRestrictedPermissionSetTwo ) {
-        this.defaultTemplateIdForRestrictedPermissionSetTwo = defaultTemplateIdForRestrictedPermissionSetTwo;
+        this.getLazilyLoadedTextDocumentAttributes().defaultTemplateIdForRestrictedPermissionSetTwo = defaultTemplateIdForRestrictedPermissionSetTwo;
     }
 
     public int getDefaultTemplateIdForRestrictedPermissionSetTwo() {
-        return defaultTemplateIdForRestrictedPermissionSetTwo;
+        return getLazilyLoadedTextDocumentAttributes().defaultTemplateIdForRestrictedPermissionSetTwo;
     }
 
     public int getDocumentTypeId() {
@@ -72,62 +103,62 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveTextDocument( this,user );
+        documentMapper.saveTextDocument( this, user );
     }
 
     public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveNewTextDocument( this,user );
+        documentMapper.saveNewTextDocument( this, user );
     }
 
     public void initDocument( DocumentMapper documentMapper ) {
-        documentMapper.initTextDocument( this );
+        // lazily loaded
     }
 
     public void setText( int textFieldIndex, TextDocumentDomainObject.Text text ) {
-        texts.put( new Integer( textFieldIndex ), text );
+        getLazilyLoadedTextDocumentAttributes().texts.put( new Integer( textFieldIndex ), text );
     }
 
     public TextDocumentDomainObject.Text getText( int textFieldIndex ) {
-        return (TextDocumentDomainObject.Text)texts.get( new Integer( textFieldIndex ) );
+        return (TextDocumentDomainObject.Text)getLazilyLoadedTextDocumentAttributes().texts.get( new Integer( textFieldIndex ) );
     }
 
     /**
      * @return Map<Integer, {@link TextDocumentDomainObject.Text}>
      */
     public Map getTexts() {
-        return Collections.unmodifiableMap( texts );
+        return Collections.unmodifiableMap( getLazilyLoadedTextDocumentAttributes().texts );
     }
 
     public void removeAllTexts() {
-        texts.clear();
+        getLazilyLoadedTextDocumentAttributes().texts.clear();
     }
 
     public void setImages( Map images ) {
-        this.images = images ;
+        this.getLazilyLoadedTextDocumentAttributes().images = images;
     }
 
     public Map getImages() {
-        return Collections.unmodifiableMap( images );
+        return Collections.unmodifiableMap( getLazilyLoadedTextDocumentAttributes().images );
     }
 
     public void removeAllImages() {
-        images.clear();
+        getLazilyLoadedTextDocumentAttributes().images.clear();
     }
 
     public void setInclude( int includeIndex, int includedDocumentId ) {
-        includes.put( new Integer( includeIndex ), new Integer( includedDocumentId )) ;
+        getLazilyLoadedTextDocumentAttributes().includes.put( new Integer( includeIndex ), new Integer( includedDocumentId ) );
     }
 
     public Integer getIncludedDocumentId( int includeIndex ) {
-        return (Integer)includes.get( new Integer( includeIndex )) ;
+        return (Integer)getLazilyLoadedTextDocumentAttributes().includes.get( new Integer( includeIndex ) );
     }
 
     public Map getIncludes() {
-        return Collections.unmodifiableMap( includes );
+        return Collections.unmodifiableMap( getLazilyLoadedTextDocumentAttributes().includes );
     }
 
     public void removeAllIncludes() {
-        includes.clear();
+        getLazilyLoadedTextDocumentAttributes().includes.clear();
     }
 
     public static class Text implements Serializable {

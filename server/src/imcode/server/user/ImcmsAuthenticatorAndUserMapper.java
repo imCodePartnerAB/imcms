@@ -75,32 +75,37 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         } else {
             user = new UserDomainObject();
 
-            user.setId( Integer.parseInt( sqlResult[0] ) );
-            user.setLoginName( sqlResult[1] );
-            user.setPassword( sqlResult[2].trim() );
-            user.setFirstName( sqlResult[3] );
-            user.setLastName( sqlResult[4] );
-            user.setTitle( sqlResult[5] );
-            user.setCompany( sqlResult[6] );
-            user.setAddress( sqlResult[7] );
-            user.setCity( sqlResult[8] );
-            user.setZip( sqlResult[9] );
-            user.setCountry( sqlResult[10] );
-            user.setCountyCouncil( sqlResult[11] );
-            user.setEmailAddress( sqlResult[12] );
-            user.setLangId( Integer.parseInt( sqlResult[13] ) );
-            user.setLanguageIso639_2(
-                    (String)ObjectUtils.defaultIfNull( sqlResult[14], service.getDefaultLanguageAsIso639_2() ) );
-            user.setUserType( Integer.parseInt( sqlResult[15] ) );
-            user.setActive( 0 != Integer.parseInt( sqlResult[16] ) );
-            user.setCreateDate( sqlResult[17] );
-            user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[18] ) );
+            initUserFromSqlData( user, sqlResult );
 
-            setPhoneNumbersForUser( user );
-
-            user.setRoles( getRolesForUser( user ) );
         }
         return user;
+    }
+
+    void initUserFromSqlData( UserDomainObject user, String[] sqlResult ) {
+        user.setId( Integer.parseInt( sqlResult[0] ) );
+        user.setLoginName( sqlResult[1] );
+        user.setPassword( sqlResult[2].trim() );
+        user.setFirstName( sqlResult[3] );
+        user.setLastName( sqlResult[4] );
+        user.setTitle( sqlResult[5] );
+        user.setCompany( sqlResult[6] );
+        user.setAddress( sqlResult[7] );
+        user.setCity( sqlResult[8] );
+        user.setZip( sqlResult[9] );
+        user.setCountry( sqlResult[10] );
+        user.setCountyCouncil( sqlResult[11] );
+        user.setEmailAddress( sqlResult[12] );
+        user.setLangId( Integer.parseInt( sqlResult[13] ) );
+        user.setLanguageIso639_2(
+                (String)ObjectUtils.defaultIfNull( sqlResult[14], service.getDefaultLanguageAsIso639_2() ) );
+        user.setUserType( Integer.parseInt( sqlResult[15] ) );
+        user.setActive( 0 != Integer.parseInt( sqlResult[16] ) );
+        user.setCreateDate( sqlResult[17] );
+        user.setImcmsExternal( 0 != Integer.parseInt( sqlResult[18] ) );
+
+        setPhoneNumbersForUser( user );
+
+        user.setRoles( getRolesForUser( user ) );
     }
 
     private RoleDomainObject[] getRolesForUser( UserDomainObject user ) {
@@ -143,6 +148,10 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
      * @return An object representing the user with the given id.
      */
     public UserDomainObject getUser( int userId ) {
+        return new UserDomainObject( userId );
+    }
+
+    String[] sqlSelectUserData( int userId ) {
         String sqlStr = "SELECT user_id, login_name, login_password, first_name, last_name, "
                         + "title, company, address, city, zip, country, county_council, "
                         + "email, users.lang_id, lang_prefix, user_type, active, "
@@ -152,8 +161,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
                         + "AND user_id = ?";
 
         String[] user_data = service.sqlQuery( sqlStr, new String[]{"" + userId} );
-        UserDomainObject result = getUserFromSqlResult( user_data );
-        return result;
+        return user_data;
     }
 
     public void updateUser( String loginName, UserDomainObject newUser ) {

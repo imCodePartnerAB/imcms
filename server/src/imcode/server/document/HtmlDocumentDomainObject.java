@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class HtmlDocumentDomainObject extends DocumentDomainObject {
 
-    private String htmlDocumentHtml = "" ;
+    private String htmlDocumentHtml = "";
 
     public void setHtmlDocumentHtml( String htmlDocumentHtml ) {
         this.htmlDocumentHtml = htmlDocumentHtml;
@@ -39,7 +39,7 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveHtmlDocument( this ) ;
+        documentMapper.saveHtmlDocument( this );
     }
 
     public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
@@ -47,7 +47,7 @@ public class HtmlDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void initDocument( DocumentMapper documentMapper ) {
-        documentMapper.initHtmlDocument(this) ;
+        documentMapper.initHtmlDocument( this );
     }
 
 }

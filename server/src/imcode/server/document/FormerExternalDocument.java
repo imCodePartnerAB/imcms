@@ -18,6 +18,7 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class FormerExternalDocument extends DocumentDomainObject {
+
     public void processNewDocumentInformation( DocumentComposer documentInformation,
                                                DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
@@ -33,4 +34,5 @@ public abstract class FormerExternalDocument extends DocumentDomainObject {
 
     public void initDocument( DocumentMapper documentMapper ) {
     }
+
 }

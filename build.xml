@@ -427,7 +427,8 @@
 
     <!-- Generate documentation -->
     <target name="javadoc" description="Generates javadoc.">
-        <javadoc packagenames="imcode.imcms.api.*" sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API">
+        <javadoc packagenames="imcode.imcms.api.*"
+            sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API" classpathref="libraries" >
             <packageset dir="server/src/" defaultexcludes="yes">
                 <include name="com/imcode/imcms/api/**"/>
             </packageset>

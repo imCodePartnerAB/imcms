@@ -15,8 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class BrowserDocumentDomainObject extends DocumentDomainObject {
 
@@ -39,7 +39,7 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void saveDocument( DocumentMapper documentMapper, UserDomainObject user ) {
-        documentMapper.saveBrowserDocument( this ) ;
+        documentMapper.saveBrowserDocument( this );
     }
 
     public void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) {
@@ -51,13 +51,13 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void setBrowserDocumentId( Browser browser, int documentId ) {
-        this.browserDocumentIdMap.put(browser, new Integer(documentId)) ;
+        this.browserDocumentIdMap.put( browser, new Integer( documentId ) );
     }
 
     public static class Browser implements Comparable, Serializable {
 
         /* Null object */
-        public final static Browser DEFAULT = new Browser(0, "", 0) ;
+        public final static Browser DEFAULT = new Browser( 0, "", 0 );
 
         private int id;
         private String name;
@@ -99,12 +99,12 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
         }
 
         public int compareTo( Object o ) {
-            Browser browser = (Browser)o ;
-            int comparison = browser.specificity - specificity ;
-            if (0 == comparison) {
-                comparison = name.compareTo( browser.name ) ;
+            Browser browser = (Browser)o;
+            int comparison = browser.specificity - specificity;
+            if ( 0 == comparison ) {
+                comparison = name.compareTo( browser.name );
             }
-            return comparison ;
+            return comparison;
         }
 
     }

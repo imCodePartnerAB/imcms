@@ -1,46 +1,68 @@
 package imcode.server.user;
 
 import imcode.server.document.TemplateGroupDomainObject;
-import org.apache.log4j.Logger;
+import imcode.server.ApplicationServer;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
+import java.io.Serializable;
 
 public class UserDomainObject extends Hashtable {
 
     UserDomainObject() {
+        lazilyLoadedUserAttributes = new LazilyLoadedUserAttributes();
+    }
+
+    UserDomainObject( int id ) {
+        this.id = id ;
     }
 
     private int id;
-    private String loginName;
-    private String password;
-    private String firstName = "";
-    private String lastName = "";
-    private String title = "";
-    private String company = "";
-    private String address = "";
-    private String city = "";
-    private String zip = "";
-    private String country = "";
-    private String county_council = "";
-    private String emailAddress = "";
-    private String workPhone = "";
-    private String mobilePhone = "";
-    private String homePhone = "";
-    private int lang_id;
-    private int user_type;
-    private boolean active;
-    private String create_date;
 
-    private String languageIso639_2;
+    private class LazilyLoadedUserAttributes implements Serializable {
 
-    private TemplateGroupDomainObject templateGroup;
-    private String loginType;
+        private String loginName;
+        private String password;
+        private String firstName = "";
+        private String lastName = "";
+        private String title = "";
+        private String company = "";
+        private String address = "";
+        private String city = "";
+        private String zip = "";
+        private String country = "";
+        private String county_council = "";
+        private String emailAddress = "";
+        private String workPhone = "";
+        private String mobilePhone = "";
+        private String homePhone = "";
+        private int lang_id;
+        private int user_type;
+        private boolean active;
+        private String create_date;
 
-    private boolean imcmsExternal = false;
-    private Set roles;
+        private String languageIso639_2;
+
+        private TemplateGroupDomainObject templateGroup;
+        private String loginType;
+
+        private boolean imcmsExternal = false;
+        private Set roles;
+    }
+
+    private LazilyLoadedUserAttributes lazilyLoadedUserAttributes = null ;
+
+    public LazilyLoadedUserAttributes getLazilyLoadedUserAttributes() {
+        if (null == lazilyLoadedUserAttributes) {
+            lazilyLoadedUserAttributes = new LazilyLoadedUserAttributes() ;
+            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = ApplicationServer.getIMCServiceInterface().getImcmsAuthenticatorAndUserAndRoleMapper() ;
+            imcmsAuthenticatorAndUserMapper.initUserFromSqlData(this, imcmsAuthenticatorAndUserMapper.sqlSelectUserData(id));
+        }
+        return lazilyLoadedUserAttributes;
+    }
+
 
     /**
      * get user-id
@@ -60,28 +82,28 @@ public class UserDomainObject extends Hashtable {
      * get login name (username)
      */
     public String getLoginName() {
-        return this.loginName;
+        return this.getLazilyLoadedUserAttributes().loginName;
     }
 
     /**
      * set login name (username)
      */
     public void setLoginName( String loginName ) {
-        this.loginName = loginName;
+        this.getLazilyLoadedUserAttributes().loginName = loginName;
     }
 
     /**
      * get password
      */
     public String getPassword() {
-        return this.password;
+        return this.getLazilyLoadedUserAttributes().password;
     }
 
     /**
      * set password
      */
     public void setPassword( String password ) {
-        this.password = password;
+        this.getLazilyLoadedUserAttributes().password = password;
     }
 
     /**
@@ -95,300 +117,300 @@ public class UserDomainObject extends Hashtable {
      * get first name
      */
     public String getFirstName() {
-        return this.firstName;
+        return this.getLazilyLoadedUserAttributes().firstName;
     }
 
     /**
      * set first name
      */
     public void setFirstName( String firstName ) {
-        this.firstName = firstName;
+        this.getLazilyLoadedUserAttributes().firstName = firstName;
     }
 
     /**
      * get last name
      */
     public String getLastName() {
-        return this.lastName;
+        return this.getLazilyLoadedUserAttributes().lastName;
     }
 
     /**
      * set last name
      */
     public void setLastName( String lastName ) {
-        this.lastName = lastName;
+        this.getLazilyLoadedUserAttributes().lastName = lastName;
     }
 
     /**
      * set title
      */
     public void setTitle( String title ) {
-        this.title = title;
+        this.getLazilyLoadedUserAttributes().title = title;
     }
 
     /**
      * get title
      */
     public String getTitle() {
-        return this.title;
+        return this.getLazilyLoadedUserAttributes().title;
     }
 
     /**
      * set company
      */
     public void setCompany( String company ) {
-        this.company = company;
+        this.getLazilyLoadedUserAttributes().company = company;
     }
 
     /**
      * get company
      */
     public String getCompany() {
-        return this.company;
+        return this.getLazilyLoadedUserAttributes().company;
     }
 
     /**
      * set address
      */
     public void setAddress( String address ) {
-        this.address = address;
+        this.getLazilyLoadedUserAttributes().address = address;
     }
 
     /**
      * get address
      */
     public String getAddress() {
-        return this.address;
+        return this.getLazilyLoadedUserAttributes().address;
     }
 
     /**
      * set city
      */
     public void setCity( String city ) {
-        this.city = city;
+        this.getLazilyLoadedUserAttributes().city = city;
     }
 
     /**
      * get city
      */
     public String getCity() {
-        return this.city;
+        return this.getLazilyLoadedUserAttributes().city;
     }
 
     /**
      * set zip
      */
     public void setZip( String zip ) {
-        this.zip = zip;
+        this.getLazilyLoadedUserAttributes().zip = zip;
     }
 
     /**
      * get zip
      */
     public String getZip() {
-        return this.zip;
+        return this.getLazilyLoadedUserAttributes().zip;
     }
 
     /**
      * set country
      */
     public void setCountry( String country ) {
-        this.country = country;
+        this.getLazilyLoadedUserAttributes().country = country;
     }
 
     /**
      * get country
      */
     public String getCountry() {
-        return this.country;
+        return this.getLazilyLoadedUserAttributes().country;
     }
 
     /**
      * set county_council
      */
     public void setCountyCouncil( String county_council ) {
-        this.county_council = county_council;
+        this.getLazilyLoadedUserAttributes().county_council = county_council;
     }
 
     /**
      * get county_council
      */
     public String getCountyCouncil() {
-        return this.county_council;
+        return this.getLazilyLoadedUserAttributes().county_council;
     }
 
     /**
      * Return the users e-mail address
      */
     public String getEmailAddress() {
-        return this.emailAddress;
+        return this.getLazilyLoadedUserAttributes().emailAddress;
     }
 
     /**
      * Set the users e-mail address
      */
     public void setEmailAddress( String emailAddress ) {
-        this.emailAddress = emailAddress;
+        this.getLazilyLoadedUserAttributes().emailAddress = emailAddress;
     }
 
     /**
      * Get the users workphone
      */
     public String getWorkPhone() {
-        return this.workPhone;
+        return this.getLazilyLoadedUserAttributes().workPhone;
     }
 
     /**
      * Set the users workphone
      */
     public void setWorkPhone( String workphone ) {
-        this.workPhone = workphone;
+        this.getLazilyLoadedUserAttributes().workPhone = workphone;
     }
 
     /**
      * Get the users mobilephone
      */
     public String getMobilePhone() {
-        return this.mobilePhone;
+        return this.getLazilyLoadedUserAttributes().mobilePhone;
     }
 
     /**
      * Set the users mobilephone
      */
     public void setMobilePhone( String mobilephone ) {
-        this.mobilePhone = mobilephone;
+        this.getLazilyLoadedUserAttributes().mobilePhone = mobilephone;
     }
 
     /**
      * Get the users homephone
      */
     public String getHomePhone() {
-        return this.homePhone;
+        return this.getLazilyLoadedUserAttributes().homePhone;
     }
 
     /**
      * Set the users homepohne
      */
     public void setHomePhone( String homephone ) {
-        this.homePhone = homephone;
+        this.getLazilyLoadedUserAttributes().homePhone = homephone;
     }
 
     /**
      * get lang_id
      */
     public int getLangId() {
-        return this.lang_id;
+        return this.getLazilyLoadedUserAttributes().lang_id;
     }
 
     /**
      * set lang_id
      */
     public void setLangId( int lang_id ) {
-        this.lang_id = lang_id;
+        this.getLazilyLoadedUserAttributes().lang_id = lang_id;
     }
 
     /**
      * set user_type
      */
     public void setUserType( int user_type ) {
-        this.user_type = user_type;
+        this.getLazilyLoadedUserAttributes().user_type = user_type;
     }
 
     /**
      * get user_type
      */
     public int getUserType() {
-        return this.user_type;
+        return this.getLazilyLoadedUserAttributes().user_type;
     }
 
     /**
      * Set whether the user is allowed to log in
      */
     public void setActive( boolean active ) {
-        this.active = active;
+        this.getLazilyLoadedUserAttributes().active = active;
     }
 
     /**
      * Check whether the user is allowed to log in
      */
     public boolean isActive() {
-        return this.active;
+        return this.getLazilyLoadedUserAttributes().active;
     }
 
     /**
      * set create_date
      */
     public void setCreateDate( String create_date ) {
-        this.create_date = create_date;
+        this.getLazilyLoadedUserAttributes().create_date = create_date;
     }
 
     /**
      * get create_date
      */
     public String getCreateDate() {
-        return this.create_date;
+        return this.getLazilyLoadedUserAttributes().create_date;
     }
 
     /**
      * set template group
      */
     public void setTemplateGroup( TemplateGroupDomainObject template_group ) {
-        this.templateGroup = template_group;
+        this.getLazilyLoadedUserAttributes().templateGroup = template_group;
     }
 
     /**
      * get template group
      */
     public TemplateGroupDomainObject getTemplateGroup() {
-        return templateGroup;
+        return getLazilyLoadedUserAttributes().templateGroup;
     }
 
     /**
      * Return the users language
      */
     public String getLanguageIso639_2() {
-        return this.languageIso639_2;
+        return this.getLazilyLoadedUserAttributes().languageIso639_2;
     }
 
     /**
      * Set the users language
      */
     public void setLanguageIso639_2( String languageIso639_2 ) {
-        this.languageIso639_2 = languageIso639_2;
+        this.getLazilyLoadedUserAttributes().languageIso639_2 = languageIso639_2;
     }
 
     /**
      * Get the login-type.
      */
     public String getLoginType() {
-        return this.loginType;
+        return this.getLazilyLoadedUserAttributes().loginType;
     }
 
     /**
      * Set the login-type.
      */
     public void setLoginType( String loginType ) {
-        this.loginType = loginType;
+        this.getLazilyLoadedUserAttributes().loginType = loginType;
     }
 
     public boolean isImcmsExternal() {
-        return this.imcmsExternal;
+        return this.getLazilyLoadedUserAttributes().imcmsExternal;
     }
 
     public void setImcmsExternal( boolean external ) {
-        this.imcmsExternal = external;
+        this.getLazilyLoadedUserAttributes().imcmsExternal = external;
     }
 
     public void setRoles( RoleDomainObject[] rolesForUser ) {
-        this.roles = new HashSet( Arrays.asList( rolesForUser ) );
+        this.getLazilyLoadedUserAttributes().roles = new HashSet( Arrays.asList( rolesForUser ) );
     }
 
     public boolean hasRole( RoleDomainObject role ) {
-        return this.roles.contains( role );
+        return this.getLazilyLoadedUserAttributes().roles.contains( role );
     }
 
     public RoleDomainObject[] getRoles() {
-        return (RoleDomainObject[])roles.toArray( new RoleDomainObject[roles.size()] );
+        return (RoleDomainObject[])getLazilyLoadedUserAttributes().roles.toArray( new RoleDomainObject[getLazilyLoadedUserAttributes().roles.size()] );
     }
 
     public boolean equals( Object o ) {
@@ -426,7 +448,7 @@ public class UserDomainObject extends Hashtable {
     }
 
     public String toString() {
-        return "(user " + id + " \"" + loginName + "\")";
+        return "(user " + id + " \"" + getLazilyLoadedUserAttributes().loginName + "\")";
     }
 
 }

@@ -485,44 +485,51 @@ public class DocumentMapper {
     public DocumentDomainObject getDocument( int metaId ) {
         NDC.push( "getDocument" );
 
-        DocumentDomainObject document = getDocumentFromDb( metaId );
+        String[] result = sprocGetDocumentInfo( metaId );
 
-        if ( null != document ) {
-            document.initDocument( this );
-
-            addCategoriesFromDatabaseToDocument( document );
-
-            document.setSections( getSections( metaId ) );
-
-            document.setKeywords( getKeywords( metaId ) );
-
-            String[][] sprocResult = service.sqlQueryMulti( "SELECT  r.role_id, r.role_name, r.admin_role, rr.set_id\n"
-                                                            + "FROM  roles AS r, roles_rights AS rr\n"
-                                                            + "WHERE rr.role_id = r.role_id AND rr.meta_id = ?",
-                                                            new String[]{"" + document.getId()} );
-
-            for ( int i = 0; i < sprocResult.length; ++i ) {
-                int roleId = Integer.parseInt( sprocResult[i][0] );
-                String roleName = sprocResult[i][1];
-                int adminRoleId = Integer.parseInt( sprocResult[i][2] );
-                RoleDomainObject role = new RoleDomainObject( roleId, roleName, adminRoleId );
-
-                int rolePermissionSetId = Integer.parseInt( sprocResult[i][3] );
-                document.setPermissionSetIdForRole( role, rolePermissionSetId );
-            }
-
-            DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
-            document.setPermissionSetForRestrictedOne( documentPermissionSetMapper.getPermissionSetRestrictedOne( document ) );
-            document.setPermissionSetForRestrictedTwo( documentPermissionSetMapper.getPermissionSetRestrictedTwo( document ) );
-
-            document.setPermissionSetForRestrictedOneForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedOneForNewDocuments( document ) );
-            document.setPermissionSetForRestrictedTwoForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedTwoForNewDocuments( document ) );
+        if ( 0 == result.length ) {
+            return null;
         }
+        DocumentDomainObject document = getDocumentFromSqlResultRow( result );
+        document.initDocument( this );
+
         NDC.pop();
         return document;
     }
 
-    void initTextDocument( TextDocumentDomainObject document ) {
+    public void initLazilyLoadedDocumentAttributes( DocumentDomainObject document ) {
+
+        addCategoriesFromDatabaseToDocument( document );
+
+        document.setSections( getSections( document.getId() ) );
+
+        document.setKeywords( getKeywords( document.getId() ) );
+
+        String[][] sprocResult = service.sqlQueryMulti( "SELECT  r.role_id, r.role_name, r.admin_role, rr.set_id\n"
+                                                        + "FROM  roles AS r, roles_rights AS rr\n"
+                                                        + "WHERE rr.role_id = r.role_id AND rr.meta_id = ?",
+                                                        new String[]{"" + document.getId()} );
+
+        for ( int i = 0; i < sprocResult.length; ++i ) {
+            int roleId = Integer.parseInt( sprocResult[i][0] );
+            String roleName = sprocResult[i][1];
+            int adminRoleId = Integer.parseInt( sprocResult[i][2] );
+            RoleDomainObject role = new RoleDomainObject( roleId, roleName, adminRoleId );
+
+            int rolePermissionSetId = Integer.parseInt( sprocResult[i][3] );
+            document.setPermissionSetIdForRole( role, rolePermissionSetId );
+        }
+
+        DocumentPermissionSetMapper documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
+        document.setPermissionSetForRestrictedOne( documentPermissionSetMapper.getPermissionSetRestrictedOne( document ) );
+        document.setPermissionSetForRestrictedTwo( documentPermissionSetMapper.getPermissionSetRestrictedTwo( document ) );
+
+        document.setPermissionSetForRestrictedOneForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedOneForNewDocuments( document ) );
+        document.setPermissionSetForRestrictedTwoForNewDocuments( documentPermissionSetMapper.getPermissionSetRestrictedTwoForNewDocuments( document ) );
+
+    }
+
+    void initLazilyLoadedTextDocumentAttributes( TextDocumentDomainObject document ) {
         // all from the table text_doc
         String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, default_template_1, default_template_2 FROM text_docs WHERE meta_id = ?",
                                                new String[]{String.valueOf( document.getId() )} );
@@ -764,12 +771,12 @@ public class DocumentMapper {
 
         int newMetaId = sqlInsertIntoMeta( document );
 
+        document.setPermissionSetForRestrictedOne( document.getPermissionSetForRestrictedOneForNewDocuments() );
+        document.setPermissionSetForRestrictedTwo( document.getPermissionSetForRestrictedTwoForNewDocuments() );
+
         document.setId( newMetaId );
 
         document.saveNewDocument( this, user );
-
-        document.setPermissionSetForRestrictedOne( document.getPermissionSetForRestrictedOneForNewDocuments() );
-        document.setPermissionSetForRestrictedTwo( document.getPermissionSetForRestrictedTwoForNewDocuments() );
 
         saveDocument( document, user );
     }
@@ -1383,18 +1390,6 @@ public class DocumentMapper {
             SectionDomainObject section = sections[i];
             addSectionToDocument( service, metaId, section.getId() );
         }
-    }
-
-    private DocumentDomainObject getDocumentFromDb( int metaId ) {
-
-        String[] result = sprocGetDocumentInfo( metaId );
-
-        if ( 0 == result.length ) {
-            return null;
-        }
-        DocumentDomainObject document = getDocumentFromSqlResultRow( result );
-
-        return document;
     }
 
     private String[] sprocGetDocumentInfo( int metaId ) {
