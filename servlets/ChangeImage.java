@@ -54,7 +54,7 @@ public class ChangeImage extends HttpServlet {
 		String imcserver 		= Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= Utility.getDomainPref( "start_url",host ) ;
 		String image_url                = Utility.getDomainPref( "image_url",host ) ;
-
+		String image_path               = Utility.getDomainPref( "image_path",host ) ;
 		imcode.server.User user ; 
 		String htmlStr = "" ;     
 		int meta_id ;
@@ -75,13 +75,8 @@ public class ChangeImage extends HttpServlet {
 
 		// Check if ChangeImage is invoked by ImageBrowse, hence containing
 		// an image filename as option value (M. Wallin)
-		String img_preset = (req.getParameter("imglist") == null)?"":req.getParameter("imglist");
+		String img_preset = (req.getParameter("imglist") == null)?"":java.net.URLDecoder.decode(req.getParameter("imglist"));
 
-
-		if (img_preset.startsWith(image_url)) {
-		    img_preset = img_preset.substring(image_url.length()) ;
-		}
-		
 		/*
 		  Enumeration logga = req.getParameterNames();
 		  while(logga.hasMoreElements())
@@ -128,30 +123,54 @@ public class ChangeImage extends HttpServlet {
 
 		String imageName = ("".equals(img_preset)&&sql.length>0?sql[1]:img_preset); // selected OPTION or ""
 
-		//String imagePath = Utility.getDomainPref( "image_path",host ) + imageName;
 		//****************************************************************
-			//String imagePath = image_url + imageName;
-		//ImageIcon icon = new ImageIcon(imagePath);
-		int width = 0 ; //icon.getIconWidth();
-		int height = 0 ; //icon.getIconHeight();
+		ImageFileMetaData image = new ImageFileMetaData(new File(image_path,imageName)) ;
+		int width = image.getWidth() ;
+		int height = image.getHeight() ;
 		//****************************************************************
 		
-		imageName = image_url + imageName ;
+		imageName = imageName ;
 		
 		if ( sql.length > 0 ) {
+		    int current_width = 0 ;
+		    try {
+			current_width = Integer.parseInt(img_preset.equals("")?sql[2]:"" + width) ;
+		    } catch ( NumberFormatException ex ) {
+			
+		    }
+		    int current_height = 0 ;
+		    try {
+			current_height = Integer.parseInt(img_preset.equals("")?sql[3]:"" + height) ;
+		    } catch ( NumberFormatException ex ) {
+			
+		    }
+		    int aspect = 0 ;
+		    if (current_width * current_height != 0) {
+			aspect = 100 * current_width / current_height ;
+		    }
+
+		    String keepAspect = "checked" ;
+		    
+		    if (width * height != 0 && aspect != (100 * width / height)) {
+			keepAspect = "" ;
+		    }
+
 		    //log("sql.lenght > 0");
 			vec.add("#imgName#") ;
 			vec.add(sql[0]) ;
 			vec.add("#imgRef#") ;
 			vec.add(imageName);
 			vec.add("#imgWidth#") ;
-			vec.add(img_preset.equals("")?sql[2]:"" + width);
+			vec.add(current_width!=0?""+current_width:""+width);
 			vec.add("#origW#"); // original imageWidth
 			vec.add("" + width);
 			vec.add("#imgHeight#") ;
-			vec.add(img_preset.equals("")?sql[3]:"" + height);
+			vec.add(current_height!=0?""+current_height:""+height);
 			vec.add("#origH#");
 			vec.add("" + height); // original imageHeight
+
+			vec.add("#keep_aspect#") ;
+			vec.add(keepAspect) ;
 			
 			vec.add("#imgBorder#") ;
 			vec.add(sql[4]) ;
@@ -222,10 +241,10 @@ public class ChangeImage extends HttpServlet {
 			vec.add("#imgHeight#") ;
 			vec.add("" + height) ;
 			
-			vec.add("#origW#"); // 0
-			vec.add("0");
-			vec.add("#origH#"); //0
-			vec.add("0");
+			vec.add("#origW#");
+			vec.add("" + width);
+			vec.add("#origH#");
+			vec.add("" + height);
 			
 			vec.add("#imgBorder#") ;
 			vec.add("0") ;
@@ -247,9 +266,8 @@ public class ChangeImage extends HttpServlet {
 			vec.add("") ;
 			
 		}
-
-		
-		
+		vec.add("#imgUrl#") ;
+		vec.add(image_url) ;
 		vec.add("#getMetaId#") ;
 		vec.add(String.valueOf(meta_id)) ;
 		vec.add("#img_no#") ;
