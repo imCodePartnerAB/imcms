@@ -55,20 +55,18 @@ public class ChatControl extends ChatBase
 		}	
 
 		HttpSession session = req.getSession(false);
+		Html ht = new Html();
 
 		// Lets get the standard SESSION parameters and validate them
 		Properties params = this.getSessionParameters(req) ;
 		if (super.checkParameters(req, res, params) == false)
-		{
-			
+		{			
 			String header = "ChatControl servlet. " ;
 			String msg = params.toString() ;
-			ChatError err = new ChatError(req,res,header,2201) ;
-			
+			ChatError err = new ChatError(req,res,header,2201) ;			
 			log("RETURN super.checkParameters");
 			return ;
 		}
-
 		// Lets get the user object
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if(user == null) 
@@ -76,22 +74,17 @@ public class ChatControl extends ChatBase
 			log("RETURN usern is null");
 		   	return ;
 		}
-
 		if ( !isUserAuthorized( req, res, user ) )
 		{
 			log("RETURN user is not authorized");
 			return;
 		}
-
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("chat_server",host) ;
-
-
 		// Lets get the url to the servlets directory
 		String servletHome = MetaInfo.getServletPath(req) ;
-
 		// Lets get parameters
 		String aMetaId = params.getProperty("META_ID") ;
 	//	int metaId = Integer.parseInt( aMetaId );
@@ -120,39 +113,30 @@ public class ChatControl extends ChatBase
 			return;
 		}
 		
-		//lets get all Properties from Chat
-		//här måste vi skriva en metod som returnerar en Properties från Chat
-		//Properties pageOptions = myChat.getProperties();
-		//session.putValue("pageOptions");
+		//här måste vi skriva in en metod som hämtar alla parametrar från  chat obj
+		//och fixar så att endast de taggar som ska finnas skapas
 		
 		
+		
+		//strings needed to set up the page
 		String chatRoom = myGroup.getChatGroupName();
 		String alias = myMember.getName();
-
-		//lets's get all messagetypes for this room
-		Vector msgTypeVect = myChat.getMsgTypes();
-		Html ht = new Html();
-		String msgTypes = ht.createHtmlCode("ID_OPTION", "", msgTypeVect ) ;
+		String msgTypes = ht.createHtmlCode("ID_OPTION", "", myChat.getMsgTypes() ) ;
 		
 		//let's get all the users in this room		
 		StringBuffer group_members = new StringBuffer("");
 		Iterator iter = myGroup.getAllGroupMembers();
 		while (iter.hasNext())
 		{
-			log("loopar");
 			ChatMember tempMember = (ChatMember) iter.next();
 			group_members.append("<option value=\""+tempMember.getUserId() + "\">" + tempMember.getName()+"</option>\n" );
 		}
 
 		//ok lets get all names of chatGroups
 		StringBuffer chat_rooms = new StringBuffer("");
-		Enumeration enum = myChat.getAllChatGroups();
-		//let's build the html code fore this select-list
-		//should maby moves to the Html-class but it doesn't takes enumerations
-		//an alternity is to move it to the ChatBase	
+		Enumeration enum = myChat.getAllChatGroups();	
 		while (enum.hasMoreElements())
 		{
-			log("loopar igen");
 			ChatGroup tempGroup = (ChatGroup) enum.nextElement();
 			chat_rooms.append("<option value=\""+ tempGroup.getGroupId() +"\">" +tempGroup.getChatGroupName()+"</option>\n" );	
 		}
@@ -168,11 +152,9 @@ public class ChatControl extends ChatBase
 		vm.addProperty("CHAT_ROOMS", chat_rooms.toString() ) ;
 		
 	
-		//we probobly needs a few more
-
 		//create the page
 		this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-		log("nu är jag klar");
+		log("ChatViewer doGet klar");
 		
 		return;
 
@@ -185,14 +167,6 @@ public class ChatControl extends ChatBase
 	throws ServletException, IOException
 	{
 
-/*		log("start doPost nu listar vi alla parametrar");
-		Enumeration para = req.getParameterNames();
-		while (para.hasMoreElements())
-		{
-			String st =(String) para.nextElement();
-			log(st+" = "+req.getParameterValues(st));
-		}
-*/
 		// Lets validate the session, e.g has the user logged in to Janus?
 		if (super.checkSession(req,res) == false)
 		{
@@ -206,15 +180,12 @@ public class ChatControl extends ChatBase
 		Properties params = this.getSessionParameters(req) ;
 		if (super.checkParameters(req, res, params) == false)
 		{
-			log("super.checkparams return");
-			
+			log("super.checkparams return");			
 			String header = "ChatControl servlet. " ;
 			String msg = params.toString() ;
-			ChatError err = new ChatError(req,res,header,2202) ;
-			
+			ChatError err = new ChatError(req,res,header,2202) ;			
 			return ;
 		}
-
 		// Lets get the user object
 		imcode.server.User user = super.getUserObj(req,res) ;
 		if (user == null)
@@ -222,41 +193,33 @@ public class ChatControl extends ChatBase
 			log("user is null return");
 			return ;
 		}
-
 		if ( !isUserAuthorized( req, res, user ) )
 		{
 			log("user is not autorized return");
 			return;
 		}
-
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		String confPoolServer = Utility.getDomainPref("chat_server",host) ;
-
-		//RmiConf rmi = new RmiConf(user) ;
-
 		// Lets get the url to the servlets directory
 		String servletHome = MetaInfo.getServletPath(req) ;
-
 		// Lets get parameters
 		String aMetaId = params.getProperty("META_ID") ;
 	//	int metaId = Integer.parseInt( aMetaId );
 		String aChatId = params.getProperty("CHAT_ID") ; //vet ej om denna behövs????
 
+		
 		//*** *** ok lets handle the useCases *** ***
 
 
-
-		//lets get the Chat Object
+		//lets get the Chat ChatGroup and ChatMember
 		Chat myChat = (Chat)session.getValue("theChat");
 		if (myChat == null)
 		{
 			log("RETURN myChat is null");
 			return;
 		}
-
-		//lets get the member and group from the session
 		ChatMember myMember = (ChatMember) session.getValue("theChatMember");
 		if (myMember == null)
 		{
@@ -270,8 +233,7 @@ public class ChatControl extends ChatBase
 			return;
 		}
 		
-	log("OK so far !!!!");
-		
+			
 		
 		//**** ok the user wants to send a message ****
 		if (req.getParameter("sendMsg") != null)
@@ -282,18 +244,17 @@ public class ChatControl extends ChatBase
 						
 			//lets get the message and all the needed params add it into the msgpool
 			String newMessage = (req.getParameter("msg") == null ? "" : req.getParameter("msg").trim());
-			if (newMessage.length() == 0)
-			{
-			
-				//lets get the recipient 1 = all 
+			if (newMessage.length() != 0)
+			{			
+				//lets get the recipient 0 = all 
 				String recieverNrStr = (req.getParameter("recipient") == null ? "" :  req.getParameter("recipient").trim());
-				log("recieverNrStr = "+recieverNrStr);
-				if(recieverNrStr.length() == 2) recieverNrStr = "1"; //it was empty lets send it too all
+				//log("recieverNrStr = "+recieverNrStr);
+				if(recieverNrStr.length() == 0) recieverNrStr = "0"; //it was empty lets send it too all
 		
-				//lets get the messageType fore the message 0 = none
+				//lets get the messageType fore the message 0 = inget
 				String msgTypeNrStr = (req.getParameter("msgTypes") == null ? "" : req.getParameter("msgTypes").trim());
-				log("msgTypeNrStr = "+msgTypeNrStr);
-				if(msgTypeNrStr.length() == 2) msgTypeNrStr = "0";
+				//log("msgTypeNrStr = "+msgTypeNrStr);
+				if(msgTypeNrStr.length() == 0) msgTypeNrStr = "0";
 	
 				//ok lets parse those to int
 				int recieverNr, msgTypeNr;
@@ -301,25 +262,52 @@ public class ChatControl extends ChatBase
 				{
 					recieverNr = Integer.parseInt(recieverNrStr);
 					msgTypeNr = Integer.parseInt(msgTypeNrStr);
+
 				}catch (NumberFormatException nfe)
 				{
 					log("NumberFormatException while try to send msg");
-					recieverNr = 1;
+					recieverNr = 0;
 					msgTypeNr = 0;
 				}
-
+				String msgTypeStr = ""; //the msgType in text
+				if (msgTypeNr != 0)
+				{
+					Vector vect = myChat.getMsgTypes();
+					for(int i = 0; i < vect.size(); i +=2)
+					{
+						String st = (String) vect.get(i);
+						if (st.equals(Integer.toString(msgTypeNr)))
+						{
+							msgTypeStr = (String) vect.get(i+1);
+							break;
+						}
+					}					
+				}
+				String recieverStr = "Alla"; //the receiver in text
+				if (recieverNr != 0)
+				{
+					boolean found = false;
+					Iterator iter = myGroup.getAllGroupMembers();
+					while (iter.hasNext() && !found)
+					{
+						ChatMember memb = (ChatMember)iter.next();
+						if (recieverNr == memb.getUserId())
+						{
+							recieverStr = memb.getName();
+							found = true;
+						}
+					}
+				}
+				
 				int senderNr = myMember.getUserId();
-
 				String theDateTime = (super.getDateToday() +" : "+ super.getTimeNow());
-
+				
 				//ok lets create the message  "public ChatMsg(String chatMsg, String recieverStr,int reciever, int msgType, String msgTypeStr, String sender, String dateTime)"
-				imcode.external.chat.ChatMsg newChatMsg = new ChatMsg(newMessage, "obs",recieverNr, msgTypeNr,"obs", senderName, theDateTime);
-				log("ChatMsg = "+newChatMsg.getMessage());
+				imcode.external.chat.ChatMsg newChatMsg = new ChatMsg(newMessage, recieverStr,recieverNr, msgTypeNr,msgTypeStr, senderName, theDateTime);
+				//log("ChatMsg = "+newChatMsg.getMessage());
 				//ok now lets send it "boolean addNewMsg(ChatMsg msg)"
 				myMember.addNewMsg(newChatMsg);	
-				log("antal i listan efter adden= "+myGroup.getNoOffMessages());		
-
-				log("ok now has the msg been sent");
+				log("ok msg has been sent");
 			}
 			
 			//ok now lets build the page in doGet
@@ -352,12 +340,12 @@ public class ChatControl extends ChatBase
 			}
 
 			//ok lets get the room
-			ChatGroup mewGroup = myChat.getChatGroup(roomNr);
-			mewGroup.addNewGroupMember(myMember);
+			//ChatGroup mewGroup = myChat.getChatGroup(roomNr);
+			//mewGroup.addNewGroupMember(myMember);
 
 			//ok lets send a enter group msg
-			ChatMsg newEnterMsg = new ChatMsg(ENTER_MSG, "", 1, 0,"", senderName, "");
-			myMember.addNewMsg(newEnterMsg);
+			//ChatMsg newEnterMsg = new ChatMsg(ENTER_MSG, "", 1, 0,"", senderName, "");
+			//myMember.addNewMsg(newEnterMsg);
 
 			//ok lets build the page in doGet
 			log("ok the room is now changed");
@@ -366,19 +354,12 @@ public class ChatControl extends ChatBase
 			
 		
 		//the user want to change settings
-		if (req.getParameter("controlOK") != null)
+		if (req.getParameter("controlOK") != null ||
+			req.getParameter("fontInc")!= null ||
+			req.getParameter("fontDec")!= null)
 		{
 			log("ok lets change some settings");
-			Enumeration ene = req.getParameterNames();
-			log("++++++++++++++++++++++++++++");
-			while (ene.hasMoreElements())
-			{
-				String st = (String) ene.nextElement();
-				
-				log(st+" = "+req. getParameter(st));
-			}
-			log("++++++++++++++++++++++++++++");
-			
+						
 			//lets get the parameters
 			String showPrivate 	= req.getParameter("private");
 			String showInOut 	= req.getParameter("inOut");
@@ -395,15 +376,31 @@ public class ChatControl extends ChatBase
 				settings = new Properties();
 				session.putValue("chatUserSettings",settings );
 			}
-			settings.setProperty("private",		(showPrivate 	== null ? "off" : "on"));
+			settings.setProperty("privat",		(showPrivate 	== null ? "off" : "on"));
 			settings.setProperty("inOut",		(showInOut 		== null ? "off" : "on"));
-			settings.setProperty("autoscroll",	(autoscroll 	== null ? "off" : "on"));
+			settings.setProperty("autoReload",	(autoscroll 	== null ? "off" : "on"));
 			settings.setProperty("dateTime",	(showDateTime 	== null ? "off" : "on"));
-			settings.setProperty("public",		(showPublicMsg 	== null ? "off" : "on"));
-			settings.setProperty("fontInc",		(fontInc 		== null ? "off" : "on"));
-			settings.setProperty("fontDec",		(fontDec 		== null ? "off" : "on"));
+			settings.setProperty("publik",		(showPublicMsg 	== null ? "off" : "on"));
+		//	settings.setProperty("fontInc",		(fontInc 		== null ? "off" : "on"));
+		//	settings.setProperty("fontDec",		(fontDec 		== null ? "off" : "on"));
+		
+			//lets setup the font
+			Integer fontSizeIn = (Integer)session.getValue("chatFontSize");
+			fontSizeIn = (fontSizeIn == null ? new Integer(3) : fontSizeIn);
+			int fontSize = 3;
+			if (fontInc != null)
+			{
+				fontSize = fontSizeIn.intValue();
+				if(fontSize < 7) fontSize++;
+			}else if(fontDec != null)
+			{
+				fontSize = fontSizeIn.intValue();
+				if(fontSize > 1) fontSize--;
+			}
+			session.putValue("chatFontSize", new Integer(fontSize));
 			
 			doGet(req, res);
+			log("change settings done");
 			return;
 		}//end if (req.getParameter("controlOK") != null)
 		

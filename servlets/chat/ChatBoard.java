@@ -18,18 +18,15 @@ import imcode.external.chat.*;
 public class ChatBoard extends ChatBase
 {
 
+	public final int CHATBOARD_ALLA_INT = 1;
 
 	String HTML_TEMPLATE ;
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
-	{
-		
+	{		
 		log("someone is trying to acces by doPost!!! It's not allowed yet!");
-
-
 		return;
-
 	} // DoPost
 
 	//*****  doGet  *****  doGet  *****  doGet  *****  doGet  *****  doGet  *****
@@ -37,7 +34,6 @@ public class ChatBoard extends ChatBase
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
 	{
-
 		// Lets validate the session, e.g has the user logged in to Janus?
 		//måste kolla så att metoden funkar i ChatBase
 		if (super.checkSession(req,res) == false)	return ;
@@ -46,7 +42,7 @@ public class ChatBoard extends ChatBase
 		//måste oxå kollas så att de funkar
 		Properties params = this.getSessionParameters(req) ;
 
-		log("params :"+params);
+		//log("params :"+params);
 
 		if (super.checkParameters(req, res, params) == false)
 		{
@@ -62,7 +58,6 @@ public class ChatBoard extends ChatBase
 		// Lets get the user object
 		//måste kolla så att metoden funkar i ChatBase
 		imcode.server.User user = super.getUserObj(req,res) ;
-		log("user "+user);
 		if(user == null) return ;
 
 		if ( !isUserAuthorized( req, res, user ) )
@@ -79,37 +74,35 @@ public class ChatBoard extends ChatBase
 		// Lets get the url to the servlets directory
 		//måste kolla så att det är till rätt server
 		String servletHome = MetaInfo.getServletPath(req) ;
-		log("servletHome = "+servletHome);
+		servletHome += "ChatBoard";
 
 		// Lets get parameters
 		String aMetaId = params.getProperty("META_ID") ;
+		log("aMetaId = "+aMetaId);
 		//		int metaId = Integer.parseInt( aMetaId );
 		String aChatId = params.getProperty("CHAT_ID") ;//=id strängen för chatten ????
-
+		log("aChatId = "+aChatId);
 		HttpSession session = req.getSession(false) ;
-		//used to store all params to resend
-		//är inte så snygg men får duga så länge
-		StringBuffer paramString = new StringBuffer("?");//vet ej om denna behös längre
 
 		//ok lets get the settings
-		
-				
-		
+
+
+
 		//this buffer is used to store all the msgs to send to the page
-		StringBuffer sendMsgString = new StringBuffer("");		
+		StringBuffer sendMsgString = new StringBuffer("");	
+		String chatRefresh = "";	
 
 		//ok let's get all the messages and add them into the buffer			
 		if (true)//(req.getParameter("ROOM_ID") != null )
 		{ 
 			log("nu är vi inne");	
-			
+
 			if(session == null)
 			{
 				log("session was null so return");
 				return;
 			}
-			
-			boolean dateOn = true;
+
 			//ok lets get the Chat and stuff
 			Chat myChat = (Chat)session.getValue("theChat");
 			log("myChat = "+myChat);
@@ -119,54 +112,173 @@ public class ChatBoard extends ChatBase
 			log("myGrupp = "+myGrupp);
 
 
+			//lets get all the settings for this page
+			boolean dateOn = true;
+			boolean publicMsg = true;
+			boolean privateMsg = true;
+			boolean autoscroll = false;
+			boolean inOut = true;
+			int fontSize = 3;
+			String time = "30";
+			Integer fontSizeIn = (Integer)session.getValue("chatFontSize");
+			fontSizeIn = (fontSizeIn == null ? new Integer(3) : fontSizeIn);
+			try
+			{
+				fontSize = fontSizeIn.intValue();
+			}catch(Exception e)
+			{
+				fontSize = 3;
+				log(e.getMessage());
+			}
+
+			Properties adminPropps = myChat.getChatParameters();
+			Properties settings = ((Properties)session.getValue("chatUserSettings")) == null ? new Properties() :
+			(Properties)session.getValue("chatUserSettings");
+
+			log("**** settings ****\n"+settings);
+
+			log("*** adminPropps ***\n"+adminPropps +"\n **** end adminpropps ***");
+			
+			//sets up show datTime or not
+			if (adminPropps.getProperty("dateTime").equals("3"))
+			{log("step 4");
+				if (settings.getProperty("dateTime") != null)
+				{log("step 5");
+					if (settings.getProperty("dateTime").equals("off"))
+					{
+						log("dateOn = false");
+						dateOn = false;				
+					}
+				}	
+			}else if(adminPropps.getProperty("dateTime").equals("2"))
+			{log("step 6");
+				dateOn = false;	
+			}
+
+			//sets up show public msg or not
+			if (adminPropps.getProperty("publik").equals("3"))
+			{log("step 7");
+				if (settings.getProperty("publik")!= null)
+				{log("step 8");
+					if (settings.getProperty("publik").equals("off"))
+					{
+						log("publicMsg = false");
+						publicMsg = false;	
+					}
+				}			
+			}else if(adminPropps.getProperty("publik").equals("2"))
+			{log("step 9");
+				publicMsg = false;	
+			}
+
+			//sets up show private msg or not
+			if (adminPropps.getProperty("privat").equals("3"))
+			{log("step 10");
+				if (settings.getProperty("privat")!= null)
+				{log("step 11");
+					if (settings.getProperty("privat").equals("off"))
+						privateMsg = false;		
+				}		
+			}else if(adminPropps.getProperty("privat").equals("2"))
+			{log("step 12");
+				privateMsg = false;	
+			}
+
+			//sets up show entrense and exits, or not
+			if (adminPropps.getProperty("inOut").equals("3"))
+			{log("step 13");
+				if (settings.getProperty("inOut")!= null)
+				{log("step 14");
+					if (settings.getProperty("inOut").equals("off"))
+						inOut = false;
+				}	
+			}else if(adminPropps.getProperty("inOut").equals("2"))
+			{log("step 15");
+				inOut = false;	
+			}
+
+			//sets up autoreload on off
+			if (adminPropps.getProperty("reload").equals("3"))
+			{log("step 16");
+				if (settings.getProperty("autoReload")!= null)
+				{	log("step 17");
+					log("autoReload = "+settings.getProperty("autoReload"));	
+					if (settings.getProperty("autoReload").equals("on"))
+					{log("step 18");				
+						time = (adminPropps.getProperty("updateTime") == null ? "30" :adminPropps.getProperty("updateTime"));
+						chatRefresh = "<META HTTP-EQUIV=\"Refresh\" CONTENT=\""+time+";URL="+servletHome +"\">";
+						log("chatRefresh ="+chatRefresh.toString());			
+					}
+				}else
+				{log("step 19");
+					time = (adminPropps.getProperty("updateTime") == null ? "30" :adminPropps.getProperty("updateTime"));
+					chatRefresh = "<META HTTP-EQUIV=\"Refresh\" CONTENT=\""+time+";URL="+servletHome +"\">";
+				}
+
+			}else if(adminPropps.getProperty("reload").equals("1"))
+			{log("step 20");
+				time = (adminPropps.getProperty("updateTime") == null ? "30" :adminPropps.getProperty("updateTime"));
+				chatRefresh = "<META HTTP-EQUIV=\"Refresh\" CONTENT=\""+time+";URL="+servletHome +"\">";						
+			}
+
 			//lets get the ignore-list
 			//doesnt have one yet
 
 
 			//let's get all the messages		
 			ListIterator msgIter =  myMember.getMessages();
-			log("antal i listan= "+myGrupp.getNoOffMessages());	
-		//	ListIterator msgIter =  myGrupp.getAllMessages();
 
-			log("msgIter = "+msgIter);
-			//lets fix the html-string to send
-			String fontSize = "3";
+			//lets fix the html-string containing all messags			
 			sendMsgString.append("<font size=\""+ fontSize+"\">");
 			while(msgIter.hasNext())
 			{
-				log("msgIter.hasNext()");
+				log("step 21");
 				ChatMsg tempMsg = (ChatMsg) msgIter.next();
 				//must check if it is a public msg
-				if (tempMsg.getReciever() == 1 )
+				if (tempMsg.getReciever() == CHATBOARD_ALLA_INT )
 				{
-					if (dateOn)
-					{
-						sendMsgString.append(tempMsg.getDateTime()+" ");	
+					log("step 22");
+					if (publicMsg)//show public messages
+					{log("step 23");
+						if (dateOn)//show dateTime
+						{log("step 24");
+							sendMsgString.append(tempMsg.getDateTime());	
+						}
+						sendMsgString.append(" "+tempMsg.getSender());
+						sendMsgString.append(" "+tempMsg.getMsgTypeStr());
+						sendMsgString.append(" "+tempMsg.getRecieverStr());
+						sendMsgString.append(" "+tempMsg.getMessage() );
+						//sendMsgString.append("<br>");
 					}
-					log("public: "+tempMsg.getReciever());
-					sendMsgString.append(tempMsg.toString());
 				}
 				//or if its a private one to this user
 				else if (tempMsg.getReciever() == myMember.getUserId())
-				{
-					if (dateOn)
-					{
-						sendMsgString.append(tempMsg.getDateTime()+" ");	
+				{log("step 25");
+					if (privateMsg)//show private messages
+					{log("step 26");
+						if (dateOn)//show dateTime
+						{log("step 27");
+							sendMsgString.append(tempMsg.getDateTime());	
+						}
+						sendMsgString.append(" "+tempMsg.getSender());
+						sendMsgString.append(" "+tempMsg.getMsgTypeStr());
+						sendMsgString.append(" "+tempMsg.getRecieverStr());
+						sendMsgString.append(" "+tempMsg.getMessage() );
+						//sendMsgString.append("<br>");
 					}
-					log("private: ");
-					sendMsgString.append(tempMsg.toString()	);
 				}
 
 				sendMsgString.append("<br>");
 			}
-			sendMsgString.append("</font>");
-			paramString.append("&ROOM_ID=\""+ req.getParameter("ROOM_ID") +"\"");				
+			sendMsgString.append("</font>");			
 		}//end if (req.getParameter("ROOM_ID") != null )	
 
-		log("sendMsgString= "+sendMsgString);
-		log("paramString ="+paramString);	
+		log("!!!!!! sendMsgString !!!!!!!\n"+sendMsgString);
+		log("!!!!!!  chatRefresh  !!!!!!!!\n "+chatRefresh);	
 
+		//<META HTTP-EQUIV="Refresh" CONTENT="3;URL=http://www.????.com">
 		VariableManager vm = new VariableManager() ;
+		vm.addProperty("CHAT_REFRESH", chatRefresh);
 		vm.addProperty("CHAT_MESSAGES", sendMsgString.toString()  );
 		//vm.addProperty("CHAT_MESSAGES", "stick"  );
 
@@ -176,25 +288,6 @@ public class ChatBoard extends ChatBase
 		log("ChatBoard doGet är färdig") ;
 
 	} //***  end DoGet  *****  end doGet  *****  end doGet *****  end doGet ***
-
-	/**
-	Returns the current discussion index. If somethings happens, zero will be returned.
-	*/
-	/*	public int getDiscIndex( HttpServletRequest req) {
-	try {
-	HttpSession session = req.getSession(false) ;
-	if(session != null) {
-	String indexStr = (String) session.getValue("Conference.disc_index") ;
-	int anInt = Integer.parseInt(indexStr) ;
-	return anInt ;
-	}
-	} catch(Exception e ) {
-	log("GetDiscIndex failed!") ;
-	return 0 ;
-	}
-	return 0 ;
-	}
-	*/
 
 
 	/**
@@ -261,81 +354,7 @@ public class ChatBoard extends ChatBase
 		return reqParams ;
 	}
 
-	/**
-	Collects the parameters used to detect the buttons from the request object. Checks
-	if the Properties object is null, if so it creates one, otherwise it uses the
-	object passed to it.
-	**/
-	/*
-	public Properties getSearchParameters( HttpServletRequest req, Properties params)
-	throws ServletException, IOException {
 
-	//Lets get the search criterias
-	String cat = (req.getParameter("CATEGORY")==null) ? "" : (req.getParameter("CATEGORY")) ;
-	String search = (req.getParameter("SEARCH")==null) ? "" : (req.getParameter("SEARCH")) ;
-	String fromDate = (req.getParameter("FR_DATE")==null) ? "" : (req.getParameter("FR_DATE")) ;
-	String fromVal = (req.getParameter("FR_VALUE")==null) ? "" : (req.getParameter("FR_VALUE")) ;
-
-	String toDate = (req.getParameter("TO_DATE")==null) ? "" : (req.getParameter("TO_DATE")) ;
-	String toVal = (req.getParameter("TO_VALUE")==null) ? "" : (req.getParameter("TO_VALUE")) ;
-	//	String searchButton = (req.getParameter("BUTTON_SEARCH")==null) ? "" : (req.getParameter("BUTTON_SEARCH")) ;
-
-	params.setProperty("CATEGORY", super.verifySqlText(cat.trim())) ;
-	params.setProperty("SEARCH", super.verifySqlText(search.trim())) ;
-	params.setProperty("FR_DATE", super.verifySqlText(fromDate.trim())) ;
-	params.setProperty("TO_DATE", super.verifySqlText(toDate.trim())) ;
-	params.setProperty("FR_VALUE", super.verifySqlText(fromVal.trim())) ;
-	params.setProperty("TO_VALUE", super.verifySqlText(toVal.trim())) ;
-
-	//	params.setProperty("BUTTON_SEARCH", searchButton) ;
-	return params ;
-	}
-
-	*/
-	/**
-	Builds the tagvector used for parse one record.
-	*/
-	/*	protected Vector buildTags() {
-
-	// Lets build our tags vector.
-	Vector tagsV = new Vector() ;
-	tagsV.add("#NEW_DISC_FLAG#") ;
-	tagsV.add("#DISC_ID#") ;
-	tagsV.add("#A_DATE#") ;
-	tagsV.add("#HEADLINE#") ;
-	tagsV.add("#C_REPLIES#") ;
-	tagsV.add("#FIRST_NAME#") ;
-	tagsV.add("#LAST_NAME#") ;
-	tagsV.add("#LAST_UPDATED#") ;    // The discussion_update date
-	tagsV.add("#REPLY_URL#") ;
-	return tagsV ;
-	} // End of buildstags
-	*/
-
-	/**
-	show the tag and the according data
-	**/
-	/*	protected void showIt(Vector tags, Vector data) {
-
-	log("***********") ;
-	if(tags.size() != data.size()) {
-	log("Antalet stämmer inte ") ;
-	log("Tags: " + tags.size()) ;
-	log("Data: " + data.size()) ;
-	// return ;
-	}
-
-	for (int i = 0 ; i < tags.size() ; i++) {
-	String aTag = ( String) tags.elementAt(i) ;
-	String aData = ( String) data.elementAt(i) ;
-	log("" + i + ": " + aTag +" --> " + aData) ;
-
-	}
-
-
-	} // End of showit
-
-	*/
 	/**
 	Detects paths and filenames.
 	*/
