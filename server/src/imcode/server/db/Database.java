@@ -20,6 +20,7 @@ public class Database {
             try {
                 connection.setAutoCommit( false );
                 databaseCommand.executeOn( new DatabaseConnection( connection ) );
+                connection.commit();
             } catch ( Throwable t ) {
                 connection.rollback();
                 throw new UnhandledException( t );
