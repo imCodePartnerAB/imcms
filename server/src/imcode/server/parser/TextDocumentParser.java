@@ -127,9 +127,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             String[] included_docs = DocumentMapper.sprocGetIncludes( serverObject, meta_id );
 
-            TemplateDomainObject template = myDoc.getTemplate();
-            String template_id = "" + template.getId();
-            String simple_name = template.getSimple_name();
+            TemplateDomainObject documentTemplate = myDoc.getTemplate();
+            int documentTemplateId = documentTemplate.getId();
+            String simple_name = documentTemplate.getSimple_name();
             int sort_order = myDoc.getMenuSortOrder();
             String group_id = "" + myDoc.getTemplateGroupId();
 
@@ -140,8 +140,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                     try {
                         int temp_template = Integer.parseInt( (String)vectT[0] );
                         if ( temp_template > 0 ) {
-                            template_id = temp_template + "";
-                            documentRequest.getDocument().setTemplate( TemplateMapper.getTemplate( (IMCService)serverObject, Integer.parseInt( template_id ) ) );
+                            documentTemplateId = temp_template;
+                            documentRequest.getDocument().setTemplate( TemplateMapper.getTemplate( (IMCService)serverObject, documentTemplateId ) );
                         }
                     } catch ( NumberFormatException nfe ) {
                         //do nothing, we keep the original template
@@ -150,24 +150,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             }
 
             String lang_prefix = user.getLangPrefix();	// Find language
-
-            List templategroups = null;
-            List templates = null;
-            List groupnamevec = null;
-
-            int selected_group = user.getTemplateGroup();
-            if ( templatemode ) {
-                templategroups = new ArrayList( Arrays.asList( TemplateMapper.sprocGetTemplateGroupsForUser( serverObject, user, meta_id ) ) );
-                // do templatemode queries
-
-                if ( selected_group == -1 ) {
-                    selected_group = Integer.parseInt( group_id );
-                }
-
-                templates = new ArrayList( Arrays.asList( TemplateMapper.sprocGetTemplatesInGroup( serverObject, selected_group ) ) );
-
-                groupnamevec = TemplateMapper.sqlSelectGroupName( serverObject, group_id );
-            }
 
             String[] emp = (String[])user.get( "emphasize" );
 
@@ -395,6 +377,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             if ( templatemode ) {	//Templatemode! :)
 
+                List groupnamevec = TemplateMapper.sqlSelectGroupName( serverObject, group_id );
+
                 String group_name;
                 if ( !groupnamevec.isEmpty() ) {
                     group_name = (String)groupnamevec.get( 0 );
@@ -402,38 +386,26 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                     group_name = "";
                 }
 
-                StringBuffer templatelist = new StringBuffer();
-                // Make a HTML option-list of them...
-                while ( !templates.isEmpty() ) {
-                    String temp_id = (String)templates.remove( 0 );
-                    templatelist.append( "<option value=\"" + temp_id );
-                    if ( temp_id.equals( template_id ) ) {
-                        templatelist.append( "\" selected>" + templates.remove( 0 ) + "</option>" );
-                    } else {
-                        templatelist.append( "\">" + templates.remove( 0 ) + "</option>" );
-                    }
+                List templategroups = new ArrayList( Arrays.asList( TemplateMapper.sprocGetTemplateGroupsForUser( serverObject, user, meta_id ) ) );
+
+                int selected_group = user.getTemplateGroup();
+
+                if ( selected_group == -1 ) {
+                    selected_group = Integer.parseInt( group_id );
                 }
 
-                // Fetch all templategroups the user may use.
-                StringBuffer grouplist = new StringBuffer();
+                List templates = new ArrayList( Arrays.asList( TemplateMapper.sprocGetTemplatesInGroup( serverObject, selected_group ) ) );
 
-                // Make a HTML option-list of the templategroups
-                while ( !templategroups.isEmpty() ) {
-                    String temp_id = (String)templategroups.remove( 0 );
-                    grouplist.append( "<option value=\"" + temp_id );
-                    if ( selected_group == Integer.parseInt( temp_id ) ) {
-                        grouplist.append( "\" selected>" + templategroups.remove( 0 ) + "</option>" );
-                    } else {
-                        grouplist.append( "\">" + templategroups.remove( 0 ) + "</option>" );
-                    }
-                }
+                String templatelist = createTemplatesOptionList( templates, documentTemplateId );
+
+                String grouplist = createTemplateGroupsOptionList( templategroups, selected_group );
 
                 temptags.setProperty( "#getDocType#", "" );
                 temptags.setProperty( "#DocMenuNo#", "" );
                 temptags.setProperty( "#group#", group_name );
-                temptags.setProperty( "#getTemplateGroups#", grouplist.toString() );
+                temptags.setProperty( "#getTemplateGroups#", grouplist);
                 temptags.setProperty( "#simple_name#", simple_name );
-                temptags.setProperty( "#getTemplates#", templatelist.toString() );
+                temptags.setProperty( "#getTemplates#", templatelist );
 
                 // Put templateadmintemplate in list of files to load.
                 toload.setProperty( "#changePage#", ( new File( admintemplate_path, "textdoc/inPage_admin.html" ) ).getPath() );
@@ -540,7 +512,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             // Now... let's load the template!
             // Get templatedir and read the file.
-            StringBuffer templatebuffer = new StringBuffer( fileCache.getCachedFileString( new File( templatePath, "text/" + template_id + ".html" ) ) );
+            StringBuffer templatebuffer = new StringBuffer( fileCache.getCachedFileString( new File( templatePath, "text/" + documentTemplateId + ".html" ) ) );
 
             // Check file for tags
             String templateContents = templatebuffer.toString();
@@ -669,6 +641,43 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             log.error( "Error occurred during parsing.", ex );
             throw ex;
         }
+    }
+
+    private String createTemplateGroupsOptionList( List templategroups, int selected_group ) {
+        StringBuffer grouplist = new StringBuffer();
+
+        for ( Iterator iterator = templategroups.iterator(); iterator.hasNext(); ) {
+            String[] templateGroupIdNamePair = (String[])iterator.next();
+            int templateGroupId = Integer.parseInt(templateGroupIdNamePair[0]) ;
+            String templateGroupName = templateGroupIdNamePair[1] ;
+            grouplist.append( "<option value=\"" + templateGroupId );
+            if ( selected_group == templateGroupId ) {
+                grouplist.append( "\" selected>" + templateGroupName );
+            } else {
+                grouplist.append( "\">" + templateGroupName );
+            }
+            grouplist.append("</option>") ;
+        }
+
+        return grouplist.toString();
+    }
+
+    private String createTemplatesOptionList( List templates, int documentTemplateId ) {
+        StringBuffer templatelist = new StringBuffer();
+        // Make a HTML option-list of them...
+        for ( Iterator iterator = templates.iterator(); iterator.hasNext(); ) {
+            String[] templateIdNamePair = (String[])iterator.next();
+            int templateId = Integer.parseInt(templateIdNamePair[0]) ;
+            String templateName = templateIdNamePair[1] ;
+            templatelist.append( "<option value=\"" + templateId );
+            if ( templateId == documentTemplateId  ) {
+                templatelist.append( "\" selected>" + templateName);
+            } else {
+                templatelist.append( "\">" + templateName);
+            }
+            templatelist.append( "</option>" ) ;
+        }
+        return templatelist.toString();
     }
 
     private String emphasizeString( String str, String[] emp, Substitution emphasize_substitution, PatternMatcher patMat ) {

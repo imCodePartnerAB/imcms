@@ -3,7 +3,7 @@ package imcode.server.db;
 import java.sql.*;
 import java.util.*;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 class DBConnect {
 
@@ -18,7 +18,7 @@ class DBConnect {
     private boolean trimStr = true;
     private int columnCount;                       // Column count
 
-    private static Category log = Category.getInstance("server");
+    private final static Logger log = Logger.getLogger( "imcode.server.db.DBConnect" );
 
     // constructor
     DBConnect(ConnectionPool conPool) {

@@ -51,18 +51,15 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
     }
 
     private static String getUsedConnectionsString( ObjectPool connectionPool ) {
-        return "Used: " + connectionPool.getNumActive() + "/" + ( connectionPool.getNumIdle() + connectionPool.getNumActive() );
+        return connectionPool.getNumActive() + "/" + ( connectionPool.getNumIdle() + connectionPool.getNumActive() );
     }
 
     public Connection getConnection() throws SQLException {
         Connection result = null;
         try {
-            if ( log.isDebugEnabled() ) {
-                log.debug( "Getting connection from pool. " + getUsedConnectionsString( connectionPool ) );
-            }
             result = DriverManager.getConnection( URI_FOR_POOLED_DRIVER + dbUrl, userName, password );
             if ( log.isDebugEnabled() ) {
-                log.debug( "Got connection from pool. " + getUsedConnectionsString( connectionPool ) );
+                log.debug( "Connections used: " + getUsedConnectionsString( connectionPool ) );
             }
         } catch ( org.apache.commons.dbcp.DbcpException ex ) {
             log.error( getAttributeAsString(), ex );
