@@ -24,6 +24,7 @@ var askedAboutWord = 0;
 function checkWordCode(str) {
 	if ((/\bmso-/gi.test(str) || /:office\b/gi.test(str) || /\bo:p\b/gi.test(str)) && !askedAboutWord) {
 		/* If there are Word-code - Make some changes to the editor, to prevent misusing */
+		if (document.getElementById("bottomLeftLayer")) document.getElementById("bottomLeftLayer").style.display = 'none';
 		document.getElementById("btnFixWord").style.visibility = 'visible';
 		if (document.getElementById("topClassSelectClickDiv")) document.getElementById("topClassSelectClickDiv").style.display = 'none';
 		if (document.getElementById("topClassWordSelectClickDiv")) document.getElementById("topClassWordSelectClickDiv").style.display = 'block';

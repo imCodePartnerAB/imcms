@@ -235,7 +235,7 @@ var showAdv = 0;
 	var isModal = 0;
 
 	/* Enable Word-HTML cleaing */
-	var isWordEnabled = 0;
+	var isWordEnabled = 1;
 
 	/* Show right-click-menu (Context Menu) */
 	var showContext = 1; // NOT READY YET!
