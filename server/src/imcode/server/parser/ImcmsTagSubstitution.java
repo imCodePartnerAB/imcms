@@ -211,21 +211,22 @@ public class ImcmsTagSubstitution implements Substitution {
        @param patMat     A pattern matcher.
     **/
     public String tagText (Properties attributes, PatternMatcher patMat) {
+	String mode =  attributes.getProperty("mode") ;
+	if ( ( mode != null && !"".equals(mode) ) 
+	     && ( ( textMode && "read".startsWith(mode) ) // With mode="read", we don't want anything in textMode.
+		  || ( !textMode && "write".startsWith(mode) ) // With mode="write", we don't want anything it not in textMode.
+		  ) ) { 
+	    return "" ;
+	}
 	// Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
 	String noStr = attributes.getProperty("no") ;
-	String result = null ;
-	if (null != noStr) {
-	    result = (String)textMap.get(noStr) ;
-	} else {
-	    result = (String)textMap.get(noStr = String.valueOf(implicitTextNumber++)) ;
+	String result = null != noStr ? (String)textMap.get(noStr) : (String)textMap.get(noStr = String.valueOf(implicitTextNumber++)) ;
+	if (result == null) {
+	    result = "" ;
 	}
-	if (result == null || "".equals(result)) {
-	    if (textMode) {
-		result = "<img src=\""+imageUrl+"red.gif\" border=\"0\">&nbsp;<a href=\""+servletUrl+"ChangeText?meta_id="+meta_id+"&txt="+noStr+"&type=1\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
-	    } else {
-		result = "" ;
-	    }
-	} else if (!textMode) {
+	if (textMode) {
+	    result = "<img src=\""+imageUrl+"red.gif\" border=\"0\">&nbsp;"+result+"<a href=\"ChangeText?meta_id="+meta_id+"&txt="+noStr+"&type=1\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
+	} else {
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
 		result = tempAtt + result ;
@@ -244,27 +245,30 @@ public class ImcmsTagSubstitution implements Substitution {
        @param patMat     A pattern matcher.
     **/
     public String tagImage (Properties attributes, PatternMatcher patMat) {
+	String mode =  attributes.getProperty("mode") ;
+	if ( ( mode != null && !"".equals(mode) ) 
+	     && ( ( imageMode && "read".startsWith(mode) ) // With mode="read", we don't want anything in imageMode.
+		  || ( !imageMode && "write".startsWith(mode) ) // With mode="write", we don't want anything it not in imageMode.
+		  ) ) { 
+	    return "" ;
+	}
 	// Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
 	String noStr = attributes.getProperty("no") ;
-	String result = null ;
-	if (null != noStr) {
-	    result = (String)imageMap.get(noStr) ;
-	} else {
-	    result = (String)imageMap.get(noStr = String.valueOf(implicitImageNumber++)) ;
+	String result = null != noStr ? (String)imageMap.get(noStr) : (String)imageMap.get(noStr = String.valueOf(implicitImageNumber++)) ;
+	if (result == null) {
+	    result = "" ;
 	}
-	if (result == null || "".equals(result)) {
-	    if (imageMode) {
-		result = "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"bild.gif\" border=\"0\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
-	    } else {
-		result = "" ;
-	    }
-	} else if (!imageMode) {
+	if (imageMode && "".equals(result)) { // If imageMode, and no data in the db-field.
+	    result = "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"bild.gif\" border=\"0\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
+	} else if (imageMode) {               // If imageMode, with data in the db-field.
+	    result += "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
+	} else {                              // Else...
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
-		result = tempAtt + result ;
+		result = tempAtt + result ;   // Prepend the contents of the 'pre'-attribute.
 	    }
 	    if ((tempAtt = attributes.getProperty("post")) != null) {
-		result = result + tempAtt ;
+		result = result + tempAtt ;   // Append the contents of the 'post'-attribute.
 	    }
 	}
 	return result ;
