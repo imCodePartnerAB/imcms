@@ -9,6 +9,7 @@ import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IdNamePair;
+import imcode.util.Utility;
 import org.apache.oro.text.regex.*;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -398,7 +399,7 @@ class MenuParserSubstitution implements Substitution {
                      + a_href;
 
             ;
-            a_href = "<a href=\"AdminDoc?meta_id="+document.getId()+"&"+AdminDoc.PARAMETER__DISPATCH_FLAGS+"=1\">"+documentMapper.getStatusIconTemplate( menuItem.getDocument(), user ) + "</a>" + a_href;
+            a_href = Utility.getLinkedStatusIconTemplate( menuItem.getDocument(), user ) + a_href;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );

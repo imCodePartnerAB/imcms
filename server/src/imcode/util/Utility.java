@@ -1,15 +1,16 @@
 package imcode.util;
 
+import com.imcode.imcms.servlet.admin.AdminDoc;
 import imcode.server.ApplicationServer;
-import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.velocity.VelocityContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.StringTokenizer;
 
@@ -115,7 +116,14 @@ public class Utility {
 
     public static void redirectToStartDocument( HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
-        res.sendRedirect( req.getContextPath()+"/servlet/StartDoc" );
+        res.sendRedirect( req.getContextPath() + "/servlet/StartDoc" );
+
+    }
+
+    public static String getLinkedStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
+        return "<a href=\"AdminDoc?meta_id=" + document.getId() + "&" + AdminDoc.PARAMETER__DISPATCH_FLAGS + "=1\">" +
+               ApplicationServer.getIMCServiceInterface().getDocumentMapper().getStatusIconTemplate( document, user ) +
+               "</a>";
 
     }
 
