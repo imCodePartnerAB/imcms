@@ -1,4 +1,4 @@
-package imcode.server.db;
+package imcode.server.db.sql;
 
 import java.util.Properties;
 import java.sql.*;
@@ -11,9 +11,6 @@ import org.apache.log4j.Category;
 
 
 public class InetPoolManager implements ConnectionPool {
-    private final static String CVS_REV = "$Revision$";
-    private final static String CVS_DATE = "$Date$";
-
 
     private PoolManager manager;
     private ConnectionPoolDataSource ds;
@@ -120,14 +117,6 @@ public class InetPoolManager implements ConnectionPool {
         // Create the DataSource.
         PDataSource pds = new PDataSource();
         return pds;
-    }
-
-    public void testConnectionAndLoggResultToTheErrorLog() {
-
-        try {
-            testConnectionAndLogMetaData( "Bla" );
-        }
-        catch( Exception ex ){}
     }
 
     private void testConnectionAndLogMetaData( String serverName ) throws SQLException {

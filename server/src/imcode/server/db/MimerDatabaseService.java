@@ -1,8 +1,10 @@
 package imcode.server.db;
 
-import java.io.File ;
-
 import org.apache.log4j.Logger;
+import imcode.server.db.sql.SQLTransaction;
+import imcode.server.db.sql.TransactionContent;
+
+import java.sql.SQLException;
 
 public class MimerDatabaseService extends DatabaseService {
 
@@ -21,16 +23,15 @@ public class MimerDatabaseService extends DatabaseService {
         // sqlProcessor.executeUpdate("CREATE DATABANK " + databaseName , null);
     }
 
-    void backup( String fullPathToBackupFile ) {
-            SQLProcessor.SQLTransaction transaction = sqlProcessor.startTransaction();
-            try {
+    void backup( final String fullPathToBackupFile ) {
+        final SQLTransaction transaction = sqlProcessor.startTransaction();
+        transaction.executeAndCommit( new TransactionContent() {
+            public void execute() throws SQLException {
                 transaction.executeUpdate( "START BACKUP", null );
                 transaction.executeUpdate( "CREATE BACKUP IN '" + fullPathToBackupFile + "' FOR DATABANK test", null );
                 transaction.executeUpdate( "COMMIT BACKUP", null );
-            } catch( Exception ex ) {
-                transaction.rollback();
             }
-            transaction.commit();
+        } );
     }
 
     /*

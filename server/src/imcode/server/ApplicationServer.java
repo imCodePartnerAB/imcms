@@ -2,7 +2,7 @@ package imcode.server;
 
 import imcode.util.Prefs;
 import imcode.server.db.*;
-// import imcode.server.db.InetPoolManager;
+// import imcode.server.db.sql.InetPoolManager;
 import org.apache.log4j.Category;
 
 import java.io.IOException;

@@ -1,9 +1,9 @@
 package imcode.server;
 
 import imcode.readrunner.ReadrunnerUserData;
-import imcode.server.db.ConnectionPool;
 import imcode.server.db.DBConnect;
 import imcode.server.db.DatabaseService;
+import imcode.server.db.sql.ConnectionPool;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DatabaseAccessor;

@@ -8,8 +8,7 @@ import java.util.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.server.db.DBConnect;
-import imcode.server.db.ConnectionPool;
-
+import imcode.server.db.sql.ConnectionPool;
 
 /**
  Database connection pool for the Imcode Net Server

@@ -15,8 +15,8 @@ import imcode.server.document.DatabaseAccessor;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.db.DBConnect;
-import imcode.server.db.ConnectionPool;
 import imcode.server.db.DatabaseService;
+import imcode.server.db.sql.ConnectionPool;
 import imcode.util.*;
 
 import org.apache.log4j.Category;

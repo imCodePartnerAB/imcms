@@ -64,7 +64,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            //DatabaseTestInitializer.static_initMimer(),
+            DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -77,7 +77,6 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_getAllRoles( databaseService );
             test_sproc_getAllUsers( databaseService );
             test_sproc_getTemplatesInGroup( databaseService );
-            test_sproc_getHighestUserId( databaseService );
             test_sproc_GetPhonetypeName( databaseService );
             test_sproc_GetPhonetypes_ORDER_BY_phonetype_id( databaseService );
             test_sproc_GetUserPhoneNumbers( databaseService );
@@ -282,11 +281,6 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private void test_sproc_getTemplatesInGroup( DatabaseService dbService ) {
         assertEquals( 1, dbService.sproc_GetTemplatesInGroup( 0 ).length );
-    }
-
-    private void test_sproc_getHighestUserId( DatabaseService dbService ) {
-        int highestUserId = USER_NEXT_FREE_ID - 1;
-        assertEquals( highestUserId, dbService.sproc_getHighestUserId() );
     }
 
     private void test_sproc_GetPhonetypeName( DatabaseService dbService ) {

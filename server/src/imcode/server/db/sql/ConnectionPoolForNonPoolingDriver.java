@@ -1,4 +1,4 @@
-package imcode.server.db;
+package imcode.server.db.sql;
 
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
@@ -9,6 +9,8 @@ import org.apache.log4j.Category;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import imcode.server.db.sql.ConnectionPool;
 
 /**
  * This class is purpose is to help JDBC drivers that lacks Connection Pooling.
@@ -62,10 +64,10 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
      * @param userName
      * @param password
      * @param maxActiveConnections
-     * @throws Exception
-     * @throws InstantiationException
-     * @throws SQLException
-     * @throws ClassNotFoundException
+     * @throws java.lang.Exception
+     * @throws java.lang.InstantiationException
+     * @throws java.sql.SQLException
+     * @throws java.lang.ClassNotFoundException
      */
     public ConnectionPoolForNonPoolingDriver( String serverName, String driverClassName, String dbUrl, String userName, String password, int maxActiveConnections ) throws Exception, InstantiationException, SQLException, ClassNotFoundException {
         this.pooledDataSourceName = POOLED_DATA_SOURCE_NAME_PREFIX + serverName;
@@ -95,7 +97,7 @@ public class ConnectionPoolForNonPoolingDriver implements ConnectionPool {
         return result;
     }
 
-    public void testConnectionAndLoggResultToTheErrorLog() {
+    private void testConnectionAndLoggResultToTheErrorLog() {
         try {
             getConnection();
             log.debug( getAttributeAsString(), null );
