@@ -110,7 +110,19 @@ for (var i = 0; i < arrButtonsRowOne.length; i++) {
 	<td align="right" unselectable="on">
 	
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/editor.html/5 ?>
+<!--
+if (showHtmlBtn) {
+	document.write('<button unselectable="on" id="btn12" onClick="if(document.forms[0].execState.value == \'2\')\{ showHelpLayer(\'EditCode\'); \} else \{ previewCode()\; \}" title="<? sv/htmleditor/editor/editor.html/5/1 ?>" style="position:relative; width:55; height:21">');
+	document.write('		<img name="previewImg" src="images/btn_preview_html.gif"></button>');
+}
+
+if (showAdv && showSimple) {
+	document.write('&nbsp\;<button unselectable="on" id="advBtn" style="width:70" onClick="show<? sv/htmleditor/editor/editor.html/5/3 ?>()\;" title="<? sv/htmleditor/editor/editor.html/5/2 ?>" style="height:21"><b id="advBtnText" style="position:relative\; top:0"><? sv/htmleditor/editor/editor.html/5/3 ?></b></button>');
+} else {
+	document.write('<button unselectable="on" id="advBtn" style="width:70" onClick="show<? sv/htmleditor/editor/editor.html/5/3 ?>()\;" title="<? sv/htmleditor/editor/editor.html/5/2 ?>" style="position:relative\; top:-1000\; height:21"><b id="advBtnText" style="position:relative\; top:-1000"> <? sv/htmleditor/editor/editor.html/5/3 ?> </b></button>');
+	if (document.getElementById("btn12")) document.getElementById("btn12").style.left = 70;
+}
+//-->
 </SCRIPT></td>
 </tr>
 </table>
@@ -179,7 +191,48 @@ if (arrButtonsRowTwo.length > 0) {
 <tr>
 	<td>
 	<SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/editor.html/8 ?>
+<!--
+var onCountSimple = 0;
+if(showSimple){
+	if (showSimpleLinkDiv) onCountSimple++;
+	if (showSimpleListDiv) onCountSimple++;
+	if (showSimplePixelDiv) onCountSimple++;
+	
+	if (onCountSimple > 1) {
+		document.write('	<b><? sv/htmleditor/editor/editor.html/8/1 ?></b></td>\n');
+		document.write('	</tr>\n');
+		document.write('	<tr>\n');
+		document.write('		<td>\n');
+		document.write('	<sel'+'ect name="simpleSelector" unselectable="On" onChange="showSimpleFunction(this.options(this.selectedIndex).value);" style="width:140">\n');
+		if(showSimpleLinkDiv) {
+			document.write('		<option value="modeSimpleLinkDiv"><? sv/htmleditor/editor/editor.html/8/2 ?></option>\n');
+		}
+		if(showSimpleListDiv) {
+			document.write('		<option value="modeSimpleListDiv"><? sv/htmleditor/editor/editor.html/8/3 ?></option>\n');
+		}	
+		if(showSimplePixelDiv) {
+			document.write('		<option value="modeSimplePixelDiv"><? sv/htmleditor/editor/editor.html/8/4 ?></option>\n');
+		}
+		document.write('	</sel'+'ect>');
+	} else {
+		document.write('	<sel'+'ect name="simpleSelector" style="display:none">\n');
+		document.write('		<option value="modeSimpleLinkDiv"><? sv/htmleditor/editor/editor.html/8/2 ?></option>\n');
+		document.write('		<option value="modeSimpleListDiv"><? sv/htmleditor/editor/editor.html/8/3 ?></option>\n');
+		document.write('		<option value="modeSimplePixelDiv"><? sv/htmleditor/editor/editor.html/8/4 ?></option>\n');
+		document.write('	</sel'+'ect>');
+		if(showSimpleLinkDiv) {
+			document.write('<b><? sv/htmleditor/editor/editor.html/8/2 ?></b>');
+			document.getElementById("simpleHeadingText").innerText = '<? sv/htmleditor/editor/editor.html/8/2 ?>';
+		} else if(showSimpleListDiv) {
+			document.write('<b><? sv/htmleditor/editor/editor.html/8/3 ?></b>');
+			document.getElementById("simpleHeadingText").innerText = '<? sv/htmleditor/editor/editor.html/8/3 ?>';
+		} else if(showSimplePixelDiv) {
+			document.write('<b><? sv/htmleditor/editor/editor.html/8/4 ?></b>');
+			document.getElementById("simpleHeadingText").innerText = '<? sv/htmleditor/editor/editor.html/8/4 ?>';
+		}
+	}
+}
+//-->
 </SCRIPT></td>
 </tr>
 <tr>
@@ -786,7 +839,21 @@ if (showKBshortcuts) {
 <DIV style="position:absolute; left:335; top:465; width:346; text-align:right; z-index:6" unselectable="on">
 <img src="images/1x1.gif" width="1" height="5"><br>
 <SCRIPT LANGUAGE="JavaScript">
-<? sv/htmleditor/editor/editor.html/116 ?>
+<!--
+if (isWordEnabled) {
+	document.write('<button id="btnFixWord" unselectable="on" cl'+'ass="fButtonSmall" style="width:100; visibility:hidden" onClick="doFixWordHTML()\;"><? sv/htmleditor/editor/editor.html/116/1 ?></button><img src="images/1x1.gif" width="23" height="1">');
+}
+
+if (show<? sv/htmleditor/editor/editor.html/116/2 ?>Btn) {
+	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:45" onClick="do<? sv/htmleditor/editor/editor.html/116/2 ?>()\;"><? sv/htmleditor/editor/editor.html/116/2 ?></button><img src="images/1x1.gif" width="3" height="1">');
+}
+if (showResetBtn) {
+	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:45" onClick="if(confirm(\'<? sv/htmleditor/editor/editor.html/116/3 ?>\'))\{ <? sv/htmleditor/editor/editor.html/116/4 ?>()\; \}"><? sv/htmleditor/editor/editor.html/116/4 ?></button><img src="images/1x1.gif" width="3" height="1">');
+}
+if (show<? sv/htmleditor/editor/editor.html/116/5 ?>Btn) {
+	document.write('<button unselectable="on" cl'+'ass="fButtonSmall" style="width:47" onClick="doSend()\; return false"><? sv/htmleditor/editor/editor.html/116/5 ?></button><img src="images/1x1.gif" width="3" height="1">');
+}
+//-->
 </SCRIPT>
 </div>
 
@@ -1176,7 +1243,11 @@ Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie c
 </tr>
 </table><? sv/htmleditor/editor/editor.html/1021 ?>&nbsp; <span class="imEditHelpLinkActive"><? sv/htmleditor/editor/editor.html/143 ?></span> &nbsp;<? sv/htmleditor/editor/editor.html/1022 ?>
 
-<span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/144 ?></span><? sv/htmleditor/editor/editor.html/145 ?></div>
+<span class="imEditHelpHeading"><? sv/htmleditor/editor/editor.html/144 ?></span><br><br>
+
+Lorem ipsum, dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.<br><br>
+
+Duis autem, vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</div>
 
 <script type="text/javascript">
 <!--
