@@ -28,12 +28,10 @@ public class ImcmsSetupFilter implements Filter {
         UserDomainObject user = (UserDomainObject)session.getAttribute( LOGGED_IN_USER );
 
         if ( user == null ) {
-            log.debug("user == null");
             String ip = request.getRemoteAddr();
             user = getUserUserOrIpLoggedInUser( ip );
             session.setAttribute( LOGGED_IN_USER, user );  // just a marker object
         }
-        log.debug("user: " + user.getFullName());
 
         initRequestWithImcmsSystemAPI( user, request );
 

@@ -27,15 +27,13 @@ class SecurityChecker {
         this.accessingUser = accessor;
         this.accessorRoles = new HashSet( Arrays.asList( accessorRoles ) );
 
-        log.debug("user: " + accessor.getFullName());
-
         isSuperAdmin = this.accessorRoles.contains( SUPERADMIN_ROLE );
         isUserAdmin = this.accessorRoles.contains( USER_ADMIN );
     }
 
-    void loggedIn() throws NoPermissionException {
-        if( null == accessingUser ) {
-            throw new NoPermissionException( "User not logged in" );
+    void isUserAdmin() throws NoPermissionException {
+        if( !isUserAdmin ) {
+            throw new NoPermissionException( "User is not " + SUPERADMIN_ROLE );
         }
     }
 
@@ -52,7 +50,7 @@ class SecurityChecker {
         }
     }
 
-    public void hasEditPermission( int documentId ) throws NoPermissionException {
+    void hasEditPermission( int documentId ) throws NoPermissionException {
         if( !docMapper.hasEditPermission( accessingUser, docMapper.getDocument( documentId ) ) ) {
             throw new NoPermissionException("The logged in user does not have permission to edit document " + documentId );
         };
@@ -72,11 +70,11 @@ class SecurityChecker {
         }
     }
 
-    public void hasTemplateGroupPermission( TemplateGroup templateGroup ) {
+    void hasTemplateGroupPermission( TemplateGroup templateGroup ) {
         // todo
     }
 
-    public void hasSharePermission( Document document ) throws NoPermissionException {
+    void hasSharePermission( Document document ) throws NoPermissionException {
         if (!docMapper.hasSharePermission(accessingUser, document.getId())) {
             throw new NoPermissionException("The logged in user does not have permission to share document "+document.getId()) ;
         }

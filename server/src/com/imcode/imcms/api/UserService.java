@@ -14,7 +14,7 @@ public class UserService {
     }
 
     public User[] getAllUsers() throws NoPermissionException {
-        securityChecker.loggedIn();
+        securityChecker.isUserAdmin();
 
         UserDomainObject[] internalUsers = internalMapper.getAllUsers();
         User[] result = new User[internalUsers.length];
@@ -26,7 +26,7 @@ public class UserService {
     }
 
     public User getUser( String userLoginName ) throws NoPermissionException {
-        securityChecker.loggedIn();
+        securityChecker.isUserAdmin();
 
         UserDomainObject internalUser = internalMapper.getUser( userLoginName );
         User result = new User( internalUser );
@@ -34,13 +34,13 @@ public class UserService {
     }
 
     public String[] getAllRolesNames() throws NoPermissionException {
-        securityChecker.loggedIn();
+        securityChecker.isSuperAdmin();
 
         return internalMapper.getAllRoleNames();
     }
 
     public String[] getRoleNames( User user ) throws NoPermissionException {
-        securityChecker.loggedIn();
+        securityChecker.isUserAdmin();
 
         User userImpl = user;
         return internalMapper.getRoleNames( userImpl.getInternalUser() );
