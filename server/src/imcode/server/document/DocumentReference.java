@@ -7,12 +7,18 @@ public class DocumentReference  {
     private DocumentMapper documentMapper;
     private DocumentDomainObject document ;
     private Date time;
+    private int documentId;
 
-    public DocumentReference( DocumentDomainObject document, DocumentMapper documentMapper ) {
-        if ( DocumentDomainObject.ID_NEW >= document.getId() ) {
+    public DocumentReference( int documentId, DocumentMapper documentMapper ) {
+        if ( DocumentDomainObject.ID_NEW >= documentId ) {
             throw new IllegalArgumentException( "Bad document id." );
         }
+        this.documentId = documentId ;
         this.documentMapper = documentMapper;
+    }
+
+    public DocumentReference( DocumentDomainObject document, DocumentMapper documentMapper ) {
+        this(document.getId(), documentMapper);
         setDocument( document );
     }
 
@@ -22,13 +28,20 @@ public class DocumentReference  {
     }
 
     public DocumentDomainObject getDocument() {
-        if ( documentMapper.hasNewerDocument( document.getId(), time ) ) {
-            setDocument( documentMapper.getDocument( document.getId() ) );
+        if ( null == document || null == time || documentMapper.hasNewerDocument( documentId, time ) ) {
+            initDocument();
         }
         return document ;
     }
 
+    private void initDocument() {
+        setDocument( documentMapper.getDocument( documentId ) );
+    }
+
     Date getTime() {
-        return time;
+        if (null == time) {
+            initDocument();
+        }
+        return time ;
     }
 }

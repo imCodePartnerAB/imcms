@@ -12,8 +12,8 @@ import imcode.util.DateConstants;
 import imcode.util.FileUtility;
 import imcode.util.IdNamePair;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.map.LazyMap;
 import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections.map.LazyMap;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -57,7 +57,7 @@ public class DocumentMapper {
         public Object transform( Object input ) {
             DocumentDomainObject document = getDocumentFromDb( ( (Integer)input ).intValue() );
             document.loadAllLazilyLoaded();
-            return new CachedDocument(document);
+            return getDocumentReference(document);
         }
     } );
 
@@ -348,8 +348,8 @@ public class DocumentMapper {
 
         DocumentDomainObject document ;
         try {
-            CachedDocument cachedDocument = (CachedDocument)documentCache.get( new Integer( metaId ) );
-            document = (DocumentDomainObject)cachedDocument.getDocument().clone();
+            DocumentReference documentReference = (DocumentReference)documentCache.get( new Integer( metaId ) );
+            document = (DocumentDomainObject)documentReference.getDocument().clone();
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException( e );
         }
@@ -360,6 +360,10 @@ public class DocumentMapper {
 
     public DocumentReference getDocumentReference( DocumentDomainObject document ) {
         return new DocumentReference( document, this );
+    }
+
+    private DocumentReference getDocumentReference( int childId ) {
+        return new DocumentReference( childId, this );
     }
 
     private DocumentDomainObject getDocumentFromDb( int metaId ) {
@@ -458,7 +462,7 @@ public class DocumentMapper {
                 menu = new MenuDomainObject( menuId, sortOrder );
                 document.setMenu( menuIndex, menu );
             }
-            menu.addMenuItem( new MenuItemDomainObject( getDocumentReference( getDocument(childId) ), new Integer( manualSortKey ), treeSortKey ) );
+            menu.addMenuItem( new MenuItemDomainObject( getDocumentReference( childId ), new Integer( manualSortKey ), treeSortKey ) );
         }
     }
 
@@ -1249,8 +1253,8 @@ public class DocumentMapper {
     }
 
     public boolean hasNewerDocument( int documentId, Date time ) {
-        CachedDocument cachedDocument = (CachedDocument)documentCache.get( new Integer( documentId ));
-        return null == cachedDocument.getDocument() || cachedDocument.getTime().after( time ) ;
+        DocumentReference documentReference = (DocumentReference)documentCache.get( new Integer( documentId ));
+        return documentReference.getTime().after( time ) ;
     }
 
     public static class TextDocumentMenuIndexPair {
@@ -1345,24 +1349,6 @@ public class DocumentMapper {
         }
     }
 
-    private static class CachedDocument {
-
-        private DocumentDomainObject document;
-        private Date time;
-
-        public CachedDocument( DocumentDomainObject document ) {
-            this.document = document ;
-            this.time = new Date() ;
-        }
-
-        public DocumentDomainObject getDocument() {
-            return document;
-        }
-
-        public Date getTime() {
-            return time;
-        }
-    }
 
 }
 
