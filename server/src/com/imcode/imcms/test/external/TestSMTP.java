@@ -32,8 +32,28 @@ public class TestSMTP extends TestCase {
     }
 
     public void testSendMailBcc() throws IOException {
-        SMTP.Mail mail = new SMTP.Mail( fromAddress, new String[0], "BCC " + TEST_SUBJECT, TEST_MAIL );
+        SMTP.Mail mail = new SMTP.Mail( fromAddress ) ;
+        mail.setSubject( "BCC " + TEST_SUBJECT ) ;
+        mail.setBody( TEST_MAIL );
         mail.setBccAddresses( new String[]{toAddress} );
+        mail.setToAddresses( new String[] { "imCMS:;" } );
+        smtp.sendMail( mail );
+    }
+
+    public void testSendGroupMail() throws IOException {
+        SMTP.Mail mail = new SMTP.Mail( fromAddress );
+        mail.setSubject( "Group " + TEST_SUBJECT );
+        mail.setBody( TEST_MAIL );
+        mail.setToAddresses( new String[]{"imCMS Group: <"+toAddress+"> ;"} );
+        smtp.sendMail( mail );
+    }
+
+    public void testSendBccGroupMail() throws IOException {
+        SMTP.Mail mail = new SMTP.Mail( fromAddress );
+        mail.setSubject( "BCC Group " + TEST_SUBJECT );
+        mail.setBody( TEST_MAIL );
+        mail.setBccAddresses( new String[]{toAddress} );
+        mail.setToAddresses( new String[]{"imCMS Group:;"} );
         smtp.sendMail( mail );
     }
 

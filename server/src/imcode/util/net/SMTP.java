@@ -38,7 +38,7 @@ public class SMTP {
 
     public void sendMail( Mail mail )
             throws IOException {
-        MultiPartEmail email = mail.getMail() ;
+        MultiPartEmail email = mail.getMail();
 
         try {
             email.setHostName( host );
@@ -123,7 +123,7 @@ public class SMTP {
 
         public void setToAddresses( String[] toAddresses ) {
             try {
-                mail.setTo( CollectionUtils.collect(Arrays.asList(toAddresses), new StringToInternetAddressTransformer() ) );
+                mail.setTo( CollectionUtils.collect( Arrays.asList( toAddresses ), new StringToInternetAddressTransformer() ) );
             } catch ( MessagingException e ) {
                 throw new UnhandledException( e );
             }
@@ -148,7 +148,7 @@ public class SMTP {
 
             public Object transform( Object input ) {
                 try {
-                    return new InternetAddress( (String)input );
+                    return new InternetAddress( (String)input, false );
                 } catch ( AddressException e ) {
                     throw new UnhandledException( e );
                 }
