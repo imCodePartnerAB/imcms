@@ -3,7 +3,7 @@
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentService documentService = imcmsSystem.getDocumentService();
     int documentId = 1001;
-    Document document = documentService.getDocument( documentId );
+    Document document = documentService.getTextDocument( documentId );
     DocumentPermissionSet restrictedOne = document.getPermissionSetRestrictedOne();
     if( restrictedOne != null ){%>
 

@@ -1012,7 +1012,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         dbc.createStatement();
         dbc.executeUpdateQuery();
         dbc.closeConnection();
-        dbc = null;
     }
 
     /**
@@ -1659,7 +1658,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
     public boolean checkAdminRights( imcode.server.user.UserDomainObject user ) {
 
-        // Lets verify that the user who tries to add a new user is an SUPERADMIN
+        // Lets verify that the user who tries to add a new user is an SUPER_ADMIN
         int currUser_id = user.getUserId();
         String checkAdminSql = "CheckAdminRights " + currUser_id;
         String[] roles = sqlProcedure( checkAdminSql );
@@ -2130,32 +2129,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         dbc.closeConnection();
         dbc = null;
-    }
-
-    /**
-     unassign template from templategroups
-     */
-    public void unAssignTemplate( int template_id, int group_id[] ) {
-        String sqlStr = "";
-
-        // create connectiobject
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-
-
-        // delete current refs
-        for( int i = 0; i < group_id.length; i++ ) {
-            sqlStr = "delete from templates_cref\n";
-            sqlStr += "where template_id = " + template_id;
-            sqlStr += "and group_id = " + group_id[i];
-            dbc.setSQLString( sqlStr );
-            dbc.createStatement();
-            dbc.executeUpdateQuery();
-        }
-
-        dbc.closeConnection();
-        dbc = null;
-
     }
 
     /** get server date

@@ -263,7 +263,7 @@ public class BillBoard extends HttpServlet { //Conference
     protected boolean checkAdminRights(IMCServiceInterface imcref, imcode.server.user.UserDomainObject user)
     {
 
-	// Lets verify that the user who tries to add a new user is an SUPERADMIN
+	// Lets verify that the user who tries to add a new user is an SUPER_ADMIN
 	int currUser_id = user.getUserId() ;
 	String checkAdminSql = "CheckAdminRights " + currUser_id ;
 	String[] roles = imcref.sqlProcedure(checkAdminSql) ;

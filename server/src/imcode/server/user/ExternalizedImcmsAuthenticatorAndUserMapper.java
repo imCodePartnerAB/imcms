@@ -116,8 +116,8 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleM
         String[] externalRoleNames = externalUserMapper.getRoleNames( user );
         for( int i = 0; i < externalRoleNames.length; i++ ) {
             String externalRoleName = externalRoleNames[i];
-            boolean hasNameConflictWithSuperAdmin = RoleConstants.SUPERADMIN.equalsIgnoreCase( externalRoleName );
-            boolean hasNameConflictWithUserAdmin = RoleConstants.USERADMIN.equalsIgnoreCase( externalRoleName );
+            boolean hasNameConflictWithSuperAdmin = RoleConstants.SUPER_ADMIN.equalsIgnoreCase( externalRoleName );
+            boolean hasNameConflictWithUserAdmin = RoleConstants.USER_ADMIN.equalsIgnoreCase( externalRoleName );
             if( !hasNameConflictWithSuperAdmin && !hasNameConflictWithUserAdmin ) {
                 imcmsAuthenticatorAndUserMapper.addRoleToUser( user, externalRoleName );
             }

@@ -12,7 +12,8 @@ public class DocumentPermissionSetDomainObject {
     final static int FULL_ID = 0;
     final static int RESTRICTED_1_ID = 1;
     final static int RESTRICTED_2_ID = 2;
-    final static int READ_ID = 3;
+    public final static int READ_ID = 3;
+    final static int NONE_ID = 4;
 
     int permissionType = IMCConstants.DOC_PERM_SET_NONE;
     private boolean editHeadline;

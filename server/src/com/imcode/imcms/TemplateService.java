@@ -1,10 +1,13 @@
 package com.imcode.imcms;
 
-import imcode.server.TemplateDomainObject;
+import imcode.server.document.TemplateDomainObject;
 import imcode.server.IMCService;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.TemplateGroupDomainObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TemplateService {
     private SecurityChecker securityChecker;
@@ -17,23 +20,13 @@ public class TemplateService {
 
     /**
      *
+     * @param textDocument The textDocument for witch we would like to se the possible groups.
      * @return Only the templategroups that the current logged in user has the permissions to see
      */
-    TemplateGroup[] getAllTemplateGropus() {
-        // todo securityChecker.????
-        return null;
-    }
-
-
-    /**
-     *
-     * @param document The document for witch we would like to se the possible groups.
-     * @return Only the templategroups that the current logged in user has the permissions to see
-     */
-    public TemplateGroup[] getTemplatesGroups( Document document ) {
+    public TemplateGroup[] getTemplatesGroups( TextDocument textDocument ) {
         // todo securityChecker.????
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        TemplateGroupDomainObject[] internalTemplates = templateMapper.getAllTemplateGroups( user, document.getId() );
+        TemplateGroupDomainObject[] internalTemplates = templateMapper.getAllTemplateGroups( user, textDocument.getId() );
         TemplateGroup[] result = new TemplateGroup[internalTemplates.length];
         for( int i = 0; i < internalTemplates.length; i++ ) {
             result[i] = new TemplateGroup( internalTemplates[i] );
@@ -49,6 +42,22 @@ public class TemplateService {
             TemplateDomainObject domainObject = templates[i];
             result[i] = new Template( domainObject );
         }
+        return result;
+    }
+
+    /**
+     * Convinient method that concat all the diffenrent templates from all the groups in one singel mehtod call.
+     * @param textDocument
+     * @return
+     */
+    public Template[] getPossibleTemplates( TextDocument textDocument ) {
+        TemplateGroup[] groups = getTemplatesGroups( textDocument );
+        ArrayList temp = new ArrayList();
+        for( int i = 0; i < groups.length; i++ ) {
+            Template[] templates = getTemplates( groups[i]);
+            temp.addAll( Arrays.asList( templates ));
+        }
+        Template[] result = (Template[])temp.toArray( new Template[ temp.size()] );
         return result;
     }
 }

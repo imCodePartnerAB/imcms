@@ -3,7 +3,7 @@
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentService documentService = imcmsSystem.getDocumentService();
     int docId = 1001;
-    TextDocument document = (TextDocument)documentService.getDocument(docId);
+    TextDocument document = (TextDocument)documentService.getTextDocument(docId);
     Template docTemplate = document.getTemplate();
 %>
 

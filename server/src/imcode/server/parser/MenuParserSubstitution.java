@@ -221,8 +221,8 @@ public class MenuParserSubstitution implements Substitution {
 	    }
 	}
 	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd") ;
-	String createdDate = dateFormat.format(menuItem.getCreatedDatetime()) ;
-	String modifiedDate = dateFormat.format(menuItem.getModifiedDatetime()) ;
+	String createdDate = dateFormat.format(menuItem.getCreatedDateTime()) ;
+	String modifiedDate = dateFormat.format(menuItem.getModifiedDateTime()) ;
 
 	Properties tags = new Properties() ;
 	tags.setProperty("#childMetaId#",""+menuItem.getMetaId()) ;
@@ -244,7 +244,7 @@ public class MenuParserSubstitution implements Substitution {
 	// For example: /servlet/GetDoc/filename.ext?meta_id=1234
 	//                             ^^^^^^^^^^^^^
 	String template = parameters.getProperty("template") ;
-	String href = "GetDoc"+(menuItem.getFilename() == null || menuItem.getFilename().length() == 0 ? "" : "/"+java.net.URLEncoder.encode(menuItem.getFilename()))+"?meta_id="+menuItem.getMetaId()+(template!=null ? "&template="+java.net.URLEncoder.encode(template) : "");
+	String href = "GetDoc"+(menuItem.getFileName() == null || menuItem.getFileName().length() == 0 ? "" : "/"+java.net.URLEncoder.encode(menuItem.getFileName()))+"?meta_id="+menuItem.getMetaId()+(template!=null ? "&template="+java.net.URLEncoder.encode(template) : "");
 	String a_href = "<a href=\""+href+(!"_self".equals(menuItem.getTarget()) ? "\" target=\""+menuItem.getTarget() : "")+"\">" ;
 
 	tags.setProperty("#menuitemlinkonly#", a_href ) ;

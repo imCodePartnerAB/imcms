@@ -5,6 +5,7 @@ import com.mockobjects.MockObject;
 import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.*;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TemplateDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;

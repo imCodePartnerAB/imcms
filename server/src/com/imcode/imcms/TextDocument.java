@@ -1,9 +1,10 @@
 package com.imcode.imcms;
 
 import imcode.server.IMCText;
-import imcode.server.TemplateDomainObject;
+import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
+import imcode.server.document.DocumentDomainObject;
 
 public class TextDocument extends Document {
 
@@ -40,6 +41,10 @@ public class TextDocument extends Document {
 
     public Template getTemplate() {
         return new Template(internalDocument.getTemplate());
+    }
+
+    public void setTemplate( Template newTemplate ) {
+       internalDocument.setTemplate( newTemplate.getInternal() );
     }
 
     public static class TextField {

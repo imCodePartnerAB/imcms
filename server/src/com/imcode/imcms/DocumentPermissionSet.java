@@ -4,10 +4,10 @@ import imcode.server.document.DocumentPermissionSetDomainObject;
 
 public class DocumentPermissionSet {
     public final static String FULL = DocumentPermissionSetDomainObject.FULL;
-    public final static String READ = DocumentPermissionSetDomainObject.READ;
-    public final static String NONE = DocumentPermissionSetDomainObject.NONE;
     public final static String RESTRICTED_1 = DocumentPermissionSetDomainObject.RESTRICTED_1;
     public final static String RESTRICTED_2 = DocumentPermissionSetDomainObject.RESTRICTED_2;
+    public final static String READ = DocumentPermissionSetDomainObject.READ;
+    public final static String NONE = DocumentPermissionSetDomainObject.NONE;
 
     private DocumentPermissionSetDomainObject internalDocPermSet;
 

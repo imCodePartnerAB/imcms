@@ -12,6 +12,7 @@ import imcode.server.util.DateHelper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.TemplateDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.db.DBConnect;
@@ -399,7 +400,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#userName#", user.getFullName() );
             tags.setProperty( "#session_counter#", String.valueOf( serverObject.getSessionCounter() ) );
             tags.setProperty( "#session_counter_date#", serverObject.getSessionCounterDate() );
-            tags.setProperty( "#lastDate#", DATETIMEFORMAT.format( myDoc.getModifiedDatetime() ) );
+            tags.setProperty( "#lastDate#", DATETIMEFORMAT.format( myDoc.getModifiedDateTime() ) );
             tags.setProperty( "#metaHeadline#", myDoc.getHeadline() );
 
             String meta_image = myDoc.getImage();

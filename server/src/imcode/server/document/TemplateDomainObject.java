@@ -1,4 +1,4 @@
-package imcode.server;
+package imcode.server.document;
 
 public class TemplateDomainObject {
     private int id;

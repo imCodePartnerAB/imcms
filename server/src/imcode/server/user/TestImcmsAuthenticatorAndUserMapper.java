@@ -61,7 +61,7 @@ public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
 
       String[] roles = imcmsAAUM.getAllRoleNames();
       assertTrue( Arrays.asList( roles ).contains( RoleConstants.USERS) );
-      assertTrue( Arrays.asList( roles ).contains( RoleConstants.SUPERADMIN ) );
+      assertTrue( Arrays.asList( roles ).contains( RoleConstants.SUPER_ADMIN ) );
       mockImcmsService.verify();
    }
 

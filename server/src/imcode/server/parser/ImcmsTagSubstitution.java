@@ -460,13 +460,13 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    if ("now".startsWith(type)) {
 		date = new Date();
 	    } else if("created".startsWith(type)) {
-		date = document.getCreatedDatetime();
+		date = document.getCreatedDateTime();
 	    } else if("modified".startsWith(type)) {
-		date = document.getModifiedDatetime();
+		date = document.getModifiedDateTime();
 	    } else if("archived".startsWith(type)) {
-		date = document.getArchivedDatetime();
+		date = document.getArchivedDateTime();
 	    } else if("activated".startsWith(type)) {
-		date = document.getActivatedDatetime();
+		date = document.getActivatedDateTime();
 	    } else {
 		return "<!-- <?imcms:datetime ... type=\""+type+"\" is empty, wrong or does not exist! -->";
 	    }

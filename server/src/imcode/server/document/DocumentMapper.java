@@ -28,11 +28,13 @@ public class DocumentMapper {
     /**
      * Stored procedure names used in this class
      */
+    // todo make sure all these is only used in one sprocMethod
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
     private static final String SPROC_GET_FILE_NAME = "GetFileName";
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
     private static final String SPROC_GET_USER_PERMISSION_SET = "GetUserPermissionSet";
     private static final String SPROC_GET_TEXT = "GetText";
+    private static final String sprocGetIncludes = "GetIncludes";
     private static final String SPROC_INSERT_TEXT = "InsertText";
     private static final String SPROC_UPDATE_PARENTS_DATE_MODIFIED = "UpdateParentsDateModified";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
@@ -93,12 +95,51 @@ public class DocumentMapper {
         imcref.sqlUpdateProcedure( SPROC_INHERIT_PERMISSONS + " " + meta_id + "," + parent_meta_id + "," + doc_type );
     }
 
-    public static void sprocUpdateSaveClassification( IMCServiceInterface imcref, int meta_id, String classification ) {
+    public static void sprocClassification_Fix( IMCServiceInterface imcref, int meta_id, String classification ) {
+        sprocSaveClassification( imcref, meta_id, classification );
+    }
+
+    public static void sprocSaveClassification( IMCServiceInterface imcref, int meta_id, String classification ) {
         imcref.sqlUpdateProcedure( SPROC_CLASSIFICATION_FIX + " " + meta_id + ",'" + classification + "'" );
     }
 
-    public static void sprocUpdateSectionAddCrossref( IMCServiceInterface imcref, int meta_id, int section_id ) {
+    public static void sprocSectionAddCrossref( IMCServiceInterface imcref, int meta_id, int section_id ) {
         imcref.sqlUpdateProcedure( SPROC_SECTION_ADD_CROSSREF + " " + meta_id + ", " + section_id );
+    }
+
+    public static Vector sprocGetIncludes( DBConnect dbc, int meta_id ) {
+        dbc.setProcedure( sprocGetIncludes, String.valueOf( meta_id ) );
+        Vector included_docs = dbc.executeProcedure();
+        dbc.clearResultSet();
+        return included_docs;
+    }
+
+    public static Vector sprocGetDocTypeForUser( DBConnect dbc, UserDomainObject user, int meta_id, String lang_prefix ) {
+        String sqlStr = SPROC_GET_DOC_TYPES_FOR_USER;
+        String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() ), lang_prefix};
+        dbc.setProcedure( sqlStr, sqlAry2 );
+        Vector doc_types_vec = dbc.executeProcedure();
+        dbc.clearResultSet();
+        return doc_types_vec;
+    }
+
+    public static void sprocUpdateParentsDateModified( IMCServiceInterface imcref, int meta_id ) {
+        imcref.sqlUpdateProcedure( SPROC_UPDATE_PARENTS_DATE_MODIFIED + " " + meta_id );
+    }
+
+
+    public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date dateTime ) {
+        String modifiedDateTimeStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( dateTime );
+        String sqlStr = "update meta set date_modified ='" + modifiedDateTimeStr + "' where meta_id = " + meta_id;
+        service.sqlUpdateQuery( sqlStr );
+        // Update the date_modified for all parents.
+        sprocUpdateParentsDateModified( service, meta_id );
+    }
+
+    public static void sqlUpdateMetaDateCreated( IMCServiceInterface imcref, String meta_id, String created_datetime ) {
+        String sqlStr;
+        sqlStr = "update meta set date_created ='" + created_datetime + "' where meta_id = " + meta_id;
+        imcref.sqlUpdateQuery( sqlStr );
     }
 
     private void sqlUpdateDockType( IMCService service, int metaId, int docType ) {
@@ -122,6 +163,7 @@ public class DocumentMapper {
         String sqlStr = "declare @new_sort int\n" + "select @new_sort = max(manual_sort_order)+10 from childs where meta_id = " + parent_meta_id + " and menu_sort = " + doc_menu_no + "\n" + "if @new_sort is null begin set @new_sort = 500 end\n" + "insert into childs (meta_id, to_meta_id, menu_sort, manual_sort_order) values (" + parent_meta_id + "," + meta_id + "," + doc_menu_no + ",@new_sort)\n";
         imcref.sqlUpdateQuery( sqlStr );
     }
+
     private static String[] sqlSelectGetClassificationStrings( IMCServiceInterface imcref, int meta_id ) {
         String sqlStr;
         sqlStr = "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = " + meta_id;
@@ -129,38 +171,11 @@ public class DocumentMapper {
         return classifications;
     }
 
-    public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date dateTime ) {
-        String modifiedDateTimeStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( dateTime );
-        String sqlStr = "update meta set date_modified ='" + modifiedDateTimeStr + "' where meta_id = " + meta_id;
-        service.sqlUpdateQuery( sqlStr );
-        // Update the date_modified for all parents.
-        String[] params = new String[]{String.valueOf( meta_id )};
-        service.sqlUpdateProcedure( SPROC_UPDATE_PARENTS_DATE_MODIFIED, params );
-    }
-
     private void sqlUpdateOneField( DocumentDomainObject document, String fieldName, String valueStr ) {
         String whereString = " where meta_id = " + document.getMetaId();
         String updateStr = "update meta set ";
         String sqlStr = updateStr + fieldName + " = " + valueStr + whereString;
         service.sqlUpdateQuery( sqlStr );
-    }
-
-    public void sqlUpdateSaveTextAttribute( DocumentDomainObject document ) {
-        String fieldName = "meta_text";
-        String valueStr = "'" + document.getText() + "'";
-        sqlUpdateOneField( document, fieldName, valueStr );
-    }
-
-    public void sqlUpdateSaveHeadlineAttribute( DocumentDomainObject document ) {
-        String fieldName = "meta_headline";
-        String valueStr = "'" + document.getHeadline() + "'";
-        sqlUpdateOneField( document, fieldName, valueStr );
-    }
-
-    public void sqlUpdateSaveImageAttribute( DocumentDomainObject document ) {
-        String fieldName = "meta_image";
-        String valueStr = "'" + document.getImage() + "'";
-        sqlUpdateOneField( document, fieldName, valueStr );
     }
 
     public static void sqlUpdateModifiedDate( IMCServiceInterface service, int meta_id, Date date ) {
@@ -221,6 +236,7 @@ public class DocumentMapper {
             document.setImage( result[5] );
             document.setTarget( result[21] );
 
+            // todo: this is always false? == "0" should be always false, use equals instead?
             document.setArchived( result[12] == "0" ? false : true );
 
             String[] section_data = sprocSectionGetInheritId( service, metaId );
@@ -264,13 +280,7 @@ public class DocumentMapper {
                 document.setFilename( sprocGetFilename( service, metaId ) );
             }
             if( document.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT ) {
-                String[] textdoc_data = TemplateMapper.sprocGetTextDocData( service, metaId );
-
-                if( textdoc_data.length >= 4 ) {
-                    document.setTemplate( new TemplateDomainObject( Integer.parseInt( textdoc_data[0] ), textdoc_data[1] ) );
-                    document.setMenuSortOrder( Integer.parseInt( textdoc_data[2] ) );
-                    document.setTemplateGroupId( Integer.parseInt( textdoc_data[3] ) );
-                }
+                initTextDoc( service, document );
             }
         } catch( SQLException ex ) {
             log.error( ex );
@@ -359,7 +369,6 @@ public class DocumentMapper {
     public static void copyTemplateData( IMCServiceInterface imcref, UserDomainObject user, String parent_meta_id, String meta_id ) {
         //ok now lets see what to do with the templates
         String[] temp = sqlSelectTemplateInfoFromTextDocs( imcref, parent_meta_id );
-        String sqlStr;
 
         //lets get the users greatest permission_set for this dokument
         final int perm_set = imcref.getUserHighestPermissionSet( Integer.parseInt( meta_id ), user.getUserId() );
@@ -426,33 +435,141 @@ public class DocumentMapper {
         int newMetaId = sqlCreateNewRowInMetaCopyParentData( service, parentId );
         // fix the data that is unique for this document
         sqlUpdateCreatedDate( service, newMetaId, nowDateTime );
-        sqlUpdateModifiedDate( service, newMetaId , nowDateTime );
+        sqlUpdateModifiedDate( service, newMetaId, nowDateTime );
         sqlUpdateDockType( service, newMetaId, docType );
 
-        // inherit all the different data thats not in meta from parent.
+        // inherit all the different data that's not in meta from parent.
         sprocUpdateInheritPermissions( service, newMetaId, parentId, docType );
         inheritClassifications( parentId, newMetaId );
         inheritSection( parentId, newMetaId );
 
-        // update parents modfied date because it has gotten an new link
+        // update parents, why? what is this? /Hasse
         sqlSelectAddSortorderToParentsChildList( service, String.valueOf( parentId ), String.valueOf( newMetaId ), String.valueOf( parentMenuNumber ) );
-        sqlUpdateModifiedDate( service, parentId , nowDateTime );
+        // update parents modfied date because it has gotten an new link
+        sqlUpdateModifiedDate( service, parentId, nowDateTime );
 
-        // Now the TEXT document specific stuff
+        // Text document
         DocumentMapper.copyTemplateData( service, user, String.valueOf( parentId ), String.valueOf( newMetaId ) );
         DocumentMapper.sqlUpdateActivateTheTextField( service, newMetaId );
 
         return getDocument( newMetaId );
     }
 
+    public void saveTextDocument( DocumentDomainObject document ) {
+        Date now = new Date();
+        document.setModifiedDatetime( now );
+
+        // Bokstavsorning på attributen, så man lättare kan hitta om något läggs till eller tagits bort
+        // använder attributen direkt, för att inte förvirras av de get-metoder som saknar motsvarande
+        // underliggande data.
+        // Denna långa uppraddning gör jag för att IntelliJ kan visa vilka variabler jag missar att använda.
+        // Denna kommentar blev på svenska för jag kom inte på vad bokstavsordning är på engelska.../Hasse
+        Date activatedDatetime = document.activatedDatetime;
+        Date archivedDatetime = document.archivedDatetime;
+        Date createdDatetime = document.createdDatetime;
+        // String filename = document.filename; // only in file docks, not implemented yet.
+        String headline = document.headline;
+        String image = document.image;
+        int menuSortOrder = document.menuSortOrder;
+        Date modifiedDatetime = document.modifiedDatetime;
+        String section = document.section;
+        String target = document.target;
+        TemplateDomainObject template = document.template;
+        int templateGroupId = document.templateGroupId;
+        String text = document.text;
+        boolean archived = document.archived;
+
+        sqlUpdateMeta( service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline, image, modifiedDatetime, target, text, archived );
+        updateSection( service, document, section );
+
+        // TEXT_DOC
+        updateTextDoc( service, document.getMetaId(), template, menuSortOrder, templateGroupId );
+
+
+        // todo: Mark parent as modified
+        /*
+                int parentId = ???;
+                sqlUpdateModifiedDate( service, parentId , now );
+        */
+    }
+
+    // todo make Section into an DomainObject
+    private static void updateSection( IMCService service, DocumentDomainObject document, String section ) {
+        int sectionId = sqlGetSectionId( service, section );
+        sprocSectionAddCrossref( service, document.getMetaId(), sectionId );
+    }
+
+    private static int sqlGetSectionId( IMCService service, String section ) {
+        String sql = "select section_id from sections where section_name = '" + section + "'";
+        String[] querryResult = service.sqlQuery( sql );
+        int sectionId = Integer.parseInt(querryResult[0]);
+        return sectionId;
+    }
+
+    private static void updateTextDoc( IMCService service, int meta_id, TemplateDomainObject template, int menuSortOrder, int templateGroupId ) {
+        String tabelName = "text_docs";
+        String sqlStr = "update " + tabelName + " set ";
+
+        sqlStr += "template_id = " + template.getId() + ", ";
+        sqlStr += "sort_order = " + menuSortOrder + ", ";
+        sqlStr += "group_id = " + templateGroupId;
+
+        sqlStr += " where meta_id = " + meta_id;
+        service.sqlUpdateQuery( sqlStr );
+    }
+
+    private static void sqlUpdateMeta( IMCService service, int meta_id, Date activatedDatetime, Date archivedDateTime, Date createdDatetime, String headline, String image, Date modifiedDateTime, String target, String text, boolean isArchived ) {
+
+        StringBuffer sqlStr = new StringBuffer( "update meta set " );
+
+        sqlStr.append( makeDateSQL("activated_datetime", activatedDatetime )  );
+        sqlStr.append( makeDateSQL("archived_datetime", archivedDateTime)  );
+        sqlStr.append( makeDateSQL("date_created", createdDatetime)  );
+        sqlStr.append( makeStringSQL("meta_headline", headline)  );
+        sqlStr.append( makeStringSQL("meta_image", image)  );
+        sqlStr.append( makeDateSQL("date_modified", modifiedDateTime)  );
+        sqlStr.append( makeStringSQL("target", target)  );
+        sqlStr.append( makeStringSQL("meta_text", text)  );
+        String str = makeBooleanSQL( "archive", isArchived );
+
+        sqlStr.append( str );
+        // todo: Remove from the meta table all collumns that are not used.
+        // Candidates: All not used above.
+
+        sqlStr.append( " where meta_id = " + meta_id );
+        service.sqlUpdateQuery( sqlStr.toString() );
+    }
+
+    private static String makeBooleanSQL( String columnName, boolean field_isArchived ) {
+        String str = columnName + " = " + (field_isArchived ? 1 : 0);
+        return str;
+    }
+
+
+    private static String makeDateSQL( String columnName, Date date ) {
+        if( null != date ) {
+            String dateStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( date );
+            return makeStringSQL( columnName, dateStr );
+        }
+        else {
+            return makeStringSQL( columnName, null );
+        }
+    }
+
+    private static String makeStringSQL( String columnName, Object value ) {
+        String s = (value!=null?"'" + value + "'":"NULL");
+        String str = columnName + " = " + s + ", ";
+        return str;
+    }
+
     private void inheritSection( int from_parentId, int to_metaId ) {
-        String[] sectionData = sprocSectionGetInheritId( service, from_parentId );
-        sprocUpdateSectionAddCrossref( service, to_metaId, Integer.parseInt(sectionData[0]) );
+        String[] sectionId = sprocSectionGetInheritId( service, from_parentId );
+        sprocSectionAddCrossref( service, to_metaId, Integer.parseInt( sectionId[0] ) );
     }
 
     private void inheritClassifications( int from_parentId, int to_newMetaId ) {
         String classifications = getClassificationsAsOneString( service, from_parentId );
-        sprocUpdateSaveClassification( service, to_newMetaId, classifications );
+        sprocSaveClassification( service, to_newMetaId, classifications );
     }
 
     private int sqlCreateNewRowInMetaCopyParentData( IMCService service, int parentId ) {
@@ -461,50 +578,27 @@ public class DocumentMapper {
         String sqlStatmentGetAllParentData = "select " + columnsToBeCopied + " from meta where meta_id = " + parentId;
 
         String[] parentDataRow = service.sqlQuery( sqlStatmentGetAllParentData );
-        String values =
-            "'" + parentDataRow[0] + "'," +
-            parentDataRow[1] + "," +
-            "'" + parentDataRow[2] + "'," +
-            "'" + parentDataRow[3] + "'," +
-            "'" + parentDataRow[4] + "'," +
-            parentDataRow[5] + "," +
-            parentDataRow[6] + "," +
-            parentDataRow[7] + "," +
-            parentDataRow[8] + "," +
-            parentDataRow[9] + "," +
-            parentDataRow[10] + "," +
-            parentDataRow[11] + "," +
-            parentDataRow[12] + "," +
-            "'" + parentDataRow[13] + "'," +
-            "'" + parentDataRow[14] + "'," +
-            "'" + parentDataRow[15] + "'," +
-            "'" + parentDataRow[16] + "'," +
-            parentDataRow[17] + "," +
-            parentDataRow[18] + "," +
-            parentDataRow[19] + "," +
-            "'" + parentDataRow[20] + "'," +
-            "'" + parentDataRow[21] + "'," +
-            parentDataRow[22];
+        String values = "'" + parentDataRow[0] + "'," + parentDataRow[1] + "," + "'" + parentDataRow[2] + "'," + "'" + parentDataRow[3] + "'," + "'" + parentDataRow[4] + "'," + parentDataRow[5] + "," + parentDataRow[6] + "," + parentDataRow[7] + "," + parentDataRow[8] + "," + parentDataRow[9] + "," + parentDataRow[10] + "," + parentDataRow[11] + "," + parentDataRow[12] + "," + "'" + parentDataRow[13] + "'," + "'" + parentDataRow[14] + "'," + "'" + parentDataRow[15] + "'," + "'" + parentDataRow[16] + "'," + parentDataRow[17] + "," + parentDataRow[18] + "," + parentDataRow[19] + "," + "'" + parentDataRow[20] + "'," + "'" + parentDataRow[21] + "'," + parentDataRow[22];
 
         // The above query returns "" of some reason instead of NULL, and I don't have time to think of why, Hasse
         // Todo: think throu how to deal with sql that is not stored procedures.
-        if( parentDataRow[23].equals("") ) {
-            values+=",NULL";
+        if( parentDataRow[23].equals( "" ) ) {
+            values += ",NULL";
         } else {
-            values +=  ",'" + parentDataRow[23] + "'";
+            values += ",'" + parentDataRow[23] + "'";
         }
 
         // Same reson here.
-        if( parentDataRow[24].equals("") ) {
-            values+=",NULL";
+        if( parentDataRow[24].equals( "" ) ) {
+            values += ",NULL";
         } else {
-            values +=  ",'" + parentDataRow[24] + "'";
+            values += ",'" + parentDataRow[24] + "'";
         }
 
-        String sqlStatmentInsertAllButMetaId = "insert into meta ("+columnsToBeCopied+") " + " values (" + values.toString() + ")";
-        service.sqlUpdateQuery(sqlStatmentInsertAllButMetaId);
+        String sqlStatmentInsertAllButMetaId = "insert into meta (" + columnsToBeCopied + ") " + " values (" + values.toString() + ")";
+        service.sqlUpdateQuery( sqlStatmentInsertAllButMetaId );
         String meta_id = service.sqlQueryStr( "select @@IDENTITY" );
-        return Integer.parseInt(meta_id);
+        return Integer.parseInt( meta_id );
     }
 
     public static boolean checkUsersRights( IMCServiceInterface imcref, UserDomainObject user, String parent_meta_id, String lang_prefix, String doc_type ) {
@@ -528,34 +622,29 @@ public class DocumentMapper {
     /**
      * Save template -> text_docs, sort
      */
-    public static void saveTextDoc( IMCServiceInterface service, UserDomainObject user, int meta_id, Table doc ) {
+    public static void saveTextDoc( IMCServiceInterface service, int meta_id, Table doc ) {
         String sqlStr = "";
         sqlStr = "update text_docs\n";
         sqlStr += "set template_id= " + doc.getString( "template" );
         sqlStr += ", group_id= " + doc.getString( "group_id" );
         sqlStr += " where meta_id = " + meta_id;
-
         service.sqlUpdateQuery( sqlStr );
-
-        ((IMCService)service).updateLogs( "Text docs  [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
     }
 
-    public static Vector sprocGetIncludes( DBConnect dbc, int meta_id ) {
-        dbc.setProcedure( "GetIncludes", String.valueOf( meta_id ) );
-        Vector included_docs = (Vector)dbc.executeProcedure();
-        dbc.clearResultSet();
-        return included_docs;
-    }
-
-    public static Vector sprocGetDocTypeForUser( DBConnect dbc, UserDomainObject user, int meta_id, String lang_prefix ) {
-        String sqlStr;
-        Vector doc_types_vec;
-        sqlStr = "GetDocTypesForUser";
-        String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() ), lang_prefix};
-        dbc.setProcedure( sqlStr, sqlAry2 );
-        doc_types_vec = (Vector)dbc.executeProcedure();
-        dbc.clearResultSet();
-        return doc_types_vec;
+    private static void initTextDoc( IMCService service, DocumentDomainObject inout_document ) {
+        // all from the table text_doc
+        String[] textdoc_data1 = service.sqlProcedure( "GetTextDocData", new String[]{String.valueOf( inout_document.getMetaId() )} );
+        String[] textdoc_data = textdoc_data1;
+        if( textdoc_data.length >= 4 ) {
+            int template_id = Integer.parseInt( textdoc_data[0] );
+            String simple_name = textdoc_data[1];
+            int sort_order = Integer.parseInt( textdoc_data[2] );
+            int group_id = Integer.parseInt( textdoc_data[3] );
+            TemplateDomainObject template = new TemplateDomainObject( template_id, simple_name );
+            inout_document.setTemplate( template );
+            inout_document.setMenuSortOrder( sort_order );
+            inout_document.setTemplateGroupId( group_id );
+        }
     }
 }
 

@@ -112,7 +112,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETALLROLES, new String[]{"0", "Superadmin", "1", "Useradmin"} );
       String[] roles = externalizedImcmsAndUserMapper.getAllRoleNames();
       assertTrue( Arrays.asList( roles ).contains( RoleConstants.USERS ) );
-      assertTrue( Arrays.asList( roles ).contains( RoleConstants.SUPERADMIN ) );
+      assertTrue( Arrays.asList( roles ).contains( RoleConstants.SUPER_ADMIN ) );
       assertTrue( Arrays.asList( roles ).contains( LdapUserAndRoleMapper.DEFAULT_LDAP_ROLE ) );
       mockImcmsService.verify();
    }

@@ -1,10 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.IMCService;
-import imcode.server.TemplateDomainObject;
-import imcode.server.IMCServiceInterface;
 import imcode.server.db.DBConnect;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 
 import java.util.Vector;
@@ -13,7 +10,6 @@ import java.util.Iterator;
 public class TemplateMapper {
     private static final String SPROC_GET_TEMPLATES_IN_GROUP = "GetTemplatesInGroup";
     private static final String SPROC_GET_TEMPLATE_GROUPS_FOR_USER = "GetTemplategroupsForUser";
-    private static final String SPROC_GET_TEXT_DOC_DATA = "GetTextDocData";
 
     private IMCService service;
 
@@ -67,11 +63,6 @@ public class TemplateMapper {
     }
     */
 
-    static String[] sprocGetTextDocData( IMCServiceInterface service, int metaId ) {
-        String[] textdoc_data = service.sqlProcedure( SPROC_GET_TEXT_DOC_DATA, new String[]{String.valueOf( metaId )} );
-        return textdoc_data;
-    }
-
     public TemplateGroupDomainObject[] getAllTemplateGroups( UserDomainObject user, int metaId ) {
         DBConnect dbc = new DBConnect( service.getConnectionPool() );
         dbc.getConnection();
@@ -110,5 +101,22 @@ public class TemplateMapper {
         Vector groupnamevec = dbc.executeQuery();
         dbc.clearResultSet();
         return groupnamevec;
+    }
+
+    public static void sqlUpdateUnassignTemplateFromGroup( IMCService service, int[] group_id, int template_id ) {
+        DBConnect dbc = new DBConnect( service.getConnectionPool() );
+        dbc.getConnection();
+
+        // delete current refs
+        for( int i = 0; i < group_id.length; i++ ) {
+            String sqlStr = "delete from templates_cref\n";
+            sqlStr += "where template_id = " + template_id;
+            sqlStr += "and group_id = " + group_id[i];
+            dbc.setSQLString( sqlStr );
+            dbc.createStatement();
+            dbc.executeUpdateQuery();
+        }
+
+        dbc.closeConnection();
     }
 }

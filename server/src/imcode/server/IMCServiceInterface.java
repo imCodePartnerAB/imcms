@@ -285,10 +285,6 @@ public interface IMCServiceInterface {
     public void changeTemplateGroupName(int group_id,String new_name)
 	;
 
-    //  unassign template from templategroups
-    public void unAssignTemplate(int template_id,int group_id[])
-	;
-
     // Send a procedure to the database and return a multistring array
     public String[][] sqlProcedureMulti(String procedure)
 	;

@@ -172,7 +172,7 @@ public class SaveNewMeta extends HttpServlet {
 
             // Save the classifications to the db
             if( classification != null ) {
-                DocumentMapper.sprocUpdateSaveClassification( imcref, Integer.parseInt(meta_id), classification );
+                DocumentMapper.sprocSaveClassification( imcref, Integer.parseInt(meta_id), classification );
             }
 
             DocumentMapper.sprocUpdateInheritPermissions( imcref, Integer.parseInt(meta_id), Integer.parseInt(parent_meta_id), Integer.parseInt(doc_type) );
@@ -200,7 +200,7 @@ public class SaveNewMeta extends HttpServlet {
             }
             //ok if we have one lets update the db
             if( section_id != null ) {
-                DocumentMapper.sprocUpdateSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
+                DocumentMapper.sprocSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
             }
 
             // Here is the stuff we have to do for each individual doctype. All general tasks

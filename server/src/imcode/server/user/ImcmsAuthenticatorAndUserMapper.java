@@ -269,7 +269,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
 
     public boolean hasSuperAdminRole( UserDomainObject user ) {
         String[] userRoleNames = this.getRoleNames( user );
-        boolean userHasSuperAdminRole = Arrays.asList( userRoleNames ).contains( RoleConstants.SUPERADMIN );
+        boolean userHasSuperAdminRole = Arrays.asList( userRoleNames ).contains( RoleConstants.SUPER_ADMIN );
         return userHasSuperAdminRole;
     }
 

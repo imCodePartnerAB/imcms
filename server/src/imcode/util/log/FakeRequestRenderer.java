@@ -9,6 +9,7 @@ import org.apache.log4j.or.* ;
 
 import imcode.server.* ;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.TemplateDomainObject;
 import imcode.server.parser.* ;
 
 public class FakeRequestRenderer implements ObjectRenderer {

@@ -5,7 +5,7 @@
     DocumentService documentService = imcmsSystem.getDocumentService();
     TemplateService templateService = imcmsSystem.getTemplateService();
     int documentId = 1001 ;
-    TextDocument document = (TextDocument)documentService.getDocument(documentId) ;
+    TextDocument document = (TextDocument)documentService.getTextDocument(documentId) ;
     Template currentTemplate = document.getTemplate();
     Template[] templates = templateService.getPossibleTemplates( document );
     int i = 0;

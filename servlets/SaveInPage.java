@@ -1,6 +1,7 @@
 
 import imcode.server.IMCServiceInterface;
 import imcode.server.Table;
+import imcode.server.IMCService;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Check;
@@ -91,7 +92,8 @@ public class SaveInPage extends HttpServlet {
                 return;
             }
             // save textdoc
-            DocumentMapper.saveTextDoc( imcref, user, meta_id, doc );
+            DocumentMapper.saveTextDoc( imcref, meta_id, doc );
+            ((IMCService)imcref).updateLogs( "Text docs  [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
 
             DocumentMapper.sqlUpdateModifiedDate( imcref, meta_id, new Date() );
 

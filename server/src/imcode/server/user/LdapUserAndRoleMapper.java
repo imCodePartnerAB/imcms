@@ -16,7 +16,8 @@ import java.util.*;
 
 public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
 
-    public final static String AUTHENTICATION_TYPE_SIMPLE = "simple";
+    public static final String DEFAULT_LDAP_ROLE = "LDAP";
+    final static String AUTHENTICATION_TYPE_SIMPLE = "simple";
 
     private static final String LDAP_ATTRIBUTE_DISTINGUISHED_NAME = "distinguishedName" ;
 
@@ -52,8 +53,6 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
     /** nonstandard, probably Microsoft specific */
     static final String NONSTANDARD_COMPANY = "company";
     private static final String NONSTANDARD_COUNTRY = "co";
-
-    static final String DEFAULT_LDAP_ROLE = "LDAP";
 
     private DirContext ctx = null;
     private HashMap userFieldLdapMappings = null;

@@ -8,6 +8,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 
 import org.apache.log4j.Category;
@@ -34,10 +35,8 @@ public class SaveMeta extends HttpServlet {
         String host = req.getHeader( "Host" );
         IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
         String start_url = imcref.getStartUrl();
-        String servlet_url = Utility.getDomainPref( "servlet_url", host );
 
         UserDomainObject user;
-
         // Check if user logged on
         if( (user = Check.userLoggedOn( req, res, start_url )) == null ) {
             return;
@@ -62,22 +61,22 @@ public class SaveMeta extends HttpServlet {
         String classification = req.getParameter( "classification" );
 
         // Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
-        String[][] role_permissions = imcref.sqlProcedureMulti( "GetRolesDocPermissions " + meta_id );
-
         // Now watch as i fetch the permission_set for the user...
-        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet " + meta_id + ", " + user.getUserId() );
+        String[] current_permissions = sprocGetUserPermissionSet( imcref, user, meta_id );
         int user_set_id = Integer.parseInt( current_permissions[0] );	// The users set_id
+        int user_perm_set = Integer.parseInt( current_permissions[1] );	// The users permission_set for that id
+        int currentdoc_perms = Integer.parseInt( current_permissions[2] );	// The docspecific permissions for this doc.
 
         // Check if the user has any business in here whatsoever.
-        if( user_set_id > 2 ) {
+
+        boolean hasMoreThanChangeAndReadPermission = user_set_id > 2; // 3 = read, 4= none
+        if( hasMoreThanChangeAndReadPermission ) {
             String output = AdminDoc.adminDoc( meta_id_int, meta_id_int, user, req, res );
             if( output != null ) {
                 out.write( output );
             }
             return;
         }
-        int user_perm_set = Integer.parseInt( current_permissions[1] );	// The users permission_set for that id
-        int currentdoc_perms = Integer.parseInt( current_permissions[2] );	// The docspecific permissions for this doc.
 
         // Now i'll loop through the db-results, and read the values
         // for each roles set_id this user may change from the form.
@@ -85,6 +84,7 @@ public class SaveMeta extends HttpServlet {
 
         Properties temp_permission_settings = new Properties();
 
+        String[][] role_permissions = sprocGetRolesDocPermissions( imcref, meta_id );
         for( int i = 0; i < role_permissions.length; ++i ) {
             String role_set_id_str = role_permissions[i][2]; // Get the old set_id for this role from the db
             int role_set_id = Integer.parseInt( role_set_id_str );
@@ -110,12 +110,13 @@ public class SaveMeta extends HttpServlet {
                 ) ) {
 
                 // We used to save to the db immediately. Now we do it a little bit differently to make it possible to store stuff in the session instead of the db.
-                // imcref.sqlUpdateProcedure( "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
                 temp_permission_settings.setProperty( String.valueOf( role_id ), String.valueOf( new_set_id ) );
             } else {
                 mainLog.info( "User " + user.getUserId() + " with set_id " + user_set_id + " and permission_set " + user_perm_set + " was denied permission to change set_id for role " + role_id + " from " + role_set_id + " to " + new_set_id + " on meta_id " + meta_id );
             }
         }
+
+        // ---- User has permission to save meta   ----
 
         /*
           Now we're going to start accepting the input form fields.
@@ -180,11 +181,11 @@ public class SaveMeta extends HttpServlet {
         // Here's some mutilation!
         // activated_date and activated_time need to be merged, and likewise with archived_date and archived_time
 
-        SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd" );
-        SimpleDateFormat timeformat = new SimpleDateFormat( "HH:mm" );
-
         String activated_date = req.getParameter( "activated_date" );
         String activated_time = req.getParameter( "activated_time" );
+
+        SimpleDateFormat dateformat = new SimpleDateFormat( "yyyy-MM-dd" );
+        SimpleDateFormat timeformat = new SimpleDateFormat( "HH:mm" );
         String activated_datetime = null;
         try {
             dateformat.parse( activated_date );
@@ -276,7 +277,7 @@ public class SaveMeta extends HttpServlet {
         String[] temp_default_templates = {temp_default_template_1, temp_default_template_2};
 
         // Set modified-date to now...
-        Date dt = imcref.getCurrentDate();
+        Date dt = new Date();
         metaprops.setProperty( "date_modified", dateformat.format( dt ) );
 
         // It's like this... people make changes on the page, and then they forget to press "save"
@@ -357,29 +358,27 @@ public class SaveMeta extends HttpServlet {
             if( new_set_id == null ) {
                 continue;
             }
-            imcref.sqlUpdateProcedure( "SetRoleDocPermissionSetId " + role_id + "," + meta_id + "," + new_set_id );
+            sprocSetRoleDocPermissionSetId( imcref, meta_id, role_id, new_set_id );
         }
 
         if( sqlStr.length() > 0 ) {
-
-            sqlStr = "update meta set " + sqlStr + " where meta_id = " + meta_id;
-            imcref.sqlUpdateQuery( sqlStr );
+            String sqlStr1 = sqlStr;
+            sqlStr1 = "update meta set " + sqlStr1 + " where meta_id = " + meta_id;
+            imcref.sqlUpdateQuery( sqlStr1 );
         }
 
         // Save the classifications to the db
         if( classification != null ) {
-            imcref.sqlUpdateProcedure( "Classification_Fix " + meta_id + ",'" + classification + "'" );
+            DocumentMapper.sprocClassification_Fix( imcref, Integer.parseInt(meta_id), classification );
         }
 
         //ok lets save the default templates
-        //log("test sql: UpdateDefaultTemplates "+meta_id+",'"+template1+"','"+template2+"'");
-        imcref.sqlUpdateProcedure( "UpdateDefaultTemplates '" + meta_id + "','" + template1 + "','" + template2 + "'" );
+        sprocUpdateDefaultTemplates( imcref, meta_id, template1, template2 );
 
         //if the administrator wants to change the date we does it here
         if( created_datetime != null ) {
             //we did got a ok date so lets save it to db
-            sqlStr = "update meta set date_created ='" + created_datetime + "' where meta_id = " + meta_id;
-            imcref.sqlUpdateQuery( sqlStr );
+            DocumentMapper.sqlUpdateMetaDateCreated( imcref, meta_id, created_datetime );
         }
         if( null != modifiedDateTime ) {
             //we did got a ok date so lets save it to db
@@ -387,7 +386,7 @@ public class SaveMeta extends HttpServlet {
         }
 
         // Update the date_modified for all parents.
-        imcref.sqlUpdateProcedure( "UpdateParentsDateModified " + meta_id );
+        DocumentMapper.sprocUpdateParentsDateModified( imcref, Integer.parseInt(meta_id) );
 
         ///**************** section index word stuff *****************
         //ok lets handle the the section stuff save to db and so on
@@ -396,7 +395,7 @@ public class SaveMeta extends HttpServlet {
         String current_section_id = req.getParameter( "current_section_id" );
         if( section_id != current_section_id ) {
             //ok lets update the db
-            imcref.sqlUpdateProcedure( "SectionAddCrossref " + meta_id + ", " + section_id );
+            DocumentMapper.sprocSectionAddCrossref( imcref, Integer.parseInt(meta_id), Integer.parseInt(section_id) );
         }
 
 
@@ -412,5 +411,23 @@ public class SaveMeta extends HttpServlet {
         mainLog.info( "Metadata on [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
 
         return;
+    }
+
+    public static void sprocSetRoleDocPermissionSetId( IMCServiceInterface imcref, String meta_id, String role_id, String new_set_id ) {
+        imcref.sqlUpdateProcedure( "SetRoleDocPermissionSetId" + " " + role_id + "," + meta_id + "," + new_set_id );
+    }
+
+    public static void sprocUpdateDefaultTemplates( IMCServiceInterface imcref, String meta_id, String template1, String template2 ) {
+        imcref.sqlUpdateProcedure( "UpdateDefaultTemplates" + " '" + meta_id + "','" + template1 + "','" + template2 + "'" );
+    }
+
+    public static String[] sprocGetUserPermissionSet( IMCServiceInterface imcref, UserDomainObject user, String meta_id ) {
+        String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet" + " " + meta_id + ", " + user.getUserId() );
+        return current_permissions;
+    }
+
+    public static String[][] sprocGetRolesDocPermissions( IMCServiceInterface imcref, String meta_id ) {
+        String[][] role_permissions = imcref.sqlProcedureMulti( "GetRolesDocPermissions" + " " + meta_id );
+        return role_permissions;
     }
 }

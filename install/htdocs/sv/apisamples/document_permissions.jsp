@@ -23,7 +23,7 @@ This is the mapping for document <%= documentId %>:<br>
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute( RequestConstants.SYSTEM );
     DocumentService documentService = imcmsSystem.getDocumentService();
-    Document doc = documentService.getDocument(documentId);
+    Document doc = documentService.getTextDocument(documentId);
     Map permissionsMap = doc.getAllRolesMappedToPermissions();
     Set roles = permissionsMap.keySet();
     Iterator roleIteratore = roles.iterator();

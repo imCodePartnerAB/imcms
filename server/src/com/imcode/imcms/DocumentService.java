@@ -22,11 +22,10 @@ public class DocumentService {
      * @return The document
      * @throws NoPermissionException If the current user dosen't have the rights to read this document.
      */
-    public Document getDocument( int documentId ) throws NoPermissionException {
+    public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
         securityChecker.hasDocumentRights( documentId );
         imcode.server.document.DocumentDomainObject doc = documentMapper.getDocument( documentId );
-        Document result = new TextDocument( securityChecker, doc, documentMapper, documentPermissionSetMapper );
-
+        TextDocument result = new TextDocument( securityChecker, doc, documentMapper, documentPermissionSetMapper );
         return result;
     }
 
@@ -35,6 +34,10 @@ public class DocumentService {
         DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, parentMenuNumber );
         TextDocument result = new TextDocument( securityChecker, newDoc, documentMapper, documentPermissionSetMapper );
         return result;
+    }
+
+    public void saveChanges( TextDocument document ) {
+        documentMapper.saveTextDocument( document.getInternal() );
     }
 
 }

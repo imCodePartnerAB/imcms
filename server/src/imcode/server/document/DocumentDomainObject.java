@@ -1,7 +1,6 @@
 package imcode.server.document;
 
 import imcode.server.IMCConstants;
-import imcode.server.TemplateDomainObject;
 
 import java.util.Date;
 
@@ -9,26 +8,29 @@ import java.util.Date;
 
 public class DocumentDomainObject implements IMCConstants {
 
-    private int metaId;
-    private int documentType;
-    private boolean archived;
-    private Date createdDatetime;
-    private Date modifiedDatetime;
-    private Date activatedDatetime;
-    private Date archivedDatetime;
-    private String headline;
-    private String text;
-    private String image;
-    private String target;
-    private String section;
+    // If an field is added, make sure to update DocumentMapper
+    int metaId;
+    int documentType;
+    boolean archived;
+    Date createdDatetime;
+    Date modifiedDatetime;
+    Date activatedDatetime;
+    Date archivedDatetime;
+    String headline;
+    String text;
+    String image;
+    String target;
+    String section;
+    // todo: classification/Search words is missing
 
     /* Filedocs only */
-    private String filename;
+    String filename;
 
     /* Textdocs only */
-    private TemplateDomainObject template;
-    private int templateGroupId;
-    private int menuSortOrder;
+    TemplateDomainObject template;
+    int templateGroupId;
+    int menuSortOrder;
+    // If an field is added, make sure to update DocumentMapper
 
     public final static int DOCTYPE_TEXT       = 2 ;
     public final static int DOCTYPE_URL        = 5 ;
@@ -112,7 +114,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of createdDatetime.
      * @return value of createdDatetime.
      */
-    public Date getCreatedDatetime() {
+    public Date getCreatedDateTime() {
         return createdDatetime;
     }
 
@@ -128,7 +130,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of modifiedDatetime.
      * @return value of modifiedDatetime.
      */
-    public Date getModifiedDatetime() {
+    public Date getModifiedDateTime() {
         return modifiedDatetime;
     }
 
@@ -144,7 +146,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of archivedDatetime.
      * @return value of archivedDatetime.
      */
-    public Date getArchivedDatetime() {
+    public Date getArchivedDateTime() {
         return archivedDatetime;
     }
 
@@ -160,7 +162,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of activatedDatetime.
      * @return value of activatedDatetime.
      */
-    public Date getActivatedDatetime() {
+    public Date getActivatedDateTime() {
         return activatedDatetime;
     }
 
@@ -240,7 +242,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of filename.
      * @return value of filename.
      */
-    public String getFilename() {
+    public String getFileName() {
         return filename;
     }
 
