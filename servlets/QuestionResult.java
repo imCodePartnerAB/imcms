@@ -31,6 +31,13 @@ public class QuestionResult extends HttpServlet
 		String question = req.getParameter("question");
 		String fileName = question;
 
+		String row = req.getParameter("quesrow") ;
+		try {
+		    fileName = "QuestionResult"+Integer.parseInt(row) ;
+		} catch ( NumberFormatException ignored ) {
+		    /* The question is used as filename */
+		}
+
 		//gå igenom strängen tecken för tecken och byt ut allt utom '_', siffror och bokstäver till '_'.
 		for(int i = 0;i<fileName.length(); i++)
 		{
@@ -44,21 +51,11 @@ public class QuestionResult extends HttpServlet
 		//get current answers from file
 		int yes = 0;
 		int no = 0;
-		
-		
-	/*	File file;
-		int filenr = 0;
-		
-		do 
-		{
-			file = new File(Integer.toString(filenr) + ".txt");
-			filenr++;
-		}
-		while(file.exists());*/
-		
+
 		File file = new File(fortune_path,fileName.trim() + ".txt");
 		if (file.exists())
 		{
+		    try {
 			BufferedReader fileR = new BufferedReader(new FileReader(file));
 			
 			fileR.skip(3);
@@ -70,6 +67,14 @@ public class QuestionResult extends HttpServlet
 			no = Integer.parseInt(n.trim());
 		
 			fileR.close();
+		    } catch (IOException ignored) {
+			// yes = 0, no = 0
+		    } catch (NumberFormatException ignored) {
+			// yes = 0, no = 0
+		    } catch (NullPointerException ignored) {
+			// yes = 0, no = 0
+		    } 
+
 		}
 	
 		//save the answer to the file
