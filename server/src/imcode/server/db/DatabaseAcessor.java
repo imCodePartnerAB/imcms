@@ -16,11 +16,12 @@ public class DatabaseAcessor {
         accessor.executeCommandsFromFile( SQL_SERVER, "tables/drop.sql" );
         accessor.executeCommandsFromFile( SQL_SERVER, "tables/create.sql" );
         accessor.executeCommandsFromFile( SQL_SERVER, "data/types.new.sql" );
+        accessor.executeCommandsFromFile( SQL_SERVER, "data/newdb.new.sql" );
 
         accessor.executeCommandsFromFile( MIMER, "tables/drop.sql" );
         accessor.executeCommandsFromFile( MIMER, "tables/create.sql" );
         accessor.executeCommandsFromFile( MIMER, "data/types.new.sql" );
-
+        accessor.executeCommandsFromFile( MIMER, "data/newdb.new.sql" );
     }
 
     private final static int MIMER = 0;
