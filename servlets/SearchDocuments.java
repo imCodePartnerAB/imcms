@@ -226,8 +226,6 @@ public class SearchDocuments extends HttpServlet {
 	res.setContentType( "text/html" );
 	PrintWriter out = res.getWriter( );
 
-	out.println("Before logintest") ;
-
  	// Get the session
 	HttpSession session = req.getSession( true );
 	// Does the session indicate this user already logged in?
@@ -246,12 +244,9 @@ public class SearchDocuments extends HttpServlet {
 	    res.sendRedirect( scheme + "://" + serverName + port + start_url ) ;
 	    return ;
 	}
-	out.println("After logintest") ;
 	// Lets get the html file we use as template
 
 	Properties props = this.getSummaryProps(servlet_url) ;
-
-	out.println("After getting properties") ;
 
 	htmlStr = IMCServiceRMI.parseDoc(imcserver,convert(props),"search_documents.html","se");
 	out.print( htmlStr ) ;
