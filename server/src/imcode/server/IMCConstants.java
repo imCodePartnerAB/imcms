@@ -50,4 +50,22 @@ public interface IMCConstants {
 
     public final static int PERM_DT_FILE_EDIT            = (1 << 16) ;
 
+
+    /* Document-Permission-sets */
+
+    public final static int DOC_PERM_SET_FULL            = 0 ;
+    
+    public final static int DOC_PERM_SET_RESTRICTED_1    = 1 ;
+    
+    public final static int DOC_PERM_SET_RESTRICTED_2    = 2 ;
+    
+    public final static int DOC_PERM_SET_READ            = 3 ;
+
+    public final static int DOC_PERM_SET_NONE            = 4 ;
+
+    /* Document-Permissions */
+
+    public final static int DOC_PERM_RESTRICTED_1_ADMINISTRATES_RESTRICTED_2 = (1 << 0) ;
+    
+
 }

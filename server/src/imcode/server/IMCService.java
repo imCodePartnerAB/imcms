@@ -251,6 +251,10 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
     }
 
     public byte[] parsePage (int meta_id, User user, int flags) throws IOException {
+	return parsePage(meta_id,user,flags,2) ;
+    }
+
+    public byte[] parsePage (int meta_id, User user, int flags, int includelevel) throws IOException {
 
 	try {
 	    long totaltime = System.currentTimeMillis() ;
@@ -957,7 +961,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 
 	    MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution(menus,menumode,tags) ;
 	    HashTagSubstitution hashtagsubstitution = new HashTagSubstitution(tags,numberedtags) ;
-	    ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution(user,meta_id,included_docs,includemode) ;
+	    ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution(user,meta_id,included_docs,includemode,includelevel) ;
 
 	    LinkedList parse = new LinkedList() ;
 	    perl5util.split(parse,"/<!-(-\\/?)IMSCRIPT-->/i",template) ;
@@ -1279,6 +1283,7 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	int implicitInclude = 1 ;
 	int meta_id ;
 	boolean includemode ;
+	int includelevel ;
 
 	HashMap included_docs = new HashMap() ;
 
@@ -1287,11 +1292,13 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	   @param meta_id        The document-id
 	   @param included_list  A list of (include-id, included-meta-id, ...)
 	   @param includemode    Whether to include the admin-template instead of the included document.
+	   @param includelevel   The number of levels of recursion we've gone through.
 	**/
-	ImcmsTagSubstitution (User user, int meta_id, List included_list, boolean includemode) {
+	ImcmsTagSubstitution (User user, int meta_id, List included_list, boolean includemode, int includelevel) {
 	    this.user = user ;
 	    this.meta_id = meta_id ;
 	    this.includemode = includemode ;
+	    this.includelevel = includelevel ;
 	    for (Iterator i = included_list.iterator(); i.hasNext() ;) {
 		included_docs.put(i.next(), i.next()) ;
 	    }
@@ -1318,11 +1325,13 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 		    return ;
 		} else if ("document".equals(imcmstagattributename)) {
 		    try {
-			int included_meta_id = Integer.parseInt(imcmstagattributevalue) ;
-			String document = new String(parsePage(included_meta_id,user,-1),"8859_1") ;
-			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-			sb.append(document) ;
+			if (includelevel>0) {
+			    int included_meta_id = Integer.parseInt(imcmstagattributevalue) ;
+			    String document = new String(parsePage(included_meta_id,user,-1,includelevel-1),"8859_1") ;
+			    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+			    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+			    sb.append(document) ;
+			}
 		    }
 		    catch (NumberFormatException ignored) {}
 		    catch (IOException ignored) {}
@@ -1340,20 +1349,23 @@ final public class IMCService extends UnicastRemoteObject implements IMCServiceI
 	    }
 	    try {
 		if (includemode) {
-		    sb.append(imcode.util.Parser.parseDoc(getCachedFileString(new File(m_TemplateHome, user.getLangPrefix()+"/admin/change_include.html")),new String[]
-			{
-			    "#meta_id#",     String.valueOf(meta_id),
-			    "#servlet_url#", m_ServletUrl,
-			    "#include_id#",  String.valueOf(no),
-			    "#include_meta_id#",""
-			}
+		    String included_meta_id_str = (String)included_docs.get(String.valueOf(no)) ;
+		    sb.append(imcode.util.Parser.parseDoc(getCachedFileString(new File(m_TemplateHome, user.getLangPrefix()+"/admin/change_include.html")),
+							  new String[] {
+							      "#meta_id#",         String.valueOf(meta_id),
+							      "#servlet_url#",     m_ServletUrl,
+							      "#include_id#",      String.valueOf(no),
+							      "#include_meta_id#", included_meta_id_str == null ? "" : included_meta_id_str
+							  }
 							  )) ;
 		} else {
-		    int included_meta_id = Integer.parseInt((String)included_docs.get(String.valueOf(no))) ;
-		    String document = new String(parsePage(included_meta_id,user,-1),"8859_1") ;
-		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-		    sb.append(document) ;
+		    if (includelevel>0) {
+			int included_meta_id = Integer.parseInt((String)included_docs.get(String.valueOf(no))) ;
+			String document = new String(parsePage(included_meta_id,user,-1,includelevel-1),"8859_1") ;
+			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+			sb.append(document) ;
+		    }
 		}
 	    }
 	    catch (NumberFormatException ignored) {}

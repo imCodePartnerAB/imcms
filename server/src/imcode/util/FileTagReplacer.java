@@ -78,8 +78,11 @@ public class FileTagReplacer extends Hashtable {
 			} catch ( IOException ex ) {
 				return null ;
 			}
-			super.put(name, buffer.toString()) ;
+			if (buffer == null) {
+			    return null ;
+			}
 			replacement = buffer.toString() ;
+			super.put(name, replacement) ;
 		}
 		return replacement ;
 	}
@@ -89,7 +92,7 @@ public class FileTagReplacer extends Hashtable {
 		If you want the content to come from something other than a file,
 		you should overload this.
 		@param name The (file)name/address of the content, that is, the information needed to find the content.
-	*/
+	**/
 	protected StringBuffer getContent(String name) throws IOException {
 		File file = new File(name) ;
 		StringBuffer buffer = new StringBuffer((int)file.length()) ;
