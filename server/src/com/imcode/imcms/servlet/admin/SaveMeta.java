@@ -75,8 +75,8 @@ public class SaveMeta extends HttpServlet {
 
         // Check if the user has any business in here whatsoever.
 
-        boolean hasMoreThanChangeAndReadPermission = userSetId > 2; // 3 = read, 4= none
-        if ( hasMoreThanChangeAndReadPermission ) {
+        boolean hasLessThanChangeAndReadPermission = userSetId > 2; // 3 = read, 4= none
+        if ( hasLessThanChangeAndReadPermission ) {
             String output = AdminDoc.adminDoc( metaId, metaId, user, req, res );
             if ( output != null ) {
                 out.write( output );
@@ -424,10 +424,7 @@ public class SaveMeta extends HttpServlet {
         }
 
         // Let's split this joint!
-        String output = AdminDoc.adminDoc( metaId, metaId, user, req, res );
-        if ( output != null ) {
-            out.write( output );
-        }
+        res.sendRedirect( "AdminDoc?meta_id="+metaId);
 
         //lets log to mainlog that the user done stuff
         mainLog.info( "Metadata on [" + metaIdStr + "] updated by user: [" + user.getFullName() + "]" );
