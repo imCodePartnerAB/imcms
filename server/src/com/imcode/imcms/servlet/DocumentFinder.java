@@ -15,7 +15,7 @@ public class DocumentFinder extends WebComponent {
     public static final String REQUEST_ATTRIBUTE_PARAMETER__SEARCH_DOCUMENTS = "searchDocuments";
 
     public static DocumentFinder getInstance( HttpServletRequest request ) {
-        DocumentFinder documentFinder = (DocumentFinder)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, DocumentFinder.REQUEST_ATTRIBUTE_PARAMETER__SEARCH_DOCUMENTS );
+        DocumentFinder documentFinder = (DocumentFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, DocumentFinder.REQUEST_ATTRIBUTE_PARAMETER__SEARCH_DOCUMENTS );
         if ( null == documentFinder ) {
             documentFinder = new DocumentFinder();
         }
@@ -36,7 +36,7 @@ public class DocumentFinder extends WebComponent {
     }
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        HttpSessionUtils.addObjectToSessionAndSetSessionAttributeNameInRequest( this, request, DocumentFinder.REQUEST_ATTRIBUTE_PARAMETER__SEARCH_DOCUMENTS );
+        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, DocumentFinder.REQUEST_ATTRIBUTE_PARAMETER__SEARCH_DOCUMENTS );
 
         String SearchTargetString = "SearchDocuments?" +
                 SearchDocuments.PARAM__DOCUMENT_TYPE + "=" + DocumentDomainObject.DOCTYPE_FILE + "&" +

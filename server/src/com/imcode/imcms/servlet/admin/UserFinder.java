@@ -23,7 +23,7 @@ public class UserFinder extends WebComponent {
     public static final int SELECT_BUTTON__EDIT_USER = UserBrowser.SELECT_BUTTON__EDIT_USER;
 
     public static UserFinder getInstance( HttpServletRequest request ) {
-        UserFinder userFinder = (UserFinder)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
+        UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
         if ( null == userFinder ) {
             userFinder = new UserFinder();
         }
@@ -43,7 +43,7 @@ public class UserFinder extends WebComponent {
     }
 
     public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        HttpSessionUtils.addObjectToSessionAndSetSessionAttributeNameInRequest( this, request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
+        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
         UserBrowser.forwardToJsp( request, response, new UserBrowser.FormData() );
     }
 

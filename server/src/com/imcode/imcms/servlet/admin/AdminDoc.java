@@ -84,7 +84,7 @@ public class AdminDoc extends HttpServlet {
 
     private void forwardToDocumentComposerWithFlow( HttpServletRequest req, HttpServletResponse res,
                                                              HttpPageFlow httpPageFlow ) throws ServletException, IOException {
-        HttpSessionUtils.addObjectToSessionAndSetSessionAttributeNameInRequest( httpPageFlow, req, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( httpPageFlow, req, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
         req.getRequestDispatcher( "DocumentComposer" ).forward( req, res );
     }
 

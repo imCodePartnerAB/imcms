@@ -15,9 +15,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.net.URLEncoder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.collections.set.ListOrderedSet;
+import org.apache.commons.collections.SetUtils;
 
 public class Utility {
 
@@ -109,8 +112,8 @@ public class Utility {
     }
 
     public static void removeNullValuesFromMap( Map map ) {
-        Collection documentIds = map.values();
-        for ( Iterator iterator = documentIds.iterator(); iterator.hasNext(); ) {
+        Collection values = map.values();
+        for ( Iterator iterator = values.iterator(); iterator.hasNext(); ) {
             if ( null == iterator.next() ) {
                 iterator.remove();
             }
@@ -165,5 +168,23 @@ public class Utility {
         }
         String imageTag = imageTagBuffer.toString();
         return imageTag;
+    }
+
+    public static String getQueryStringExcludingParameter(HttpServletRequest request, String parameterNameToExclude) {
+        Set requestParameterStrings = SetUtils.orderedSet(new HashSet()) ;
+        Map requestParameters = request.getParameterMap() ;
+        for ( Iterator iterator = requestParameters.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            String parameterName = (String)entry.getKey();
+            if (parameterName.equals( parameterNameToExclude )) {
+                continue;
+            }
+            String[] parameterValues = (String[])entry.getValue();
+            for ( int i = 0; i < parameterValues.length; i++ ) {
+                String parameterValue = parameterValues[i];
+                requestParameterStrings.add( URLEncoder.encode( parameterName ) + "=" + URLEncoder.encode( parameterValue )) ;
+            }
+        }
+        return StringUtils.join( requestParameterStrings.iterator(), "&" ) ;
     }
 }

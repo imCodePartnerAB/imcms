@@ -15,7 +15,6 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 public class ImageArchiveServlet extends HttpServlet {
-    private Logger log = Logger.getLogger( ImageArchiveServlet.class );
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         doPost( request, response );

@@ -53,7 +53,7 @@ public class DocumentComposer extends HttpServlet {
     }
 
     public static DocumentPageFlow getDocumentPageFlowFromRequest( HttpServletRequest request ) {
-        return (DocumentPageFlow)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+        return (DocumentPageFlow)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
     }
 
 }

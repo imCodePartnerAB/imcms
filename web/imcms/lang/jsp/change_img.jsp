@@ -9,7 +9,7 @@
                  imcode.util.Utility"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
-    ChangeImage.ImageEditPage imageEditPage = (ChangeImage.ImageEditPage)request.getAttribute( ChangeImage.REQUEST_ATTRIBUTE__PAGE ) ;
+    ChangeImage.ImageEditPage imageEditPage = (ChangeImage.ImageEditPage)request.getAttribute( ChangeImage.ImageEditPage.REQUEST_ATTRIBUTE__PAGE ) ;
     TextDocumentDomainObject document = imageEditPage.getDocument() ;
     ImageDomainObject image = imageEditPage.getImage() ;
     int imageIndex = imageEditPage.getImageIndex() ;

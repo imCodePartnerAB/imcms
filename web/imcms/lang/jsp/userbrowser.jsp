@@ -7,7 +7,7 @@
                  org.apache.commons.lang.StringUtils"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <%
-    UserFinder userFinder = (UserFinder)HttpSessionUtils.getObjectFromSessionWithKeyInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
+    UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, UserBrowser.REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
     UserBrowser.FormData formData = (UserBrowser.FormData)request.getAttribute( UserBrowser.REQUEST_ATTRIBUTE__FORM_DATA ) ;
 %>
 <vel:velocity>

@@ -59,7 +59,7 @@ public class AddDoc extends HttpServlet {
                 httpPageFlow = new CreateFormerExternalDocumentPageFlow( (TextDocumentDomainObject)parentDocument, parentMenuIndex, (FormerExternalDocumentDomainObject)document ) ;
 
             }
-            HttpSessionUtils.addObjectToSessionAndSetSessionAttributeNameInRequest( httpPageFlow, request, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
+            HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( httpPageFlow, request, DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
             request.getRequestDispatcher( "DocumentComposer" ).forward( request, response );
         }
     }

@@ -34,7 +34,6 @@ public class ChangeImage extends HttpServlet {
     final static String REQUEST_PARAMETER__IMAGE_FILE_DOCUMENT_ID = "imageFileDocumentId";
     public final static String REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE = "GotoImageArchive";
 
-    public static final String REQUEST_ATTRIBUTE__PAGE = "page";
     public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
     public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
     private static final String REQUEST_PARAMETER__IMAGE_HEIGHT = "image_height";
@@ -101,27 +100,22 @@ public class ChangeImage extends HttpServlet {
             image.setWidth( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__IMAGE_WIDTH ) ) );
         } catch ( NumberFormatException ignored ) {
         }
-        ;
         try {
             image.setHeight( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__IMAGE_HEIGHT ) ) );
         } catch ( NumberFormatException ignored ) {
         }
-        ;
         try {
             image.setBorder( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__IMAGE_BORDER ) ) );
         } catch ( NumberFormatException ignored ) {
         }
-        ;
         try {
             image.setVerticalSpace( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__VERTICAL_SPACE ) ) );
         } catch ( NumberFormatException ignored ) {
         }
-        ;
         try {
             image.setHorizontalSpace( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__HORIZONTAL_SPACE ) ) );
         } catch ( NumberFormatException ignored ) {
         }
-        ;
         image.setUrl( req.getParameter( REQUEST_PARAMETER__IMAGE_URL ) );
         image.setName( req.getParameter( REQUEST_PARAMETER__IMAGE_NAME ).trim() );
         image.setAlign( req.getParameter( REQUEST_PARAMETER__IMAGE_ALIGN ) );
@@ -318,6 +312,8 @@ public class ChangeImage extends HttpServlet {
     }
 
     public static class ImageEditPage {
+
+        public static final String REQUEST_ATTRIBUTE__PAGE = "page";
 
         private TextDocumentDomainObject document;
         private int imageIndex;

@@ -265,12 +265,12 @@ public class DocumentMapper {
     }
 
     public SectionDomainObject[] getAllSections() {
-        String[] sqlResult = service.sqlProcedure( SPROC_SECTION_GET_ALL, new String[0] );
-        SectionDomainObject[] allSections = new SectionDomainObject[sqlResult.length / 2];
-        for ( int i = 0; i < sqlResult.length; i += 2 ) {
-            int sectionId = Integer.parseInt( sqlResult[i] );
-            String sectionName = sqlResult[i + 1];
-            allSections[i / 2] = new SectionDomainObject( sectionId, sectionName );
+        String[][] sqlRows = service.sqlProcedureMulti( SPROC_SECTION_GET_ALL, new String[0] );
+        SectionDomainObject[] allSections = new SectionDomainObject[sqlRows.length];
+        for ( int i = 0; i < sqlRows.length; i++ ) {
+            int sectionId = Integer.parseInt( sqlRows[i][0] );
+            String sectionName = sqlRows[i][1];
+            allSections[i] = new SectionDomainObject( sectionId, sectionName );
         }
         return allSections;
     }

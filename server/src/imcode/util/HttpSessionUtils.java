@@ -7,7 +7,7 @@ public class HttpSessionUtils {
     private HttpSessionUtils() {
     }
 
-    public static void addObjectToSessionAndSetSessionAttributeNameInRequest( final Object objectToAddToSession,
+    public static void setSessionAttributeAndSetNameInRequestAttribute( final Object objectToAddToSession,
                                                                               HttpServletRequest request,
                                                                               final String sessionAttributeNameRequestAttributeName ) {
         final String sessionAttributeName = objectToAddToSession.getClass().getName() + "." + System.currentTimeMillis();
@@ -15,13 +15,13 @@ public class HttpSessionUtils {
         request.setAttribute( sessionAttributeNameRequestAttributeName, sessionAttributeName );
     }
 
-    public static Object getObjectFromSessionWithKeyInRequest( HttpServletRequest request,
+    public static Object getSessionAttributeWithNameInRequest( HttpServletRequest request,
                                                                String requestAttributeOrParameterName ) {
         String sessionAttributeName = getSessionAttributeNameFromRequest( request, requestAttributeOrParameterName );
         return request.getSession().getAttribute( sessionAttributeName );
     }
 
-    public static void removeObjectFromSessionWithKeyInRequest( HttpServletRequest request,
+    public static void removeSessionAttributeWithNameInRequest( HttpServletRequest request,
                                                                  String requestAttributeOrParameterName ) {
         String sessionAttributeName = getSessionAttributeNameFromRequest( request, requestAttributeOrParameterName );
         request.getSession().removeAttribute( sessionAttributeName );
