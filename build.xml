@@ -315,7 +315,7 @@
 
 
     <target name="build-addon" if="addon" depends="classes" description="Build addon">
-        <ant antfile="addons/${addon}/build.xml" target="build" inheritall="false"/>
+        <ant antfile="addons/${addon}/build.xml" target="build" inheritall="false" inheritrefs="true" />
     </target>
 
 
