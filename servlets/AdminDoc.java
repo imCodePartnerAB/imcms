@@ -126,7 +126,7 @@ public class AdminDoc extends HttpServlet {
 		switch ( doc_type ) {
 
 		default:
-			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,flags ) ;
+			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,flags,null ) ;
 			return result ;
 
 		case 101:

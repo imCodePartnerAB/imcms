@@ -101,7 +101,7 @@ public class GetDoc extends HttpServlet {
 				imcode.util.log.Log log = imcode.util.log.Log.getLog( this.getClass().getName() );
 				log.log( imcode.util.log.LogLevels.DEBUG, "Exception occured" + ex.getMessage() );	   
 			}
-
+			
 			byte[] tempbytes = getDoc(meta_id,meta_id,host,req,res) ;
 			if ( tempbytes != null )
 			{
@@ -317,11 +317,12 @@ public class GetDoc extends HttpServlet {
 
 		default:
 			user.setTemplateGroup(-1) ;
+			String temp_template = req.getParameter("template");
 			// track user
 			//			IMCServiceRMI.updateTrackLog( imcserver,parent_meta_id,meta_id,user ) ;
 
 			user.setLastMetaId( meta_id ) ;
-			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,0 ) ;
+			byte[] result = IMCServiceRMI.parsePage( imcserver,meta_id,user,0,temp_template ) ;
 			return result ;
 		}
 	}
