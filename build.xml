@@ -395,7 +395,7 @@
 	    <fileset dir="install/lib" >
 			<exclude name = "junit.jar"/>
 			<exclude name = "servlet.jar"/>
-	    </fileset>	
+	    </fileset>
 	</copy>
 
     </target>
@@ -456,7 +456,7 @@
 		<exclude name="**/*.jpg"/>
 	    </fileset>
 	</copy>
-	
+
 	<copy todir="${poll}/images" >
 		<fileset dir="install/htdocs/sv/poll/images">
 		<patternset>
@@ -465,7 +465,7 @@
 		</patternset>
 		</fileset>
 	</copy>
-	
+
 
 	<!-- Copy swedish navigation buttons for imagebrowse -->
 	<copy todir="${imcmsimages}/se/admin">
@@ -984,7 +984,7 @@
 
     <!-- Copies the files for the online-help. -->
     <target name="help" depends="init">
-    
+
 	<!-- Copy the swedish images for the online-help -->
 	<copy todir="${imcmsimages}/se/helpimages">
 	    <fileset dir="install/htdocs/sv/helpimages" includes="*"/>
@@ -1057,6 +1057,10 @@
 	<copy todir="${templates}/se/admin" filtering="true"
 	      file="templates/sv/readrunner/AdminUserResp.htm"
 	      overwrite="yes"/>
+
+   <copy todir="${templates}/se/admin/readrunner" filtering="true">
+       <fileset dir="templates/sv/readrunner/"/>
+    </copy>
 
 	<mkdir dir="${readrunner}/preparsed"/>
     </target>
