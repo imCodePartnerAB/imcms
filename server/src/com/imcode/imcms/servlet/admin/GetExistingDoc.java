@@ -7,8 +7,12 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentIndex;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
+import imcode.util.IdNamePair;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
@@ -18,6 +22,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.TermQuery;
+import org.apache.commons.lang.ArrayUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -192,51 +197,37 @@ public class GetExistingDoc extends HttpServlet {
 
     private void addDocument( imcode.server.user.UserDomainObject user, HttpServletRequest req,
                               IMCServiceInterface imcref, int meta_id, int menuIndex, HttpServletResponse res ) throws IOException {
-        String[] values;
-        int existing_meta_id;
         user.put( "flags", new Integer( IMCConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) );
 
         // get the seleced existing docs
-        values = req.getParameterValues( "existing_meta_id" );
+        String[] values = req.getParameterValues( "existing_meta_id" );
         if ( values == null ) {
             values = new String[0];
         }
 
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        TextDocumentDomainObject parentDocument = (TextDocumentDomainObject)documentMapper.getDocument( meta_id );
+
+        int[] allowedDocumentTypeIdsArray = ((TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, parentDocument )).getAllowedDocumentTypeIds() ;
+        Set allowedDocumentTypeIds = new HashSet(Arrays.asList(ArrayUtils.toObject( allowedDocumentTypeIdsArray )));
+
         // Lets loop through all the selected existsing meta ids and add them to the current menu
         for ( int m = 0; m < values.length; m++ ) {
-            existing_meta_id = Integer.parseInt( values[m] );
+            int existingDocumentId = Integer.parseInt( values[m] );
 
-            DocumentMapper documentMapper = imcref.getDocumentMapper();
-            DocumentDomainObject parentDocument = documentMapper.getDocument( meta_id );
-
-            // Fetch all doctypes from the db and put them in an option-list
-            // First, get the doc_types the current user may use.
-            String[][] user_dt = documentMapper.getCreatableDocumentTypeIdsAndNamesInUsersLanguage(parentDocument,user) ;
-
-            Set user_doc_types = new HashSet();
-
-            // I'll fill a HashSet with all the doc-types the current user may use,
-            // for easy retrieval.
-            for ( int i = 0; i < user_dt.length; i ++ ) {
-                user_doc_types.add( user_dt[i][0] );
-            }
-
-            int doc_type = DocumentMapper.sqlGetDocTypeFromMeta( imcref, existing_meta_id );
-
-            DocumentDomainObject existingDocument = documentMapper.getDocument( existing_meta_id );
+            DocumentDomainObject existingDocument = documentMapper.getDocument( existingDocumentId );
             // Add the document in menu if user is admin for the document OR the document is shared.
             boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToMenu( user, existingDocument );
-            if ( user_doc_types.contains( "" + doc_type ) && sharePermission ) {
-                try {
-                    documentMapper.addDocumentToMenu( user, parentDocument, menuIndex, existingDocument );
-                } catch ( DocumentMapper.DocumentAlreadyInMenuException e ) {
-                    //ok, already in menu
-                }
+            boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( existingDocument.getDocumentTypeId() ) ) && sharePermission;
+            if ( canAddToMenu ) {
+                parentDocument.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( existingDocument ) );
+                documentMapper.saveDocument( parentDocument, user );
             }
 
-        } // End of for loop
+        }
 
-        res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags=" + IMCConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu="
+        res.sendRedirect( "AdminDoc?meta_id=" + meta_id + "&flags=" + IMCConstants.DISPATCH_FLAG__EDIT_MENU
+                          + "&editmenu="
                           + menuIndex );
     }
 

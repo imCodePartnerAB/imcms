@@ -3,7 +3,9 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ImageFileMetaData;
 import imcode.util.Utility;
@@ -51,7 +53,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         String origWidth = req.getParameter( "origW" ); // width
         String origHeight = req.getParameter( "origH" ); // height
 
-        TextDocumentDomainObject.Image image = new TextDocumentDomainObject.Image();
+        ImageDomainObject image = new ImageDomainObject();
         try {
             image.setHeight( Integer.parseInt( image_height ) );
         } catch ( NumberFormatException ex ) {

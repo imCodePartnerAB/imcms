@@ -4,7 +4,9 @@ import imcode.server.ApplicationServer;
 import imcode.server.HTMLConv;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.GetImages;
 import imcode.util.ImageFileMetaData;
@@ -82,7 +84,7 @@ public class ChangeImage extends HttpServlet {
         int img_no = Integer.parseInt( imgNoStr );
 
         DocumentMapper documentMapper = imcref.getDocumentMapper() ;
-        TextDocumentDomainObject.Image image = documentMapper.getDocumentImage( meta_id, img_no );
+        ImageDomainObject image = documentMapper.getDocumentImage( meta_id, img_no );
 
         // Check if ChangeImage is invoked by ImageBrowse, hence containing
         // an image filename as option value.

@@ -1,14 +1,15 @@
 package com.imcode.imcms.api;
 
 import imcode.server.IMCServiceInterface;
-import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject;
 
 public class Image {
 
-    private TextDocumentDomainObject.Image internalImage;
+    private imcode.server.document.textdocument.ImageDomainObject internalImage;
     private IMCServiceInterface service;
 
-    Image( TextDocumentDomainObject.Image internalImage, IMCServiceInterface service ) {
+    Image( imcode.server.document.textdocument.ImageDomainObject internalImage, IMCServiceInterface service ) {
         this.internalImage = internalImage;
         this.service = service;
     }

@@ -1,9 +1,11 @@
 package com.imcode.imcms.api;
 
+import imcode.server.IMCServiceInterface;
 import imcode.server.document.*;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
-import imcode.server.IMCServiceInterface;
 
 import java.io.IOException;
 
@@ -15,22 +17,21 @@ public class DocumentService {
     private UserAndRoleMapper userAndRoleMapper;
     private IMCServiceInterface service;
 
-    Document wrapDocumentDomainObject(DocumentDomainObject document) {
-        Document result ;
+    Document wrapDocumentDomainObject( DocumentDomainObject document ) {
+        Document result;
 
-        if (document instanceof TextDocumentDomainObject) {
-            result = new TextDocument( (TextDocumentDomainObject) document, service, securityChecker, this, documentMapper,
-                    documentPermissionSetMapper, userAndRoleMapper );
-        } else if (document instanceof UrlDocumentDomainObject) {
-            result = new UrlDocument( (UrlDocumentDomainObject) document, service, securityChecker, this, documentMapper,
-                    documentPermissionSetMapper, userAndRoleMapper );
+        if ( document instanceof TextDocumentDomainObject ) {
+            result = new TextDocument( (TextDocumentDomainObject)document, service, securityChecker, this, documentMapper,
+                                       documentPermissionSetMapper, userAndRoleMapper );
+        } else if ( document instanceof UrlDocumentDomainObject ) {
+            result = new UrlDocument( (UrlDocumentDomainObject)document, service, securityChecker, this, documentMapper,
+                                      documentPermissionSetMapper, userAndRoleMapper );
         } else {
             result = new Document( document, service, securityChecker, this, documentMapper,
-                    documentPermissionSetMapper, userAndRoleMapper );
+                                   documentPermissionSetMapper, userAndRoleMapper );
         }
         return result;
     }
-
 
     public DocumentService( IMCServiceInterface service, SecurityChecker securityChecker, DocumentMapper documentMapper,
                             DocumentPermissionSetMapper documentPermissionSetMapper,
@@ -54,13 +55,12 @@ public class DocumentService {
     public Document getDocument( int documentId ) throws NoPermissionException {
         DocumentDomainObject doc = documentMapper.getDocument( documentId );
         Document result = null;
-        if( null != doc ) {
-            result = wrapDocumentDomainObject(doc);
+        if ( null != doc ) {
+            result = wrapDocumentDomainObject( doc );
             securityChecker.hasAtLeastDocumentReadPermission( result );
         }
         return result;
     }
-
 
     /**
      * @param documentId The id number of the document requested, also somtimes known as "meta_id"
@@ -70,7 +70,7 @@ public class DocumentService {
      */
     public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
         Document doc = getDocument( documentId );
-        return (TextDocument) doc;
+        return (TextDocument)doc;
     }
 
     /**
@@ -81,17 +81,17 @@ public class DocumentService {
      */
     public UrlDocument getUrlDocument( int documentId ) throws NoPermissionException {
         Document doc = getDocument( documentId );
-        return (UrlDocument) doc;
+        return (UrlDocument)doc;
     }
 
     public TextDocument createAndSaveNewTextDocument( Document parent ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
         DocumentDomainObject newDoc = createAndSaveNewDocument( DocumentDomainObject.DOCTYPE_TEXT, parent );
-        return (TextDocument) getDocument( newDoc.getId() );
+        return (TextDocument)getDocument( newDoc.getId() );
     }
 
     public UrlDocument createAndSaveNewUrlDocument( Document parent ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
         DocumentDomainObject newDoc = createAndSaveNewDocument( DocumentDomainObject.DOCTYPE_URL, parent );
-        return (UrlDocument) getDocument( newDoc.getId() );
+        return (UrlDocument)getDocument( newDoc.getId() );
     }
 
     private DocumentDomainObject createAndSaveNewDocument( int doctype, Document parent ) throws MaxCategoriesOfTypeExceededException, NoPermissionException {
@@ -100,7 +100,7 @@ public class DocumentService {
         DocumentDomainObject newDoc = documentMapper.createDocumentOfTypeFromParent( doctype, parent.internalDocument, user );
         try {
             documentMapper.saveNewDocument( newDoc, user );
-        } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
+        } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
             throw new MaxCategoriesOfTypeExceededException( e );
         }
         return newDoc;
@@ -114,7 +114,7 @@ public class DocumentService {
         UrlDocument newUrlDocument = null;
         try {
             newUrlDocument = createAndSaveNewUrlDocument( parentDocument );
-        } catch (MaxCategoriesOfTypeExceededException e) {
+        } catch ( MaxCategoriesOfTypeExceededException e ) {
             throw new RuntimeException( e );
         }
         addDocumentToMenu( parentDocument, parentMenuNumber, newUrlDocument );
@@ -130,7 +130,7 @@ public class DocumentService {
         TextDocument newTextDocument = null;
         try {
             newTextDocument = createAndSaveNewTextDocument( parentDocument );
-        } catch (MaxCategoriesOfTypeExceededException e) {
+        } catch ( MaxCategoriesOfTypeExceededException e ) {
             throw new RuntimeException( e );
         }
         addDocumentToMenu( parentDocument, parentMenuNumber, newTextDocument );
@@ -140,18 +140,16 @@ public class DocumentService {
 
     private void addDocumentToMenu( Document parentDocument, int parentMenuNumber, Document document ) {
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        try {
-            documentMapper.addDocumentToMenu( user, parentDocument.internalDocument, parentMenuNumber, document.internalDocument );
-        } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
-            throw new RuntimeException( e );
-        }
+        DocumentDomainObject internalParentDocument = parentDocument.internalDocument;
+        ( (TextDocumentDomainObject)internalParentDocument ).getMenu( parentMenuNumber ).addMenuItem( new MenuItemDomainObject( document.internalDocument ) );
+        documentMapper.saveDocument( internalParentDocument, user );
     }
 
     public void saveChanges( Document document ) throws NoPermissionException, MaxCategoriesOfTypeExceededException {
         securityChecker.hasEditPermission( document );
         try {
             documentMapper.saveDocument( document.getInternal(), securityChecker.getCurrentLoggedInUser() );
-        } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
+        } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
             throw new MaxCategoriesOfTypeExceededException( e );
         }
     }
@@ -159,7 +157,7 @@ public class DocumentService {
     public Category getCategory( CategoryType categoryType, String categoryName ) {
         // Allow everyone to get a Category. No security check.
         final CategoryDomainObject category = documentMapper.getCategory( categoryType.getInternal(), categoryName );
-        if (null != category) {
+        if ( null != category ) {
             return new Category( category );
         } else {
             return null;
@@ -169,7 +167,7 @@ public class DocumentService {
     public Category getCategory( int categoryId ) {
         // Allow everyone to get a Category. No security check.
         final CategoryDomainObject category = documentMapper.getCategoryById( categoryId );
-        if (null != category) {
+        if ( null != category ) {
             return new Category( category );
         } else {
             return null;
@@ -179,7 +177,7 @@ public class DocumentService {
     public CategoryType getCategoryType( String categoryTypeName ) {
         // Allow everyone to get a CategoryType. No security check.
         final CategoryTypeDomainObject categoryType = documentMapper.getCategoryType( categoryTypeName );
-        if (null != categoryType) {
+        if ( null != categoryType ) {
             return new CategoryType( categoryType );
         }
         return null;
@@ -189,7 +187,7 @@ public class DocumentService {
         // Allow everyone to get a CategoryType. No security check.
         CategoryDomainObject[] categoryDomainObjects = documentMapper.getAllCategoriesOfType( categoryType.getInternal() );
         Category[] categories = new Category[categoryDomainObjects.length];
-        for (int i = 0; i < categoryDomainObjects.length; i++) {
+        for ( int i = 0; i < categoryDomainObjects.length; i++ ) {
             CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
             categories[i] = new Category( categoryDomainObject );
         }
@@ -200,7 +198,7 @@ public class DocumentService {
         // Allow everyone to get a CategoryType. No security check.
         CategoryTypeDomainObject[] categoryTypeDomainObjects = documentMapper.getAllCategoryTypes();
         CategoryType[] categoryTypes = new CategoryType[categoryTypeDomainObjects.length];
-        for (int i = 0; i < categoryTypeDomainObjects.length; i++) {
+        for ( int i = 0; i < categoryTypeDomainObjects.length; i++ ) {
             CategoryTypeDomainObject categoryTypeDomainObject = categoryTypeDomainObjects[i];
             categoryTypes[i] = new CategoryType( categoryTypeDomainObject );
         }
@@ -208,20 +206,20 @@ public class DocumentService {
     }
 
     /**
-     *
      * @param name
      * @param maxChoices
      * @return The newly craeated category type.
      * @throws NoPermissionException
      * @throws CategoryTypeAlreadyExistsException
+     *
      */
     public CategoryType createNewCategoryType( String name, int maxChoices ) throws NoPermissionException, CategoryTypeAlreadyExistsException {
         securityChecker.isSuperAdmin();
-        if( documentMapper.isUniqueCategoryTypeName( name ) ) {
+        if ( documentMapper.isUniqueCategoryTypeName( name ) ) {
             CategoryTypeDomainObject newCategoryTypeDO = documentMapper.addCategoryTypeToDb( name, maxChoices );
             return new CategoryType( newCategoryTypeDO );
         } else {
-            throw new CategoryTypeAlreadyExistsException("A category with name " + name + " already exists." );
+            throw new CategoryTypeAlreadyExistsException( "A category with name " + name + " already exists." );
         }
     }
 
@@ -237,11 +235,14 @@ public class DocumentService {
 
     public Category createNewCategory( String name, String description, String imageUrl, CategoryType categoryType ) throws NoPermissionException, CategoryAlreadyExistsException {
         securityChecker.isSuperAdmin();
-        if ( !categoryType.getInternal().hasCategoryWithName( categoryType.getInternal(), name )) {
+        if ( !categoryType.getInternal().hasCategoryWithName( categoryType.getInternal(), name ) ) {
             CategoryDomainObject newCategoryDO = documentMapper.addCategoryToDb( categoryType.getInternal().getId(), name, description, imageUrl );
             return new Category( newCategoryDO );
         } else {
-            throw new CategoryAlreadyExistsException( "A category with name " + name + " already exists in category type " + categoryType.getName() + "." );
+            throw new CategoryAlreadyExistsException( "A category with name " + name
+                                                      + " already exists in category type "
+                                                      + categoryType.getName()
+                                                      + "." );
         }
     }
 
@@ -249,9 +250,9 @@ public class DocumentService {
         // Allow everyone to get a Section. No security check.
         SectionDomainObject[] sections = documentMapper.getAllSections();
         Section result = null;
-        for (int i = 0; i < sections.length; i++) {
+        for ( int i = 0; i < sections.length; i++ ) {
             SectionDomainObject section = sections[i];
-            if (sectionId == section.getId()) {
+            if ( sectionId == section.getId() ) {
                 result = new Section( section );
             }
         }
@@ -262,18 +263,18 @@ public class DocumentService {
         try {
             DocumentDomainObject[] documentDomainObjects = documentMapper.getDocumentIndex().search( query.getQuery(), securityChecker.getCurrentLoggedInUser() );
             Document[] documents = new Document[documentDomainObjects.length];
-            for (int i = 0; i < documentDomainObjects.length; i++) {
+            for ( int i = 0; i < documentDomainObjects.length; i++ ) {
                 DocumentDomainObject documentDomainObject = documentDomainObjects[i];
                 documents[i] = wrapDocumentDomainObject( documentDomainObject );
             }
             return documents;
-        } catch (IOException e) {
+        } catch ( IOException e ) {
             throw new SearchException( e );
         }
     }
 
     public SearchQuery parseLuceneSearchQuery( String query ) throws BadQueryException {
-        return new LuceneParsedQuery( query ) ;
+        return new LuceneParsedQuery( query );
     }
 
 }

@@ -2,6 +2,9 @@ package imcode.server.document;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import org.apache.commons.lang.time.StopWatch;
@@ -230,14 +233,14 @@ public class DocumentIndex {
             while ( textsIterator.hasNext() ) {
                 Map.Entry textEntry = (Map.Entry)textsIterator.next();
                 Integer textIndex = (Integer)textEntry.getKey();
-                TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)textEntry.getValue();
+                TextDomainObject text = (TextDomainObject)textEntry.getValue();
                 indexDocument.add( Field.UnStored( FIELD__TEXT, text.getText() ) );
                 indexDocument.add( Field.UnStored( FIELD__TEXT + textIndex, text.getText() ) );
             }
 
             Iterator imagesIterator = textDocument.getImages().values().iterator();
             while ( imagesIterator.hasNext() ) {
-                TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)imagesIterator.next();
+                ImageDomainObject image = (ImageDomainObject)imagesIterator.next();
                 String imageLinkUrl = image.getLinkUrl();
                 if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
                     indexDocument.add( unStoredKeyword( FIELD__IMAGE_LINK_URL, imageLinkUrl ) );

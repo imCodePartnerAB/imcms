@@ -69,14 +69,6 @@ public interface IMCConstants {
     /** The error-log, used for logging errors, exceptions, and the like. */
     public final static String ERROR_LOG		= "errorlog";
 
-    /* Menu-sort-orders. */
-    public final static int MENU_SORT_BY_HEADLINE        = 1 ;
-    public final static int MENU_SORT_BY_MANUAL_ORDER    = 2 ;
-    public final static int MENU_SORT_BY_DATETIME        = 3 ;
-    public final static int MENU_SORT_BY_MANUAL_TREE_ORDER = 4;
-
-    public final static int MENU_SORT_DEFAULT = MENU_SORT_BY_HEADLINE ;
-
     final static int PASSWORD_MINIMUM_LENGTH = 4;
 
     final static int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;

@@ -4,7 +4,9 @@ import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -16,7 +18,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Save text in a document.
+ * Save textdocument in a document.
  */
 public class SaveText extends HttpServlet {
 
@@ -40,8 +42,8 @@ public class SaveText extends HttpServlet {
         // get text_no
         int txt_no = Integer.parseInt( req.getParameter( "txt_no" ) );
 
-        // get text
-        String text_string = req.getParameter( "text" );
+        // get textdocument
+        String text_string = req.getParameter( "textdocument" );
 
         int text_format = Integer.parseInt( req.getParameter( "format_type" ) );
 
@@ -50,7 +52,7 @@ public class SaveText extends HttpServlet {
             text_type = "";
         }
 
-        TextDocumentDomainObject.Text text = new TextDocumentDomainObject.Text( text_string, text_format );
+        TextDomainObject text = new TextDomainObject( text_string, text_format );
 
         user.put( "flags", new Integer( imcode.server.IMCConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) );
 

@@ -2,7 +2,9 @@ package com.imcode.imcms.servlet.admin;
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
-import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
@@ -16,7 +18,7 @@ import java.io.Writer;
 import java.util.Vector;
 
 /**
- * Edit text in a document.
+ * Edit textdocument in a document.
  */
 public class ChangeText extends HttpServlet {
 
@@ -48,10 +50,10 @@ public class ChangeText extends HttpServlet {
             return;
         }
 
-        TextDocumentDomainObject.Text text = imcref.getText( meta_id, txt_no );
+        TextDomainObject text = imcref.getText( meta_id, txt_no );
 
         if ( null == text ) {
-            text = new TextDocumentDomainObject.Text( "", TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN );
+            text = new TextDomainObject( "", TextDomainObject.TEXT_TYPE_PLAIN );
         }
 
         String[] tags = {
@@ -62,7 +64,7 @@ public class ChangeText extends HttpServlet {
         String text_string = Parser.parseDoc( text.getText(), tags );
 
         Vector vec = new Vector();
-        if ( text.getType() == TextDocumentDomainObject.Text.TEXT_TYPE_HTML ) {
+        if ( text.getType() == TextDomainObject.TEXT_TYPE_HTML ) {
             vec.add( "#html#" );
             vec.add( "checked" );
             vec.add( "#!html#" );
@@ -81,7 +83,7 @@ public class ChangeText extends HttpServlet {
         vec.add( text_string );
         vec.add( "#meta_id#" );
         vec.add( String.valueOf( meta_id ) );
-        vec.add( "#txt_no#" );   // text number
+        vec.add( "#txt_no#" );   // textdocument number
         vec.add( String.valueOf( txt_no ) );
         vec.add( "#txt_type#" );
         vec.add( text_type );

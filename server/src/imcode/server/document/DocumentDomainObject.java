@@ -3,7 +3,9 @@ package imcode.server.document;
 import com.imcode.imcms.servlet.admin.DocumentComposer;
 import com.imcode.imcms.api.NoPermissionException;
 import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import imcode.server.ApplicationServer;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -523,7 +525,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         }
     }
 
-    public abstract static class Comparator implements java.util.Comparator {
+    public abstract static class DocumentComparator extends ChainableReversibleNullComparator {
 
         public int compare( Object o1, Object o2 ) {
             final DocumentDomainObject d1 = (DocumentDomainObject)o1;
@@ -531,15 +533,28 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
             try {
                 return compareDocuments( d1, d2 );
             } catch ( NullPointerException npe ) {
-                throw new NullPointerException( "Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.") ;
+                throw new NullPointerException( "Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your MenuItemComparator.") ;
             }
         }
 
         protected abstract int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) ;
 
-        public final static DocumentDomainObject.Comparator ID = new DocumentDomainObject.Comparator() {
+        public final static DocumentDomainObject.DocumentComparator ID = new DocumentDomainObject.DocumentComparator() {
             protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
                 return d1.getId() - d2.getId();
+            }
+        };
+
+        public final static DocumentComparator HEADLINE = new DocumentDomainObject.DocumentComparator() {
+            protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
+                return d1.getHeadline().compareTo( d2.getHeadline() ) ;
+            }
+
+        };
+
+        public final static DocumentComparator MODIFIED_DATETIME = new DocumentDomainObject.DocumentComparator() {
+            protected int compareDocuments( DocumentDomainObject d1, DocumentDomainObject d2 ) {
+                return d1.getModifiedDatetime().compareTo( d2.getModifiedDatetime() ) ;
             }
         };
 

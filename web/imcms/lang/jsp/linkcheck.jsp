@@ -20,6 +20,7 @@
             <tr>
                 <th><? web/imcms/lang/jsp/linkcheck.jsp/heading_type ?></th>
                 <th><? web/imcms/lang/jsp/linkcheck.jsp/heading_adminlink ?></th>
+                <th><? web/imcms/lang/jsp/linkcheck.jsp/heading_ref ?></th>
                 <th><? web/imcms/lang/jsp/linkcheck.jsp/heading_url ?></th>
                 <th width="5%"><? web/imcms/lang/jsp/linkcheck.jsp/heading_valid_url ?></th>
                 <th width="5%"><? web/imcms/lang/jsp/linkcheck.jsp/heading_host_found ?></th>
@@ -38,19 +39,19 @@
                                 %><? web/imcms/lang/jsp/linkcheck.jsp/url_document ?></td>
                                 <td><a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= urlDocumentLink.getUrlDocument().getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS%>=<%= IMCConstants.DISPATCH_FLAG__EDIT_URL_DOCUMENT %>">
                                     <%= urlDocumentLink.getUrlDocument().getId() %> - <%= urlDocumentLink.getUrlDocument().getHeadline() %>
-                                </a>
+                                </a></td><td>... <? web/imcms/lang/jsp/linkcheck.jsp/parent_count_unit ?>
                             <% } else if (link instanceof LinkCheck.TextLink) {
                                 LinkCheck.TextLink textLink = (LinkCheck.TextLink)link ;
                                 %><? web/imcms/lang/jsp/linkcheck.jsp/text ?></td>
                                 <td><a href="<%= request.getContextPath() %>/servlet/ChangeText?meta_id=<%= textLink.getTextDocument().getId() %>&txt=<%=textLink.getTextIndex()%>">
                                     <%= textLink.getTextDocument().getId() %> - <%= textLink.getTextIndex() %> - <%= textLink.getTextDocument().getHeadline() %>
-                                </a>
+                                </a></td><td>&nbsp;
                             <% } else if (link instanceof LinkCheck.ImageLink) {
                                 LinkCheck.ImageLink imageLink = (LinkCheck.ImageLink)link ;
                                 %><? web/imcms/lang/jsp/linkcheck.jsp/image ?></td>
                                 <td><a href="<%= request.getContextPath() %>/servlet/ChangeImage?meta_id=<%= imageLink.getTextDocument().getId() %>&img=<%=imageLink.getImageIndex()%>">
                                     <%= imageLink.getTextDocument().getId() %> - <%= imageLink.getImageIndex() %> - <%= imageLink.getTextDocument().getHeadline() %>
-                                </a>
+                                </a></td><td>&nbsp;
                             <% } %>
                         </td>
                         <td><a href="<%= link.getUrl() %>"><%= link.getUrl() %></a></td>

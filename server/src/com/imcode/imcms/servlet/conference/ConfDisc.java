@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.text.SimpleDateFormat;
 
 /**
  * Html template in use:
@@ -520,8 +521,7 @@ public class ConfDisc extends Conference {
 
     private boolean compareDates( String date1, String date2 ) {
         // Lets fix the date
-        // java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat() ;
-        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+        SimpleDateFormat formatter = new java.text.SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
         GregorianCalendar firstDate = new GregorianCalendar();
         GregorianCalendar secDate = new GregorianCalendar();
 

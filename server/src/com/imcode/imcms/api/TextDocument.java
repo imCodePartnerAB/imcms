@@ -1,6 +1,8 @@
 package com.imcode.imcms.api;
 
 import imcode.server.document.*;
+import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserAndRoleMapper;
 import imcode.server.*;
 
@@ -14,22 +16,22 @@ public class TextDocument extends Document {
 
     public TextField getTextField(int textFieldIndexInDocument) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        TextDocumentDomainObject.Text imcmsText = documentMapper.getTextField(internalDocument, textFieldIndexInDocument);
+        TextDomainObject imcmsText = documentMapper.getTextField(internalDocument, textFieldIndexInDocument);
         TextField textField = new TextField(imcmsText);
         return textField;
     }
 
     public void setPlainTextField(int textFieldIndexInDocument, String newText) throws NoPermissionException {
-        setTextField(textFieldIndexInDocument, newText, TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN);
+        setTextField(textFieldIndexInDocument, newText, TextDomainObject.TEXT_TYPE_PLAIN);
     }
 
     public void setHtmlTextField(int textFieldIndexInDocument, String newText) throws NoPermissionException {
-        setTextField(textFieldIndexInDocument, newText, TextDocumentDomainObject.Text.TEXT_TYPE_HTML);
+        setTextField(textFieldIndexInDocument, newText, TextDomainObject.TEXT_TYPE_HTML);
     }
 
     private void setTextField(int textFieldIndexInDocument, String newText, int textType) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        TextDocumentDomainObject.Text imcmsText = new TextDocumentDomainObject.Text(newText, textType);
+        TextDomainObject imcmsText = new TextDomainObject(newText, textType);
         ((TextDocumentDomainObject)internalDocument).setText( textFieldIndexInDocument, imcmsText);
     }
 
@@ -50,7 +52,7 @@ public class TextDocument extends Document {
                            int h_space, String align, String link_target, String link_href, String alt_text,
                            String low_src ) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        TextDocumentDomainObject.Image internalImage = new TextDocumentDomainObject.Image();
+        imcode.server.document.textdocument.ImageDomainObject internalImage = new ImageDomainObject();
 
         internalImage.setUrl(image_src); // image srcurl,  relative imageurl
         internalImage.setName(image_name);  // html imagetag name
@@ -69,7 +71,7 @@ public class TextDocument extends Document {
 
     public Image getImage( int imageIndexInDocument ) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        TextDocumentDomainObject.Image imageDomainObject = documentMapper.getDocumentImage( internalDocument.getId(), imageIndexInDocument );
+        ImageDomainObject imageDomainObject = ((TextDocumentDomainObject)internalDocument).getImage( imageIndexInDocument );
         if( null != imageDomainObject ) {
             return new Image(imageDomainObject, service);
         } else {
@@ -96,7 +98,7 @@ public class TextDocument extends Document {
      */
     public void setTemplate(Template template) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        // todo: check if the template is alowed to be set on this document
+        // todo: check if the template is alowed to be set on this internalTextDocument
         setTemplateInternal(template);
     }
 
@@ -137,7 +139,7 @@ public class TextDocument extends Document {
      */
     public void setMenuSortOrder(int sortOrder) throws NoPermissionException {
         securityChecker.hasEditPermission(this);
-        //((TextDocumentDomainObject)internalDocument).setMenuSortOrder(sortOrder);
+        //((TextDocumentDomainObject)internalTextDocument).setMenuSortOrder(sortOrder);
     }
 
     /**
@@ -151,7 +153,7 @@ public class TextDocument extends Document {
      */
     public int getMenuSortOrder() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
-        //return ((TextDocumentDomainObject)internalDocument).getMenuSortOrder();
+        //return ((TextDocumentDomainObject)internalTextDocument).getMenuSortOrder();
         return TextDocument.Menu.SORT_BY_HEADLINE ;
     }
 
@@ -168,9 +170,9 @@ public class TextDocument extends Document {
     }
 
     public static class TextField {
-        TextDocumentDomainObject.Text imcmsText;
+        TextDomainObject imcmsText;
 
-        private TextField(TextDocumentDomainObject.Text imcmsText) {
+        private TextField(TextDomainObject imcmsText) {
             this.imcmsText = imcmsText;
         }
 
@@ -178,14 +180,14 @@ public class TextDocument extends Document {
          * Set the format of the text in this textfield to HTML. (Should not be html-formatted.)
          */
         public void setHtmlFormat() {
-            this.imcmsText.setType(TextDocumentDomainObject.Text.TEXT_TYPE_HTML);
+            this.imcmsText.setType(TextDomainObject.TEXT_TYPE_HTML);
         }
 
         /**
          * Set the format of the text in this textfield to plain text. (Should be html-formatted.)
          */
         public void setPlainFormat() {
-            this.imcmsText.setType(TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN);
+            this.imcmsText.setType(TextDomainObject.TEXT_TYPE_PLAIN);
         }
 
         /**
@@ -230,22 +232,26 @@ public class TextDocument extends Document {
         }
 
         public int getManualNumber() {
-            return internalMenuItem.getManualNumber();
+            Integer sortKey = internalMenuItem.getSortKey();
+            if (null == sortKey) {
+                return 0 ;
+            }
+            return sortKey.intValue();
         }
 
         public TreeKey getTreeKey() {
-            return new TreeKey(internalMenuItem.getTreeKey());
+            return new TreeKey(internalMenuItem.getTreeSortKey());
         }
 
         public class TreeKey {
-            TreeKeyDomainObject internalTreeKey;
+            TreeSortKeyDomainObject internalTreeSortKey;
 
-            public TreeKey(TreeKeyDomainObject internalTreeKey) {
-                this.internalTreeKey = internalTreeKey;
+            public TreeKey(TreeSortKeyDomainObject internalTreeSortKey) {
+                this.internalTreeSortKey = internalTreeSortKey;
             }
 
             public int getLevelCount() {
-                return internalTreeKey.getLevelCount();
+                return internalTreeSortKey.getLevelCount();
             }
 
             /**
@@ -254,11 +260,11 @@ public class TextDocument extends Document {
              * @return the key on the level requested. Throws a NoSuchElementException() if there is none.
              */
             public int getLevelKey(int level) {
-                return internalTreeKey.getLevelKey(level);
+                return internalTreeSortKey.getLevelKey(level - 1);
             }
 
             public String toString() {
-                return internalTreeKey.toString();
+                return internalTreeSortKey.toString();
             }
         }
     }
@@ -267,30 +273,32 @@ public class TextDocument extends Document {
         /**
          * Menu sorted by headline. *
          */
-        public final static int SORT_BY_HEADLINE = IMCConstants.MENU_SORT_BY_HEADLINE;
+        public final static int SORT_BY_HEADLINE = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE;
         /**
          * Menu sorted by 'manual' order. *
          */
-        public final static int SORT_BY_MANUAL_ORDER_DESCENDING = IMCConstants.MENU_SORT_BY_MANUAL_ORDER;
+        public final static int SORT_BY_MANUAL_ORDER_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER;
         /**
          * Menu sorted by datetime. *
          */
-        public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = IMCConstants.MENU_SORT_BY_DATETIME;
+        public final static int SORT_BY_MODIFIED_DATETIME_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME;
         /**
          * Menu sorted by tree sort order
          */
-        public final static int SORT_BY_TREE_ORDER_DESCENDING = IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER;
+        public final static int SORT_BY_TREE_ORDER_DESCENDING = imcode.server.document.textdocument.MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
 
-        private MenuDomainObject internalMenu;
         private SecurityChecker securityChecker;
+        private TextDocumentDomainObject internalTextDocument;
+        private int menuIndex;
 
-        private Menu(TextDocument owner, int menuIndex, SecurityChecker securityChecker) {
-            internalMenu = new MenuDomainObject(owner.internalDocument, menuIndex, owner.documentMapper);
+        private Menu(TextDocument document, int menuIndex, SecurityChecker securityChecker) {
+            this.internalTextDocument = (TextDocumentDomainObject)document.internalDocument ;
+            this.menuIndex = menuIndex ;
             this.securityChecker = securityChecker;
         }
 
         public MenuItem[] getMenuItems() throws NoPermissionException {
-            MenuItemDomainObject[] menuItemsDomainObjects = internalMenu.getMenuItems();
+            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu( menuIndex ).getMenuItems();
             MenuItem[] menuItems = new MenuItem[menuItemsDomainObjects.length];
             for (int i = 0; i < menuItemsDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
@@ -300,40 +308,31 @@ public class TextDocument extends Document {
         }
 
         /**
-         * Add a document to the menu.
+         * Add a internalTextDocument to the menu.
          *
-         * @param documentToAdd the document to add
+         * @param documentToAdd the internalTextDocument to add
          * @throws NoPermissionException          If you lack permission to edit the menudocument or permission to add the owner.
          * @throws DocumentAlreadyInMenuException If the owner already is in the menu.
          */
         public void addDocument(Document documentToAdd) throws NoPermissionException, DocumentAlreadyInMenuException {
             securityChecker.hasEditPermission(documentToAdd.getId());
             securityChecker.hasSharePermission(documentToAdd);
-            try {
-                documentMapper.addDocumentToMenu(securityChecker.getCurrentLoggedInUser(), internalMenu.getOwnerDocument(), internalMenu.getMenuIndex(), documentToAdd.getInternal());
-            } catch (DocumentMapper.DocumentAlreadyInMenuException e) {
-                throw new DocumentAlreadyInMenuException("Menu " + internalMenu.getMenuIndex() + " of owner " +
-                        internalMenu.getOwnerDocument().getId() + " already contains owner " + documentToAdd.getId());
-            }
+            internalTextDocument.getMenu(menuIndex).addMenuItem( new MenuItemDomainObject( documentToAdd.internalDocument ) );
         }
 
         /**
-         * Remove a document from the menu.
+         * Remove a internalTextDocument from the menu.
          *
-         * @param documentToRemove the document to remove
+         * @param documentToRemove the internalTextDocument to remove
          * @throws NoPermissionException If you lack permission to edit the menudocument.
          */
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
             securityChecker.hasEditPermission(documentToRemove.getId());
-            documentMapper.removeDocumentFromMenu(securityChecker.getCurrentLoggedInUser(),
-                    internalMenu.getOwnerDocument(),
-                    internalMenu.getMenuIndex(),
-                    documentToRemove.getInternal());
-
+            internalTextDocument.getMenu(menuIndex).removeMenuItem( new MenuItemDomainObject( documentToRemove.internalDocument ) );
         }
 
         public Document[] getDocuments() {
-            MenuItemDomainObject[] menuItemDomainObjects = documentMapper.getMenuItemsForDocument(internalDocument.getId(), internalMenu.getMenuIndex());
+            MenuItemDomainObject[] menuItemDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems() ;
             List documentList = new ArrayList() ;
             for (int i = 0; i < menuItemDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemDomainObjects[i];

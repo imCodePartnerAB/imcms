@@ -13,6 +13,8 @@ import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.*;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
@@ -601,8 +603,8 @@ public class DocumentComposer extends HttpServlet {
                                                    UserDomainObject user ) throws IOException {
 
         if ( null != request.getParameter( PARAMETER__COPY_HEADLINE_AND_TEXT_TO_TEXTFIELDS ) ) {
-            newTextDocument.setText( 1, new TextDocumentDomainObject.Text( newTextDocument.getHeadline(), TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN ) );
-            newTextDocument.setText( 2, new TextDocumentDomainObject.Text( newTextDocument.getMenuText(), TextDocumentDomainObject.Text.TEXT_TYPE_PLAIN ) );
+            newTextDocument.setText( 1, new TextDomainObject( newTextDocument.getHeadline(), TextDomainObject.TEXT_TYPE_PLAIN ) );
+            newTextDocument.setText( 2, new TextDomainObject( newTextDocument.getMenuText(), TextDomainObject.TEXT_TYPE_PLAIN ) );
         }
         saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( newTextDocument, newDocumentParentInformation, user, request );
         redirectToDocumentIdInMenumode( response, newDocumentParentInformation.parentId, newDocumentParentInformation.parentMenuIndex );

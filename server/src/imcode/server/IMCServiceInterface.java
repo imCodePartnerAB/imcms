@@ -8,8 +8,11 @@ import imcode.server.parser.ParserParameters ;
 import imcode.server.user.*;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.db.ConnectionPool;
 import imcode.util.net.SMTP;
 import org.apache.velocity.app.VelocityEngine;
@@ -27,13 +30,13 @@ public interface IMCServiceInterface {
     /**
        Retrieve a text-field
     **/
-    TextDocumentDomainObject.Text getText(int meta_id,int txt_no)
+    TextDomainObject getText(int meta_id,int txt_no)
 	;
 
     String parsePage( ParserParameters paramsToParse ) throws IOException ;
 
     // Save an image
-    void saveImage(int meta_id,UserDomainObject user,int img_no,TextDocumentDomainObject.Image image)
+    void saveImage(int meta_id,UserDomainObject user,int img_no,ImageDomainObject image)
 	;
 
     /**

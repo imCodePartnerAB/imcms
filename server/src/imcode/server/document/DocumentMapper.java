@@ -1,8 +1,8 @@
 package imcode.server.document;
 
-import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.*;
+import imcode.server.document.textdocument.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -47,7 +47,6 @@ public class DocumentMapper {
     private IMCServiceInterface service;
     private DocumentIndex documentIndex;
     private static final int FILE_BUFFER_LENGTH = 2048;
-    private static final String XOPEN_SQLSTATE__INTEGRITY_CONSTRAINT_VIOLATION = "23000";
 
     private static final String TEMPLATE__STATUS_NEW = "textdoc/status/new.frag";
     private static final String TEMPLATE__STATUS_DISAPPROVED = "textdoc/status/disapproved.frag";
@@ -63,72 +62,6 @@ public class DocumentMapper {
         File indexDirectory = new File( webAppPath, "WEB-INF/index" );
 
         this.documentIndex = new DocumentIndex( indexDirectory );
-    }
-
-    public void addDocumentToMenu( UserDomainObject user, DocumentDomainObject menuDocument, int menuIndex,
-                                   DocumentDomainObject documentToBeAdded )
-            throws DocumentAlreadyInMenuException {
-
-        String menuIdStr = sqlSelectMenuId( menuDocument, menuIndex );
-        if (null == menuIdStr) {
-            sqlInsertMenu( menuDocument, menuIndex );
-            // FIXME: Get generated menu_id primary key from insert without selecting it.
-            menuIdStr = sqlSelectMenuId( menuDocument, menuIndex );
-        }
-        int menuId = Integer.parseInt( menuIdStr );
-
-        String sqlSelectMaxManualSortIndex = "SELECT ISNULL(MAX(manual_sort_order),500) FROM childs WHERE menu_id = ?";
-        String maxManualSortIndexStr = service.sqlQueryStr( sqlSelectMaxManualSortIndex, new String[]{"" + menuId} );
-        if (null == maxManualSortIndexStr) {
-            maxManualSortIndexStr = "" + 500;
-        }
-        int maxManualSortIndex = Integer.parseInt( maxManualSortIndexStr );
-        int newManualSortIndex = maxManualSortIndex + 10;
-
-        String sqlInsertChild = "INSERT INTO childs (menu_id, to_meta_id, manual_sort_order, tree_sort_index)\n"
-                + "VALUES(?,?,?,'')";
-        try {
-            service.sqlUpdateQuery( sqlInsertChild, new String[]{
-                "" + menuId, "" + documentToBeAdded.getId(), ""
-                    + newManualSortIndex
-            } );
-        } catch (RuntimeException re) {
-            if (re.getCause() instanceof SQLException) {
-                SQLException sqlException = (SQLException) re.getCause();
-                if (XOPEN_SQLSTATE__INTEGRITY_CONSTRAINT_VIOLATION.equals( sqlException.getSQLState() )) {
-                    throw new DocumentAlreadyInMenuException( "Failed to add document " + documentToBeAdded.getId()
-                            + " to menu "
-                            + menuIndex
-                            + " on document "
-                            + menuDocument.getId() );
-                }
-            }
-            throw re;
-        }
-
-        touchDocument( menuDocument );
-        indexDocument( documentToBeAdded );
-
-        service.updateLogs( "Link from [" + menuDocument.getId() + "] in menu [" + menuIndex + "] to ["
-                + documentToBeAdded.getId()
-                + "] added by user: ["
-                + user.getFullName()
-                + "]" );
-    }
-
-    private void sqlInsertMenu( DocumentDomainObject menuDocument, int menuIndex ) {
-        String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?)";
-        service.sqlUpdateQuery( sqlInsertMenu, new String[]{
-            "" + menuDocument.getId(), "" + menuIndex, "" + IMCConstants.MENU_SORT_DEFAULT
-        } );
-    }
-
-    private String sqlSelectMenuId( DocumentDomainObject menuDocument, int menuIndex ) {
-        String sqlSelectMenuId = "SELECT menu_id FROM menus WHERE meta_id = ? AND menu_index = ?";
-        String menuIdStr = service.sqlQueryStr( sqlSelectMenuId, new String[]{
-            "" + menuDocument.getId(), "" + menuIndex
-        } );
-        return menuIdStr;
     }
 
     private boolean userCanCreateDocumentOfTypeIdFromParent( UserDomainObject user, int documentTypeId,
@@ -208,6 +141,9 @@ public class DocumentMapper {
             Integer permissionSetId = ((Integer) rolesMappedToPermissionSetIds.get( usersRole ));
             if (null != permissionSetId && permissionSetId.intValue() < mostPrivilegedPermissionSetIdFoundYet) {
                 mostPrivilegedPermissionSetIdFoundYet = permissionSetId.intValue();
+                if (DocumentPermissionSetDomainObject.TYPE_ID__FULL == mostPrivilegedPermissionSetIdFoundYet) {
+                    break ;
+                }
             }
         }
         return mostPrivilegedPermissionSetIdFoundYet;
@@ -504,7 +440,7 @@ public class DocumentMapper {
 
     }
 
-    void initLazilyLoadedTextDocumentAttributes( TextDocumentDomainObject document ) {
+    public void initLazilyLoadedTextDocumentAttributes( TextDocumentDomainObject document ) {
         // all from the table text_doc
         String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, default_template_1, default_template_2 FROM text_docs WHERE meta_id = ?",
                 new String[]{String.valueOf( document.getId() )} );
@@ -524,7 +460,30 @@ public class DocumentMapper {
         setDocumentTexts( document );
         setDocumentImages( document );
         setDocumentIncludes( document );
+        setDocumentMenus( document );
 
+    }
+
+    private void setDocumentMenus( TextDocumentDomainObject document ) {
+        String sqlSelectDocumentMenus = "SELECT menus.menu_id, menu_index, sort_order, to_meta_id, manual_sort_order, tree_sort_index FROM menus,childs WHERE menus.menu_id = childs.menu_id AND meta_id = ? ORDER BY menu_index" ;
+        String[][] sqlRows = service.sqlQueryMulti(sqlSelectDocumentMenus, new String[] { ""+document.getId() } ) ;
+        MenuDomainObject menu = null ;
+        int previousMenuIndex = 0 ;
+        for ( int i = 0; i < sqlRows.length; i++ ) {
+            String[] sqlRow = sqlRows[i];
+            int menuId = Integer.parseInt(sqlRow[0]) ;
+            int menuIndex = Integer.parseInt(sqlRow[1]) ;
+            int sortOrder = Integer.parseInt(sqlRow[2]) ;
+            int childId = Integer.parseInt(sqlRow[3]) ;
+            int manualSortKey = Integer.parseInt(sqlRow[4]) ;
+            String treeSortKey = sqlRow[5] ;
+            if (null == menu || menuIndex != previousMenuIndex ) {
+                previousMenuIndex = menuIndex ;
+                menu = new MenuDomainObject( menuId, sortOrder) ;
+                document.setMenu( menuIndex, menu ) ;
+            }
+            menu.addMenuItem( new MenuItemDomainObject( getDocument( childId ), new Integer(manualSortKey), treeSortKey ) );
+        }
     }
 
     private void setDocumentIncludes( TextDocumentDomainObject document ) {
@@ -552,7 +511,7 @@ public class DocumentMapper {
             int textIndex = Integer.parseInt( sqlTextsRow[0] );
             String text = sqlTextsRow[1];
             int textType = Integer.parseInt( sqlTextsRow[2] );
-            document.setText( textIndex, new TextDocumentDomainObject.Text( text, textType ) );
+            document.setText( textIndex, new TextDomainObject( text, textType ) );
         }
     }
 
@@ -615,27 +574,6 @@ public class DocumentMapper {
         }
     }
 
-    public MenuItemDomainObject[] getMenuItemsForDocument( int parentId, int menuIndex ) {
-        DocumentDomainObject parent = getDocument( parentId );
-        int sortOrder = getSortOrderOfMenu( parentId, menuIndex );
-        String orderBy = getSortOrderAsSqlOrderBy( sortOrder );
-        String sqlStr = "select to_meta_id, menu_index, manual_sort_order, tree_sort_index from childs,menus,meta where childs.menu_id = menus.menu_id AND menus.meta_id = ? AND childs.to_meta_id = meta.meta_id AND menu_index = ? order by "
-                + orderBy;
-        String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + parentId, "" + menuIndex} );
-        MenuItemDomainObject[] menuItems = new MenuItemDomainObject[sqlResult.length];
-        for (int i = 0; i < sqlResult.length; i++) {
-            int to_meta_id = Integer.parseInt( sqlResult[i][0] );
-            int menu_index = Integer.parseInt( sqlResult[i][1] );
-            int manual_sort_order = Integer.parseInt( sqlResult[i][2] );
-            String tree_sort_index = sqlResult[i][3];
-            DocumentDomainObject child = getDocument( to_meta_id );
-            menuItems[i] = new MenuItemDomainObject( parent, child, menu_index, manual_sort_order, tree_sort_index );
-        }
-        Arrays.sort( menuItems, new MenuItemDomainObject.TreeKeyComparator() );
-
-        return menuItems;
-    }
-
     public SectionDomainObject getSectionById( int sectionId ) {
         String sectionName = service.sqlQueryStr( "SELECT section_name FROM sections WHERE section_id = ?",
                 new String[]{"" + sectionId} );
@@ -662,7 +600,7 @@ public class DocumentMapper {
         return sections;
     }
 
-    public TextDocumentDomainObject.Text getText( int metaId, int no ) {
+    public TextDomainObject getText( int metaId, int no ) {
         String[] results = sprocGetText( metaId, no );
 
         if (results == null || results.length == 0) {
@@ -674,11 +612,11 @@ public class DocumentMapper {
         String text = results[0];
         int type = Integer.parseInt( results[1] );
 
-        return new TextDocumentDomainObject.Text( text, type );
+        return new TextDomainObject( text, type );
 
     }
 
-    public TextDocumentDomainObject.Text getTextField( DocumentDomainObject document, int textFieldIndexInDocument ) {
+    public TextDomainObject getTextField( DocumentDomainObject document, int textFieldIndexInDocument ) {
         return getText( document.getId(), textFieldIndexInDocument );
     }
 
@@ -820,7 +758,7 @@ public class DocumentMapper {
         return metaId;
     }
 
-    void saveNewTextDocument( TextDocumentDomainObject textDocument, UserDomainObject user ) {
+    public void saveNewTextDocument( TextDocumentDomainObject textDocument, UserDomainObject user ) {
         String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template_1, default_template_2) VALUES (?,?,?,?,?)";
         TemplateDomainObject textDocumentTemplate = textDocument.getTemplate();
         service.sqlUpdateQuery( sqlTextDocsInsertStr,
@@ -1050,7 +988,7 @@ public class DocumentMapper {
      *                  pollparameter-description		  description for this poll
      */
 
-    public void saveText( TextDocumentDomainObject.Text text, DocumentDomainObject document, int txt_no, UserDomainObject user,
+    public void saveText( TextDomainObject text, DocumentDomainObject document, int txt_no, UserDomainObject user,
                           String text_type ) {
         String textstring = text.getText();
 
@@ -1198,34 +1136,6 @@ public class DocumentMapper {
         imcref.sqlUpdateQuery( "INSERT INTO meta_section VALUES(?,?)", new String[]{"" + metaId, "" + sectionId} );
     }
 
-    private String getSortOrderAsSqlOrderBy( int sortOrder ) {
-        String orderBy = "meta_headline";
-        switch (sortOrder) {
-            case TextDocument.Menu.SORT_BY_MANUAL_ORDER_DESCENDING:
-                orderBy = "manual_sort_order desc";
-                break;
-
-            case TextDocument.Menu.SORT_BY_MODIFIED_DATETIME_DESCENDING:
-                orderBy = "date_modified desc";
-                break;
-
-            case TextDocument.Menu.SORT_BY_HEADLINE:
-                orderBy = "meta_headline";
-                break;
-        }
-        return orderBy;
-    }
-
-    private int getSortOrderOfMenu( int documentId, int menuIndex ) {
-        String temp = service.sqlQueryStr( "SELECT sort_order FROM menus WHERE meta_id = ? AND menu_index = ?",
-                new String[]{"" + documentId, "" + menuIndex} );
-        if (null != temp) {
-            return Integer.parseInt( temp );
-        } else {
-            return IMCConstants.MENU_SORT_DEFAULT;
-        }
-    }
-
     private static void makeBooleanSqlUpdateClause( String columnName, boolean bool, List sqlUpdateColumns,
                                                     List sqlUpdateValues ) {
         sqlUpdateColumns.add( columnName + " = ?" );
@@ -1358,7 +1268,7 @@ public class DocumentMapper {
     }
 
     private static void sprocUpdateInsertText( IMCServiceInterface service, int meta_id, int txt_no,
-                                               TextDocumentDomainObject.Text text, String textstring ) {
+                                               TextDomainObject text, String textstring ) {
         String[] params = new String[]{"" + meta_id, "" + txt_no, "" + text.getType(), textstring};
         service.sqlUpdateProcedure( SPROC_INSERT_TEXT, params );
     }
@@ -1384,33 +1294,6 @@ public class DocumentMapper {
         indexDocument( document );
     }
 
-    /**
-     * Retrieve the texts for a document
-     *
-     * @param meta_id The id of the document.
-     * @return A Map (String -> TextDocumentDomainObject.Text) with all the  texts in the document.
-     */
-    public Map getTexts( int meta_id ) {
-
-        // Now we'll get the texts from the db.
-        String[] texts = service.sqlProcedure( "GetTexts", new String[]{String.valueOf( meta_id )});
-        Map textMap = new HashMap();
-        Iterator it = Arrays.asList( texts ).iterator();
-        while (it.hasNext()) {
-            try {
-                it.next(); // the key, not needed
-                String txt_no = (String) it.next();
-                int txt_type = Integer.parseInt( (String) it.next() );
-                String value = (String) it.next();
-                textMap.put( txt_no, new TextDocumentDomainObject.Text( value, txt_type ) );
-            } catch (NumberFormatException e) {
-                log.error( "SProc 'GetTexts " + meta_id + "' returned a non-number where a number was expected.", e );
-                return null;
-            }
-        }
-        return textMap;
-    }
-
     private boolean userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
                                                                            int leastPrivilegedPermissionSetIdWanted,
                                                                            DocumentDomainObject document ) {
@@ -1421,19 +1304,7 @@ public class DocumentMapper {
     private boolean userHasAtLeastPermissionSetIdOnDocument( UserDomainObject user,
                                                              int leastPrivilegedPermissionSetIdWanted,
                                                              DocumentDomainObject document ) {
-        boolean result = false;
-        RoleDomainObject[] userRoles = user.getRoles();
-        Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds();
-        for (int i = 0; i < userRoles.length; i++) {
-            RoleDomainObject userRole = userRoles[i];
-            Integer permissionSetIdForUserRole = (Integer) rolesMappedToPermissionSetIds.get( userRole );
-            if (null != permissionSetIdForUserRole
-                    && permissionSetIdForUserRole.intValue() <= leastPrivilegedPermissionSetIdWanted) {
-                result = true;
-                break;
-            }
-        }
-        return result;
+        return getUsersMostPrivilegedPermissionSetIdOnDocument(user, document) <= leastPrivilegedPermissionSetIdWanted ;
     }
 
     public DocumentIndex getDocumentIndex() {
@@ -1443,12 +1314,6 @@ public class DocumentMapper {
     String[][] getParentDocumentAndMenuIdsForDocument( DocumentDomainObject document ) {
         String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
         return service.sqlQueryMulti( sqlStr, new String[]{"" + document.getId()} );
-    }
-
-    public static int sqlGetDocTypeFromMeta( IMCServiceInterface imcref, int existing_meta_id ) {
-        String sqlStr = "select doc_type from meta where meta_id = ?";
-        String doc_type = imcref.sqlQueryStr( sqlStr, new String[]{"" + existing_meta_id} );
-        return Integer.parseInt( doc_type );
     }
 
     private final static String IMAGE_SQL_COLUMNS = "name,image_name,imgurl,width,height,border,v_space,h_space,target,align,alt_text,low_scr,linkurl";
@@ -1461,13 +1326,13 @@ public class DocumentMapper {
         for (int i = 0; i < imageRows.length; i++) {
             String[] imageRow = imageRows[i];
             Integer imageIndex = Integer.valueOf( imageRow[0] );
-            TextDocumentDomainObject.Image image = createImageFromSqlResultRow( imageRow );
+            ImageDomainObject image = createImageFromSqlResultRow( imageRow );
             imageMap.put( imageIndex, image );
         }
         return imageMap;
     }
 
-    public TextDocumentDomainObject.Image getDocumentImage( int meta_id, int img_no ) {
+    public ImageDomainObject getDocumentImage( int meta_id, int img_no ) {
         String[] sqlResult = service.sqlQuery( "select " + IMAGE_SQL_COLUMNS + " from images\n"
                 + "where meta_id = ? and name = ?",
                 new String[]{"" + meta_id, "" + img_no} );
@@ -1479,8 +1344,8 @@ public class DocumentMapper {
         }
     }
 
-    private TextDocumentDomainObject.Image createImageFromSqlResultRow( String[] sqlResult ) {
-        TextDocumentDomainObject.Image image = new TextDocumentDomainObject.Image();
+    private ImageDomainObject createImageFromSqlResultRow( String[] sqlResult ) {
+        ImageDomainObject image = new ImageDomainObject();
 
         image.setName( sqlResult[1] );
         image.setUrl( sqlResult[2] );
@@ -1498,7 +1363,7 @@ public class DocumentMapper {
         return image;
     }
 
-    public void saveDocumentImage( int meta_id, int img_no, TextDocumentDomainObject.Image image,
+    public void saveDocumentImage( int meta_id, int img_no, ImageDomainObject image,
                                    UserDomainObject user ) {
         String sqlStr = "update images\n"
                 + "set imgurl  = ?, \n"
@@ -1529,7 +1394,7 @@ public class DocumentMapper {
                 user.getFullName() + "]" );
     }
 
-    private int sqlImageUpdateQuery( String sqlStr, TextDocumentDomainObject.Image image, int meta_id, int img_no ) {
+    private int sqlImageUpdateQuery( String sqlStr, ImageDomainObject image, int meta_id, int img_no ) {
         return service.sqlUpdateQuery( sqlStr, new String[]{
             image.getUrl(),
             "" + image.getWidth(),
@@ -1563,10 +1428,9 @@ public class DocumentMapper {
     public void saveNewDocumentAndAddToMenu( DocumentDomainObject newDocument, UserDomainObject user,
                                              DocumentComposer.NewDocumentParentInformation newDocumentParentInformation ) throws MaxCategoryDomainObjectsOfTypeExceededException, DocumentAlreadyInMenuException {
         saveNewDocument( newDocument, user );
-        addDocumentToMenu( user, getDocument( newDocumentParentInformation.parentId ),
-                newDocumentParentInformation.parentMenuIndex,
-                newDocument );
-
+        TextDocumentDomainObject parentDocument = (TextDocumentDomainObject)getDocument( newDocumentParentInformation.parentId );
+        parentDocument.getMenu( newDocumentParentInformation.parentMenuIndex ).addMenuItem( new MenuItemDomainObject(newDocument));
+        saveDocument( parentDocument, user );
     }
 
     public BrowserDocumentDomainObject.Browser[] getAllBrowsers() {
@@ -1597,7 +1461,7 @@ public class DocumentMapper {
         return browser;
     }
 
-    void saveTextDocument( TextDocumentDomainObject textDocument, UserDomainObject user ) {
+    public void saveTextDocument( TextDocumentDomainObject textDocument, UserDomainObject user ) {
         String sqlStr = "UPDATE text_docs SET template_id = ?, group_id = ?,\n"
                 + "default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{
@@ -1611,6 +1475,75 @@ public class DocumentMapper {
         updateTextDocumentTexts( textDocument );
         updateTextDocumentImages( textDocument, user );
         updateTextDocumentIncludes( textDocument );
+        updateTextDocumentMenus( textDocument );
+    }
+
+    private void updateTextDocumentMenus( TextDocumentDomainObject textDocument ) {
+        deleteTextDocumentMenus( textDocument );
+        insertTextDocumentMenus( textDocument );
+    }
+
+    private void insertTextDocumentMenus( TextDocumentDomainObject textDocument ) {
+        Map menus = textDocument.getMenus() ;
+        for ( Iterator iterator = menus.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = (Map.Entry)iterator.next();
+            Integer menuIndex = (Integer)entry.getKey() ;
+            MenuDomainObject menu = (MenuDomainObject)entry.getValue() ;
+            sqlInsertMenu( textDocument, menuIndex.intValue(), menu );
+            insertTextDocumentMenuItems( menu );
+        }
+
+    }
+
+    private void insertTextDocumentMenuItems( MenuDomainObject menu ) {
+        MenuItemDomainObject[] menuItems = menu.getMenuItems() ;
+        for ( int i = 0; i < menuItems.length; i++ ) {
+            MenuItemDomainObject menuItem = menuItems[i];
+            insertTextDocumentMenuItem( menu, menuItem );
+        }
+    }
+
+    private void insertTextDocumentMenuItem( MenuDomainObject menu, MenuItemDomainObject menuItem ) {
+        Integer sortKey = menuItem.getSortKey();
+        if (null == sortKey) {
+            Integer maxSortKey = getMaxSortKeyForMenu( menu );
+            sortKey = null == maxSortKey ? new Integer( MenuDomainObject.DEFAULT_SORT_KEY ) : new Integer( maxSortKey.intValue() + 10 );
+            menuItem.setSortKey(sortKey) ;
+        }
+        sqlInsertMenuItem( menu, menuItem, sortKey.intValue() );
+    }
+
+    private void sqlInsertMenuItem( MenuDomainObject menu, MenuItemDomainObject menuItem, int sortKey ) {
+        String sqlInsertMenuItem = "INSERT INTO childs (menu_id, to_meta_id, manual_sort_order, tree_sort_index) VALUES(?,?,?,?)" ;
+        service.sqlUpdateQuery( sqlInsertMenuItem, new String[] { ""+menu.getId(), ""+menuItem.getDocument().getId(), ""+sortKey, ""+menuItem.getTreeSortKey() } ) ;
+    }
+
+    private Integer getMaxSortKeyForMenu( MenuDomainObject menu ) {
+        String sqlSelectMaxSortKey = "SELECT MAX(manual_sort_order) FROM childs WHERE menu_id = ?" ;
+        String maxSortKeyString = service.sqlQueryStr( sqlSelectMaxSortKey, new String[] {""+menu.getId()} ) ;
+        if (null == maxSortKeyString) {
+            return null ;
+        }
+        Integer maxSortKey = Integer.valueOf( maxSortKeyString );
+        return maxSortKey;
+    }
+
+    private void sqlInsertMenu( TextDocumentDomainObject textDocument, int menuIndex,
+                                MenuDomainObject menu ) {
+        if (null == menu) {
+            menu = new MenuDomainObject( 0, MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) ;
+        }
+        String sqlInsertMenu = "INSERT INTO menus (meta_id, menu_index, sort_order) VALUES(?,?,?) SELECT @@IDENTITY" ;
+        String menuIdString = service.sqlQueryStr( sqlInsertMenu, new String[] {""+textDocument.getId(), ""+menuIndex, ""+menu.getSortOrder() } ) ;
+        int menuId = Integer.parseInt(menuIdString) ;
+        menu.setId(menuId) ;
+    }
+
+    private void deleteTextDocumentMenus( TextDocumentDomainObject textDocument ) {
+        String sqlDeleteMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)" ;
+        service.sqlUpdateQuery( sqlDeleteMenuItems, new String[] {""+textDocument.getId()} ) ;
+        String sqlDeleteMenus = "DELETE FROM menus WHERE meta_id = ?" ;
+        service.sqlUpdateQuery( sqlDeleteMenus, new String[] {""+textDocument.getId()} ) ;
     }
 
     private void updateTextDocumentTexts( TextDocumentDomainObject textDocument ) {
@@ -1654,7 +1587,7 @@ public class DocumentMapper {
         Map images = textDocument.getImages();
         for (Iterator iterator = images.keySet().iterator(); iterator.hasNext();) {
             Integer imageIndex = (Integer) iterator.next();
-            TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image) images.get( imageIndex );
+            ImageDomainObject image = (ImageDomainObject) images.get( imageIndex );
             saveDocumentImage( textDocument.getId(), imageIndex.intValue(), image, user );
         }
     }
@@ -1669,7 +1602,7 @@ public class DocumentMapper {
         Map texts = textDocument.getTexts();
         for (Iterator iterator = texts.keySet().iterator(); iterator.hasNext();) {
             Integer textIndex = (Integer) iterator.next();
-            TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text) texts.get( textIndex );
+            TextDomainObject text = (TextDomainObject) texts.get( textIndex );
             service.sqlUpdateQuery( sqlInsertTexts, new String[]{
                 "" + textDocument.getId(), "" + textIndex, text.getText(), "" + text.getType()
             } );
@@ -1748,11 +1681,17 @@ public class DocumentMapper {
         return statusIconTemplate;
     }
 
-    public String[][] getCreatableDocumentTypeIdsAndNamesInUsersLanguage( DocumentDomainObject document, UserDomainObject user ) {
-        return service.sqlProcedureMulti( SPROC_GET_DOC_TYPES_FOR_USER, new String[]{
+    public IdNamePair[] getCreatableDocumentTypeIdsAndNamesInUsersLanguage( DocumentDomainObject document, UserDomainObject user ) {
+        String[][] sqlRows = service.sqlProcedureMulti( SPROC_GET_DOC_TYPES_FOR_USER, new String[]{
                                                         "" + document.getId(), "" + user.getId(),
                                                         user.getLanguageIso639_2()
                                                     } );
+        IdNamePair[] idNamePairs = new IdNamePair[sqlRows.length] ;
+        for ( int i = 0; i < sqlRows.length; i++ ) {
+            String[] sqlRow = sqlRows[i];
+            idNamePairs[i] = new IdNamePair( Integer.parseInt( sqlRow[0]), sqlRow[1] );
+        }
+        return idNamePairs ;
     }
 
     public IdNamePair[] getAllDocumentTypeIdsAndNamesInUsersLanguage( UserDomainObject user ) {

@@ -1,23 +1,21 @@
 package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
-import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
-import imcode.server.LanguageMapper;
 import imcode.server.document.*;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.oro.text.perl.Perl5Util;
 import org.apache.oro.text.regex.*;
-import org.apache.commons.lang.ArrayUtils;
 
 import java.io.IOException;
-import java.text.Collator;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class TextDocumentParser implements imcode.server.IMCConstants {
 
@@ -99,15 +97,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
 
-            Map menus = getMenus( document, user, menumode, datetimeFormatWithSeconds, parserParameters );
-
-
             String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
             result.append( imcmsMessage );
 
             Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
             MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
-            MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution( parserParameters, menus, menumode );
+            MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution( parserParameters, document, menumode );
             ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
 
             String returnresult = replaceTags( template, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution, document, user );
@@ -259,82 +254,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         return changeTemplateUi;
     }
 
-    private Map getMenus( TextDocumentDomainObject document, UserDomainObject user, boolean menumode, SimpleDateFormat datetimeFormatWithSeconds,
-                          ParserParameters parserParameters ) {
-        HashMap menus = new HashMap();	// Map to contain all the menus on the page.
-        Menu currentMenu = null;
-        int previousMenuIndex = -1;
-
-        String[][] childs = service.sqlProcedureMulti( "GetChilds", new String[]{"" + document.getId(), ""
-                                                                                                        + user.getId()} );
-
-        for ( int i = 0; i < childs.length; ++i ) {
-            String[] childRow = childs[i];
-
-            int menuIndex = Integer.parseInt( childRow[1] );              // What menu in the page the child is in.
-            int menuSortOrder = Integer.parseInt( childRow[2] );
-            if ( menuIndex != previousMenuIndex ) {	                                     // If we come upon a new menu...
-                previousMenuIndex = menuIndex;
-                currentMenu = new Menu( menuIndex, menumode, menuSortOrder );	     // We make a new Menu,
-                menus.put( new Integer( menuIndex ), currentMenu );		     // and add it to the page.
-            }
-            MenuItem menuItem = createMenuItemFromSprocGetChildsRow( currentMenu, childRow, datetimeFormatWithSeconds );
-
-            Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-            boolean editingThisMenu = menumode && null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex;
-            if ( !menuItem.getDocument().isPublishedAndNotArchived() && !editingThisMenu ) { // if not menumode, and document is inactive or archived, don't include it.
-                continue;
-            }
-            currentMenu.add( menuItem );	// Add the Properties for this menuitem to the current menus list.
-        }
-
-        for ( Iterator menuIterator = menus.values().iterator(); menuIterator.hasNext(); ) {
-            Menu menu = (Menu)menuIterator.next();
-            sortMenu( menu );
-        }
-        return menus;
-    }
-
-    private MenuItem createMenuItemFromSprocGetChildsRow( Menu currentMenu, String[] childRow,
-                                                          SimpleDateFormat datetimeFormatWithSeconds ) {
-        MenuItem menuItem = new MenuItem( currentMenu );
-        DocumentDomainObject menuItemDocument = DocumentDomainObject.fromDocumentTypeId( Integer.parseInt( childRow[5] ) );
-        menuItemDocument.setId( Integer.parseInt( childRow[0] ) );
-        menuItem.setSortKey( Integer.parseInt( childRow[3] ) );      // What order the document is sorted in in the menu, using sort-order 2 (manual sort)
-        menuItem.setTreeSortKey( childRow[4] );
-        menuItemDocument.setTarget( childRow[6] );
-        try {
-            menuItemDocument.setCreatedDatetime( datetimeFormatWithSeconds.parse( childRow[7] ) );
-        } catch ( ParseException ignored ) {
-        }
-        try {
-            menuItemDocument.setModifiedDatetime( datetimeFormatWithSeconds.parse( childRow[8] ) );
-        } catch ( ParseException ignored ) {
-        }
-        menuItemDocument.setHeadline( childRow[9] );
-        menuItemDocument.setMenuText( childRow[10] );
-        menuItemDocument.setMenuImage( childRow[11] );
-        try {
-            menuItemDocument.setPublicationStartDatetime( datetimeFormatWithSeconds.parse( childRow[12] ) );
-        } catch ( NullPointerException ignored ) {
-        } catch ( ParseException ignored ) {
-        }
-        try {
-            menuItemDocument.setArchivedDatetime( datetimeFormatWithSeconds.parse( childRow[13] ) );
-        } catch ( NullPointerException ignored ) {
-        } catch ( ParseException ignored ) {
-        }
-        try {
-            menuItemDocument.setPublicationEndDatetime( datetimeFormatWithSeconds.parse( childRow[14] ) );
-        } catch ( NullPointerException ignored ) {
-        } catch ( ParseException ignored ) {
-        }
-        menuItem.setEditable( "0".equals( childRow[15] ) );           // if the user may admin it.
-        menuItemDocument.setStatus( Integer.parseInt( childRow[16] ) );
-        menuItem.setDocument( menuItemDocument );
-        return menuItem;
-    }
-
     private String emphasizeString( String str, String[] emp, Substitution emphasize_substitution,
                                     PatternMatcher patMat ) {
 
@@ -353,135 +272,4 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         return str;
     }
 
-    private void sortMenu( Menu currentMenu ) {
-        int sort_order = currentMenu.getSortOrder();
-        Comparator childsComparator;
-        switch ( sort_order ) {
-            case IMCConstants.MENU_SORT_BY_DATETIME:
-                childsComparator = new ReverseComparator( new MenuItemModifiedDateComparator() );
-                break;
-            case IMCConstants.MENU_SORT_BY_MANUAL_ORDER:
-                childsComparator = new ReverseComparator( new MenuItemManualSortOrderComparator() );
-                break;
-            case IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER:
-                childsComparator = new MenuItemManualTreeSortOrderComparator();
-                break;
-            case IMCConstants.MENU_SORT_BY_HEADLINE:
-            default:
-                childsComparator = new MenuItemHeadlineComparator( service.getDefaultLanguageAsIso639_2() );
-        }
-
-        Collections.sort( currentMenu, childsComparator );
-    }
-
-    class MenuItemHeadlineComparator implements Comparator {
-
-        private Collator collator;
-
-        private MenuItemHeadlineComparator( String lang ) {
-            Locale locale = Locale.ENGLISH;
-            try {
-                locale = new Locale( LanguageMapper.convert639_2to639_1( lang ) );
-            } catch ( LanguageMapper.LanguageNotSupportedException ignored ) {
-            }
-            collator = Collator.getInstance( locale );
-        }
-
-        public int compare( Object o1, Object o2 ) {
-            String headline1 = ( (MenuItem)o1 ).getDocument().getHeadline();
-            String headline2 = ( (MenuItem)o2 ).getDocument().getHeadline();
-            return collator.compare( headline1, headline2 );
-        }
-    }
-
-    static class MenuItemModifiedDateComparator implements Comparator {
-
-        public int compare( Object o1, Object o2 ) {
-            Date modifiedDate1 = ( (MenuItem)o1 ).getDocument().getModifiedDatetime();
-            Date modifiedDate2 = ( (MenuItem)o2 ).getDocument().getModifiedDatetime();
-            return modifiedDate1.compareTo( modifiedDate2 );
-        }
-    }
-
-    private class MenuItemManualSortOrderComparator implements Comparator {
-
-        public int compare( Object o1, Object o2 ) {
-            int sortKey1 = ( (MenuItem)o1 ).getSortKey();
-            int sortKey2 = ( (MenuItem)o2 ).getSortKey();
-            return sortKey1 - sortKey2;
-        }
-    }
-
-    /**
-     * @deprecated Remove usage of this when removeing MenuItem instead -> MenuItemDomainObject
-     */
-    static class MenuItemManualTreeSortOrderComparator implements Comparator {
-
-        private final static Pattern FIRST_NUMBER_PATTERN;
-        private final PatternMatcher perl5Matcher = new Perl5Matcher();
-
-        private final Comparator dateComparator = new ReverseComparator( new MenuItemModifiedDateComparator() );
-
-        static {
-            PatternCompiler perl5Compiler = new Perl5Compiler();
-            Pattern firstNumberPattern = null;
-            try {
-                firstNumberPattern = perl5Compiler.compile( "^(\\d+)\\.?(.*)" );
-            } catch ( MalformedPatternException ignored ) {
-                log.fatal( "Bad pattern.", ignored );
-            }
-            FIRST_NUMBER_PATTERN = firstNumberPattern;
-        }
-
-        public int compare( Object o1, Object o2 ) {
-            String treeSortKey1 = ( (MenuItem)o1 ).getTreeSortKey();
-            String treeSortKey2 = ( (MenuItem)o2 ).getTreeSortKey();
-
-            int difference = compareTreeSortKeys( treeSortKey1, treeSortKey2 );
-            if ( 0 == difference ) {
-                return dateComparator.compare( o1, o2 );
-            }
-            return difference;
-        }
-
-        private int compareTreeSortKeys( String treeSortKey1, String treeSortKey2 ) {
-
-            boolean key1Matches = perl5Matcher.matches( treeSortKey1, FIRST_NUMBER_PATTERN );
-            MatchResult match1 = perl5Matcher.getMatch();
-            boolean key2Matches = perl5Matcher.matches( treeSortKey2, FIRST_NUMBER_PATTERN );
-            MatchResult match2 = perl5Matcher.getMatch();
-
-            if ( key1Matches && key2Matches ) {
-                int firstNumber1 = Integer.parseInt( match1.group( 1 ) );
-                String tail1 = match1.group( 2 );
-
-                int firstNumber2 = Integer.parseInt( match2.group( 1 ) );
-                String tail2 = match2.group( 2 );
-
-                if ( firstNumber1 != firstNumber2 ) {
-                    return firstNumber1 - firstNumber2;
-                }
-                return compareTreeSortKeys( tail1, tail2 );
-            } else if ( !key1Matches && !key2Matches ) {
-                return treeSortKey1.compareTo( treeSortKey2 );
-            } else if ( key2Matches ) {
-                return -1;
-            } else {
-                return +1;
-            }
-        }
-    }
-
-    private static class ReverseComparator implements Comparator {
-
-        private Comparator comparator;
-
-        ReverseComparator( Comparator comparator ) {
-            this.comparator = comparator;
-        }
-
-        public int compare( Object o1, Object o2 ) {
-            return -comparator.compare( o1, o2 );
-        }
-    }
 }

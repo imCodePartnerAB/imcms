@@ -78,7 +78,6 @@ public class AdminFortuneFile extends Administrator {
 			String date2 = fullLine.substring(7,13);
 			String text = HTMLConv.toHTML(fullLine.substring(14));
 
-			//out.println(date1 + "#" + date2 + "#" + text + "#" + "<br>");
 			fileW.write(date1 + "#" + date2 + "#" + text + "#" );
 			fileW.newLine();
 		    }

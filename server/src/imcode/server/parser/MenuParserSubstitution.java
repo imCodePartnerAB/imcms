@@ -1,48 +1,52 @@
 package imcode.server.parser;
 
-import imcode.server.IMCConstants;
+import com.imcode.imcms.servlet.admin.AdminDoc;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.IdNamePair;
 import org.apache.oro.text.regex.*;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import com.imcode.imcms.servlet.admin.AdminDoc;
 
 class MenuParserSubstitution implements Substitution {
 
     private Substitution NULLSUBSTITUTION = new StringSubstitution( "" );
 
     private Map menus;
-    private boolean menumode;
+    private boolean menuMode;
     private int[] implicitMenus = {1};
     private ParserParameters parserParameters;
+    private static final int EXISTING_DOCTYPE_ID = 0;
 
-    public MenuParserSubstitution( ParserParameters parserParameters, Map menus,
-                                   boolean menumode ) {
+    MenuParserSubstitution( ParserParameters parserParameters, TextDocumentDomainObject document,
+                                   boolean menuMode ) {
         this.parserParameters = parserParameters;
-        this.menumode = menumode;
-        this.menus = menus;
+        this.menuMode = menuMode;
+        this.menus = document.getMenus();
     }
 
-    private Menu getMenuByIndex( int id ) {
-        return (Menu)menus.get( new Integer( id ) );
+    private MenuDomainObject getMenuByIndex( int id ) {
+        return (MenuDomainObject)menus.get( new Integer( id ) );
     }
 
     private String getMenuModePrefix( int menuIndex, String labelAttribute ) {
         Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
         IMCServiceInterface serverObject = parserParameters.getDocumentRequest().getServerObject();
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-        Menu menu = getMenuByIndex( menuIndex );
+        MenuDomainObject menu = getMenuByIndex( menuIndex );
         List parseTags = Arrays.asList( new String[]{
             "#menuindex#", "" + menuIndex,
             "#label#", labelAttribute,
             "#flags#", ""+parserParameters.getFlags(),
-            "#sortOrder" + ( null != menu ? menu.getSortOrder() : IMCConstants.MENU_SORT_DEFAULT ) + "#", "checked",
+            "#sortOrder" + ( null != menu ? menu.getSortOrder() : MenuDomainObject.MENU_SORT_ORDER__DEFAULT ) + "#", "checked",
             "#doc_types#", createDocumentTypesOptionList(),
             "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId()
         } );
@@ -70,25 +74,23 @@ class MenuParserSubstitution implements Substitution {
         }
     }
 
-    private class DocumentTypeIdNamePair {
-
-        private Integer id;
-        private String name;
-    }
-
     private String createDocumentTypesOptionList() {
         DocumentDomainObject document = parserParameters.getDocumentRequest().getDocument();
 
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-        String[][] docTypes = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper().getCreatableDocumentTypeIdsAndNamesInUsersLanguage(document ,user) ;
-        List docTypesList = new ArrayList( Arrays.asList( docTypes ) );
+        IdNamePair[] docTypes = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper().getCreatableDocumentTypeIdsAndNamesInUsersLanguage(document ,user) ;
+        Map docTypesMap = new HashMap();
+        for ( int i = 0; i < docTypes.length; i++ ) {
+            IdNamePair docType = docTypes[i];
+            docTypesMap.put( new Integer( docType.getId() ), docType ) ;
+        }
 
         String existing_doc_name = parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/existing_doc_name.html", parserParameters.getDocumentRequest().getUser(), null );
-        docTypesList.add( 0, new String[] { "0", existing_doc_name} );
+        docTypesMap.put( new Integer(EXISTING_DOCTYPE_ID), new IdNamePair( EXISTING_DOCTYPE_ID, existing_doc_name ) );
 
-        final int[] docTypesSortOrder = {
+        final int[] docTypeIdsOrder = {
             DocumentDomainObject.DOCTYPE_TEXT,
-            0, // "Existing document"
+            EXISTING_DOCTYPE_ID,
             DocumentDomainObject.DOCTYPE_URL,
             DocumentDomainObject.DOCTYPE_FILE,
             DocumentDomainObject.DOCTYPE_BROWSER,
@@ -96,43 +98,20 @@ class MenuParserSubstitution implements Substitution {
             DocumentDomainObject.DOCTYPE_CHAT,
             DocumentDomainObject.DOCTYPE_BILLBOARD,
             DocumentDomainObject.DOCTYPE_CONFERENCE,
-            DocumentDomainObject.DOCTYPE_DIAGRAM,
         };
-        Map sortOrderMap = new HashMap();
-        for ( int i = 0; i < docTypesSortOrder.length; i++ ) {
-            int docTypeId = docTypesSortOrder[i];
-            sortOrderMap.put( new Integer( docTypeId ), new Integer( i ) );
-        }
 
-        TreeMap sortedIds = new TreeMap();
-        for ( Iterator iterator = docTypesList.iterator(); iterator.hasNext(); ) {
-            DocumentTypeIdNamePair documentTypeIdNamePair = new DocumentTypeIdNamePair();
-            String[] documentTypeIdNamePairStrings = (String[])iterator.next() ;
-            documentTypeIdNamePair.id = new Integer( documentTypeIdNamePairStrings[0] );
-            documentTypeIdNamePair.name = documentTypeIdNamePairStrings[1];
-
-            Integer sortKey = (Integer)sortOrderMap.get( documentTypeIdNamePair.id );
-            if ( null != sortKey ) {
-                sortedIds.put( sortKey, documentTypeIdNamePair );
+        StringBuffer documentTypesHtmlOptionList = new StringBuffer();
+        for ( int i = 0; i < docTypeIdsOrder.length; i++ ) {
+            int docTypeId = docTypeIdsOrder[i];
+            IdNamePair temp = (IdNamePair)docTypesMap.get( new Integer( docTypeId )) ;
+            if (null != temp) {
+                int documentTypeId = temp.getId();
+                String documentTypeName = temp.getName();
+                documentTypesHtmlOptionList.append( "<option value=\"" + documentTypeId + "\">" + documentTypeName + "</option>" );
             }
         }
 
-        Collection sortedTuplesOfDocumentTypes = sortedIds.values();
-        Iterator docTypesIter = sortedTuplesOfDocumentTypes.iterator();
-        StringBuffer doc_types_sb = new StringBuffer( 256 );
-        while ( docTypesIter.hasNext() ) {
-            DocumentTypeIdNamePair temp = (DocumentTypeIdNamePair)docTypesIter.next();
-            Integer documentTypeId = temp.id;
-            String documentTypeName = temp.name;
-            doc_types_sb.append( "<option value=\"" );
-            doc_types_sb.append( documentTypeId );
-            doc_types_sb.append( "\">" );
-            doc_types_sb.append( documentTypeName );
-            doc_types_sb.append( "</option>" );
-        }
-
-        String doctypesOptionList = doc_types_sb.toString();
-        return doctypesOptionList;
+        return documentTypesHtmlOptionList.toString();
     }
 
     private String nodeMenuParser( int menuIndex, String menutemplate, Properties menuattributes,
@@ -140,14 +119,14 @@ class MenuParserSubstitution implements Substitution {
         String modeAttribute = menuattributes.getProperty( "mode" );
         boolean modeIsRead = "read".equalsIgnoreCase( modeAttribute );
         boolean modeIsWrite = "write".equalsIgnoreCase( modeAttribute );
-        if ( menumode && modeIsRead || !menumode && modeIsWrite ) {
+        if ( menuMode && modeIsRead || !menuMode && modeIsWrite ) {
             return "";
         }
-        Menu currentMenu = getMenuByIndex( menuIndex ); 	// Get the menu
+        MenuDomainObject currentMenu = getMenuByIndex( menuIndex ); 	// Get the menu
         StringBuffer result = new StringBuffer(); // Allocate a buffer for building our return-value in.
         NodeList menuNodes = new NodeList( menutemplate ); // Build a tree-structure of nodes in memory, which "only" needs to be traversed. (Vood)oo-magic.
-        nodeMenu( new SimpleElement( "menu", menuattributes, menuNodes ), result, currentMenu, patMat ); // Create an artificial root-node of this tree. An "imcms:menu"-element.
-        if ( menumode ) { // If in menumode, make sure to include all the stuff from the proper admintemplates.
+        nodeMenu( new SimpleElement( "menu", menuattributes, menuNodes ), result, currentMenu, patMat, menuIndex ); // Create an artificial root-node of this tree. An "imcms:menu"-element.
+        if ( menuMode ) { // If in menuMode, make sure to include all the stuff from the proper admintemplates.
             String labelAttribute = menuattributes.getProperty( "label" );
             result.append( getMenuModeSuffix( menuIndex ) );
             result.insert( 0, getMenuModePrefix( menuIndex, labelAttribute ) );
@@ -158,13 +137,14 @@ class MenuParserSubstitution implements Substitution {
     /**
      * Handle an imcms:menu element.
      */
-    private void nodeMenu( Element menuNode, StringBuffer result, Menu currentMenu, PatternMatcher patMat ) {
-        if ( currentMenu == null || currentMenu.isEmpty() ) {
+    private void nodeMenu( Element menuNode, StringBuffer result, MenuDomainObject currentMenu,
+                           PatternMatcher patMat, int menuIndex ) {
+        if ( currentMenu == null || 0 == currentMenu.getMenuItems().length ) {
             return; // Don't output anything
         }
         Properties menuAttributes = menuNode.getAttributes(); // Get the attributes from the imcms:menu-element. This will be passed down, to allow attributes of the imcms:menu-element to affect the menuitems.
         if ( menuNode.getChildElement( "menuloop" ) == null ) {
-            nodeMenuLoop( new SimpleElement( "menuloop", null, menuNode.getChildren() ), result, currentMenu, menuAttributes, patMat ); // The imcms:menu contained no imcms:menuloop, so let's create one, passing the children from the imcms:menu
+            nodeMenuLoop( new SimpleElement( "menuloop", null, menuNode.getChildren() ), result, currentMenu, menuAttributes, patMat, menuIndex ); // The imcms:menu contained no imcms:menuloop, so let's create one, passing the children from the imcms:menu
         } else {
             // The imcms:menu contained at least one imcms:menuloop.
             Iterator menuNodeChildrenIterator = menuNode.getChildren().iterator();
@@ -176,7 +156,7 @@ class MenuParserSubstitution implements Substitution {
                         break;
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuloop".equals( ( (Element)menuNodeChild ).getName() ) ) { // Is it an imcms:menuloop?
-                            nodeMenuLoop( (Element)menuNodeChild, result, currentMenu, menuAttributes, patMat );
+                            nodeMenuLoop( (Element)menuNodeChild, result, currentMenu, menuAttributes, patMat, menuIndex );
                         } else {
                             result.append( ( menuNodeChild ).toString() );  // No? Just append it (almost)verbatim.
                         }
@@ -191,16 +171,15 @@ class MenuParserSubstitution implements Substitution {
      *
      * @param menuLoopNode   The imcms:menuloop-element
      * @param result         The StringBuffer to which to append the result
-     * @param menuItems      The current menu
+     * @param menu      The current menu
      * @param menuAttributes The attributes passed down from the imcms:menu-element.
      * @param patMat         The patternmatcher used for pattern matching.
      */
-    private void nodeMenuLoop( Element menuLoopNode, StringBuffer result, Menu menuItems,
-                               Properties menuAttributes, PatternMatcher patMat ) {
-        if ( null == menuItems ) {
+    private void nodeMenuLoop( Element menuLoopNode, StringBuffer result, MenuDomainObject menu,
+                               Properties menuAttributes, PatternMatcher patMat, int menuIndex ) {
+        if ( null == menu ) {
             return;
         }
-        ListIterator menuItemsIterator = menuItems.listIterator();
         List menuLoopNodeChildren = menuLoopNode.getChildren();
         if ( null == menuLoopNode.getChildElement( "menuitem" ) ) {
             Element menuItemNode = new SimpleElement( "menuitem", null, menuLoopNodeChildren );  // The imcms:menuloop contained no imcms:menuitem, so let's create one.
@@ -208,15 +187,16 @@ class MenuParserSubstitution implements Substitution {
             menuLoopNodeChildren.add( menuItemNode );
         }
         // The imcms:menuloop contained at least one imcms:menuitem.
-        loopOverMenuItemsAndMenuItemTemplateElementsAndAddToResult( menuItemsIterator, menuLoopNodeChildren,
-                                                                    result, menuAttributes, patMat );
+        loopOverMenuItemsAndMenuItemTemplateElementsAndAddToResult( menu, menuLoopNodeChildren,
+                                                                    result, menuAttributes, patMat, menuIndex );
     }
 
-    private void loopOverMenuItemsAndMenuItemTemplateElementsAndAddToResult( ListIterator menuItemsIterator,
+    private void loopOverMenuItemsAndMenuItemTemplateElementsAndAddToResult( MenuDomainObject menu,
                                                                              final List menuLoopNodeChildren,
                                                                              StringBuffer result,
                                                                              Properties menuAttributes,
-                                                                             PatternMatcher patMat ) {
+                                                                             PatternMatcher patMat, int menuIndex ) {
+        Iterator menuItemsIterator = Arrays.asList(menu.getMenuItems()).iterator() ;
         int menuItemIndexStart = 0;
         try {
             menuItemIndexStart = Integer.parseInt( menuAttributes.getProperty( "indexstart" ) );
@@ -240,11 +220,11 @@ class MenuParserSubstitution implements Substitution {
                         break;
                     case Node.ELEMENT_NODE: // An element-node
                         if ( "menuitem".equals( ( (Element)menuLoopChild ).getName() ) ) { // Is it an imcms:menuitem?
-                            MenuItem menuItem = menuItemsIterator.hasNext()
-                                                ? (MenuItem)menuItemsIterator.next()
+                            MenuItemDomainObject menuItem = menuItemsIterator.hasNext()
+                                                ? (MenuItemDomainObject)menuItemsIterator.next()
                                                 : null; // If there are more menuitems from the db, put the next in 'menuItem', otherwise put null.
                             nodeMenuItem( (Element)menuLoopChild, result, menuItem,
-                                          menuAttributes, patMat, menuItemIndex ); // Parse one menuitem.
+                                          menuAttributes, patMat, menuItemIndex, menu, menuIndex ); // Parse one menuitem.
                             menuItemIndex += menuItemIndexStep;
                         } else {
                             result.append( menuLoopChild.toString() );  // No? Just append the elements verbatim into the result.
@@ -264,13 +244,14 @@ class MenuParserSubstitution implements Substitution {
      * @param menuAttributes The attributes passed down from the imcms:menu-element. Any attributes in the imcms:menuitem-element will override these.
      * @param patMat         The patternmatcher used for pattern matching.
      */
-    private void nodeMenuItem( Element menuItemNode, StringBuffer result, MenuItem menuItem,
-                               Properties menuAttributes, PatternMatcher patMat, int menuItemIndex ) {
+    private void nodeMenuItem( Element menuItemNode, StringBuffer result, MenuItemDomainObject menuItem,
+                               Properties menuAttributes, PatternMatcher patMat, int menuItemIndex,
+                               MenuDomainObject menu, int menuIndex ) {
         Substitution menuItemSubstitution;
         if ( menuItem != null ) {
             Properties menuItemAttributes = new Properties( menuAttributes ); // Make a copy of the menuAttributes, so we don't override them permanently.
             menuItemAttributes.putAll( menuItemNode.getAttributes() ); // Let all attributes of the menuItemNode override the attributes of the menu.
-            menuItemSubstitution = getMenuItemSubstitution( menuItem, menuItemAttributes, menuItemIndex );
+            menuItemSubstitution = getMenuItemSubstitution( menu, menuItem, menuItemAttributes, menuItemIndex, menuIndex );
         } else {
             menuItemSubstitution = NULLSUBSTITUTION;
         }
@@ -321,7 +302,8 @@ class MenuParserSubstitution implements Substitution {
     /**
      * Create a substitution for parsing this menuitem into a template with the correct tags.
      */
-    private Substitution getMenuItemSubstitution( MenuItem menuItem, Properties parameters, int menuItemIndex ) {
+    private Substitution getMenuItemSubstitution( MenuDomainObject menu, MenuItemDomainObject menuItem,
+                                                  Properties parameters, int menuItemIndex, int menuIndex ) {
 
         DocumentDomainObject document = menuItem.getDocument();
         String imageUrl = document.getMenuImage();
@@ -352,7 +334,7 @@ class MenuParserSubstitution implements Substitution {
         tags.setProperty( "#childCreatedDate#", createdDate );
         tags.setProperty( "#childModifiedDate#", modifiedDate );
         tags.setProperty( "#menuitemindex#", "" + menuItemIndex );
-        tags.setProperty( "#menuitemtreesortkey#", menuItem.getTreeSortKey() );
+        tags.setProperty( "#menuitemtreesortkey#", menuItem.getTreeSortKey().toString() );
         tags.setProperty( "#menuitemmetaid#", "" + document.getId() );
         tags.setProperty( "#menuitemheadline#", headline );
         tags.setProperty( "#menuitemtext#", document.getMenuText() );
@@ -379,22 +361,22 @@ class MenuParserSubstitution implements Substitution {
         tags.setProperty( "#menuitemlinkonly#", a_href );
         tags.setProperty( "#/menuitemlinkonly#", "</a>" );
 
-        Menu parentMenu = menuItem.getParentMenu();
         Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-        boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == parentMenu.getMenuIndex()
-                                  && parentMenu.isMenuMode();
+        boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex
+                                  && menuMode;
+        DocumentMapper documentMapper = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper() ;
         if ( editingThisMenu ) {
-            final int sortOrder = menuItem.getParentMenu().getSortOrder();
-            if ( IMCConstants.MENU_SORT_BY_MANUAL_ORDER == sortOrder
-                 || IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER == sortOrder ) {
+            final int sortOrder = menu.getSortOrder();
+            if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER == sortOrder
+                 || MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == sortOrder ) {
                 String sortKey = "";
                 String sortKeyTemplate = null;
-                if ( IMCConstants.MENU_SORT_BY_MANUAL_ORDER == sortOrder ) {
+                if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER == sortOrder ) {
                     sortKey = "" + menuItem.getSortKey();
                     sortKeyTemplate = "textdoc/admin_menuitem_manual_sortkey.frag";
 
-                } else if ( IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER == sortOrder ) {
-                    String key = menuItem.getTreeSortKey();
+                } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == sortOrder ) {
+                    String key = menuItem.getTreeSortKey().toString();
                     sortKey = key == null ? "" : key;
                     sortKeyTemplate = "textdoc/admin_menuitem_treesortkey.frag";
                 }
@@ -415,13 +397,13 @@ class MenuParserSubstitution implements Substitution {
             a_href = parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags )
                      + a_href;
 
-            DocumentMapper documentMapper = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper();
+            ;
             a_href = "<a href=\"AdminDoc?meta_id="+document.getId()+"&"+AdminDoc.PARAMETER__DISPATCH_FLAGS+"=1\">"+documentMapper.getStatusIconTemplate( menuItem.getDocument(), user ) + "</a>" + a_href;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );
         tags.setProperty( "#/menuitemlink#",
-                          menuItem.getParentMenu().isMenuMode() && menuItem.isEditable() && editingThisMenu
+                          editingThisMenu && documentMapper.userHasMoreThanReadPermissionOnDocument( user, document )
                           ? "</a>"
                             + parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/admin_menuitem.frag", user, Arrays.asList( new String[]{
                                 "#meta_id#", ""

@@ -1,7 +1,8 @@
 <%@ page language="java"
 import="java.util.*, java.text.*, imcode.server.*, imcode.util.*, imcode.util.poll.*,
-        imcode.server.document.TextDocumentDomainObject.Text,
-        imcode.server.document.TextDocumentDomainObject"
+        imcode.server.document.textdocument.TextDomainObject,
+        imcode.server.document.textdocument.TextDocumentDomainObject,
+        imcode.server.document.textdocument.TextDocumentDomainObject"
 %><%
 
 // Get a reference to IMCServiceInterface //
@@ -15,7 +16,7 @@ String meta_id = request.getHeader("X-Meta-Id");
 
 //Get PollParameters from db 
 String[] poll_param;
-TextDocumentDomainObject.Text poll_name = new TextDocumentDomainObject.Text("",0);
+TextDomainObject poll_name = new TextDomainObject("",0);
 if ( meta_id !=null ) {
 	poll_param = poll.getPollParameters(meta_id); 
 	

@@ -34,7 +34,7 @@ public class GetImages implements FilenameFilter, Comparator {
 				arrlist.add(_imgArr[i]);
 		}
 
-		// sorts arrlist using compare-method of Comparator
+		// sorts arrlist using compare-method of MenuItemComparator
 		if(sorted) Collections.sort(arrlist,_this);
 		return arrlist ;
 	}
@@ -60,7 +60,7 @@ public class GetImages implements FilenameFilter, Comparator {
 			}
 		}
 
-		// sorts arrlist using compare-method of Comparator
+		// sorts arrlist using compare-method of MenuItemComparator
 		if(sorted) Collections.sort(arrlist,_this);
 		return arrlist ;
 	}
@@ -84,7 +84,7 @@ public class GetImages implements FilenameFilter, Comparator {
 	}
 	
 /**
-	* implemented Comparator-method, compares the filenames, regardless of path
+	* implemented MenuItemComparator-method, compares the filenames, regardless of path
 	@param o1
 	@param o2
 **/

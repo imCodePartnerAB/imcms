@@ -2,6 +2,7 @@ package imcode.server.document;
 
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;

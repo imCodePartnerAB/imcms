@@ -3,6 +3,9 @@ package com.imcode.imcms.servlet.superadmin;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.*;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.httpclient.HttpClient;
@@ -31,7 +34,9 @@ public class LinkCheck extends HttpServlet {
 
     private static final String USER_AGENT = "imCMS LinkCheck - http://www.imcms.net/";
     private static final String HTTP_REQUEST_HEADER__USER_AGENT = "user-agent";
-    private static final int MILLISECONDS__ONE_SECOND = 1000;
+
+    private static final int CONNECTION_TIMEOUT_MILLISECONDS = 5000;
+    private static final int READ_TIMEOUT_MILLISECONDS = 5000;
 
     private final static Logger log = Logger.getLogger( LinkCheck.class.getName() );
     public static final String REQUEST_ATTRIBUTE__LINKS_ITERATOR = "linksIterator";
@@ -59,7 +64,7 @@ public class LinkCheck extends HttpServlet {
     private void addUrlDocumentLinks( List links, DocumentIndex documentIndex, UserDomainObject user ) throws IOException {
         DocumentDomainObject[] urlDocuments = documentIndex.search( new TermQuery( new Term( DocumentIndex.FIELD__DOC_TYPE_ID, ""
                                                                                                                                + DocumentDomainObject.DOCTYPE_URL ) ), user );
-        Arrays.sort( urlDocuments, DocumentDomainObject.Comparator.ID );
+        Arrays.sort( urlDocuments, DocumentDomainObject.DocumentComparator.ID );
 
         for ( int i = 0; i < urlDocuments.length; i++ ) {
             UrlDocumentDomainObject urlDocument = (UrlDocumentDomainObject)urlDocuments[i];
@@ -89,7 +94,7 @@ public class LinkCheck extends HttpServlet {
         for ( Iterator iterator = texts.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             Integer textIndex = (Integer)entry.getKey();
-            TextDocumentDomainObject.Text text = (TextDocumentDomainObject.Text)entry.getValue();
+            TextDomainObject text = (TextDomainObject)entry.getValue();
             String textString = text.getText();
             PatternMatcherInput patternMatcherInput = new PatternMatcherInput( textString );
             Perl5Util perl5Util = new Perl5Util();
@@ -106,7 +111,7 @@ public class LinkCheck extends HttpServlet {
         for ( Iterator iterator = images.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             Integer imageIndex = (Integer)entry.getKey();
-            TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)entry.getValue();
+            ImageDomainObject image = (ImageDomainObject)entry.getValue();
             String imageLinkUrl = image.getLinkUrl();
             if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
                 Link link = new ImageLink( textDocument, imageIndex.intValue(), imageLinkUrl );
@@ -161,8 +166,8 @@ public class LinkCheck extends HttpServlet {
         private void checkUrl( String url ) {
             log.debug( "checkUrl(" + url + ")" );
             HttpClient httpClient = new HttpClient();
-            httpClient.setConnectionTimeout( MILLISECONDS__ONE_SECOND );
-            httpClient.setTimeout( MILLISECONDS__ONE_SECOND );
+            httpClient.setConnectionTimeout( CONNECTION_TIMEOUT_MILLISECONDS );
+            httpClient.setTimeout( READ_TIMEOUT_MILLISECONDS );
             GetMethod getMethod = null;
             try {
                 getMethod = new GetMethod( url );
@@ -181,7 +186,7 @@ public class LinkCheck extends HttpServlet {
             } catch ( IllegalArgumentException e ) {
             } catch ( UnknownHostException e ) {
             } catch ( HttpConnection.ConnectionTimeoutException e ) {
-                hostFound = true ;
+                hostFound = true;
             } catch ( ConnectException e ) {
                 hostFound = true;
             } catch ( HttpException e ) {
@@ -199,6 +204,7 @@ public class LinkCheck extends HttpServlet {
 
         public UrlDocumentLink( UrlDocumentDomainObject urlDocument ) {
             this.urlDocument = urlDocument;
+
         }
 
         public String getUrl() {

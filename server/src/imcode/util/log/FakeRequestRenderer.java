@@ -5,7 +5,8 @@ import imcode.server.Revisits;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.document.SectionDomainObject;
-import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.or.ObjectRenderer;
 

@@ -1,6 +1,6 @@
 <%@ page language="java"
 import="java.util.*, java.text.*, imcode.server.*, imcode.util.*, imcode.util.poll.*,
-        imcode.server.document.TextDocumentDomainObject.Text"
+        imcode.server.document.textdocument.TextDomainObject"
 %><%
 
 final String IMAGE_NAME = "blue_animation.gif";
@@ -101,7 +101,7 @@ private StringBuffer getQuestionResult(IMCServiceInterface imcref, PollHandlingS
 
 //Get one text from db
 private String getText( IMCServiceInterface imcref, int meta_id, int text_no ){
-    TextDocumentDomainObject.Text imctext = imcref.getText(meta_id, text_no) ;
+    TextDomainObject imctext = imcref.getText(meta_id, text_no) ;
     if (null == imctext) {
 	return "" ;
     }

@@ -35,7 +35,7 @@ if ( meta_id !=null){
 
 // Lets check if we have a cookie "imcms.poll" on the client.
 // If we have a cookie lets hide button "Send Answer", and 
-// instead show an explanation text. 
+// instead show an explanation text.
 boolean saveAnswers = true;
 
 if ( set_cookie == 1 && meta_id != null){

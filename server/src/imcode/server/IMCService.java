@@ -3,6 +3,9 @@ package imcode.server;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.SqlHelpers;
 import imcode.server.document.*;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
@@ -356,14 +359,14 @@ final public class IMCService implements IMCServiceInterface {
      * @param no      The id of the text in the page.
      * @return The text from the db, or null if there was none.
      */
-    public TextDocumentDomainObject.Text getText( int meta_id, int no ) {
+    public TextDomainObject getText( int meta_id, int no ) {
         return documentMapper.getText( meta_id, no );
     }
 
     /**
      * Save an imageref.
      */
-    public void saveImage( int meta_id, UserDomainObject user, int img_no, TextDocumentDomainObject.Image image ) {
+    public void saveImage( int meta_id, UserDomainObject user, int img_no, ImageDomainObject image ) {
         documentMapper.saveDocumentImage( meta_id, img_no, image, user );
     }
 

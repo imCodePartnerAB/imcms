@@ -5,6 +5,9 @@ import com.mockobjects.MockObject;
 import imcode.server.*;
 import imcode.server.db.ConnectionPool;
 import imcode.server.document.*;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.util.poll.PollHandlingSystem;
 import imcode.util.shop.ShoppingOrderSystem;
@@ -41,7 +44,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-    public TextDocumentDomainObject.Text getText( int meta_id, int txt_no ) {
+    public TextDomainObject getText( int meta_id, int txt_no ) {
       return null;
    }
 
@@ -50,7 +53,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // Save an image
-   public void saveImage( int meta_id, UserDomainObject user, int img_no, TextDocumentDomainObject.Image image ) {
+   public void saveImage( int meta_id, UserDomainObject user, int img_no, ImageDomainObject image ) {
    }
 
    public void deleteDocAll( int meta_id, UserDomainObject user ) {

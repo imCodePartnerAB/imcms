@@ -4,7 +4,9 @@ import imcode.server.*;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.SectionDomainObject;
-import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
@@ -100,7 +102,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         Map imageMap = new HashMap();
         for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
             Integer imageIndex = (Integer)iterator.next();
-            TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)images.get( imageIndex );
+            ImageDomainObject image = (ImageDomainObject)images.get( imageIndex );
 
             StringBuffer value = new StringBuffer( 96 );
             if ( !"".equals( image.getUrl() ) ) {
@@ -402,14 +404,14 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
         String noStr = attributes.getProperty( "no" );
         int no;
-        TextDocumentDomainObject.Text text = null;
+        imcode.server.document.textdocument.TextDomainObject text = null;
         if ( null == noStr ) {
             no = implicitTextNumber++;
-            text = (TextDocumentDomainObject.Text)textMap.get( new Integer( no ) );
+            text = (TextDomainObject)textMap.get( new Integer( no ) );
         } else {
             noStr = noStr.trim();
             no = Integer.parseInt( noStr );
-            text = (TextDocumentDomainObject.Text)textMap.get( new Integer( no ) );
+            text = (TextDomainObject)textMap.get( new Integer( no ) );
             implicitTextNumber = no + 1;
         }
         String result;

@@ -5,7 +5,9 @@ import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
-import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -47,10 +49,12 @@ public class SaveSort extends HttpServlet {
         String temp_str;
         String[] selectedChildrenIds;
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        DocumentDomainObject document = documentMapper.getDocument( documentId );
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( documentId );
         documentMapper.touchDocument( document );
 
-        String[] children = imcref.sqlQuery( "select to_meta_id from childs, menus where childs.menu_id = menus.menu_id AND meta_id = ?", new String[]{"" + documentId} );
+        String[] children = imcref.sqlQuery( "select to_meta_id from childs, menus where childs.menu_id = menus.menu_id AND meta_id = ?", new String[]{
+            "" + documentId
+        } );
 
         Vector childs = new Vector();
         Vector sort_no = new Vector();
@@ -71,20 +75,20 @@ public class SaveSort extends HttpServlet {
         if ( sortParam != null ) {
             int sort_order = Integer.parseInt( req.getParameter( "sort_order" ) );
             String[] queryResult = imcref.sqlQuery( "select sort_order from menus where meta_id = ? AND menu_index = ?",
-                                                    new String[]{"" + documentId, ""+menuIndex} );
-            int currentSortOrder = IMCConstants.MENU_SORT_DEFAULT ;
-            if (0 < queryResult.length) {
+                                                    new String[]{"" + documentId, "" + menuIndex} );
+            int currentSortOrder = MenuDomainObject.MENU_SORT_ORDER__DEFAULT;
+            if ( 0 < queryResult.length ) {
                 String currentSortOrderStr = queryResult[0];
                 currentSortOrder = Integer.parseInt( currentSortOrderStr );
             }
             if ( currentSortOrder != sort_order ) {
                 imcref.sqlUpdateQuery( "update menus set sort_order = ? where meta_id = ? AND menu_index = ?",
-                                       new String[]{"" + sort_order, "" + documentId, ""+menuIndex} );
+                                       new String[]{"" + sort_order, "" + documentId, "" + menuIndex} );
             } else {
                 if ( childs.size() > 0 ) {
-                    if ( IMCConstants.MENU_SORT_BY_MANUAL_ORDER == sort_order ) {
+                    if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER == sort_order ) {
                         imcref.saveManualSort( documentId, user, childs, sort_no, menuIndex );
-                    } else if ( IMCConstants.MENU_SORT_BY_MANUAL_TREE_ORDER == sort_order ) {
+                    } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == sort_order ) {
                         imcref.saveTreeSortIndex( documentId, user, childs, sort_no, menuIndex );
                     }
                 }
@@ -103,23 +107,20 @@ public class SaveSort extends HttpServlet {
 
                 for ( int i = 0; i < selectedChildrenIds.length; i++ ) {
                     String selectedChildIdStr = selectedChildrenIds[i];
-                    int selectedChildId = Integer.parseInt( selectedChildIdStr ) ;
-                    DocumentDomainObject selectedChild = documentMapper.getDocument( selectedChildId ) ;
-                    try {
-                        selectedChild.setHeadline( selectedChild.getHeadline()+copyHeadlineSuffix );
-                        selectedChild.setStatus( DocumentDomainObject.STATUS_NEW );
-                        selectedChild.setPublicationStartDatetime( new Date() );
-                        documentMapper.saveNewDocument( selectedChild, user );
-                        documentMapper.addDocumentToMenu( user, document, menuIndex, selectedChild);
-                    } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
-                        throw new RuntimeException(e) ;
-                    } catch ( DocumentMapper.DocumentAlreadyInMenuException e ) {
-                        throw new RuntimeException(e) ;
-                    }
+                    int selectedChildId = Integer.parseInt( selectedChildIdStr );
+                    DocumentDomainObject selectedChild = documentMapper.getDocument( selectedChildId );
+                    selectedChild.setHeadline( selectedChild.getHeadline() + copyHeadlineSuffix );
+                    selectedChild.setStatus( DocumentDomainObject.STATUS_NEW );
+                    selectedChild.setPublicationStartDatetime( new Date() );
+                    documentMapper.saveNewDocument( selectedChild, user );
+                    document.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( selectedChild ) );
                 }
+                documentMapper.saveDocument( document, user );
             }
         }
 
-        res.sendRedirect( "AdminDoc?meta_id="+documentId+"&flags="+IMCConstants.DISPATCH_FLAG__EDIT_MENU+"&editmenu="+menuIndex);
+        res.sendRedirect( "AdminDoc?meta_id=" + documentId + "&flags=" + IMCConstants.DISPATCH_FLAG__EDIT_MENU
+                          + "&editmenu="
+                          + menuIndex );
     }
 }

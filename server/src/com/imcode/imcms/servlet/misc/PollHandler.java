@@ -16,8 +16,9 @@ import imcode.util.poll.*;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
-import imcode.server.document.TextDocumentDomainObject.Text;
-import imcode.server.document.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 
 public class PollHandler extends HttpServlet {
 
@@ -130,7 +131,7 @@ public class PollHandler extends HttpServlet {
 				if( !("").equals(text.trim()) ){ 
 					textAnswers.put(""+question_no, text); //
 				
-					//lets store question number and question text that we are going to send as mail to recipients 
+					//lets store question number and question text that we are going to send as mail to recipients
 					String questionText = getText(imcref, Integer.parseInt(meta_id), question_no ); // in this case question_no is equal to text_no
 					textQuestions.put(""+question_no, questionText); 
 				}
@@ -215,7 +216,7 @@ public class PollHandler extends HttpServlet {
 		
 		
 		// get poll name
-		TextDocumentDomainObject.Text poll_name = new TextDocumentDomainObject.Text("",0);
+		TextDomainObject poll_name = new TextDomainObject("",0);
 		
 		if ( poll_param != null && poll_param.length !=0 && poll_param[1] != null ){
 			int text_no = Integer.parseInt( poll_param[1] );
@@ -260,10 +261,10 @@ public class PollHandler extends HttpServlet {
     } // end of sendMail()
 
     
-	//Get one text from db 
+	//Get one text from db
 	private String getText( IMCServiceInterface imcref, int meta_id, int text_no ){
 
-		TextDocumentDomainObject.Text text;
+		TextDomainObject text;
 		text = imcref.getText(meta_id, text_no);
 		
 		if ( text != null ) {

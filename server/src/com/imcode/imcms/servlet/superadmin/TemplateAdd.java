@@ -37,7 +37,7 @@ public class TemplateAdd extends HttpServlet {
 
                 if ( temp == null || temp.length == 0 ) {
                     htmlStr = imcref.getAdminTemplate( "no_demotemplate.html", user, null ).getBytes( "8859_1" );
-                    mimeType = "text/html";
+                    mimeType = "textdocument/html";
                 } else {
                     mimeType = getServletContext().getMimeType( template + "." + suffixAndStream[0] );
                     htmlStr = temp;
