@@ -110,7 +110,7 @@ public class SaveSort extends HttpServlet {
                     selectedChild.setStatus( DocumentDomainObject.STATUS_NEW );
                     selectedChild.setPublicationStartDatetime( new Date() );
                     documentMapper.saveNewDocument( selectedChild, user );
-                    menu.addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( selectedChild.getId() ) ) );
+                    menu.addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( selectedChild ) ) );
                 }
             }
         }

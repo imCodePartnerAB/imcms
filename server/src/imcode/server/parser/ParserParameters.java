@@ -1,6 +1,9 @@
 package imcode.server.parser;
 
 import imcode.server.DocumentRequest;
+import imcode.server.ImcmsConstants;
+import imcode.server.document.DocumentMapper;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 
 public class ParserParameters implements Cloneable {
 
@@ -10,12 +13,13 @@ public class ParserParameters implements Cloneable {
     private Integer editingMenuIndex;
     private DocumentRequest documentRequest;
     private int flags;
+    private DocumentMapper documentMapper;
 
-    public ParserParameters() {
-
+    public ParserParameters( DocumentRequest documentRequest, DocumentMapper documentMapper ) {
+        this.documentMapper = documentMapper;
+        this.documentRequest = documentRequest;
     }
 
-    // set methods
     public void setTemplate( String template ) {
         this.template = template;
     }
@@ -28,7 +32,6 @@ public class ParserParameters implements Cloneable {
         this.externalParam = externalparam;
     }
 
-    // get methods
     public String getTemplate() {
         return this.template;
     }
@@ -67,5 +70,10 @@ public class ParserParameters implements Cloneable {
 
     public Object clone() throws CloneNotSupportedException {
         return super.clone() ;
+    }
+
+    public boolean isMenuMode() {
+        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( documentRequest.getDocument(), documentRequest.getUser() );
+        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
     }
 }

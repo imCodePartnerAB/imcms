@@ -221,7 +221,7 @@ public class GetExistingDoc extends HttpServlet {
         boolean canAddToMenu = allowedDocumentTypeIds.contains( new Integer( document.getDocumentTypeId() ) )
                                && sharePermission;
         if ( canAddToMenu ) {
-            parentDocument.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( document.getId() ) ) );
+            parentDocument.getMenu( menuIndex ).addMenuItem( new MenuItemDomainObject( documentMapper.getDocumentReference( document ) ) );
             documentMapper.saveDocument( parentDocument, user );
         }
     }

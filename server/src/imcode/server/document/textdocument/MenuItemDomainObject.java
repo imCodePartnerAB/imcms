@@ -41,7 +41,7 @@ public class MenuItemDomainObject {
     }
 
     public int hashCode() {
-        return documentReference.getDocumentId() ;
+        return documentReference.getDocument().hashCode() ;
     }
 
     public DocumentDomainObject getDocument() {

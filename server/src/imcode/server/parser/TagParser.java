@@ -9,8 +9,14 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.exception.ParseErrorException;
+import org.apache.velocity.exception.MethodInvocationException;
+import org.apache.velocity.exception.ResourceNotFoundException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -18,13 +24,15 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
+class TagParser {
 
     private static Pattern HTML_PREBODY_PATTERN = null;
     private static Pattern HTML_POSTBODY_PATTERN = null;
-    private static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN = null;
+    private static Pattern IMCMS_TAG_PATTERN = null;
+    private static Pattern IMCMS_END_TAG_PATTERN = null;
+    private static Pattern ATTRIBUTES_PATTERN;
 
-    private final static Logger log = Logger.getLogger( ImcmsTagSubstitution.class.getName() );
+    private final static Logger log = Logger.getLogger( TagParser.class.getName() );
 
     private FileCache fileCache = new FileCache();
 
@@ -33,13 +41,16 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
 
         try {
 
-            IMCMS_TAG_ATTRIBUTES_PATTERN = patComp.compile( "\\s*(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.SINGLELINE_MASK
-                                                                                                  | Perl5Compiler.READ_ONLY_MASK );
             HTML_PREBODY_PATTERN = patComp.compile( "^.*?<[Bb][Oo][Dd][Yy].*?>", Perl5Compiler.SINGLELINE_MASK
                                                                                  | Perl5Compiler.READ_ONLY_MASK );
             HTML_POSTBODY_PATTERN = patComp.compile( "<\\/[Bb][Oo][Dd][Yy]>.*$", Perl5Compiler.SINGLELINE_MASK
                                                                                  | Perl5Compiler.READ_ONLY_MASK );
-
+            IMCMS_TAG_PATTERN = patComp.compile( "<\\?imcms:(\\w+)\\b(.*?)\\s*\\?>", Perl5Compiler.SINGLELINE_MASK
+                                                                              | Perl5Compiler.READ_ONLY_MASK );
+            IMCMS_END_TAG_PATTERN = patComp.compile( "<\\?/imcms:(\\w+)\\s*\\?>", Perl5Compiler.SINGLELINE_MASK
+                                                                                  | Perl5Compiler.READ_ONLY_MASK );
+            ATTRIBUTES_PATTERN = patComp.compile( "\\s+(\\w+)\\s*=\\s*([\"'])(.*?)\\2", Perl5Compiler.SINGLELINE_MASK
+                                                                                                | Perl5Compiler.READ_ONLY_MASK );
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
             log.fatal( "Danger, Will Robinson!", ignored );
@@ -67,7 +78,7 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
     private DocumentRequest documentRequest;
     private TextDocumentDomainObject document;
 
-    ImcmsTagSubstitution( TextDocumentParser textdocparser, ParserParameters parserParameters,
+    TagParser( TextDocumentParser textdocparser, ParserParameters parserParameters,
                           boolean includemode, int includelevel,
                           boolean textmode,
                           boolean imagemode ) {
@@ -165,7 +176,7 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
 
     private String includePath( String path ) {
         HttpServletRequest request = documentRequest.getHttpServletRequest();
-        HttpServletRequestWrapper metaIdHeaderHttpServletRequest = new ImcmsTagSubstitution.MetaIdHeaderHttpServletRequest( request, document.getId() );
+        HttpServletRequestWrapper metaIdHeaderHttpServletRequest = new TagParser.MetaIdHeaderHttpServletRequest( request, document.getId() );
         HttpServletResponseWrapper collectingHttpServletResponse = new CollectingHttpServletResponse( documentRequest.getHttpServletResponse() ) ;
         try {
             request.getRequestDispatcher( path ).include( metaIdHeaderHttpServletRequest, collectingHttpServletResponse );
@@ -208,7 +219,8 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
         }
     }
 
-    private String includeUrl( String urlStr, Properties attributes ) {
+    private String includeUrl( String attribute, Properties attributes ) {
+        String urlStr = attribute ;
         try {
             String commaSeparatedNamesOfParametersToSend = attributes.getProperty( "sendparameters" );
 
@@ -456,9 +468,9 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
      */
     private String tagImage( Properties attributes ) {
         String mode = attributes.getProperty( "mode" );
-        if ( ( mode != null && !"".equals( mode ) )
-             && ( ( imageMode && "read".startsWith( mode ) ) // With mode="read", we don't want anything in imageMode.
-                  || ( !imageMode && "write".startsWith( mode ) )// With mode="write", we don't want anything it not in imageMode.
+        if ( mode != null && !"".equals( mode )
+             && ( imageMode && "read".startsWith( mode ) // With mode="read", we don't want anything in imageMode.
+                  || !imageMode && "write".startsWith( mode )// With mode="write", we don't want anything it not in imageMode.
                 ) ) {
             return "";
         }
@@ -509,7 +521,7 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
         String type = attributes.getProperty( "type" );
         String lang = attributes.getProperty( "lang" );
 
-        Date date = null;
+        Date date;
 
         if ( type != null ) {
             type = type.toLowerCase();
@@ -553,7 +565,7 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
      */
     private String tagUser( Properties attributes ) {
 
-        UserDomainObject user = null;
+        UserDomainObject user;
         String who = attributes.getProperty( "who" );
 
         if ( null != who && "creator".equalsIgnoreCase( who ) ) {
@@ -640,64 +652,130 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
         }
     }
 
-    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput,
-                                    PatternMatcher patMat, Pattern pat ) {
-        String tagname = matres.group( 1 );
-        String tagattributes = matres.group( 2 );
-        Properties attributes = new Properties();
-        PatternMatcherInput pminput = new PatternMatcherInput( tagattributes );
-        while ( patMat.contains( pminput, IMCMS_TAG_ATTRIBUTES_PATTERN ) ) {
-            MatchResult attribute_matres = patMat.getMatch();
-            attributes.setProperty( attribute_matres.group( 1 ), attribute_matres.group( 3 ) );
-        }
-        String result;
+    private String singleTag( String tagname, Properties attributes, String entireMatch,
+                        PatternMatcher patMat ) {
+        String tagResult;
 
-        /* FIXME: This is quickly growing ugly.
-        A better solution would be a class per tag (TagHandler's if you will),
-        with a known interface, looked up through some HashMap.
-        JSP already fixes this with tag-libs. */
         if ( "text".equals( tagname ) ) {
-            result = tagText( attributes );
+            tagResult = tagText( attributes );
         } else if ( "image".equals( tagname ) ) {
-            result = tagImage( attributes );
+            tagResult = tagImage( attributes );
         } else if ( "include".equals( tagname ) ) {
-            result = tagInclude( attributes, patMat );
+            tagResult = tagInclude( attributes, patMat );
         } else if ( "metaid".equals( tagname ) ) {
-            result = tagMetaId();
+            tagResult = tagMetaId();
         } else if ( "datetime".equals( tagname ) ) {
-            result = tagDatetime( attributes );
+            tagResult = tagDatetime( attributes );
         } else if ( "section".equals( tagname ) ) {
-            result = tagSection( attributes );
+            tagResult = tagSection( attributes );
         } else if ( "sections".equals( tagname ) ) {
-            result = tagSections( attributes );
+            tagResult = tagSections( attributes );
         } else if ( "user".equals( tagname ) ) {
-            result = tagUser( attributes );
+            tagResult = tagUser( attributes );
         } else if ( "documentlanguage".equals( tagname ) ) {
-            result = tagLanguage( attributes );
+            tagResult = tagLanguage( attributes );
         } else if ( "documentcategories".equals( tagname ) ) {
-            result = tagCategories( attributes );
+            tagResult = tagCategories( attributes );
         } else if ( "contextpath".equals( tagname ) ) {
-            result = tagContextPath();
+            tagResult = tagContextPath();
         } else {
-            result = matres.group( 0 );
+            tagResult = entireMatch ;
         }
 
-        /* If result equals something other than the empty string we have to
-        handle pre and post attributes */
-        if ( !"".equals( result ) ) {
-            String tempAtt = null;
-            if ( ( tempAtt = attributes.getProperty( "pre" ) ) != null ) {
-                result = tempAtt + result;
-            }
-            if ( ( tempAtt = attributes.getProperty( "post" ) ) != null ) {
-                result = result + tempAtt;
-            }
-        }
-        sb.append( result );
+        return tagResult;
     }
 
     private String tagContextPath() {
         return documentRequest.getHttpServletRequest().getContextPath();
+    }
+
+    public String replaceTags( Perl5Matcher patMat, String template ) {
+        StringBuffer result = new StringBuffer() ;
+        PatternMatcherInput input = new PatternMatcherInput( template );
+        int lastMatchEndOffset = 0;
+        while (patMat.contains( input, IMCMS_TAG_PATTERN )) {
+            result.append(input.substring(lastMatchEndOffset, input.getMatchBeginOffset() )) ;
+
+            MatchResult matres = patMat.getMatch();
+            String entireTag = matres.group( 0 );
+            String tagName = matres.group( 1 );
+            String tagattributes = matres.group( 2 );
+            Properties attributes = parseAttributes( tagattributes, patMat );
+
+            String tagResult = entireTag ;
+
+            if ("menu".equals( tagName ) || "velocity".equals( tagName )) {
+                tagResult = findEndTag( tagName, attributes, tagResult, patMat, input );
+            } else {
+                tagResult = singleTag( tagName, attributes, entireTag, patMat );
+            }
+            addResultWithPrePost( result, tagResult, attributes );
+            lastMatchEndOffset = input.getCurrentOffset();
+        }
+        result.append(template.substring( lastMatchEndOffset ));
+
+        return result.toString() ;
+    }
+
+    private String findEndTag( String tagName, Properties attributes, String entireTag, Perl5Matcher patMat,
+                               PatternMatcherInput input ) {
+        String tagResult = entireTag ;
+        PatternMatcherInput endTagInput = new PatternMatcherInput( input.getBuffer(), input.getMatchEndOffset(), input.getEndOffset()-input.getMatchEndOffset() ) ;
+        while (patMat.contains( endTagInput, IMCMS_END_TAG_PATTERN)) {
+            String endTagName = patMat.getMatch().group( 1 );
+            if (endTagName.equals( tagName )) {
+                String elementContent = endTagInput.preMatch() ;
+                input.setCurrentOffset( endTagInput.getMatchEndOffset() );
+                tagResult = blockTag( tagName, attributes, elementContent, patMat ) ;
+                break ;
+            }
+        }
+        return tagResult;
+    }
+
+    private void addResultWithPrePost( StringBuffer result, String tagResult, Properties attributes ) {
+        if ( tagResult.length() > 0 ) {
+            String preAttribute = attributes.getProperty( "pre" );
+            if ( preAttribute != null ) {
+                result.append(preAttribute) ;
+            }
+            result.append( tagResult );
+            String postAttribute = attributes.getProperty( "post" );
+            if ( postAttribute != null ) {
+                result.append(postAttribute) ;
+            }
+        }
+    }
+
+    String blockTag( String tagname, Properties attributes, String content,
+                PatternMatcher patternMatcher ) {
+        String result = content;
+        if ( "menu".equals( tagname ) ) {
+            MenuParserSubstitution menuParserSubstitution = new MenuParserSubstitution( parserParameters );
+            result = menuParserSubstitution.tag( attributes, content, patternMatcher );
+        } else if ( "velocity".equals( tagname ) ) {
+            VelocityEngine velocityEngine = service.getVelocityEngine( parserParameters.getDocumentRequest().getUser() ) ;
+            VelocityContext velocityContext = new VelocityContext();
+            velocityContext.put( "request", parserParameters.getDocumentRequest().getHttpServletRequest() );
+            velocityContext.put( "response", parserParameters.getDocumentRequest().getHttpServletResponse() );
+            StringWriter stringWriter = new StringWriter();
+            try {
+                velocityEngine.init();
+                velocityEngine.evaluate( velocityContext, stringWriter, null, content );
+            } catch ( ParseErrorException e ) {
+                throw new UnhandledException( e );
+            } catch ( MethodInvocationException e ) {
+                throw new UnhandledException( e );
+            } catch ( ResourceNotFoundException e ) {
+                throw new UnhandledException( e );
+            } catch ( IOException e ) {
+                throw new UnhandledException( e );
+            } catch ( Exception e ) {
+                throw new UnhandledException( e );
+            }
+            result = stringWriter.toString();
+        }
+        return result;
     }
 
     public class MetaIdHeaderHttpServletRequest extends HttpServletRequestWrapper {
@@ -716,4 +794,21 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
             return super.getHeader( headerName ) ;
         }
     }
+
+    /**
+     * Take a String of attributes, as may be found inside a tag, (name="...", and so on...) and transform it into a Properties.
+     */
+    public static Properties parseAttributes( String attributes_string, PatternMatcher patternMatcher ) {
+        Properties attributes = new Properties();
+
+        PatternMatcherInput attributes_input = new PatternMatcherInput( attributes_string );
+        while ( patternMatcher.contains( attributes_input, ATTRIBUTES_PATTERN ) ) {
+            MatchResult attribute_matres = patternMatcher.getMatch();
+            attributes.setProperty( attribute_matres.group( 1 ), attribute_matres.group( 3 ) );
+        }
+
+        return attributes;
+    }
+
+
 }

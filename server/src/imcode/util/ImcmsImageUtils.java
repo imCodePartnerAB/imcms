@@ -77,7 +77,7 @@ public class ImcmsImageUtils {
             DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( Integer.parseInt( imageUrl ) );
             if ( document instanceof FileDocumentDomainObject ) {
-                imageSource = new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( document.getId() ) );
+                imageSource = new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( document ) );
             }
         } catch ( NumberFormatException nfe ) {
             imageSource = new ImageDomainObject.ImagesPathRelativePathImageSource( imageUrl );

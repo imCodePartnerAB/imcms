@@ -47,8 +47,6 @@ public class DocumentMapper {
     private static final String SPROC_SECTION_GET_ALL = "SectionGetAll";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
 
-    private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAAUMAndRole;
-
     private ImcmsServices service;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
@@ -59,7 +57,7 @@ public class DocumentMapper {
         public Object transform( Object input ) {
             DocumentDomainObject document = getDocumentFromDb( ( (Integer)input ).intValue() );
             document.loadAllLazilyLoaded();
-            return document;
+            return new CachedDocument(document);
         }
     } );
 
@@ -70,10 +68,9 @@ public class DocumentMapper {
     private static final String TEMPLATE__STATUS_ARCHIVED = "status/archived.frag";
     private static final String TEMPLATE__STATUS_APPROVED = "status/approved.frag";
 
-    public DocumentMapper( ImcmsServices service, ImcmsAuthenticatorAndUserAndRoleMapper imcmsAAUMAndRole ) {
+    public DocumentMapper( ImcmsServices service ) {
         this.service = service;
         documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
-        this.imcmsAAUMAndRole = imcmsAAUMAndRole;
         File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         File indexDirectory = new File( webAppPath, "WEB-INF/index" );
 
@@ -351,7 +348,8 @@ public class DocumentMapper {
 
         DocumentDomainObject document ;
         try {
-            document = (DocumentDomainObject)( (DocumentDomainObject)documentCache.get( new Integer( metaId ) ) ).clone();
+            CachedDocument cachedDocument = (CachedDocument)documentCache.get( new Integer( metaId ) );
+            document = (DocumentDomainObject)cachedDocument.getDocument().clone();
         } catch ( CloneNotSupportedException e ) {
             throw new UnhandledException( e );
         }
@@ -360,8 +358,8 @@ public class DocumentMapper {
         return document;
     }
 
-    public DocumentReference getDocumentReference( int documentId ) {
-        return new DocumentReference( documentId, this );
+    public DocumentReference getDocumentReference( DocumentDomainObject document ) {
+        return new DocumentReference( document, this );
     }
 
     private DocumentDomainObject getDocumentFromDb( int metaId ) {
@@ -460,7 +458,7 @@ public class DocumentMapper {
                 menu = new MenuDomainObject( menuId, sortOrder );
                 document.setMenu( menuIndex, menu );
             }
-            menu.addMenuItem( new MenuItemDomainObject( this.getDocumentReference( childId ), new Integer( manualSortKey ), treeSortKey ) );
+            menu.addMenuItem( new MenuItemDomainObject( getDocumentReference( getDocument(childId) ), new Integer( manualSortKey ), treeSortKey ) );
         }
     }
 
@@ -953,11 +951,13 @@ public class DocumentMapper {
         final int documentTypeId = Integer.parseInt( result[1] );
         DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
 
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
         document.setId( Integer.parseInt( result[0] ) );
         document.setHeadline( result[2] );
         document.setMenuText( result[3] );
         document.setMenuImage( result[4] );
-        document.setCreator( imcmsAAUMAndRole.getUser( Integer.parseInt( result[5] ) ) );
+        UserDomainObject creator = imcmsAuthenticatorAndUserAndRoleMapper.getUser( Integer.parseInt( result[5] ) );
+        document.setCreator( creator );
         document.setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo( getBooleanFromSqlResultString( result[6] ) );
         document.setLinkableByOtherUsers( getBooleanFromSqlResultString( result[7] ) );
         document.setVisibleInMenusForUnauthorizedUsers( getBooleanFromSqlResultString( result[8] ) );
@@ -972,7 +972,7 @@ public class DocumentMapper {
         document.setArchivedDatetime( parseDateFormat( dateFormat, result[14] ) );
         String publisherIdStr = result[15];
         if ( null != publisherIdStr ) {
-            UserDomainObject publisher = imcmsAAUMAndRole.getUser( Integer.parseInt( publisherIdStr ) );
+            UserDomainObject publisher = imcmsAuthenticatorAndUserAndRoleMapper.getUser( Integer.parseInt( publisherIdStr ) );
             document.setPublisher( publisher );
         }
         document.setStatus( Integer.parseInt( result[16] ) );
@@ -1058,7 +1058,7 @@ public class DocumentMapper {
         if ( ImageDomainObject.ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT == imageType ) {
             try {
                 int fileDocumentId = Integer.parseInt( imageSource );
-                image.setSource( new ImageDomainObject.FileDocumentImageSource( getDocumentReference( fileDocumentId ) ) );
+                image.setSource( new ImageDomainObject.FileDocumentImageSource( getDocumentReference( getDocument(fileDocumentId) ) ) );
             } catch ( NumberFormatException nfe ) {
                 log.warn( "Non-numeric document-id \"" + imageSource + "\" for image in database." );
             } catch ( ClassCastException cce ) {
@@ -1095,7 +1095,7 @@ public class DocumentMapper {
 
     public void addToMenu( TextDocumentDomainObject parentDocument, int parentMenuIndex,
                            DocumentDomainObject documentToAddToMenu, UserDomainObject user ) {
-        parentDocument.getMenu( parentMenuIndex ).addMenuItem( new MenuItemDomainObject( this.getDocumentReference( documentToAddToMenu.getId() ) ) );
+        parentDocument.getMenu( parentMenuIndex ).addMenuItem( new MenuItemDomainObject( this.getDocumentReference( documentToAddToMenu ) ) );
         saveDocument( parentDocument, user );
     }
 
@@ -1248,6 +1248,11 @@ public class DocumentMapper {
         deleteFileDocumentFilesAccordingToFileFilter( new SuperfluousFileDocumentFilesFileFilter( fileDocument ) );
     }
 
+    public boolean hasNewerDocument( int documentId, Date time ) {
+        CachedDocument cachedDocument = (CachedDocument)documentCache.get( new Integer( documentId ));
+        return null == cachedDocument.getDocument() || cachedDocument.getTime().after( time ) ;
+    }
+
     public static class TextDocumentMenuIndexPair {
 
         private TextDocumentDomainObject document;
@@ -1337,6 +1342,25 @@ public class DocumentMapper {
             boolean fileDocumentHasFile = null != fileDocument.getFile( fileId );
             return super.accept( file, fileDocumentId, fileId )
                    && ( !correctFileForFileDocumentFile || !fileDocumentHasFile );
+        }
+    }
+
+    private static class CachedDocument {
+
+        private DocumentDomainObject document;
+        private Date time;
+
+        public CachedDocument( DocumentDomainObject document ) {
+            this.document = document ;
+            this.time = new Date() ;
+        }
+
+        public DocumentDomainObject getDocument() {
+            return document;
+        }
+
+        public Date getTime() {
+            return time;
         }
     }
 

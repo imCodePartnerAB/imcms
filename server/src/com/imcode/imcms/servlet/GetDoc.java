@@ -245,12 +245,11 @@ public class GetDoc extends HttpServlet {
                 }
             }
             user.setTemplateGroup( null );
-            ParserParameters paramsToParser = new ParserParameters();
+            ParserParameters paramsToParser = new ParserParameters(documentRequest, documentMapper );
 
             paramsToParser.setTemplate( req.getParameter( "template" ) );
             paramsToParser.setParameter( req.getParameter( "param" ) );
             paramsToParser.setExternalParameter( externalparam );
-            paramsToParser.setDocumentRequest( documentRequest );
             // Log to accesslog
             trackLog.info( documentRequest );
             String result = imcref.parsePage( paramsToParser );

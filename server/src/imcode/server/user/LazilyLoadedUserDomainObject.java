@@ -1,19 +1,19 @@
 package imcode.server.user;
 
+import imcode.server.Imcms;
+
 public class LazilyLoadedUserDomainObject extends UserDomainObject {
 
     private boolean attributesLoaded;
     private boolean phoneNumbersLoaded;
     private boolean rolesLoaded;
-    private UserMapper userMapper;
 
-    public LazilyLoadedUserDomainObject( int id, UserMapper userMapper ) {
-        this(id, userMapper, false) ;
+    public LazilyLoadedUserDomainObject( int id ) {
+        this(id, false) ;
     }
 
-    public LazilyLoadedUserDomainObject( int id, UserMapper userMapper, boolean loadAttributes ) {
+    public LazilyLoadedUserDomainObject( int id, boolean loadAttributes ) {
         this.id = id ;
-        this.userMapper = userMapper;
         this.attributesLoaded = !loadAttributes ;
     }
 
@@ -23,6 +23,7 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         }
         attributesLoaded = true;
         if ( 0 != id ) {
+            UserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
             userMapper.initUserAttributes( this );
         }
     }
@@ -33,6 +34,7 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         }
         phoneNumbersLoaded = true;
         if ( 0 != id ) {
+            UserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
             userMapper.initUserPhoneNumbers( this );
         }
     }
@@ -43,6 +45,7 @@ public class LazilyLoadedUserDomainObject extends UserDomainObject {
         }
         rolesLoaded = true;
         if ( 0 != id ) {
+            UserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
             userMapper.initUserRoles( this );
         }
     }

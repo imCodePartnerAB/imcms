@@ -5,9 +5,7 @@ import imcode.server.ImcmsServices;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserAndRoleRegistry, Authenticator {
 
@@ -80,7 +78,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
         if ( sqlResult.length == 0 ) {
             user = null;
         } else {
-            user = new LazilyLoadedUserDomainObject(0, this, false);
+            user = new LazilyLoadedUserDomainObject(0, false);
             initUserFromSqlData( user, sqlResult );
         }
         return user;
@@ -124,7 +122,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
      * @return An object representing the user with the given id.
      */
     public UserDomainObject getUser( int userId ) {
-        return new LazilyLoadedUserDomainObject( userId, this );
+        return new LazilyLoadedUserDomainObject( userId );
     }
 
     private String[][] sqlSelectAllUsers( boolean includeUserExtern, boolean includeInactiveUsers ) {

@@ -147,7 +147,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initDocumentMapper() {
-        documentMapper = new DocumentMapper( this, imcmsAuthenticatorAndUserMapperAndRole );
+        documentMapper = new DocumentMapper( this );
     }
 
     private void initTemplateMapper() {

@@ -23,8 +23,6 @@ public class TextDocumentParser {
     private final static Logger log = Logger.getLogger( TextDocumentParser.class );
 
     static Pattern HASHTAG_PATTERN = null;
-    private static Pattern MENU_PATTERN = null;
-    private static Pattern IMCMS_TAG_PATTERN = null;
     private static Pattern HTML_TAG_PATTERN = null;
     private static Pattern HTML_TAG_HTML_PATTERN = null;
 
@@ -37,12 +35,7 @@ public class TextDocumentParser {
 
             HTML_TAG_HTML_PATTERN = patComp.compile( "<[hH][tT][mM][lL]\\s*>", Perl5Compiler.READ_ONLY_MASK );
 
-            IMCMS_TAG_PATTERN = patComp.compile( "<\\?imcms:([-\\w]+)(.*?)\\?>", Perl5Compiler.SINGLELINE_MASK
-                                                                                 | Perl5Compiler.READ_ONLY_MASK );
             HASHTAG_PATTERN = patComp.compile( "#[^ #\"<>&;\\t\\r\\n]+#", Perl5Compiler.READ_ONLY_MASK );
-            MENU_PATTERN = patComp.compile( "<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK
-                                                                                                 | Perl5Compiler.READ_ONLY_MASK );
-
         } catch ( MalformedPatternException ignored ) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
             log.fatal( "Bad pattern.", ignored );
@@ -74,7 +67,6 @@ public class TextDocumentParser {
 
         boolean textmode = false;
         boolean imagemode = false;
-        boolean menumode = false;
         boolean templatemode = false;
         boolean includemode = false;
 
@@ -82,7 +74,6 @@ public class TextDocumentParser {
             textmode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
             imagemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
                         && permissionSet.getEditImages();
-            menumode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
             templatemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
                            && permissionSet.getEditTemplates();
             includemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
@@ -99,10 +90,10 @@ public class TextDocumentParser {
 
         Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
         MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
-        MenuParserSubstitution menuparsersubstitution = new MenuParserSubstitution( parserParameters, document, menumode );
-        ImcmsTagSubstitution imcmstagsubstitution = new ImcmsTagSubstitution( this, parserParameters, includemode, includelevel, textmode, imagemode );
+        TagParser tagParser = new TagParser( this, parserParameters, includemode, includelevel, textmode, imagemode );
 
-        String tagsReplaced = replaceTags( template, patMat, menuparsersubstitution, imcmstagsubstitution, hashtagsubstitution );
+        String tagsReplaced = tagParser.replaceTags(patMat, template) ;
+        tagsReplaced = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
 
         String emphasizedAndTagsReplaced = applyEmphasis( documentRequest, user, tagsReplaced, patMat );
         return Util.substitute( patMat, HTML_TAG_HTML_PATTERN, new Substitution() {
@@ -159,18 +150,6 @@ public class TextDocumentParser {
             return result.toString();
         }
         return string;
-    }
-
-    private String replaceTags( String template, Perl5Matcher patMat, MenuParserSubstitution menuparsersubstitution,
-                                ImcmsTagSubstitution imcmstagsubstitution, MapSubstitution hashtagsubstitution ) {
-        // Menus.
-        String result = Util.substitute( patMat, MENU_PATTERN, menuparsersubstitution, template, Util.SUBSTITUTE_ALL );
-        // <?imcms:tags?>
-        result = Util.substitute( patMat, IMCMS_TAG_PATTERN, imcmstagsubstitution, result, Util.SUBSTITUTE_ALL );
-        // #hashtags#
-        result = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, result, Util.SUBSTITUTE_ALL );
-
-        return result;
     }
 
     private Properties getHashTags( UserDomainObject user, SimpleDateFormat datetimeFormatWithSeconds,

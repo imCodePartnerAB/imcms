@@ -8,9 +8,8 @@ import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.MenuItemDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.IdNamePair;
-import imcode.util.Utility;
 import imcode.util.Html;
+import imcode.util.IdNamePair;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
 import org.apache.oro.text.regex.*;
@@ -19,21 +18,19 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-class MenuParserSubstitution implements Substitution {
+class MenuParserSubstitution {
 
     private Substitution NULLSUBSTITUTION = new StringSubstitution( "" );
 
     private Map menus;
-    private boolean menuMode;
     private int[] implicitMenus = {1};
     private ParserParameters parserParameters;
     private static final int EXISTING_DOCTYPE_ID = 0;
 
-    MenuParserSubstitution( ParserParameters parserParameters, TextDocumentDomainObject document,
-                            boolean menuMode ) {
+    MenuParserSubstitution( ParserParameters parserParameters ) {
         this.parserParameters = parserParameters;
-        this.menuMode = menuMode;
-        this.menus = document.getMenus();
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)parserParameters.getDocumentRequest().getDocument();
+        this.menus = textDocument.getMenus();
     }
 
     private MenuDomainObject getMenuByIndex( int id ) {
@@ -118,11 +115,12 @@ class MenuParserSubstitution implements Substitution {
         return documentTypesHtmlOptionList.toString();
     }
 
-    private String nodeMenuParser( int menuIndex, String menutemplate, Properties menuattributes,
+    private String parseMenuNode( int menuIndex, String menutemplate, Properties menuattributes,
                                    PatternMatcher patMat ) {
         String modeAttribute = menuattributes.getProperty( "mode" );
         boolean modeIsRead = "read".equalsIgnoreCase( modeAttribute );
         boolean modeIsWrite = "write".equalsIgnoreCase( modeAttribute );
+        boolean menuMode = parserParameters.isMenuMode();
         if ( menuMode && modeIsRead || !menuMode && modeIsWrite ) {
             return "";
         }
@@ -162,7 +160,7 @@ class MenuParserSubstitution implements Substitution {
                         if ( "menuloop".equals( ( (Element)menuNodeChild ).getName() ) ) { // Is it an imcms:menuloop?
                             nodeMenuLoop( (Element)menuNodeChild, result, currentMenu, menuAttributes, patMat, menuIndex );
                         } else {
-                            result.append( ( menuNodeChild ).toString() );  // No? Just append it (almost)verbatim.
+                            result.append( menuNodeChild.toString() );  // No? Just append it (almost)verbatim.
                         }
                         break;
                 }
@@ -198,7 +196,7 @@ class MenuParserSubstitution implements Substitution {
     private boolean editingMenu( int menuIndex ) {
         Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
         boolean editingThisMenu = null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex
-                                  && menuMode;
+                                  && parserParameters.isMenuMode();
         return editingThisMenu;
     }
 
@@ -286,7 +284,7 @@ class MenuParserSubstitution implements Substitution {
             switch ( menuItemChild.getNodeType() ) { // Check the type of the child-node.
                 case Node.ELEMENT_NODE: // An element-node
                     Element menuItemChildElement = (Element)menuItemChild;
-                    if ( ( !"menuitemhide".equals( menuItemChildElement.getName() ) )
+                    if ( !"menuitemhide".equals( menuItemChildElement.getName() )
                          || menuItem != null ) { // if the child-element isn't a imcms:menuitemhide-element or there is a child...
                         parseMenuItem( result, menuItemChildElement.getTextContent(),
                                        menuItemSubstitution, patMat ); // parse it
@@ -307,21 +305,15 @@ class MenuParserSubstitution implements Substitution {
                                                                   org.apache.oro.text.regex.Util.SUBSTITUTE_ALL ) );
     }
 
-    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc,
-                                    PatternMatcherInput originalInput, PatternMatcher patMat,
-                                    Pattern pat ) {
-        MatchResult menuMatres = patMat.getMatch();
-        String attributes_string = menuMatres.group( 1 );
-        String menutemplate = menuMatres.group( 2 );
-        Properties menuattributes = NodeList.createAttributes( attributes_string, patMat );
-        // Get the id of the menu
+    public String tag( Properties menuattributes, String menutemplate,
+                       PatternMatcher patMat ) {
         int menuIndex;
         try {
             menuIndex = Integer.parseInt( menuattributes.getProperty( "no" ) );
         } catch ( NumberFormatException ex ) {
             menuIndex = implicitMenus[0]++;
         }
-        sb.append( nodeMenuParser( menuIndex, menutemplate, menuattributes, patMat ) );
+        return parseMenuNode( menuIndex, menutemplate, menuattributes, patMat );
     }
 
     /**
@@ -332,8 +324,8 @@ class MenuParserSubstitution implements Substitution {
 
         DocumentDomainObject document = menuItem.getDocument();
         String imageUrl = document.getMenuImage();
-        String imageTag = ( imageUrl != null && imageUrl.length() > 0 )
-                          ? ( "<img src=\"" + imageUrl + "\" border=\"0\">" ) : "";
+        String imageTag = imageUrl != null && imageUrl.length() > 0
+                          ? "<img src=\"" + imageUrl + "\" border=\"0\">" : "";
         String headline = document.getHeadline();
         if ( headline.length() == 0 ) {
             headline = "&nbsp;";
@@ -398,7 +390,7 @@ class MenuParserSubstitution implements Substitution {
                     sortKey = "" + menuItem.getSortKey();
                     sortKeyTemplate = "textdoc/admin_menuitem_manual_sortkey.frag";
 
-                } else if ( MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER == sortOrder ) {
+                } else {
                     String key = menuItem.getTreeSortKey().toString();
                     sortKey = key == null ? "" : key;
                     sortKeyTemplate = "textdoc/admin_menuitem_treesortkey.frag";
@@ -419,8 +411,6 @@ class MenuParserSubstitution implements Substitution {
 
             a_href = parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags )
                      + a_href;
-
-            ;
             a_href = Html.getLinkedStatusIconTemplate( menuItem.getDocument(), user ) + a_href;
         }
 

@@ -24,7 +24,7 @@ public class ImcmsSetupFilter implements Filter {
 
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
 
-        HttpServletRequest httpServletRequest = ( (HttpServletRequest)request );
+        HttpServletRequest httpServletRequest = (HttpServletRequest)request;
         HttpSession session = httpServletRequest.getSession();
 
         if ( session.isNew() ) {

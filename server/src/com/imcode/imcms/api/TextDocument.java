@@ -408,7 +408,7 @@ public class TextDocument extends Document {
         public void addDocument(Document documentToAdd) throws NoPermissionException, DocumentAlreadyInMenuException {
             getSecurityChecker().hasEditPermission(documentToAdd);
             getSecurityChecker().userHasPermissionToAddDocumentToAnyMenu(documentToAdd);
-            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(getDocumentMapper().getDocumentReference( documentToAdd.getInternal().getId() ) ));
+            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(getDocumentMapper().getDocumentReference( documentToAdd.getInternal() ) ));
         }
 
         /**
@@ -419,7 +419,7 @@ public class TextDocument extends Document {
          */
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
             getSecurityChecker().hasEditPermission(documentToRemove);
-            internalTextDocument.getMenu(menuIndex).removeMenuItem(new MenuItemDomainObject( getDocumentMapper().getDocumentReference( documentToRemove.getInternal().getId() ) ) );
+            internalTextDocument.getMenu(menuIndex).removeMenuItem(new MenuItemDomainObject( getDocumentMapper().getDocumentReference( documentToRemove.getInternal() ) ) );
         }
 
         public Document[] getDocuments() {

@@ -114,7 +114,7 @@ public class ChangeImage extends HttpServlet {
                     fileDocument.setHeadline( file.getFilename() );
                     fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
                     documentMapper.saveNewDocument( document, user );
-                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( fileDocument.getId() ) ) );
+                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( fileDocument ) ) );
                 }
             }
         };
@@ -160,7 +160,7 @@ public class ChangeImage extends HttpServlet {
                                         HttpServletResponse response ) throws IOException, ServletException {
                 FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound;
                 if ( null != imageFileDocument ) {
-                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( imageFileDocument.getId() ) ) );
+                    image.setSourceAndClearSize( new ImageDomainObject.FileDocumentImageSource( documentMapper.getDocumentReference( imageFileDocument ) ) );
                 }
                 goToImageEditPage( document, imageIndex, image, request, response );
             }
