@@ -2,13 +2,12 @@ package com.imcode.imcms.servlet.superadmin;
 
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.TemplateDomainObject;
-import imcode.server.document.TemplateGroupDomainObject;
-import imcode.server.document.TemplateMapper;
-import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.Parser;
+import imcode.util.Utility;
+import org.apache.commons.collections.iterators.ArrayIterator;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,9 +17,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.collections.iterators.ArrayIterator;
 
 public class TemplateAdmin extends HttpServlet {
     private static final String TEMPLATE_ADMIN = "template_admin.html";
@@ -312,9 +308,8 @@ public class TemplateAdmin extends HttpServlet {
                                                                    UserDomainObject user ) {
         String htmlStr;
         String commaSeparatedTemplateNames = StringUtils.join( new ArrayIterator( templatesInGroup ) {
-            private int arrayIndex = 0 ;
             public Object next() {
-                return ((TemplateDomainObject[])getArray())[arrayIndex++].getName() ;
+                return ((TemplateDomainObject)super.next()).getName() ;
             }
         }, ", " );
         List vec = new ArrayList();
