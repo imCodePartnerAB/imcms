@@ -1,5 +1,10 @@
 Version 1.11.0:
 
+    Of importance:
+
+    * The "SelectMethod" in the JdbcUrl in "server.properties" MUST be set to "SelectMethod=cursor".
+      The default used to be "SelectMethod=direct". (Bug 2569)
+
     Of interest to users:
 
     * Made it possible to upload several files in one filedocument. (Bug 2452)
@@ -7,7 +12,7 @@ Version 1.11.0:
     * File-extension "xls" on uploaded files is now recognized as a Microsoft Excel Spreadsheet. (Bug 2534)
     * Fixed a problem with viewing uploaded PDF files with Adobe Acrobat 6.0.1. (Bug 2511)
     * Fixed exception when trying to create an HTML-document. (Bug 2543)
-    * Changes some swedish names for different document types. (Bug 1496)
+    * Changed some swedish names for different document types. (Bug 1496)
     * Some form elements looked strange in "page info" in Internet Explorer 5.2 on Macintosh. (Bug 2391)
 
     Of interest to API-using developers:
@@ -43,7 +48,6 @@ Version 1.11.0:
 
     Of interest to administrators:
 
-    * The "SelectMethod" in the database-url MUST be set to "SelectMethod=cursor". (Bug 2569)
     * Disallow editing of user "user". (Bug 2479)
     * Fixed a bug that made it impossible to create a category. (Bug 2514)
     * Fixed a bug that prevented changing a category-type from multi-choice to single-choice. (Bug 2515)
