@@ -14,6 +14,7 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentComparator;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
@@ -51,6 +52,7 @@ public class AdminManager extends Administrator {
     public static final String PAGE_SEARCH = "search";
     private static final LocalizedMessage ERROR_MESSAGE__NO_CREATE_PERMISSION = new LocalizedMessage( "error/servlet/AdminManager/no_create_permission" );
     private static final LocalizedMessage ERROR_MESSAGE__NO_PARENT_ID = new LocalizedMessage( "error/servlet/AdminManager/no_parent_id" );
+    private static final LocalizedMessage ERROR_MESSAGE__PARENT_MUST_BE_TEXT_DOCUMENT = new LocalizedMessage( "error/servlet/AdminManager/parent_must_be_text_document" );
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         this.doPost( req, res );
@@ -92,6 +94,10 @@ public class AdminManager extends Administrator {
                     documentMapper.copyDocument( parentDocument, user );
                     createAndShowAdminManagerPage( request, response, null );
                 } else {
+                    if (!(parentDocument instanceof TextDocumentDomainObject)) {
+                        createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__PARENT_MUST_BE_TEXT_DOCUMENT );
+                        return ;
+                    }
                     int documentTypeId = Integer.parseInt( createDocumentAction );
 
                     DocumentPageFlow.SaveDocumentCommand saveNewDocumentCommand = new SaveNewDocumentCommand();
@@ -274,7 +280,7 @@ public class AdminManager extends Administrator {
             DocumentDomainObject[] documentsFound ) {
         DocumentDomainObject.LifeCyclePhase[] phases = new DocumentDomainObject.LifeCyclePhase[]{
             DocumentDomainObject.LifeCyclePhase.APPROVED, DocumentDomainObject.LifeCyclePhase.NEW,
-            DocumentDomainObject.LifeCyclePhase.PUBLISHED, DocumentDomainObject.LifeCyclePhase.ARCHIVED, 
+            DocumentDomainObject.LifeCyclePhase.PUBLISHED, DocumentDomainObject.LifeCyclePhase.ARCHIVED,
         };
         Date sixMonthsAgo = getDateSixMonthsAgo();
         List documentsUnchangedForSixMonths = new ArrayList();

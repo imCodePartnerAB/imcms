@@ -86,7 +86,7 @@
 if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabName())) {
 	if (null != adminManagerPage.getErrorMessage()) { %>
 	<div style="color: red"><%=
-		StringEscapeUtils.escapeHtml( adminManagerPage.getErrorMessage().toLocalizedString(request) )
+		adminManagerPage.getErrorMessage().toLocalizedString(request)
 		%></div><%
 	} %>
 	<table border="0" cellspacing="0" cellpadding="2" width="656">
