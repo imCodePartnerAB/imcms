@@ -1,6 +1,7 @@
 package imcode.server.user;
 
 import imcode.server.IMCServiceInterface;
+import imcode.server.db.DBConnect;
 import org.apache.log4j.Logger;
 
 import com.imcode.imcms.RoleConstants;
@@ -320,5 +321,14 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
                            String.valueOf( tempUser.getUserType() ),
                            tempUser.isActive() ? "1" : "0" };
        service.sqlUpdateProcedure( modifyUserProcedureName, params );
+    }
+
+    public static Vector sprocGetUserPermissionSet( DBConnect dbc, String meta_id_str, String user_id_str ) {
+        dbc.getConnection();
+        dbc.createStatement();
+        dbc.setProcedure( "GetUserPermissionSet", new String[]{meta_id_str, user_id_str} );
+        Vector user_permission_set = (Vector)dbc.executeProcedure();
+        dbc.clearResultSet();
+        return user_permission_set;
     }
 }

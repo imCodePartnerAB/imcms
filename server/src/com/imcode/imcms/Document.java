@@ -82,8 +82,4 @@ public class Document {
     public int getId() {
         return internalDocument.getMetaId();
     }
-
-    public DocumentDomainObject getInternal() {
-        return internalDocument;
-    }
 }

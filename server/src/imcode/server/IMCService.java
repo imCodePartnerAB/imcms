@@ -29,6 +29,10 @@ import java.util.*;
  **/
 final public class IMCService implements IMCServiceInterface, IMCConstants {
 
+    public ConnectionPool getConnectionPool() {
+        return m_conPool;
+    }
+
     private final ConnectionPool m_conPool; // inet pool of connections
     private TextDocumentParser textDocParser;
 

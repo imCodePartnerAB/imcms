@@ -3,8 +3,12 @@ package imcode.server.document;
 import imcode.server.IMCService;
 import imcode.server.TemplateDomainObject;
 import imcode.server.IMCServiceInterface;
+import imcode.server.db.DBConnect;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
+
+import java.util.Vector;
+import java.util.Iterator;
 
 public class TemplateMapper {
     protected IMCService service;
@@ -16,7 +20,7 @@ public class TemplateMapper {
     private static final String SPROC_GET_TEXT_DOC_DATA = "GetTextDocData";
     public static final String SPROC_GET_TEMPLATE_GROUPS_FOR_USER = "GetTemplateGroupsForUser";
 
-    // todo make sure all sproc and sql mehtods are private
+    // todo make sure all sproc and sql mehtods are private, start with making them not public.
     /** @return the template for a text-internalDocument, or null if the internalDocument isn't a text-internalDocument. **/
 /*
     public TemplateDomainObject getTemplate( int meta_id ) {
@@ -27,15 +31,15 @@ public class TemplateMapper {
         return new TemplateDomainObject( Integer.parseInt( textdoc_data[0] ), textdoc_data[1] );
     }
  */
-    private static TemplateDomainObject[] sprocGetTemplateGroupsForUser( IMCService service, int user_id, int meta_id ){
+    private static TemplateGroupDomainObject[] sprocGetTemplateGroupsForUser( IMCService service, int user_id, int meta_id ){
         String[] params = new String[]{ String.valueOf(meta_id), String.valueOf(user_id)};
         String[] sprocResult = service.sqlProcedure( SPROC_GET_TEMPLATE_GROUPS_FOR_USER, params );
         int noOfColumnsInResult = 2;
-        TemplateDomainObject[] result = new TemplateDomainObject[sprocResult.length/noOfColumnsInResult];
+        TemplateGroupDomainObject[] result = new TemplateGroupDomainObject[sprocResult.length/noOfColumnsInResult];
         for( int i = 0, k = 0 ; i < sprocResult.length; i=i + noOfColumnsInResult, k++ ) {
             String name = sprocResult[i+1];
             int id = Integer.parseInt(sprocResult[i]);
-            result[k] = new TemplateDomainObject( id, name );
+            result[k] = new TemplateGroupDomainObject( id, name );
         }
         return result;
     }
@@ -45,8 +49,49 @@ public class TemplateMapper {
         return textdoc_data;
     }
 
-    public TemplateDomainObject[] getAllTemplateGroups( UserDomainObject user, DocumentDomainObject document ) {
-        return sprocGetTemplateGroupsForUser( service, user.getUserId(), document.getMetaId() );
+    public TemplateGroupDomainObject[] getAllTemplateGroups( UserDomainObject user, int metaId ) {
+        return sprocGetTemplateGroupsForUser( service, user.getUserId(), metaId );
+    }
+
+    public TemplateDomainObject[] getTemplates( int groupId ) {
+        DBConnect dbc = new DBConnect( service.getConnectionPool() );
+        dbc.getConnection();
+        Vector templates = sprocGetTemplatesInGroup( dbc, groupId );
+        dbc.closeConnection();
+        Iterator iterator = templates.iterator();
+        int noOfColumns = 2;
+        TemplateDomainObject[] result = new TemplateDomainObject[templates.size()/noOfColumns];
+        for( int k=0; iterator.hasNext(); k++ ) {
+            String templateId = (String)iterator.next();
+            String templateName = (String)iterator.next();
+            result[k] = new TemplateDomainObject( Integer.parseInt(templateId), templateName );
+        }
+        return result;
+    }
+
+    public static Vector sqlSelectGrouuName( DBConnect dbc, String group_id ) {
+        String sqlStr = "select group_name from templategroups where group_id = " + group_id;
+        dbc.setSQLString( sqlStr );
+        Vector groupnamevec = dbc.executeQuery();
+        dbc.clearResultSet();
+        return groupnamevec;
+    }
+
+    public static Vector sprocGetTemplateGroupsForUser( DBConnect dbc, UserDomainObject user, int meta_id ) {
+        String sqlStr = "GetTemplategroupsForUser";
+        String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
+        dbc.setProcedure( sqlStr, sqlAry2 );
+        Vector templategroups = dbc.executeProcedure();
+        dbc.clearResultSet();
+        return templategroups;
+    }
+
+    public static Vector sprocGetTemplatesInGroup( DBConnect dbc, int selected_group ) {
+        String sqlStr = "GetTemplatesInGroup";
+        dbc.setProcedure( sqlStr, String.valueOf( selected_group ) );
+        Vector templates = dbc.executeProcedure();
+        dbc.clearResultSet();
+        return templates;
     }
 
 }

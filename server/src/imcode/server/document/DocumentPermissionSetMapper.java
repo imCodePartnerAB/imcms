@@ -132,7 +132,7 @@ public class DocumentPermissionSetMapper {
             String langPrefix = "en";
             switch( permissionType ) {
                 case IMCConstants.DOC_PERM_SET_FULL:
-                    result.put( roleName, createFullPermissionSet( document, langPrefix ) );
+                    result.put( roleName, createFullPermissionSet( document ) );
                     break;
                 case IMCConstants.DOC_PERM_SET_RESTRICTED_1:
                 case IMCConstants.DOC_PERM_SET_RESTRICTED_2:
@@ -149,7 +149,7 @@ public class DocumentPermissionSetMapper {
         return result;
     }
 
-    private DocumentPermissionSetDomainObject createFullPermissionSet(  DocumentDomainObject document, String langPrefix ) {
+    private DocumentPermissionSetDomainObject createFullPermissionSet(  DocumentDomainObject document ) {
         DocumentPermissionSetDomainObject result =  null;
         result = new DocumentPermissionSetDomainObject( document, DocumentPermissionSetDomainObject.FULL_ID );
         result.setEditDocumentInformation( true );

@@ -1,6 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.*;
+import imcode.server.db.DBConnect;
 import imcode.server.util.DateHelper;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
@@ -537,6 +538,24 @@ public class DocumentMapper {
         service.sqlUpdateQuery( sqlStr );
 
         ((IMCService)service).updateLogs( "Text docs  [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
+    }
+
+    public static Vector sprocGetIncludes( DBConnect dbc, int meta_id ) {
+        dbc.setProcedure( "GetIncludes", String.valueOf( meta_id ) );
+        Vector included_docs = (Vector)dbc.executeProcedure();
+        dbc.clearResultSet();
+        return included_docs;
+    }
+
+    public static Vector sprocGetDocTypeForUser( DBConnect dbc, UserDomainObject user, int meta_id, String lang_prefix ) {
+        String sqlStr;
+        Vector doc_types_vec;
+        sqlStr = "GetDocTypesForUser";
+        String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() ), lang_prefix};
+        dbc.setProcedure( sqlStr, sqlAry2 );
+        doc_types_vec = (Vector)dbc.executeProcedure();
+        dbc.clearResultSet();
+        return doc_types_vec;
     }
 }
 

@@ -4,6 +4,7 @@ import imcode.server.TemplateDomainObject;
 import imcode.server.IMCService;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.TemplateMapper;
+import imcode.server.document.TemplateGroupDomainObject;
 
 public class TemplateService {
     private IMCService service;
@@ -31,13 +32,24 @@ public class TemplateService {
      * @param document The document for witch we would like to se the possible groups.
      * @return Only the templategroups that the current logged in user has the permissions to see
      */
-    public Template[] getAllTemplatesGroups( Document document ) {
+    public TemplateGroup[] getTemplatesGroups( Document document ) {
         // todo securityChecker.????
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
-        TemplateDomainObject[] internalTemplates = templateMapper.getAllTemplateGroups( user, document.getInternal() );
-        Template[] result = new Template[internalTemplates.length];
+        TemplateGroupDomainObject[] internalTemplates = templateMapper.getAllTemplateGroups( user, document.getId() );
+        TemplateGroup[] result = new TemplateGroup[internalTemplates.length];
         for( int i = 0; i < internalTemplates.length; i++ ) {
-            result[i] = new Template( internalTemplates[i] );
+            result[i] = new TemplateGroup( internalTemplates[i] );
+        }
+        return result;
+    }
+
+    public Template[] getTemplates( TemplateGroup templateGroup ) {
+        // todo securityChecker.????
+        TemplateDomainObject[] templates = templateMapper.getTemplates( templateGroup.getId() );
+        Template[] result = new Template[templates.length];
+        for( int i = 0; i < templates.length; i++ ) {
+            TemplateDomainObject domainObject = templates[i];
+            result[i] = new Template( domainObject );
         }
         return result;
     }
