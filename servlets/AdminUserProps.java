@@ -1267,6 +1267,10 @@ public class AdminUserProps extends Administrator {
 			session.removeAttribute("userToChange");
 			session.removeAttribute("tempRRUserData");
 			session.removeAttribute("next_url");
+			session.removeAttribute("tempUser");
+			session.removeAttribute("tempUserRoles");
+			session.removeAttribute("tempUserType");
+			session.removeAttribute("tempUseradminRoles");
 
 		}catch(IllegalStateException ise) {
 	    	log("session has been invalidated so no need to remove parameters");
