@@ -379,4 +379,10 @@ public interface IMCServiceInterface {
 
     public void unsetUserFlag(User user, String flagName);
 
+    Hashtable sqlProcedureHash( String procedure, String[] params );
+
+    int sqlUpdateProcedure( String procedure, String[] params );
+
+    String sqlProcedureStr( String procedure, String[] params );
+
 }

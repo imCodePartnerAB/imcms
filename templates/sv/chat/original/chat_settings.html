@@ -1,19 +1,49 @@
 <html>
 <head>
-	<title>Chat settings page</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
+<title>Chat settings page</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<body>
-<form method=post action=ChatControl name=botten>
-#reload#
-#entrance#
-#private#
-#public#
-#datetime#
-#font#
-	<INPUT name=controlOK type=submit value="Uppdatera inställningar">
+<!-- link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_admin.css" -->
+<link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_ns.css">
+<script language="JavaScript">
+<!--
+if (document.layers) {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat_ns.css\">");
+} else {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat.css\">");
+}
+//-->
+</script>
+
+</head>
+<body marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" scroll="no" class="chatControlBody">
+
+
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+	<td colspan="3" class="chatControlBodyTopline"><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td height="5"><img src="@imcmsimageurl@/se/admin/1x1.gif" width="10" height="1"></td>
+	<td><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="1"></td>
+	<td><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="10"></td>
+</tr>
+<form method="post" action="ChatControl" name="botten">
+<tr>
+	<td><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="1"></td>
+	<td>
+	#reload#
+	#entrance#
+	#private#
+	#datetime#
+	#font#
+	</td>
+	<td valign="bottom" ><input class="chatButton" name="controlOK" type="submit" value="Uppdatera inställningar"></td>
+	<td><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="1"></td>
+</tr>
 </form>
+</table>
 
 </body>
 </html>
+

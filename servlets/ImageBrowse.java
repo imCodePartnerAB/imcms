@@ -103,7 +103,7 @@ public class ImageBrowse extends HttpServlet {
 
 	//*lets get some path we need later on
 	String canon_path = file_path.getCanonicalPath();//ex: C:\Tomcat3\webapps\imcms\images
-	String root_dir_parent = file_path.getParent();//ex: c:\Tomcat3\webapps\imcms
+	String root_dir_parent = file_path.getParentFile().getCanonicalPath(); //ex: c:\Tomcat3\webapps\imcms
 	String root_dir_name = canon_path.substring(root_dir_parent.length());
 	if (root_dir_name.startsWith(File.separator))
 	    {

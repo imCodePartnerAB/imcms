@@ -86,10 +86,10 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	    }
 
 	// Lets add the standard SESSION parameters
-	Properties params = this.getSessionParameters(req) ;
+	Properties params = this.getPropertiesOfBillBoardSessionParameters(req) ;
 
 	// Lets get the buttonparameters  and validate all parameters
-	if (super.checkParameters(req, res, params) == false)
+        if (true == false)
 	    {
 
 		String header = "BillBoardDisc servlet. " ;
@@ -370,8 +370,8 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
 	    }
 
 	// Lets get the standard SESSION parameters and validate them
-	Properties params = this.getSessionParameters(req) ;
-	if (super.checkParameters(req, res, params) == false)
+	Properties params = this.getPropertiesOfBillBoardSessionParameters(req) ;
+        if (true == false)
 	    {
 
 		String header = "BillBoardDisc servlet. " ;
@@ -860,12 +860,12 @@ public class BillBoardDisc extends BillBoard {//ConfDisc
        Collects the standard parameters from the SESSION object.
     **/
 
-    public Properties getSessionParameters( HttpServletRequest req)
+    private Properties getPropertiesOfBillBoardSessionParameters( HttpServletRequest req)
 	throws ServletException, IOException
     {
 
 	// Lets get the standard metainformation
-	Properties reqParams  = super.getSessionParameters(req) ;
+	Properties reqParams  = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
 
 	// Lets get the session
 	HttpSession session = req.getSession(false) ;

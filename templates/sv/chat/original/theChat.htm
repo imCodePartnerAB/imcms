@@ -2,69 +2,117 @@
 <head>
 <title>chatControl</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_ns.css">
+<script language="JavaScript">
+<!--
+if (document.layers) {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat_ns.css\">");
+} else {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat.css\">");
+}
+//-->
+</script>
+
 </head>
+<body marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" scroll="no" class="chatControlBody" onload="huvud.msg.focus();">
+<!-- onload="if (parent._ChatMsgFrame) parent._ChatMsgFrame.location='ChatBoard';huvud.msg.focus();" -->
 
-<body bgcolor="#ffffff" text="#000000" onload="parent._ChatMsgFrame.location='ChatBoard';">
-
-<FORM method=post action=ChatControl name=huvud>
-	<INPUT name=nick type=hidden value=#alias#> 
-	<INPUT name=chatRoom2 type=hidden value=#chatRoom#>
-	
-<TABLE border=0 cellPadding=0 cellSpacing=0 width=701>
-	<TR valign="bottom">
-		<TD colSpan=3 valign="bottom" width="500" nowrap>
-			<B>#alias#</B> i <B>#chatRoom#</B> 
-			<SELECT name=msgTypes>
-				#MSG_PREFIX#
-			</SELECT> 
-			<SELECT name=recipient> 
-				<option value="0" >Alla</option> 
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+	<td class="chatControlBodyTopline"><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="1"></td>
+</tr>
+<tr>
+	<td><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="10"></td>
+</tr>
+<tr>
+	<td align="center">
+	<table border="0" cellspacing="0" cellpadding="0" width="760">
+	<form method="post" action="ChatControl" name="huvud" target="_parent">
+	<input name="nick" type="hidden" value="#alias#"> 
+	<input name="chatRoom2" type="hidden" value="#chatRoom#">
+	<tr valign="bottom">
+		<td colspan="2">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td>
+			<table border="0" cellspacing="0" cellpadding="3">
+			<tr>
+				<td class="chatControlFont" nowrap>#alias# i &quot;#chatRoom#&quot;</td>
+				<td>&nbsp;</td>
+				<td>
+				<select class="chatSelectBox" name="msgTypes">
+					#MSG_PREFIX#
+				</select></td>
+				<td>&nbsp;</td>
+				<td>
+				<select class="chatSelectBox" name="recipient"> 
+					<option value="0" >Alla</option> 
 					#MSG_RECIVER#
-			</SELECT><br>			
-			<INPUT maxLength=250 name=msg size=80> 
-		</TD>
-		<td valign="bottom">
-			#CHAT_ADMIN_DISCUSSION#<br>
-			<INPUT name=sendMsg type=submit value=Skicka/Uppdatera> 
-		</td>
-	</TR>
-</FORM>
-	<TR>
-		<TD colSpan=4 height=3>
-			<HR>
-		</TD>
-	</TR>
-	<TR>
-		<td nowrap> 	
-			
-			<form action="ChatControl" target="_self" method="post">	 			
-				<b>Byta rum:</b> 
-        		<select name="newRooms">
-          			#CHAT_ROOMS#          
-        		</select>
-        		<input type="submit" value=" Gå till " name="changeRoom">
-			</form>
-		</td>
+				</select></td>
+			</tr>
+			</table></td>
+			<td align="right">&nbsp;#CHAT_ADMIN_DISCUSSION#</td>
+		</tr>
+		<tr>
+			<td><textarea class="chatTextarea" name="msg" cols="57" rows="3" style="width:540; overflow:auto" wrap="soft">
+</textarea></td>
+			<td align="right" valign="bottom"><input type="submit" class="chatButtonSend" name="sendMsg" value="Skicka/Uppdatera"></td>
+		</tr>
+		</table></td>
+	</tr>
+	</form>
+	<tr>
+		<td colspan="2"><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="5"></td>
+	</tr>
+	<tr>
+		<td colspan="2" class="chatControlBodyMidline"><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td colspan="2"><img src="@imcmsimageurl@/se/admin/1x1.gif" width="1" height="5"></td>
+	</tr>
+	<tr>
 		<td>
-			#SETTINGS#	
-		</td>
-		<td>
-			<form action="ChatControl" target="_top" method="post">			
-        		<input type="submit" value=" Logga ut " name="logOut">
+		<table border="0" cellspacing="0" cellpadding="0">
+		<form action="ChatControl" target="_self" method="post">
+		<tr>
+			<td class="chatControlFont">Byt rum till</td>
+			<td>&nbsp;</td>
+			<td>
+			<select class="chatSelectBox" name="newRooms">
+			#CHAT_ROOMS#          
+			</select></td>
+			<td>&nbsp;</td>
+			<td><input class="chatButton" type="submit" value=" Byt " name="changeRoom"></td>
+		</tr>
+		</form>
+		</table></td>
+		
+		<td align="right">
+		<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td>#SETTINGS#</td>
+			<td>&nbsp;</td>
+			<td>
+			<table border="0" cellspacing="0" cellpadding="0">
+			<form action="ChatControl" target="_top" method="post">
+			<tr>
+				<td><input class="chatButtonAbort" type="submit" value=" Avsluta " name="logOut"></td>
+			</tr>
 			</form>
-		</td>
-		<td>
-			<form action="ChatCreator" target="_parent" method="get">
-				<input type="hidden" name="action" value="admin_chat">
-				<input type="hidden" name="chatName" value="#chatName#">
-        		#CHAT_ADMIN_LINK#
-			</form>
-		</td>
-	</TR>
-</TABLE>
+			</table></td>
+			<td>#CHAT_ADMIN_LINK#</td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></td>
+</tr>
+</table>
+
+
      
 </body>
-</HTML>
+</html>
 
 
 

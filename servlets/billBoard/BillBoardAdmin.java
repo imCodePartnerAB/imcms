@@ -124,7 +124,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 	// ********* REGISTER NEW TEMPLATE ********
 	if (req.getParameter("REGISTER_TEMPLATE_LIB") != null) {
-	    if (super.checkParameters(req, res, params) == false ) {
+        if (true == false ) {
 		return ;
 	    }
 
@@ -175,7 +175,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 	    params.setProperty("TEMPLATE_NAME" ,libName) ;
 	    params.setProperty("UPLOAD_TYPE" ,uploadType) ;
-	    if (super.checkParameters(req, res, params) == false ) {
+        if (true == false ) {
 		return ;
 	    }
 
@@ -187,7 +187,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 	// ********* SET TEMPLATE LIB FOR A CONFERENCE  ********
 	if (req.getParameter("SET_TEMPLATE_LIB") != null) {
-	    if (super.checkParameters(req, res, params) == false ) {
+        if (true == false ) {
 		return ;
 	    }
 
@@ -222,7 +222,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	// ********* DELETE REPLY ********  Peter says OK!!!!
 	if (req.getParameter("DELETE_REPLY") != null)
 	    {
-		if (super.checkParameters(req, res, params) == false ) {
+        if (true == false ) {
 		    return ;
 		}
 		// Lets get the discusssion id
@@ -259,7 +259,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 	// ********* RESAVE REPLY ********  Peter says OK!!!!
 	if (req.getParameter("RESAVE_REPLY") != null) {
-	    if (super.checkParameters(req, res, params) == false ) {
+        if (true == false ) {
 		return ;
 	    }
 	    // Lets get the discusssion id
@@ -304,7 +304,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	// ********* DELETE DISCUSSION ********   Peter says OK!!!!
 	if (req.getParameter("DELETE_DISCUSSION") != null) {
 
-	    if (super.checkParameters(req, res, params) == false ) {
+        if (true == false ) {
 		return ;
 	    }
 
@@ -326,7 +326,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	// ********* MOVE BILLS TO ANITHER SECTION ******** Peter says OK!!!!
 	if (req.getParameter("MOVE_BILLS") != null)
 	    {
-		if (super.checkParameters(req, res, params) == false ) {
+        if (true == false ) {
 		    return ;
 		}
 		String redirectParam = req.getParameter("BILLTYPES");
@@ -368,7 +368,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 	// ********* MOVE A BILL TO ANITHER SECTION ******** Peter says OK!!!!
 	if (req.getParameter("MOVE_A_BILL") != null) {
-		if (super.checkParameters(req, res, params) == false ) {
+        if (true == false ) {
 		    return ;
 		}
 
@@ -404,7 +404,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	if (req.getParameter("DELETE_SECTION") != null) {
 
 	    params = this.getDelSectionParameters(req, params) ;
-	    if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 		return ;
 	    }
 
@@ -439,7 +439,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	if (req.getParameter("ADD_SECTION") != null) {
 	    // Lets get addForum parameters
 	    params = this.getAddSectionParameters(req, params) ;
-	    if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 		return ;
 	    }
 
@@ -472,7 +472,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	if (req.getParameter("CHANGE_SECTION_NAME") != null) {
 	    // Lets get addForum parameters
 	    params = this.getRenameSectionParameters(req, params) ;
-	    if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 		return ;
 	    }
 
@@ -519,7 +519,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	if (req.getParameter("SHOW_DISCUSSION_NBR") != null) {
 	    // Lets get addForum parameters
 	    params = this.getShowDiscussionNbrParameters(req, params) ;
-	    if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 		return ;
 	    }
 
@@ -534,7 +534,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	if (req.getParameter("SHOW_DISCUSSION_DAYS") != null) {
 	    // Lets get addForum parameters
 	    params = this.getShowDiscussionDaysParameters(req, params) ;
-	    if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 		return ;
 	    }
 
@@ -562,7 +562,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 	// Lets get the standard SESSION parameters
 	Properties params = this.getStandardParameters(req) ;
 
-	if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 	    return ;
 	}
 
@@ -1121,7 +1121,7 @@ public class BillBoardAdmin extends BillBoard {//ConfAdmin
 
 
 	// Lets get the standard metainformation
-	Properties reqParams = super.getSessionParameters(req) ;
+	Properties reqParams = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
 
 	// Lets get the session
 	HttpSession session = req.getSession(false) ;

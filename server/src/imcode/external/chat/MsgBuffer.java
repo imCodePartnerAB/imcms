@@ -5,8 +5,6 @@ package imcode.external.chat;
 import java.util.*;
 
 public class MsgBuffer{
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 
 	private List _msgBuffer;
 	private final int _maxSize = 100;
@@ -19,20 +17,18 @@ public class MsgBuffer{
 	}
 
 	/**
-	*Gets an Iterator of all ChatMsg in the list
-	*@return An Iterator of all ChatMsg Object in the list
+	*Gets an Iterator of all ChatNormalMessage in the list
+	*@return An Iterator of all ChatNormalMessage Object in the list
 	*/
 	public ListIterator getAllMsg()	{
 		return _msgBuffer.listIterator();
 	}
 
 	/**
-	*Gets an Iterator of ChatMsg
-	*@param
-	*@param
-	*@return An Iterator of ChatMsg Object in the list
+	*Gets an Iterator of ChatNormalMessage
+	*@return An Iterator of ChatNormalMessage Object in the list
 	*/
-	public ListIterator getMessages(ChatMsg lastMsg, int nrOfOldOnes){
+	public ListIterator getMessages(ChatMessage lastMsg, int nrOfOldOnes){
 		//get the number for the last read msg
 		int start = _msgBuffer.indexOf(lastMsg);
 		start = start - nrOfOldOnes;
@@ -51,12 +47,26 @@ public class MsgBuffer{
 	/**
 	*Adds the supplied ChatMessage into the list
 	*if the list has reashed the max size then the oldest is removed
-	*@param message The ChatMsg object you want to add to the list.
+	*@param msg The ChatMessage object you want to add to the list.
 	*/
-	public void addNewMsg(ChatMsg message){
-		_msgBuffer.add(message);
-		if (_msgBuffer.size() < _maxSize){
-			_msgBuffer.remove(0);
-		}
-	}
+
+    protected void addNewMsg( ChatMessage msg ) {
+
+        synchronized ( _msgBuffer ) {
+            pruneBuffer();
+            _msgBuffer.add( 0, msg );
+        }
+    }
+
+    private void pruneBuffer() {
+        if ( _msgBuffer.size() > _maxSize ) {
+            _msgBuffer.remove( _msgBuffer.size() - 1 );
+        }
+    }
+
+    public List get_msgBuffer() {
+        return _msgBuffer;
+    }
+
+
 }//end class

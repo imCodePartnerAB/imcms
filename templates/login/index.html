@@ -1,7 +1,7 @@
 <HTML>
 
 <head>
-<title>Du är utloggad</title>
+<title>Logga in</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <SCRIPT language=JavaScript>
@@ -27,9 +27,9 @@ function openHelpW(id){
 <tr>
 	<td colspan="4" align="center">
 	<font size="2" face="Verdana, Arial, Helvetica, sans-serif">
-	Ange ditt namn och l&ouml;senord<br>
+	Ange Ditt anv&auml;ndarnamn och l&ouml;senord<br>
 	och tryck p&aring; Logga in f&ouml;r att logga in i systemet<br>
-	eller tryck p&aring; &Auml;ndra f&ouml;r att ändra dina personliga uppgifter.</font></td>
+	eller tryck p&aring; &Auml;ndra f&ouml;r att redigera Dina personliga uppgifter.</font></td>
 </tr>
 <tr>
 	<td colspan="4">&nbsp;</td>
@@ -40,11 +40,11 @@ function openHelpW(id){
 	<table border="0" cellpadding="1" cellspacing="0">
 	<form action="@servleturl@/VerifyUser" method="post">
 	<tr>
-		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Namn:</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Anv&auml;ndarnamn:&nbsp;</font></td>
 		<td><input type="text" name="name" size="15"></td>
 	</tr>
 	<tr>
-		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Lösenord:&nbsp;</font></td>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&ouml;senord:&nbsp;</font></td>
 		<td><input type="password" name="passwd" size="15"></td>
 	</tr>
 	<tr>
@@ -52,7 +52,7 @@ function openHelpW(id){
 		<td><input type="submit" name= "Logga in" value="Logga in">&nbsp;
 		    <input type="submit" name= "Ändra" value="&Auml;ndra">&nbsp;
 			<a href="@servleturl@/GetDoc?meta_id=54" target="_blank" onClick="openHelpW('54'); return false;">
-		    <img alt="Öppna hjälpsidan" border="0" height="21" src="@imageurl@/se/helpimages/btn_help_round.gif" width="19"></a></td>
+		    <img alt="Öppna hjälpsidan" border="0" height="21" src="@imcmsimageurl@/se/helpimages/btn_help_round.gif" width="19"></a></td>
 	</tr>
 	</form>
 	</table></td>
@@ -63,7 +63,16 @@ function openHelpW(id){
 	 
 </tr>
 <tr>
-	<td colspan="4" align="center"> <a href="@servleturl@/PasswordMailReminder">Glömt ditt lösenord? Klicka här.</a></td>
+	<td width="5%">&nbsp;</td>
+	<td>
+	 <table border="0" cellspacing="0" cellpadding="0" width="100%">
+	  <tr>
+		 <td align="left"><a href="@servleturl@/PasswordMailReminder">Jag har gl&ouml;mt mitt l&ouml;senord.</a></td>
+     <td align="right"><a href="@servleturl@/StartDoc">Till startsidan.</a></td>
+		</tr>
+	 </table>
+	</td>
+  <td colspan="2">&nbsp;</td>
 </tr>
 <tr>
 	<td colspan="4">&nbsp;</td>

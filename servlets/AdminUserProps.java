@@ -1555,7 +1555,7 @@ public class AdminUserProps extends Administrator {
 			return true;
 		}
 			
-	/*	else if ( user.getUserId() == userToChange.getUserId() ){
+	/*	else if ( user.getMemberId() == userToChange.getMemberId() ){
 		 	return true;
 					
 		}

@@ -4,14 +4,9 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.* ;
-import java.rmi.* ;
-import java.rmi.registry.* ;
 import imcode.util.* ;
 
 public class ConfHelp extends Conference {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
-
     private final static String USER_TEMPLATE = "Conf_help_user.htm";
     private final static String ADMIN_TEMPLATE = "Conf_help_admin.htm";
     private final static String ADMIN_TEMPLATE2 = "Conf_help_admin2.htm";
@@ -24,7 +19,7 @@ public class ConfHelp extends Conference {
 
 	// Lets get all parameters for this servlet
 	Properties params = this.getParameters(req) ;
-	if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 	    /*
 	      String header = "ConfLogin servlet. " ;
 	      String msg = params.toString() ;
@@ -41,7 +36,6 @@ public class ConfHelp extends Conference {
 	if ( isUserAuthorized( req, res, user ) ) {
 
 	    // Lets get serverinformation
-	    String host = req.getHeader("Host") ;
 	    IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface(req) ;
 
 	    // Lets get a VariableManager
@@ -63,8 +57,7 @@ public class ConfHelp extends Conference {
 		    }
 		} else {
 		    String header = "ConfHelp servlet. " ;
-		    String msg = params.toString() ;
-		    ConfError err = new ConfError( req, res, header, 6 );
+            new ConfError( req, res, header, 6 );
 		    return ;
 		}
 	    }
@@ -86,10 +79,10 @@ public class ConfHelp extends Conference {
     public Properties getParameters( HttpServletRequest req)
 	throws ServletException, IOException {
 
-	Properties params = super.getSessionParameters(req) ;
+	Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getConferenceSessionParameters(req)) ;
 
 	// Lets get the EXTENDED SESSION PARAMETERS
-	super.getExtSessionParameters(req, params) ;
+	super.addExtSessionParametersToProperties(req, params) ;
 
 	// Lets get our REQUESTPARAMETERS
 	String helpInfo = (req.getParameter("helparea")==null) ? "" : (req.getParameter("helparea")) ;

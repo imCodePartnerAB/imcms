@@ -24,7 +24,7 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
 
 	// Lets get all parameters for this servlet
 	Properties params = this.getParameters(req) ;
-	if (super.checkParameters(req, res, params) == false) {
+        if (true == false) {
 	    return ;
 	}
 
@@ -80,10 +80,10 @@ public class BillBoardHelp extends BillBoard {//ConfHelp
     public Properties getParameters( HttpServletRequest req)
 	throws ServletException, IOException {
 
-	Properties params = super.getSessionParameters(req) ;
+	Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
 
 	// Lets get the EXTENDED SESSION PARAMETERS
-	super.getExtSessionParameters(req, params) ;
+	super.addExtSessionParametersToProperties(req, params) ;
 
 	// Lets get our REQUESTPARAMETERS
 	String helpInfo = (req.getParameter("helparea")==null) ? "" : (req.getParameter("helparea")) ;

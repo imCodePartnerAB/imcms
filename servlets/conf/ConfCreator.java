@@ -7,8 +7,6 @@ import imcode.external.diverse.*;
 import imcode.util.* ;
 
 public class ConfCreator extends Conference {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
     String HTML_TEMPLATE = "Conf_Creator.htm" ;
 
     /**
@@ -23,12 +21,12 @@ public class ConfCreator extends Conference {
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get the standard parameters and validate them
-	Properties params = super.getSessionParameters(req) ;
-	if (super.checkParameters(req, res, params) == false) return ;
+	Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getConferenceSessionParameters(req)) ;
+        if (true == false) return ;
 
 	// Lets get the new conference parameters
 	Properties confParams = this.getNewConfParameters(req) ;
-	if (super.checkParameters(req, res, confParams) == false) return ;
+        if (true == false) return ;
 
 	// Lets get an user object
 	imcode.server.User user = super.getUserObj(req,res) ;
@@ -84,9 +82,6 @@ public class ConfCreator extends Conference {
 	    // Lets get the administrators user_id
 	    String user_id = ""+user.getUserId() ;
 
-	    // Lets get the recently added forums id
-	    String forum_id = confref.sqlProcedureStr("A_GetFirstForum " + metaId) ;
-
 	    // Lets add this user into the conference if hes not exists there before were
 	    // adding the discussion
 	    String confUsersAddSql = "A_ConfUsersAdd "+ user_id +", "+ metaId +", '"+ user.getFirstName() + "', '"
@@ -115,10 +110,6 @@ public class ConfCreator extends Conference {
 
 	// Lets validate the session, e.g has the user logged in to Janus?
 	if (super.checkSession(req,res) == false)	return ;
-
-	// Lets get the standard parameters and validate them
-	Properties params = super.getSessionParameters(req) ;
-	if (super.checkParameters(req, res, params) == false) return ;
 
 	// Lets get an user object
 	imcode.server.User user = super.getUserObj(req,res) ;

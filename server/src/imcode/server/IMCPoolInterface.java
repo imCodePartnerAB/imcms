@@ -26,29 +26,20 @@ public interface IMCPoolInterface {
 	final static String CVS_REV = "$Revision$" ;
 	final static String CVS_DATE = "$Date$" ;
 
-	// Parse doc replace variables with data
-	String  parseDoc(String htmlStr,java.util.Vector variables)
-	;
-
-	// Send a sqlquery to the database and return a string array
+    // Send a sqlquery to the database and return a string array
 	String[] sqlQuery(String sqlQuery)
 	;
 
-	// Send a sqlquery to the database/set database and return a string array
-	String[] sqlQuery(String sqlQuery,String catalog)
-	;
-
-	// Send a sql update query to the database
+    // Send a sql update query to the database
 	void sqlUpdateQuery(String sqlStr) ;
 
 
-	// Send a sqlquery to the database and return a string
-	String sqlQueryStr(String sqlQuery)
+    // Send a procedure to the database and return a string array
+	public String[] sqlProcedure(String procedure)
 	;
 
-
-	// Send a procedure to the database and return a string array
-	public String[] sqlProcedure(String procedure)
+    // Send a procedure to the database and return a string array
+    public String[] sqlProcedure(String procedure, String[] params)
 	;
 
 	// Send a procedure to the database and return a string
@@ -60,11 +51,7 @@ public interface IMCPoolInterface {
 	;
 
 
-	// Parse doc replace variables with data, uses two vectors
-	String  parseDoc(String htmlStr,java.util.Vector variables,java.util.Vector data)
-	;
-
-	// Send a sqlquery to the database and return a string array and metadata
+    // Send a sqlquery to the database and return a string array and metadata
 	String[] sqlQueryExt(String sqlQuery)
 	;
 
@@ -76,16 +63,16 @@ public interface IMCPoolInterface {
 	public java.util.Hashtable sqlQueryHash(String sqlQuery)
 	;
 
-	// Send a procedure to the database and return a Hashtable
-	public java.util.Hashtable sqlProcedureHash(String procedure)
-	;
-
-	// check document rights
-	public boolean checkDocAdminRights(int meta_id, User user)
-	;
-
-	// Send a procedure to the database and return a multistring array
+    // Send a procedure to the database and return a multistring array
 	public String[][] sqlProcedureMulti(String procedure)
 	;
+
+    // Send a procedure to the database and return a multistring array
+	public String[][] sqlProcedureMulti(String procedure, String[] params)
+	;
+
+    String sqlProcedureStr( String procedure, String[] params );
+
+    int sqlUpdateProcedure( String procedure, String[] params );
 
 }

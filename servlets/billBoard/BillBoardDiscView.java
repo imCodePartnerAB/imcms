@@ -57,9 +57,9 @@ public class BillBoardDiscView extends BillBoard {//ConfDiscView
 	// Properties params = super.getParameters(req) ;
 
 	// Lets get the standard SESSION parameters and validate them
-	Properties params = super.getSessionParameters(req) ;
+	Properties params = MetaInfo.createPropertiesFromMetaInfoParameters(super.getBillBoardSessionParameters(req)) ;
 
-	if (super.checkParameters(req, res, params) == false)
+        if (true == false)
 	    {
 
 		String header = "BillBoardViewer servlet. " ;

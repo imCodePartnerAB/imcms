@@ -7,8 +7,6 @@ import imcode.external.diverse.*;
 import imcode.util.* ;
 
 public class ConfManager extends Conference {
-    private final static String CVS_REV = "$Revision$" ;
-    private final static String CVS_DATE = "$Date$" ;
     String HTML_TEMPLATE ;
 
     /**
@@ -23,14 +21,14 @@ public class ConfManager extends Conference {
 	if (super.checkSession(req,res) == false)	return ;
 
 	// Lets get the standard parameters and validate them
-	Properties params = super.getParameters(req) ;
-	if (super.checkParameters(req, res, params) == false) return ;
+
+    MetaInfo.Parameters params = MetaInfo.getParameters( req ) ;
 
 	// Lets get an user object
 	imcode.server.User user = super.getUserObj(req,res) ;
 	if(user == null) return ;
 
-	int testMetaId = Integer.parseInt( params.getProperty("META_ID") );
+	int testMetaId = params.getMetaId() ;
 	if ( !isUserAuthorized( req, res, testMetaId, user ) ) {
 	    return;
 	}
@@ -51,9 +49,7 @@ public class ConfManager extends Conference {
 	    HttpSession session = req.getSession(false) ;
 	    if (session != null) {
 		// log("Ok nu sätter vi metavärdena");
-		session.setAttribute("Conference.meta_id", params.getProperty("META_ID")) ;
-		session.setAttribute("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-		session.setAttribute("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
+            setSessionAttributes( session, params );
 	    }
 
 	    String url = "ConfCreator?action=NEW" ;
@@ -66,7 +62,6 @@ public class ConfManager extends Conference {
 	if(action.equalsIgnoreCase("VIEW")) {
 
 	    // Lets get userparameters
-	    String metaId = params.getProperty("META_ID") ;
 	    String userId = "" + user.getUserId() ;
 
 	    // Lets detect which type of user we got
@@ -81,9 +76,7 @@ public class ConfManager extends Conference {
 		HttpSession session = req.getSession(false) ;
 		if (session != null) {
 		    // log("Ok nu sätter vi metavärdena");
-		    session.setAttribute("Conference.meta_id", params.getProperty("META_ID")) ;
-		    session.setAttribute("Conference.parent_meta_id", params.getProperty("PARENT_META_ID")) ;
-		    session.setAttribute("Conference.cookie_id", params.getProperty("COOKIE_ID")) ;
+            setSessionAttributes(session,params);
 		    session.setAttribute("Conference.viewedDiscList", new Properties()) ;
 		    log("OK, nu sätter vi viewedDiscList") ;
 		}
@@ -152,8 +145,7 @@ public class ConfManager extends Conference {
        Statistics function. Used By AdminManager system
     **/
 
-    public static String[][] getStatistics (IMCPoolInterface confref,String sproc)
-	throws ServletException, IOException {
+    public static String[][] getStatistics (IMCPoolInterface confref,String sproc) {
 
 	String[][] arr = confref.sqlProcedureMulti(sproc) ;
 	return arr ;

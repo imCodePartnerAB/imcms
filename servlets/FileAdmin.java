@@ -48,7 +48,7 @@ public class FileAdmin extends HttpServlet {
 	File fd2 = null ;
 
 	if ( rootpaths != null ) {
-	    StringTokenizer st = new StringTokenizer(rootpaths,File.pathSeparator) ;
+	    StringTokenizer st = new StringTokenizer(rootpaths,":;") ;
 
 	    switch (st.countTokens()) {
 	    default:
@@ -121,7 +121,7 @@ public class FileAdmin extends HttpServlet {
 
 	File[] roots = null ;
 	if ( rootpaths != null ) {
-	    StringTokenizer st = new StringTokenizer(rootpaths,File.pathSeparator) ;
+	    StringTokenizer st = new StringTokenizer(rootpaths,":;") ;
 	    roots = new File[st.countTokens()] ;
 	    for ( int i=0 ; i<roots.length ; i++ ) {
 		String oneRoot = st.nextToken().trim() ;
@@ -261,7 +261,7 @@ public class FileAdmin extends HttpServlet {
 	} else if ( mp.getParameter("deleteok") != null ) {
 	    String files, path ;
 	    if ( (files = mp.getParameter("files")) != null && (path = mp.getParameter("source")) != null) {
-		StringTokenizer st = new StringTokenizer (files,File.pathSeparator) ;
+		StringTokenizer st = new StringTokenizer (files,":;") ;
 		while ( st.hasMoreTokens() ) {
 		    File foo = new File(path,st.nextToken()) ;
 		    if ( foo.exists() && isUnderRoot(foo.getParentFile(),roots)) {
@@ -543,7 +543,7 @@ public class FileAdmin extends HttpServlet {
 		File srcdir = new File(src) ;
 		File dstdir = new File(dst) ;
 		if ( isUnderRoot(srcdir,roots) && isUnderRoot(dstdir,roots) ) {
-		    StringTokenizer st = new StringTokenizer (files,File.pathSeparator) ;
+		    StringTokenizer st = new StringTokenizer (files,":;") ;
 		    while ( st.hasMoreTokens() ) {
 			String foo = st.nextToken() ;
 			File source = new File(srcdir,foo) ;
@@ -675,7 +675,7 @@ public class FileAdmin extends HttpServlet {
 		File srcdir = new File(src) ;
 		File dstdir = new File(dst) ;
 		if ( isUnderRoot(srcdir,roots) && isUnderRoot(dstdir,roots) ) {
-		    StringTokenizer st = new StringTokenizer (files,File.pathSeparator) ;
+		    StringTokenizer st = new StringTokenizer (files,":;") ;
 		    while ( st.hasMoreTokens() ) {
 			String foo = st.nextToken() ;
 			File source = new File(srcdir,foo) ;
@@ -800,7 +800,7 @@ public class FileAdmin extends HttpServlet {
 	Vector vec = new Vector () ;
 	File[] rootlist = null ;
 	if ( rootpaths != null ) {
-	    StringTokenizer st = new StringTokenizer(rootpaths,File.pathSeparator) ;
+	    StringTokenizer st = new StringTokenizer(rootpaths,":;") ;
 	    rootlist = new File[st.countTokens()] ;
 	    for ( int i = 0 ; i<rootlist.length && st.hasMoreTokens() ; i++ ) {
 		String oneRoot = st.nextToken().trim() ;

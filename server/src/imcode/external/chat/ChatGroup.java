@@ -1,19 +1,24 @@
 
 package imcode.external.chat;
 
+import imcode.server.IMCPoolInterface;
+import imcode.server.IMCServiceInterface;
+import javax.servlet.ServletException;
 import java.util.*;
+import java.io.IOException;
 
 public class ChatGroup{
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
-	
+
 	private int _groupId;
 	private String _name;
 	private List _groupMembers;
 	private Counter _msgNrCounter;
-	private Counter _membersCounter;
+    private static final int AUTO_LOGOUT_TIME = 30;
+    private List _msgBuffer;
+    private int _maxBufferSize = 200;
 
-	/**
+
+    /**
 	*Default constructor
 	*@param groupNumber The groupNumber that this ChatGroup will have
 	*/
@@ -23,7 +28,8 @@ public class ChatGroup{
 		_name = groupName;
 		_groupMembers = Collections.synchronizedList(new LinkedList());
 		_msgNrCounter = new Counter();
-		_membersCounter = new Counter();
+        _msgBuffer = Collections.synchronizedList(new LinkedList());
+
 
 	}
 
@@ -84,26 +90,67 @@ public class ChatGroup{
 	*If not the  ChatMember exists in this group no action is taken.
 	*/
 	public synchronized void removeGroupMember(ChatMember member){
-		_groupMembers.remove(member);
+        _groupMembers.remove(member);
 	}
 
 
 	/**
-	*Adds a ChatMsg into all members of this ChatGroup
-	*@param msg The ChatMsg you want to add
+	*Adds a ChatNormalMessage into all members of this ChatGroup
+	*@param msg The ChatNormalMessage you want to add
 	*/
-	public synchronized void addNewMsg(ChatMsg msg){
-		_msgNrCounter.increment();
+	public synchronized void addNewMsg( ChatBase chatBase, ChatMessage msg, IMCServiceInterface imcref, IMCPoolInterface chatref) throws IOException, ServletException{
+        _msgNrCounter.increment();
 		msg.setIdNumber(_msgNrCounter.getValue());
 		Iterator iter = _groupMembers.iterator();
-		//spred the msg to the members
-		while (iter.hasNext()){
+
+        // add message to the group
+        addNewMsgToGroup( msg );
+
+        //spred the msg to the members
+        List membersWhichHaveTimedOut = new ArrayList() ;
+        while (iter.hasNext()){
 			ChatMember tempMember = (ChatMember) iter.next();
-			tempMember.addNewMsg(msg);
+            Calendar autoLogOutTime = Calendar.getInstance() ;
+            autoLogOutTime.setTime(tempMember.getLastRequest()) ;
+            autoLogOutTime.add(Calendar.MINUTE, AUTO_LOGOUT_TIME) ;
+
+            if (new Date().after(autoLogOutTime.getTime())) {
+                membersWhichHaveTimedOut.add(tempMember) ;
+                continue;
+            }
+
+            tempMember.addNewMsg(msg);
 		}
+
+        for (Iterator it = membersWhichHaveTimedOut.iterator(); it.hasNext(); ) {
+            ChatMember theMember = (ChatMember)it.next();
+            ChatSystemMessage systemMessage = new ChatSystemMessage(theMember, ChatSystemMessage.USER_TIMEDOUT_MSG) ;
+            chatBase.logOutMember(theMember, systemMessage, imcref, chatref);
+        }
+
 	}
 
-	public String toString(){
+
+    public List get_msgBuffer() {
+        return _msgBuffer;
+    }
+
+    protected void addNewMsgToGroup( ChatMessage msg ) {
+
+        synchronized ( _msgBuffer ) {
+            pruneBuffer();
+            _msgBuffer.add( 0, msg );
+        }
+    }
+
+    private void pruneBuffer() {
+        if ( _msgBuffer.size() > _maxBufferSize ) {
+            _msgBuffer.remove( _msgBuffer.size() - 1 );
+        }
+    }
+
+
+    public String toString(){
 		return "Group: " + _name + " GroupId: " + _groupId;
 	}
 }//end class

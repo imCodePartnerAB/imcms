@@ -72,13 +72,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		this.servletUrl = servleturl ;
 		this.serverObject = serverobject ;
     }
-	
-	/* 
-	 return a referens to IMCServerInterface used by TextDocumentParser  
-	*/
-	public IMCServiceInterface getServerObject(){
-		return this.serverObject;
-	}
+
+    /*
+       return a referens to IMCServerInterface used by TextDocumentParser  
+    */
+    public IMCServiceInterface getServerObject(){
+	return this.serverObject;
+    }
 
     public String parsePage (DocumentRequest documentRequest, int flags, ParserParameters paramsToParse) throws IOException{
 		return parsePage(documentRequest,flags,5,paramsToParse) ;
@@ -115,7 +115,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    dbc.setProcedure("GetUserPermissionSet (?,?)",sqlAry) ;
 	    Vector user_permission_set = (Vector)dbc.executeProcedure() ;
-	    dbc.clearResultSet() ;
 	    if ( user_permission_set == null ) {
 		dbc.closeConnection() ;
 		log.error("parsePage: GetUserPermissionset returned null") ;
@@ -149,7 +148,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    dbc.setProcedure("GetIncludes",String.valueOf(meta_id)) ;
 	    Vector included_docs = (Vector)dbc.executeProcedure() ;
-	    dbc.clearResultSet() ;
 
 	    String template_id = ""+myDoc.getTemplate().getId() ;
 	    String simple_name = myDoc.getTemplate().getName() ;
@@ -185,7 +183,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		} ;
 		dbc.setProcedure(sqlStr,sqlAry2) ;
 		doc_types_vec = (Vector)dbc.executeProcedure() ;
-		dbc.clearResultSet() ;
 	    }
 
 	    Vector templategroups = null ;
@@ -201,7 +198,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		} ;
 		dbc.setProcedure(sqlStr,sqlAry2) ;
 		templategroups = (Vector)dbc.executeProcedure() ;
-		dbc.clearResultSet() ;
 		// do templatemode queries
 
 		if ( selected_group == -1 ) {
@@ -211,12 +207,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		sqlStr = "GetTemplatesInGroup";
 		dbc.setProcedure(sqlStr,String.valueOf(selected_group)) ;
 		templates = (Vector)dbc.executeProcedure() ;
-		dbc.clearResultSet() ;
 
 		sqlStr = "select group_name from templategroups where group_id = " + group_id ;
 		dbc.setSQLString(sqlStr);
 		groupnamevec = (Vector)dbc.executeQuery() ;
-		dbc.clearResultSet() ;
 
 	    }
 
@@ -236,14 +230,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    int child_cols = dbc.getColumnCount() ;
 	    int child_rows = childs.size() / child_cols ;
-	    dbc.clearResultSet() ;
 
 	    // Get the images from the db
 	    // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
 	    //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
 	    dbc.setProcedure("GetImgs",String.valueOf(meta_id)) ;
 	    Vector images = (Vector)dbc.executeProcedure() ;
-	    dbc.clearResultSet() ;
 	    if ( images == null ) {
 		dbc.closeConnection() ;
 		log.error("parsePage: GetImgs returned null") ;
@@ -252,7 +244,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    dbc.setProcedure("SectionGetInheritId",String.valueOf(meta_id)) ;
 	    Vector section_data = (Vector)dbc.executeProcedure() ;
-	    dbc.clearResultSet() ;
 
 	    String section_name = null ;
 	    if (section_data == null) {
@@ -281,7 +272,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    int images_cols = dbc.getColumnCount() ;
 	    int images_rows = images.size() / images_cols ;
-	    dbc.clearResultSet() ;
 	    Iterator imit = images.iterator() ;
 	    // This is where we gather all images from the database and put them in our maps.
 	    while ( imit.hasNext() ) {
@@ -602,7 +592,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    StringBuffer result = new StringBuffer(template.length()+16384) ; // This value is the amount i expect the document to increase in size.
 
 	    ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter() ;
-	    MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution(menus,menumode,tags) ;
+	    MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution(documentRequest,menus,menumode,tags) ;
 	    HashTagSubstitution hashtagsubstitution = new imcode.server.parser.HashTagSubstitution(tags,numberedtags) ;
 	    ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution(this,
 												      documentRequest,

@@ -87,7 +87,12 @@ public class MultipartFormdataParser {
 	public String getFilename (String name) {
 		for ( int i = 0 ; i<names.length ; i++ ) {
 			if ( names[i].equals(name) ) {
-				return (mp.getHeaderParams(i,"content-disposition").getProperty("filename")) ;
+				String filename = (mp.getHeaderParams(i,"content-disposition").getProperty("filename")) ;
+                if (null != filename) {
+                    filename = filename.substring( filename.lastIndexOf( '/' ) + 1 );
+                    filename = filename.substring( filename.lastIndexOf( '\\' ) + 1 );
+                }
+                return filename ;
 			}
 		}
 		return null ;

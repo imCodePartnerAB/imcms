@@ -3,17 +3,20 @@
 <title>chatMessages</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 #CHAT_REFRESH#
-</head>
 
-<body>
-	#CHAT_MESSAGES#
-
-<script language="JavaScript" type="text/javascript">
-	document.location = "#bottom";
+<link rel="STYLESHEET" type="text/css" href="@cssurl@/style_chat_ns.css">
+<script language="JavaScript">
+<!--
+if (document.layers) {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat_ns.css\">");
+} else {
+	document.writeln("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"@cssurl@/style_chat.css\">");
+}
+//-->
 </script>
+
+</head>
+<body>
+<div class="chatFont">#CHAT_MESSAGES#</div>
 </BODY>
 </HTML>
-
-
-
-

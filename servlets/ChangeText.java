@@ -88,9 +88,13 @@ public class ChangeText extends HttpServlet {
 	if ( text.getType() == IMCText.TEXT_TYPE_HTML ) {
 	    vec.add("#html#") ;
 	    vec.add("checked") ;
+	    vec.add("#!html#") ;
+	    vec.add("") ;
 	} else {
 	    vec.add("#!html#") ;
 	    vec.add("checked") ;
+	    vec.add("#html#") ;
+	    vec.add("") ;
 	}
 	vec.add("#label#") ;
 	vec.add(label) ;
