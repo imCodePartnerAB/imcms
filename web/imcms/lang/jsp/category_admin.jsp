@@ -5,16 +5,16 @@
 <vel:velocity>
 <html>
 <head>
-
-
-<title><? install/htdocs/sv/jsp/category_admin/title ?></title>
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-
+    <title><? global/administer ?> <? templates/sv/AdminManager_adminTask_element.htm/17 ?></title>
+    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 </head>
-<body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">
+
+<body onLoad="focusField(1,'template')">
 #gui_outer_start()
-#gui_head("<? global/imcms_administration ?>")
+#gui_head("<? global/administer ?> <? templates/sv/AdminManager_adminTask_element.htm/17 ?>")
+#gui_head_help_and_back_buttons( "124"  "AdminManager" "" "" )
+
 <%
     AdminCategories.FormData formData = (AdminCategories.FormData)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
     StringBuffer messageToUser = new StringBuffer("");
@@ -23,6 +23,9 @@
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="head" action="AdminCategories" method="post">
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
     <tr>
         <td colspan="2" class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category_type ?>:</b></td>
     </tr>
@@ -41,12 +44,11 @@
         <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__EDIT_CATEGORY %>" value="<? global/edit ?>">
         <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__DELETE_CATEGORY %>" value="<? global/remove ?>">
         <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_MODE__VIEW_CATEGORY %>" value="<? global/view ?>">
-    <td>
-        <input type="button" value="<? global/help ?>" title="Open help" class="imcmsFormBtn" onClick="openHelpW(124)"></td>
-    </tr>
 </form>
 </table>
+
 #gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="main" action="AdminCategories" method="post">
 <%
@@ -357,7 +359,7 @@
                 <%}%>
         <%  }  %>
 
-        <input type="submit" class="imcmsFormBtn" name="<%= AdminCategories.PARAMETER_BUTTON__CANCEL %>" value="<? global/back ?>"></td>
+        </td>
 </tr>
 </form>
 </table>

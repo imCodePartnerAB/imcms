@@ -1,29 +1,86 @@
+#gui_start_of_page( "<? templates/sv/AdminManager_adminTask_element.htm/2 ?>" "AdminManager" "" "38" "" )
+
+<table border="0" cellspacing="0" cellpadding="0" width="400" align="center">
+    <form name="user_categoriesForm" action="AdminUser" method="post">
+    <tr>
+        <td colspan="2">#gui_heading( "<? templates/sv/AdminChangeUser.htm/4/1 ?>" )</td>
+    </tr>
+    <tr>
+        <td colspan="2" class="imcmsAdmText">
+        <? templates/sv/AdminChangeUser.htm/5 ?></td>
+    </tr>
+    <tr>
+        <td colspan="2">#gui_hr( "cccccc" )</td>
+    </tr>
+    <tr>
+        <td class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/7 ?></td>
+        <td>
+        <select name="user_categories"  style="WIDTH: 200px">
+            <option value="All_Choice" selected><? templates/sv/AdminChangeUser.htm/8 ?></option>
+            #USER_TYPES#
+        </select></td>
+    </tr>
+    <tr>
+        <td class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/10 ?></td>
+        <td>
+        <table border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td><input type="text" name="searchstring" size="20" maxlength="20" value="#searchstring#"></td>
+            <td class="imcmsAdmDim">&nbsp; <? templates/sv/AdminChangeUser.htm/1001 ?></td>
+        </tr>
+        </table></td>
+    </tr>
+    <tr>
+        <td class="imcmsAdmText">&nbsp;</td>
+        <td><input type="checkbox" name="active" value="0" #active#> <? templates/sv/AdminChangeUser.htm/12 ?></td>
+    </tr>
+    <tr>
+        <td colspan="2">#gui_hr( "cccccc" )</td>
+    </tr>
+    <tr>
+        <td class="imcmsAdmText">&nbsp;</td>
+        <td>
+        <table border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td><input type="submit" class="imcmsFormBtnSmall" name="showUsers" value="<? templates/sv/AdminChangeUser.htm/2004 ?>"></td>
+        </tr>
+        </table>
+    </td>
+    </tr>
+    </form>
+    <tr>
+        <td colspan="2" class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/14 ?></td>
+    </tr>
+    <form name="argumentForm" action="AdminUser" method="post" target="_top">
+    <tr>
+        <td colspan="2">
+        <table border="0" cellspacing="0" cellpadding="0">
+        <tr valign="top">
+            <td>
+            <select name="user_Id" size="15" style="width:300">
+                #USERS_MENU#
+            </select></td>
+            <td>&nbsp;</td>
+            <td>
+            <input type="submit" class="imcmsFormBtnSmall" name="ADD_USER" value="<? templates/sv/AdminChangeUser.htm/2005 ?>" style="width:80"><br>
+            <img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
+            <input type="submit" class="imcmsFormBtnSmall" name="CHANGE_USER" value=" <? templates/sv/AdminChangeUser.htm/2006 ?> " onClick="if(!evalEditUser()) return false;" style="width:80"></td>
+        </tr>
+        </table></td>
+    </tr>
+    <tr>
+        <td colspan="2">#gui_hr( "blue" )</td>
+    </tr>
+    <tr>
+        <td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" name="GO_BACK" value="<? templates/sv/AdminChangeUser.htm/2007 ?>"></td>
+    </tr>
+</form>
+</table>
+
+<script language="JavaScript">
 <!--
-Template: AdminChangeUser.htm
--->
-<html>
-<head>
-
-
-<title><? templates/sv/AdminChangeUser.htm/1 ?></title>
-
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
-
-<SCRIPT language="JavaScript">
-<!--
-
-function closeThisWindow() {
-	window.close();
-} //END FUNCTION CloseThisWindow
-
-function confirmDeleteUser(){
-	if(confirm("<? templates/sv/AdminChangeUser.htm/3000 ?>")) {
-		return true;
-	} else {
-		return false;
-	}
-}
+var sSearch = unescape(getParam("search")) ;
+if (sSearch != "" && sSearch != " ") document.forms[1].searchstring.value = sSearch ;
 
 function evalEditUser() {
 	var userId = document.forms.argumentForm.user_Id.selectedIndex;
@@ -34,115 +91,7 @@ function evalEditUser() {
 		return true;
 	}
 }
-
-
-//-->
-</SCRIPT>
-
-</head>
-<body bgcolor="#FFFFFF" onLoad="focusField(1,'searchstring')">
-
-#gui_outer_start()
-#gui_head( "<? global/imcms_administration ?>" )
-
-<table border="0" cellspacing="0" cellpadding="0">
-<form method="post" action="AdminUser" name="abortForm">
-<input type="hidden" name="user_Id" value="">
-<tr>
-	<td><input type="submit" class="imcmsFormBtn" name="GO_BACK" value="<? templates/sv/AdminChangeUser.htm/2001 ?>"></td>
-	<td>&nbsp;</td>
-    <td><input type="button" value="<? templates/sv/AdminChangeUser.htm/2002 ?>" title="<? templates/sv/AdminChangeUser.htm/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(38)"></td>
-</tr>
-</form>
-</table>
-#gui_mid()
-
-<table border="0" cellspacing="0" cellpadding="0" width="400" align="center">
-<form name="user_categoriesForm" action="AdminUser" method="post">
-<tr>
-	<td colspan="2">#gui_heading( "<? templates/sv/AdminChangeUser.htm/4/1 ?>" )</td>
-</tr>
-<tr>
-	<td colspan="2" class="imcmsAdmText">
-	<? templates/sv/AdminChangeUser.htm/5 ?></td>
-</tr>
-<tr>
-	<td colspan="2">#gui_hr( "cccccc" )</td>
-</tr>
-<tr>
-	<td class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/7 ?></td>
-	<td>
-	<select name="user_categories"  style="WIDTH: 200px">
-		<option value="All_Choice" selected><? templates/sv/AdminChangeUser.htm/8 ?></option>
-		#USER_TYPES#
-	</select></td>
-</tr>
-<tr>
-	<td class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/10 ?></td>
-	<td>
-	<table border="0" cellspacing="0" cellpadding="0">
-	<tr>
-		<td><input type="text" name="searchstring" size="20" maxlength="20" value="#searchstring#"></td>
-		<td class="imcmsAdmDim">&nbsp; <? templates/sv/AdminChangeUser.htm/1001 ?></td>
-	</tr>
-	</table></td>
-</tr>
-<tr>
-	<td class="imcmsAdmText">&nbsp;</td>
-	<td><input type="checkbox" name="active" value="0" #active#> <? templates/sv/AdminChangeUser.htm/12 ?></td>
-</tr>
-<tr>
-	<td colspan="2">#gui_hr( "cccccc" )</td>
-</tr>
-<tr>
-	<td class="imcmsAdmText">&nbsp;</td>
-	<td>
-	<table border="0" cellspacing="0" cellpadding="0">
-	<tr>
-		<td><input type="submit" class="imcmsFormBtnSmall" name="showUsers" value="<? templates/sv/AdminChangeUser.htm/2004 ?>"></td>
-	</tr>
-	</table>
-</td>
-</tr>
-</form>
-<tr>
-	<td colspan="2" class="imcmsAdmText"><? templates/sv/AdminChangeUser.htm/14 ?></td>
-</tr>
-<form name="argumentForm" action="AdminUser" method="post" target="_top">
-<tr>
-	<td colspan="2">
-	<table border="0" cellspacing="0" cellpadding="0">
-	<tr valign="top">
-		<td>
-		<select name="user_Id" size="15" style="width:300">
-			#USERS_MENU#
-		</select></td>
-		<td>&nbsp;</td>
-		<td>
-		<input type="submit" class="imcmsFormBtnSmall" name="ADD_USER" value="<? templates/sv/AdminChangeUser.htm/2005 ?>" style="width:80"><br>
-		<img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
-		<input type="submit" class="imcmsFormBtnSmall" name="CHANGE_USER" value=" <? templates/sv/AdminChangeUser.htm/2006 ?> " onClick="if(!evalEditUser()) return false;" style="width:80"></td>
-	</tr>
-	</table></td>
-</tr>
-<tr>
-	<td colspan="2">#gui_hr( "blue" )</td>
-</tr>
-<tr>
-	<td colspan="2" align="right"><input type="submit" class="imcmsFormBtn" name="GO_BACK" value="<? templates/sv/AdminChangeUser.htm/2007 ?>"></td>
-</tr>
-</form>
-</table>
-#gui_bottom()
-#gui_outer_end()
-
-
-<script language="JavaScript">
-<!--
-var sSearch = unescape(getParam("search")) ;
-if (sSearch != "" && sSearch != " ") document.forms[1].searchstring.value = sSearch ;
 //-->
 </script>
 
-</body>
-</html>
+#gui_end_of_page()

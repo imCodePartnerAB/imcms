@@ -11,8 +11,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import org.apache.log4j.*;
-import com.imcode.imcms.servlet.superadmin.AdminError;
-import com.imcode.imcms.servlet.superadmin.Administrator;
 
 public class AdminUser extends Administrator {
 
