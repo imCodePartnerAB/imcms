@@ -6,7 +6,7 @@
  */
 package imcode.server.document;
 
-import com.imcode.imcms.servlet.admin.DocumentInformation;
+import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletException;
@@ -30,8 +30,8 @@ public class UrlDocumentDomainObject extends DocumentDomainObject {
         return DOCTYPE_URL;
     }
 
-    public void processNewDocumentInformation( DocumentInformation documentInformation,
-                                               DocumentInformation.NewDocumentParentInformation newDocumentParentInformation,
+    public void processNewDocumentInformation( DocumentComposer documentInformation,
+                                               DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException, ServletException {
         documentInformation.forwardToCreateNewUrlDocumentPage( request, response, user );

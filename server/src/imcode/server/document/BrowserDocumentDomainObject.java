@@ -6,7 +6,7 @@
  */
 package imcode.server.document;
 
-import com.imcode.imcms.servlet.admin.DocumentInformation;
+import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletException;
@@ -20,7 +20,6 @@ import java.util.TreeMap;
 public class BrowserDocumentDomainObject extends DocumentDomainObject {
 
     private Map browserDocumentIdMap = new TreeMap();
-    private Integer defaultBrowserDocumentId;
 
     public Map getBrowserDocumentIdMap() {
         return Collections.unmodifiableMap( browserDocumentIdMap );
@@ -30,8 +29,8 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
         return DOCTYPE_BROWSER;
     }
 
-    public void processNewDocumentInformation( DocumentInformation documentInformation,
-                                               DocumentInformation.NewDocumentParentInformation newDocumentParentInformation,
+    public void processNewDocumentInformation( DocumentComposer documentInformation,
+                                               DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException, ServletException {
         documentInformation.forwardToCreateNewBrowserDocumentPage( request, response, user );
@@ -48,10 +47,6 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
 
     public void setBrowserDocumentId( Browser browser, int toMetaId ) {
         browserDocumentIdMap.put( browser, new Integer( toMetaId ) );
-    }
-
-    public Integer getDefaultBrowserDocumentId() {
-        return defaultBrowserDocumentId;
     }
 
     public static class Browser implements Comparable {

@@ -1,7 +1,7 @@
 package imcode.server.document;
 
 import com.imcode.imcms.api.TextDocument;
-import com.imcode.imcms.servlet.admin.DocumentInformation;
+import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
@@ -333,7 +333,7 @@ public class DocumentMapper {
         DocumentDomainObject document = sprocGetDocumentInfo( metaId );
 
         if ( null != document ) {
-            document.initDocumentFromDb(this) ;
+            document.initDocumentFromDb( this );
 
             addCategoriesFromDatabaseToDocument( document );
 
@@ -395,16 +395,16 @@ public class DocumentMapper {
         String sqlStr = "SELECT to_meta_id, browsers.browser_id, browsers.name, browsers.value\n"
                         + "FROM browser_docs, browsers\n"
                         + "WHERE browser_docs.browser_id = browsers.browser_id\n"
-                        + "AND meta_id = ?" ;
-        String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[] {""+document.getId()} ) ;
+                        + "AND meta_id = ?";
+        String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + document.getId()} );
         for ( int i = 0; i < sqlResult.length; i++ ) {
             String[] sqlRow = sqlResult[i];
-            int toMetaId = Integer.parseInt(sqlRow[0]) ;
-            int browserId = Integer.parseInt(sqlRow[1]) ;
-            String browserName = sqlRow[2] ;
-            int browserSpecificity = Integer.parseInt(sqlRow[3]) ;
+            int toMetaId = Integer.parseInt( sqlRow[0] );
+            int browserId = Integer.parseInt( sqlRow[1] );
+            String browserName = sqlRow[2];
+            int browserSpecificity = Integer.parseInt( sqlRow[3] );
             BrowserDocumentDomainObject.Browser browser = new BrowserDocumentDomainObject.Browser( browserId, browserName, browserSpecificity );
-            document.setBrowserDocumentId(browser, toMetaId) ;
+            document.setBrowserDocumentId( browser, toMetaId );
         }
 
         //TODO
@@ -439,7 +439,7 @@ public class DocumentMapper {
     }
 
     public static HashMap getDocumentTypeIdsAndNames( IMCServiceInterface service, int metaId, int userId,
-                                                   String lang_prefix ) {
+                                                      String lang_prefix ) {
         String[] docTypesQueryResult = service.sqlProcedure( SPROC_GET_DOC_TYPES_FOR_USER,
                                                              new String[]{"" + metaId, "" + userId, lang_prefix} );
         HashMap docTypesIdAndNames = new HashMap();
@@ -581,7 +581,7 @@ public class DocumentMapper {
 
         document.setMetaId( newMetaId );
 
-        document.saveNewDocument(this) ;
+        document.saveNewDocument( this );
 
         saveDocument( document );
     }
@@ -697,10 +697,10 @@ public class DocumentMapper {
 
         String sqlBrowserDocsInsertStr = makeSqlInsertString( "fileupload_docs", browserDocumentColumns );
 
-        Map browserDocumentMap = document.getBrowserDocumentIdMap() ;
+        Map browserDocumentMap = document.getBrowserDocumentIdMap();
         for ( Iterator iterator = browserDocumentMap.keySet().iterator(); iterator.hasNext(); ) {
             BrowserDocumentDomainObject.Browser browser = (BrowserDocumentDomainObject.Browser)iterator.next();
-            Integer metaIdForBrowser = (Integer)browserDocumentMap.get(browser) ;
+            Integer metaIdForBrowser = (Integer)browserDocumentMap.get( browser );
 
         }
 
@@ -1230,7 +1230,7 @@ public class DocumentMapper {
             return null;
         }
         final int documentTypeId = Integer.parseInt( result[2] );
-        DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(documentTypeId) ;
+        DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId( documentTypeId );
 
         document.setMetaId( Integer.parseInt( result[0] ) );
         document.setHeadline( result[3] );
@@ -1517,7 +1517,7 @@ public class DocumentMapper {
     }
 
     public void saveNewDocumentAndAddToMenu( DocumentDomainObject newDocument, UserDomainObject user,
-                                             DocumentInformation.NewDocumentParentInformation newDocumentParentInformation ) throws IOException, MaxCategoryDomainObjectsOfTypeExceededException, DocumentAlreadyInMenuException {
+                                             DocumentComposer.NewDocumentParentInformation newDocumentParentInformation ) throws IOException, MaxCategoryDomainObjectsOfTypeExceededException, DocumentAlreadyInMenuException {
         saveNewDocument( newDocument );
         addDocumentToMenu( user, newDocumentParentInformation.parentId,
                            newDocumentParentInformation.parentMenuNumber,
@@ -1526,18 +1526,28 @@ public class DocumentMapper {
     }
 
     public BrowserDocumentDomainObject.Browser[] getAllBrowsers() {
-        String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id != 0" ;
-        String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[0]) ;
-        List browsers = new ArrayList() ;
+        String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id != 0";
+        String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[0] );
+        List browsers = new ArrayList();
         for ( int i = 0; i < sqlResult.length; i++ ) {
-            String[] sqlRow = sqlResult[i];
-            int browserId = Integer.parseInt(sqlRow[0]) ;
-            String browserName = sqlRow[1] ;
-            int browserSpecificity = Integer.parseInt(sqlRow[2]) ;
-            BrowserDocumentDomainObject.Browser browser = new BrowserDocumentDomainObject.Browser(browserId, browserName, browserSpecificity) ;
-            browsers.add(browser) ;
+            browsers.add( createBrowserFromSqlRow( sqlResult[i] ) );
         }
-        return (BrowserDocumentDomainObject.Browser[])browsers.toArray( new BrowserDocumentDomainObject.Browser[browsers.size()]) ;
+        return (BrowserDocumentDomainObject.Browser[])browsers.toArray( new BrowserDocumentDomainObject.Browser[browsers.size()] );
+    }
+
+    public BrowserDocumentDomainObject.Browser getBrowserById( int browserIdToGet ) {
+        String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id = ?";
+        String[] sqlRow = service.sqlQuery( sqlStr, new String[]{"" + browserIdToGet} );
+        BrowserDocumentDomainObject.Browser browser = createBrowserFromSqlRow( sqlRow );
+        return browser ;
+    }
+
+    private BrowserDocumentDomainObject.Browser createBrowserFromSqlRow( String[] sqlRow ) {
+        int browserId = Integer.parseInt( sqlRow[0] );
+        String browserName = sqlRow[1];
+        int browserSpecificity = Integer.parseInt( sqlRow[2] );
+        BrowserDocumentDomainObject.Browser browser = new BrowserDocumentDomainObject.Browser( browserId, browserName, browserSpecificity );
+        return browser;
     }
 
     public static class DocumentAlreadyInMenuException extends Exception {

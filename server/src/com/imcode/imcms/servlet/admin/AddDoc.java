@@ -15,10 +15,10 @@ public class AddDoc extends HttpServlet {
     static final String SESSION__DATA__IDENTIFIER = "AddDoc.session.data";
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        DocumentInformation.NewDocumentParentInformation newDocumentParentInformation = new DocumentInformation.NewDocumentParentInformation( request );
+        DocumentComposer.NewDocumentParentInformation newDocumentParentInformation = new DocumentComposer.NewDocumentParentInformation( request );
 
-        DocumentInformation.addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocumentParentInformation", newDocumentParentInformation,request, DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
-        request.getRequestDispatcher( "/servlet/DocumentInformation" ).forward( request, response );
+        DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocumentParentInformation", newDocumentParentInformation,request, DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME);
+        request.getRequestDispatcher( "/servlet/DocumentComposer" ).forward( request, response );
         return ;
     }
 }

@@ -6,7 +6,7 @@
  */
 package imcode.server.document;
 
-import com.imcode.imcms.servlet.admin.DocumentInformation;
+import com.imcode.imcms.servlet.admin.DocumentComposer;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,8 +67,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return DOCTYPE_TEXT;
     }
 
-    public void processNewDocumentInformation( DocumentInformation documentInformation,
-                                               DocumentInformation.NewDocumentParentInformation newDocumentParentInformation,
+    public void processNewDocumentInformation( DocumentComposer documentInformation,
+                                               DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException {
             documentInformation.saveNewDocumentAndAddToMenuAndRemoveSessionAttributesAndRedirectToParent( this, newDocumentParentInformation, user, request, response );

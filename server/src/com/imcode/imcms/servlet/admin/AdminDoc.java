@@ -35,11 +35,11 @@ public class AdminDoc extends HttpServlet {
         if ( IMCConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
             DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
             DocumentDomainObject document = documentMapper.getDocument( metaId );
-            DocumentInformation.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
-                                                                                       + ".document", document, req, DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
+            DocumentComposer.addObjectToSessionAndSetSessionAttributeNameInRequest( AdminDoc.class.getName()
+                                                                                       + ".document", document, req, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
 
-            req.getRequestDispatcher( "DocumentInformation?action="
-                                      + DocumentInformation.ACTION__EDIT_DOCUMENT_INFORMATION ).forward( req, res );
+            req.getRequestDispatcher( "DocumentComposer?action="
+                                      + DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION ).forward( req, res );
         } else {
             IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 

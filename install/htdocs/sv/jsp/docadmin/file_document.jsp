@@ -1,4 +1,4 @@
-<%@ page contentType="text/html" import="com.imcode.imcms.servlet.admin.DocumentInformation,
+<%@ page contentType="text/html" import="com.imcode.imcms.servlet.admin.DocumentComposer,
                                          imcode.server.document.DocumentMapper,
                                          imcode.util.Utility,
                                          org.apache.commons.lang.StringEscapeUtils,
@@ -18,7 +18,7 @@ imcmsGui("outer_start", null);
 imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
-<form method="POST" enctype="multipart/form-data" action="DocumentInformation" charset>
+<form method="POST" enctype="multipart/form-data" action="DocumentComposer" charset>
 <input type="hidden" name="meta_id" value="#getMetaId#">
 <input type="hidden" name="new_meta_id" value="#new_meta_id#">
 <tr>
@@ -32,10 +32,10 @@ imcmsGui("head", null);
 imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
-<form method="POST" enctype="multipart/form-data" action="DocumentInformation">
-<input type="hidden" name="<%= DocumentInformation.PARAMETER__ACTION %>" value="<%= DocumentInformation.ACTION__CREATE_NEW_FILE_DOCUMENT %>">
-<input type="hidden" name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
-<input type="hidden" name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+<form method="POST" enctype="multipart/form-data" action="DocumentComposer">
+<input type="hidden" name="<%= DocumentComposer.PARAMETER__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_FILE_DOCUMENT %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
 	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/file_document.jsp/4/1 ?>",396);</script></td>
 </tr>
@@ -45,13 +45,13 @@ imcmsGui("mid", null);
 	<tr>
 		<td width="20%" height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/5 ?></td>
 		<td width="80%">
-            <input type="file" name="<%= DocumentInformation.PARAMETER__FILE_DOC__FILE %>" size="45"/>
+            <input type="file" name="<%= DocumentComposer.PARAMETER__FILE_DOC__FILE %>" size="45"/>
         </td>
 	</tr>
 	<tr>
 		<td height="22"><? install/htdocs/sv/jsp/docadmin/file_document.jsp/7 ?></td>
 		<td>
-		<select name="<%= DocumentInformation.PARAMETER__FILE_DOC__MIME_TYPE %>">
+		<select name="<%= DocumentComposer.PARAMETER__FILE_DOC__MIME_TYPE %>">
 			<option value=""><? install/htdocs/sv/jsp/docadmin/file_document.jsp/autodetect_or_fill_in_below ?></option>
 			<%
                 final DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();

@@ -17,6 +17,7 @@ import imcode.util.DateConstants;
 import imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,7 +29,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class DocumentInformation extends HttpServlet {
+public class DocumentComposer extends HttpServlet {
 
     private final static String URL_I15D_PAGE__PREFIX = "/imcms/";
 
@@ -36,7 +37,7 @@ public class DocumentInformation extends HttpServlet {
     private final static String URL_I15D_PAGE__URLDOC = "/jsp/docadmin/url_document.jsp";
     private final static String URL_I15D_PAGE__HTMLDOC = "/jsp/docadmin/html_document.jsp";
     private static final String URL_I15D_PAGE__FILEDOC = "/jsp/docadmin/file_document.jsp";
-    private static final String URL_I15D_PAGE__BROWSERDOC = "/jsp/docadmin/browser_document.jsp";
+    static final String URL_I15D_PAGE__BROWSERDOC = "/jsp/docadmin/browser_document.jsp";
 
     private static final String MIME_TYPE__APPLICATION_OCTET_STREAM = "application/octet-stream";
     private static final String MIME_TYPE__UNKNOWN_DEFAULT = MIME_TYPE__APPLICATION_OCTET_STREAM;
@@ -215,7 +216,7 @@ public class DocumentInformation extends HttpServlet {
                                                                               final Object objectToAddToSession,
                                                                               HttpServletRequest request,
                                                                               final String sessionAttributeNameRequestAttributeName ) {
-        final String sessionAttributeName = DocumentInformation.class.getName() + "." + sessionObjectName + "."
+        final String sessionAttributeName = DocumentComposer.class.getName() + "." + sessionObjectName + "."
                                             + System.currentTimeMillis();
         request.getSession().setAttribute( sessionAttributeName, objectToAddToSession );
         request.setAttribute( sessionAttributeNameRequestAttributeName, sessionAttributeName );
@@ -306,10 +307,10 @@ public class DocumentInformation extends HttpServlet {
         String target = getTargetFromRequest( request );
         document.setTarget( target );
 
-        Date createdDatetime = parseDatetimeParameters( request, "date_created", "created_time", dateFormat,
-                                                        timeFormat );
-        Date modifiedDatetime = parseDatetimeParameters( request, "date_modified", "modified_time", dateFormat,
-                                                         timeFormat );
+        Date createdDatetime = (Date)ObjectUtils.defaultIfNull( parseDatetimeParameters( request, "date_created", "created_time", dateFormat, timeFormat ), new Date());
+
+        Date modifiedDatetime = (Date)ObjectUtils.defaultIfNull( parseDatetimeParameters( request, "date_modified", "modified_time", dateFormat, timeFormat ), createdDatetime);
+
         document.setCreatedDatetime( createdDatetime );
         document.setModifiedDatetime( modifiedDatetime );
 
@@ -370,6 +371,8 @@ public class DocumentInformation extends HttpServlet {
             date = dateformat.parse( dateStr );
         } catch ( ParseException pe ) {
             return null;
+        } catch (NullPointerException npe) {
+            return null ;
         }
 
         Date time = null;
@@ -377,6 +380,8 @@ public class DocumentInformation extends HttpServlet {
             timeformat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
             time = timeformat.parse( timeStr );
         } catch ( ParseException pe ) {
+            return date;
+        } catch (NullPointerException npe) {
             return date;
         }
 

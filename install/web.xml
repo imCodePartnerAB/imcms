@@ -224,6 +224,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.BrowserDocumentComposer</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.BrowserDocumentComposer</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-class>
     </servlet>
@@ -439,8 +444,8 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.DocumentInformation</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.DocumentInformation</servlet-class>
+        <servlet-name>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-class>
     </servlet>
 
     <servlet>
@@ -773,6 +778,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.BrowserDocumentComposer</servlet-name>
+        <url-pattern>/servlet/BrowserDocumentComposer</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.ChangeExternalDoc2</servlet-name>
         <url-pattern>/servlet/ChangeExternalDoc2</url-pattern>
     </servlet-mapping>
@@ -989,8 +999,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.DocumentInformation</servlet-name>
-        <url-pattern>/servlet/DocumentInformation</url-pattern>
+        <servlet-name>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-name>
+        <url-pattern>/servlet/DocumentComposer</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -1,8 +1,8 @@
-<%@ page import="com.imcode.imcms.servlet.admin.DocumentInformation,
+<%@ page import="com.imcode.imcms.servlet.admin.DocumentComposer,
                  imcode.server.document.DocumentDomainObject,
                  org.apache.commons.lang.StringEscapeUtils" contentType="text/html"%>
 <%
-    DocumentDomainObject document = (DocumentDomainObject)DocumentInformation.getObjectFromSessionWithKeyInRequest( request, DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
+    DocumentDomainObject document = (DocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
 %>
 <html>
 <head>
@@ -20,7 +20,7 @@ imcmsGui("outer_start", null);
 imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
-<form action="DocumentInformation">
+<form action="DocumentComposer">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/url_document.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
@@ -32,16 +32,16 @@ imcmsGui("head", null);
 imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
-<form method="POST" action="DocumentInformation">
-<input type="hidden" name="<%= DocumentInformation.PARAMETER__ACTION %>" value="<%= DocumentInformation.ACTION__CREATE_NEW_URL_DOCUMENT %>">
-<input type="hidden" name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
-<input type="hidden" name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+<form method="POST" action="DocumentComposer">
+<input type="hidden" name="<%= DocumentComposer.PARAMETER__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_URL_DOCUMENT %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
 	<td colspan="2"><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/url_document.jsp/4/1 ?>",396);</script></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/url_document.jsp/1001 ?>&nbsp;</td>
-	<td><input type="text" name="<%= DocumentInformation.PARAMETER__URL_DOC__URL %>" size="62" maxlength="255" value=""></td>
+	<td><input type="text" name="<%= DocumentComposer.PARAMETER__URL_DOC__URL %>" size="62" maxlength="255" value=""></td>
 </tr>
 <tr>
 	<td colspan="2"><script>hr("100%",396,"cccccc");</script></td>

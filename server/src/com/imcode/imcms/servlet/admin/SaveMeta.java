@@ -217,10 +217,10 @@ public class SaveMeta extends HttpServlet {
         SimpleDateFormat dateFormat = new SimpleDateFormat( DateConstants.DATE_FORMAT_STRING );
         SimpleDateFormat timeFormat = new SimpleDateFormat( DateConstants.TIME_FORMAT_NO_SECONDS_STRING );
 
-        Date activated_datetime = DocumentInformation.parseDatetimeParameters( req, "activated_date", "activated_time", dateFormat, timeFormat );
-        Date archived_datetime = DocumentInformation.parseDatetimeParameters( req, "archived_date", "archived_time", dateFormat, timeFormat );
-        Date createdDatetime = DocumentInformation.parseDatetimeParameters( req, "date_created", "created_time", dateFormat,timeFormat) ;
-        Date modifiedDatetime = DocumentInformation.parseDatetimeParameters( req, "date_modified", "modified_time", dateFormat,timeFormat) ;
+        Date activated_datetime = DocumentComposer.parseDatetimeParameters( req, "activated_date", "activated_time", dateFormat, timeFormat );
+        Date archived_datetime = DocumentComposer.parseDatetimeParameters( req, "archived_date", "archived_time", dateFormat, timeFormat );
+        Date createdDatetime = DocumentComposer.parseDatetimeParameters( req, "date_created", "created_time", dateFormat,timeFormat) ;
+        Date modifiedDatetime = DocumentComposer.parseDatetimeParameters( req, "date_modified", "modified_time", dateFormat,timeFormat) ;
 
         // If target is set to '_other', it means the real target is in 'frame_name'.
         // In this case, set target to the value of frame_name.

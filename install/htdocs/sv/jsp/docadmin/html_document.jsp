@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.servlet.admin.DocumentInformation"%>
+<%@ page import="com.imcode.imcms.servlet.admin.DocumentComposer"%>
 <%@page contentType="text/html"%>
 <html>
 <head>
@@ -16,7 +16,7 @@ imcmsGui("outer_start", null);
 imcmsGui("head", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="0">
-<form method="POST" action="DocumentInformation">
+<form method="POST" action="DocumentComposer">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="cancel" value="<? install/htdocs/sv/jsp/docadmin/html_document.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
@@ -28,10 +28,10 @@ imcmsGui("head", null);
 imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-<form method="POST" action="DocumentInformation">
-<input type="hidden" name="<%= DocumentInformation.PARAMETER__ACTION %>" value="<%= DocumentInformation.ACTION__CREATE_NEW_HTML_DOCUMENT %>">
-<input type="hidden" name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
-<input type="hidden" name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
+<form method="POST" action="DocumentComposer">
+<input type="hidden" name="<%= DocumentComposer.PARAMETER__ACTION %>" value="<%= DocumentComposer.ACTION__CREATE_NEW_HTML_DOCUMENT %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME) %>">
+<input type="hidden" name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>" value="<%= request.getAttribute(DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME) %>">
 <tr>
 	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/html_document.jsp/6 ?>",656);</script></td>
 </tr>
@@ -39,7 +39,7 @@ imcmsGui("mid", null);
 	<td><? install/htdocs/sv/jsp/docadmin/html_document.jsp/5 ?></td>
 </tr>
 <tr>
-	<td><textarea name="<%= DocumentInformation.PARAMETER__HTML_DOC__HTML %>" cols="57" rows="16" wrap="virtual" style="width:100%; overflow:auto">
+	<td><textarea name="<%= DocumentComposer.PARAMETER__HTML_DOC__HTML %>" cols="57" rows="16" wrap="virtual" style="width:100%; overflow:auto">
 </textarea></td>
 </tr>
 <tr>

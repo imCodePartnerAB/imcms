@@ -16,14 +16,14 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  imcode.server.document.*,
-                 com.imcode.imcms.servlet.admin.DocumentInformation"%>
+                 com.imcode.imcms.servlet.admin.DocumentComposer"%>
 <%
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     final IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
     final DocumentMapper documentMapper = service.getDocumentMapper();
 
-    DocumentDomainObject document = (DocumentDomainObject)DocumentInformation.getObjectFromSessionWithKeyInRequest(request, DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
-    final boolean editingExistingDocument = DocumentInformation.ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( request.getParameter( DocumentInformation.PARAMETER__ACTION  )) ;
+    DocumentDomainObject document = (DocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest(request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME);
+    final boolean editingExistingDocument = DocumentComposer.ACTION__EDIT_DOCUMENT_INFORMATION.equalsIgnoreCase( request.getParameter( DocumentComposer.PARAMETER__ACTION  )) ;
     boolean creatingNewDocument = !editingExistingDocument;
 %>
 <%!
@@ -73,13 +73,13 @@ imcmsGui("head", null);
 imcmsGui("mid", null);
 </script>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-<form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentInformation">
+<form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
 <%
     if (creatingNewDocument) { %>
-    <input type="hidden" name="action" value="<%=DocumentInformation.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION%>" />
+    <input type="hidden" name="action" value="<%=DocumentComposer.ACTION__PROCESS_NEW_DOCUMENT_INFORMATION%>" />
     <input type="hidden"
-        name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
-        value="<%= request.getAttribute( DocumentInformation.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) %>">
+        name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME %>"
+        value="<%= request.getAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME ) %>">
 <tr>
 	<td class="imcmsAdmText"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/new_document_procedure_description ?>
 	&nbsp;</td>
@@ -88,10 +88,10 @@ imcmsGui("mid", null);
 	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/create_document_heading ?>","656");</script></td>
 </tr>
 <% } else { %>
-    <input type="hidden" name="action" value="<%=DocumentInformation.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
+    <input type="hidden" name="action" value="<%=DocumentComposer.ACTION__PROCESS_EDITED_DOCUMENT_INFORMATION%>" />
     <input type="hidden"
-        name="<%= DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
-        value="<%= request.getAttribute( DocumentInformation.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>">
+        name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
+        value="<%= request.getAttribute( DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) %>">
 <tr>
 	<td><script>imcHeading("<? install/htdocs/sv/jsp/docadmin/document_information.jsp/edit_document_heading ?> <%= document.getId() %>","656");</script></td>
 </tr>

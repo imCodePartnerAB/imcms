@@ -7,7 +7,7 @@ import imcode.server.user.UserDomainObject;
 import java.util.*;
 import java.io.IOException;
 
-import com.imcode.imcms.servlet.admin.DocumentInformation;
+import com.imcode.imcms.servlet.admin.DocumentComposer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -291,8 +291,8 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable {
         return document ;
     }
 
-    public abstract void processNewDocumentInformation( DocumentInformation documentInformation,
-                                               DocumentInformation.NewDocumentParentInformation newDocumentParentInformation,
+    public abstract void processNewDocumentInformation( DocumentComposer documentInformation,
+                                               DocumentComposer.NewDocumentParentInformation newDocumentParentInformation,
                                                UserDomainObject user, HttpServletRequest request,
                                                HttpServletResponse response ) throws IOException, ServletException;
 
