@@ -69,7 +69,8 @@
 #gui_mid_tabs1()
 <%= tabString %>
 #gui_mid_tabs2()
-    <form method="post" name="subreport" action="AdminManager">
+    <form method="GET" name="subreport" action="AdminManager">
+    <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>">
         <%
           List subreports = adminManagerPage.getSubreports() ;
           for ( Iterator iterator = subreports.iterator(); iterator.hasNext(); ) {

@@ -8,7 +8,7 @@ import java.util.List;
 public class AdminManagerSubreport {
 
     private String name;
-    private String sortorder;
+    private String sortorder = "MOD";
     private List documents;
     private LocalizedMessage heading;
     private boolean expanded;

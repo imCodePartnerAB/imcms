@@ -22,9 +22,9 @@
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>
         <% if ( subreport.isExpanded() ) { %>
-            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="hideAll" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/12 ?> &raquo;"></td>
+            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_hideAll" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/12 ?> &raquo;"></td>
         <%}else{ %>
-            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="showAll" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/11 ?> &raquo;"></td>
+            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_showAll" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/11 ?> &raquo;"></td>
         <%}%>
     </tr>
     </table></td>
@@ -44,7 +44,7 @@
             <tr>
                 <td nowrap><? web/imcms/lang/jsp/admin/admin_manager_search.jsp/7 ?>:&nbsp;</td>
                 <td>
-                <select name="new_sortorder" onChange="this.form.submit();">
+                <select name="<%= subreport.getName() %>_sortorder" onChange="this.form.submit();">
                     <% request.setAttribute( "SORT", subreport.getSortorder() ); %>
                     <jsp:include page="admin_manager_inc_sortorder_select_option.jsp" />
                 </select></td>

@@ -97,9 +97,6 @@ public class AdminManager extends Administrator {
                 res.sendRedirect( url );
                 return;
             }
-        } else if ( PAGE_SEARCH.equals( req.getParameter( REQUEST_PARAMETER__FROMPAGE ) ) ) {
-            req.getRequestDispatcher( "/servlet/SearchDocuments" ).forward( req, res );
-            return;
         }
 
         String tabToShow = null != req.getParameter( REQUEST_PARAMETER__SHOW )
@@ -134,6 +131,22 @@ public class AdminManager extends Administrator {
         AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = createDocumentsArchivedWithinOneWeekSubreport( documents_archived_less_then_one_week );
         AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = createDocumentsUnpublishedWithinOneWeekSubreport( documents_publication_end_less_then_one_week );
         AdminManagerSubreport documentsUnmodifiedForSixMonthsSubreport = createDocumentsUnmodifiedForSixMonthsSubreport( documents_not_changed_in_six_month );
+
+        AdminManagerSubreport[] subreports = {
+           newDocumentsSubreport,
+           modifiedDocumentsSubreport,
+           documentsArchivedWithinOneWeekSubreport,
+           documentsUnpublishedWithinOneWeekSubreport,
+           documentsUnmodifiedForSixMonthsSubreport,
+        } ;
+        for ( int i = 0; i < subreports.length; i++ ) {
+            AdminManagerSubreport subreport = subreports[i];
+            String newSortOrder = req.getParameter( subreport.getName()+"_sortorder" ) ;
+            if (null != newSortOrder) {
+                subreport.setSortorder( newSortOrder );
+            }
+            Collections.sort( subreport.getDocuments(), getComparator( subreport.getSortorder() ) ) ;
+        }
 
         AdminManagerPage adminManagerPage = null ;
         if ( tabToShow.equals( PARAMETER_VALUE__SHOW_NEW ) ) {
@@ -203,6 +216,7 @@ public class AdminManager extends Administrator {
 
     private AdminManagerSubreport createModifiedDocumentsSubreport( List documents_modified ) {
         AdminManagerSubreport modifiedDocumentsSubreport = new AdminManagerSubreport();
+        modifiedDocumentsSubreport.setName( "modified" );
         modifiedDocumentsSubreport.setDocuments( documents_modified );
         modifiedDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/5" ));
         return modifiedDocumentsSubreport;
@@ -210,6 +224,7 @@ public class AdminManager extends Administrator {
 
     private AdminManagerSubreport createNewDocumentsSubreport( List documents_new ) {
         AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
+        newDocumentsSubreport.setName( "new" );
         newDocumentsSubreport.setDocuments( documents_new );
         newDocumentsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/1" ) );
         return newDocumentsSubreport;
@@ -218,24 +233,30 @@ public class AdminManager extends Administrator {
     private AdminManagerSubreport createDocumentsUnmodifiedForSixMonthsSubreport(
             List documents_not_changed_in_six_month ) {
         AdminManagerSubreport documentsUnchangedForSixMonthsSubreport = new AdminManagerSubreport();
+        documentsUnchangedForSixMonthsSubreport.setName("unchangedForSixMonths") ;
         documentsUnchangedForSixMonthsSubreport.setDocuments( documents_not_changed_in_six_month );
         documentsUnchangedForSixMonthsSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/4" ) );
+        documentsUnchangedForSixMonthsSubreport.setSortorder( "MODR" );
         return documentsUnchangedForSixMonthsSubreport;
     }
 
     private AdminManagerSubreport createDocumentsArchivedWithinOneWeekSubreport(
             List documents_archived_less_then_one_week ) {
         AdminManagerSubreport documentsArchivedWithinOneWeekSubreport = new AdminManagerSubreport();
+        documentsArchivedWithinOneWeekSubreport.setName( "archivedWithinOneWeek" );
         documentsArchivedWithinOneWeekSubreport.setDocuments( documents_archived_less_then_one_week );
         documentsArchivedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/2" ));
+        documentsArchivedWithinOneWeekSubreport.setSortorder( "ARCR" );
         return documentsArchivedWithinOneWeekSubreport;
     }
 
     private AdminManagerSubreport createDocumentsUnpublishedWithinOneWeekSubreport(
             List documents_publication_end_less_then_one_week ) {
         AdminManagerSubreport documentsUnpublishedWithinOneWeekSubreport = new AdminManagerSubreport();
+        documentsUnpublishedWithinOneWeekSubreport.setName( "unpublishedWithinOneWeek" );
         documentsUnpublishedWithinOneWeekSubreport.setDocuments( documents_publication_end_less_then_one_week );
         documentsUnpublishedWithinOneWeekSubreport.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/subreport_heading/3" ) );
+        documentsUnpublishedWithinOneWeekSubreport.setSortorder( "PUBER" );
         return documentsUnpublishedWithinOneWeekSubreport;
     }
 
