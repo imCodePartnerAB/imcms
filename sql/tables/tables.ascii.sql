@@ -399,7 +399,7 @@ CREATE TABLE [dbo].[main_log] (
 GO
 
 CREATE TABLE [dbo].[meta] (
-	[meta_id] [int] NOT NULL ,
+	[meta_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[description] [varchar] (80) NOT NULL ,
 	[doc_type] [int] NOT NULL ,
 	[meta_headline] [varchar] (255) NOT NULL ,
