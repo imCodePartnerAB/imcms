@@ -6,6 +6,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.parser.ParserParameters;
 
@@ -32,7 +33,7 @@ public class AdminDoc extends HttpServlet {
         // Find the start-page
         int start_doc = imcref.getSystemData().getStartDocument();
 
-        imcode.server.user.UserDomainObject user;
+        UserDomainObject user;
         int meta_id;
 
         // Check if user logged on
@@ -112,7 +113,6 @@ public class AdminDoc extends HttpServlet {
             return htmlStr;
         }
 
-
         switch( doc_type ) {
 
             default:
@@ -122,8 +122,8 @@ public class AdminDoc extends HttpServlet {
                 String result = imcref.parsePage( documentRequest, flags, new ParserParameters() );
                 return result;
 
-            case 101:
-            case 102:
+            case DocumentDomainObject.DOCTYPE_DIAGRAM:
+            case DocumentDomainObject.DOCTYPE_CONFERENCE:
                 if( req == null || res == null ) {
                     throw new NullPointerException( "Request or response cannot be null for external docs." );
                 }
@@ -138,7 +138,7 @@ public class AdminDoc extends HttpServlet {
                 }
                 break;
 
-            case 5:
+            case DocumentDomainObject.DOCTYPE_URL:
                 Vector urlvec = new Vector();
                 String[] strary = imcref.sqlQuery( "select u.url_ref,m.target, m.frame_name from url_docs u, meta m where m.meta_id = u.meta_id and m.meta_id = " + meta_id );
                 String url_ref = strary[0];
@@ -177,7 +177,7 @@ public class AdminDoc extends HttpServlet {
                 htmlStr = imcref.parseDoc( urlvec, "change_url_doc.html", lang_prefix );
                 break;
 
-            case 7:
+            case DocumentDomainObject.DOCTYPE_HTML:
                 Vector fsetvec = new Vector();
                 String fset = imcref.sqlQueryStr( "select frame_set from frameset_docs where meta_id = " + meta_id );
                 fsetvec.add( "#frame_set#" );
@@ -192,19 +192,19 @@ public class AdminDoc extends HttpServlet {
 
                 break;
 
-            case 6:
+            case DocumentDomainObject.DOCTYPE_BROWSER:
                 Vector vec = new Vector();
                 String sqlStr = "select name,browsers.browser_id,to_meta_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = " + meta_id + " order by value desc,name asc";
                 Hashtable hash = imcref.sqlQueryHash( sqlStr );
-                String[] b_id = (String[])hash.get( "browser_id" );
-                String[] nm = (String[])hash.get( "name" );
-                String[] to = (String[])hash.get( "to_meta_id" );
+                String[] browserId = (String[])hash.get( "browser_id" );
+                String[] name = (String[])hash.get( "name" );
+                String[] toMetaId = (String[])hash.get( "to_meta_id" );
                 String bs = "";
-                if( b_id != null ) {
+                if( browserId != null ) {
                     bs += "<table width=\"50%\" border=\"0\">";
-                    for( int i = 0; i < b_id.length; i++ ) {
+                    for( int i = 0; i < browserId.length; i++ ) {
                         String[] temparr = {" ", "&nbsp;"};
-                        bs += "<tr><td>" + Parser.parseDoc( nm[i], temparr ) + ":</td><td><input type=\"text\" size=\"10\" name=\"bid" + b_id[i] + "\" value=\"" + (to[i].equals( "0" ) ? "\">" : to[i] + "\"><a href=\"GetDoc?meta_id=" + to[i] + "&parent_meta_id=" + meta_id + "\">" + to[i] + "</a>") + "</td></tr>";
+                        bs += "<tr><td>" + Parser.parseDoc( name[i], temparr ) + ":</td><td><input type=\"text\" size=\"10\" name=\"bid" + browserId[i] + "\" value=\"" + (toMetaId[i].equals( "0" ) ? "\">" : toMetaId[i] + "\"><a href=\"GetDoc?meta_id=" + toMetaId[i] + "&parent_meta_id=" + meta_id + "\">" + toMetaId[i] + "</a>") + "</td></tr>";
                     }
                     bs += "</table>";
                 }
@@ -212,12 +212,12 @@ public class AdminDoc extends HttpServlet {
                 vec.add( bs );
                 sqlStr = "select browser_id,name from browsers where browser_id not in (select browsers.browser_id from browser_docs join browsers on browsers.browser_id = browser_docs.browser_id where meta_id = " + meta_id + " ) order by value desc,name asc";
                 hash = imcref.sqlQueryHash( sqlStr );
-                b_id = (String[])hash.get( "browser_id" );
-                nm = (String[])hash.get( "name" );
+                browserId = (String[])hash.get( "browser_id" );
+                name = (String[])hash.get( "name" );
                 String nb = "";
-                if( b_id != null ) {
-                    for( int i = 0; i < b_id.length; i++ ) {
-                        nb += "<option value=\"" + b_id[i] + "\">" + nm[i] + "</option>";
+                if( browserId != null ) {
+                    for( int i = 0; i < browserId.length; i++ ) {
+                        nb += "<option value=\"" + browserId[i] + "\">" + name[i] + "</option>";
                     }
                 }
                 vec.add( "#new_browsers#" );
@@ -235,7 +235,7 @@ public class AdminDoc extends HttpServlet {
                 htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", lang_prefix );
                 break;
 
-            case 8:
+            case DocumentDomainObject.DOCTYPE_FILE:
                 sqlStr = "select mime from fileupload_docs where meta_id = " + meta_id;
                 String mimetype = imcref.sqlQueryStr( sqlStr );
                 sqlStr = "select filename from fileupload_docs where meta_id = " + meta_id;
