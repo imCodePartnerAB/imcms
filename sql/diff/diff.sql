@@ -3115,3 +3115,299 @@ GO
 
 
 --2002-02-11
+
+--renamed all the procedures to handle the section stuff
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[add_section]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[add_section]
+GO
+
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SectionAdd]
+GO
+
+
+CREATE PROCEDURE SectionAdd 
+  @section_word varchar(200)
+AS
+
+-- Lets check if a section already exists
+DECLARE @foundCode int
+SELECT @foundCode = 0
+-- Lets start with to find the id for the section_name
+SELECT @foundCode = section_id
+FROM sections
+WHERE section_name LIKE @section_word
+
+IF ( @foundCode = 0 ) BEGIN 
+ --PRINT 'Koden fanns inte'
+ -- Lets start to add the sections
+ INSERT INTO sections (section_name)
+ VALUES (  @section_word )
+END
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+--******** next one **********
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[add_section_crossref]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[add_section_crossref]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionAddCrossref]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SectionAddCrossref]
+GO
+
+
+CREATE PROCEDURE SectionAddCrossref 
+ @meta_id int,
+ @section_id int
+AS
+-- Lets insert the crossreferences but first we deleta all oldones for this meta_id
+DELETE FROM meta_section
+WHERE meta_id=@meta_id
+
+INSERT INTO meta_section (meta_id,section_id)
+VALUES (  @meta_id , @section_id )
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+--******** next one **********
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[change_and_delete_section_crossref]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[change_and_delete_section_crossref]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionChangeAndDeleteCrossref]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SectionChangeAndDeleteCrossref]
+GO
+
+
+CREATE PROCEDURE SectionChangeAndDeleteCrossref
+  @new_section_id int,
+  @old_section_id  int
+AS
+update meta_section
+set section_id = @new_section_id
+where section_id=@old_section_id
+
+exec delete_section @old_section_id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+--******** next one **********
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[change_section_name]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[change_section_name]
+GO
+
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionChangeName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SectionChangeName]
+GO
+
+
+CREATE PROCEDURE SectionChangeName
+ @section_id int,
+ @new_name varchar(200)
+AS
+ UPDATE sections
+ set section_name= @new_name
+ WHERE section_id = @section_id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+--******** next one **********
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[get_sections_count]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[get_sections_count]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SectionCount]
+GO
+
+
+CREATE PROCEDURE SectionCount 
+ @section_id int
+AS
+/*
+Gets the number of docs that is connected to that section_id
+*/
+select count(meta_id) 
+from meta_section
+where section_id=@section_id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+--******** next one **********
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[delete_section]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[delete_section]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SectionDelete]
+GO
+
+
+CREATE PROCEDURE SectionDelete
+ @section_id int
+AS
+ 
+ DELETE
+ FROM meta_section
+ WHERE section_id = @section_id
+ DELETE 
+ FROM sections
+ WHERE section_id = @section_id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+--******** next one **********
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[get_all_sections]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[get_all_sections]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionGetAll]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SectionGetAll]
+GO
+
+
+CREATE PROCEDURE SectionGetAll AS
+/*
+Gets all the section_id and  section_name
+*/
+SELECT section_id, section_name
+ FROM sections
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+--******** next one **********
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[get_all_sections_count]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[get_all_sections_count]
+GO
+
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionGetAllCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SectionGetAllCount]
+GO
+
+
+CREATE PROCEDURE SectionGetAllCount AS
+/*
+Gets all the section_id and  section_name and the number of docs
+*/
+select s.section_id, s.section_name, count(meta_id) 
+from sections s
+left join meta_section ms on s.section_id = ms.section_id
+group by s.section_name, s.section_id
+order by section_name
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+--******** next one **********
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[get_inherit_section_id]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[get_inherit_section_id]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SectionGetInheritId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[SectionGetInheritId]
+GO
+
+
+CREATE PROCEDURE SectionGetInheritId
+  @parent_meta_id int
+
+AS
+
+SELECT s.section_id, s.section_name
+ FROM sections s, meta_section ms, meta m
+where m.meta_id=ms.meta_id
+and m.meta_id=@parent_meta_id
+and ms.section_id=s.section_id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+--2002-02-11
+
+
+
+
+
+
+
+
