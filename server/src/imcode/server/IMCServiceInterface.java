@@ -267,4 +267,6 @@ public interface IMCServiceInterface {
     public Properties getLangProperties(UserDomainObject user);
 
     File getFilePath();
+
+    File getIncludePath();
 }

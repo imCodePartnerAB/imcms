@@ -346,6 +346,10 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;  // TODO
     }
 
+    public File getIncludePath() {
+        return null;  // TODO
+    }
+
     public boolean checkAdminRights( UserDomainObject user ) {
       return false;
    }

@@ -10,8 +10,8 @@ import imcode.util.DateConstants;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.oro.text.regex.*;
+import org.apache.oro.text.perl.Perl5Util;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.Collator;
 import java.text.ParseException;
@@ -20,9 +20,9 @@ import java.util.*;
 
 public class TextDocumentParser implements imcode.server.IMCConstants {
 
-    private final static Logger log = Logger.getLogger( "imcode.server.parser.TextDocumentParser" );
+    private final static Logger log = Logger.getLogger( TextDocumentParser.class );
 
-    private final static org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util(); // Internally synchronized
+    private final static Perl5Util perl5util = new Perl5Util();
 
     static Pattern HASHTAG_PATTERN = null;
     private static Pattern MENU_PATTERN = null;
@@ -49,15 +49,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     private IMCServiceInterface service;
-    private File templatePath;
-    private File includePath;
-    private String imageUrl;
     public static final int EXPECTED_CONTENT_BLOAT = 16384;
 
-    public TextDocumentParser( IMCServiceInterface serverobject, File templatepath, File includepath, String imageurl ) {
-        this.templatePath = templatepath;
-        this.includePath = includepath;
-        this.imageUrl = imageurl;
+    public TextDocumentParser( IMCServiceInterface serverobject ) {
         this.service = serverobject;
     }
 
@@ -111,7 +105,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                               && ( user_set_id == 0 || ( user_perm_set & PERM_DT_TEXT_EDIT_INCLUDES ) != 0 );
             }
 
-            String[] included_docs = DocumentMapper.sprocGetIncludes( service, meta_id );
+            String[] included_docs = documentMapper.sprocGetIncludes( meta_id );
 
             TemplateDomainObject documentTemplate = document.getTemplate();
             int documentTemplateId = documentTemplate.getId();
@@ -125,17 +119,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 }
             }
 
-            String lang_prefix = user.getLanguageIso639_2();	// Find language
-
             String[] metaIdUserIdPair = {meta_id_str, user_id_str};
 
             Perl5Matcher patMat = new Perl5Matcher();
 
-            Map imageMap = getImageMap( meta_id, imagemode );
-
             SimpleDateFormat datetimeFormatWithSeconds = new SimpleDateFormat( DateConstants.DATETIME_SECONDS_FORMAT_STRING );
 
-            Map menus = getMenus( metaIdUserIdPair, menumode, datetimeFormatWithSeconds, lang_prefix, parserParameters );
+            Map menus = getMenus( metaIdUserIdPair, menumode, datetimeFormatWithSeconds, parserParameters );
 
             StringBuffer templatebuffer = new StringBuffer( service.getTemplateData( documentTemplateId ) );
 
@@ -148,7 +138,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
             MapSubstitution hashtagsubstitution = new imcode.server.parser.MapSubstitution( hashTags, true );
             MenuParserSubstitution menuparsersubstitution = new imcode.server.parser.MenuParserSubstitution( parserParameters, menus, menumode );
-            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, parserParameters, templatePath, Arrays.asList( included_docs ), includemode, includelevel, includePath, document.getTexts(), textmode, imageMap, imagemode );
+            ImcmsTagSubstitution imcmstagsubstitution = new imcode.server.parser.ImcmsTagSubstitution( this, parserParameters, Arrays.asList( included_docs ), includemode, includelevel, textmode, imagemode );
 
             LinkedList parse = new LinkedList();
             perl5util.split( parse, "/(<!--\\/?IMSCRIPT-->)/", templateContents );
@@ -226,77 +216,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         // #hashtags#
         nextbit = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, nextbit, Util.SUBSTITUTE_ALL );
         return nextbit;
-    }
-
-    private Map getImageMap( int meta_id, boolean imagemode ) {
-        // Get the images from the db
-        // sqlStr = "select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = " + meta_id ;
-        //					0                    1    2      3       4     5      6      7       8       9          10    11       12      13     14
-        String[] images = service.sqlProcedure( "GetImgs", new String[]{"" + meta_id} );
-        HashMap imageMap = new HashMap();
-
-        Iterator imit = Arrays.asList( images ).iterator();
-        // This is where we gather all images from the database and put them in our maps.
-        while ( imit.hasNext() ) {
-            String imgnumber = (String)imit.next();
-            String imgurl = (String)imit.next();
-            String linkurl = (String)imit.next();
-            String width = (String)imit.next();
-            String height = (String)imit.next();
-            String border = (String)imit.next();
-            String vspace = (String)imit.next();
-            String hspace = (String)imit.next();
-            String image_name = (String)imit.next();
-            String align = (String)imit.next();
-            String alt = (String)imit.next();
-            String lowscr = (String)imit.next();
-            String target = (String)imit.next();
-            StringBuffer value = new StringBuffer( 96 );
-            if ( !"".equals( imgurl ) ) {
-                if ( !"".equals( linkurl ) ) {
-                    value.append( "<a href=\"" ).append( linkurl ).append( "\"" );
-                    if ( !"".equals( target ) ) {
-                        value.append( " target=\"" ).append( target ).append( "\"" );
-                    }
-                    value.append( '>' ) ;
-                }
-
-                value.append( "<img src=\"" + imageUrl + imgurl + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-                if ( !"0".equals( width ) ) {
-                    value.append( " width=\"" + width + "\"" );
-                }
-                if ( !"0".equals( height ) ) {
-                    value.append( " height=\"" + height + "\"" );
-                }
-                value.append( " border=\"" + border + "\"" );
-
-                if ( !"0".equals( vspace ) ) {
-                    value.append( " vspace=\"" + vspace + "\"" );
-                }
-                if ( !"0".equals( hspace ) ) {
-                    value.append( " hspace=\"" + hspace + "\"" );
-                }
-                if ( !"".equals( image_name ) ) {
-                    value.append( " name=\"" + image_name + "\"" );
-                }
-                if ( !"".equals( alt ) ) {
-                    value.append( " alt=\"" + alt + "\"" );
-                }
-                if ( !"".equals( lowscr ) ) {
-                    value.append( " lowscr=\"" + lowscr + "\"" );
-                }
-                if ( !"".equals( align ) && !"none".equals( align ) ) {
-                    value.append( " align=\"" + align + "\"" );
-                }
-                if ( !"".equals( linkurl ) || imagemode ) {
-                    value.append( "></a>" );
-                } else {
-                    value.append( ">" );
-                }
-            }
-            imageMap.put( imgnumber, value.toString() );
-        }
-        return imageMap;
     }
 
     private Properties getHashTags( UserDomainObject user, SimpleDateFormat datetimeFormatWithSeconds,
@@ -377,7 +296,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     private Map getMenus( String[] metaIdUserIdPair, boolean menumode, SimpleDateFormat datetimeFormatWithSeconds,
-                          String lang_prefix, ParserParameters parserParameters ) {
+                          ParserParameters parserParameters ) {
         /*
           OK.. we will now make a LinkedList for the entire page.
           This LinkedList, menus, will contain one item for each menu on the page.
@@ -415,7 +334,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
         for ( Iterator menuIterator = menus.values().iterator(); menuIterator.hasNext(); ) {
             Menu menu = (Menu)menuIterator.next();
-            sortMenu( menu, lang_prefix );
+            sortMenu( menu );
         }
         return menus;
     }
@@ -478,7 +397,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         return str;
     }
 
-    private void sortMenu( Menu currentMenu, String lang_prefix ) {
+    private void sortMenu( Menu currentMenu ) {
         int sort_order = currentMenu.getSortOrder();
         Comparator childsComparator;
         switch ( sort_order ) {

@@ -51,3 +51,7 @@ GO
 
 -- 2004-03-23 Kreiger
 
+DROP PROCEDURE GetImgs
+GO
+
+-- 2004-03-24 Kreiger

@@ -54,11 +54,8 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private TextDocumentParser textDocParser;
 
-    private File templatePath;
-
     private boolean includeMode;
     private int includeLevel;
-    private File includePath;
     private int implicitIncludeNumber = 1;
 
     private Map textMap;
@@ -71,36 +68,88 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     private HashMap included_docs = new HashMap();
 
-    private IMCServiceInterface serverObject;
+    private IMCServiceInterface service;
     private ParserParameters parserParameters;
     private DocumentRequest documentRequest;
-    private DocumentDomainObject document;
+    private TextDocumentDomainObject document;
 
     ImcmsTagSubstitution( TextDocumentParser textdocparser, ParserParameters parserParameters,
-                          File templatepath,
-                          List included_list, boolean includemode, int includelevel, File includepath,
-                          Map textmap, boolean textmode,
-                          Map imagemap, boolean imagemode ) {
+                          List included_list, boolean includemode, int includelevel,
+                          boolean textmode,
+                          boolean imagemode ) {
         this.textDocParser = textdocparser;
         this.parserParameters = parserParameters;
         this.documentRequest = parserParameters.getDocumentRequest();
-        this.document = documentRequest.getDocument();
-        this.serverObject = textDocParser.getService();
-
-        this.templatePath = templatepath;
+        this.document = (TextDocumentDomainObject)documentRequest.getDocument();
+        this.service = textDocParser.getService();
 
         this.includeMode = includemode;
         this.includeLevel = includelevel;
-        this.includePath = includepath;
         for ( Iterator i = included_list.iterator(); i.hasNext(); ) {
             included_docs.put( i.next(), i.next() );
         }
 
-        this.textMap = textmap;
         this.textMode = textmode;
+        this.textMap = document.getTexts();
 
-        this.imageMap = imagemap;
         this.imageMode = imagemode;
+        this.imageMap = getImageMap( document, imagemode );
+
+    }
+
+    private Map getImageMap( TextDocumentDomainObject document, boolean imagemode ) {
+        Map images = document.getImages() ;
+        Map imageMap = new HashMap() ;
+        for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
+            Integer imageIndex = (Integer)iterator.next();
+            TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)images.get(imageIndex) ;
+
+            StringBuffer value = new StringBuffer( 96 );
+            if ( !"".equals( image.getUrl() ) ) {
+                if ( !"".equals( image.getLinkUrl() ) ) {
+                    value.append( "<a href=\"" ).append( image.getLinkUrl() ).append( "\"" );
+                    if ( !"".equals( image.getTarget() ) ) {
+                        value.append( " target=\"" ).append( image.getTarget() ).append( "\"" );
+                    }
+                    value.append( '>' ) ;
+                }
+
+                value.append( "<img src=\"" + service.getImageUrl() + image.getUrl() + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
+                if ( 0 != image.getWidth() ) {
+                    value.append( " width=\"" + image.getWidth() + "\"" );
+                }
+                if ( 0 != image.getHeight() ) {
+                    value.append( " height=\"" + image.getHeight() + "\"" );
+                }
+                value.append( " border=\"" + image.getBorder() + "\"" );
+
+                if ( 0 != image.getVerticalSpace() ) {
+                    value.append( " vspace=\"" + image.getVerticalSpace() + "\"" );
+                }
+                if ( 0 != image.getHorizontalSpace() ) {
+                    value.append( " hspace=\"" + image.getHorizontalSpace() + "\"" );
+                }
+                if ( !"".equals( image.getName() ) ) {
+                    value.append( " name=\"" + image.getName() + "\"" );
+                }
+                if ( !"".equals( image.getAlternateText() ) ) {
+                    value.append( " alt=\"" + image.getAlternateText() + "\"" );
+                }
+                if ( !"".equals( image.getLowResolutionUrl() ) ) {
+                    value.append( " lowscr=\"" + image.getLowResolutionUrl() + "\"" );
+                }
+                if ( !"".equals( image.getAlign() ) && !"none".equals( image.getAlign() ) ) {
+                    value.append( " align=\"" + image.getAlign() + "\"" );
+                }
+                if ( !"".equals( image.getLinkUrl() ) || imagemode ) {
+                    value.append( "></a>" );
+                } else {
+                    value.append( ">" );
+                }
+            }
+            imageMap.put( imageIndex, value.toString() );
+        }
+        return imageMap;
     }
 
     /**
@@ -149,7 +198,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         } else if ( null != ( attributevalue = attributes.getProperty( "file" ) ) ) { // If we have the attribute file="filename"...
             // Fetch a file from the disk
             try {
-                return fileCache.getCachedFileString( new File( includePath, attributevalue ) ); // Get a file from the include directory
+                return fileCache.getCachedFileString( new File( service.getIncludePath(), attributevalue ) ); // Get a file from the include directory
             } catch ( IOException ex ) {
                 return "<!-- imcms:include file failed: " + ex + " -->";
             }
@@ -242,7 +291,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             if ( includeMode ) {
                 String included_meta_id_str = (String)included_docs.get( String.valueOf( no ) );
                 String langPrefix = documentRequest.getUser().getLanguageIso639_2();
-                return imcode.util.Parser.parseDoc( fileCache.getCachedFileString( new File( templatePath, langPrefix
+                return imcode.util.Parser.parseDoc( fileCache.getCachedFileString( new File( service.getTemplatePath(), langPrefix
                                                                                                            + "/admin/change_include.html" ) ),
                                                     new String[]{
                                                         "#meta_id#", String.valueOf( document.getId() ),
@@ -275,7 +324,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             includedParserParameters = (ParserParameters)parserParameters.clone();
             includedParserParameters.setTemplate( attributes.getProperty( "template" ) );
             includedParserParameters.setParameter( attributes.getProperty( "param" ) );
-            includedParserParameters.getDocumentRequest().setDocument( serverObject.getDocumentMapper().getDocument( included_meta_id ) );
+            includedParserParameters.getDocumentRequest().setDocument( service.getDocumentMapper().getDocument( included_meta_id ) );
             includedParserParameters.getDocumentRequest().setReferrer( document );
             includedParserParameters.setFlags( -1 );
         } catch ( CloneNotSupportedException e ) {
@@ -384,7 +433,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         if ( textMode ) {
             String[] replace_tags = getLabelTags( attributes, no, finalresult );
             String langPrefix = documentRequest.getUser().getLanguageIso639_2();
-            File admin_template_file = new File( templatePath, langPrefix + "/admin/textdoc/admin_text.frag" );
+            File admin_template_file = new File( service.getTemplatePath(), langPrefix + "/admin/textdoc/admin_text.frag" );
             try {
                 finalresult = imcode.util.Parser.parseDoc( fileCache.getCachedFileString( admin_template_file ), replace_tags );
             } catch ( IOException ex ) {
@@ -456,9 +505,9 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             String langPrefix = documentRequest.getUser().getLanguageIso639_2();
             File admin_template_file;
             if ( "".equals( result ) ) { // no data in the db-field.
-                admin_template_file = new File( templatePath, langPrefix + "/admin/textdoc/admin_no_image.frag" );
+                admin_template_file = new File( service.getTemplatePath(), langPrefix + "/admin/textdoc/admin_no_image.frag" );
             } else {               // data in the db-field.
-                admin_template_file = new File( templatePath, langPrefix + "/admin/textdoc/admin_image.frag" );
+                admin_template_file = new File( service.getTemplatePath(), langPrefix + "/admin/textdoc/admin_image.frag" );
             }
 
             try {
@@ -582,7 +631,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         if ( null == categoryTypeName ) {
             categories = document.getCategories();
         } else {
-            CategoryTypeDomainObject categoryType = serverObject.getDocumentMapper().getCategoryType( categoryTypeName );
+            CategoryTypeDomainObject categoryType = service.getDocumentMapper().getCategoryType( categoryTypeName );
             final CategoryDomainObject[] categoriesOfType = document.getCategoriesOfType( categoryType );
             categories = categoriesOfType;
         }
@@ -605,7 +654,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private String tagLanguage( Properties attributes ) {
         String representation = attributes.getProperty( "representation" );
         if ( null == representation ) {
-            return LanguageMapper.getCurrentLanguageNameInUsersLanguage( serverObject, documentRequest.getUser(), document.getLanguageIso639_2() );
+            return LanguageMapper.getCurrentLanguageNameInUsersLanguage( service, documentRequest.getUser(), document.getLanguageIso639_2() );
         } else if ( LanguageMapper.ISO639_2.equalsIgnoreCase( representation ) ) {
             return document.getLanguageIso639_2();
         } else {

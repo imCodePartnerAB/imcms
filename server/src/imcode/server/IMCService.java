@@ -35,6 +35,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private TextDocumentParser textDocParser;
 
     private File templatePath;           // template home
+
     private File includePath;
     private File fortunePath;
     private File imcmsPath;             //  folder  /imcms
@@ -111,7 +112,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         initExternalDocTypes( props );
         initSessionCounter();
 
-        textDocParser = new TextDocumentParser( this, templatePath, includePath, imageUrl );
+        textDocParser = new TextDocumentParser( this );
 
     }
 
@@ -1394,4 +1395,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public File getFilePath() {
         return filePath;
     }
+
+    public File getIncludePath() {
+        return includePath;
+    }
+
 }

@@ -2,10 +2,7 @@ package imcode.server.document;
 
 import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.servlet.admin.DocumentComposer;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
-import imcode.server.LanguageMapper;
-import imcode.server.WebAppGlobalConstants;
+import imcode.server.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -617,7 +614,8 @@ public class DocumentMapper {
 
     public Map getIncludedDocuments( DocumentDomainObject textDocument ) {
         Map result = new HashMap();
-        String[] includedMetaIds = sprocGetIncludes( service, textDocument.getId() );
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper() ;
+        String[] includedMetaIds = documentMapper.sprocGetIncludes( textDocument.getId() );
         for ( int i = 0; i < includedMetaIds.length; i += 2 ) {
             int include_id = Integer.parseInt( includedMetaIds[i] );
             int included_meta_id = Integer.parseInt( includedMetaIds[i + 1] );
@@ -1097,8 +1095,8 @@ public class DocumentMapper {
         imcref.sqlUpdateProcedure( "DeleteInclude", new String[]{"" + including_meta_id, "" + include_id} );
     }
 
-    public static String[] sprocGetIncludes( IMCServiceInterface imcref, int meta_id ) {
-        String[] included_docs = imcref.sqlProcedure( SPROC_GET_INCLUDES, new String[]{String.valueOf( meta_id )} );
+    public String[] sprocGetIncludes( int meta_id ) {
+        String[] included_docs = service.sqlProcedure( SPROC_GET_INCLUDES, new String[]{String.valueOf( meta_id )} );
         return included_docs;
     }
 
