@@ -253,23 +253,29 @@ public class GetExistingDoc extends HttpServlet {
             outVector.add( formatter.format(endDate) ) ;
 
 
-            // Lets take care of the document types. Get those who were selected
-            // and select those again in the page to send back to the user.
-            // First, put them in an hashtable for easy access.
-            Hashtable selectedDocTypes = new Hashtable(docTypes.length) ;
-            for(int i = 0 ; i < docTypes.length; i++ ) {
-              selectedDocTypes.put(docTypes[i], docTypes[i]) ;
-            }
+            
+			if (docTypes != null)
+			{	
+				// Lets take care of the document types. Get those who were selected
+				// and select those again in the page to send back to the user.
+				// First, put them in an hashtable for easy access.		
+				Hashtable selectedDocTypes = new Hashtable(docTypes.length) ;
+				for(int i = 0 ; i < docTypes.length; i++ )
+				{
+					selectedDocTypes.put(docTypes[i], docTypes[i]) ;
+				}
 
-            // Lets get all possible values of for the documenttypes from database
-            for(int i = 0 ; i < allDocTypesArray.length; i+=2 ) {
-              outVector.add("#checked_" + allDocTypesArray[i] + "#" ) ;
-              if( selectedDocTypes.containsKey(allDocTypesArray[i]) )
-                outVector.add("checked" ) ;
-              else
-                outVector.add("" ) ;
-            }
-
+				// Lets get all possible values of for the documenttypes from database
+				for(int i = 0 ; i < allDocTypesArray.length; i+=2 )
+				{
+					outVector.add("#checked_" + allDocTypesArray[i] + "#" ) ;
+					if( selectedDocTypes.containsKey(allDocTypesArray[i]) )
+						outVector.add("checked" ) ;
+					else
+						outVector.add("" ) ;
+				}
+		
+			}
 
              // Lets take care of the created, changed boxes.
              // first, getallchecked values and put them in a hashtable
