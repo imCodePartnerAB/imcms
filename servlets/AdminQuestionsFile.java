@@ -50,11 +50,11 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 
 		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
+		Writer out = res.getWriter();
 
 		String whichFile = (String)session.getAttribute("file") ;
 
-		if (req.getParameter("back")!=null)	{
+		if (req.getParameter("back")!=null) {
 			res.sendRedirect("AdminQuestions") ;
 			return;
 		}
@@ -64,7 +64,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 		String date2 = "";
 		String text  = "";
 
-		if (req.getParameter("save")!=null)	{
+		if (req.getParameter("save")!=null) {
 
 			addLineToList(req,lines);
 
@@ -74,7 +74,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 			res.sendRedirect("AdminQuestions") ;
 			return;
 
-		}else{
+		} else {
 
 			String options		= IMCServiceRMI.parseExternalDoc(imcServer, null, OPTION_LINE , user.getLangPrefix(),DOCTYPE_FORTUNES+"");
 			String errMsgDate	= IMCServiceRMI.parseExternalDoc(imcServer, null, DATE_ERROR , user.getLangPrefix(), DOCTYPE_FORTUNES+"");
@@ -84,7 +84,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 			date2 = "";
 			text = "";
 
-			if ((req.getParameter("add")).equals("add")){
+			if (req.getParameter("add")!=null){
 				//hämta parametrar
 				date1 = (req.getParameter("date1")).trim();
 				date2 = (req.getParameter("date2")).trim();
@@ -112,9 +112,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 					date2 = "";
 					text  = "";
 				}
-			}
-
-			if (req.getParameter("edit")!=null){
+			} else if (req.getParameter("edit")!=null){
 				//hämta raden som är markerad
 				String row = req.getParameter("AdminFile") ;
 
@@ -131,9 +129,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 					text  = poll.getQuestion();
 					lines.remove(poll);
 				}
-			}
-
-			if (req.getParameter("remove")!=null){
+			} else if (req.getParameter("remove")!=null){
 				//hämta de rader som ska tas bort
 				String rows[] = req.getParameterValues("AdminFile") ;
 				//ta bort de som ska raderas
@@ -150,7 +146,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 			StringBuffer buff = createOptionList(req,lines, imcServer, user );
 
 
-			//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
+			//Add info for parsing to a Vector and parse it with a template to a htmlString that is writeed
 			Vector values = new Vector();
 			values.add("#date1#");
 			values.add(date1);
@@ -164,7 +160,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 			values.add(buff.toString());
 
 			String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, ADMIN_TEMPLATE, user.getLangPrefix(), DOCTYPE_FORTUNES+"");
-			out.print(parsed);
+			out.write(parsed);
 			return;
 
 		}
@@ -178,7 +174,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 		while (iter.hasNext()) {
 			Poll poll = (Poll) iter.next();
 			DateRange dates = poll.getDateRange();
-			buff.append("<option value=\""  + counter++ + "\" > "+dateForm.format(dates.getStartDate()) +" "+dateForm.format(dates.getEndDate())+" "+ poll.getQuestion() + "</option>");
+			buff.append("<option value=\""  + counter++ + "\">"+dateForm.format(dates.getStartDate()) +" "+dateForm.format(dates.getEndDate())+" "+ poll.getQuestion() + "</option>");
 		}
 		return buff;
 	}
@@ -209,17 +205,6 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 		}
 		return true;
 	}
-
-
-	/**
-	Log function, will work for both servletexec and Apache
-	**/
-
-	public void log( String str){
-		super.log(str) ;
-		System.out.println("AdminQuestionsFile: " + str ) ;
-	}
-
 
 
 } // End of class

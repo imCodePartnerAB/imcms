@@ -5,6 +5,7 @@ import java.text.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import imcode.server.HTMLConv ;
 import imcode.external.diverse.*;
 import imcode.external.chat.*;
 
@@ -68,6 +69,8 @@ public class QuestionEngine extends HttpServlet
 
 	// The question...
 	String question = thePoll.getQuestion() ;
+
+	question = HTMLConv.toHTMLSpecial(question) ;
 
 	//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
 	Vector values = new Vector();

@@ -5,6 +5,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import imcode.external.diverse.*;
 import imcode.external.chat.*;
+import imcode.server.HTMLConv ;
 import imcode.util.* ;
 import imcode.util.fortune.* ;
 
@@ -15,111 +16,104 @@ import imcode.util.fortune.* ;
  */
 
 public class QuotPicEngine extends HttpServlet {
-	private final static String CVS_REV = "$Revision$"  ;
-	private final static String CVS_DATE = "$Date$";
+    private final static String CVS_REV = "$Revision$"  ;
+    private final static String CVS_DATE = "$Date$";
 
-	private final static SimpleDateFormat dateF = new SimpleDateFormat("yyMMdd");
-	
-	public void doGet(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException {	
-		
-		String host = req.getHeader("Host") ;
-		String imcServer = Utility.getDomainPref("userserver",host) ;
-		
-		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
-		
-		//get parameters
-		String type = req.getParameter("type");
-		String inFile = req.getParameter("file");
-		
-		
-		//lets get a list of all questions/citat/pictures
-		List lines;
-		if (type.equals("pic") || type.equals("quot")){
-			lines = IMCServiceRMI.getQuoteList(imcServer, inFile +".txt");
-		}else {
-			lines = IMCServiceRMI.getPollList(imcServer,inFile +".txt");
-		}
-		
-		//ok lets loop and store the ones to use
-		Date date = new Date();
-		Hashtable hash = new Hashtable();
-		int counter = 0;
-		for(int i=0; i<lines.size();i++) {
-			Object obj = lines.get(i);
-			DateRange dates;
-			if (obj instanceof Poll) {
-				dates = ((Poll)obj).getDateRange();
-			}else {
-				dates = ((Quote)obj).getDateRange();
-			}
-			if (dates.contains(date)) {
-				hash.put(new Integer(counter++),new Integer(i));
-			}						
-		}
-		
-		
-		//get the text and row to return
-		String theText = "<!-- Error in QuotPicEngine, nothing was returned!  -->" ;
-		int the_row = -1;
-		
-		if ( counter > 0 ){
-			//lets get the pos in the list to get
-			Random random = new Random();
-			the_row =  random.nextInt(counter);			
-			the_row = ((Integer)hash.get(new Integer(the_row))).intValue();
-		}
-		
-		
+    private final static SimpleDateFormat dateF = new SimpleDateFormat("yyMMdd");
 
-		if( type.equals("pic")){
-			if (the_row != -1) {
-				theText = ((Quote)lines.get(the_row)).getText();
-			}
-											
-			out.println( "<img src=\" " + theText + "\"> ");
-		}else if(type.equals("quot")){
-			if (the_row != -1) {
-				theText = ((Quote)lines.get(the_row)).getText();
-			}
-			out.println(theText );
-			
-			//raden i filen
-			out.println("<input type=\"hidden\" name=\"quotrow\" value=\"" + the_row + "\">");
-			out.println("<input type=\"hidden\" name=\"quot\" value=\"" + theText + "\">");
-		}else {
-			if (the_row != -1) {
-				theText = ((Poll)lines.get(the_row)).getQuestion();
-			}
-			out.println( theText );
-		}
-		out.close();
-		return ;
+    public void doGet(HttpServletRequest req, HttpServletResponse res)	throws ServletException, IOException {
 
-	} // End doGet
+	String host = req.getHeader("Host") ;
+	String imcServer = Utility.getDomainPref("userserver",host) ;
 
-	
+	res.setContentType("text/html");
+	Writer out = res.getWriter();
 
-	public void doPost(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException 
-	{
-		this.doGet(req,res);
-		return ;
+	//get parameters
+	String type = req.getParameter("type");
+	String inFile = req.getParameter("file");
+
+	//lets get a list of all questions/citat/pictures
+	List lines;
+	if (type.equals("pic") || type.equals("quot")){
+	    lines = IMCServiceRMI.getQuoteList(imcServer, inFile +".txt");
+	}else {
+	    lines = IMCServiceRMI.getPollList(imcServer,inFile +".txt");
 	}
-	
-	
-	
 
-
-	/**
-	Log function, will work for both servletexec and Apache
-	**/
-	public void log( String str) {
-		super.log(str) ;
+	//ok lets loop and store the ones to use
+	Date date = new Date();
+	Hashtable hash = new Hashtable();
+	int counter = 0;
+	for(int i=0; i<lines.size();i++) {
+	    Object obj = lines.get(i);
+	    DateRange dates;
+	    if (obj instanceof Poll) {
+		dates = ((Poll)obj).getDateRange();
+	    }else {
+		dates = ((Quote)obj).getDateRange();
+	    }
+	    if (dates.contains(date)) {
+		hash.put(new Integer(counter++),new Integer(i));
+	    }
 	}
+
+
+	//get the text and row to return
+	String theText = "<!-- Error in QuotPicEngine, nothing was returned! -->" ;
+	int the_row = -1;
+
+	if ( counter > 0 ){
+	    //lets get the pos in the list to get
+	    Random random = new Random();
+	    the_row =  random.nextInt(counter);
+	    the_row = ((Integer)hash.get(new Integer(the_row))).intValue();
+	}
+
+	if ( type.equals("pic")){
+	    if (the_row != -1) {
+		theText = "<img src=\"" + ((Quote)lines.get(the_row)).getText() + "\">" ;
+	    }
+	} else if(type.equals("quot")){
+	    if (the_row != -1) {
+		theText = ((Quote)lines.get(the_row)).getText()
+		    + "<input type=\"hidden\" name=\"quotrow\" value=\"" + the_row + "\">"
+		    + "<input type=\"hidden\" name=\"quot\" value=\"" + theText + "\">" ;
+	    }
+	} else {
+	    if (the_row != -1) {
+		theText = ((Poll)lines.get(the_row)).getQuestion();
+	    }
+	}
+
+	theText = HTMLConv.toHTMLSpecial(theText) ;
+
+	out.write(theText) ;
+
+	out.close();
+	return ;
+
+    } // End doGet
+
+
+
+    public void doPost(HttpServletRequest req, HttpServletResponse res)
+	throws ServletException, IOException
+    {
+	this.doGet(req,res);
+	return ;
+    }
+
+
+
+
+
+    /**
+       Log function, will work for both servletexec and Apache
+    **/
+    public void log( String str) {
+	super.log(str) ;
+    }
 
 
 } // End class
-
-
-

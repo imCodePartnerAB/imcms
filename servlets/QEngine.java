@@ -4,6 +4,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import imcode.server.HTMLConv ;
 import imcode.util.* ;
 import imcode.util.fortune.* ;
 
@@ -69,28 +70,26 @@ public class QEngine extends HttpServlet
 
 		}
 
+		theText = HTMLConv.toHTMLSpecial(theText) ;
+
 		if( "pic".equals(type) )
 		{
-			out.write( "<img src=\"" + theText + "\">");
+		    theText = "<img src=\"" + theText + "\">" ;
 		}
 		else if( "quot".equals(type) )
 		{
-			out.write( theText );
-
-			out.write("<input type=\"hidden\" name=\"quotrow\" value=\"" + quoteCount + "\">");
-			out.write("<input type=\"hidden\" name=\"quot\" value=\"" + theText + "\">");
+		    theText = theText
+			+ "<input type=\"hidden\" name=\"quotrow\" value=\"" + quoteCount + "\">"
+			+ "<input type=\"hidden\" name=\"quot\" value=\"" + theText + "\">" ;
 		}
 		else if( "ques".equals(type) )
 		{
-			out.write( theText );
+			theText = theText
+			    + "<input type=\"hidden\" name=\"quesrow\" value=\"" + quoteCount + "\">"
+			    + "<input type=\"hidden\" name=\"question\" value=\"" + theText + "\">" ;
+		}
 
-			out.write("<input type=\"hidden\" name=\"quesrow\" value=\"" + quoteCount + "\">");
-			out.write("<input type=\"hidden\" name=\"question\" value=\"" + theText + "\">");
-		}
-		else
-		{
-			out.write( theText );
-		}
+		out.write(theText) ;
 
 	} // End doGet
 
