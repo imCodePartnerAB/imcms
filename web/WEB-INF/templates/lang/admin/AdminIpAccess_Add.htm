@@ -1,85 +1,53 @@
 <html>
 <head>
-<title><? templates/sv/AdminIpAccess_Add.htm/1 ?></title>
+<title><? templates/sv/AdminIpAccess_Add.htm/2 ?></title>
 
-
-</SCRIPT>
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
+
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+#gui_head_help_and_back_buttons( 15  "AdminIpAccess" "addIP" "CANCEL_ADD_IP" )
+#gui_mid()
+
 <form method="post" action="AdminIpAccess" name="addIP">
-  <table width="40%" border="0" cellspacing="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminIpAccess_Add.htm/2 ?></font></b></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp; </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminIpAccess_Add.htm/3 ?></font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminIpAccess_Add.htm/4 ?> 
-		<select name="USER_ID" size="1">
-	#USERS_LIST#
-        </select>
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%" height="23"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminIpAccess_Add.htm/6 ?> 
-		<input type="text" name="IP_START" size="12">
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%" height="26"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		<? templates/sv/AdminIpAccess_Add.htm/7 ?> 
-		<input type="text" name="IP_END" size="12">
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminIpAccess_Add.htm/8 ?></font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<input type="submit" name="ADD_NEW_IP_ACCESS" value="<? templates/sv/AdminIpAccess_Add.htm/2001 ?>">
-		<input type="submit" name="CANCEL_ADD_IP" value="<? templates/sv/AdminIpAccess_Add.htm/2002 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=15" target="_blank"><img src="$contextPath/imcms/$language/images/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/AdminIpAccess_Add.htm/2003 ?>"></a>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa">
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
+  <table>
+    <tr>
+        <td  colspan="2">#gui_heading( "<? templates/sv/AdminIpAccess_Add.htm/2 ?>" )</td>
+    </tr>
+    <tr>
+        <td colspan="2"><? templates/sv/AdminIpAccess_Add.htm/3 ?></td>
+    </tr>
+    <tr>
+        <td><? templates/sv/AdminIpAccess_Add.htm/4 ?></td>
+        <td><select name="USER_ID" size="1">#USERS_LIST#</select></td>
+    </tr>
+    <tr>
+        <td><? templates/sv/AdminIpAccess_Add.htm/6 ?></td>
+        <td><input type="text" name="IP_START" size="15" maxlength="15"></td>
+    </tr>
+    <tr>
+        <td><? templates/sv/AdminIpAccess_Add.htm/7 ?></td>
+        <td><input type="text" name="IP_END" size="15" maxlength="15"></td>
+    </tr>
+    <tr>
+        <td colspan="2"><? templates/sv/AdminIpAccess_Add.htm/8 ?></td>
+    </tr>
+    <tr>
+        <td>
+            <input type="submit" class="imcmsFormBtnSmall" name="ADD_NEW_IP_ACCESS" value="<? templates/sv/AdminIpAccess_Add.htm/2001 ?>">
+            <input type="submit" class="imcmsFormBtnSmall" name="CANCEL_ADD_IP" value="<? templates/sv/AdminIpAccess_Add.htm/2002 ?>">
+        </td>
+    </tr>
   </table>
 </form>
+
+#gui_bottom()
+#gui_outer_end()
+
   </body>
 </html>

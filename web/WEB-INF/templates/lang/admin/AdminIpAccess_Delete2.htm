@@ -2,46 +2,36 @@
 <head>
 <title><? templates/sv/AdminIpAccess_Delete2.htm/1 ?> </title>
 
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
+
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+#gui_head_help_and_back_buttons( 16  "AdminIpAccess" "AdminIPAccess" "IP_CANCEL_DELETE" )
+#gui_mid()
+
 <form method="post" action="AdminIpAccess" name="AdminIPAccess">
-  <table width="40%" border="0" cellspacing="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminIpAccess_Delete2.htm/2 ?></font></b></div>
+  <table cellpadding="2" width="400" align="center">
+	<tr>
+	  <td>#gui_heading( "<? global/warning ?>" )</td>
+	</tr>
+	<tr>
+	  <td><? templates/sv/AdminIpAccess_Delete2.htm/3 ?></td>
+	</tr>
+	<tr>
+	  <td>
+		  <input type="submit" class="imcmsFormBtnSmall" name="DEL_IP_ACCESS" value="<? templates/sv/AdminIpAccess_Delete2.htm/2001 ?>">
 	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminIpAccess_Delete2.htm/3 ?> 
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<p> 
-		  <input type="submit" name="DEL_IP_ACCESS" value="<? templates/sv/AdminIpAccess_Delete2.htm/2001 ?>">
-		  <input type="submit" name="IP_CANCEL_DELETE" value="<? templates/sv/AdminIpAccess_Delete2.htm/2002 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=16" target="_blank"><img src="$contextPath/imcms/$language/images/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/AdminIpAccess_Delete2.htm/2003 ?>"></a>
-		</p>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
 	</tr>
   </table>
 </form>
+
+#gui_bottom()
+#gui_outer_end()
+
 </body>
 </html>

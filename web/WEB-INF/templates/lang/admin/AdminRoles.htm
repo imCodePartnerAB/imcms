@@ -1,18 +1,17 @@
 <html>
 <head>
 
-
 <title><? templates/sv/AdminRoles.htm/1 ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 
-<body bgcolor="#FFFFFF">
+<body>
+
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
-
 
 <table border="0" cellspacing="0" cellpadding="0">
 <form metod="post" action="AdminManager" name="abortForm">
@@ -26,9 +25,7 @@
 
 #gui_mid()
 
-
-
-<table border="0" cellspacing="0" cellpadding="2" width="400" align="center">
+<table width="400" align="center">
 <form method="post" action="AdminRoles" name="AdminRoles">
 <tr>
     <td>#gui_heading( "<? templates/sv/AdminRoles.htm/1 ?>" )</td>

@@ -1,87 +1,46 @@
 <html>
 <head>
+
 <title><? templates/sv/AdminIpAccess.htm/1 ?></title>
 
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
-<SCRIPT language=JavaScript>
-<!--
-
-function closeThisWindow() {
-	window.close();
-} //END FUNCTION CloseThisWindow
-
-function confirmDeletetion(){
-	if(confirm("<? templates/sv/AdminIpAccess.htm/3000 ?>"))
-		return true
-	else 
-		return false
-}
-
-function evalEditUser() {
-	var userId
-	userId = document.argumentForm.user_Id.selectedIndex
-	if(userId == "-1" ) {
-		alert("<? templates/sv/AdminIpAccess.htm/3001 ?>")
-		return false
-	} else
-		return true
-}
-
-//-->
-</SCRIPT>
 </head>
-<body bgcolor="#FFFFFF">
+
+<body>
+
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+#gui_head_help_and_back_buttons( 14  "AdminManager" "abortForm" "CANCEL" )
+#gui_mid()
+
+<table cellpadding="2" width="400" align="center">
 <form method="post" action="AdminIpAccess" name="argumentForm">
-  <table width="40%" border="0" cellspacing="0">
-	<tr bgcolor="#333366"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/AdminIpAccess.htm/2 ?></font></b></div>
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%">&nbsp; </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><? templates/sv/AdminIpAccess.htm/3 ?></font></td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%">&nbsp;</td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">#ALL_IP_ACCESSES#
-		&nbsp;</font></td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%" height="23">&nbsp; </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%" height="26"> 
-        <input type="submit" name="ADD_IP_ACCESS" value="<? templates/sv/AdminIpAccess.htm/2001 ?>">
-        <input type="submit" name="RESAVE_IP_ACCESS" value="<? templates/sv/AdminIpAccess.htm/2002 ?>">
-        <input type="submit" name="IP_WARN_DELETE" value="<? templates/sv/AdminIpAccess.htm/2003 ?>">
-        <input type="submit" name="CANCEL" value="<? templates/sv/AdminIpAccess.htm/2004 ?>">&nbsp; <a href="@documentationurl@/GetDoc?meta_id=14" target="_blank"><img src="$contextPath/imcms/$language/images/admin/btn_help_round.gif" width="19" height="21" border="0" alt="<? templates/sv/AdminIpAccess.htm/2005 ?>"></a>
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="5%">&nbsp;</td>
-      <td width="90%">&nbsp;</td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-  </table>
-  </form>
+<tr>
+    <td>#gui_heading( "<? templates/sv/AdminIpAccess.htm/1 ?>" )</td>
+</tr>
+
+<tr>
+    <td><? templates/sv/AdminIpAccess.htm/3 ?></td>
+</tr>
+<tr>
+    <td >#ALL_IP_ACCESSES#</td>
+</tr>
+<tr>
+<td>
+    <input type="submit" class="imcmsFormBtnSmall" name="ADD_IP_ACCESS" value="<? templates/sv/AdminIpAccess.htm/2001 ?>">
+    <input type="submit" class="imcmsFormBtnSmall" name="RESAVE_IP_ACCESS" value="<? templates/sv/AdminIpAccess.htm/2002 ?>">
+    <input type="submit" class="imcmsFormBtnSmall" name="IP_WARN_DELETE" value="<? templates/sv/AdminIpAccess.htm/2003 ?>">
+</td>
+<tr>
+    <td>&nbsp;</td>
+</tr>
+</form>
+</table>
+
+#gui_bottom()
+#gui_outer_end()
+
 </body>
 </html>

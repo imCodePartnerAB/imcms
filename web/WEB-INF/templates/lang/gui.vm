@@ -56,6 +56,18 @@
 		</table>
 #end
 
+#macro( gui_head_help_and_back_buttons $help_id $formAction $formName $cancelButtonName )
+<table border="0" cellspacing="0" cellpadding="0">
+    <form metod="post" action="$formAction" name="$formName">
+        <tr>
+            <td><input type="submit"  class="imcmsFormBtn" name="$cancelButtonName" value="<? global/back ?>"></td>
+            <td>&nbsp;</td>
+            <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW($help_id)"></td>
+        </tr>
+    </form>
+</table>
+#end
+
 #macro( gui_head $heading )
 		<table border="0" cellspacing="0" cellpadding="0">
 		<tr>
