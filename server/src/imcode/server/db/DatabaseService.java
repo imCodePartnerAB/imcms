@@ -411,6 +411,7 @@ public class DatabaseService {
         return sqlProcessor.executeUpdate( sql, paramValues );
     }
 
+    // todo: flytta in detta i addNewUser istället, och se till att det fungerar concurrently.
     int sproc_getHighestUserId() {
         String columnName = "user_id";
         String TableName = "users";
@@ -426,6 +427,8 @@ public class DatabaseService {
     /*
     This function adds a new phone numbers to the db. Used by AdminUserProps
     */
+    // todo: se till att detta fungerar även om fler försöker göra insert samtigit.
+    // Todo: nöja mig med synchroniced på metoden? Eller se till att testa några gånger tills det går igenom?
     int sproc_phoneNbrAdd( int userId, String number, int phoneType ) {
         String tableName = "phones";
         String primaryKeyColumnName = "phone_id";
@@ -454,8 +457,7 @@ public class DatabaseService {
     }
 
     // todo: ta bort från samtliga forreign key ställen (och inte bara från user_roles_crossref)? phones, user_flags_crossref, user_rights, useradmin_role_crossref
-    // todo: transaktion?
-    // todo: Split into two, depending on how it is used.
+    // todo: Or Split into two, depending on how it is used.
     int sproc_delUser( int user_id ) {
         SQLProcessor.SQLTransaction trans = sqlProcessor.startTransaction();
         int rowCount = 0;
@@ -468,8 +470,23 @@ public class DatabaseService {
 
             trans.commit();
         } catch( SQLException ex ) {
+            log.warn( "sproc_delUser(" + user_id + ") failed", ex );
             trans.rollback();
         }
         return rowCount;
+    }
+
+    /**
+     * Add role a Useradmin have administration rights on user with that roles.
+     * A useradmin is only allowed to administrate users with those roles.
+     * @param user_id The user id for the user, that user should have the role Useradmin (1)
+     * @param role_id The role of other users that this user should hav (new) permissions to administrate.
+     * @return 1 if succed, otherwise 0.
+     */
+    int sproc_AddUseradminPermissibleRoles( int user_id, int role_id ) {
+        String sql = "INSERT INTO useradmin_role_crossref (user_id, role_id ) " +
+            "VALUES ( ?, ? )";
+        Object[] paramValues = new Object[]{ new Integer(user_id), new Integer(role_id) };
+       return sqlProcessor.executeUpdate( sql, paramValues );
     }
 }

@@ -200,6 +200,14 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         }
     }
 
+    public void test_sproc_AddUseradminPermissibleRoles() {
+        assertEquals( 1, sqlServer.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
+        assertEquals( 1, mySql.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
+        if( testMimer ) {
+            assertEquals( 1, mimer.sproc_AddUseradminPermissibleRoles( 1, 2 ) );
+        }
+    }
+
     private DatabaseService.Table_users createDummyUser( int nextFreeUserId ) {
         DatabaseService.Table_users user = new DatabaseService.Table_users( nextFreeUserId, "test login name", "test password", "First name", "Last name", "Titel", "Company", "Adress", "City", "Zip", "Country", "Country council", "Email adress", 0, 1001, 0, 1, 1, 1, new Timestamp( new java.util.Date().getTime() ) );
         return user;
@@ -241,4 +249,5 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         mySql = new DatabaseService( DatabaseService.MY_SQL, TestDatabaseService.DB_HOST, TestDatabaseService.MYSQL_PORT, TestDatabaseService.MYSQL_DATABASE_NAME, TestDatabaseService.MYSQL_DATABASE_USER, TestDatabaseService.MYSQL_DATABASE_PASSWORD );
         mySql.initializeDatabase();
     }
+
 }
