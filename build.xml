@@ -721,7 +721,9 @@
         </imtranslate>
 
         <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable" >
-            <fileset dir="${apisamples}"/>
+            <fileset dir="${apisamples}">
+                <include name="*.jsp"/>
+            </fileset>
             <mapper type="glob" from="*" to="*.txt"/>
         </copy>
 
