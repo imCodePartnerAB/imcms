@@ -1,12 +1,20 @@
 <?xml version="1.0"?>
 <project name="tools" default="build">
 
-  <target name="build" depends="ant-tasks" description="Builds the project."/>
+  <target name="clean">
+    <delete dir="build"/>
+  </target>
 
-  <target name="ant-tasks" depends="cat" description="Builds the ant-tasks."/>
-
-  <target name="cat" description="Builds the cat-task for ant.">
-    <javac srcdir="."/>
+  <target name="build" description="Builds the project.">
+    <mkdir dir="build"/>
+    <javac srcdir="src" destdir="build">
+	<classpath>
+	    <fileset dir="../install/lib">
+		<include name="**/*.jar"/>
+	    </fileset>
+	    <pathelement path="../build/WEB-INF/classes"/>
+	</classpath>
+    </javac>
   </target>
 
 </project>

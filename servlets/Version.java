@@ -7,98 +7,73 @@ import javax.servlet.http.* ;
 
 import org.apache.oro.text.perl.* ;
 
+import imcode.util.version.* ;
+
+import org.apache.xml.serialize.XMLSerializer ;
+
 public class Version extends HttpServlet {
 
     private final static String CVS_REV =  "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
     private final static String CVS_NAME = "$Name$" ;
-    private final static String CVS_TAG = CVS_NAME.substring(CVS_NAME.indexOf(' ')+1,CVS_NAME.lastIndexOf(' ')) ;
+    private final static String CVS_TAG ;
 
     private final static int BUFFERLENGTH = 32768 ;
 
-    private class DirectoryFilter implements FileFilter {
-	
-	public boolean accept(File file) {
-	    return file.isDirectory() ;
+    static {
+	if (CVS_NAME.indexOf(' ') != -1) {
+	    CVS_TAG = CVS_NAME.substring(CVS_NAME.indexOf(' ')+1,CVS_NAME.lastIndexOf(' ')) ;
+	} else {
+	    CVS_TAG = "" ;
 	}
-
-    }
-
-    private class NotDirectoryFilter implements FileFilter {
-	
-	public boolean accept(File file) {
-	    return !file.isDirectory() ;
-	}
-
     }
 
     public void init (ServletConfig config) throws ServletException {
 	super.init(config) ;
     }
 
-    public void doGet (HttpServletRequest req, HttpServletResponse res) throws java.io.IOException {
+    public void doGet (HttpServletRequest req, HttpServletResponse res) throws IOException {
 
-	res.setContentType("text/plain") ;
+	res.setContentType("text/xml; charset=UTF-8") ;
 	ServletOutputStream out = res.getOutputStream() ;
 
-	// Print out the tag this file was checked out with.
-	out.println(CVS_TAG.length() > 0 ? CVS_TAG : "Unknown" ) ;
-
-	checksumDirectory(new File(this.getServletContext().getRealPath("/")), "", out) ;
-    }
-
-    public void checksumDirectory(File parent_dir, String sub_dir, ServletOutputStream out) throws java.io.IOException {
-	Perl5Util perl = new Perl5Util() ;
-
-	File dir = new File(parent_dir,sub_dir) ;
-	File[] files = dir.listFiles(new NotDirectoryFilter()) ;
-
-	// Loop through the files and get a checksum for each.
-	for (int i = 0; i < files.length; ++i) {
-	    out.print(files[i].getPath().substring(parent_dir.getPath().length()+1)+' ') ;
-
-	    Checksum checksum = new CRC32() ;
-	    long file_length = files[i].length() ;
-	    // Read the classfile, and have the inputstream compute the checksum as we go.
-	    String line ;
-	    String revision = null ;
-	    String date_time = null ;
-	    try {
-		BufferedReader in = new BufferedReader(new InputStreamReader(new CheckedInputStream(new FileInputStream(files[i]), checksum), "8859_1")) ;
-		while (null != (line = in.readLine())) {
-		    // Find the revision.
-		    if (null == revision && perl.match("/\\$"+"Revision: (\\d+(?:\\.\\d+)+) "+"\\$/",line)) {
-			revision = perl.group(1) ;
-		    }
-		    // Find the date
-		    if (null == date_time && perl.match("/\\$"+"Date: (\\S+)\\s+(\\S+) "+"\\$/",line)) {
-			date_time = perl.group(1) + ' ' + perl.group(2) ;
-		    }
-		}
+	try {
+	    if (req.getParameter("diff")!=null) {
+		diff(out) ;
+	    } else if (req.getParameter("version")!=null) {
+		version(out) ;
+	    } else {
+		now(out) ;
 	    }
-	    catch (IOException ignored) { } 
-	    catch (OutOfMemoryError ignored) { }
-
-	    // Print the revision.
-	    out.print( ( revision != null ? revision : "Unknown" ) + ' ') ;
-	    // Print the date.
-	    out.print( ( date_time != null ? date_time : "Unknown" ) + ' ') ;
-	    // Print the checksum.
-	    out.print(checksum.getValue()+" ") ;
-	    
-	    // Find and print the last-modified date.
-	    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT) ;
-	    out.print(df.format(new Date(files[i].lastModified()))+" ") ;
-
-	    // Print the file-length.
-	    out.println(file_length) ;
+	} catch (Exception ex) {
+	    ex.printStackTrace(new PrintWriter(out)) ;
 	}
-
-	File[] subdirs = dir.listFiles(new DirectoryFilter()) ;
-
-	for (int i = 0; i < subdirs.length; ++i) {
-	    checksumDirectory(parent_dir, subdirs[i].getPath().substring(parent_dir.getPath().length()), out) ;
-	}
-
     }
+
+
+    private void diff(OutputStream out) throws Exception {
+	File webapproot = new File(this.getServletContext().getRealPath("/")) ;
+	File version    = new File(webapproot,"WEB-INF/version.xml") ;
+	XmlVersion v1 = new XmlVersion(version) ;
+	XmlVersion v2 = new XmlVersion(webapproot, CVS_TAG) ;
+	XmlVersionDiff d = new XmlVersionDiff(v1.getDocument(),v2.getDocument()) ;
+	XMLSerializer xmlSerializer = new XMLSerializer() ;
+	xmlSerializer.writeNode(out,d.getDiffDocument()) ;
+    }
+
+    private void version(OutputStream out) throws Exception {
+	File webapproot = new File(this.getServletContext().getRealPath("/")) ;
+	File version    = new File(webapproot,"WEB-INF/version.xml") ;
+	XmlVersion v = new XmlVersion(version) ;
+	XMLSerializer xmlSerializer = new XMLSerializer() ;
+	xmlSerializer.writeNode(out,v.getDocument()) ;
+    }
+
+    private void now(OutputStream out) throws Exception {
+	File webapproot = new File(this.getServletContext().getRealPath("/")) ;
+	XmlVersion v = new XmlVersion(webapproot) ;
+	XMLSerializer xmlSerializer = new XMLSerializer() ;
+	xmlSerializer.writeNode(out,v.getDocument()) ;
+    }
+
 }

@@ -82,7 +82,7 @@
 
   <!-- A handy target to have everything else depend on, just in case. -->
   <target name="init"
-	  depends="check-build-properties,fail-build-properties"
+	  depends="check-build-properties"
 	  description="Handy target for everything else to depend on.">
 
     <tstamp/>
@@ -118,7 +118,7 @@
 	  description="Checks that ${build.properties} is up-to-date.">
 
     <uptodate targetfile="${build.properties}" property="build-properties-up-to-date">
-      <srcfiles dir="${basedir}" includes="${build.properties}.template,build.xml"/>
+      <srcfiles dir="${basedir}" includes="${build.properties}.template"/>
     </uptodate>
 
   </target>
@@ -130,12 +130,13 @@
 	  unless="build-properties-up-to-date">
 
     <fail>
-      '${build.properties}.template' and/or 'build.xml' are newer than '${build.properties}'.
+      '${build.properties}.template' is newer than '${build.properties}'.
       Copy '${build.properties}.template' to '${build.properties}' and edit it!
       (See INSTALL.TXT for details.)
     </fail>
 
   </target>
+
 
   <!-- Checks that 'deployroot' is set. -->
   <target name="check-deployroot"
@@ -180,6 +181,19 @@
 	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,sql"
 	  description="Builds everything.">
 
+    <antcall target="xmlversion"/>
+  </target>
+
+
+  <!-- Create an xml-file representing the release. -->
+  <target name="xmlversion" description="Creates an XML-file representing the release.">
+    <taskdef name="xmlversion" classname="imcode.anttasks.XmlVersionTask">
+	<classpath>
+	    <pathelement path="build/WEB-INF/classes"/>
+	    <pathelement path="tools/build"/>
+	</classpath>
+    </taskdef>
+    <xmlversion dir="build" destfile="build/WEB-INF/version.xml"/>
   </target>
 
 
@@ -187,6 +201,7 @@
   <target name="clean" description="Deletes everything for a fresh start.">
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
+    <ant dir="tools" target="clean"/>
   </target>
 
 
@@ -238,14 +253,14 @@
 
 
   <!-- Build extra tools needed for building. -->
-  <target name="tools">
+  <target name="tools" description="Builds extra tools needed for building.">
     <ant dir="tools"/>
   </target>
 
 
   <!-- Generates the sql-scripts -->
   <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
-    <taskdef name="cat" classname="Cat" classpath="tools"/>
+    <taskdef name="cat" classname="imcode.anttasks.Cat" classpath="tools/build"/>
     <cat destfile="${dist-sql}" orderby="path" filtering="true">
       <fileset dir="sql/tables" includes="tables.ascii.sql"/>
       <fileset dir="sql/sprocs"/>
@@ -616,8 +631,8 @@
     <mkdir dir="${fortunes}"/>
 
     <!-- Create empty files needed by fortune -->
-    <touch file="${fortunes}/questions.txt"/>
-    <touch file="${fortunes}/quotes.txt"/>
+    <touch file="${fortunes}/questions.txt" millis="0"/>
+    <touch file="${fortunes}/quotes.txt"  millis="0"/>
   </target>
 
 
