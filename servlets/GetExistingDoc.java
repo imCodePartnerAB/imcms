@@ -94,9 +94,9 @@ public class GetExistingDoc extends HttpServlet {
             else
                 s7 = "" + (Integer.parseInt(s7) - Integer.parseInt(s6));
         }
-		// kolla parametrar
-		// sortBy
-		//---------------------------
+		
+		//-----------------------------------------------------------------
+		// check form-parameters: sortBy
 		Hashtable check = new Hashtable();
 		check.put("meta_id", "meta_id");
 		check.put("doc_type", "doc_type");
@@ -117,7 +117,17 @@ public class GetExistingDoc extends HttpServlet {
 			sortBy = "meta_id";
 			
 		}
-		//----------------------------
+		//------------------------------------------------------------------
+		// parse searchString, replaces SPACE with RETURN and EMPTY with RETURN
+		while (searchString.indexOf(" ") != -1)
+		{
+			int spaceIndex = searchString.indexOf(" ");
+			searchString = searchString.substring(0, spaceIndex)
+			+ "\n" + searchString.substring(spaceIndex+1, searchString.length());
+		}
+		if(searchString.equals(""))
+			searchString = "\n";
+		//------------------------------------------------------------------
         sqlString = "EXEC SearchDocs " + s9 + ",'" + searchString + "', '" + searchPrep + "', '" + s12 + "', " + s7 + ", " + s6 + ", '" + sortBy + "', " + s14 + ", '1'";
         String s19 = "";
         String s20 = "";
