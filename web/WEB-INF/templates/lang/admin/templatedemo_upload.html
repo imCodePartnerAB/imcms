@@ -20,19 +20,26 @@ function setSize() {
 </script>
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="focusField(1,'file'); setSize();">
+<body bgcolor="#FFFFFF" onLoad="focusField(2,'file'); setSize();">
 
 #gui_outer_start()
 #gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/10 ?>" )
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<form action="AdminManager">
+<tr>
+	<td>
+	<input type="submit" value="<? global/back ?>" title="<? global/back ?>" class="imcmsFormBtn">
+	<input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW(23)"></td>
+</tr>
+</form>
+<tr>
+	<td class="imcmsAdmText"><? templates/sv/templatedemo_upload.html/3 ?></td>
+</tr>
 <form name="TemplateAdmin" action="TemplateAdmin" method="post">
 <input type="HIDDEN" name="language" value="<? templates/default_lang ?>">
 <tr>
-	<td colspan="2" class="imcmsAdmText"><? templates/sv/templatedemo_upload.html/3 ?></td>
-</tr>
-<tr>
-	<td colspan="2">
+	<td>
 	<input type="submit" class="imcmsFormBtn" name="add_template" value="<? templates/sv/templatedemo_upload.html/2001 ?>">
 	<input type="submit" class="imcmsFormBtn" name="delete_template" value="<? templates/sv/templatedemo_upload.html/2002 ?>">
 	<input type="submit" class="imcmsFormBtn" name="rename_template" value="<? templates/sv/templatedemo_upload.html/2003 ?>">
@@ -42,7 +49,7 @@ function setSize() {
 	<input type="submit" class="imcmsFormBtn" name="show_templates" value="<? templates/sv/templatedemo_upload.html/2007 ?>"></td>
 </tr>
 <tr>
-	<td colspan="2" class="imcmsAdmText"><? templates/sv/templatedemo_upload.html/4 ?></td>
+	<td class="imcmsAdmText"><? templates/sv/templatedemo_upload.html/4 ?></td>
 </tr>
 <tr>
 	<td>
@@ -50,17 +57,6 @@ function setSize() {
 	<input type="submit" class="imcmsFormBtn" name="delete_group" value="<? templates/sv/templatedemo_upload.html/2009 ?>">
 	<input type="submit" class="imcmsFormBtn" name="rename_group" value="<? templates/sv/templatedemo_upload.html/2010 ?>">
 	<input type="submit" class="imcmsFormBtn" name="assign_group" value="<? templates/sv/templatedemo_upload.html/2011 ?>"></td>
-	<td align="right">
-	<table border="0" cellspacing="0" cellpadding="0">
-	</form>
-	<form action="AdminManager">
-	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" value="<? global/cancel ?>" title="<? global/cancel ?>" class="imcmsFormBtn"></td>
-		<td>&nbsp;</td>
-		<td><input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW(23)"></td>
-	</tr>
-	</table></td>
 </tr>
 </form>
 </table>

@@ -49,18 +49,25 @@ if (inDefaultMode) {
 <script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
-<body onLoad="focusField(1,'template')">
+<body onLoad="focusField('main','template')">
 
 #gui_outer_start()
 #gui_head( "<? templates/sv/AdminManager_adminTask_element.htm/17 ?>" )
 
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+<form action="AdminManager">
+<tr>
+	<td>
+	<input type="submit" value="<? global/back ?>" title="<? global/back ?>" class="imcmsFormBtn">
+	<input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW(124)"></td>
+</tr>
+</form>
+<tr>
+	<td class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category_type ?>:</b></td>
+</tr>
 <form name="head" action="AdminCategories" method="post">
 <tr>
-	<td colspan="2" class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category_type ?>:</b></td>
-</tr>
-<tr>
-	<td colspan="2">
+	<td>
 	<input type="submit" class="imcmsFormBtn<%=
 	inAddCategoryTypeMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE %>" value="<? global/create ?>">
@@ -72,7 +79,7 @@ if (inDefaultMode) {
 	AdminCategories.PARAMETER_MODE__DELETE_CATEGORY_TYPE %>" value="<? global/remove ?>"></td>
 </tr>
 <tr>
-	<td colspan="2" class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category ?>:</b></td>
+	<td class="imcmsAdmText"><b class="white"><? install/htdocs/sv/jsp/category_admin/category ?>:</b></td>
 </tr>
 <tr>
 	<td>
@@ -88,19 +95,8 @@ if (inDefaultMode) {
 	<input type="submit" class="imcmsFormBtn<%=
 	inViewCategoryMode ? "Disabled\" disabled" : "\"" %> name="<%=
 	AdminCategories.PARAMETER_MODE__VIEW_CATEGORY %>" value="<? global/view ?>"></td>
-	<td align="right">
-	<table border="0" cellspacing="0" cellpadding="0">
-	</form>
-	<form action="AdminManager">
-	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" value="<? global/cancel ?>" title="<? global/cancel ?>" class="imcmsFormBtn"></td>
-		<td>&nbsp;</td>
-		<td><input type="button" value="<? global/help ?>" title="<? global/help ?>" class="imcmsFormBtn" onClick="openHelpW(124)"></td>
-	</tr>
-	</form>
-	</table></td>
 </tr>
+</form>
 </table>
 
 #gui_mid()
