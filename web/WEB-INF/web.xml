@@ -849,6 +849,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.GetDoc</servlet-name>
+        <url-pattern>/GetDoc</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.GetExistingDoc</servlet-name>
         <url-pattern>/servlet/GetExistingDoc</url-pattern>
     </servlet-mapping>
