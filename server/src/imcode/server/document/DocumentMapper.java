@@ -203,13 +203,6 @@ public class DocumentMapper {
         return classifications;
     }
 
-    private void sqlUpdateOneField( DocumentDomainObject document, String fieldName, String valueStr ) {
-        String whereString = " where meta_id = " + document.getMetaId();
-        String updateStr = "update meta set ";
-        String sqlStr = updateStr + fieldName + " = " + valueStr + whereString;
-        service.sqlUpdateQuery( sqlStr );
-    }
-
     public static void sqlUpdateModifiedDate( IMCServiceInterface service, int meta_id, Date date ) {
         String dateModifiedStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( date );
         String sqlStr = "update meta set date_modified = '" + dateModifiedStr + "' where meta_id = " + meta_id;
@@ -544,15 +537,22 @@ public class DocumentMapper {
 
     // todo make Section into an DomainObject
     private static void updateSection( IMCService service, DocumentDomainObject document, String section ) {
-        int sectionId = sqlGetSectionId( service, section );
-        sprocSectionAddCrossref( service, document.getMetaId(), sectionId );
+        if (null != section) {
+            String sqlQuery = "select section_id from sections where section_name = ?";
+            String[] queryResult = service.sqlQuery( sqlQuery, new String[] { section } );
+            if (queryResult.length > 0) {
+                int sectionId = Integer.parseInt( queryResult[0] );
+                sprocSectionAddCrossref( service, document.getMetaId(), sectionId );
+            } else {
+                throw new IllegalArgumentException("No such section '"+section+"'") ;
+            }
+        } else {
+            removeSectionCrossref( service, document );
+        }
     }
 
-    private static int sqlGetSectionId( IMCService service, String section ) {
-        String sql = "select section_id from sections where section_name = '" + section + "'";
-        String[] querryResult = service.sqlQuery( sql );
-        int sectionId = Integer.parseInt( querryResult[0] );
-        return sectionId;
+    private static void removeSectionCrossref( IMCService service, DocumentDomainObject document ) {
+        sprocSectionAddCrossref(service,document.getMetaId(), -1);
     }
 
     private static void updateTextDoc( IMCService service, int meta_id, TemplateDomainObject template, int menuSortOrder, int templateGroupId ) {
