@@ -21,9 +21,10 @@
   <property name="texttemplates"  value="${templates}/text"/>
   <property name="demotemplates"  value="${texttemplates}/demo"/>
 
-  <property name="wardist" value="imcms.war"/>
-
   <property file="build.properties"/>
+
+  <property name="wardist" value="${webappname}.war"/>
+  <property name="webapproot" value="${deployroot}/${webappname}"/>
 
   <target name="dist"
           depends="build"
@@ -56,7 +57,15 @@
 
     <echo> Building the server and the utility classes. </echo>
     <mkdir dir="${classes}"/>
-    <javac srcdir="server/src" destdir="${classes}"/>
+    <javac srcdir="server/src" destdir="${classes}">
+      <classpath>
+        <pathelement path="${classes}"/>
+	  <fileset dir="install/lib">
+	    <include name="**/*.jar"/>
+	  </fileset>
+      </classpath>
+    </javac>
+
     <echo> Done building the server and the utility classes. </echo>
 
   </target>
@@ -70,7 +79,16 @@
     <javac srcdir="servlets"
            destdir="${classes}"
            includes="*.java"
-           classpath="${classes}"/>
+           classpath="${classes}">
+
+      <classpath>
+        <pathelement path="${classes}"/>
+	  <fileset dir="install/lib">
+	    <include name="**/*.jar"/>
+	  </fileset>
+      </classpath>
+
+    </javac>
     <echo> Done building the servlets. </echo>
 
   </target>
