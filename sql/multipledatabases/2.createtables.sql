@@ -360,10 +360,11 @@ CREATE TABLE phonetypes (
 CREATE TABLE roles_rights (
 	role_id INT NOT NULL ,
 	meta_id INT NOT NULL ,
-	set_id SMALLINT NOT NULL ,
+	set_id INT NOT NULL ,
 	PRIMARY KEY (role_id, meta_id) ,
     FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ,
-    FOREIGN KEY (role_id) REFERENCES roles (role_id)
+    FOREIGN KEY (role_id) REFERENCES roles (role_id),
+    FOREIGN KEY (set_id) REFERENCES permission_sets (set_id)
 );
 
 CREATE TABLE sys_data (
@@ -420,15 +421,6 @@ CREATE TABLE user_flags_crossref (
 	user_flag_id INT NOT NULL ,
 	PRIMARY KEY (user_id,user_flag_id) ,
     FOREIGN KEY (user_flag_id) REFERENCES user_flags (user_flag_id) ,
-    FOREIGN KEY (user_id) REFERENCES users (user_id)
-);
-
-CREATE TABLE user_rights (
-	user_id INT NOT NULL ,
-	meta_id INT NOT NULL ,
-	permission_id SMALLINT NOT NULL ,
-	PRIMARY KEY (user_id,meta_id,permission_id) ,
-    FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ,
     FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 

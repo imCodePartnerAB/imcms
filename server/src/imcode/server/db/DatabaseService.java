@@ -11,6 +11,8 @@ import java.sql.Timestamp;
 
 import java.io.*;
 
+import imcode.server.user.UserDomainObject;
+
 /**
  * STOP! Before changing anyting in this class, make sure to run (all) the test in class TestDatabaseService.
  * They can take a while, but it is essentialt to keep this class working with multiple databases that those test are
@@ -649,7 +651,7 @@ public abstract class DatabaseService {
             rowCount += transaction.executeUpdate( "delete from texts where meta_id = ?", paramValues );
             rowCount += transaction.executeUpdate( "delete from images where meta_id = ?", paramValues );
             rowCount += transaction.executeUpdate( "delete from roles_rights where meta_id = ?", paramValues );
-            rowCount += transaction.executeUpdate( "delete from user_rights where meta_id = ?", paramValues );
+//            rowCount += transaction.executeUpdate( "delete from user_rights where meta_id = ?", paramValues );
             rowCount += transaction.executeUpdate( "delete from url_docs where meta_id = ?", paramValues );
             rowCount += transaction.executeUpdate( "delete from browser_docs where meta_id = ?", paramValues );
             rowCount += transaction.executeUpdate( "delete from fileupload_docs where meta_id = ?", paramValues );
@@ -1065,4 +1067,13 @@ public abstract class DatabaseService {
         } );
         return (Table_doc_types[])queryResult.toArray( new Table_doc_types[queryResult.size()] );
     }
+
+    /*
+    String[] sproc_copyDocs( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu, String copyPrefix ) {
+        // kolla vilka som inte är fildocs
+        // kolla vilka man har rätt att kopiera
+        // loop: kopiera kvarvarande
+
+    } */
+
 }

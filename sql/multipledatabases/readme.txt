@@ -21,6 +21,7 @@ Kvar att undersöka/göra
 * Andra default värden är inte satta (ännu, går det, finns det en standard?)
 * Indexeringen är droppad så länge men borde gå att lägga till.
 * Kvar är help.sql tills jag vet mer hur dessa skapats.
+* lägga till en forreign key mellan owner id och user tabellen?
 
 Sproc:ar kvar att flytta in i koden:
 (Ta bort den du håller på med)
@@ -47,9 +48,8 @@ getlanguagelist.prc
 getlanguages.prc
 getmenudocchilds.prc
 getmetapathinfo.prc
-getnewpermissionset.prc
 getnooftemplates.prc
-getpermissionset.prc
+Hasse: getpermissionset.prc
 getreadrunneruserdataforuser.prc
 getroleidbyrolename.prc
 getrolesdocpermissions.prc
@@ -193,6 +193,16 @@ Detta har lett till följande:
 * I browsers tabellen är namnet 'value' bytt mot 'browser_value' (value är ett reserverat ord i Standard SQL)
 * I sys_data tabellen är namnet 'value' bytt mot 'sysdata_value' (value är ett reserverat ord i Standard SQL)
 * Bytte ut CAST( URRENT_TIME AS CHAR(80)) -> CAST( CURRENT_TIME AS CHAR) kodmässigt då MySQL inte stödde castning CHAR(siffror).
+* Tog bort tabellen CREATE TABLE user_rights (
+	user_id INT NOT NULL ,
+	meta_id INT NOT NULL ,
+	permission_id SMALLINT NOT NULL ,
+	PRIMARY KEY (user_id,meta_id,permission_id) ,
+    FOREIGN KEY (meta_id) REFERENCES meta (meta_id) ,
+    FOREIGN KEY (user_id) REFERENCES users (user_id)
+);
+då den inte används längre
+* La till på tabellen roles_rights FOREIGN KEY (set_id) REFERENCES permission_sets (set_id) och ändrade typen på set_id till INT från SMALLINT
 
 Förändringar gentemot filen types.sql
 * Satt in ; i slutet på varje commando.

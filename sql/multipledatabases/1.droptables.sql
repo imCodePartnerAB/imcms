@@ -28,7 +28,6 @@ drop table texts;
 drop table track_log;
 drop table url_docs;
 drop table user_flags_crossref;
-drop table user_rights;
 drop table user_roles_crossref;
 drop table user_types;
 drop table useradmin_role_crossref;
