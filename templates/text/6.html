@@ -1,0 +1,46 @@
+<!--IMSCRIPT-->
+<?imcms:include file="readrunner/copyright.txt"?>
+<html>
+<head>
+<title>#metaHeadline# - Powered by imCode imCMS <?imcms:include file="readrunner/title.txt"?>
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<?imcms:include file="readrunner/script.txt"?>
+</head>
+
+<body bgcolor="#FFFFFF" <?imcms:include file="readrunner/bodyevents.txt"?>>
+<center>
+<?imcms:include file="readrunner/panel.txt"?>
+#changePage#
+<br>
+
+<?imcms:include no="1"?>
+
+<?imcms:image no="1"?>
+<?imcms:text  no="1" filter="readrunner"?>
+
+<br>
+<br>
+<?imcms:menu no="1"?>
+<table>
+<?imcms:menuloop?>
+<b>#menuitemimage##menuitemlink##menuitemheadline##/menuitemlink#</b>
+<br>#menuitemtext#
+<?/imcms:menuloop?>
+</table>
+<?/imcms:menu?>
+<br>
+
+<br>
+<?imcms:image no="2"?>
+<?imcms:text no="2" filter="readrunner"?>
+<br>
+<?imcms:image no="3"?>
+<br>
+#adminMode#
+</center>
+
+<?imcms:include file="readrunner/buffer.txt"?>
+</body>
+</html>
+<!--/IMSCRIPT-->

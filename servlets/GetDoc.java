@@ -275,9 +275,16 @@ public class GetDoc extends HttpServlet {
 	    }
 
 	    user.setTemplateGroup(-1) ;
-	    ParserParameters paramsToParser = new ParserParameters(req.getParameter("template"),
-								   req.getParameter("param"),
-								   externalparam);
+	    ParserParameters paramsToParser = new ParserParameters() ;
+	    paramsToParser.setTemplate(req.getParameter("template")) ;
+	    paramsToParser.setParameter(req.getParameter("param")) ;
+	    paramsToParser.setExternalParameter(externalparam) ;
+	    if (null != req.getParameter("readrunner_no_stops")) {
+		paramsToParser.setReadrunnerUseStopChars(false) ;
+	    }
+	    if (null != req.getParameter("readrunner_no_separators")) {
+		paramsToParser.setReadrunnerUseSepChars(false) ;
+	    }
 
 	    user.setLastMetaId( meta_id ) ;
 	    String result = IMCServiceRMI.parsePage( imcserver,meta_id,user,0,paramsToParser ) ;

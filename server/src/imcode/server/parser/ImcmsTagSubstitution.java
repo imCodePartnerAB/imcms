@@ -18,10 +18,17 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private static Pattern HTML_PREBODY_PATTERN  = null ;
     private static Pattern HTML_POSTBODY_PATTERN  = null ;
     private static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN  = null ;
+    private static Pattern READRUNNER_FILTER_STOPSEP_PATTERN = null ;
+    private static Pattern READRUNNER_FILTER_STOP_PATTERN = null ;
+    private static Pattern READRUNNER_FILTER_SEP_PATTERN = null ;
+    private static Pattern READRUNNER_FILTER_PATTERN = null ;
+    private static Pattern HTML_TAG_PATTERN  = null ;
+    private static Pattern HTML_ESCAPE_HIDE_PATTERN  = null ;
+    private static Pattern HTML_ESCAPE_UNHIDE_PATTERN  = null ;
 
     private static Category log = Category.getInstance("server");
 
-    FileCache fileCache = new FileCache() ;
+    private FileCache fileCache = new FileCache() ;
 
     static {
 	Perl5Compiler patComp = new Perl5Compiler() ;
@@ -32,39 +39,75 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    HTML_PREBODY_PATTERN = patComp.compile("^.*?<[Bb][Oo][Dd][Yy].*?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 	    HTML_POSTBODY_PATTERN = patComp.compile("<\\/[Bb][Oo][Dd][Yy]>.*$", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
 
+	    READRUNNER_FILTER_STOPSEP_PATTERN = patComp.compile("([^\\s].*?(?:[.?!,:;\\\\/-]\\B\\S*\\s*|\\s*$))" , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    READRUNNER_FILTER_STOP_PATTERN = patComp.compile("([^\\s].*?(?:[.?!]\\B\\S*\\s*|\\s*$))" , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    READRUNNER_FILTER_SEP_PATTERN = patComp.compile("([^\\s].*?(?:[,:;\\\\/-]\\B\\S*\\s*|\\s*$))" , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    READRUNNER_FILTER_PATTERN = patComp.compile("([^\\s].*?)\\s*$" , Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+
+	    HTML_TAG_PATTERN = patComp.compile("<[^>]+?>",Perl5Compiler.READ_ONLY_MASK) ;
+	    HTML_ESCAPE_HIDE_PATTERN = patComp.compile("(&#?\\w+;)",Perl5Compiler.READ_ONLY_MASK) ;
+	    HTML_ESCAPE_UNHIDE_PATTERN = patComp.compile("_(&#?\\w+;)_",Perl5Compiler.READ_ONLY_MASK) ;
+
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
 	    log.fatal("Danger, Will Robinson!",ignored) ;
 	}
-
     }
-
-    TextDocumentParser textDocParser ;
-    User user ;
-    int meta_id ;
-
-    File templatePath ;
-    String servletUrl ;
-
-    boolean includeMode ;
-    int includeLevel ;
-    File includePath ;
-    int implicitIncludeNumber = 1 ;
-
-    Map textMap ;
-    boolean textMode ;
-    int implicitTextNumber = 1 ;
-
-    Map imageMap ;
-    boolean imageMode ;
-    String imageUrl ;
-    int implicitImageNumber = 1 ;
-
-    Document document;
 
     private final Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
-    HashMap included_docs = new HashMap() ;
+    private final Substitution HTML_ESCAPE_HIDE_SUBSTITUTION = new Perl5Substitution("_$1_") ;
+    private final Substitution HTML_ESCAPE_UNHIDE_SUBSTITUTION = new Perl5Substitution("$1") ;
+
+    private TextDocumentParser textDocParser ;
+    private User user ;
+    private int meta_id ;
+
+    private File templatePath ;
+    private String servletUrl ;
+
+    private boolean includeMode ;
+    private int includeLevel ;
+    private File includePath ;
+    private int implicitIncludeNumber = 1 ;
+
+    private Map textMap ;
+    private boolean textMode ;
+    private int implicitTextNumber = 1 ;
+
+    private Map imageMap ;
+    private boolean imageMode ;
+    private String imageUrl ;
+    private int implicitImageNumber = 1 ;
+
+    private Document document;
+
+    private HashMap included_docs = new HashMap() ;
+
+    private ParserParameters parserParameters ;
+
+    private class ReadrunnerQuoteSubstitution implements Substitution {
+	private int readrunnerQuoteSubstitutionCount = 0 ;
+
+	public void appendSubstitution(java.lang.StringBuffer appendBuffer,
+				       MatchResult match,
+				       int substitutionCount,
+				       PatternMatcherInput originalInput,
+				       PatternMatcher matcher,
+				       Pattern pattern) {
+	    appendBuffer.append("<q>") ;
+	    appendBuffer.append(match.group(1)) ;
+	    appendBuffer.append("</q>") ;
+	    ++readrunnerQuoteSubstitutionCount ;
+	}
+
+	public int getReadrunnerQuoteSubstitutionCount() {
+	    return readrunnerQuoteSubstitutionCount ;
+	}
+    } ;
+
+    private ReadrunnerQuoteSubstitution readrunnerQuoteSubstitution = new ReadrunnerQuoteSubstitution() ;
+
 
     /**
        @param user           The user
@@ -77,7 +120,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 				 File templatepath, String servleturl,
 				 List included_list, boolean includemode, int includelevel, File includepath,
 				 Map textmap, boolean textmode,
-				 Map imagemap, boolean imagemode, String imageurl,Document theDoc) {
+				 Map imagemap, boolean imagemode, String imageurl,Document theDoc, ParserParameters parserParameters) {
 	this.textDocParser = textdocparser ;
 	this.user = user ;
 	this.meta_id = meta_id ;
@@ -99,6 +142,7 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	this.imageMode = imagemode ;
 	this.imageUrl  = imageurl ;
 	this.document = theDoc;
+	this.parserParameters = parserParameters ;
     }
 
     /**
@@ -120,7 +164,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	String attributevalue ;
 
 	//lets get the templates simplename or null if there isn't one
-	ParserParameters paramsToParse = new ParserParameters(attributes.getProperty("template"),attributes.getProperty("param"));
+	ParserParameters paramsToParse = new ParserParameters() ;
+	paramsToParse.setTemplate(attributes.getProperty("template")) ;
+	paramsToParse.setParameter(attributes.getProperty("param")) ;
 
 	if (null != (attributevalue = attributes.getProperty("no"))) {	    // If we have the attribute no="number"...
 	    // Set the number of this include-tag
@@ -240,10 +286,17 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    result = htmlize(text) ;
 	}
 
+	String filter = attributes.getProperty("filter") ;
+	if (null != filter && "readrunner".equalsIgnoreCase(filter)) {
+
+	    result = filterReadrunner(result,patMat) ;
+	}
+
 	String finalresult = result ;
 	if (textMode) {
+	    // FIXME: Remove this html-crap.
 	    finalresult = "<img src=\""+imageUrl+"red.gif\" border=\"0\">&nbsp;"+finalresult+"<a href=\"ChangeText?meta_id="+meta_id+"&txt="+noStr+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
-	} else if (!"".equals(result)) { // Else, if we're not in adminmode, and we have something other than the empty string...
+	} else if (!"".equals(result)) { // Else, we're not in textmode, and do we have something other than the empty string?
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {
 		finalresult = tempAtt + finalresult ;
@@ -283,8 +336,10 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	}
 	String finalresult = result ;
 	if (imageMode && "".equals(result)) { // If imageMode, and no data in the db-field.
+	    // FIXME: Remove this html-crap.
 	    finalresult = "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"bild.gif\" border=\"0\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
 	} else if (imageMode) {               // If imageMode, with data in the db-field.
+	    // FIXME: Remove this html-crap.
 	    finalresult += "<a href=\"ChangeImage?meta_id="+meta_id+"&img="+noStr+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
 	} else if(!"".equals(result)) {                              // Else, if we have something other than the empty string...
 	    String tempAtt = null ;
@@ -298,55 +353,53 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	return finalresult ;
     }
 
-	/**
+    /**
        Handle a <?imcms:datetime ...?> tag
 
        @param attributes The attributes of the datetime tag.
-	   format attribute defines a user pattern to use when geting the date.
-	   type attribute defines what date to get they can bee
-		now, created, modified, activated, archived
+       format attribute defines a user pattern to use when geting the date.
+       type attribute defines what date to get they can bee
+       now, created, modified, activated, archived
 
     **/
     public String tagDatetime (Properties attributes) {
-		String format =  attributes.getProperty("format") == null ? DATETIME_FORMAT_STD : attributes.getProperty("format") ;
-		String type	  =  attributes.getProperty("type")	;
-		String lang	  =  attributes.getProperty("lang")	;
+	String format =  attributes.getProperty("format") == null ? DATETIME_FORMAT_STD : attributes.getProperty("format") ;
+	String type	  =  attributes.getProperty("type")	;
+	String lang	  =  attributes.getProperty("lang")	;
 
-		Date date = null;
+	Date date = null;
 
-		if (type != null) {
-			type = type.toLowerCase();
-			if ("now".startsWith(type)) {
-				date = new Date();
-			}else if("created".startsWith(type)) {
-				date = document.getCreatedDatetime();
-			}else if("modified".startsWith(type)) {
-				date = document.getModifiedDatetime();
-			}else if("arcived".startsWith(type)) {
-				date = document.getActivatedDatetime();
-			}else if("activated".startsWith(type)) {
-				date = document.getArchivedDatetime();
-			}
-			if (date==null) {
-				return "<!-- <?imcms:datetime ... type=\""+type+"\" is empty, wrong or doesnt exists! -->";
-			}
-		}else {
-			date = new Date();
-		}
+	if (type != null) {
+	    type = type.toLowerCase();
+	    if ("now".startsWith(type)) {
+		date = new Date();
+	    } else if("created".startsWith(type)) {
+		date = document.getCreatedDatetime();
+	    } else if("modified".startsWith(type)) {
+		date = document.getModifiedDatetime();
+	    } else if("archived".startsWith(type)) {
+		date = document.getActivatedDatetime();
+	    } else if("activated".startsWith(type)) {
+		date = document.getArchivedDatetime();
+	    } else {
+		return "<!-- <?imcms:datetime ... type=\""+type+"\" is empty, wrong or does not exist! -->";
+	    }
+	} else {
+	    date = new Date();
+	}
 
-		java.text.SimpleDateFormat formatter;
-		if (lang == null){
+	java.text.SimpleDateFormat formatter;
+	if (lang == null){
+	    formatter = new java.text.SimpleDateFormat(format);
+	} else {
+	    formatter = new java.text.SimpleDateFormat(format, new Locale(lang,""));
+	}
 
-			formatter = new java.text.SimpleDateFormat(format);
-		}else{
-			formatter = new java.text.SimpleDateFormat(format, new Locale(lang,""));
-		}
-
-		try{
-			return formatter.format(date);
-		}catch(IllegalArgumentException ex){
-			return "<!-- imcms:datetime failed: "+ex.getMessage()+" -->";
-		}
+	try {
+	    return formatter.format(date);
+	} catch (IllegalArgumentException ex) {
+	    return "<!-- imcms:datetime failed: "+ex.getMessage()+" -->";
+	}
     }
 
     public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {
@@ -384,16 +437,123 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	String result = text.getText() ;
 	if ( text.getType() == IMCText.TEXT_TYPE_PLAIN ) {
 	    String[] vp = new String[] {
-		"&", "&amp;",
-		"<", "&lt;",
-		">", "&gt;",
-		"\"","&quot;",
+		"&",   "&amp;",
+		"<",   "&lt;",
+		">",   "&gt;",
+		"\"",  "&quot;",
 		"\r\n","\n",
-		"\r", "\n",
-		"\n", "<BR>\n",
+		"\r",  "\n",
+		"\n",  "<BR>\n",
 	    } ;
 	    result = Parser.parseDoc(result,vp) ;
 	}
 	return result ;
+    }
+
+    /**
+       Do the filtering necessary for Readrunner.
+    **/
+    private String filterReadrunner ( String text, PatternMatcher patMat) {
+	org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util() ;
+	List firsttaglist = new ArrayList() ;
+
+	// Split on <html-tags>
+	perl5util.split(firsttaglist,"m!(<[^>]+?>)!",text) ;
+
+	// Create a set of our linebreak-tags.
+	Set linebreakTags = new HashSet() ;
+	linebreakTags.add("a") ;
+	linebreakTags.add("p") ;
+	linebreakTags.add("h1") ;
+	linebreakTags.add("h2") ;
+	linebreakTags.add("h3") ;
+	linebreakTags.add("h4") ;
+	linebreakTags.add("h5") ;
+	linebreakTags.add("h6") ;
+	linebreakTags.add("br") ;
+	linebreakTags.add("div") ;
+
+	List secondtaglist = new ArrayList() ;
+
+	StringBuffer nextListItem = new StringBuffer() ;
+
+	// Loop through all parts, html-tags and not.
+	for (Iterator i = firsttaglist.iterator(); i.hasNext() ; ) {
+
+	    String part = (String)i.next() ;
+
+	    if (perl5util.match("m!</?(\\w+)[^>]*?>!", part)) {
+		String tagName = perl5util.group(1).toLowerCase() ;
+
+		if (linebreakTags.contains(tagName)) {
+		    secondtaglist.add(nextListItem.toString()) ;
+		    nextListItem.setLength(0) ;
+		    secondtaglist.add(part) ;
+		    continue ;
+		}
+	    }
+	    nextListItem.append(part) ;
+	}
+
+	secondtaglist.add(nextListItem.toString()) ;
+
+	// Set up a buffer for storing the result
+	StringBuffer resultBuffer = new StringBuffer() ;
+
+	resultBuffer.append("<div id='RR1'>") ;
+
+	// Loop through all parts, html-tags and not.
+	for (Iterator i = secondtaglist.iterator(); i.hasNext() ; ) {
+
+	    String part = (String)i.next() ;
+
+	    // For each part, check if it looks like a html-tag.
+	    if (!perl5util.match("/^<[^>]+?>$/",part)) {
+		// Not a html-tag
+
+		// Change all "&abc;" and "&#123;" to "_&abc;_" and "_&#123;_"
+		part = org.apache.oro.text.regex.Util.substitute(patMat,
+								 HTML_ESCAPE_HIDE_PATTERN,
+								 HTML_ESCAPE_HIDE_SUBSTITUTION,
+								 part,
+								 org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+
+
+		// Choose a nice readrunner-pattern.
+		Pattern readrunnerFilterPattern = null ;
+		if (parserParameters.getReadrunnerUseStopChars() && parserParameters.getReadrunnerUseSepChars()) {
+		    readrunnerFilterPattern = READRUNNER_FILTER_STOPSEP_PATTERN ;
+		} else if (parserParameters.getReadrunnerUseStopChars()) {
+		    readrunnerFilterPattern = READRUNNER_FILTER_STOP_PATTERN ;
+		} else if (parserParameters.getReadrunnerUseSepChars()) {
+		    readrunnerFilterPattern = READRUNNER_FILTER_SEP_PATTERN ;
+		} else {
+		    readrunnerFilterPattern = READRUNNER_FILTER_PATTERN ;
+		}
+
+		// <q>Quote</q> all sentences.
+		part = org.apache.oro.text.regex.Util.substitute(patMat,
+								 readrunnerFilterPattern,
+								 readrunnerQuoteSubstitution,
+								 part,
+								 org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+
+		// Change all "_&abc;_" and "_&#123;_" to "&abc;" and "&#123;"
+		part = org.apache.oro.text.regex.Util.substitute(patMat,
+								 HTML_ESCAPE_UNHIDE_PATTERN,
+								 HTML_ESCAPE_UNHIDE_SUBSTITUTION,
+								 part,
+								 org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+
+	    }
+	    resultBuffer.append(part) ;
+	}
+	resultBuffer.append("</div>") ;
+
+	return resultBuffer.toString() ;
+    }
+
+    public int getReadrunnerQuoteSubstitutionCount() {
+	return readrunnerQuoteSubstitution.getReadrunnerQuoteSubstitutionCount() ;
     }
 }

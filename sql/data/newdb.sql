@@ -34,6 +34,12 @@ INSERT INTO templategroups
  VALUES (0, 'Start')
 INSERT INTO templates_cref
  VALUES(0,1)
+INSERT INTO templates 
+ VALUES (6,'rr_start.html', 'ReadrunnerStart', 'se', 1,1,1)
+INSERT INTO templategroups
+ VALUES (1, 'Readrunner')
+INSERT INTO templates_cref
+ VALUES(1,6)
 INSERT INTO text_docs
  VALUES (1001, 1, 0, 1, -1, -1)
 INSERT INTO roles_rights

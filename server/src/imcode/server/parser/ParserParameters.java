@@ -5,59 +5,58 @@ import java.util.* ;
 
 
 public class ParserParameters {
-	private final static String CVS_REV = "$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
+    private final static String CVS_REV = "$Revision$" ;
+    private final static String CVS_DATE = "$Date$" ;
 
-	private String _template; 	//used to store the template if not default is wanted
-	private String _param;		//used to store the parameter param
-	private String _externalParam; //used to store the param prodused from external class.
-	
-	public ParserParameters(){
-	}
-	
-	public ParserParameters(String template){
-		_template = template;
-	}
-	
-	public ParserParameters(String template, String param){
-		_template = template;
-		_param = param;
-	}
-	
-	public ParserParameters(String template, String param, String externalParam){
-		_template = template;
-		_param = param;
-		_externalParam = externalParam;
-	}
-	
-	// set methods
-	public void setTemplate(String template)
-	{
-		_template = template;
-	}
-	
-	public void setParameter(String param)
-	{
-		_param = param;
-	}
-	
-	public void setExternalParameter(String externalparam)
-	{
-		_externalParam = externalparam;
-	}
-	// get methods
-	public String getTemplate()
-	{
-		return	_template;
-	}
-	
-	public String getParameter()
-	{
-		return	_param == null ? "":_param;
-	}
-	
-	public String getExternalParameter()
-	{
-		return	_externalParam == null ? "":_externalParam;
-	}
+    private String template;	//used to store the template if not default is wanted
+    private String param;		//used to store the parameter param
+    private String externalParam; //used to store the param prodused from external class.
+    private boolean readrunnerUseStopChars = true ;
+    private boolean readrunnerUseSepChars = true ;
+
+    public ParserParameters() {
+
+    }
+
+    // set methods
+    public void setTemplate(String template) {
+	this.template = template;
+    }
+
+    public void setParameter(String param) {
+	this.param = param;
+    }
+
+    public void setExternalParameter(String externalparam) {
+	this.externalParam = externalparam;
+    }
+
+    public void setReadrunnerUseStopChars(boolean v) {
+	this.readrunnerUseStopChars = v ;
+    }
+
+    public void setReadrunnerUseSepChars(boolean v) {
+	this.readrunnerUseSepChars = v ;
+    }
+
+    // get methods
+    public String getTemplate() {
+	return	this.template;
+    }
+
+    public String getParameter() {
+	return	this.param == null ? "":this.param;
+    }
+
+    public String getExternalParameter() {
+	return	this.externalParam == null ? "":this.externalParam;
+    }
+
+    public boolean getReadrunnerUseStopChars() {
+	return readrunnerUseStopChars ;
+    }
+
+    public boolean getReadrunnerUseSepChars() {
+	return readrunnerUseSepChars ;
+    }
 }

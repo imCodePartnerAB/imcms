@@ -25,6 +25,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     private static Pattern IMCMS_TAG_PATTERN  = null ;
     private static Pattern MENU_NO_PATTERN  = null ;
     private static Pattern HTML_TAG_PATTERN  = null ;
+    private static Pattern READRUNNER_QUOTE_SUBSTITUTION_COUNT_PATTERN = null ;
 
     static {
 	Perl5Compiler patComp = new Perl5Compiler() ;
@@ -37,6 +38,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    MENU_NO_PATTERN = patComp.compile("#doc_menu_no#",Perl5Compiler.READ_ONLY_MASK) ;
 	    HASHTAG_PATTERN = patComp.compile("#[^ #\"<>&;\\t\\r\\n]+#",Perl5Compiler.READ_ONLY_MASK) ;
 	    MENU_PATTERN = patComp.compile("<\\?imcms:menu(.*?)\\?>(.*?)<\\?\\/imcms:menu\\?>", Perl5Compiler.SINGLELINE_MASK|Perl5Compiler.READ_ONLY_MASK) ;
+	    READRUNNER_QUOTE_SUBSTITUTION_COUNT_PATTERN = patComp.compile("#readrunner_quote_substitution_count#", Perl5Compiler.READ_ONLY_MASK) ;
 	} catch (MalformedPatternException ignored) {
 	    // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
 	    log.fatal("Danger, Will Robinson!",ignored) ;
@@ -69,14 +71,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    String meta_id_str = String.valueOf(meta_id) ;
 	    int user_id = user.getInt("user_id") ;
 	    String user_id_str = String.valueOf(user_id) ;
-		
-		Document myDoc = serverObject.getDocument(meta_id);	
-		
-		//handles the extra parameters
-		ParserParameters parse_params = paramsToParse;
-		String template_name = parse_params.getTemplate();
-		String param_value = parse_params.getParameter();
-		String extparam_value = parse_params.getExternalParameter();
+
+	    Document myDoc = serverObject.getDocument(meta_id);
+
+	    //handles the extra parameters
+	    String template_name = paramsToParse.getTemplate();
+	    String param_value = paramsToParse.getParameter();
+	    String extparam_value = paramsToParse.getExternalParameter();
 
 	    DBConnect dbc = new DBConnect(connPool) ;
 	    dbc.getConnection() ;
@@ -141,8 +142,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		log.error("parsePage: GetTextDocData returned nothing") ;
 		return "parsePage: GetTextDocData returned nothing" ;
 	    }
-			
-		String template_id = (String)text_docs.remove(0) ;			
+
+		String template_id = (String)text_docs.remove(0) ;
 		if (template_name != null){
 			//lets validate that the template exists before we changes the original one
 			dbc.setProcedure("GetTemplateId "+template_name);
@@ -151,13 +152,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 				try	{
 					int temp_template = Integer.parseInt( (String)vectT.get(0) );
 					if(temp_template > 0)
-						template_id = temp_template+"";	
+						template_id = temp_template+"";
 				}catch(NumberFormatException nfe){
-						//do nothing, we keep the original template 
+						//do nothing, we keep the original template
 				}
 			}
 		}
-		
+
 	    String simple_name = (String)text_docs.remove(0) ;
 	    int sort_order = Integer.parseInt((String)text_docs.remove(0)) ;
 	    String group_id = (String)text_docs.remove(0) ;
@@ -192,7 +193,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		templategroups = (Vector)dbc.executeProcedure() ;
 		dbc.clearResultSet() ;
 		// do templatemode queries
-		
+
 		if ( selected_group == -1 ) {
 		    selected_group = Integer.parseInt(group_id) ;
 		}
@@ -388,7 +389,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		menuItem.setHeadline((String)childIt.next()) ;                       // The headline of the child.
 		menuItem.setText((String)childIt.next()) ;                           // The subtext for the child.
 		menuItem.setImage((String)childIt.next()) ;                          // An optional imageurl for this document.
-	        childIt.next() ;                                                     // Ignored. The target frame for this document. Replaced by 'target'.
+		childIt.next() ;                                                     // Ignored. The target frame for this document. Replaced by 'target'.
 		try {
 		    menuItem.setActivatedDatetime(DATETIMEFORMAT.parse((String)childIt.next())) ; // The datetime the child will be/was activated
 		} catch ( java.text.ParseException ignored ) {}
@@ -437,9 +438,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    tags.setProperty("#addDoc*#","") ;
 	    tags.setProperty("#saveSortStart*#","") ;
 	    tags.setProperty("#saveSortStop*#","") ;
-		
+
 	    tags.setProperty("#param#", param_value);
 	    tags.setProperty("#externalparam#",extparam_value);
+
+	    tags.setProperty("#readrunner_quote_substitution_count#","#readrunner_quote_substitution_count#");
 
 	    // Give the user a row of buttons if he is privileged enough.
 	    if ( serverObject.checkDocAdminRights(meta_id,user) && flags >= 0 ) {
@@ -493,7 +496,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    }  // if (templatemode)
 
 	    temptags.setProperty("#servlet_url#",servletUrl) ;
-		
+
 
 	    if ( menumode ) {
 
@@ -532,8 +535,8 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    } // if (menumode)
 
 	    temptags.setProperty("#getMetaId#",String.valueOf(meta_id)) ;
-		
-		
+
+
 	    // Now load the files specified in "toload", and place them in "tags"
 	    //System.out.println("Loading template-files.") ;
 
@@ -590,10 +593,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 															   templatePath,servletUrl,
 															   included_docs,includemode,includelevel,includePath,
 															   textMap,textmode,
-															   imageMap,imagemode,imageUrl,myDoc) ;
+															   imageMap,imagemode,imageUrl,myDoc,paramsToParse) ;
 
 	    LinkedList parse = new LinkedList() ;
-	    perl5util.split(parse,"/(<!--\\/?IMSCRIPT-->)/i",template) ;
+	    perl5util.split(parse,"/(<!--\\/?IMSCRIPT-->)/",template) ;
 	    Iterator pit = parse.iterator() ;
 	    boolean parsing = false ;
 
@@ -602,10 +605,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    while ( pit.hasNext() ) {
 		// So, let's jump in and out of blocks delimited by <!--IMSCRIPT--> and <!--/IMSCRIPT-->
 		String nextbit = (String)pit.next() ;
-		if (nextbit.equalsIgnoreCase("<!--/IMSCRIPT-->")) { // We matched <!--/IMSCRIPT-->
+		if (nextbit.equals("<!--/IMSCRIPT-->")) { // We matched <!--/IMSCRIPT-->
 		    parsing = false ;       // So, we're not parsing.
 		    continue ;
-		} else if (nextbit.equalsIgnoreCase("<!--IMSCRIPT-->")) { // We matched <!--IMSCRIPT-->
+		} else if (nextbit.equals("<!--IMSCRIPT-->")) { // We matched <!--IMSCRIPT-->
 		    parsing = true ;              // So let's get to parsing.
 		    continue ;
 		}
@@ -613,10 +616,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		    result.append(nextbit) ;
 		    continue ;
 		}
-		
+
 		// String nextbit now contains the bit to parse. (Within the imscript-tags.)
-		
-		// Parse the new-style menus.
+
+ 		// Parse the new-style menus.
 		// Aah... the magic of OO...
 		nextbit = org.apache.oro.text.regex.Util.substitute(patMat,MENU_PATTERN, menuparsersubstitution,nextbit,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
 
@@ -625,13 +628,23 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 		// Parse the hashtags
 		nextbit = org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,hashtagsubstitution,nextbit,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
-		
+
 		// So, append the result from this loop-iteration to the result.
 		result.append(nextbit) ;
 	    } // end while (pit.hasNext()) // End of the main parseloop
-	    
+
+	    // Get the number of <q>tags</q> inserted by the readrunner filter.
+	    int readrunnerQuoteSubstitutionCount = imcmstagsubstitution.getReadrunnerQuoteSubstitutionCount() ;
 	    String returnresult = result.toString() ;
-	    
+
+	    if (readrunnerQuoteSubstitutionCount > 0) {
+		returnresult = org.apache.oro.text.regex.Util.substitute(patMat,
+							  READRUNNER_QUOTE_SUBSTITUTION_COUNT_PATTERN,
+							  new StringSubstitution(""+readrunnerQuoteSubstitutionCount),
+							  returnresult,
+							  org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+	    }
+
 	    /*
 	      So, it is here i shall have to put my magical markupemphasizing code.
 	      First, i'll split the html (returnresult) on html-tags, and then go through every non-tag part and parse it for keywords to emphasize,
@@ -653,7 +666,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		    // for each string to emphasize
 		    emphasized_result.append(non_html_tag_string) ;
 		    emphasized_result.append(html_tag_string) ;
-		} // while 
+		} // while
 		non_html_tag_string = result.substring(last_html_offset) ;
 		non_html_tag_string = emphasizeString(non_html_tag_string,emp,emphasize_substitution,patMat) ;
 		emphasized_result.append(non_html_tag_string) ;
@@ -665,12 +678,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    return ex.toString() ;
 	}
     }
-    
+
     private String emphasizeString(String str,
 				   String[] emp,
 				   Substitution emphasize_substitution,
 				   PatternMatcher patMat) {
-	
+
 	Perl5Compiler empCompiler = new Perl5Compiler() ;
 	// for each string to emphasize
 	for (int i = 0 ; i < emp.length ; ++i) {

@@ -19,11 +19,13 @@
   <!-- The webroot. Everything put here can be seen by any visitor. -->
   <property name="webroot"        value="${build}"/>
 
+  <property name="imcmsimages"    value="${webroot}/imcmsimages"/>
   <property name="images"         value="${webroot}/images"/>
   <property name="login"          value="${webroot}/login"/>
   <property name="css"            value="${webroot}/css"/>
   <property name="user"           value="${webroot}/user"/>
-  <property name="adminbuttons"   value="${webroot}/admin"/>
+  <property name="javascript"     value="${webroot}/javascript"/>
+  <property name="adminbuttons"   value="${imcmsimages}/admin"/>
 
 
   <!-- 'WEB-INF' - Everything put here is private to the webapp -->
@@ -51,9 +53,11 @@
   <property name="servleturl"      value="${rooturl}/servlet"/>
   <property name="loginurl"        value="${rooturl}/login"/>
   <property name="imageurl"        value="${rooturl}/images"/>
-  <property name="adminbuttonsurl" value="${rooturl}/admin"/>
   <property name="cssurl"          value="${rooturl}/css"/>
+  <property name="javascripturl"   value="${rooturl}/javascript"/>
   <property name="postcardsurl"    value="${rooturl}/postcards"/>
+  <property name="imcmsimageurl"   value="${rooturl}/imcmsimages"/>
+  <property name="adminbuttonsurl" value="${imcmsimageurl}/admin"/>
 
 
   <!-- Locations for the final packages -->
@@ -95,6 +99,8 @@
     <filter token="cssurl"             value="${cssurl}"/>
     <filter token="postcardsurl"       value="${postcardsurl}"/>
     <filter token="adminbuttonsurl"    value="${adminbuttonsurl}"/>
+    <filter token="imcmsimageurl"      value="${imcmsimageurl}"/>
+    <filter token="javascripturl"      value="${javascripturl}"/>
 
     <filter token="db-host"            value="${db-host}"/>
     <filter token="db-port"            value="${db-port}"/>
@@ -178,9 +184,7 @@
 	  description="Checks that webappname is set."
 	  unless="webappname">
 
-    <fail>
-      Set "webappname" in "${build.properties}"!
-    </fail>
+    <fail message="Set 'webappname' in '${build.properties}'!"/>
 
   </target>
 
@@ -192,7 +196,7 @@
 
     <war warfile="${wardist}"
 	 basedir="${build}"
-	 webxml="install/web.xml"/>
+	 webxml="${WEB-INF}/web.xml"/>
 
     <echo>Done packaging distribution '${wardist}'.</echo>
 
@@ -203,8 +207,10 @@
 
   <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
   <target name="build"
-	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,sql"
+	  depends="init,server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help,fortune,readrunner,sql"
 	  description="Builds everything.">
+
+    <copy todir="${WEB-INF}" file="install/web.xml"/>
 
     <antcall target="xmlversion"/>
   </target>
@@ -243,7 +249,6 @@
     <copy todir="${webapproot}">
       <fileset dir="${build}"/>
     </copy>
-    <copy todir="${webapproot}/WEB-INF" file="install/web.xml"/>
   </target>
 
 
@@ -385,6 +390,9 @@
     <mkdir dir="${login}"/>
     <mkdir dir="${css}"/>
     <mkdir dir="${user}"/>
+    <mkdir dir="${javascript}"/>
+    <mkdir dir="${imcmsimages}"/>
+
     <copy file="templates/login/index.html" todir="${login}" filtering="true"/>
     <copy todir="${images}">
       <fileset dir="install/htdocs/images">
@@ -882,7 +890,10 @@
 
 
   <!-- Copies the files for the 'fortune'-plugin. -->
-  <target name="fortune" depends="init,fortune-templates">
+  <target name="fortune"
+          depends="init,fortune-templates"
+          description="Copies the files for the 'fortune'-plugin.">
+
     <mkdir dir="${fortunes}"/>
 
     <!-- Create empty files needed by fortune -->
@@ -920,5 +931,46 @@
 
   </target>
 
+
+  <!-- Copies the files for readrunner -->
+  <target name="readrunner"
+          depends="init,readrunner-includes,readrunner-images,readrunner-javascript"
+	  description="Copies the files for readrunner."/>
+
+
+  <!-- Copies the includes needed by readrunner. -->
+  <target name="readrunner-includes"
+	  depends="init,web"
+	  description="Copies the includes needed by readrunner.">
+
+	  <copy todir="${includes}/readrunner" filtering="true">
+	    <fileset dir="install/htdocs/sv/readrunner/includes"/>
+	  </copy>
+
+  </target>
+
+
+  <!-- Copies the images needed by readrunner. -->
+  <target name="readrunner-images"
+	  depends="init,web"
+	  description="Copies the images needed by readrunner.">
+
+	  <copy todir="${imcmsimages}/readrunner">
+	    <fileset dir="install/htdocs/sv/readrunner/images"/>
+	  </copy>
+
+  </target>
+
+
+  <!-- Copies the javascript needed by readrunner. -->
+  <target name="readrunner-javascript"
+	  depends="init,web"
+	  description="Copies the javascript needed by readrunner.">
+
+	  <copy todir="${javascript}/readrunner" filtering="true">
+	    <fileset dir="install/htdocs/sv/readrunner/javascript"/>
+	  </copy>
+
+  </target>
 
 </project>
