@@ -11,12 +11,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import javax.servlet.ServletException;
 import javax.servlet.ServletConfig;
+
+import javax.servlet.http.Cookie ;
 import javax.servlet.http.HttpUtils;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletOutputStream;
+
 import imcode.util.* ;
 import imcode.util.log.* ;
 import imcode.server.* ;
@@ -276,19 +279,57 @@ public class GetDoc extends HttpServlet {
 
 	    user.setTemplateGroup(-1) ;
 	    ParserParameters paramsToParser = new ParserParameters() ;
+
 	    paramsToParser.setTemplate(req.getParameter("template")) ;
 	    paramsToParser.setParameter(req.getParameter("param")) ;
 	    paramsToParser.setExternalParameter(externalparam) ;
-	    if (null != req.getParameter("readrunner_no_stops")) {
-		paramsToParser.setReadrunnerUseStopChars(false) ;
-	    }
-	    if (null != req.getParameter("readrunner_no_separators")) {
-		paramsToParser.setReadrunnerUseSepChars(false) ;
-	    }
+
+	    setReadrunnerParameters(req, paramsToParser) ;
 
 	    user.setLastMetaId( meta_id ) ;
 	    String result = IMCServiceRMI.parsePage( imcserver,meta_id,user,0,paramsToParser ) ;
 	    return result ;
 	}
+    }
+
+    private static void setReadrunnerParameters(HttpServletRequest req, ParserParameters paramsToParser) {
+	Cookie[] cookies = req.getCookies() ;
+
+	// Find a readrunner-cookie and extract readrunner-info from it.
+	for (int i = 0; i < cookies.length; ++i) {
+	    Cookie aCookie = cookies[i] ;
+	    if ("RRsettings".equals(aCookie.getName())) {
+		String[] arrSettings = split(aCookie.getValue(),',') ;
+		if (arrSettings.length >= 3) {  // We want the second and third token.
+		    boolean stopCheck = "true".equals(split(arrSettings[1],'/')[0]) ;
+		    boolean stopVal   = !"0".equals(split(arrSettings[1],'/')[1]) ;
+		    boolean sepCheck =  "true".equals(split(arrSettings[2],'/')[0]) ;
+		    boolean sepVal   =  !"0".equals(split(arrSettings[2],'/')[1]) ;
+		    if (!stopCheck || !stopVal) {
+			paramsToParser.setReadrunnerUseStopChars(false) ;
+		    }
+		    if (!sepCheck || !sepVal) {
+			paramsToParser.setReadrunnerUseSepChars(false) ;
+		    }
+		    break ;
+		}
+	    }
+	}
+
+	if (null != req.getParameter("readrunner_no_stops")) {
+	    paramsToParser.setReadrunnerUseStopChars(false) ;
+	}
+	if (null != req.getParameter("readrunner_no_separators")) {
+	    paramsToParser.setReadrunnerUseSepChars(false) ;
+	}
+    }
+
+    private static String[] split (String input, char splitChar) {
+	StringTokenizer tokenizer = new StringTokenizer(input,""+splitChar) ;
+	String[] output = new String[tokenizer.countTokens()] ;
+	for (int i = 0; tokenizer.hasMoreTokens(); ++i) {
+	    output[i] = tokenizer.nextToken() ;
+	}
+	return output ;
     }
 }
