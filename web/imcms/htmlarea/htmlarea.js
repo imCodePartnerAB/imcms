@@ -688,6 +688,10 @@ HTMLArea.prototype.generate = function () {
 		w: textarea.offsetWidth,
 		h: textarea.offsetHeight
 	};
+	if (orgW == 0 || orgH == 0) {
+		orgW = this._ta_size.w ;
+		orgH = this._ta_size.h ;
+	}
 	textarea.style.display = "none";
 
 	// create the editor framework
@@ -746,11 +750,10 @@ HTMLArea.prototype.generate = function () {
 	// remove the default border as it keeps us from computing correctly
 	// the sizes.  (somebody tell me why doesn't this work in IE)
 
-	if (!HTMLArea.is_ie) {
+	if (HTMLArea.is_ie) {
+		//iframe.style.border = "1px solid #999999";
+	} else {
 		iframe.style.borderWidth = "1px";
-	// iframe.frameBorder = "1";
-	// iframe.marginHeight = "0";
-	// iframe.marginWidth = "0";
 	}
 
 	// size the IFRAME according to user's prefs or initial textarea
@@ -759,9 +762,9 @@ HTMLArea.prototype.generate = function () {
 	var width = (this.config.width == "auto" ? (this._ta_size.w + "px") : this.config.width);
 	width = parseInt(width);
 
-	if (!HTMLArea.is_ie) {
+	if (!HTMLArea.is_ie) { // the border
 		height -= 2;
-		width -= 2;
+		width  -= 2;
 	}
 
 	iframe.style.width = width + "px";

@@ -2,7 +2,7 @@
 	
 %><%@ include file="_editor_methods.jsp" %><%
 
-if (isHtmlAreaSupported) { %>
+if (isHtmlAreaSupported && showModeEditor) { %>
 
 <script type="text/javascript">
 var openEditor = false ;
@@ -22,31 +22,34 @@ HTMLArea.loadPlugin("ContextMenu");
 var editor = null;
 openEditor = true ;
 
+var orgW = 0 ;
+var orgH = 0 ;
+
 function initEditor() {
-  editor = new HTMLArea(editorTextareaId);
+	editor = new HTMLArea(editorTextareaId);
 	editor.config.metaId      = <%= EDITED_META %> ;
 	editor.config.servletPath = "<%= SERVLET_PATH %>" ;
 	editor.config.contextPath = "<%= request.getContextPath() %>" ;
 	editor.registerPlugin(TableOperations);
 	editor.registerPlugin("ContextMenu");
 	editor.config.pageStyle =
-	'body { background-color:#ffffff; color:#000000; font: x-small verdana,sans-serif }';
-
+		'body { background-color:#ffffff; color:#000000; font: x-small verdana,sans-serif }';
+	
 	editor.config.toolbar = [
-	[ "copy", "cut", "paste", "separator",
-	  "space", "undo", "redo", "separator",
-	  "bold", "italic", "underline", "separator", "subscript", "superscript", "separator",
-	  "justifyleft", "justifycenter", "justifyright", "justifyfull", "separator",
-	  "insertorderedlist", "insertunorderedlist", "outdent", "indent", "separator",
-	  "createlink", "inserttable", "separator",
-	  "insertimage", "separator",
-	  "showhelp", "about" ]
+		[ "copy", "cut", "paste", "separator",
+		"space", "undo", "redo", "separator",
+		"bold", "italic", "underline", "separator", "subscript", "superscript", "separator",
+		"justifyleft", "justifycenter", "justifyright", "justifyfull", "separator",
+		"insertorderedlist", "insertunorderedlist", "outdent", "indent", "separator",
+		"createlink", "inserttable", "separator",
+		"insertimage", "separator",
+		"showhelp", "about" ]
 	];
-  setTimeout(function() {
-    editor.generate();
+	setTimeout(function() {
+		editor.generate();
 		lockMode(true,2) ;
-  }, 300);
-  return false;
+	}, 300);
+	return false;
 }
 
 function showHideHtmlArea(show) {
@@ -57,9 +60,9 @@ function showHideHtmlArea(show) {
 				document.getElementById("htmlarea").innerHTML     = "" ;
 				document.getElementById("htmlarea").style.display = "none" ;
 				var o = document.getElementById("htmlarea") ;
-				//alert(o.outerHTML) ;
-				document.getElementById("htmlarea").id            = "" ;
-				//alert(o.outerHTML) ;
+				document.getElementById("htmlarea").id = "" ;
+				document.getElementById(editorTextareaId).style.width   = orgW ;
+				document.getElementById(editorTextareaId).style.height  = orgH ;
 				document.getElementById(editorTextareaId).style.display = "block" ;
 				document.getElementById(editorTextareaId).value         = fixHTML(editor.getHTML()) ;
 				lockMode(false,1) ;
@@ -71,33 +74,14 @@ function showHideHtmlArea(show) {
 					initEditor() ;
 					window.status = "initEditor()" ;
 				}
-				lockMode(true,2) ;
-				setEditorSize() ;
+				lockMode(true,2) ;<%
+				if (rows == -1) { %>
+				setEditorSize() ;<%
+				} %>
 			}
 		}
 	}
 }
-/*
-function showHideHtmlArea() {
-	if (document.getElementById) {
-		//alert(document.getElementById(editorTextareaId) +"\n\n"+ document.getElementById("htmlarea")) ;
-		if (document.getElementById(editorTextareaId) && document.getElementById("htmlarea")) {
-			var isOn = (document.getElementById(editorTextareaId).style.display == "none") ;
-			if (isOn) {
-				document.getElementById("htmlarea").style.display       = "none" ;
-				document.getElementById(editorTextareaId).style.display = "block" ;
-				document.getElementById(editorTextareaId).value = fixHTML(editor.getHTML()) ;
-				lockMode(false) ;
-			} else {
-				document.getElementById("htmlarea").style.display       = "block" ;
-				document.getElementById(editorTextareaId).style.display = "none" ;
-				editor.setHTML(document.getElementById(editorTextareaId).value) ;
-				editor.generate() ;
-				lockMode(true) ;
-			}
-		}
-	}
-}*/
 
 function toggleEditorOnOff(on) {
 	if (on) {
@@ -151,9 +135,12 @@ function getCookie(Name) {
 	}
 }
 
-function checkEditor() {
-	if (!openEditor || getCookie("imcms_hide_editor") == "true") {
+function checkEditor(textMode) {
+	if (textMode || !openEditor || getCookie("imcms_hide_editor") == "true") {
 		focusField(0,'text') ;
+		var f = document.forms[0] ;
+		if (textMode)  f.format_type[0].checked = true ;
+		if (!textMode) f.format_type[1].checked = true ;
 	} else {
 		initEditor() ;
 	}

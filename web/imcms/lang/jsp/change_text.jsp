@@ -13,6 +13,9 @@ ChangeText.TextEditPage textEditPage = (ChangeText.TextEditPage) request.getAttr
 
 int EDITED_META  = textEditPage.getDocumentId() ;
 
+boolean imcmsModeHtml    = (textEditPage.getType() == TextDomainObject.TEXT_TYPE_HTML) ;
+boolean imcmsModeText    = !imcmsModeHtml ;
+boolean showEditorCookie = !getCookie("imcms_hide_editor", request).equals("true") ;
 %>
 <vel:velocity>
 <html>
@@ -24,7 +27,9 @@ int EDITED_META  = textEditPage.getDocumentId() ;
 <%@ include file="../../htmlarea/_editor_scripts.jsp" %>
 
 </head>
-<body bgcolor="#FFFFFF" style="margin-bottom:0px;"<%= isHtmlAreaSupported ? " onLoad=\"checkEditor();\" onResize=\"setEditorSize()\"" : "" %>>
+<body bgcolor="#FFFFFF" style="margin-bottom:0px;"<%=
+(isHtmlAreaSupported && showModeEditor) ? " onLoad=\"checkEditor(" + (imcmsModeText ? "true":"false") + ");\"" : "" %><%=
+(isHtmlAreaSupported && rows == -1) ? " onResize=\"setEditorSize()\"" : "" %>>
 
 <div id="theLabel" style="display:none"><i><%= StringEscapeUtils.escapeHtml( textEditPage.getLabel() ) %></i></div>
 
@@ -42,7 +47,7 @@ int EDITED_META  = textEditPage.getDocumentId() ;
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><input type="SUBMIT" value="Back" name="cancel" class="imcmsFormBtn"></td><%
-		if (isHtmlAreaSupported) { %>
+		if (isHtmlAreaSupported && showModeEditor) { %>
 		<td style="color:#ffffff;" nowrap>&nbsp; &nbsp; <? install/htdocs/sv/htmleditor/editor/editor.jsp/3000 ?> &nbsp;</td>
 		<td><%
 			if (getCookie("imcms_hide_editor", request).equals("true")) { %>
@@ -75,8 +80,13 @@ int EDITED_META  = textEditPage.getDocumentId() ;
 		? " &nbsp;&#150;&nbsp; <i>" + StringEscapeUtils.escapeHtml(textEditPage.getLabel()) + "</i>" : "" %>" )</td>
 </tr>
 <tr>
-	<td colspan="2" class="imcmsAdmForm"><textarea name="text" id="txtCont" cols="125" rows="18" style="overflow: auto; width: 100%" wrap="virtual">
-<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea></td>
+	<td colspan="2" class="imcmsAdmForm"><%
+	if (rows == 1) { %>
+	<input type="text" name="text" id="txtCont" style="width:100%" value="<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %>"><%
+	} else { %>
+	<textarea name="text" id="txtCont" cols="125" rows="<%= (rows > 1) ? rows : 18 %>" style="overflow: auto; width: 100%" wrap="virtual">
+<%= StringEscapeUtils.escapeHtml( textEditPage.getTextString() ) %></textarea><%
+	} %></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -84,28 +94,30 @@ int EDITED_META  = textEditPage.getDocumentId() ;
 	<tr>
 		<td>
 		<table border="0" cellpadding="0" cellspacing="0">
-		<tr>
+		<tr><%
+		if (showModeText) { %>
 			<td class="imcmsAdmText">&nbsp;<? templates/sv/change_text.html/1001 ?>&nbsp;</td>
 			<td><input type="RADIO" name="format_type" id="format_type0" value="0" <%
 			%>onClick="checkMode()" onChange="checkMode()"<%
-			%><%= (textEditPage.getType() == TextDomainObject.TEXT_TYPE_HTML) ? "" : " checked" %>></td>
+			%><%= (imcmsModeText) ? "" : " checked" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type0" accesskey="T" title="Text (<%= isMac ? "Ctrl" : "Alt" %> + T)">
-			&nbsp;<u>T</u>ext&nbsp;</label>&nbsp;</td>
+			&nbsp;<u>T</u>ext&nbsp;</label>&nbsp;</td><%
+		} %>
 			<td><input type="RADIO" name="format_type" id="format_type1" value="1" <%
-			%>onClick="checkMode();<%= (isHtmlAreaSupported) ? " showHideHtmlArea(false);" : "" %>" onChange="checkMode()"<%
-			%><%= (textEditPage.getType() == TextDomainObject.TEXT_TYPE_HTML && getCookie("imcms_hide_editor", request).equals("true")) ? " checked" : "" %>></td>
+			%>onClick="checkMode();<%= (isHtmlAreaSupported && showModeEditor) ? " showHideHtmlArea(false);" : "" %>" onChange="checkMode()"<%
+			%><%= (imcmsModeHtml && (!showEditorCookie || !showModeEditor || !showModeText)) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type1" accesskey="H" title="HTML (<%= isMac ? "Ctrl" : "Alt" %> + H)">
 			&nbsp;<u>H</u>TML&nbsp;</label>&nbsp;</td><%
-if (isHtmlAreaSupported) { %>
+		if (isHtmlAreaSupported && showModeEditor) { %>
 			<td><input type="RADIO" name="format_type" id="format_type2" value="1" <%
 			%>onClick="checkMode(); showHideHtmlArea(true);" onChange="checkMode()"<%
-			%><%= (textEditPage.getType() == TextDomainObject.TEXT_TYPE_HTML && !getCookie("imcms_hide_editor", request).equals("true")) ? " checked" : "" %>></td>
+			%><%= (imcmsModeHtml && showEditorCookie) ? " checked" : "" %>></td>
 			<td class="imcmsAdmText">
 			<label for="format_type2" accesskey="<%= isMac ? "D" : "E" %>" title="Editor (<%= isMac ? "Ctrl" : "Alt" %> + <%= isMac ? "D" : "E" %>)">
 			&nbsp;<%= isMac ? "E<u>d</u>itor" : "<u>E</u>ditor" %>&nbsp;</label>&nbsp;</td><%
-} %>
+		} %>
 		</tr>
 		</table></td>
 		<td align="right">
@@ -138,14 +150,15 @@ function setEditorSize() {
 		document.getElementById("txtCont").style.overflow = "auto";
 		if (document.getElementById("theIframe")) {
 			document.getElementById("theIframe").style.width    = editW ;
-			document.getElementById("theIframe").style.height   = editH - 42 ;
+			document.getElementById("theIframe").style.height   = editH - 41 ;
 		}
 	}
-}
-setEditorSize() ;
+}<%
+if (rows == -1) { %>
+setEditorSize() ;<%
+} %>
 
 function checkMode() {
-	
 }
 //-->
 </script>

@@ -16,6 +16,38 @@ ImcmsServices imcref                = Imcms.getServices() ;
 UserService userService             = imcmsSystem.getUserService() ;
 User user                           = imcmsSystem.getCurrentUser() ;
 
+/* *******************************************************************************************
+ *         Editor functions & layout                                                         *
+ ******************************************************************************************* */
+
+boolean showModeEditor = true ;
+boolean showModeText   = true ;
+
+boolean hasNone = false ;
+boolean hasText = false ;
+
+String[] formats = request.getParameterValues("formats") ;
+int      rows   = -1 ;
+
+if (formats != null) {
+	for (int i = 0; i < formats.length; i++) {
+		if (formats[i].toLowerCase().matches("none|html")) hasNone = true ;
+		if (formats[i].toLowerCase().matches("text"))      hasText = true ;
+	}
+	if (hasNone && !hasText) {
+		showModeEditor = false ;
+		showModeText   = false ;
+	} else {
+		showModeEditor = false ;
+	}
+}
+
+if (request.getParameter("rows") != null) {
+	try {
+		rows = Integer.parseInt(request.getParameter("rows")) ;
+	} catch (NumberFormatException nfe) {}
+	if (showModeEditor && rows < 10) rows = 10 ;
+}
 
 /* *******************************************************************************************
  *         LANGUAGE                                                                          *
