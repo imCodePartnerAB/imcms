@@ -700,10 +700,6 @@ public class DocumentMapper {
     private void saveFile( FileDocumentDomainObject newFileDocument ) {
         try {
             InputStreamSource inputStreamSource = newFileDocument.getInputStreamSource();
-            boolean fileAlreadyIsOnDisk = inputStreamSource instanceof FileInputStreamSource;
-            if ( fileAlreadyIsOnDisk ) {
-                return;
-            }
             InputStream in = inputStreamSource.getInputStream();
             if ( null == in ) {
                 return;
@@ -712,6 +708,10 @@ public class DocumentMapper {
             filePath = Utility.getDomainPrefPath( PREFERENCE__FILE_PATH );
 
             File file = new File( filePath, "" + newFileDocument.getId() );
+            boolean sameFileOnDisk = inputStreamSource instanceof FileInputStreamSource && file.exists();
+            if ( sameFileOnDisk ) {
+                return;
+            }
             byte[] buffer = new byte[FILE_BUFFER_LENGTH];
             final OutputStream out = new FileOutputStream( file );
             try {

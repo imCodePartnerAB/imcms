@@ -6,6 +6,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -15,13 +16,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Vector;
+import java.util.Date;
 
 /**
  * Save document sorting (date,name,manual)
  */
 public class SaveSort extends HttpServlet {
 
-    private final static String COPY_PREFIX_TEMPLATE = "copy_prefix.html";
+    private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
 
     private final static String FILE_WARNING_TEMPLATE = "copy_file_warning.html";
 
@@ -45,7 +47,7 @@ public class SaveSort extends HttpServlet {
         }
 
         String temp_str;
-        String[] childsThisMenu;
+        String[] selectedChildrenIds;
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument( documentId );
         documentMapper.touchDocument( document );
@@ -62,7 +64,7 @@ public class SaveSort extends HttpServlet {
             }
         }
 
-        childsThisMenu = req.getParameterValues( "archiveDelBox" );
+        selectedChildrenIds = req.getParameterValues( "archiveDelBox" );
 
         user.put( "flags", new Integer( 262144 ) );
 
@@ -90,34 +92,32 @@ public class SaveSort extends HttpServlet {
                 }
             }
         } else if ( req.getParameter( "delete" ) != null ) {
-            if ( childsThisMenu != null ) {
-                imcref.deleteChilds( documentId, menuIndex, user, childsThisMenu );
+            if ( selectedChildrenIds != null ) {
+                imcref.deleteChilds( documentId, menuIndex, user, selectedChildrenIds );
             }
         } else if ( req.getParameter( "archive" ) != null ) {
-            if ( childsThisMenu != null ) {
-                imcref.archiveChilds( documentId, user, childsThisMenu );
+            if ( selectedChildrenIds != null ) {
+                imcref.archiveChilds( documentId, user, selectedChildrenIds );
             }
         } else if ( req.getParameter( "copy" ) != null ) {
-            if ( childsThisMenu != null ) {
-                String copyPrefix = imcref.getAdminTemplate( COPY_PREFIX_TEMPLATE, user, null );
+            if ( selectedChildrenIds != null ) {
+                String copyHeadlineSuffix = imcref.getAdminTemplate( COPY_HEADLINE_SUFFIX_TEMPLATE, user, null );
 
-                String[] file_meta_ids = imcref.copyDocs( documentId, menuIndex, user, childsThisMenu, copyPrefix );
-                if ( file_meta_ids.length > 0 ) {
-                    // Build an option-list
-                    StringBuffer fileMetaIds = new StringBuffer();
-                    for ( int i = 0; i < file_meta_ids.length; ++i ) {
-                        imcode.server.document.DocumentDomainObject doc = imcref.getDocumentMapper().getDocument(
-                                Integer.parseInt( file_meta_ids[i] ) );
-                        fileMetaIds.append( "<option>[" + file_meta_ids[i] + "] " + doc.getHeadline() + "</option>" );
+                for ( int i = 0; i < selectedChildrenIds.length; i++ ) {
+                    String selectedChildIdStr = selectedChildrenIds[i];
+                    int selectedChildId = Integer.parseInt( selectedChildIdStr ) ;
+                    DocumentDomainObject selectedChild = documentMapper.getDocument( selectedChildId ) ;
+                    try {
+                        selectedChild.setHeadline( selectedChild.getHeadline()+copyHeadlineSuffix );
+                        selectedChild.setStatus( DocumentDomainObject.STATUS_NEW );
+                        selectedChild.setPublicationStartDatetime( new Date() );
+                        documentMapper.saveNewDocument( selectedChild, user );
+                        documentMapper.addDocumentToMenu( user, documentId, menuIndex, selectedChild.getId());
+                    } catch ( MaxCategoryDomainObjectsOfTypeExceededException e ) {
+                        throw new RuntimeException(e) ;
+                    } catch ( DocumentMapper.DocumentAlreadyInMenuException e ) {
+                        throw new RuntimeException(e) ;
                     }
-                    Vector vec = new Vector();
-                    vec.add( "#meta_id#" );
-                    vec.add( "" + documentId );
-                    vec.add( "#filedocs#" );
-                    vec.add( fileMetaIds.toString() );
-                    String fileWarning = imcref.getAdminTemplate( FILE_WARNING_TEMPLATE, user, vec );
-                    out.write( fileWarning );
-                    return;
                 }
             }
         }

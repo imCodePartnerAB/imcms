@@ -231,7 +231,7 @@ public class GetExistingDoc extends HttpServlet {
                 boolean sharePermission = documentMapper.userHasPermissionToAddDocumentToMenu( user, existingDocument );
                 if ( user_doc_types.contains( "" + doc_type ) && sharePermission ) {
                     try {
-                        imcref.addExistingDoc( meta_id, user, existing_meta_id, doc_menu_no );
+                        documentMapper.addDocumentToMenu( user, meta_id, doc_menu_no, existing_meta_id );
                     } catch ( DocumentMapper.DocumentAlreadyInMenuException e ) {
                         //ok, already in menu
                     }

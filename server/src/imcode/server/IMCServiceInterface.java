@@ -45,17 +45,12 @@ public interface IMCServiceInterface {
     void deleteDocAll(int meta_id,UserDomainObject user)
 	;
 
-    void addExistingDoc(int meta_id,UserDomainObject user,int existing_meta_id,int doc_menu_no) throws DocumentMapper.DocumentAlreadyInMenuException;
-
     void saveManualSort(int meta_id,imcode.server.user.UserDomainObject user,List childs, List sort_no, int menuNumber)
 	;
 
     // archive childs
     void archiveChilds(int meta_id,UserDomainObject user,String[] childsThisMenu)
 	;
-
-    /** Copy documents and insert them in a new textdocument and menu **/
-    String[] copyDocs( int meta_id, int doc_menu_no,  UserDomainObject user, String[] childsThisMenu, String copyPrefix)  ;
 
     // List all archived docs
     //    String listArchive(int meta_id,imcode.server.user.User user)

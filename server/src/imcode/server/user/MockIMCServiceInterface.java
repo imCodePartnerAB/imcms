@@ -54,9 +54,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    public void deleteDocAll( int meta_id, UserDomainObject user ) {
    }
 
-   public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no ) {
-   }
-
     public void saveManualSort( int meta_id, UserDomainObject user, List childs, List sort_no, int menuNumber ) {
         // TODO
     }
@@ -110,10 +107,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
 
     // archive childs
    public void archiveChilds( int meta_id, UserDomainObject user, String[] childsThisMenu ) {
-   }
-
-   public String[] copyDocs( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu, String copyPrefix ) {
-      return new String[0];
    }
 
     // check if url doc

@@ -41,4 +41,7 @@ ALTER TABLE childs ADD CONSTRAINT PK_childs PRIMARY KEY (menu_id, to_meta_id)
 ALTER TABLE childs ADD CONSTRAINT PK_childs_meta FOREIGN KEY (to_meta_id) REFERENCES meta (meta_id)
 GO
 
+DROP PROCEDURE CopyDocs
+GO
+
 -- 2004-03-23 Kreiger

@@ -441,11 +441,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
                          user.getFullName() + "]" );
     }
 
-    public void addExistingDoc( int meta_id, UserDomainObject user, int existing_meta_id, int doc_menu_no )
-            throws DocumentMapper.DocumentAlreadyInMenuException {
-        documentMapper.addDocumentToMenu( user, meta_id, doc_menu_no, existing_meta_id );
-    }
-
     public void saveManualSort( int meta_id, UserDomainObject user, List childs,
                                 List sort_no, int menuNumber ) {
         String columnName = "manual_sort_order";
@@ -475,43 +470,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
         updateLogs( "Child manualsort for [" + meta_id + "] updated by user: [" +
                     user.getFullName() + "]" );
-    }
-
-    /**
-     * Makes copies of the documents given in the String-array, and inserts them into the given document and menu.
-     * If one of the documents couldn't be copied for some reason, no documents are copied, and the uncopyable
-     * documents are returned.
-     *
-     * @param meta_id        The document to insert into
-     * @param doc_menu_no    The menu to insert into
-     * @param user           The user
-     * @param childsThisMenu The id's to copy.
-     * @return A String array containing the meta-ids of uncopyable pages.
-     */
-    public String[] copyDocs( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu,
-                              String copyPrefix ) {
-
-        if ( childsThisMenu != null && childsThisMenu.length > 0 ) {
-
-            StringBuffer logchilds = new StringBuffer( childsThisMenu[0] );
-            for ( int i = 1; i < childsThisMenu.length; ++i ) {
-                logchilds.append( "," + childsThisMenu[i] );
-            }
-            String[] uncopyable = sqlProcedure( "CheckForFileDocs", new String[]{logchilds.toString()} );
-            if ( uncopyable.length == 0 ) {
-                sqlUpdateProcedure( "CopyDocs",
-                                    new String[]{
-                                        logchilds.toString(), "" + meta_id, "" + doc_menu_no, "" + user.getUserId(),
-                                        copyPrefix
-                                    } );
-                this.updateLogs( "Childs [" + logchilds.toString() + "] on [" + meta_id + "] copied by user: ["
-                                 + user.getFullName()
-                                 + "]" );
-            }
-            return uncopyable;
-        }
-        return null;
-
     }
 
     public void deleteChilds( int meta_id, int doc_menu_no, UserDomainObject user, String[] childsThisMenu ) {
