@@ -12,7 +12,7 @@ public class Section {
        return this.internalSection.getName();
    }
 
-   int getId() {
+   public int getId() {
        return internalSection.getId();
    }
 }
