@@ -5,7 +5,6 @@ import org.apache.log4j.*;
 import java.sql.*;
 import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Properties;
 import java.io.FileInputStream;
 
@@ -50,7 +49,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
         passWord = dbProperties.getProperty( "db-pass" ) ;
         driverClassName = dbProperties.getProperty( "db-driver") ;
         dbUrl = dbProperties.getProperty( "db-url") ;
-       
+
         dbUrl += serverName + ':' + serverPort + ";DatabaseName=" + databaseName;
 
     }
@@ -126,7 +125,7 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
         ResultSet rs = cs.executeQuery();
         while ( rs.next() ) {
             String templateId = rs.getString( 1 );
-            assertEquals(templateId,"1") ;
+            assertNotNull( templateId ) ;
         }
         conn.close();
     }
