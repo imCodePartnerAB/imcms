@@ -49,7 +49,8 @@ public class ChatManager extends ChatBase
 			return ;
 		}
 
-		// ********* NEW ********används peter
+		// ********* NEW ********
+		//i'ts here we end up when we creates a new chatlink
 		if(action.equalsIgnoreCase("NEW"))
 		{
 			log("Lets add a chat");
