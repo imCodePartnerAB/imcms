@@ -17,7 +17,8 @@ INSERT INTO sys_data (sys_id, type_id, value)
  VALUES(7, 7, '@webmaster-email@')
 SET IDENTITY_INSERT sys_data OFF
 INSERT INTO users 
- VALUES (1,'admin', 'admin', 'Admin', 'Super','','','','','','','','',0,1001,0,1,1,1,convert(char(10),getDate(),120))INSERT INTO users VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',0,1001,0,1,1,1,convert(char(10),getDate(),120))
+ VALUES (1,'admin', 'admin', 'Admin', 'Super','','','','','','','','',0,1001,0,1,1,1,convert(char(10),getDate(),120))
+INSERT INTO users VALUES (2,'user', 'user', 'User', 'Extern','','','','','','','','',0,1001,0,1,1,1,convert(char(10),getDate(),120))
 INSERT INTO roles 
  VALUES(0, 'Superadmin', 0, 1)
 INSERT INTO roles 
@@ -27,7 +28,7 @@ INSERT INTO roles
 INSERT INTO user_roles_crossref
  VALUES(1,0)
 INSERT INTO user_roles_crossref
- VALUES(2,1)
+ VALUES(2,2)
 SET IDENTITY_INSERT meta ON
 INSERT INTO meta (meta_id, description, doc_type, meta_headline, meta_text, meta_image, owner_id, permissions, shared, expand, show_meta, help_text_id, archive, status_id, lang_prefix, classification, date_created, date_modified, sort_position, menu_position, disable_search, activated_datetime, archived_datetime, target,  frame_name, activate)
  VALUES           (1001,    '',          2,        'Startsidan',  '',        '',         1,        0,           0,      1,      0,         1,            0,       1,         'se',        '',             convert(char(10),getDate(),120),    convert(char(10),getDate(),120),     1,             1,             0,              convert(char(10),getDate(),120),   null,        '_self',  '',         1)

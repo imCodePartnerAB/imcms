@@ -12,11 +12,14 @@ CREATE PROCEDURE GetCategoryUsers
 
 /*
 Used from servlet AdminUser 
-Get all user in selected category and have ( fistname || lastname || loginname ) like searchString 
+Get all user in selected category with ( fistname || lastname || loginname ) like searchString 
 but for a Useradmin we only get those users with roles that the Useradmin has permission to administrate.
 and not user with role Superadmin or Useradmin.
 show only aktive users when @show= 1,  if show=0 show also not active users (active=0) 
+We never show USER where loginname = 'user'
 */
+
+
  @category int,
  @searchString varchar(20),
  @userId int,
@@ -38,6 +41,7 @@ IF @category = -1 BEGIN  -- if all category
 	FROM users
 	WHERE ( first_name like @searchString+'%' OR last_name like @searchString+'%' OR login_name like @searchString+'%' ) 
 	       AND ( active=1 or active=@show )
+               AND NOT ( login_name like 'user' )
 	ORDER BY last_name
      END
      
@@ -55,6 +59,7 @@ IF @category = -1 BEGIN  -- if all category
  			SELECT user_roles_crossref.user_id FROM user_roles_crossref INNER JOIN
                       	roles ON user_roles_crossref.role_id = roles.role_id 
 			WHERE     (roles.admin_role > 0) )  
+		  AND NOT (	login_name like 'user' )
 
 	ORDER BY last_name
         
@@ -68,7 +73,8 @@ ELSE BEGIN  -- select only user with selected category
 	FROM users
 	WHERE user_type = @category
 	     AND ( first_name like @searchString+'%' OR last_name like @searchString+'%' OR login_name like @searchString+'%' )
-		 AND ( active=1 or active=@show )	
+		 AND ( active=1 or active=@show )
+		 AND NOT ( login_name like 'user' )
 	ORDER BY last_name
     END
 
@@ -87,13 +93,16 @@ ELSE BEGIN  -- select only user with selected category
  			SELECT user_roles_crossref.user_id FROM user_roles_crossref INNER JOIN
                       	roles ON user_roles_crossref.role_id = roles.role_id 
 			WHERE     (roles.admin_role > 0) )
-	
+	      AND NOT ( login_name like 'user' )
 	ORDER BY last_name
 	
     END
 END
 
+
+
 GO
+
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
