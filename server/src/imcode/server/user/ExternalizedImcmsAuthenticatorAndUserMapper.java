@@ -86,7 +86,7 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
 
 
    private void updateRoleAssignments( User user ) {
-      String[] roleNames = externalUserMapper.getRoleNames( user );
+      String[] roleNames = getRoleNames( user );
       for( int i = 0; i < roleNames.length; i++ ) {
          String roleName = roleNames[i];
          imcmsAuthenticatorAndUserMapper.assignRoleToUser( user, roleName );
