@@ -35,6 +35,7 @@ public class TestTextDocument extends TestCase {
         textDocumentDO.setPermissionSetIdForRole( editRole, DocumentPermissionSetDomainObject.TYPE_ID__FULL );
         otherTextDocumentDO = new TextDocumentDomainObject();
         otherTextDocumentDO.setId( 1002 );
+        otherTextDocumentDO.setLinkableByOtherUsers( true );
         int menuIndex = 1;
         DocumentReference documentReference = new MockDocumentReference( otherTextDocumentDO );
         MenuDomainObject menuDO = textDocumentDO.getMenu( menuIndex );
