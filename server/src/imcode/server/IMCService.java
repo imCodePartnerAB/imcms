@@ -1405,22 +1405,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      get doctype
      */
     public int getDocType( int meta_id ) {
-        DBConnect dbc = new DBConnect( m_conPool );
-        dbc.getConnection();
-        dbc.setProcedure( "GetDocType " + meta_id );
-        Vector data = dbc.executeProcedure();
-        dbc.clearResultSet();
-        dbc.closeConnection();
-        dbc = null;
 
-        if( data != null ) {
-            if( data.size() > 0 )
-                return Integer.parseInt( data.elementAt( 0 ).toString() );
-            else
-                return 0;
-        }
+        Integer docType = m_databaseService.sproc_GetDocType(meta_id) ;
 
-        return -1;
+        return docType == null ? -1 : docType.intValue() ; 
     }
 
     /**

@@ -32,10 +32,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static final int DOC_NON_EXISTING_ID = 66666;
     private final static int DOC_TEST_FIRST_ID = 9001;
     private final static int DOC_TEST_SECOND_ID = 9002;
-    private final static int DOC_TEST_FILE_UPLOAD_DOC_TYPE = 9003;
-    private final static int DOC_TEST_URL_DOC_TYPE = 9004;
-    private final static int DOC_TEST_BROWSER_DOC_TYPE = 9005;
-    private final static int DOC_TEST_FRAMESET_DOC_TYPE = 9006;
+    private final static int DOC_TEST_FILE_UPLOAD_ID = 9003;
+    private final static int DOC_TEST_URL_ID = 9004;
+    private final static int DOC_TEST_BROWSER_ID = 9005;
+    private final static int DOC_TEST_FRAMESET_ID = 9006;
 
     private final static int DOC_TEST_ID_DETACHED = 9999;
     private final static int DOC_TEST_MAX_ID = 9999;
@@ -69,8 +69,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private void createDatabasesWithDefaultData() throws IOException {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
-            //DatabaseTestInitializer.static_initSqlServer(),
-            //DatabaseTestInitializer.static_initMimer(),
+            DatabaseTestInitializer.static_initSqlServer(),
+            DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -332,7 +332,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_getBrowserDocChilds( DatabaseService databaseService ) {
-        assertEquals( 2, databaseService.sproc_getBrowserDocChilds( DOC_TEST_BROWSER_DOC_TYPE, USER_ADMIN_ID ).length );
+        assertEquals( 2, databaseService.sproc_getBrowserDocChilds( DOC_TEST_BROWSER_ID, USER_ADMIN_ID ).length );
     }
     private void test_sproc_GetAllUsersInList( DatabaseService databaseService ) {
         assertEquals( 3, databaseService.sproc_GetAllUsersInList().length );
@@ -401,7 +401,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private void testIsFileDoc( DatabaseService dbService ) {
         assertFalse( dbService.selectFrom_meta_isFileDoc( DOC_TEST_FIRST_ID ) );
-        assertTrue( dbService.selectFrom_meta_isFileDoc( DOC_TEST_FILE_UPLOAD_DOC_TYPE ) );
+        assertTrue( dbService.selectFrom_meta_isFileDoc( DOC_TEST_FILE_UPLOAD_ID ) );
     }
 
     private int test_sproc_getAllRoles( DatabaseService dbService ) {
@@ -478,12 +478,12 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private void test_sproc_GetFileName( DatabaseService databaseService ) {
         assertNull( databaseService.sproc_GetFileName( DOC_FIRST_PAGE_ID ) );
         assertNull( databaseService.sproc_GetFileName( DOC_NON_EXISTING_ID ) );
-        assertTrue( DOC_THIRD_DOC_FILENAME.equals( databaseService.sproc_GetFileName( DOC_TEST_FILE_UPLOAD_DOC_TYPE ) ) );
+        assertTrue( DOC_THIRD_DOC_FILENAME.equals( databaseService.sproc_GetFileName( DOC_TEST_FILE_UPLOAD_ID ) ) );
     }
 
     private void test_sproc_GetDocType( DatabaseService databaseService ) {
-        assertEquals( DOC_TYPE_TEXT_ID, databaseService.sproc_GetDocType( DOC_TEST_FIRST_ID ) );
-        assertEquals( DOC_TYPE_FILE_ID, databaseService.sproc_GetDocType( DOC_TEST_FILE_UPLOAD_DOC_TYPE ) );
+        assertEquals( DOC_TYPE_TEXT_ID, databaseService.sproc_GetDocType( DOC_TEST_FIRST_ID ).intValue() );
+        assertEquals( DOC_TYPE_FILE_ID, databaseService.sproc_GetDocType( DOC_TEST_FILE_UPLOAD_ID ).intValue() );
     }
 
     private void test_sproc_GetDocTypes( DatabaseService databaseService ) {
@@ -633,10 +633,10 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     public void test_sproc_copyDocs() {
         int[] documentsToBeCopied = new int[]{
             DOC_TEST_SECOND_ID,
-            DOC_TEST_FILE_UPLOAD_DOC_TYPE,
-            DOC_TEST_BROWSER_DOC_TYPE,
-            DOC_TEST_FRAMESET_DOC_TYPE,
-            DOC_TEST_URL_DOC_TYPE };
+            DOC_TEST_FILE_UPLOAD_ID,
+            DOC_TEST_BROWSER_ID,
+            DOC_TEST_FRAMESET_ID,
+            DOC_TEST_URL_ID };
         int menu_id = 1;
         String copyPrefix = "Kopierat document";
         for( int i = 0; i < databaseServices.length; i++ ) {
@@ -644,7 +644,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             DatabaseService.PartOfTable_document[] documentForUserBefore = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_ONE_MORE_THAN_EXISTS_IN_SYSTEM_ID );
             int[] result = databaseService.sproc_copyDocs( DOC_TEST_FIRST_ID, menu_id, USER_ADMIN_ID, documentsToBeCopied, copyPrefix );
             assertEquals( 1, result.length );
-            DatabaseService.PartOfTable_document[] documentForUserAfter = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_ONE_MORE_THAN_EXISTS_IN_SYSTEM_ID );
+            DatabaseService.PartOfTable_document[] documentForUserAfter = databaseService.sproc_getDocs( USER_ADMIN_ID, DOC_TEST_FIRST_ID, DOC_NON_EXISTING_ID );
             assertEquals( documentForUserBefore.length + documentsToBeCopied.length - result.length, documentForUserAfter.length );
         }
     }

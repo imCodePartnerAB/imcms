@@ -18,7 +18,7 @@ public class SQLTransaction {
 
     private ConnectionPool connectionPool;
     private int transactionIsolationLevel;
-    private Connection currentConntection;
+    private Connection currentConnection;
 
     private int rowCount = 0;
     private Object transactionResult;
@@ -44,25 +44,25 @@ public class SQLTransaction {
                 logger.info( "Failure in executeAndCommit, trying again, try no: " + tryNo );
             }
             try {
-                this.currentConntection = connectionPool.getConnection();
-                this.currentConntection.setTransactionIsolation( transactionIsolationLevel );
-                this.currentConntection.setAutoCommit( false );
+                this.currentConnection = connectionPool.getConnection();
+                this.currentConnection.setTransactionIsolation( transactionIsolationLevel );
+                this.currentConnection.setAutoCommit( false );
 
                 transactionContent.execute();
 
-                currentConntection.commit();
+                currentConnection.commit();
                 succeded = true;
             } catch( SQLException ex ) {
                 latestException = ex;
                 SQLProcessorNoTransaction.static_logSQLException( "Exception when executing transactionContent! Rolls back the transaction ", ex );
                 try {
-                    currentConntection.rollback();
+                    currentConnection.rollback();
                 } catch( SQLException ex2 ) {
                     // Swallow.
                     SQLProcessorNoTransaction.static_logSQLException( "Exception when rollback", ex );
                 }
             } finally {
-                SQLProcessorNoTransaction.static_closeConnection( currentConntection );
+                SQLProcessorNoTransaction.static_closeConnection( currentConnection );
             }
         }
         if( !succeded ) {
@@ -71,7 +71,7 @@ public class SQLTransaction {
     }
 
     public int executeUpdate( String sql, Object[] params ) throws SQLException {
-        int rowCount = SQLProcessorNoTransaction.executeUpdate( currentConntection, sql, params );
+        int rowCount = SQLProcessorNoTransaction.executeUpdate( currentConnection, sql, params );
         this.rowCount += rowCount;
         return rowCount;
     }
@@ -81,7 +81,7 @@ public class SQLTransaction {
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = currentConntection.prepareStatement( sql );
+            statement = currentConnection.prepareStatement( sql );
             SQLProcessorNoTransaction.setParamsIntoStatment( statement, paramValues );
             rs = statement.executeQuery();
             result = SQLProcessorNoTransaction.mapResults( rs, resultProcessor );

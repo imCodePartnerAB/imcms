@@ -955,7 +955,7 @@ public abstract class DatabaseService {
         return (String)(queryResult.size() > 0 ? queryResult.get( 0 ) : null);
     }
 
-    public int sproc_GetDocType( int meta_id ) {
+    public Integer sproc_GetDocType( int meta_id ) {
         String sql = "SELECT doc_type FROM meta WHERE meta_id = ?";
         Object[] paramValues = new Object[]{new Integer( meta_id )};
         ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new ResultProcessor() {
@@ -963,7 +963,7 @@ public abstract class DatabaseService {
                 return new Integer( rs.getInt( "doc_type" ) );
             }
         } );
-        return ((Integer)queryResult.get( 0 )).intValue();
+        return (Integer) (queryResult.isEmpty() ? null : queryResult.get( 0 )) ;
     }
 
     public class Table_doc_types {
@@ -1087,7 +1087,7 @@ public abstract class DatabaseService {
     }
 
     private boolean mayUserAddDocumentToParent( Integer user_id, Integer parent_meta_id, Integer meta_id_to_add ) {
-        int doc_type = sproc_GetDocType( meta_id_to_add.intValue() );
+        int doc_type = sproc_GetDocType( meta_id_to_add.intValue() ).intValue() ;
         // TODO: Use default-language instead of "se"
         Table_doc_types[] user_doc_types = sproc_GetDocTypesForUser( user_id.intValue(), parent_meta_id.intValue(), "se" );
         boolean userCanCreateDocType = false;
