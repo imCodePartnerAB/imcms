@@ -1,6 +1,8 @@
 package imcode.server.document;
 
-public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject {
+import java.io.Serializable;
+
+public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSetDomainObject implements Serializable {
 
     private boolean editMenus;
     private boolean editTemplates;

@@ -1,14 +1,11 @@
-<%@ page import="com.imcode.imcms.api.*,
+<%@ page contentType="text/html; charset=windows-1252" import="com.imcode.imcms.api.*,
 java.util.*,
                  java.text.SimpleDateFormat,
-                 java.text.DateFormat" errorPage="error.jsp" %>
-<%
+                 java.text.DateFormat" errorPage="error.jsp" %><%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     DocumentService documentService = imcmsSystem.getDocumentService() ;
     SearchQuery query ;
-%>
-
-<html>
+%><html>
     <head>
         <title>Search Documents</title>
     </head>
