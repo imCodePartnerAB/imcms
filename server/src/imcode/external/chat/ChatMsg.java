@@ -19,9 +19,11 @@ import java.util.*;
 public class ChatMsg
 {
 
-	private int _sender;
+	private String _sender;
 	private int _msgType;
+	private String _msgTypeStr;
 	private String _chatMsg;
+	private String _recieverStr;
 	private int _reciever;
 	private int _number;
 	private String _dateTime;
@@ -31,13 +33,21 @@ public class ChatMsg
 	/**
 	*Default constructor
 	*/
-	public ChatMsg(String chatMsg, int reciever, int msgType, int sender, String dateTime)
+	public ChatMsg(String chatMsg, String recieverStr,int reciever, int msgType, String msgTypeStr, String sender, String dateTime)
 	{
 		_chatMsg = chatMsg;
 		_reciever =	reciever;
+		_recieverStr = recieverStr;
 		_msgType = msgType;
+		_msgTypeStr = msgTypeStr;
 		_sender = sender;
 		_dateTime = dateTime;
+	}
+	
+	public String toString()
+	{
+		return _sender+" "+ _msgTypeStr+" "+_recieverStr+" : "+_chatMsg;
+
 	}
 
 	protected void setIdNumber(int number)
@@ -54,12 +64,7 @@ public class ChatMsg
 		return _dateTime;
 	}
 
-	public String toString()
-	{
-		return null;
-
-	}
-
+	
 	public String getMessage()
 	{
 		return _chatMsg;
@@ -79,7 +84,7 @@ public class ChatMsg
 
 	}
 
-	public int getSender()
+	public String getSender()
 	{
 		return _sender;
 
