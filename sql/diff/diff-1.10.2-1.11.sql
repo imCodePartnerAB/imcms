@@ -47,7 +47,7 @@ fetch next from posCursor
 into @meta_id
 while @@fetch_status = 0
 begin
-	insert into fileupload_docs values (@meta_id, '', 'application/octet-stream', 0)
+	insert into fileupload_docs values (@meta_id, '', 'application/octet-stream', 0, '', 0)
 	fetch next from posCursor
 	into @meta_id
 end
