@@ -3,20 +3,22 @@ package imcode.server.document.textdocument;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 import java.io.Serializable;
+import java.util.NoSuchElementException;
 
 public class TreeSortKeyDomainObject implements Comparable, Serializable {
 
     private int[] keys;
 
     public TreeSortKeyDomainObject( String treeSortKey ) {
-        StringTokenizer tokenizer = new StringTokenizer( treeSortKey, "." );
-        keys = new int[tokenizer.countTokens()] ;
-        for (int i = 0; i < keys.length; ++i) {
-            String token = tokenizer.nextToken();
-            keys[i] = Integer.parseInt(token) ;
+        String[] keyStrings = treeSortKey.trim().split( "\\D+",0 ) ;
+        if (1 == keyStrings.length && "".equals(keyStrings[0])) {
+            keyStrings = new String[0];
+        }
+        keys = new int[keyStrings.length] ;
+        for (int i = 0; i < keyStrings.length; ++i) {
+            String keyString = keyStrings[i];
+            keys[i] = Integer.parseInt(keyString) ;
         }
     }
 
