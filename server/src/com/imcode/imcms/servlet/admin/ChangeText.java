@@ -36,7 +36,7 @@ public class ChangeText extends HttpServlet {
         TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( textDocument, user );
 
         if ( !textDocumentPermissionSet.getEditTexts() ) {	// Checking to see if user may edit this
-            String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
+            String output = AdminDoc.adminDoc( documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }

@@ -32,7 +32,7 @@ public final class SaveText extends HttpServlet {
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) ) {	// Checking to see if user may edit this
-            String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
+            String output = AdminDoc.adminDoc( meta_id, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }
@@ -63,7 +63,7 @@ public final class SaveText extends HttpServlet {
             saveText( documentMapper, text, document, txt_no, text_type, imcref, meta_id, user );
         }
 
-        String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
+        String output = AdminDoc.adminDoc( meta_id, user, req, res );
         if ( output != null ) {
             out.write( output );
         }

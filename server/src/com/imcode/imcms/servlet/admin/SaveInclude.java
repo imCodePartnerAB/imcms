@@ -88,7 +88,7 @@ public class SaveInclude extends HttpServlet {
             }
         }
 
-        String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
+        String tempstring = AdminDoc.adminDoc( meta_id, user, req, res );
         if ( tempstring != null ) {
             out.write( tempstring );
         }

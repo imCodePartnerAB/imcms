@@ -573,7 +573,8 @@ CREATE TABLE [dbo].[text_docs] (
 	[template_id] [int] NOT NULL ,
 	[group_id] [int] NOT NULL ,
 	[default_template_1] [int] NOT NULL ,
-	[default_template_2] [int] NOT NULL
+	[default_template_2] [int] NOT NULL ,
+	[default_template] [int] NULL
 ) ON [PRIMARY]
 GO
 
@@ -1342,6 +1343,7 @@ ALTER TABLE [dbo].[text_docs] WITH NOCHECK ADD
 	CONSTRAINT [DF_text_docs_group_id] DEFAULT (1) FOR [group_id],
 	CONSTRAINT [DF__text_docs__defau__0D44F85C] DEFAULT ((-1)) FOR [default_template_1],
 	CONSTRAINT [DF__text_docs__defau__0E391C95] DEFAULT ((-1)) FOR [default_template_2],
+	CONSTRAINT FK_text_docs_default_template FOREIGN KEY ( default_template ) REFERENCES templates ( template_id ),
 	CONSTRAINT [PK_text_docs] PRIMARY KEY  NONCLUSTERED
 	(
 		[meta_id]

@@ -60,7 +60,7 @@ public class SaveInPage extends HttpServlet {
              || !requestedTemplateGroupIsAllowed ) {	// Checking to see if user may edit this
             Utility.setDefaultHtmlContentType( res );
 
-            String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
+            String output = AdminDoc.adminDoc( documentId, user, req, res );
             if ( output != null ) {
                 Writer out = res.getWriter();
                 out.write( output );
@@ -97,7 +97,7 @@ public class SaveInPage extends HttpServlet {
             }
 
             // return page
-            String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
+            String output = AdminDoc.adminDoc( documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }
@@ -141,7 +141,7 @@ public class SaveInPage extends HttpServlet {
                 user.setTemplateGroup( requestedTemplateGroup );
             }
 
-            String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
+            String output = AdminDoc.adminDoc( documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }

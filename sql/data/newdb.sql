@@ -58,7 +58,7 @@ INSERT INTO templates_cref
 GO
 
 INSERT INTO text_docs
- VALUES (1001, 1, 0, -1, -1)
+ VALUES (1001, 1, 0, -1, -1, NULL)
 GO
 
 INSERT INTO roles_rights

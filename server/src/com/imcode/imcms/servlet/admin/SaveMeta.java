@@ -52,7 +52,7 @@ public class SaveMeta extends HttpServlet {
         if ( !imcref.checkDocAdminRightsAny( metaId, user, ImcmsConstants.PERM_EDIT_HEADLINE
                                                            | ImcmsConstants.PERM_EDIT_DOCINFO
                                                            | ImcmsConstants.PERM_EDIT_PERMISSIONS ) ) {	// Checking to see if user may edit this
-            String output = AdminDoc.adminDoc( metaId, metaId, user, req, res );
+            String output = AdminDoc.adminDoc( metaId, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }
@@ -74,7 +74,7 @@ public class SaveMeta extends HttpServlet {
 
         boolean hasLessThanChangeAndReadPermission = userSetId > 2; // 3 = read, 4= none
         if ( hasLessThanChangeAndReadPermission ) {
-            String output = AdminDoc.adminDoc( metaId, metaId, user, req, res );
+            String output = AdminDoc.adminDoc( metaId, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }
@@ -303,7 +303,7 @@ public class SaveMeta extends HttpServlet {
             }
             putTemporaryPermissionSettingsInUser( user, metaIdStr, metaprops, temp_permission_settings, temp_default_templates );
 
-            out.write( MetaDataParser.parseMetaPermission( metaIdStr, metaIdStr, user, "docinfo/change_meta_rights.html" ) );
+            out.write( MetaDataParser.parseMetaPermission( metaIdStr, metaIdStr, user ) );
             return;
         }
 

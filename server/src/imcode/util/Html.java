@@ -1,19 +1,12 @@
 package imcode.util;
 
 import com.imcode.imcms.servlet.admin.AdminDoc;
-import com.imcode.imcms.servlet.admin.ChangeImage;
 import imcode.server.Imcms;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 
-import java.io.IOException;
 import java.util.*;
 
 public class Html {
@@ -72,25 +65,6 @@ public class Html {
         return createOptionList( data, Arrays.asList( new String[]{selected} ) );
     }
 
-    /**
-     * creats option.
-     *
-     * @param elementValue - option value
-     * @param elementValue - option string
-     * @param selected     - true or false
-     */
-    public static String option( String elementValue, String elementName, boolean selected ) {
-
-        StringBuffer option = new StringBuffer();
-
-        option.append( "<option value=\"" + StringEscapeUtils.escapeHtml( elementValue ) + "\"" );
-        if ( selected ) {
-            option.append( " selected" );
-        }
-        option.append( ">" + StringEscapeUtils.escapeHtml( elementName ) + "</option>" );
-        return option.toString();
-    }
-
     public static String createOptionListOfCategoriesOfTypeForDocument( DocumentMapper documentMapper,
                                                                         CategoryTypeDomainObject categoryType,
                                                                         DocumentDomainObject document ) {
@@ -125,9 +99,28 @@ public class Html {
         return statusIconTemplate;
     }
 
+    public static String option( String elementValue, String content, boolean selected ) {
+
+        StringBuffer option = new StringBuffer();
+
+        option.append( "<option value=\"" + StringEscapeUtils.escapeHtml( elementValue ) + "\"" );
+        if ( selected ) {
+            option.append( " selected" );
+        }
+        option.append( ">" + StringEscapeUtils.escapeHtml( content ) + "</option>" );
+        return option.toString();
+    }
+
     public static String hidden( String name, String value ) {
         return "<input type=\"hidden\" name=\"" + StringEscapeUtils.escapeHtml( name ) + "\" value=\""
                + StringEscapeUtils.escapeHtml( value )
                + "\">";
+    }
+
+    public static String radio( String name, String value, boolean selected ) {
+        return
+            "<input type=\"radio\" name=\""+StringEscapeUtils.escapeHtml( name )+"\" value=\""
+                + StringEscapeUtils.escapeHtml( value )+"\""+ (selected ? " checked" : "")+">" ; 
+
     }
 }

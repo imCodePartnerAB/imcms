@@ -11,6 +11,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     private TemplateDomainObject template;
     private int templateGroupId;
+    private TemplateDomainObject defaultTemplate;
     private int defaultTemplateIdForRestrictedPermissionSetOne;
     private int defaultTemplateIdForRestrictedPermissionSetTwo;
     private TreeMap texts = new TreeMap();
@@ -178,4 +179,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         images.put( new Integer( imageIndex ), image ) ;
     }
 
+    public TemplateDomainObject getDefaultTemplate() {
+        return defaultTemplate;
+    }
+
+    public void setDefaultTemplate( TemplateDomainObject defaultTemplate ) {
+        this.defaultTemplate = defaultTemplate;
+    }
 }

@@ -44,22 +44,11 @@ public class AdminDoc extends HttpServlet {
         if ( null != httpPageFlow ) {
             httpPageFlow.dispatch( req, res );
         } else {
-            ImcmsServices imcref = Imcms.getServices();
-
-            // Find the start-page
-            int start_doc = imcref.getSystemData().getStartDocument();
 
             Utility.setDefaultHtmlContentType( res );
             int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
-            int parent_meta_id;
-            String parent_meta_str = req.getParameter( "parent_meta_id" );
-            if ( parent_meta_str != null ) {
-                parent_meta_id = Integer.parseInt( parent_meta_str );
-            } else {
-                parent_meta_id = start_doc;
-            }
 
-            String tempstring = AdminDoc.adminDoc( meta_id, parent_meta_id, user, req, res );
+            String tempstring = AdminDoc.adminDoc( meta_id, user, req, res );
 
             if ( tempstring != null ) {
                 byte[] tempbytes = tempstring.getBytes( WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
@@ -77,6 +66,8 @@ public class AdminDoc extends HttpServlet {
         HttpPageFlow httpPageFlow = null;
         if ( ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
             httpPageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
+        } else if ( ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags ) {
+            httpPageFlow = new EditDocumentPermissionsPageFlow( document, returnCommand, saveDocumentCommand );
         } else if ( document instanceof BrowserDocumentDomainObject
                     && ImcmsConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {
             httpPageFlow = new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, returnCommand, saveDocumentCommand );
@@ -94,12 +85,9 @@ public class AdminDoc extends HttpServlet {
         return httpPageFlow;
     }
 
-    public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req,
+    public static String adminDoc( int meta_id, UserDomainObject user, HttpServletRequest req,
                                    HttpServletResponse res ) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
-
-        String htmlStr;
-        String lang_prefix = user.getLanguageIso639_2();
 
         Stack history = (Stack)user.get( "history" );
         if ( history == null ) {
@@ -138,30 +126,24 @@ public class AdminDoc extends HttpServlet {
         }
 
         // Lets detect which view the admin wants
-        if ( ( flags & 4 ) != 0 ) { // User rights
-            htmlStr = imcode.util.MetaDataParser.parseMetaPermission( String.valueOf( meta_id ), String.valueOf( meta_id ), user, "docinfo/change_meta_rights.html" );
-            return htmlStr;
-        } else {
+        switch ( doc_type ) {
 
-            switch ( doc_type ) {
+            case DocumentDomainObject.DOCTYPE_CONFERENCE:
+            case DocumentDomainObject.DOCTYPE_BILLBOARD:
+            case DocumentDomainObject.DOCTYPE_CHAT:
+                GetDoc.redirectToExternalDocumentTypeWithAction( document, res, "change" );
+                return null;
 
-                default:
-                    DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req, res );
-                    ParserParameters parserParameters = new ParserParameters(documentRequest, imcref.getDocumentMapper() );
-                    parserParameters.setFlags( flags );
-                    String editingMenuIndexStr = req.getParameter( "editmenu" );
-                    if ( null != editingMenuIndexStr ) {
-                        parserParameters.setEditingMenuIndex( Integer.valueOf( editingMenuIndexStr ) );
-                    }
-                    return imcref.parsePage( parserParameters );
+            default:
+                DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req, res );
+                ParserParameters parserParameters = new ParserParameters( documentRequest, imcref.getDocumentMapper() );
+                parserParameters.setFlags( flags );
+                String editingMenuIndexStr = req.getParameter( "editmenu" );
+                if ( null != editingMenuIndexStr ) {
+                    parserParameters.setEditingMenuIndex( Integer.valueOf( editingMenuIndexStr ) );
+                }
+                return imcref.parsePage( parserParameters );
 
-                case DocumentDomainObject.DOCTYPE_CONFERENCE:
-                case DocumentDomainObject.DOCTYPE_BILLBOARD:
-                case DocumentDomainObject.DOCTYPE_CHAT:
-                    GetDoc.redirectToExternalDocumentTypeWithAction( document, res, "change" );
-                    return null;
-
-            }
         }
     }
 
@@ -169,7 +151,7 @@ public class AdminDoc extends HttpServlet {
 
         private final DocumentDomainObject document;
 
-        public RedirectToDocumentCommand( DocumentDomainObject document ) {
+        RedirectToDocumentCommand( DocumentDomainObject document ) {
             this.document = document;
         }
 

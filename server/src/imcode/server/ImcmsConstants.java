@@ -8,7 +8,7 @@ public interface ImcmsConstants {
     public final static int PERM_EDIT_HEADLINE           = (1 << 0) ; // 1
 
     /** Permission to edit all docinfo for a document. **/
-    public final static int PERM_EDIT_DOCINFO            = PERM_EDIT_HEADLINE ; // 2
+    public final static int PERM_EDIT_DOCINFO            = PERM_EDIT_HEADLINE ;
 
     /** Permission to set permissions for a document. **/
     public final static int PERM_EDIT_PERMISSIONS        = (1 << 2) ; // 4
@@ -65,11 +65,12 @@ public interface ImcmsConstants {
 
     final static int PASSWORD_MINIMUM_LENGTH = 4;
 
-    final static int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;
-    final static int DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT = PERM_EDIT_BROWSER_DOCUMENT;
-    final static int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_EDIT_HTML_DOCUMENT;
-    final static int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_EDIT_URL_DOCUMENT;
-    final static int DISPATCH_FLAG__EDIT_FILE_DOCUMENT = PERM_EDIT_FILE_DOCUMENT;
-    final static int DISPATCH_FLAG__EDIT_MENU = PERM_EDIT_TEXT_DOCUMENT_MENUS;
-    final static int DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES = PERM_EDIT_TEXT_DOCUMENT_IMAGES;
+    int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;
+    int DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT = PERM_EDIT_BROWSER_DOCUMENT;
+    int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_EDIT_HTML_DOCUMENT;
+    int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_EDIT_URL_DOCUMENT;
+    int DISPATCH_FLAG__EDIT_FILE_DOCUMENT = PERM_EDIT_FILE_DOCUMENT;
+    int DISPATCH_FLAG__EDIT_MENU = PERM_EDIT_TEXT_DOCUMENT_MENUS;
+    int DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES = PERM_EDIT_TEXT_DOCUMENT_IMAGES;
+    int DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE = PERM_EDIT_PERMISSIONS;
 }

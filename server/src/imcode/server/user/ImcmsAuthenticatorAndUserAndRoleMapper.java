@@ -64,8 +64,6 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
     }
 
     public UserDomainObject getUser( String loginName ) {
-        loginName = loginName.trim();
-
         String[] user_data = service.sqlQuery( "SELECT user_id,\n"
                                                    + "login_name,\n"
                                                    + "login_password,\n"
@@ -85,7 +83,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
                                                    + "[external]\n"
                                                    + "FROM users\n"
                                                    +"WHERE login_name = ?",
-                                               new String[]{loginName} );
+                                               new String[]{loginName.trim()} );
 
         return getUserFromSqlRow( user_data );
     }
@@ -465,11 +463,11 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserA
 
         if ( phoneNbr != null ) {
             for ( int i = 0; i < phoneNbr.length; i++ ) {
-                if ( ( "2" ).equals( phoneNbr[i][3] ) ) {
+                if ( "2".equals( phoneNbr[i][3] ) ) {
                     workPhone = phoneNbr[i][1];
-                } else if ( ( "3" ).equals( phoneNbr[i][3] ) ) {
+                } else if ( "3".equals( phoneNbr[i][3] ) ) {
                     mobilePhone = phoneNbr[i][1];
-                } else if ( ( "1" ).equals( phoneNbr[i][3] ) ) {
+                } else if ( "1".equals( phoneNbr[i][3] ) ) {
                     homePhone = phoneNbr[i][1];
                 }
             }

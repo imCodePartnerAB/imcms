@@ -69,9 +69,6 @@ String formatTime(Date time) {
     return dateFormat.format(time) ;
 }
 
-String formatUser(UserDomainObject user) {
-    return StringEscapeUtils.escapeHtml( user.getLastName()+", "+user.getFirstName()+" ("+user.getLoginName()+")" );
-}
 %><vel:velocity><html>
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_information_title ?></title>
@@ -187,9 +184,6 @@ function checkFocus() {
 			<td align="right"><input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER%>"
 			value=" <? install/htdocs/global/pageinfo/browse ?> "></td>
 		</tr>
-		<input type="hidden" name="<%=
-		DocumentComposer.PARAMETER__PREVIOUS_ACTION %>" value="<%=
-		request.getAttribute( DocumentComposer.REQUEST_ATTRIBUTE_OR_PARAMETER__ACTION ) %>"/>
 		</table></td>
 	</tr>
 	<tr>
@@ -503,7 +497,7 @@ function checkFocus() {
 			<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__CREATED_TIME %>" size="5" maxlength="5" style="width: 4em;"
 			value="<%= formatTime( document.getCreatedDatetime() ) %>"></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/created_by ?>
-			<%= formatUser(document.getCreator()) %>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_creator_button ?>"></td>
+			<%= Utility.formatUser(document.getCreator()) %>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_CREATOR_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_creator_button ?>"></td>
 		</tr>
 		</table></td>
 	</tr>
@@ -531,7 +525,7 @@ function checkFocus() {
 		<%=
 		null == publisher
 		? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_publisher ?>"
-		: formatUser(publisher)
+		: Utility.formatUser(publisher)
 		%>&nbsp;<input type="submit" class="imcmsFormBtnSmall" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__GO_TO_PUBLISHER_BROWSER %>" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/select_publisher_button ?>"></td>
 	</tr>
 	<tr>

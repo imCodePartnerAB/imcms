@@ -32,8 +32,7 @@ public class MetaDataParser {
      * parseMetaPermission parses the page which consists of  the information for a certain meta_id from the db and
      * parses the information into the change_meta.html (the plain admin mode file).
      */
-    public static String parseMetaPermission( String metaIdStr, String parent_meta_id, UserDomainObject user,
-                                              String htmlFile ) {
+    public static String parseMetaPermission( String metaIdStr, String parent_meta_id, UserDomainObject user ) {
         int metaId = Integer.parseInt( metaIdStr );
 
         ImcmsServices imcref = Imcms.getServices();
@@ -87,6 +86,7 @@ public class MetaDataParser {
         }
 
         // Lets get the template file
+        String htmlFile = "docinfo/change_meta_rights.html";
         String htmlStr = imcref.getAdminTemplate( htmlFile, user, null );
 
         // Lets fill the info from db into the vector vec

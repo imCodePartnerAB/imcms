@@ -1,0 +1,187 @@
+<%@ page import="imcode.server.document.DocumentDomainObject,
+                 imcode.server.user.RoleDomainObject,
+                 imcode.server.Imcms,
+                 java.util.*,
+                 org.apache.commons.lang.StringEscapeUtils,
+                 imcode.server.user.UserDomainObject,
+                 imcode.util.Utility,
+                 imcode.util.Html,
+                 com.imcode.imcms.api.DocumentPermissionSet,
+                 imcode.server.document.DocumentPermissionSetDomainObject,
+                 imcode.util.HttpSessionUtils,
+                 com.imcode.imcms.flow.*,
+                 imcode.server.document.TemplateDomainObject,
+                 imcode.server.document.textdocument.TextDocumentDomainObject"%>
+<%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
+
+    EditDocumentPermissionsPageFlow.DocumentPermissionsPage documentPermissionsPage = EditDocumentPermissionsPageFlow.DocumentPermissionsPage.fromRequest(request) ;
+    DocumentDomainObject document = documentPermissionsPage.getDocument() ;
+    UserDomainObject user = Utility.getLoggedOnUser( request );
+%><vel:velocity>
+<html>
+<head>
+<title><? templates/sv/docinfo/change_meta_rights.html/1 ?></title>
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+</head>
+<body bgcolor="#FFFFFF">
+
+#gui_outer_start()
+#gui_head( "<? global/imcms_administration ?>" )
+
+<form method="GET" action="DocumentComposer">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
+        value="<%= EditDocumentPermissionsPageFlow.PAGE__DOCUMENT_PERMISSIONS %>">
+    <table border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td><input type="submit" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2001 ?>"></td>
+            <td>&nbsp;</td>
+            <td><input type="button" value="<? templates/sv/docinfo/change_meta_rights.html/2002 ?>" title="<? templates/sv/docinfo/change_meta_rights.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(84)"></td>
+        </tr>
+    </table>
+#gui_mid()
+
+    <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
+        <tr>
+            <td colspan="2">#gui_heading( "<? templates/sv/docinfo/change_meta_rights.html/5/1 ?>" )</td>
+        </tr>
+        <tr>
+            <td class="imcmsAdmText"><? templates/sv/docinfo/change_meta_rights.html/1001 ?></td>
+            <td class="imcmsAdmText">
+                <table border="0" cellspacing="0" cellpadding="0" width="90%">
+                <tr align="center">
+                    <td class="imcmsAdmText" colspan="2" align="left"><? templates/sv/permissions/roles_rights_table_head.html/1 ?></td>
+                    <td class="imcmsAdmText" width="15%"><? templates/sv/permissions/roles_rights_table_head.html/2 ?></td>
+                    <td class="imcmsAdmText" width="15%"><? templates/sv/permissions/roles_rights_table_head.html/3 ?></td>
+                    <td class="imcmsAdmText" width="15%"><? templates/sv/permissions/roles_rights_table_head.html/4 ?></td>
+                    <td class="imcmsAdmText" width="15%"><? templates/sv/permissions/roles_rights_table_head.html/5 ?></td>
+                    <td class="imcmsAdmText" width="15%"><? templates/sv/permissions/roles_rights_table_head.html/6 ?></td>
+                </tr>
+                <%
+                    SortedSet allRoles = new TreeSet(Arrays.asList(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getAllRoles())) ;
+                    Map rolesMappedToPermissionSetIds = document.getRolesMappedToPermissionSetIds() ;
+                    for ( Iterator iterator = rolesMappedToPermissionSetIds.entrySet().iterator(); iterator.hasNext(); ) {
+                        Map.Entry entry = (Map.Entry)iterator.next();
+                        RoleDomainObject role = (RoleDomainObject)entry.getKey();
+                        Integer permissionSetId = (Integer)entry.getValue();
+                        allRoles.remove( role ) ;
+                %>
+                <tr align="center">
+                    <td height="22" class="imcmsAdmText" align="left"><% if (user.hasRole( role )) { %>*<% } else { %>&nbsp;<% } %></td>
+                    <td class="imcmsAdmText" align="left"><%= role.getName() %></td>
+                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__NONE, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__NONE ) %></td>
+                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__READ, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__READ ) %></td>
+                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 ) %></td>
+                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 ) %></td>
+                    <td><%= Html.radio("role_"+role.getId(), ""+DocumentPermissionSetDomainObject.TYPE_ID__FULL, permissionSetId.intValue() == DocumentPermissionSetDomainObject.TYPE_ID__FULL ) %></td>
+                </tr>
+                <% } %>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="imcmsAdmText"><? templates/sv/docinfo/change_meta_rights.html/7 ?></td>
+            <td>
+            <table border="0" cellspacing="0" cellpadding="2">
+                <tr>
+                    <td align="right"><input type="submit" class="imcmsFormBtnSmall" name="add_roles" value="<? templates/sv/docinfo/change_meta_rights.html/2004 ?>" style="width:130" ></td>
+                    <td class="imcmsAdmDim">&nbsp; <? templates/sv/docinfo/change_meta_rights.html/1002 ?></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <select name="<%= EditDocumentPermissionsPageFlow.REQUEST_PARAMETER__ROLES_WITHOUT_PERMISSIONS %>" size="4" multiple>
+                            <%
+                                for ( Iterator iterator = allRoles.iterator(); iterator.hasNext(); ) {
+                                    RoleDomainObject role = (RoleDomainObject)iterator.next();
+                                    %><%= Html.option( ""+role.getId(), role.getName(), false ) %><%
+                                }
+                            %>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </tr>
+        <tr>
+            <td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/docinfo/change_meta_rights.html/9/1 ?>" )</td>
+        </tr>
+        <tr>
+            <td class="imcmsAdmText"><? templates/sv/permissions/define_sets.html/1 ?></td>
+            <td>
+            <table border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td class="imcmsAdmText">#set_1# #new_set_1#<br>#set_2# #new_set_2#</td>
+                <td>&nbsp;</td>
+                <td class="imcmsAdmText">
+                #sets_precedence#</td>
+            </tr>
+            </table></td>
+        </tr>
+        <% if (document instanceof TextDocumentDomainObject) {
+            TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document ; %>
+        <tr>
+            <td colspan="2">#gui_hr( "cccccc" )</td>
+        </tr>
+        <tr>
+            <td class="imcmsAdmText"><? templates/sv/docinfo/default_templates.html/2 ?></td>
+            <td class="imcmsAdmText">
+                <select name="default_template">
+                    <option value=""><? templates/sv/docinfo/default_templates_1.html/2 ?></option>
+                    <%
+                        TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
+                        TemplateDomainObject[] allTemplates = Imcms.getServices().getTemplateMapper().getAllTemplates() ;
+                        for ( int i = 0; i < allTemplates.length; i++ ) {
+                            TemplateDomainObject template = allTemplates[i];
+                            %><%= Html.option( ""+template.getId(), template.getName(), template.equals( defaultTemplate ))%><%
+                        } %>
+                </select>
+            </td>
+        </tr>
+        <% } %>
+        <tr>
+            <td colspan="2">#gui_hr( "blue" )</td>
+        </tr>
+        <tr>
+            <td class="imcmsAdmText"><? templates/sv/docinfo/change_meta_rights.html/12 ?></td>
+            <td>
+            <table border="0" cellspacing="0" cellpadding="0" width="100%">
+            <tr>
+                <td>
+                <table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td><input type="CHECKBOX" name="show_meta" value="1" <% if (document.isVisibleInMenusForUnauthorizedUsers()) {%>checked<% } %>></td>
+                    <td class="imcmsAdmText">&nbsp;<? templates/global/pageinfo/ShowLinkToUnuthorizedUser ?></td>
+                </tr>
+                <tr>
+                    <td><input type="CHECKBOX" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__LINKABLE_BY_OTHER_USERS %>" value="1" <% if (document.isLinkableByOtherUsers()) {%>checked<% } %>></td>
+                    <td class="imcmsAdmText">&nbsp;<? templates/global/pageinfo/share ?></td>
+                </tr>
+                </table>
+                </td>
+                <td class="imcmsAdmText" nowrap><? templates/sv/docinfo/change_meta_rights.html/1004 ?>&nbsp;<i><%= Utility.formatUser(document.getCreator()) %></i></td>
+            </tr>
+            </table></td>
+        </tr>
+        <tr>
+            <td colspan="2">#gui_hr( "blue" )</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td align="right">
+            <table border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td><input type="SUBMIT" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2005 ?>"></td>
+                <td>&nbsp;</td>
+                <td><input type="RESET" name="reset" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2006 ?>"></td>
+                <td>&nbsp;</td>
+                <td><input type="submit" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2007 ?>"></td>
+            </tr>
+            </table></td>
+        </tr>
+    </table>
+<form>
+#gui_bottom()
+#gui_outer_end()
+</body>
+</html>
+</vel:velocity>

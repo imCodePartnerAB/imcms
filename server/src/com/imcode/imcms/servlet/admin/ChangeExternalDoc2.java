@@ -36,7 +36,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 
 		UserDomainObject user=Utility.getLoggedOnUser( req );
 		if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this
-			String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
+			String output = AdminDoc.adminDoc(meta_id, user,req,res) ;
 			if ( output != null ) {
 				out.write(output) ;
 			}

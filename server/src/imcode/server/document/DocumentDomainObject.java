@@ -4,6 +4,7 @@ import com.imcode.imcms.api.util.ChainableReversibleNullComparator;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.collections.map.TypedMap;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -203,6 +204,11 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public Map getRolesMappedToPermissionSetIds() {
         return Collections.unmodifiableMap( attributes.rolesMappedToDocumentPermissionSetIds );
+    }
+
+    public void setRolesMappedToPermissionSetIds( Map rolesMappedToPermissionSetIds ) {
+        attributes.rolesMappedToDocumentPermissionSetIds = TypedMap.decorate( new HashMap(), RoleDomainObject.class, Integer.class ) ;
+        attributes.rolesMappedToDocumentPermissionSetIds.putAll( rolesMappedToPermissionSetIds );
     }
 
     public SectionDomainObject[] getSections() {

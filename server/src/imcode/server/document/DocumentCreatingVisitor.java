@@ -32,12 +32,13 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     }
 
     public void visitTextDocument( TextDocumentDomainObject textDocument ) {
-        String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template_1, default_template_2) VALUES (?,?,?,?,?)";
+        String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template, default_template_1, default_template_2) VALUES (?,?,?,?,?)";
         TemplateDomainObject textDocumentTemplate = textDocument.getTemplate();
         service.sqlUpdateQuery( sqlTextDocsInsertStr,
                                 new String[]{
                                     "" + textDocument.getId(), "" + textDocumentTemplate.getId(),
                                     "" + textDocument.getTemplateGroupId(),
+                                    "" + textDocument.getDefaultTemplate().getId(),
                                     "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
                                     "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo()
                                 } );

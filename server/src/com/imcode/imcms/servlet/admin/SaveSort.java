@@ -41,7 +41,7 @@ public class SaveSort extends HttpServlet {
 
         TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getDocumentPermissionSetForUser( document, user );
         if ( !documentPermissionSet.getEditMenus() ) {
-            String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
+            String output = AdminDoc.adminDoc( documentId, user, req, res );
             if ( output != null ) {
                 out.write( output );
             }

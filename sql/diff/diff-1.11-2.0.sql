@@ -146,3 +146,9 @@ DROP PROCEDURE GetUserPhoneNumbers
 DROP PROCEDURE PermissionsGetPermission
 
 -- 2004-11-25 Kreiger
+
+ALTER TABLE text_docs ADD default_template INT
+ALTER TABLE text_docs ADD CONSTRAINT FK_text_docs_default_template FOREIGN KEY ( default_template ) REFERENCES templates ( template_id )
+GO
+
+-- 2004-12-06 Kreiger

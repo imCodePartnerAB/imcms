@@ -161,6 +161,14 @@
     </target>
 
 
+    <target name="database-apply-diff" depends="init,sql">
+        <fail unless="db-diff-file">
+            Set "db-diff-file" in build.properties to the diff file you want to execute.
+        </fail>
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
+            userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${sql-diff}/${db-diff-file}"/>
+    </target>
+
     <target name="database-create" depends="init,sql">
 
         <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"

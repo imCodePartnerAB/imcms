@@ -70,8 +70,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
     }
 
     public void visitTextDocument( TextDocumentDomainObject document ) {
-        // all from the table text_doc
-        String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, default_template_1, default_template_2 FROM text_docs WHERE meta_id = ?",
+        String[] sqlResult = service.sqlQuery( "SELECT template_id, group_id, default_template_1, default_template_2, default_template FROM text_docs WHERE meta_id = ?",
                                                new String[]{String.valueOf( document.getId() )} );
         if ( sqlResult.length >= 4 ) {
             int template_id = Integer.parseInt( sqlResult[0] );
@@ -79,18 +78,26 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             int defaultTemplateIdForRestrictedPermissionSetOne = Integer.parseInt( sqlResult[2] );
             int defaultTemplateIdForRestrictedPermissionSetTwo = Integer.parseInt( sqlResult[3] );
 
-            TemplateDomainObject template = service.getTemplateMapper().getTemplateById( template_id );
+            TemplateMapper templateMapper = service.getTemplateMapper();
+            TemplateDomainObject template = templateMapper.getTemplateById( template_id );
+
+            TemplateDomainObject defaultTemplate = null ;
+            try {
+                int defaultTemplateId = Integer.parseInt( sqlResult[4] );
+                defaultTemplate = templateMapper.getTemplateById( defaultTemplateId );
+            } catch ( NumberFormatException ignored ) {}
+
             document.setTemplate( template );
             document.setTemplateGroupId( group_id );
             document.setDefaultTemplateIdForRestrictedPermissionSetOne( defaultTemplateIdForRestrictedPermissionSetOne );
             document.setDefaultTemplateIdForRestrictedPermissionSetTwo( defaultTemplateIdForRestrictedPermissionSetTwo );
+            document.setDefaultTemplate( defaultTemplate );
         }
 
         setDocumentTexts( document );
         setDocumentImages( document );
         setDocumentIncludes( document );
         setDocumentMenus( document );
-
     }
 
     private void setDocumentMenus( TextDocumentDomainObject document ) {

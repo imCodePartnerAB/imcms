@@ -6,6 +6,7 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.SetUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.imageio.ImageIO;
@@ -33,7 +34,7 @@ public class Utility {
      * Transforms a long containing an ip into a String.
      */
     public static String ipLongToString( long ip ) {
-        return ( ( ip >>> 24 ) & 255 ) + "." + ( ( ip >>> 16 ) & 255 ) + "." + ( ( ip >>> 8 ) & 255 ) + "."
+        return ( ip >>> 24 & 255 ) + "." + ( ip >>> 16 & 255 ) + "." + ( ip >>> 8 & 255 ) + "."
                + ( ip & 255 );
     }
 
@@ -45,7 +46,7 @@ public class Utility {
         StringTokenizer ipTok = new StringTokenizer( ip, "." );
         for ( int exp = 3; ipTok.hasMoreTokens(); --exp ) {
             int ipNum = Integer.parseInt( ipTok.nextToken() );
-            ipInt += ( ipNum * Math.pow( 256, exp ) );
+            ipInt += ipNum * Math.pow( 256, exp );
         }
         return ipInt;
     }
@@ -186,9 +187,14 @@ public class Utility {
         long timeLength;
         String suffix;
 
-        public TimeLengthSuffixPair( long timeLength, String suffix ) {
+        TimeLengthSuffixPair( long timeLength, String suffix ) {
             this.timeLength = timeLength;
             this.suffix = suffix;
         }
     }
+
+    public static String formatUser( UserDomainObject user ) {
+        return StringEscapeUtils.escapeHtml( user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")" );
+    }
+
 }

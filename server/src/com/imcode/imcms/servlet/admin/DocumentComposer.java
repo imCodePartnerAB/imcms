@@ -1,14 +1,12 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.DocumentPageFlow;
-import com.imcode.imcms.flow.HttpPageFlow;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
-import imcode.util.HttpSessionUtils;
 import imcode.util.MultipartHttpServletRequest;
 import imcode.util.Utility;
 import org.apache.commons.lang.NotImplementedException;
@@ -20,13 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class DocumentComposer extends HttpServlet {
-
-    public static final String REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME = "document.sessionAttributeName";
-    public static final String REQUEST_ATTR_OR_PARAM__NEW_DOCUMENT_PARENT_INFORMATION_SESSION_ATTRIBUTE_NAME = "newDocumentParentInformation.sessionAttributeName";
-
-    public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__ACTION = "action";
-
-    public static final String PARAMETER__PREVIOUS_ACTION = "previousAction";
 
     public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         doPost( request, response );
@@ -41,13 +32,17 @@ public class DocumentComposer extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( request );
 
         DocumentPageFlow pageFlow = DocumentPageFlow.fromRequest( request );
-        DocumentDomainObject document = pageFlow.getDocument();
-        if ( null != document && documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
-            pageFlow.dispatch( request, response );
+        if ( null != pageFlow ) {
+            DocumentDomainObject document = pageFlow.getDocument();
+            if ( null != document && documentMapper.userHasMoreThanReadPermissionOnDocument( user, document ) ) {
+                pageFlow.dispatch( request, response );
 
-            if ( !response.isCommitted() ) {
-                throw new NotImplementedException( pageFlow.getClass() );
+                if ( !response.isCommitted() ) {
+                    throw new NotImplementedException( pageFlow.getClass() );
+                }
             }
+        } else {
+            Utility.redirectToStartDocument( request, response );
         }
     }
 
