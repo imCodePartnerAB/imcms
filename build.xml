@@ -38,6 +38,7 @@
     <property name="WEB-INF" value="${webroot}/WEB-INF"/>
 
     <property name="versionfile" value="${WEB-INF}/version.txt"/>
+    <property name="checksumsfile" value="${WEB-INF}/checksums.txt"/>
 
     <property name="srcincludes" value="MANIFEST.TXT"/>
 
@@ -156,7 +157,7 @@
 
     <!-- If you want to add more things to build by default, the dependencies of this target is the place to do it. -->
     <target name="build"
-       depends="init,jar,test,apidocs,libraries,web,conf,sql,versionfile,addon"
+       depends="init,jar,test,apidocs,libraries,web,conf,sql,versionfile,checksumsfile,addon"
        description="Builds everything."/>
 
     <target name="clean" description="Deletes everything for a fresh start.">
@@ -271,6 +272,13 @@
         </javadoc>
     </target>
 
+    <target name="checksumsfile">
+        <taskdef name="checksumfiles" classname="imcode.anttasks.ChecksumFiles" classpathref="tools-and-libraries"/>
+        <checksumfiles destfile="${checksumsfile}" digest="MD5" append="true">
+            <fileset dir="${build}"/>
+        </checksumfiles>
+    </target>
+
     <target name="classes" depends="init,tools-util">
 
         <mkdir dir="${classes}"/>
@@ -381,12 +389,7 @@
     </target>
 
     <target name="versionfile">
-        <echo message="${version}&#10;" file="${versionfile}"/>
-        <fixcrlf srcdir="${basedir}" includes="${versionfile}"/>
-        <taskdef name="checksumfiles" classname="imcode.anttasks.ChecksumFiles" classpathref="tools-and-libraries"/>
-        <checksumfiles destfile="${versionfile}" digest="MD5" append="true">
-            <fileset dir="${build}"/>
-        </checksumfiles>
+        <echo message="${version}" file="${versionfile}"/>
     </target>
 
     <!-- Creates the directories and copies the files that are to be public. -->
