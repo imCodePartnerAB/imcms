@@ -6,6 +6,7 @@
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.SystemData;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import imcode.util.net.SMTP;
 
@@ -13,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.StringTokenizer;
@@ -58,11 +58,6 @@ public class SendMailServlet extends HttpServlet {
         /* server info */
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-        // Get the session
-        HttpSession session = req.getSession(true);
-        // Check if user logged on
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
 
 
         SystemData sysData = imcref.getSystemData();
@@ -116,6 +111,7 @@ public class SendMailServlet extends HttpServlet {
             mailTextV.add( mailTextArr[i] );
         }
 
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         String mailBody;
         //ok lets see if its a shop-mail or not
         if ( param != null ) {//its a shop-mail so lets get the mailTo adress from texts100

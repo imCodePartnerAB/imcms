@@ -43,27 +43,6 @@ public class ImageBrowse extends HttpServlet {
     }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws IOException {
-
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        // Get the session
-        HttpSession session = req.getSession( true );
-
-        // Does the session indicate this user already logged in?
-        UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
-
-        if ( user == null ) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-            String scheme = req.getScheme();
-            String serverName = req.getServerName();
-            int p = req.getServerPort();
-            String port = ( p == 80 ) ? "" : ":" + p;
-            res.sendRedirect( scheme + "://" + serverName + port + start_url );
-            return;
-        }
-
         getPage( req, res, this.getServletContext() );
     }
 
@@ -71,11 +50,6 @@ public class ImageBrowse extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String image_url = imcref.getImageUrl();
         File file_path = Utility.getDomainPrefPath( "image_path" );
-
-        // Get the session
-        HttpSession session = request.getSession( false );
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
-
 
         String meta_id = request.getParameter( "meta_id" );
         String img_no = request.getParameter( "img_no" );
@@ -93,6 +67,7 @@ public class ImageBrowse extends HttpServlet {
             img_dir_preset = request.getParameter( "dirlist_preset" ) == null ? "" : request.getParameter( "dirlist_preset" );
         }
 
+        HttpSession session = request.getSession( false );
         if ( request.getParameter( "PREVIOUS_IMG" ) != null || request.getParameter( "NEXT_IMG" ) != null ) {
             session.removeAttribute( "ImageBrowse.optionlist" );
             img_preset = null;
@@ -132,6 +107,7 @@ public class ImageBrowse extends HttpServlet {
 
 
         //*hamdles the number of images to show and the buttons to admin it.
+        UserDomainObject user = Utility.getLoggedOnUser( request );
         String adminImgPath = user.getLangPrefix() + "/admin/";
         String previousButton = "&nbsp;";
         String nextButton = "&nbsp;";

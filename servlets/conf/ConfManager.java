@@ -1,5 +1,7 @@
 
 import imcode.external.diverse.MetaInfo;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,15 +19,9 @@ public class ConfManager extends Conference {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
         MetaInfo.Parameters params = MetaInfo.getParameters( req );
 
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         int testMetaId = params.getMetaId();
         if ( !isUserAuthorized( req, res, testMetaId, user ) ) {
             return;
@@ -34,7 +30,6 @@ public class ConfManager extends Conference {
         String action = req.getParameter( "action" );
         //log("ConfManager is in action...") ;
         if ( action == null ) {
-            action = "";
             String header = "ConfManager servlet. ";
             ConfError err = new ConfError( req, res, header, 3 );
             log( header + err.getErrorMsg() );

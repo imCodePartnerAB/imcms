@@ -9,6 +9,7 @@ import javax.servlet.http.*;
 import imcode.external.chat.*;
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 public class ChatLogin extends ChatBase {
 
@@ -19,7 +20,6 @@ public class ChatLogin extends ChatBase {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
         HttpSession session = req.getSession( true );
 
         //lets get the ServletContext
@@ -69,8 +69,8 @@ public class ChatLogin extends ChatBase {
 
         //ok lets setup the booleans for the loginpage
         boolean loggedOnOk = false;
-        boolean aliasBol = false;
-        boolean imCmsRegBol = false;
+        boolean aliasBol;
+        boolean imCmsRegBol;
 
         //sets up the booleans
         //Vector rolV = super.convert2Vector(roles);
@@ -148,8 +148,6 @@ public class ChatLogin extends ChatBase {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
-        // Lets validate the session, e.g has the user logged in to imCMS?
-        if ( super.checkSession( req, res ) == false ) return;
         HttpSession session = req.getSession( true );
 
         // Lets get the standard parameters and validate them
@@ -196,14 +194,13 @@ public class ChatLogin extends ChatBase {
 
             //ok lets create a user obj and put it into the session
 
-            imcode.server.user.UserDomainObject oldUser = user;
-            user = null;
+            UserDomainObject oldUser = user;
             user = allowUser( userName, password, imcref );
             user.put( "history", oldUser.get( "history" ) );
 
             session.setAttribute( "logon.isDone", user );
             chatAlias = user.getLoginName();
-        }//end loginToImCms
+        }
 
         // ************* LOG A USER INTO A CHAT **************
         //check if the intended chat already exists ServletContext

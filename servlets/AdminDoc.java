@@ -24,22 +24,13 @@ public class AdminDoc extends HttpServlet {
     public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
         // Find the start-page
         int start_doc = imcref.getSystemData().getStartDocument();
 
-        UserDomainObject user;
-        int meta_id;
-
-        // Check if user logged on
-        if( (user = Utility.getLoggedOnUserOrRedirect( req, res, start_url )) == null ) {
-            return;
-        }
-
         res.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
         ServletOutputStream out = res.getOutputStream();
-        meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
+        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
         int parent_meta_id;
         String parent_meta_str = req.getParameter( "parent_meta_id" );
         if( parent_meta_str != null ) {
@@ -48,6 +39,7 @@ public class AdminDoc extends HttpServlet {
             parent_meta_id = start_doc;
         }
 
+        UserDomainObject user = Utility.getLoggedOnUser(req);
         String tempstring = AdminDoc.adminDoc( meta_id, parent_meta_id, user, req, res );
 
         if( tempstring != null ) {

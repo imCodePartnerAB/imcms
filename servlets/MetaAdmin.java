@@ -6,6 +6,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.*;
 
 public class MetaAdmin extends HttpServlet {
@@ -16,15 +17,10 @@ public class MetaAdmin extends HttpServlet {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        String start_url = imcref.getStartUrl();
-
         res.setContentType( "text/html" );
 
-        imcode.server.user.UserDomainObject user;
-        // Check if user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+
         String[] pd = {
             "&", "&amp;",
             "<", "&lt;",

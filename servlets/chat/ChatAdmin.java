@@ -59,48 +59,37 @@ public class ChatAdmin extends Administrator {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-	String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
+        String eMailServerMaster = Utility.getDomainPref("servermaster_email");
 
-	// Lets validate the session
-	if ( checkSession( request, response ) == false ) {
-	    return ;
-	}
+        // Lets verify that the user who tries to add a new user is an admin
+        UserDomainObject user = Utility.getLoggedOnUser(request);
+        if (imcref.checkAdminRights(user) == false) {
+            sendErrorMessage(imcref, eMailServerMaster, user, ERROR_HEADER, 2, response);
+            return;
+        }
 
-	// Lets get an user object
-	imcode.server.user.UserDomainObject user = getUserObj( request, response ) ;
-	if(user == null) {
-	    sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 1, response );
-	    return ;
-	}
+        /* User has right lets do the request */
+        VariableManager vm = new VariableManager();
 
-	// Lets verify that the user who tries to add a new user is an admin
-	if (imcref.checkAdminRights(user) == false) {
-	    sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 2, response );
-	    return ;
-	}
-
-	/* User has right lets do the request */
-	VariableManager vm = new VariableManager();
-
-	/* lets get which request to do */
+        /* lets get which request to do */
         // generate htmlpage for listing chats
-	if ( request.getParameter( "VIEW_CHAT_LIST_TOOL" ) != null ) {
-	    sendHtml( request, response, vm, TEMPLATE_LIST_TOOL );
-            // generate list of chats
-	} else if ( request.getParameter( "VEIW_CHAT_LIST" ) != null ) {
-	    listChats( request, response, user);
-	    // go to AdminManager
-	} else if ( request.getParameter( "CANCEL" ) != null ) {
-	    Utility.redirect( request, response, "AdminManager" );
-	    // go to htmlpage for listing Chats
-	} else if ( request.getParameter( "CANCEL_CHAT_LIST" ) != null ) {
-	    Utility.redirect( request, response, "ChatAdmin" );
-	    // go to AdminChat page
-	} else {
-	    sendHtml( request, response, vm, TEMPLATE_CONF );
-	}
+        if (request.getParameter("VIEW_CHAT_LIST_TOOL") != null) {
+            sendHtml(request, response, vm, TEMPLATE_LIST_TOOL);
+// generate list of chats
+        } else if (request.getParameter("VEIW_CHAT_LIST") != null) {
+            listChats(request, response, user);
+            // go to AdminManager
+        } else if (request.getParameter("CANCEL") != null) {
+            Utility.redirect(request, response, "AdminManager");
+            // go to htmlpage for listing Chats
+        } else if (request.getParameter("CANCEL_CHAT_LIST") != null) {
+            Utility.redirect(request, response, "ChatAdmin");
+            // go to AdminChat page
+        } else {
+            sendHtml(request, response, vm, TEMPLATE_CONF);
+        }
     }
 
     /**
@@ -124,118 +113,118 @@ public class ChatAdmin extends Administrator {
      *
      */
     private void listChats(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface() ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
-	String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
-	boolean noErrors = true;
+        String eMailServerMaster = Utility.getDomainPref("servermaster_email");
+        boolean noErrors = true;
 
-	/*
-	 * 0 = all date !not in use
-	 * 1 = create date
-	 * 2 = modified date
-	 */
-	String listMode = request.getParameter( "LISTMOD" );
-	String startDate = request.getParameter( "START_DATE" );
-	String endDate = request.getParameter( "END_DATE" );
+        /*
+         * 0 = all date !not in use
+         * 1 = create date
+         * 2 = modified date
+         */
+        String listMode = request.getParameter("LISTMOD");
+        String startDate = request.getParameter("START_DATE");
+        String endDate = request.getParameter("END_DATE");
 
-	/* lets see if any errors in requared fields or if some is missing */
-	try {
-	    if ( listMode != null ) {
-		int  mode = Integer.parseInt( listMode );
-		if ( !(mode == 1 || mode == 2 ) ) {
-		    noErrors = false;
-		}
-	    } else {
-		noErrors = false;
-	    }
-	} catch ( NumberFormatException e ) {
-	    noErrors = false;
-	}
+        /* lets see if any errors in requared fields or if some is missing */
+        try {
+            if (listMode != null) {
+                int mode = Integer.parseInt(listMode);
+                if (!(mode == 1 || mode == 2)) {
+                    noErrors = false;
+                }
+            } else {
+                noErrors = false;
+            }
+        } catch (NumberFormatException e) {
+            noErrors = false;
+        }
 
-	if ( startDate != null ) {
-	    if ( startDate.length() > 0 ) {
-		if ( !isDateInRightFormat( startDate ) ) {
-		    noErrors = false;
-		}
-	    } else {
-		startDate = "0"; // Stored Procedure expects 0 then no startDate
-	    }
-	} else {
-	    noErrors = false; // no startDate field submited
-	}
+        if (startDate != null) {
+            if (startDate.length() > 0) {
+                if (!isDateInRightFormat(startDate)) {
+                    noErrors = false;
+                }
+            } else {
+                startDate = "0"; // Stored Procedure expects 0 then no startDate
+            }
+        } else {
+            noErrors = false; // no startDate field submited
+        }
 
-	if ( endDate != null ) {
-	    if ( endDate.length() > 0 )	{
-		if ( !isDateInRightFormat( endDate ) ) {
-		    noErrors = false;
-		}
-	    } else {
-		endDate = "0"; // Stored Procedure expects 0 then no endDate
-	    }
-	} else {
-	    noErrors = false; // no endDate field submited
-	}
+        if (endDate != null) {
+            if (endDate.length() > 0) {
+                if (!isDateInRightFormat(endDate)) {
+                    noErrors = false;
+                }
+            } else {
+                endDate = "0"; // Stored Procedure expects 0 then no endDate
+            }
+        } else {
+            noErrors = false; // no endDate field submited
+        }
 
-	// lets generate response page
-	if ( noErrors ) {
+        // lets generate response page
+        if (noErrors) {
 
-            //lets get htmltemplate for chatrow
-	    String htmlChatElement = imcref.parseDoc( null, TEMPLATE_CONF_ELEMENT, user);
-	    String htmlForumElement = imcref.parseDoc( null, TEMPLATE_FORUM_ELEMENT, user);
+//lets get htmltemplate for chatrow
+            String htmlChatElement = imcref.parseDoc(null, TEMPLATE_CONF_ELEMENT, user);
+            String htmlForumElement = imcref.parseDoc(null, TEMPLATE_FORUM_ELEMENT, user);
 
             String[][] listOfChats = imcref.sqlProcedureMulti("ListChats", new String[0]);
 
-            // lets create chatlist
+// lets create chatlist
             StringBuffer chatListTag = new StringBuffer();
 
             Hashtable chatTags = new Hashtable();
-	    Hashtable forumTags = new Hashtable();
-	    Hashtable debateTags = new Hashtable();
+            Hashtable forumTags = new Hashtable();
+            Hashtable debateTags = new Hashtable();
 
-	    for ( int i = 0 ; i < listOfChats.length ; i++ ) {
+            for (int i = 0; i < listOfChats.length; i++) {
 
-		String metaId = listOfChats[i][0];
+                String metaId = listOfChats[i][0];
                 String[][] queryResultForum = chatref.sqlProcedureMulti("C_AdminStatistics1", new String[]{metaId, startDate, endDate, listMode});
 
-                //lets create forumList for this chat
-		StringBuffer forumList = new StringBuffer();
+//lets create forumList for this chat
+                StringBuffer forumList = new StringBuffer();
 
-		for ( int j = 0 ; j < queryResultForum.length ; j++ ) {
+                for (int j = 0; j < queryResultForum.length; j++) {
 
-		    String forumId = queryResultForum[j][0];
+                    String forumId = queryResultForum[j][0];
                     String[][] queryResultDebate = chatref.sqlProcedureMulti("C_AdminStatistics2", new String[]{metaId, forumId, startDate, endDate, listMode});
 
-		    // lets create debatelist for this forum
-		    StringBuffer debateList = new StringBuffer();
-		    for ( int k = 0 ; k < queryResultDebate.length ; k++ ) {
-			debateTags.put( "DEBATE", queryResultDebate[k][1] );
-			debateTags.put( "DATE", queryResultDebate[k][2] );
-		    }
+                    // lets create debatelist for this forum
+                    StringBuffer debateList = new StringBuffer();
+                    for (int k = 0; k < queryResultDebate.length; k++) {
+                        debateTags.put("DEBATE", queryResultDebate[k][1]);
+                        debateTags.put("DATE", queryResultDebate[k][2]);
+                    }
 
-		    forumTags.put("FORUM", queryResultForum[j][1] );
-		    forumTags.put("DEBATE_LIST", debateList.toString() );
-		    forumList.append( (Parser.parseTags( new StringBuffer( htmlForumElement ), '#', " <>\n\r\t", (java.util.Map)forumTags, true, 1 )).toString() );
-		}
+                    forumTags.put("FORUM", queryResultForum[j][1]);
+                    forumTags.put("DEBATE_LIST", debateList.toString());
+                    forumList.append((Parser.parseTags(new StringBuffer(htmlForumElement), '#', " <>\n\r\t", forumTags, true, 1)).toString());
+                }
 
-		if ( queryResultForum.length > 0 ) {
+                if (queryResultForum.length > 0) {
                     chatTags.put("SERVLET_URL", "");
                     chatTags.put("META_ID", metaId);
                     chatTags.put("CONFERENCE", listOfChats[i][1]);
                     chatTags.put("FORUM_LIST", forumList.toString());
                     chatListTag.append((Parser.parseTags(new StringBuffer(htmlChatElement), '#', " <>\n\r\t", chatTags, true, 1)).toString());
-		}
-	    }
+                }
+            }
 
-	    //Lets generate the html page
-	    VariableManager vm = new VariableManager();
+            //Lets generate the html page
+            VariableManager vm = new VariableManager();
             vm.addProperty("CHAT_LIST", chatListTag.toString());
 
-	    this.sendHtml( request, response, vm, TEMPLATE_LIST );
+            this.sendHtml(request, response, vm, TEMPLATE_LIST);
 
-	} else {
-	    sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 10, response );
-	}
+        } else {
+            sendErrorMessage(imcref, eMailServerMaster, user, ERROR_HEADER, 10, response);
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -26,27 +27,9 @@ public class AdminUserProps extends Administrator {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        // Lets validate the session
-        if ( checkSession( req, res ) == false )
-            return;
-
-        // Get the session
-        HttpSession session = req.getSession( false );
-
-        // Lets get an user object
-        UserDomainObject user = getUserObj( req, res );
-
-        if ( user == null ) {
-            String header = "Error in AdminCounter.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-        }
-
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
         // check if user is a Useradmin, adminRole = 2
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
 
         // check if user is a Superadmin, adminRole = 1
@@ -55,6 +38,7 @@ public class AdminUserProps extends Administrator {
         //Lets get temporary values from session if there is some.
         //String[] tmp_userRoles = (String[])session.getAttribute("tempUserRoles");
         //String tmp_userType = (String)session.getAttribute("tempUserType");
+        HttpSession session = req.getSession( false );
         Properties tmp_userInfo = (Properties)session.getAttribute( "tempUser" );
 
         Vector tmp_phones = (Vector)session.getAttribute( "Ok_phoneNumbers" );
@@ -309,7 +293,7 @@ public class AdminUserProps extends Administrator {
         return languagesHtmlOptionList;
     }
 
-    private void showErrorPageUserHasNoRightsToChangeUserValues( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    private void showErrorPageUserHasNoRightsToChangeUserValues( HttpServletRequest req, HttpServletResponse res ) throws IOException {
         String header = "Error in AdminCounter.";
         String msg = "The user has no rights to change user values." + "<BR>";
         this.log( header + msg );
@@ -427,39 +411,23 @@ public class AdminUserProps extends Administrator {
         out.write( outputString );
     }
 
-    private void showErrorPageUserNotAnAdministrator( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    private void showErrorPageUserNotAnAdministrator( HttpServletRequest req, HttpServletResponse res ) throws IOException {
         String header = "Error in AdminCounter.";
         String msg = "The user is not an administrator." + "<BR>";
         this.log( header + msg );
         new AdminError( req, res, header, msg );
     }
 
-    /**
-     * POST
-     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        // Lets validate the session
-        if ( checkSession( req, res ) == false )
-            return;
-
         HttpSession session = req.getSession( false );
-
         if ( session == null )
             return;
 
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-        if ( user == null ) {
-            String header = "Error in AdminCounter.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            new AdminError( req, res, header, msg );
-            return;
-        }
-
         // check if user is a Superadmin, adminRole = 1
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         boolean isSuperadmin = imcref.checkUserAdminrole( user.getUserId(), 1 );
 
         // check if user is a Useradmin, adminRole = 2
@@ -1207,7 +1175,7 @@ public class AdminUserProps extends Administrator {
      * a error page will be generated, fore those times the user uses the backstep in
      * the browser
      */
-    private void sendErrorMsg( HttpServletRequest req, HttpServletResponse res, String header, String msg ) throws ServletException, IOException {
+    private void sendErrorMsg( HttpServletRequest req, HttpServletResponse res, String header, String msg ) throws IOException {
         new AdminError( req, res, header, msg );
     }
 
@@ -1215,7 +1183,7 @@ public class AdminUserProps extends Administrator {
      * Returns a Vector, containing the choosed roles from the html page. if Something
      * failes, a error page will be generated and null will be returned.
      */
-    private Vector getRolesParameters( String name, HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    private Vector getRolesParameters( String name, HttpServletRequest req, HttpServletResponse res ) throws IOException {
         // Lets get the roles
         // Vector rolesV = this.getRolesParameters(req) ;
         String[] roles = ( req.getParameterValues( name ) == null ) ? new String[0] : ( req.getParameterValues( name ) );
@@ -1349,7 +1317,7 @@ public class AdminUserProps extends Administrator {
      * failes, a error page will be generated and null will be returned.
      */
 
-    private Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    private Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
         //	Properties params = this.getParameters(req) ;
         if ( checkParameters( aPropObj ) == false ) {
@@ -1631,7 +1599,7 @@ public class AdminUserProps extends Administrator {
      * a error page will be generated and null will be returned.
      */
 
-    private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
         String userId = req.getParameter( "CURR_USER_ID" );
 

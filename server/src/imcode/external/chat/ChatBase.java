@@ -7,6 +7,7 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.ApplicationServer;
 import imcode.server.user.UserDomainObject;
 import imcode.util.log.DailyRollingFileAppender;
+import imcode.util.Utility;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -194,21 +195,8 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     protected imcode.server.user.UserDomainObject getUserObj( HttpServletRequest req,
                                              HttpServletResponse res ) throws IOException {
 
-        if ( checkSession( req, res ) == true ) {
-
-            // Get the session
-            HttpSession session = req.getSession( true );
-            // Does the session indicate this user already logged in?
-            Object done = session.getAttribute( "logon.isDone" );  // marker object
-            imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
-
-            return user;
-        } else {
-            String header = "Chat servlet.";
-            ChatError err = new ChatError( req, res, header, 2 );
-            log( err.getErrorMsg() );
-            return null;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        return user;
     }
 
     // *************** LETS HANDLE THE SESSION META PARAMETERS *********************
@@ -259,53 +247,12 @@ public class ChatBase extends HttpServlet implements ChatConstants {
     }
 
     /**
-     * Verifies that the user has logged in. If he hasnt, he will be redirected to
-     * an url which we get from a init file name conference.
-     */
-
-    protected boolean checkSession( HttpServletRequest req, HttpServletResponse res ) throws IOException {
-
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-        UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
-        //imcode.server.User user = (imcode.server.User) done ;
-
-        if ( user == null ) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-            session.setAttribute( "login.target", req.getRequestURL().toString() );
-
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-            String startUrl = imcref.getStartUrl();
-            res.sendRedirect( startUrl );
-            return false;
-        }
-        return true;
-    }
-
-    // *************** LETS HANDLE THE STANDARD META PARAMETERS *********************
-
-
-    // *************************** END OF META PARAMETER FUNCTIONS *****************
-
-
-    // *************************** ADMIN RIGHTS FUNCTIONS **************************
-
-
-    // *********************** GETEXTERNAL TEMPLATE FUNCTIONS *********************
-
-    /**
      * Gives the folder to the root external folder
      */
     File getExternalTemplateRootFolder( HttpServletRequest req ) throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Lets get serverinformation
         int metaId = getMetaId( req );
@@ -357,13 +304,8 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
-        // Get the session
-        HttpSession session = req.getSession();
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
-        // Check if user logged on
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
-
-        // Set lang_prefix
         String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
         if(user != null){
             lang_prefix = user.getLangPrefix();
@@ -420,13 +362,8 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
-        // Get the session
-        HttpSession session = req.getSession();
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
-        // Check if user logged on
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
-
-        // Set lang_prefix
         String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
         if(user != null){
             lang_prefix = user.getLangPrefix();
@@ -455,7 +392,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         HttpSession session = req.getSession( true );
 
         //lets get if user authorized or not
-        boolean authorized = true;
+        boolean authorized;
 
         //OBS "Chat.meta_id" ska bytas ut mot en konstant senare
         String stringMetaId = (String)session.getAttribute( "Chat.meta_id" );

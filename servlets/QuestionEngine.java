@@ -1,16 +1,13 @@
 import java.io.*;
 import java.util.*;
-import java.text.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import imcode.external.diverse.*;
-import imcode.external.chat.*;
-
 import imcode.util.* ;
 import imcode.util.fortune.* ;
 import imcode.server.* ;
+import imcode.server.user.UserDomainObject;
 
 import org.apache.log4j.Category ;
 
@@ -31,12 +28,9 @@ public class QuestionEngine extends HttpServlet
 
 
     IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-    // Get the session
-    HttpSession session = req.getSession( true );
-    // Check if user logged on
-    imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
 
-    File fortune_path = Utility.getDomainPrefPath("FortunePath" );
+
+    UserDomainObject user = Utility.getLoggedOnUser( req );
 
 	res.setContentType("text/html");
 	PrintWriter out = res.getWriter();

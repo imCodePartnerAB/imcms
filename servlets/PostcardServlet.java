@@ -83,23 +83,15 @@ public class PostcardServlet extends HttpServlet {
      * process submit
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        String host = req.getHeader( "Host" );
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Check if user logged on
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
-
-        SystemData sysData = imcref.getSystemData();
-
-        File templateLib = getExternalTemplateFolder( req, user);
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        File templateLib = getExternalTemplateFolder(user);
 
         String qLine = "1";
         String metaId = "";
 
         //lets get the line nr from session
+        HttpSession session = req.getSession( true );
         String[] pCStuff = (String[])session.getAttribute( "postCardStuff" );
         if ( pCStuff != null ) {
             qLine = pCStuff[0];
@@ -113,10 +105,11 @@ public class PostcardServlet extends HttpServlet {
             //some thing gon wrong, but I dont care I give them the first line'
             //instead of the one they wanted
             //System.out.println("qLine wasn't a number");
-            qInt = 1;
             log.debug( dateFormat.format( new Date() ) + "qLine wasn't a number", nfe );
         }
 
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        SystemData sysData = imcref.getSystemData();
         List quoteList = imcref.getQuoteList( QUOTE_FILE );
 
         String qTextToSend = "";
@@ -241,6 +234,7 @@ public class PostcardServlet extends HttpServlet {
         vect.add( "#mailText1#" );
         vect.add( senderName );
         vect.add( "#mailText2#" );
+        String host = req.getHeader( "Host" );
         vect.add( "http://" + host );
         vect.add( "#mailText3#" );
         vect.add( pcFileName );
@@ -250,10 +244,10 @@ public class PostcardServlet extends HttpServlet {
         return;
     }
 
-    private File getExternalTemplateFolder(HttpServletRequest req, UserDomainObject user) throws IOException {
+    private File getExternalTemplateFolder(UserDomainObject user) {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        
+
         // Since our templates are located into the 105 folder, we'll have to hang on 105
         String langPrefix = user != null ? user.getLangPrefix() : imcref.getDefaultLanguageAsIso639_2() ;
         File templateLib = new File( imcref.getTemplatePath(), langPrefix );
@@ -278,9 +272,6 @@ public class PostcardServlet extends HttpServlet {
         HttpSession session = req.getSession( false );
         if ( session == null )
             res.sendRedirect( req.getContextPath() + "/servlet/StartDoc" );
-
-        // Check if user logged on
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
 
         String mailserver = Utility.getDomainPref( "smtp_server" );
         String stringMailPort = Utility.getDomainPref( "smtp_port" );
@@ -308,7 +299,9 @@ public class PostcardServlet extends HttpServlet {
         } catch ( NumberFormatException ignored ) {
             // Do nothing, let mailtimeout stay at default.
         }
+
         // send mail
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         try {
             SMTP smtp = new SMTP( mailserver, mailport, mailtimeout );
             smtp.sendMailWait( mailNfo[0], mailNfo[1], mailNfo[2], mailNfo[3] );

@@ -1,13 +1,14 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -22,9 +23,7 @@ public class SaveUrlDoc extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
-        imcode.server.user.UserDomainObject user;
         String url_ref = "";
         String values[];
         int meta_id;
@@ -46,25 +45,10 @@ public class SaveUrlDoc extends HttpServlet {
             target = req.getParameter( "frame_name" );
         }
 
-        // Get the session
-        HttpSession session = req.getSession( true );
-
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        user = (imcode.server.user.UserDomainObject)done;
-
-        if ( done == null ) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-            String scheme = req.getScheme();
-            String serverName = req.getServerName();
-            int p = req.getServerPort();
-            String port = ( p == 80 ) ? "" : ":" + p;
-            res.sendRedirect( scheme + "://" + serverName + port + start_url );
-            return;
-        }
         // Check if user has write rights
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkDocAdminRights( meta_id, user, 65536 ) ) {
+            String start_url = imcref.getStartUrl();
             log(
                     "User " + user.getUserId() + " was denied access to meta_id " + meta_id + " and was sent to "
                     + start_url );

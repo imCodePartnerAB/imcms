@@ -30,7 +30,7 @@ public class TemplateService {
      * @throws NoPermissionException If the current user isn't superadmin
      */
     public TemplateGroup[] getTemplatesGroups( TextDocument textDocument ) throws NoPermissionException {
-        securityChecker.isSuperAdmin();
+        securityChecker.hasEditPermission(textDocument);
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         TemplateGroupDomainObject[] internalTemplates = templateMapper.getAllTemplateGroupsAvailableForUserOnDocument( user, textDocument.getId() );
         TemplateGroup[] result = new TemplateGroup[internalTemplates.length];

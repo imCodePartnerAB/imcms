@@ -157,16 +157,13 @@ public class PutInShoppingCart extends HttpServlet {
 	    }
 	}
 
-	String forwardTo = null ;
+	String forwardTo;
 
 	if (null != req.getParameter("send") || null != req.getParameter("send.x")) {
-	    forwardTo = req.getParameter("send_next") ;
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	    UserDomainObject user = null ;
-	    // Check if user logged on
-	    if ( (user=Utility.getLoggedOnUserOrRedirect(req,res,forwardTo))==null ) {
-		return ;
-	    }
+
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+
 	    sendMail(req,user) ;
 
 	    ShoppingOrderSystem shoppingOrderSystem = imcref.getShoppingOrderSystem() ;

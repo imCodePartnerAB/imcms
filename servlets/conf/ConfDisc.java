@@ -9,6 +9,7 @@
 */
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 import java.io.*;
 import java.util.*;
@@ -16,6 +17,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
+import imcode.util.Utility;
 
 /**
  * Html template in use:
@@ -55,13 +57,7 @@ public class ConfDisc extends Conference {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
-        // Lets get the user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
         }
@@ -122,7 +118,7 @@ public class ConfDisc extends Conference {
             // Lets get the total nbr of discs in the forum
             // RmiConf rmi = new RmiConf(user) ;
             String nbrOfDiscsStr = confref.sqlProcedureStr( "A_GetNbrOfDiscs", new String[]{params.getProperty( "FORUM_ID" )} );
-            int nbrOfDiscs = 0;
+            int nbrOfDiscs;
 
             // Lets get the nbr of discussions to show. If it does not contain any
             // discussions, 20 will be returned by default from db
@@ -169,7 +165,7 @@ public class ConfDisc extends Conference {
             String searchMsg = "";
             String sqlAnswer[][] = null;
             boolean searchParamsOk = true;
-            String currForum = "";
+            String currForum;
 
             // Lets get the forumname for the current forum
 
@@ -262,8 +258,6 @@ public class ConfDisc extends Conference {
                     if (allRecs == null) {
                         ConfError msgErr = new ConfError();
                         allRecs = msgErr.getErrorMessage( req, 41 );
-                        msgErr = null;
-                    } else {
                     }
                 } else {
                 }
@@ -273,7 +267,6 @@ public class ConfDisc extends Conference {
                 if ( searchParamsOk ) {
                     ConfError msgErr = new ConfError();
                     allRecs = msgErr.getErrorMessage( req, 41 );
-                    msgErr = null;
                 }
             }
 
@@ -316,16 +309,10 @@ public class ConfDisc extends Conference {
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
         // Lets get the standard SESSION parameters and validate them
         Properties params = this.getPropertiesOfConferenceSessionParameters( req );
 
-        // Lets get the user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
         }
@@ -364,7 +351,7 @@ public class ConfDisc extends Conference {
         String allRecs = "";
         // Lets get the start record position in the array
         int discIndexPos = this.getDiscIndex( req );
-        int showDiscsCounter = 0;
+        int showDiscsCounter;
         if ( sqlAnswer.length > 0 ) {
             // Lets build our tags vector.
             Vector tagsV = this.buildTags();
@@ -537,7 +524,7 @@ public class ConfDisc extends Conference {
         itemNbr = itemNbr - 1;
         StringTokenizer st = new StringTokenizer( str, delim );
         int counter = 0;
-        int retVal = 0;
+        int retVal;
 
         while ( st.hasMoreTokens() ) {
             String tmp = st.nextToken();

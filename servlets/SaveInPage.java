@@ -25,9 +25,6 @@ public class SaveInPage extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        UserDomainObject user;
 
         // get meta_id
         int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
@@ -43,10 +40,8 @@ public class SaveInPage extends HttpServlet {
         if ( groupId == null )
             groupId = "-1"; //if there isn'n anyone lets set it to -1
 
-        // Check if user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+
         // Check if user has write rights
         if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_DT_TEXT_CHANGE_TEMPLATE ) ) {	// Checking to see if user may edit this
             res.setContentType( "text/html" );
@@ -58,8 +53,6 @@ public class SaveInPage extends HttpServlet {
             }
             return;
         }
-
-        String lang_prefix = user.getLangPrefix();
 
         if ( req.getParameter( "update" ) != null ) {
             Writer out = res.getWriter();
@@ -98,10 +91,9 @@ public class SaveInPage extends HttpServlet {
                 out.write( htmlStr );
                 return;
             }
-            Object[] temp = null;
-            temp = imcref.getDemoTemplate( Integer.parseInt( template ) );
+            Object[] temp = imcref.getDemoTemplate( Integer.parseInt( template ) );
             if ( temp != null ) {
-                String demoTemplateName = template + "." + (String)temp[0];
+                String demoTemplateName = template + "." + temp[0];
                 // Set content-type depending on type of demo-template.
                 res.setContentType( getServletContext().getMimeType( demoTemplateName ) );
                 byte[] bytes = (byte[])temp[1];

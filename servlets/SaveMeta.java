@@ -40,13 +40,8 @@ public class SaveMeta extends HttpServlet {
         }
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
-        UserDomainObject user;
-        // Check if user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
         res.setContentType( "text/html" );
         Writer out = res.getWriter();

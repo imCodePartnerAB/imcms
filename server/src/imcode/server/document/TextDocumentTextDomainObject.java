@@ -76,7 +76,7 @@ public class TextDocumentTextDomainObject {
     }
 
     /**
-       Equivalent to getText()
+       Equivalent to getMenuText()
     **/
     public String toString() {
 	return getText() ;

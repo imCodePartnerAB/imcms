@@ -8,7 +8,6 @@ import imcode.server.user.*;
 import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.TemplateGroupDomainObject;
 import imcode.server.db.ConnectionPool;
 import imcode.util.net.SMTP;
 
@@ -98,9 +97,6 @@ public interface IMCServiceInterface {
     // get external template folder
     File getExternalTemplateFolder(int meta_id, UserDomainObject user)
 	;
-
-    // increment session counter
-    int incCounter()  ;
 
     // get session counter
     int getCounter()  ;

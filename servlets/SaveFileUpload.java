@@ -1,6 +1,7 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
@@ -20,15 +21,9 @@ public class SaveFileUpload extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
         File file_path = imcode.util.Utility.getDomainPrefPath( "file_path" );
 
-        imcode.server.user.UserDomainObject user;
-
-        // Check if user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
         res.setHeader( "Cache-Control", "no-cache; must-revalidate;" );
         res.setHeader( "Pragma", "no-cache;" );

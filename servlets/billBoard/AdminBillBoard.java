@@ -65,19 +65,8 @@ public class AdminBillBoard extends Administrator { //AdminConference
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
-        // Lets validate the session
-        if ( checkSession( request, response ) == false ) {
-            return;
-        }
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( request, response );
-        if ( user == null ) {
-            sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 1, response );
-            return;
-        }
-
         // Lets verify that the user who tries to add a new user is an admin
+        UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( imcref.checkAdminRights( user ) == false ) {
             sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 2, response );
             return;
@@ -223,7 +212,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
 
                     forumTags.put( "SECTION", queryResultForum[j][1] );
                     forumTags.put( "DEBATE_LIST", debateList.toString() );
-                    sectionList.append( ( Parser.parseTags( new StringBuffer( htmlForumElement ), '#', " <>\n\r\t", (java.util.Map)forumTags, true, 1 ) ).toString() );
+                    sectionList.append( ( Parser.parseTags( new StringBuffer( htmlForumElement ), '#', " <>\n\r\t", forumTags, true, 1 ) ).toString() );
                 }
 
                 if ( queryResultForum.length > 0 ) {
@@ -231,7 +220,7 @@ public class AdminBillBoard extends Administrator { //AdminConference
                     billBoardTags.put( "META_ID", metaId );
                     billBoardTags.put( "BILLBOARD", listOfBillBoards[i][1] );
                     billBoardTags.put( "SECTION_LIST", sectionList.toString() );
-                    conferencesListTag.append( ( Parser.parseTags( new StringBuffer( htmlConferenceElement ), '#', " <>\n\r\t", (java.util.Map)billBoardTags, true, 1 ) ).toString() );
+                    conferencesListTag.append( ( Parser.parseTags( new StringBuffer( htmlConferenceElement ), '#', " <>\n\r\t", billBoardTags, true, 1 ) ).toString() );
                 }
             }
 

@@ -20,9 +20,6 @@ public class ChatHelp extends ChatBase {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-	// Lets validate the session, e.g has the user logged in to Janus?
-	if (super.checkSession(req,res) == false) return ;
-
 	// Lets get all parameters for this servlet
 	Properties params = this.getParameters(req) ;
 

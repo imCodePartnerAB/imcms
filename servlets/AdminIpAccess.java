@@ -7,6 +7,7 @@ import java.util.*;
 import imcode.external.diverse.*;
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 public class AdminIpAccess extends Administrator {
 
@@ -24,19 +25,6 @@ public class AdminIpAccess extends Administrator {
             throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-        // Lets validate the session
-        if ( checkSession( req, res ) == false ) return;
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-        if ( user == null ) {
-            String header = "Error in AdminIpAccess.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-        }
 
         // ********** GENERATE THE IP-ACCESS PAGE *********
         // Lets get all IP-accesses from DB
@@ -76,22 +64,10 @@ public class AdminIpAccess extends Administrator {
     public void doPost( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-        // Lets validate the session
-        if ( checkSession( req, res ) == false ) return;
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-        if ( user == null ) {
-            String header = "Error in AdminCounter.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-        }
 
         // Lets check if the user is an admin, otherwise throw him out.
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminCounter.";
             String msg = "The user is not an administrator." + "<BR>";
@@ -275,8 +251,7 @@ public class AdminIpAccess extends Administrator {
      * failes, a error page will be generated and null will be returned.
      */
 
-    private Properties validateParameters( Properties aPropObj, HttpServletRequest req,
-                                           HttpServletResponse res ) throws ServletException, IOException {
+    private Properties validateParameters( Properties aPropObj, HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
         if ( checkParameters( aPropObj ) == false ) {
             String header = "Checkparameters error";

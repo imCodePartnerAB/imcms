@@ -1,5 +1,6 @@
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 import java.io.*;
 import java.util.*;
@@ -7,6 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
+import imcode.util.Utility;
 
 public class ConfAdmin extends Conference {
 
@@ -22,302 +24,297 @@ public class ConfAdmin extends Conference {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if (super.checkSession(req, res) == false) return;
+        UserDomainObject user = Utility.getLoggedOnUser(req);
 
-	// Lets get the user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
-	if(user == null) return ;
+        if (!isUserAuthorized(req, res, user)) {
+            return;
+        }
 
-	if ( !isUserAuthorized( req, res, user ) ) {
-	    return;
-	}
+        // Lets get the standard SESSION parameters
+        Properties params = this.getStandardParameters(req);
 
-	// Lets get the standard SESSION parameters
-	Properties params = this.getStandardParameters(req) ;
+        // Lets get serverinformation
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
 
-	// Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface() ;
-
-	// Lets check that the user is an administrator
-        if (super.userHasAdminRights( imcref, Integer.parseInt( params.getProperty("META_ID") ), user ) == false) {
-	    String header = "ConfAdmin servlet. " ;
+        // Lets check that the user is an administrator
+        if (super.userHasAdminRights(imcref, Integer.parseInt(params.getProperty("META_ID")), user) == false) {
+            String header = "ConfAdmin servlet. ";
             new ConfError(req, res, header, 6);
-	    return ;
-	}
+            return;
+        }
 
-	// ********* ADD SELF_REGISTERED USERS ********
-	if (req.getParameter("ADD_SELF_REG_ROLE") != null) {
+        // ********* ADD SELF_REGISTERED USERS ********
+        if (req.getParameter("ADD_SELF_REG_ROLE") != null) {
 
-	    // Lets check if the user is a superadmin
-	    if( Administrator.checkAdminRights(req,res)== false ) {
+            // Lets check if the user is a superadmin
+            if (Administrator.checkAdminRights(req) == false) {
                 new ConfError(req, res, "ConfAdmin", 64);
-		return ;
-	    }
+                return;
+            }
 
-	    // Lets get the role id the user wants to add
-	    String selfRegRoleId = req.getParameter("ALL_SELF_REGISTER_ROLES")  ;
-	    if (selfRegRoleId == null) {
-		String header = "ConfAdmin servlet. " ;
+            // Lets get the role id the user wants to add
+            String selfRegRoleId = req.getParameter("ALL_SELF_REGISTER_ROLES");
+            if (selfRegRoleId == null) {
+                String header = "ConfAdmin servlet. ";
                 new ConfError(req, res, header, 86);
-		return ;
-	    }
+                return;
+            }
 
             String roleName = imcref.sqlProcedureStr("RoleGetName", new String[]{selfRegRoleId});
 
-            confref.sqlUpdateProcedure("A_SelfRegRoles_AddNew", new String[]{params.getProperty("META_ID"),selfRegRoleId,roleName});
+            confref.sqlUpdateProcedure("A_SelfRegRoles_AddNew", new String[]{params.getProperty("META_ID"), selfRegRoleId, roleName});
 
-	    res.sendRedirect("ConfAdmin?ADMIN_TYPE=SELF_REGISTER") ;
-	    return ;
-	}
-
-	// ********* DELETE A SELF_REGISTERED ROLE ********
-	if (req.getParameter("DEL_SELF_REG_ROLE") != null) {
-
-	    // Lets check if the user is a superadmin
-	    if( Administrator.checkAdminRights(req,res)== false ) {
-                new ConfError(req, res, "ConfAdmin", 64);
-		return ;
-	    }
-
-
-	    // Lets get the role id the user wants to delete
-	    String selfRegRoleId = req.getParameter("CURR_SELF_REGISTER_ROLES")  ;
-	    if (selfRegRoleId == null) {
-		String header = "ConfAdmin servlet. " ;
-                new ConfError(req, res, header, 87);
-		return ;
-	    }
-
-            confref.sqlUpdateProcedure("A_SelfRegRoles_Delete", new String[]{params.getProperty("META_ID"),selfRegRoleId});
             res.sendRedirect("ConfAdmin?ADMIN_TYPE=SELF_REGISTER");
-	    return ;
-	}
+            return;
+        }
 
-	// ********* REGISTER NEW TEMPLATE ********
-	if (req.getParameter("REGISTER_TEMPLATE_LIB") != null) {
-	    log("Nu lägger vi till ett nytt set") ;
+        // ********* DELETE A SELF_REGISTERED ROLE ********
+        if (req.getParameter("DEL_SELF_REG_ROLE") != null) {
 
-	    // Lets get the new library name and validate it
-	    String newLibName = req.getParameter("TEMPLATE_LIB_NAME")  ;
-	    if (newLibName == null) {
-		String header = "ConfAdmin servlet. " ;
+            // Lets check if the user is a superadmin
+            if (Administrator.checkAdminRights(req) == false) {
+                new ConfError(req, res, "ConfAdmin", 64);
+                return;
+            }
+
+
+            // Lets get the role id the user wants to delete
+            String selfRegRoleId = req.getParameter("CURR_SELF_REGISTER_ROLES");
+            if (selfRegRoleId == null) {
+                String header = "ConfAdmin servlet. ";
+                new ConfError(req, res, header, 87);
+                return;
+            }
+
+            confref.sqlUpdateProcedure("A_SelfRegRoles_Delete", new String[]{params.getProperty("META_ID"), selfRegRoleId});
+            res.sendRedirect("ConfAdmin?ADMIN_TYPE=SELF_REGISTER");
+            return;
+        }
+
+        // ********* REGISTER NEW TEMPLATE ********
+        if (req.getParameter("REGISTER_TEMPLATE_LIB") != null) {
+            log("Nu lägger vi till ett nytt set");
+
+            // Lets get the new library name and validate it
+            String newLibName = req.getParameter("TEMPLATE_LIB_NAME");
+            if (newLibName == null) {
+                String header = "ConfAdmin servlet. ";
                 new ConfError(req, res, header, 80);
-		return ;
-	    }
-	    newLibName = super.verifySqlText(newLibName) ;
+                return;
+            }
+            newLibName = super.verifySqlText(newLibName);
 
-	    // Lets check if we already have a templateset with that name
+            // Lets check if we already have a templateset with that name
             String libNameExists = confref.sqlProcedureStr("A_FindTemplateLib", new String[]{newLibName});
-	    if( !libNameExists.equalsIgnoreCase("-1") ) {
-		String header = "ConfAdmin servlet. " ;
+            if (!libNameExists.equalsIgnoreCase("-1")) {
+                String header = "ConfAdmin servlet. ";
                 new ConfError(req, res, header, 84);
-		return ;
-	    }
+                return;
+            }
 
             confref.sqlUpdateProcedure("A_AddTemplateLib", new String[]{newLibName});
 
-	    // Lets copy the original folders to the new foldernames
-	    int metaId = getMetaId(req) ;
-	    FileManager fileObj = new FileManager() ;
+            // Lets copy the original folders to the new foldernames
+            int metaId = getMetaId(req);
+            FileManager fileObj = new FileManager();
 
-	    File templateSrc = new File(imcref.getExternalTemplateFolder(metaId, user), "original") ;
-	    File imageSrc = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user), "original") ;
-	    File templateTarget = new File(imcref.getExternalTemplateFolder(metaId, user), newLibName) ;
-	    File imageTarget = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user), newLibName) ;
+            File templateSrc = new File(imcref.getExternalTemplateFolder(metaId, user), "original");
+            File imageSrc = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user), "original");
+            File templateTarget = new File(imcref.getExternalTemplateFolder(metaId, user), newLibName);
+            File imageTarget = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user), newLibName);
 
-	    fileObj.copyDirectory(templateSrc, templateTarget) ;
-	    fileObj.copyDirectory(imageSrc, imageTarget) ;
+            fileObj.copyDirectory(templateSrc, templateTarget);
+            fileObj.copyDirectory(imageSrc, imageTarget);
 
-	    res.sendRedirect("ConfAdmin?ADMIN_TYPE=META") ;
-	    return ;
-	}
+            res.sendRedirect("ConfAdmin?ADMIN_TYPE=META");
+            return;
+        }
 
-	// ********* PREPARE ADMIN TEMPLATES ********
-	if (req.getParameter("UPLOAD_CONF") != null) {
-	    String libName = (req.getParameter("TEMPLATE_NAME")==null) ? "" : (req.getParameter("TEMPLATE_NAME")) ;
-	    String uploadType = (req.getParameter("UPLOAD_TYPE")==null) ? "" : (req.getParameter("UPLOAD_TYPE")) ;
+        // ********* PREPARE ADMIN TEMPLATES ********
+        if (req.getParameter("UPLOAD_CONF") != null) {
+            String libName = (req.getParameter("TEMPLATE_NAME") == null) ? "" : (req.getParameter("TEMPLATE_NAME"));
+            String uploadType = (req.getParameter("UPLOAD_TYPE") == null) ? "" : (req.getParameter("UPLOAD_TYPE"));
 
-	    params.setProperty("TEMPLATE_NAME" ,libName) ;
-	    params.setProperty("UPLOAD_TYPE" ,uploadType) ;
+            params.setProperty("TEMPLATE_NAME", libName);
+            params.setProperty("UPLOAD_TYPE", uploadType);
 
-	    String url = "ConfAdmin?ADMIN_TYPE=META" ;
-	    url += "&setname=" + libName + "&UPLOAD_TYPE=" + uploadType ;
-	    res.sendRedirect(url) ;
-	    return ;
-	}
+            String url = "ConfAdmin?ADMIN_TYPE=META";
+            url += "&setname=" + libName + "&UPLOAD_TYPE=" + uploadType;
+            res.sendRedirect(url);
+            return;
+        }
 
-	// ********* SET TEMPLATE LIB FOR A CONFERENCE  ********
-	if (req.getParameter("SET_TEMPLATE_LIB") != null) {
-	    log("Lets set a new template set for the conference") ;
+        // ********* SET TEMPLATE LIB FOR A CONFERENCE  ********
+        if (req.getParameter("SET_TEMPLATE_LIB") != null) {
+            log("Lets set a new template set for the conference");
 
-	    // Lets get the new library name and validate it
-	    String newLibName = req.getParameter("TEMPLATE_ID")  ;
-	    if (newLibName == null) {
-		String header = "ConfAdmin servlet. " ;
+            // Lets get the new library name and validate it
+            String newLibName = req.getParameter("TEMPLATE_ID");
+            if (newLibName == null) {
+                String header = "ConfAdmin servlet. ";
                 new ConfError(req, res, header, 80);
-		return ;
-	    }
+                return;
+            }
 
-	    // Lets find the selected template in the database and get its id
-	    // if not found, -1 will be returned
+            // Lets find the selected template in the database and get its id
+            // if not found, -1 will be returned
             String templateId = confref.sqlProcedureStr("A_GetTemplateIdFromName", new String[]{newLibName});
-	    if(templateId.equalsIgnoreCase("-1")) {
-		String header = "ConfAdmin servlet. " ;
+            if (templateId.equalsIgnoreCase("-1")) {
+                String header = "ConfAdmin servlet. ";
                 new ConfError(req, res, header, 81);
-		return ;
-	    }
-	    // Ok, lets update the conference with this new templateset.
-            confref.sqlUpdateProcedure("A_SetTemplateLib", new String[]{params.getProperty("META_ID"),templateId});
+                return;
+            }
+            // Ok, lets update the conference with this new templateset.
+            confref.sqlUpdateProcedure("A_SetTemplateLib", new String[]{params.getProperty("META_ID"), templateId});
 
-	    res.sendRedirect("ConfAdmin?ADMIN_TYPE=META") ;
-	    return ;
-	} // SET TEMPLATE LIB
+            res.sendRedirect("ConfAdmin?ADMIN_TYPE=META");
+            return;
+        } // SET TEMPLATE LIB
 
-	// ********* DELETE REPLY ********
-	if (req.getParameter("DELETE_REPLY") != null) {
-	    log("Nu tar vi bort inlägg") ;
-	    // Lets get the discusssion id
-	    String discId = params.getProperty("DISC_ID") ;
+        // ********* DELETE REPLY ********
+        if (req.getParameter("DELETE_REPLY") != null) {
+            log("Nu tar vi bort inlägg");
+            // Lets get the discusssion id
+            String discId = params.getProperty("DISC_ID");
 
-	    // Lets get all the replies id:s
-	    String repliesIds[] = this.getDelReplyParameters(req) ;
+            // Lets get all the replies id:s
+            String repliesIds[] = this.getDelReplyParameters(req);
 
-	    // Lets delete all marked replies. Observe that the first one wont be deleted!
-	    // if the user wants to delete the first one then he has to delete the discussion
-	    if( repliesIds != null ) {
-		for(int i = 0 ; i < repliesIds.length ; i++ ) {
-                    confref.sqlUpdateProcedure("A_DeleteReply", new String[]{discId,repliesIds[i]});
-		}
-	    }
-	    res.sendRedirect("ConfAdmin?ADMIN_TYPE=REPLY") ;
-	    return ;
-	}
+            // Lets delete all marked replies. Observe that the first one wont be deleted!
+            // if the user wants to delete the first one then he has to delete the discussion
+            if (repliesIds != null) {
+                for (int i = 0; i < repliesIds.length; i++) {
+                    confref.sqlUpdateProcedure("A_DeleteReply", new String[]{discId, repliesIds[i]});
+                }
+            }
+            res.sendRedirect("ConfAdmin?ADMIN_TYPE=REPLY");
+            return;
+        }
 
-	// ********* RESAVE REPLY ********
-	if (req.getParameter("RESAVE_REPLY") != null) {
-	    // Lets get all the replies id:s
-	    String repliesIds[] = this.getDelReplyParameters(req) ;
+        // ********* RESAVE REPLY ********
+        if (req.getParameter("RESAVE_REPLY") != null) {
+            // Lets get all the replies id:s
+            String repliesIds[] = this.getDelReplyParameters(req);
 
-	    // Lets get the seleted textboxes headers and texts values.
-	    if( repliesIds != null ) {
-		for(int i = 0 ; i < repliesIds.length ; i++ ) {
-		    String newText = req.getParameter("TEXT_BOX_" + repliesIds[i]) ;
-		    if( newText.equals("") || newText == null) {
-			ConfError err = new ConfError() ;
-			newText = err.getErrorMessage(req, 70) ;
-		    }
+            // Lets get the seleted textboxes headers and texts values.
+            if (repliesIds != null) {
+                for (int i = 0; i < repliesIds.length; i++) {
+                    String newText = req.getParameter("TEXT_BOX_" + repliesIds[i]);
+                    if (newText.equals("") || newText == null) {
+                        ConfError err = new ConfError();
+                        newText = err.getErrorMessage(req, 70);
+                    }
 
-		    String newHeader = req.getParameter("REPLY_HEADER_" + repliesIds[i]) ;
-		    if( newHeader.equals("") || newHeader == null) {
-			ConfError err = new ConfError() ;
-			newHeader = err.getErrorMessage(req, 71) ;
-		    }
+                    String newHeader = req.getParameter("REPLY_HEADER_" + repliesIds[i]);
+                    if (newHeader.equals("") || newHeader == null) {
+                        ConfError err = new ConfError();
+                        newHeader = err.getErrorMessage(req, 71);
+                    }
 
-		    // Lets validate the new text for the sql question
-		    newHeader = super.verifySqlText(newHeader) ;
-		    newText = super.verifySqlText(newText) ;
+                    // Lets validate the new text for the sql question
+                    newHeader = super.verifySqlText(newHeader);
+                    newText = super.verifySqlText(newText);
 
-                    confref.sqlUpdateProcedure("A_UpdateReply", new String[]{repliesIds[i],newHeader,newText});
+                    confref.sqlUpdateProcedure("A_UpdateReply", new String[]{repliesIds[i], newHeader, newText});
 
-		}
-	    }
-	    res.sendRedirect("ConfAdmin?ADMIN_TYPE=REPLY") ;
-	    return ;
-	}
+                }
+            }
+            res.sendRedirect("ConfAdmin?ADMIN_TYPE=REPLY");
+            return;
+        }
 
-	// ********* DELETE DISCUSSION ********
-	if (req.getParameter("DELETE_DISCUSSION") != null) {
+        // ********* DELETE DISCUSSION ********
+        if (req.getParameter("DELETE_DISCUSSION") != null) {
 
-	    // Lets get all the discussion id:s
-	    String discIds[] = this.getDelDiscParameters(req) ;
+            // Lets get all the discussion id:s
+            String discIds[] = this.getDelDiscParameters(req);
 
-	    // Lets delete all the discussion and all the replies in that discussion.
-	    if( discIds != null ) {
-		for(int i = 0 ; i < discIds.length ; i++ ) {
+            // Lets delete all the discussion and all the replies in that discussion.
+            if (discIds != null) {
+                for (int i = 0; i < discIds.length; i++) {
                     confref.sqlUpdateProcedure("A_DeleteDiscussion", new String[]{discIds[i]});
-		}
-	    }
-	    res.sendRedirect("ConfAdmin?ADMIN_TYPE=DISCUSSION") ;
-	    return ;
-	}
+                }
+            }
+            res.sendRedirect("ConfAdmin?ADMIN_TYPE=DISCUSSION");
+            return;
+        }
 
-	// ********* DELETE FORUM ********
-	if (req.getParameter("DELETE_FORUM") != null) {
-	    log("Nu tar vi bort ett forum") ;
-	    params = this.getDelForumParameters(req, params) ;
+        // ********* DELETE FORUM ********
+        if (req.getParameter("DELETE_FORUM") != null) {
+            log("Nu tar vi bort ett forum");
+            params = this.getDelForumParameters(req, params);
 
-	    // Lets get the forum_id and set our session object before updating
-	    String aForumId = params.getProperty("FORUM_ID") ;
+            // Lets get the forum_id and set our session object before updating
+            String aForumId = params.getProperty("FORUM_ID");
 
-	    // Lets get all discussions for that forum and delete those before deleting the forum
-	    // GetAllDiscsInForum @aForumId int
-            String discs[] = confref.sqlProcedure("A_GetAllDiscsInForum" , new String[]{aForumId});
-	    if( discs != null) {
-		for( int i = 0 ; i < discs.length; i++ ) {
+            // Lets get all discussions for that forum and delete those before deleting the forum
+            // GetAllDiscsInForum @aForumId int
+            String discs[] = confref.sqlProcedure("A_GetAllDiscsInForum", new String[]{aForumId});
+            if (discs != null) {
+                for (int i = 0; i < discs.length; i++) {
                     confref.sqlUpdateProcedure("A_DeleteDiscussion", new String[]{discs[i]});
-		}
-	    }
+                }
+            }
 
-	    // DeleteForum @aForumId int
+            // DeleteForum @aForumId int
             confref.sqlUpdateProcedure("A_DeleteForum", new String[]{params.getProperty("FORUM_ID")});
             this.doGet(req, res);
-	    return ;
-	}
+            return;
+        }
 
-	// ********* ADD FORUM ********
-	if (req.getParameter("ADD_FORUM") != null) {
-	    log("Lets add a forum") ;
-	    // Lets get addForum parameters
-	    params = this.getAddForumParameters(req, params) ;
+        // ********* ADD FORUM ********
+        if (req.getParameter("ADD_FORUM") != null) {
+            log("Lets add a forum");
+            // Lets get addForum parameters
+            params = this.getAddForumParameters(req, params);
 
-	    // Lets verify the parameters for the sql questions.
-	    params = super.verifyForSql(params) ;
+            // Lets verify the parameters for the sql questions.
+            params = super.verifyForSql(params);
 
-	    // Lets check if a forum with that name exists
+            // Lets check if a forum with that name exists
 
-            String foundIt = confref.sqlProcedureStr("A_FindForumName", new String[]{params.getProperty("META_ID"),params.getProperty("NEW_FORUM_NAME")});
+            String foundIt = confref.sqlProcedureStr("A_FindForumName", new String[]{params.getProperty("META_ID"), params.getProperty("NEW_FORUM_NAME")});
 
-	    if( !foundIt.equalsIgnoreCase("-1") ) {
-		String header = "ConfAdmin servlet. " ;
+            if (!foundIt.equalsIgnoreCase("-1")) {
+                String header = "ConfAdmin servlet. ";
                 new ConfError(req, res, header, 85);
-		return ;
-	    }
+                return;
+            }
 
-	    //	AddNewForum @meta_id int, @forum_name varchar(255), @archive_mode char, @archive_time int
+            //	AddNewForum @meta_id int, @forum_name varchar(255), @archive_mode char, @archive_time int
 
             final String archiveMode = "A";
             final String archiveTime = "30";
-            confref.sqlUpdateProcedure("A_AddNewForum", new String[]{params.getProperty("META_ID"),params.getProperty("NEW_FORUM_NAME"), archiveMode,archiveTime});
-	    this.doGet(req, res) ;
-	    return ;
-	}
-
-	// ********* CHANGE FORUM NAME ********
-	if (req.getParameter("CHANGE_FORUM_NAME") != null) {
-
-	    // Lets get addForum parameters
-	    params = this.getRenameForumParameters(req, params) ;
-
-	    // Lets verify the parameters for the sql questions.
-	    params = super.verifyForSql(params) ;
-
-            confref.sqlUpdateProcedure("A_RenameForum", new String[]{params.getProperty("FORUM_ID"),params.getProperty("NEW_FORUM_NAME")});
+            confref.sqlUpdateProcedure("A_AddNewForum", new String[]{params.getProperty("META_ID"), params.getProperty("NEW_FORUM_NAME"), archiveMode, archiveTime});
             this.doGet(req, res);
-	    return ;
-	}
-	// ********* SET SHOW_DISCUSSION_COUNTER ********
-	if (req.getParameter("SHOW_DISCUSSION_NBR") != null) {
-	    log("Lets set the nbr of discussions to show") ;
-	    // Lets get addForum parameters
-	    params = this.getShowDiscussionNbrParameters(req, params) ;
+            return;
+        }
 
-            confref.sqlUpdateProcedure("A_SetNbrOfDiscsToShow", new String[]{params.getProperty("FORUM_ID"),params.getProperty("NBR_OF_DISCS_TO_SHOW")});
+        // ********* CHANGE FORUM NAME ********
+        if (req.getParameter("CHANGE_FORUM_NAME") != null) {
+
+            // Lets get addForum parameters
+            params = this.getRenameForumParameters(req, params);
+
+            // Lets verify the parameters for the sql questions.
+            params = super.verifyForSql(params);
+
+            confref.sqlUpdateProcedure("A_RenameForum", new String[]{params.getProperty("FORUM_ID"), params.getProperty("NEW_FORUM_NAME")});
+            this.doGet(req, res);
+            return;
+        }
+        // ********* SET SHOW_DISCUSSION_COUNTER ********
+        if (req.getParameter("SHOW_DISCUSSION_NBR") != null) {
+            log("Lets set the nbr of discussions to show");
+            // Lets get addForum parameters
+            params = this.getShowDiscussionNbrParameters(req, params);
+
+            confref.sqlUpdateProcedure("A_SetNbrOfDiscsToShow", new String[]{params.getProperty("FORUM_ID"), params.getProperty("NBR_OF_DISCS_TO_SHOW")});
 
             res.sendRedirect("ConfAdmin?ADMIN_TYPE=FORUM");
-	    return ;
-	}
+            return;
+        }
 
     } // DoPost
 
@@ -327,244 +324,238 @@ public class ConfAdmin extends Conference {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if (super.checkSession(req, res) == false) return;
-
         // Lets get the standard SESSION parameters
         Properties params = this.getStandardParameters(req);
 
-	// Lets get the user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
-	if(user == null) return ;
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        if (!isUserAuthorized(req, res, user)) {
+            return;
+        }
 
-	if ( !isUserAuthorized( req, res, user ) ) {
-	    return;
-	}
+        // Lets get serverinformation
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
 
-	// Lets get serverinformation
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface() ;
-
-	// Lets check that the user is an administrator
-        if (super.userHasAdminRights( imcref, Integer.parseInt( params.getProperty("META_ID") ), user ) == false) {
-	    String header = "ConfAdmin servlet. " ;
+        // Lets check that the user is an administrator
+        if (super.userHasAdminRights(imcref, Integer.parseInt(params.getProperty("META_ID")), user) == false) {
+            String header = "ConfAdmin servlet. ";
             new ConfError(req, res, header, 6);
-	    return ;
-	}
+            return;
+        }
 
-	// Lets get the admintype from the requestobject
-	String adminWhat = (req.getParameter("ADMIN_TYPE")==null) ? "" : (req.getParameter("ADMIN_TYPE")) ;
+        // Lets get the admintype from the requestobject
+        String adminWhat = (req.getParameter("ADMIN_TYPE") == null) ? "" : (req.getParameter("ADMIN_TYPE"));
 
-	VariableManager vm = new VariableManager();
-	String htmlFile = "";
+        VariableManager vm = new VariableManager();
+        String htmlFile = "";
 
-	// *********** ADMIN SELF_REGISTER *************
-	// Lets build the selfregister page to the user
-	if (adminWhat.equalsIgnoreCase("SELF_REGISTER") ) {
+        // *********** ADMIN SELF_REGISTER *************
+        // Lets build the selfregister page to the user
+        if (adminWhat.equalsIgnoreCase("SELF_REGISTER")) {
 
-	    // Lets check if the user is a superadmin
-	    if( Administrator.checkAdminRights(req,res)== false ) {
+            // Lets check if the user is a superadmin
+            if (Administrator.checkAdminRights(req) == false) {
                 new ConfError(req, res, "ConfAdmin", 64);
-		return ;
-	    }
+                return;
+            }
 
 
-	    // Lets get the current self register roles from DB
+            // Lets get the current self register roles from DB
             String sqlAnswer[] = confref.sqlProcedure("A_SelfRegRoles_GetAll", new String[]{params.getProperty("META_ID")});
             Vector selfRegV = super.convert2Vector(sqlAnswer);
-	    String selfRegList = Html.createHtmlOptionList( "", selfRegV ) ;
+            String selfRegList = Html.createHtmlOptionList("", selfRegV);
 
-	    // Lets ALL avaible self_register roles from DB
-	    String langPrefix = user.getLangPrefix() ;
+            // Lets ALL avaible self_register roles from DB
+            String langPrefix = user.getLangPrefix();
 
             String sqlAnswer2[] = imcref.sqlProcedure("RoleGetConferenceAllowed", new String[]{langPrefix});
-	    Vector allSelfRegV = super.convert2Vector(sqlAnswer2) ;
-	    String allSelfRegList = Html.createHtmlOptionList( "", allSelfRegV ) ;
+            Vector allSelfRegV = super.convert2Vector(sqlAnswer2);
+            String allSelfRegList = Html.createHtmlOptionList("", allSelfRegV);
 
-	    // Lets build the Responsepage
+            // Lets build the Responsepage
 
-	    vm.addProperty("SELFREG_ROLES_LIST", selfRegList ) ;
-	    vm.addProperty("ALL_SELFREG_ROLES_LIST", allSelfRegList ) ;
-	    vm.addProperty("UNADMIN_LINK_HTML", FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE );
+            vm.addProperty("SELFREG_ROLES_LIST", selfRegList);
+            vm.addProperty("ALL_SELFREG_ROLES_LIST", allSelfRegList);
+            vm.addProperty("UNADMIN_LINK_HTML", FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE);
 
-	    htmlFile = "Conf_Admin_Template3.htm";
-	    //return ;
-	}
+            htmlFile = "Conf_Admin_Template3.htm";
+            //return ;
+        }
 
-	// *********** ADMIN META *************
-	if (adminWhat.equalsIgnoreCase("META") ) {
+        // *********** ADMIN META *************
+        if (adminWhat.equalsIgnoreCase("META")) {
 
-	    // Lets check which page we should show, the standard meta page or
-	    // the upload image/template page
+            // Lets check which page we should show, the standard meta page or
+            // the upload image/template page
 
-	    String setName = req.getParameter("setname") ;
-	    if(	setName != null ) {
+            String setName = req.getParameter("setname");
+            if (setName != null) {
 
-		String uploadType = req.getParameter("UPLOAD_TYPE") ;
-		if( uploadType == null ) {
-		    String header = "ConfAdmin servlet. " ;
+                String uploadType = req.getParameter("UPLOAD_TYPE");
+                if (uploadType == null) {
+                    String header = "ConfAdmin servlet. ";
                     new ConfError(req, res, header, 83);
-		    return ;
-		}
+                    return;
+                }
 
-		// Ok, Lets get root path to the external type
-		String metaId= params.getProperty("META_ID") ;
+                // Ok, Lets get root path to the external type
+                String metaId = params.getProperty("META_ID");
 
-		vm.addProperty("UPLOAD_TYPE", uploadType );
-		vm.addProperty("FOLDER_NAME", setName );
-		vm.addProperty("META_ID", metaId);
-		vm.addProperty("UNADMIN_LINK_HTML", FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE );
+                vm.addProperty("UPLOAD_TYPE", uploadType);
+                vm.addProperty("FOLDER_NAME", setName);
+                vm.addProperty("META_ID", metaId);
+                vm.addProperty("UNADMIN_LINK_HTML", FORUM_TEMPLATE2_UNADMIN_LINK_TEMPLATE);
 
-		htmlFile = "Conf_Admin_Template2.htm" ;
+                htmlFile = "Conf_Admin_Template2.htm";
 
-		// Ok, were gonna show our standard meta page
+                // Ok, were gonna show our standard meta page
             } else {
 
-		// Lets get the current template set for this metaid
+                // Lets get the current template set for this metaid
                 String currTemplateSet = confref.sqlProcedureStr("A_GetTemplateLib", new String[]{params.getProperty("META_ID")});
 
-		// Lets get all current template sets
+                // Lets get all current template sets
                 String sqlAnswer[] = confref.sqlProcedure("A_GetAllTemplateLibs", new String[]{});
-		Vector templateV = super.convert2Vector(sqlAnswer) ;
+                Vector templateV = super.convert2Vector(sqlAnswer);
 
-		// Lets fill the select box	with forums
-		String templateList = Html.createHtmlOptionList( "", templateV ) ;
+                // Lets fill the select box	with forums
+                String templateList = Html.createHtmlOptionList("", templateV);
 
-		// Lets build the Responsepage
-		//VariableManager vm = new VariableManager() ;
-		vm.addProperty("TEMPLATE_LIST", templateList ) ;
-		vm.addProperty("A_META_ID", params.getProperty("META_ID") ) ;
-		vm.addProperty("CURRENT_TEMPLATE_SET", currTemplateSet ) ;
-		vm.addProperty("UNADMIN_LINK_HTML", FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE );
+                // Lets build the Responsepage
+                //VariableManager vm = new VariableManager() ;
+                vm.addProperty("TEMPLATE_LIST", templateList);
+                vm.addProperty("A_META_ID", params.getProperty("META_ID"));
+                vm.addProperty("CURRENT_TEMPLATE_SET", currTemplateSet);
+                vm.addProperty("UNADMIN_LINK_HTML", FORUM_TEMPLATE1_UNADMIN_LINK_TEMPLATE);
 
-		htmlFile = "Conf_Admin_Template1.htm" ;
-		//return ;
-	    }
-	}
+                htmlFile = "Conf_Admin_Template1.htm";
+                //return ;
+            }
+        }
 
-	// *********** ADMIN FORUM *************
-	if (adminWhat.equalsIgnoreCase("FORUM") ) {
+        // *********** ADMIN FORUM *************
+        if (adminWhat.equalsIgnoreCase("FORUM")) {
 
-	    // Lets get the information from DB
+            // Lets get the information from DB
             String sqlAnswer[] = confref.sqlProcedure("A_GetAllForum", new String[]{params.getProperty("META_ID")});
             Vector forumV = super.convert2Vector(sqlAnswer);
 
-	    // Lets fill the select box with forums
-	    String forumList = Html.createHtmlOptionList( "", forumV ) ;
+            // Lets fill the select box with forums
+            String forumList = Html.createHtmlOptionList("", forumV);
 
-	    // Lets get all the showDiscs values
+            // Lets get all the showDiscs values
             String sqlAllDiscs[] = confref.sqlProcedure("A_GetAllNbrOfDiscsToShow", new String[]{params.getProperty("META_ID")});
 
-	    Vector sqlAllDiscsV = new Vector() ;
-	    if (sqlAllDiscs != null) {
-		sqlAllDiscsV = super.convert2Vector(sqlAllDiscs) ;
-	    }
-	    String discToShowList = Html.createHtmlOptionList( "", sqlAllDiscsV ) ;
+            Vector sqlAllDiscsV = new Vector();
+            if (sqlAllDiscs != null) {
+                sqlAllDiscsV = super.convert2Vector(sqlAllDiscs);
+            }
+            String discToShowList = Html.createHtmlOptionList("", sqlAllDiscsV);
 
-	    // Lets build the Responsepage
-	    vm.addProperty("FORUM_LIST", forumList ) ;
-	    vm.addProperty("NBR_OF_DISCS_TO_SHOW_LIST", discToShowList );
-	    vm.addProperty("UNADMIN_LINK_HTML", FORUM_UNADMIN_LINK_TEMPLATE );
-	    htmlFile = "Conf_Admin_Forum.htm" ;
-	}
+            // Lets build the Responsepage
+            vm.addProperty("FORUM_LIST", forumList);
+            vm.addProperty("NBR_OF_DISCS_TO_SHOW_LIST", discToShowList);
+            vm.addProperty("UNADMIN_LINK_HTML", FORUM_UNADMIN_LINK_TEMPLATE);
+            htmlFile = "Conf_Admin_Forum.htm";
+        }
 
-	// *********** ADMIN DISCUSSION *************
-	if (adminWhat.equalsIgnoreCase("DISCUSSION") ) {
-	    String adminDiscList = "Conf_Admin_Disc_List.htm" ;
-	    log("OK, Administrera Discussions") ;
+        // *********** ADMIN DISCUSSION *************
+        if (adminWhat.equalsIgnoreCase("DISCUSSION")) {
+            String adminDiscList = "Conf_Admin_Disc_List.htm";
+            log("OK, Administrera Discussions");
 
-	    // Lets get parameters
-	    String aMetaId = params.getProperty("META_ID") ;
-	    String aForumId = params.getProperty("FORUM_ID") ;
-	    String aLoginDate = params.getProperty("LAST_LOGIN_DATE") ;
+            // Lets get parameters
+            String aMetaId = params.getProperty("META_ID");
+            String aForumId = params.getProperty("FORUM_ID");
+            String aLoginDate = params.getProperty("LAST_LOGIN_DATE");
 
-	    // Lets get the part of an html page, wich will be parsed for every a Href reference
-	    File aHrefHtmlFile = new File(super.getExternalTemplateFolder(req), adminDiscList) ;
+            // Lets get the part of an html page, wich will be parsed for every a Href reference
+            File aHrefHtmlFile = new File(super.getExternalTemplateFolder(req), adminDiscList);
 
-	    // Lets get all New Discussions
+            // Lets get all New Discussions
             String sqlAnswerNew[][] = confref.sqlProcedureMulti("A_GetAllNewDiscussions", new String[]{aMetaId, aForumId, aLoginDate});
 
-	    // Lets get all Old Discussions
+            // Lets get all Old Discussions
             String sqlAnswerOld[][] = confref.sqlProcedureMulti("A_GetAllOldDiscussions", new String[]{aMetaId, aForumId, aLoginDate});
 
-	    // Lets build our tags vector.
-	    Vector tagsV = this.buildAdminTags() ;
+            // Lets build our tags vector.
+            Vector tagsV = this.buildAdminTags();
 
-	    // Lets preparse all NEW records
-	    String allNewRecs  = "" ;
-	    if( sqlAnswerNew != null ) {
-		if( sqlAnswerNew.length > 0)
-                    allNewRecs = discPreParse( sqlAnswerNew, tagsV, aHrefHtmlFile );
-	    }
-	    // Lets preparse all OLD records
-	    String allOldRecs  = "" ;
-	    if( sqlAnswerOld != null ) {
-		if( sqlAnswerOld.length > 0)
-                    allOldRecs = discPreParse( sqlAnswerOld, tagsV, aHrefHtmlFile );
-	    }
+            // Lets preparse all NEW records
+            String allNewRecs = "";
+            if (sqlAnswerNew != null) {
+                if (sqlAnswerNew.length > 0)
+                    allNewRecs = discPreParse(sqlAnswerNew, tagsV, aHrefHtmlFile);
+            }
+            // Lets preparse all OLD records
+            String allOldRecs = "";
+            if (sqlAnswerOld != null) {
+                if (sqlAnswerOld.length > 0)
+                    allOldRecs = discPreParse(sqlAnswerOld, tagsV, aHrefHtmlFile);
+            }
 
-	    // Lets build the Responsepage
-	    vm.addProperty("NEW_A_HREF_LIST", allNewRecs  ) ;
-	    vm.addProperty("OLD_A_HREF_LIST", allOldRecs  ) ;
-	    vm.addProperty("UNADMIN_LINK_HTML", DISC_UNADMIN_LINK_TEMPLATE );
+            // Lets build the Responsepage
+            vm.addProperty("NEW_A_HREF_LIST", allNewRecs);
+            vm.addProperty("OLD_A_HREF_LIST", allOldRecs);
+            vm.addProperty("UNADMIN_LINK_HTML", DISC_UNADMIN_LINK_TEMPLATE);
 
-	    htmlFile = "Conf_Admin_Disc.htm" ;
-	} // End admin discussion
+            htmlFile = "Conf_Admin_Disc.htm";
+        } // End admin discussion
 
-	// *********** ADMIN REPLIES *************
-	if (adminWhat.equalsIgnoreCase("REPLY") ) {
-	    String adminReplyList = "Conf_Admin_Reply_List.htm" ;
+        // *********** ADMIN REPLIES *************
+        if (adminWhat.equalsIgnoreCase("REPLY")) {
+            String adminReplyList = "Conf_Admin_Reply_List.htm";
 
-	    // Lets get the users userId
-	    String userId = ""+user.getUserId() ;
+            // Lets get the users userId
+            String userId = "" + user.getUserId();
 
-	    // Lets get the replylist from DB
-	    String discId = params.getProperty("DISC_ID") ;
+            // Lets get the replylist from DB
+            String discId = params.getProperty("DISC_ID");
 
             String sqlAnswer[][] = confref.sqlProcedureMulti("A_GetAllRepliesInDiscAdmin", new String[]{discId, userId});
 
-	    // Lets get the users sortorder from DB
-	    String metaId = params.getProperty("META_ID") ;
+            // Lets get the users sortorder from DB
+            String metaId = params.getProperty("META_ID");
 
             String sortOrderVal = confref.sqlProcedureStr("A_ConfUsersGetReplyOrderSel", new String[]{metaId, userId});
-	    String checkBoxStr = "" ;
+            String checkBoxStr = "";
 
-	    if( sortOrderVal.equalsIgnoreCase("1")) checkBoxStr = "checked" ;
+            if (sortOrderVal.equalsIgnoreCase("1")) checkBoxStr = "checked";
 
-	    // SYNTAX: date  first_name  last_name  headline   text reply_level
-	    // Lets build our variable list
-	    Vector tagsV = new Vector() ;
-	    tagsV.add("#REPLY_DATE#") ;
-	    tagsV.add("#FIRST_NAME#") ;
-	    tagsV.add("#LAST_NAME#") ;
-	    tagsV.add("#REPLY_HEADER#") ;
-	    tagsV.add("#REPLY_TEXT#") ;
-	    tagsV.add("#REPLY_LEVEL#") ;
-	    tagsV.add("#REPLY_ID#") ;
-	    tagsV.add("#REPLY_ID2#") ;
-	    tagsV.add("#REPLY_ID3#") ;
+            // SYNTAX: date  first_name  last_name  headline   text reply_level
+            // Lets build our variable list
+            Vector tagsV = new Vector();
+            tagsV.add("#REPLY_DATE#");
+            tagsV.add("#FIRST_NAME#");
+            tagsV.add("#LAST_NAME#");
+            tagsV.add("#REPLY_HEADER#");
+            tagsV.add("#REPLY_TEXT#");
+            tagsV.add("#REPLY_LEVEL#");
+            tagsV.add("#REPLY_ID#");
+            tagsV.add("#REPLY_ID2#");
+            tagsV.add("#REPLY_ID3#");
 
-	    // Lets get path to the imagefolder. http://dev.imcode.com/images/102/ConfDiscNew.gif
-	    String imagePath = super.getExternalImageFolder(req) + "ConfExpert.gif" ;
-	    // log("ImagePath: " + imagePath) ;
+            // Lets get path to the imagefolder. http://dev.imcode.com/images/102/ConfDiscNew.gif
+            String imagePath = super.getExternalImageFolder(req) + "ConfExpert.gif";
+            // log("ImagePath: " + imagePath) ;
 
-	    // Lets get the part of an html page, wich will be parsed for every a Href reference
-	    File templateLib = super.getExternalTemplateFolder(req) ;
-	    File aSnippetFile = new File(templateLib, adminReplyList) ;
+            // Lets get the part of an html page, wich will be parsed for every a Href reference
+            File templateLib = super.getExternalTemplateFolder(req);
+            File aSnippetFile = new File(templateLib, adminReplyList);
 
-	    // Lets preparse all records
-	    String allRecs = " " ;
-	    if (sqlAnswer != null) allRecs = replyPreParse(sqlAnswer, tagsV, aSnippetFile, imagePath) ;
+            // Lets preparse all records
+            String allRecs = " ";
+            if (sqlAnswer != null) allRecs = replyPreParse(sqlAnswer, tagsV, aSnippetFile, imagePath);
 
-	    // Lets build the Responsepage
-	    //VariableManager vm = new VariableManager() ;
-	    vm.addProperty("USER_SORT_ORDER", sortOrderVal) ;
-	    vm.addProperty("CHECKBOX_STATE", checkBoxStr) ;
-	    vm.addProperty("REPLIES_RECORDS", allRecs  ) ;
-	    vm.addProperty("UNADMIN_LINK_HTML", REPLY_UNADMIN_LINK_TEMPLATE );
-	    //return ;
-	    htmlFile = "Conf_Admin_Reply.htm" ;
-	} // End admin Reply
+            // Lets build the Responsepage
+            //VariableManager vm = new VariableManager() ;
+            vm.addProperty("USER_SORT_ORDER", sortOrderVal);
+            vm.addProperty("CHECKBOX_STATE", checkBoxStr);
+            vm.addProperty("REPLIES_RECORDS", allRecs);
+            vm.addProperty("UNADMIN_LINK_HTML", REPLY_UNADMIN_LINK_TEMPLATE);
+            //return ;
+            htmlFile = "Conf_Admin_Reply.htm";
+        } // End admin Reply
 
         this.sendHtml(req, res, vm, htmlFile);
 
@@ -576,8 +567,8 @@ public class ConfAdmin extends Conference {
      * Parses the Extended array with the htmlcode, which will be parsed
      * for all records in the array
      */
-    private String replyPreParse( String[][] DBArr, Vector tagsV,
-                                File htmlCodeFile, String imagePath) {
+    private String replyPreParse(String[][] DBArr, Vector tagsV,
+                                 File htmlCodeFile, String imagePath) {
 
         String htmlStr = "";
         // Lets do for all records...
@@ -591,7 +582,7 @@ public class ConfAdmin extends Conference {
 
             // Lets check if the user is some kind of "Master" eg. if he's
             // reply_level is equal to 1 and add the code returned to data.
-            dataV.set(5, this.getReplyLevelCode( dataV, imagePath));
+            dataV.set(5, this.getReplyLevelCode(dataV, imagePath));
 
             // Lets the id two more times, since our parser cant replace one tag
             // more than once
@@ -608,12 +599,12 @@ public class ConfAdmin extends Conference {
      * Returns the users Replylevel htmlcode. If the user is marked with something
      * a bitmap will occur, otherwise nothing will occur.
      */
-    private String getReplyLevelCode( Vector dataV, String ImagePath) {
+    private String getReplyLevelCode(Vector dataV, String ImagePath) {
 
         // Lets get the information regarding the replylevel
         int index = 5;
         String replyLevel = (String) dataV.elementAt(index);
-        String htmlCode = "";
+        String htmlCode;
         String imageStart = "<img src=\"";
         String imageEnd = "\">";
 
@@ -631,8 +622,8 @@ public class ConfAdmin extends Conference {
      * Parses the Extended array with the htmlcode, which will be parsed
      * for all records in the array
      */
-    private String discPreParse( String[][] DBArr, Vector tagsV,
-                               File htmlCodeFile ) {
+    private String discPreParse(String[][] DBArr, Vector tagsV,
+                                File htmlCodeFile) {
 
         String htmlStr = "";
         // Lets do for all records...

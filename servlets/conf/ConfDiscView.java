@@ -2,7 +2,7 @@
  *
  * @(#)ConfDiscView.java
  *
- * 
+ *
  *
  * Copyright (c)
  *
@@ -14,6 +14,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 /**
  * Html template in use:
@@ -23,7 +25,7 @@ import imcode.external.diverse.*;
  * <p/>
  * stored procedures in use:
  * -
- * 
+ *
  * @author Rickard Larsson
  * @version 1.0 21 Nov 2000
  */
@@ -34,19 +36,13 @@ public class ConfDiscView extends Conference {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
         // Lets get the standard parameters and validate them
         // Properties params = super.getParameters(req) ;
 
         // Lets get the standard SESSION parameters and validate them
         Properties params = MetaInfo.createPropertiesFromMetaInfoParameters( super.getConferenceSessionParameters( req ) );
 
-        // Lets get an user object  
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
         }
@@ -62,7 +58,7 @@ public class ConfDiscView extends Conference {
         vm.addProperty( "CONF_REPLY", "ConfReply?" + paramStr );
 
         this.sendHtml( req, res, vm, HTML_TEMPLATE );
-        //	log("Nu är ConfDiscView klar") ;  
+        //	log("Nu är ConfDiscView klar") ;
         return;
     }
 

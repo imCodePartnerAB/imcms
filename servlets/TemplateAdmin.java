@@ -24,15 +24,11 @@ import org.apache.commons.collections.iterators.ArrayIterator;
 public class TemplateAdmin extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        UserDomainObject user;
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkAdminRights( user ) ) {
+            String start_url = imcref.getStartUrl();
             Utility.redirect( req, res, start_url );
             return;
         }
@@ -47,16 +43,11 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        // Check if user logged on
-        UserDomainObject user;
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkAdminRights( user ) ) {
+            String start_url = imcref.getStartUrl();
             Utility.redirect( req, res, start_url );
             return;
         }

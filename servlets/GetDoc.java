@@ -54,7 +54,6 @@ public class GetDoc extends HttpServlet {
     public static String getDoc(int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res)
             throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
         String no_permission_url = Utility.getDomainPref("no_permission_url");
         File file_path = Utility.getDomainPrefPath("file_path");
@@ -65,42 +64,15 @@ public class GetDoc extends HttpServlet {
         vec.add("#EMAIL_SERVER_MASTER#");
         vec.add(eMailServerMaster);
 
-        HttpSession session = req.getSession(true);
-        UserDomainObject user = (UserDomainObject) session.getAttribute("logon.isDone");  // marker object
-        if (user == null) {
-            // Check the name and password for validity
-            String ip = req.getRemoteAddr();
-
-            user = StartDoc.ipAssignUser(ip);
-
-            // Valid login.  Make a note in the session object.
-            if (user == null) {
-                session.setAttribute("login.target",
-                        req.getRequestURL().append("?").append(req.getQueryString()).toString());
-                res.sendRedirect(start_url);
-                return null;
-            }
-            session.setAttribute("logon.isDone", user);  // just a marker object
-
-            // get type of browser
-            String value = req.getHeader("User-Agent");
-
-            if (value == null) {
-                value = "";
-            }
-            session.setAttribute("browser_id", value);
-
-            StartDoc.incrementSessionCounter(imcref, user, req);
-
-        }
-
-        if (session.getAttribute("open poll popup") != null) {
-            String poll_meta_id = (String) session.getAttribute("open poll popup");
-            session.removeAttribute("open poll popup");
-            res.sendRedirect("../popup.jsp?meta_id=" + meta_id + "&popup_meta_id=" + poll_meta_id);
+        HttpSession session = req.getSession( true );
+        if ( session.getAttribute( "open poll popup" ) != null ) {
+            String poll_meta_id = (String)session.getAttribute( "open poll popup" );
+            session.removeAttribute( "open poll popup" );
+            res.sendRedirect( "../popup.jsp?meta_id=" + meta_id + "&popup_meta_id=" + poll_meta_id );
             return null;
         }
 
+        UserDomainObject user = Utility.getLoggedOnUser(req);
         Stack history = (Stack) user.get("history");
         if (history == null) {
             history = new Stack();
@@ -133,14 +105,11 @@ public class GetDoc extends HttpServlet {
                 referringDocument = null;
             }
         }
-        documentRequest = new DocumentRequest(imcref, user, document, referringDocument, req);
 
+        documentRequest = new DocumentRequest( imcref, user, document, referringDocument, req );
         documentRequest.setEmphasize(req.getParameterValues("emp"));
 
-        // Get all cookies from request
         Cookie[] cookies = req.getCookies();
-
-        // Find cookies and put in hash.
         Hashtable cookieHash = new Hashtable();
 
         for (int i = 0; cookies != null && i < cookies.length; ++i) {
@@ -213,14 +182,17 @@ public class GetDoc extends HttpServlet {
                 return null;
 
             case 6:	//browser-doc
-                String br_id = (String) session.getAttribute("browser_id");
-                String tmp = imcref.sqlQueryStr("select top 1 to_meta_id\n"
-                        + "from browser_docs\n"
-                        + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
-                        + "where meta_id = ? and ? like user_agent order by value desc",
-                        new String[]{"" + meta_id, br_id});
-                if (tmp != null && (!"".equals(tmp))) {
-                    meta_id = Integer.parseInt(tmp);
+                String br_id = req.getHeader( "User-Agent" );
+                if ( br_id == null ) {
+                    br_id = "";
+                }
+                String tmp = imcref.sqlQueryStr( "select top 1 to_meta_id\n"
+                                                 + "from browser_docs\n"
+                                                 + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
+                                                 + "where meta_id = ? and ? like user_agent order by value desc",
+                                                 new String[]{"" + meta_id, br_id} );
+                if ( tmp != null && ( !"".equals( tmp ) ) ) {
+                    meta_id = Integer.parseInt( tmp );
                 }
 
                 Utility.redirect(req, res, "GetDoc?meta_id=" + meta_id + "&parent_meta_id=" + parent_meta_id);

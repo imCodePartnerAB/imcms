@@ -4,6 +4,7 @@ import javax.servlet.http.*;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.UserDomainObject;
 /**
   Return user from externaldoc editing or open metawindow for externaldoc.
 	Shows a change_meta.html which calls SaveMeta
@@ -19,9 +20,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-		String start_url        	= imcref.getStartUrl() ;
 
-		imcode.server.user.UserDomainObject user ;
 		String htmlStr;
 		int meta_id ;
 		int parent_meta_id ;
@@ -31,11 +30,7 @@ public class ChangeExternalDoc2 extends HttpServlet {
 		meta_id = Integer.parseInt( req.getParameter( "meta_id" ) ) ;
 		parent_meta_id = Integer.parseInt( req.getParameter( "parent_meta_id" ) ) ;
 
-		// Check if user logged on
-		if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
-			return ;
-		}
-
+		UserDomainObject user=Utility.getLoggedOnUser( req );
 		if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this
 			String output = AdminDoc.adminDoc(meta_id,meta_id,user,req,res) ;
 			if ( output != null ) {

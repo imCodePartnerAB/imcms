@@ -126,7 +126,7 @@ public class Document {
 
     public String getMenuText() throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission( this );
-        return internalDocument.getText();
+        return internalDocument.getMenuText();
     }
 
     public String getMenuImageURL() throws NoPermissionException {
@@ -141,7 +141,7 @@ public class Document {
 
     public void setMenuText( String menuText ) throws NoPermissionException {
         securityChecker.hasEditPermission( this );
-        internalDocument.setText( menuText );
+        internalDocument.setMenuText( menuText );
     }
 
     public void setMenuImageURL( String imageUrl ) throws NoPermissionException {
@@ -154,8 +154,7 @@ public class Document {
         return new User( internalDocument.getCreator() );
     }
 
-    DocumentDomainObject getInternal() throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
+    DocumentDomainObject getInternal() {
         return internalDocument;
     }
 
@@ -272,7 +271,7 @@ public class Document {
      * @throws NoPermissionException
      */
     public Section[] getSections() throws NoPermissionException {
-        securityChecker.hasEditPermission(this);
+        securityChecker.hasAtLeastDocumentReadPermission(this);
         SectionDomainObject[] sectionDomainObjects = internalDocument.getSections();
         Section[] sections = new Section[sectionDomainObjects.length];
         for (int i = 0; i < sectionDomainObjects.length; i++) {

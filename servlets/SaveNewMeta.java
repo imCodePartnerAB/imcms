@@ -52,7 +52,6 @@ public class SaveNewMeta extends HttpServlet {
         }
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
@@ -149,13 +148,8 @@ public class SaveNewMeta extends HttpServlet {
             }
         }
 
-        // Check if user logged on
-        imcode.server.user.UserDomainObject user;
-        if( (user = Utility.getLoggedOnUserOrRedirect( req, res, start_url )) == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         String usersLangPrefix = user.getLangPrefix();
-
         boolean userHasRights = DocumentMapper.checkUsersRights( imcref, user, ""+parentMetaId, usersLangPrefix, doc_type );
 
         // So... if the user may not create this particular doc-type... he's outta here!

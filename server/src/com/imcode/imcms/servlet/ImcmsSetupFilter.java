@@ -2,11 +2,12 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
-import com.imcode.imcms.api.NotLoggedInContentManagementSystem;
 import com.imcode.imcms.api.RequestConstants;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCService;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.commons.lang.StringUtils;
@@ -19,14 +20,22 @@ import java.io.IOException;
 public class ImcmsSetupFilter implements Filter {
 
     private Logger log = Logger.getLogger( ImcmsSetupFilter.class );
-    private static final String USER = "logon.isDone";
+    private static final String LOGGED_IN_USER = "logon.isDone";
 
     public void doFilter( ServletRequest request, ServletResponse response, FilterChain chain ) throws IOException, ServletException {
 
         HttpSession session = ( (HttpServletRequest)request ).getSession( true );
-        UserDomainObject currentUser = (UserDomainObject)session.getAttribute( USER );
+        UserDomainObject user = (UserDomainObject)session.getAttribute( LOGGED_IN_USER );
 
-        initRequestWithImcmsSystemAPI( currentUser, request );
+        if ( user == null ) {
+            log.debug("user == null");
+            String ip = request.getRemoteAddr();
+            user = getUserUserOrIpLoggedInUser( ip );
+            session.setAttribute( LOGGED_IN_USER, user );  // just a marker object
+        }
+        log.debug("user: " + user.getFullName());
+
+        initRequestWithImcmsSystemAPI( user, request );
 
         NDC.setMaxDepth(0);
         NDC.push(StringUtils.substringAfterLast(((HttpServletRequest)request).getRequestURI(), "/")) ;
@@ -35,13 +44,9 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     private void initRequestWithImcmsSystemAPI( UserDomainObject currentUser, ServletRequest request ) {
-        ContentManagementSystem imcmsSystem = null;
-        if ( null != currentUser ) {
-            IMCService service = (IMCService)ApplicationServer.getIMCServiceInterface();
-            imcmsSystem = new DefaultContentManagementSystem( service, currentUser );
-        } else {
-            imcmsSystem = new NotLoggedInContentManagementSystem();
-        }
+        ContentManagementSystem imcmsSystem;
+        IMCService service = (IMCService)ApplicationServer.getIMCServiceInterface();
+        imcmsSystem = new DefaultContentManagementSystem( service, currentUser );
         request.setAttribute( RequestConstants.SYSTEM, imcmsSystem );
     }
 
@@ -49,5 +54,36 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     public void destroy() {
+    }
+
+    /**
+     * Ip login  - check if user exist in ip-table
+     */
+    public static UserDomainObject getUserUserOrIpLoggedInUser( String remote_ip ) {
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        UserDomainObject user;
+
+        long ip = Utility.ipStringToLong( remote_ip );
+
+        // FIXME: Remove this sql-abomination!
+        String sqlStr;
+        sqlStr = "select distinct login_name,login_password,ip_access_id from users,user_roles_crossref,ip_accesses\n";
+        sqlStr += "where user_roles_crossref.user_id = ip_accesses.user_id\n";
+        sqlStr += "and users.user_id = user_roles_crossref.user_id\n";
+        sqlStr += "and ip_accesses.ip_start <= ?\n";
+        sqlStr += "and ip_accesses.ip_end >= ?\n";
+        sqlStr += "order by ip_access_id desc";
+
+        String user_data[] = imcref.sqlQuery( sqlStr, new String[]{"" + ip, "" + ip} );
+
+        if ( user_data.length > 0 ) {
+            user = imcref.verifyUser( user_data[0], user_data[1] );
+            user.setLoginType( "ip_access" );
+        } else {
+            user = imcref.verifyUser( "User", "user" );
+            user.setLoginType( "extern" );
+        }
+
+        return user;
     }
 }

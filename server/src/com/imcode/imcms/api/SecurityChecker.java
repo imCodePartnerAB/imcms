@@ -6,7 +6,7 @@ import imcode.server.user.UserDomainObject;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.imcode.imcms.api.NoPermissionException;
+import org.apache.log4j.Logger;
 
 class SecurityChecker {
 
@@ -14,16 +14,20 @@ class SecurityChecker {
     private final static String USER_ADMIN = "Useradmin";
 
     private DocumentMapper docMapper;
-    private imcode.server.user.UserDomainObject accessingUser;
+    private UserDomainObject accessingUser;
     private HashSet accessorRoles;
 
     private boolean isSuperAdmin;
     private boolean isUserAdmin;
 
+    private static Logger log = Logger.getLogger( SecurityChecker.class );
+
     SecurityChecker( DocumentMapper docMapper, UserDomainObject accessor, String[] accessorRoles ) {
         this.docMapper = docMapper;
         this.accessingUser = accessor;
         this.accessorRoles = new HashSet( Arrays.asList( accessorRoles ) );
+
+        log.debug("user: " + accessor.getFullName());
 
         isSuperAdmin = this.accessorRoles.contains( SUPERADMIN_ROLE );
         isUserAdmin = this.accessorRoles.contains( USER_ADMIN );

@@ -21,11 +21,6 @@ public class ChatManager extends ChatBase {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        //RequestDispatcher myDispatcher = req.getRequestDispatcher( "/servlet/StartDoc" );
-
-        // Lets validate the session, e.g has the user logged in to imCms?
-        if ( super.checkSession( req, res ) == false ) return;
-
         // Lets get the standard parameters and validate them
         MetaInfo.Parameters params = MetaInfo.getParameters( req );
         //if (super.checkParameters(req, res, params) == false) return ;
@@ -44,7 +39,6 @@ public class ChatManager extends ChatBase {
 
         if ( action == null ) {
             //OBS FIXA FELMEDELANDENA
-            action = "";
             String header = "ChatManager servlet. ";
             ChatError err = new ChatError( req, res, header, 3 );
             log( header + err.getErrorMsg() );

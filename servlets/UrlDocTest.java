@@ -1,6 +1,7 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.log4j.Logger;
 
@@ -32,12 +33,7 @@ public class UrlDocTest extends HttpServlet {
 		res.setContentType("text/html") ;
 		ServletOutputStream out = res.getOutputStream() ;
 
-		imcode.server.user.UserDomainObject user ;
-		// Check if user logged on
-		if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
-			return ;
-		}
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if (!imcref.checkAdminRights(user)) {
 			Utility.redirect(req,res,start_url) ;
 			return ;

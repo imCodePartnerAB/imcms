@@ -5,6 +5,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 /**
  * A class that allows Web users to upload local files to a web server's file system.
@@ -13,16 +14,8 @@ public class ImageUpload extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
         File file_path = Utility.getDomainPrefPath( "image_path" );
         String image_url = imcref.getImageUrl();
-
-        imcode.server.user.UserDomainObject user;
-
-        // Check if user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
 
         res.setContentType( "text/html" );
 
@@ -76,6 +69,7 @@ public class ImageUpload extends HttpServlet {
 
         File fn = new File( new File( file_path, folder ), filename );
 
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( file.length() > 0 ) {
             if ( fn.exists() ) {
                 Vector vec = new Vector();
@@ -100,8 +94,6 @@ public class ImageUpload extends HttpServlet {
         int countX = folderOptList.indexOf( folder );
         if ( countX > 0 )
             buff.insert( countX + folder.length() + 1, "selected" );
-
-        if ( folderOptList == null ) folderOptList = "";
 
         //String htmlStr = imcref.interpretAdminTemplate(meta_id,user,"change_img.html",img_no,0,0,0) ;
         //out.println(htmlStr) ;
@@ -157,7 +149,6 @@ public class ImageUpload extends HttpServlet {
         vec.add( "#folders#" );
         vec.add( buff.toString() );
 
-        String lang_prefix = user.getLangPrefix();
         String htmlStr = imcref.parseDoc( vec, "change_img.html", user);
         out.print( htmlStr );
 

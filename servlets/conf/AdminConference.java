@@ -64,19 +64,8 @@ public class AdminConference extends Administrator {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
-        // Lets validate the session
-        if ( checkSession( request, response ) == false ) {
-            return;
-        }
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( request, response ) ;
-        if(user == null) {
-            sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 1, response );
-            return ;
-        }
-
         // Lets verify that the user who tries to add a new user is an admin
+        UserDomainObject user = Utility.getLoggedOnUser( request );
         if (imcref.checkAdminRights(user) == false) {
             sendErrorMessage( imcref, eMailServerMaster, user, ERROR_HEADER, 2, response );
             return ;

@@ -2,6 +2,7 @@
 import imcode.external.diverse.RmiConf;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
 
@@ -10,7 +11,6 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,18 +22,7 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        String start_url = imcref.getStartUrl();
-
-        // Check if user logged on
-        if ( ( Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
-        HttpSession session = req.getSession( true );
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)session.getAttribute( "logon.isDone" );
-        if ( user == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
         res.setContentType( "text/html" );
         res.setHeader( "Cache-Control", "no-cache; must-revalidate;" );
@@ -67,10 +56,6 @@ public class ConfAndBillbTemplateUpload extends HttpServlet {
         } else if ( uploadType.equalsIgnoreCase( "IMAGE" ) ) {
             externalPath = new File( RmiConf.getImagePathForExternalDocument( imcref, Integer.parseInt( metaId ), user), folderName );
         } else {
-            return;
-        }
-
-        if ( externalPath == null ) {
             return;
         }
 

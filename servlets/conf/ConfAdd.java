@@ -1,5 +1,6 @@
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 import java.io.*;
 import java.util.*;
@@ -7,136 +8,131 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
+import imcode.util.Utility;
 
 public class ConfAdd extends Conference {
 
     private String HTML_TEMPLATE;
-    private String SERVLET_NAME;  // The name on this servlet
+    private String SERVLET_NAME;
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if (super.checkSession(req, res) == false) return;
+        // Lets get all parameters for this servlet
+        Properties params = this.getParameters(req);
 
-	// Lets get all parameters for this servlet
-	Properties params = this.getParameters(req) ;
+        UserDomainObject user = Utility.getLoggedOnUser(req);
+        if (!isUserAuthorized(req, res, user)) {
+            return;
+        }
 
-	// Lets get the user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
-	if(user == null) return ;
+        // Lets detect which addtype we have
+        String addType;
+        addType = req.getParameter("ADDTYPE");
 
-	if ( !isUserAuthorized( req, res, user ) ) {
-	    return;
-	}
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
 
-	// Lets detect which addtype we have
-	String addType = "" ;
-	addType = req.getParameter("ADDTYPE") ;
+        int metaId = Integer.parseInt(params.getProperty("META_ID"));
+        if (userHasRightToEdit(imcref, metaId, user)) {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface() ;
+            // ********* CANCEL ********
+            if (req.getParameter("CANCEL") != null || req.getParameter("CANCEL.x") != null) {
+                // Lets redirect to the servlet which holds in us.
+                res.sendRedirect("ConfDiscView");
+                return;
+            }
 
-	int metaId = Integer.parseInt( params.getProperty("META_ID") );
-	if ( userHasRightToEdit( imcref, metaId, user ) ) {
+            // ********* ADD DISCUSSION ********
+            if (addType.equalsIgnoreCase("DISCUSSION") && (req.getParameter("ADD") != null || req.getParameter("ADD.x") != null)) {
 
-	    // ********* CANCEL ********
-	    if( req.getParameter("CANCEL") != null || req.getParameter("CANCEL.x") != null ) {
-		// Lets redirect to the servlet which holds in us.
-		res.sendRedirect("ConfDiscView") ;
-		return ;
-	    }
+                // Lets add a new discussion to the database
+                String aForumId = params.getProperty("FORUM_ID");
+                String userId = "";
+                HttpSession session = req.getSession(false);
+                if (session != null) {
+                    userId = (String) session.getAttribute("Conference.user_id");
+                }
 
-	    // ********* ADD DISCUSSION ********
-	    if(addType.equalsIgnoreCase("DISCUSSION") && ( req.getParameter("ADD") != null || req.getParameter("ADD.x") != null ) ) {
-
-		// Lets add a new discussion to the database
-		String aForumId = params.getProperty("FORUM_ID") ;
-		String userId = "" ;
-		HttpSession session = req.getSession(false) ;
-		if (session != null) {
-		    userId = (String) session.getAttribute("Conference.user_id") ;
-		}
-
-		// Lets get the users reply level
+                // Lets get the users reply level
                 String level = confref.sqlProcedureStr("A_ConfUsersGetUserLevel", new String[]{params.getProperty("META_ID"), userId});
                 if (level.equalsIgnoreCase("-1")) {
                     log("An error occured in reading the users level");
                     level = "0";
-		}
+                }
 
-		// Lets verify the fields the user have had to write freetext in
-		// to verify that the sql questions wont go mad.
-		String addHeader = super.verifySqlText(params.getProperty("ADD_HEADER")) ;
-		String addText = super.verifySqlText(params.getProperty("ADD_TEXT")) ;
+                // Lets verify the fields the user have had to write freetext in
+                // to verify that the sql questions wont go mad.
+                String addHeader = super.verifySqlText(params.getProperty("ADD_HEADER"));
+                String addText = super.verifySqlText(params.getProperty("ADD_TEXT"));
 
-		// Lets check the data size
-		if(addText.length() > 32000) {
-		    String header = SERVLET_NAME + " servlet. " ;
+                // Lets check the data size
+                if (addText.length() > 32000) {
+                    String header = SERVLET_NAME + " servlet. ";
                     new ConfError(req, res, header, 74);
-		    return ;
-		}
+                    return;
+                }
 
-		// Ok, Lets add the discussion to DB
-                confref.sqlUpdateProcedure("A_AddNewDisc", new String[]{aForumId, userId, addHeader, addText, level} );
+                // Ok, Lets add the discussion to DB
+                confref.sqlUpdateProcedure("A_AddNewDisc", new String[]{aForumId, userId, addHeader, addText, level});
 
-		// Lets add the new discussion id to the session object
-		// Ok, Lets get the last discussion in that forum
-		if (session != null) {
-                    String latestDiscId = confref.sqlProcedureStr("A_GetLastDiscussionId", new String[]{params.getProperty("META_ID"),aForumId});
-		    session.setAttribute("Conference.disc_id", latestDiscId) ;
-		}
+                // Lets add the new discussion id to the session object
+                // Ok, Lets get the last discussion in that forum
+                if (session != null) {
+                    String latestDiscId = confref.sqlProcedureStr("A_GetLastDiscussionId", new String[]{params.getProperty("META_ID"), aForumId});
+                    session.setAttribute("Conference.disc_id", latestDiscId);
+                }
 
 
-		// Lets redirect to the servlet which holds in us.
-		res.sendRedirect("ConfDiscView") ;
-		return ;
-	    }
+                // Lets redirect to the servlet which holds in us.
+                res.sendRedirect("ConfDiscView");
+                return;
+            }
 
-	    // ********* ADD REPLY ********
-	    // This is a workaround to fix the possibility to use gifs OR submit buttons
+            // ********* ADD REPLY ********
+            // This is a workaround to fix the possibility to use gifs OR submit buttons
 
-	    if(addType.equalsIgnoreCase("REPLY") && ( req.getParameter("ADD") != null || req.getParameter("ADD.x") != null ) ) {
+            if (addType.equalsIgnoreCase("REPLY") && (req.getParameter("ADD") != null || req.getParameter("ADD.x") != null)) {
 
-		// Lets add a new Reply to the database
-		String discId = params.getProperty("DISC_ID") ;
-		String userId = "" ;
-		HttpSession session = req.getSession(false) ;
-		if (session != null) {
-		    userId = (String) session.getAttribute("Conference.user_id") ;
-		}
+                // Lets add a new Reply to the database
+                String discId = params.getProperty("DISC_ID");
+                String userId = "";
+                HttpSession session = req.getSession(false);
+                if (session != null) {
+                    userId = (String) session.getAttribute("Conference.user_id");
+                }
 
-		// Lets get the users reply level
+                // Lets get the users reply level
                 String level = confref.sqlProcedureStr("A_ConfUsersGetUserLevel", new String[]{params.getProperty("META_ID"), userId});
                 if (level.equalsIgnoreCase("-1")) {
-		    log("An error occured in reading the users level") ;
-		    level = "0" ;
-		}
+                    log("An error occured in reading the users level");
+                    level = "0";
+                }
 
-		// Lets verify the textfields
-		String addHeader = super.verifySqlText(params.getProperty("ADD_HEADER")) ;
-		String addText = super.verifySqlText(params.getProperty("ADD_TEXT")) ;
+                // Lets verify the textfields
+                String addHeader = super.verifySqlText(params.getProperty("ADD_HEADER"));
+                String addText = super.verifySqlText(params.getProperty("ADD_TEXT"));
 
-		// Lets check the data size
-		if(addText.length() > 32000) {
-		    String header = SERVLET_NAME + " servlet. " ;
+                // Lets check the data size
+                if (addText.length() > 32000) {
+                    String header = SERVLET_NAME + " servlet. ";
                     new ConfError(req, res, header, 74);
-		    return ;
-		}
+                    return;
+                }
 
 
-		// Ok, Lets add the reply
-                confref.sqlUpdateProcedure("A_AddReply", new String[]{userId,discId, addHeader,addText,level});
+                // Ok, Lets add the reply
+                confref.sqlUpdateProcedure("A_AddReply", new String[]{userId, discId, addHeader, addText, level});
 
-		// Lets redirect to the servlet which holds in us.
-		res.sendRedirect("ConfDiscView") ;
-		return ;
-	    }
-	} else {
-	    String header = SERVLET_NAME + " servlet. " ;
+                // Lets redirect to the servlet which holds in us.
+                res.sendRedirect("ConfDiscView");
+                return;
+            }
+        } else {
+            String header = SERVLET_NAME + " servlet. ";
             new ConfError(req, res, header, 100);
-	    return ;
-	}
+            return;
+        }
     } // DoPost
 
     /**
@@ -144,81 +140,75 @@ public class ConfAdd extends Conference {
      */
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if (super.checkSession(req, res) == false) return;
+        // Lets get all parameters for this servlet
+        Properties params = this.getParameters(req);
 
-	// Lets get all parameters for this servlet
-	Properties params = this.getParameters(req) ;
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        if (!isUserAuthorized(req, res, user)) {
+            return;
+        }
 
-	// Lets get the user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
-	if(user == null) return ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
 
-	if ( !isUserAuthorized( req, res, user ) ) {
-	    return;
-	}
+        int metaId = Integer.parseInt(params.getProperty("META_ID"));
+        if (userHasRightToEdit(imcref, metaId, user)) {
+            // Lets Get the session user id
+            // Ok, Lets get the last discussion in that forum
+            String loginUserId = "";
+            HttpSession session = req.getSession(false);
+            if (session != null) {
+                loginUserId = (String) session.getAttribute("Conference.user_id");
+            }
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface() ;
+            // Lets get a VariableManager
+            VariableManager vm = new VariableManager();
 
-	int metaId = Integer.parseInt( params.getProperty("META_ID") );
-	if ( userHasRightToEdit( imcref, metaId, user ) ) {
-	    // Lets Get the session user id
-	    // Ok, Lets get the last discussion in that forum
-	    String loginUserId = "" ;
-	    HttpSession session = req.getSession(false) ;
-	    if (session != null) {
-		loginUserId = (String) session.getAttribute("Conference.user_id") ;
-	    }
-
-	    // Lets get a VariableManager
-	    VariableManager vm = new VariableManager() ;
-
-	    // Lets get the users first and last names
+            // Lets get the users first and last names
             String firstName = confref.sqlProcedureStr("A_GetConfLoginNames", new String[]{params.getProperty("META_ID"), loginUserId, "1"});
             String lastName = confref.sqlProcedureStr("A_GetConfLoginNames", new String[]{params.getProperty("META_ID"), loginUserId, "2"});
 
-	    vm.addProperty("FIRST_NAME", firstName ) ;
-	    vm.addProperty("LAST_NAME",	lastName ) ;
-	    vm.addProperty("ADD_TYPE", params.getProperty("ADD_TYPE")) ;
+            vm.addProperty("FIRST_NAME", firstName);
+            vm.addProperty("LAST_NAME", lastName);
+            vm.addProperty("ADD_TYPE", params.getProperty("ADD_TYPE"));
 
-	    // Lets add the current forum name
+            // Lets add the current forum name
             String currForum = confref.sqlProcedureStr("A_GetForumName", new String[]{params.getProperty("FORUM_ID")});
-	    vm.addProperty("CURRENT_FORUM_NAME", currForum) ;
+            vm.addProperty("CURRENT_FORUM_NAME", currForum);
 
-	    // Lets get the addtype and add it to the page
-	    String addTypeHeader = "" ;
-	    if(params.getProperty("ADD_TYPE").equalsIgnoreCase("REPLY")) {
-		ConfError err = new ConfError() ;
-		addTypeHeader = err.getErrorMessage(req, 72) ;
-	    } else {
-		ConfError err = new ConfError() ;
-		addTypeHeader = err.getErrorMessage(req, 73) ;
-	    }
+            // Lets get the addtype and add it to the page
+            String addTypeHeader;
+            if (params.getProperty("ADD_TYPE").equalsIgnoreCase("REPLY")) {
+                ConfError err = new ConfError();
+                addTypeHeader = err.getErrorMessage(req, 72);
+            } else {
+                ConfError err = new ConfError();
+                addTypeHeader = err.getErrorMessage(req, 73);
+            }
 
-	    vm.addProperty("ADD_TYPE_HEADER", addTypeHeader) ;
+            vm.addProperty("ADD_TYPE_HEADER", addTypeHeader);
 
-	    // If addtype is reply, then lets get the header for the discussion
-	    // from the db and suggest it to the user
-	    String discHeader = "" ;
-	    if( params.getProperty("ADD_TYPE").equalsIgnoreCase("REPLY") ) {
-		String aDiscId = params.getProperty("DISC_ID") ;
+            // If addtype is reply, then lets get the header for the discussion
+            // from the db and suggest it to the user
+            String discHeader = "";
+            if (params.getProperty("ADD_TYPE").equalsIgnoreCase("REPLY")) {
+                String aDiscId = params.getProperty("DISC_ID");
                 String arr[] = confref.sqlProcedure("A_GetDiscussionHeader", new String[]{aDiscId});
-		if( arr != null) {
-		    if(arr.length > 0) {
-			discHeader = (String) arr[0] ;
-		    }
-		}
-	    }
-	    vm.addProperty("DISC_HEADER", discHeader) ;
-	    this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
-	    //	log("ConfAdd OK") ;
-	    return ;
-	} else {
-	    String header = SERVLET_NAME + " servlet. " ;
+                if (arr != null) {
+                    if (arr.length > 0) {
+                        discHeader = arr[0];
+                    }
+                }
+            }
+            vm.addProperty("DISC_HEADER", discHeader);
+            this.sendHtml(req, res, vm, HTML_TEMPLATE);
+            //	log("ConfAdd OK") ;
+            return;
+        } else {
+            String header = SERVLET_NAME + " servlet. ";
             new ConfError(req, res, header, 100);
-	    return ;
-	}
+            return;
+        }
 
     } //DoGet
 

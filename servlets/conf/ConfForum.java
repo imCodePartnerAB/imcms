@@ -1,5 +1,6 @@
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 import java.io.*;
 import java.util.*;
@@ -7,6 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
+import imcode.util.Utility;
 
 public class ConfForum extends Conference {
 
@@ -17,16 +19,10 @@ public class ConfForum extends Conference {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
         String htmlFile = HTML_TEMPLATE;
         if ( req.getParameter( "advancedView" ) != null ) htmlFile = HTML_TEMPLATE_EXT;
 
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
         }

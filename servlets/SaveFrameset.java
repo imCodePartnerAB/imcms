@@ -1,6 +1,7 @@
 
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
 
@@ -22,9 +23,6 @@ public class SaveFrameset extends HttpServlet {
 	*/
 	public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-		String start_url        	= imcref.getStartUrl() ;
-
-		imcode.server.user.UserDomainObject user ;
 		int meta_id ;
 
 		res.setContentType( "text/html" );
@@ -35,10 +33,7 @@ public class SaveFrameset extends HttpServlet {
 
         String frame_set = req.getParameter("frame_set");
 
-		// Check if user logged on
-		if( (user=Utility.getLoggedOnUserOrRedirect( req,res,start_url ))==null ) {
-			return ;
-		}
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
 		// Check if user has write rights
 		if ( !imcref.checkDocAdminRights(meta_id,user,65536 ) ) {	// Checking to see if user may edit this

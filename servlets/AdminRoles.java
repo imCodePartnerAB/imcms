@@ -7,6 +7,8 @@ import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 /**
  * Comments. This servlet will need the following stored procedures in the db
@@ -38,23 +40,9 @@ public class AdminRoles extends Administrator {
     public void doGet( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-        // Lets validate the session
-        if ( checkSession( req, res ) == false ) return;
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-
-        if ( user == null ) {
-            String header = "Error in AdminRoles.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-        }
-
         // Lets verify that the user who tries to add a new user is an admin
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminRoles.";
             String msg = "The user is not an administrator." + "<BR>";
@@ -95,22 +83,9 @@ public class AdminRoles extends Administrator {
     public void doPost( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        // Lets validate the session
-        if ( checkSession( req, res ) == false ) return;
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-        if ( user == null ) {
-            String header = "Error in AdminRoles.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-        }
-
-
         // Lets check if the user is an admin, otherwise throw him out.
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminRoles.";
             String msg = "The user is not an administrator." + "<BR>";

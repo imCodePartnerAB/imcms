@@ -206,10 +206,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             log.info( "ExternalAuthenticator not set." );
             log.info( "ExternalUserAndRoleMapper not set." );
         } else {
+            log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
             log.error(
                     "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
-            externalAuthenticatorName = null;
-            externalUserAndRoleMapperName = null;
         }
         imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( this );
         externalizedImcmsAuthAndMapper =
@@ -237,6 +236,10 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         UserDomainObject user = externalizedImcmsAuthAndMapper.getUser( login );
         if ( userAuthenticates ) {
             result = user;
+            if ( "user".equalsIgnoreCase( user.getLoginName() ) ) {
+                sessionCounter += 1;
+                sqlUpdateProcedure("IncSessionCounter", new String[0]);
+            }
             mainLog.info( "->User '" + login + "' successfully logged in." );
         } else if ( null == user ) {
             mainLog.info( "->User '" + login + "' failed to log in: User not found." );
@@ -331,9 +334,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             return "";
         }
 
-        StringBuffer tempbuffer = null;
-        StringBuffer templatebuffer = null;
-        StringBuffer superadmin = null;
+        StringBuffer tempbuffer;
+        StringBuffer templatebuffer;
+        StringBuffer superadmin;
         int doc_type = getDocType( Integer.parseInt( meta_id ) );
         try {
 
@@ -1103,12 +1106,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         }
     }
 
-    /**
-     * save template to disk
-     */
-    public int saveTemplate( String name, String file_name, byte[] template, boolean overwrite, String lang_prefix ) {
-        String sqlStr = "";
-
+    public int saveTemplate(String name, String file_name, byte[] template, boolean overwrite, String lang_prefix) {
+        String sqlStr;
         // check if template exists
         sqlStr = "select template_id from templates where simple_name = ?";
         String templateId = sqlQueryStr( sqlStr, new String[]{name} );
@@ -1165,8 +1164,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
             if ( fileObj.exists() && fileDate > date ) {
                 // if a template was not properly removed, the template
                 // with the most recens modified-date is returned
-                date = fileDate;
-
                 try {
                     fr = new BufferedReader( new InputStreamReader( new FileInputStream( fileObj ), "8859_1" ) );
                     suffix = suffixList[i];

@@ -5,33 +5,27 @@ import javax.servlet.http.* ;
 
 import imcode.util.* ;
 import imcode.server.* ;
+import imcode.server.user.UserDomainObject;
 
 public class LogOut extends HttpServlet {
-
-    /**
-	doGet()
-	*/
 	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-		String host 				= req.getHeader("Host") ;
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-		String login_url        	= Utility.getDomainPref( "admin_url" ) ;
-		String start_url        	= imcref.getStartUrl() ;
-		res.setContentType("text/html") ;
-		ServletOutputStream out = res.getOutputStream () ;
-		HttpSession session = req.getSession (true) ;
-		Object done = session.getAttribute("logon.isDone");  // marker object
-		imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done ;
-		if ( user == null ) {
-			res.sendRedirect(start_url) ;
-			return ;
-		}
-		Vector vec = new Vector() ;
-		vec.add("#start#") ;
-		vec.add(start_url) ;
-		vec.add("#login#") ;
-		vec.add(login_url) ;
-		String htmlStr = imcref.parseDoc(vec,"logged_out.html", user) ;
+
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        HttpSession session = req.getSession (true) ;
 		session.invalidate() ;
+
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+
+        res.setContentType("text/html") ;
+        ServletOutputStream out = res.getOutputStream () ;
+        Vector vec = new Vector() ;
+        vec.add("#start#") ;
+        String start_url = imcref.getStartUrl() ;
+        vec.add(start_url) ;
+        vec.add("#login#") ;
+        String login_url = Utility.getDomainPref( "admin_url" ) ;
+        vec.add(login_url) ;
+        String htmlStr = imcref.parseDoc(vec,"logged_out.html", user) ;
 		out.print(htmlStr) ;
 	}
 }

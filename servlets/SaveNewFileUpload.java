@@ -5,21 +5,16 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 public class SaveNewFileUpload extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
         File file_path = Utility.getDomainPrefPath( "file_path" );
 
-        imcode.server.user.UserDomainObject user;
-
-        // Check if user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
         res.setContentType( "text/html" );
         Utility.setNoCache(res);

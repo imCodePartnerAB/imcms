@@ -1,13 +1,3 @@
-/*
- *
- * @(#)BillBoard.java
- *
- *
- *
- * Copyright (c)
- *
- */
-
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 
@@ -16,34 +6,9 @@ import java.util.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
+import imcode.util.Utility;
 
-/**
- * superclas for billboard servlets.
- * <p/>
- * Html template in use:
- * BillBoard_Admin_Button.htm
- * BillBoard_Unadmin_Button.htm
- * <p/>
- * Html parstags in use:
- * #IMAGE_URL#
- * #SERVLET_URL#
- * #ADMIN_LINK_HTML#
- * #SECTION_ADMIN_LINK#
- * #SECTION_UNADMIN_LINK#
- * #UNADMIN_LINK_HTML#
- * # #UNADMIN_BUTTON#
- * <p/>
- * stored procedures in use:
- * CheckAdminRights
- * B_GetTemplateLib
- * B_GetFirstSection
- * B_GetLastDiscussionId
- *
- * @author Rickard Larsson, Jerker Drottenmyr, REBUILD TO BILLBOARD BY Peter Östergren
- * @version 1.2 20 Aug 2001
- */
-
-public class BillBoard extends HttpServlet { //Conference
+public class BillBoard extends HttpServlet {
     private final static String ADMIN_BUTTON_TEMPLATE = "BillBoard_Admin_Button.htm";
     private final static String UNADMIN_BUTTON_TEMPLATE = "BillBoard_Unadmin_Button.htm";
 
@@ -66,8 +31,7 @@ public class BillBoard extends HttpServlet { //Conference
     /**
      * Returns an user object. If an error occurs, an errorpage will be generated.
      */
-
-    imcode.server.user.UserDomainObject getUserObj( HttpServletRequest req,
+     UserDomainObject getUserObj( HttpServletRequest req,
                                                     HttpServletResponse res ) throws IOException {
 
         // Lets get serverinformation
@@ -76,12 +40,7 @@ public class BillBoard extends HttpServlet { //Conference
         String default_lang_prefix = imcref.getDefaultLanguageAsIso639_2();
 
         if ( checkSession( req, res ) == true ) {
-
-            // Get the session
-            HttpSession session = req.getSession( true );
-            // Does the session indicate this user already logged in?
-            imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
-
+            UserDomainObject user = Utility.getLoggedOnUser( req );
             return user;
         } else {
             String header = "BillBoard servlet.";
@@ -137,25 +96,6 @@ public class BillBoard extends HttpServlet { //Conference
 
     boolean checkSession( HttpServletRequest req, HttpServletResponse res )
             throws IOException {
-
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-
-        UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
-
-        if ( user == null ) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-            session.setAttribute( "login.target", HttpUtils.getRequestURL( req ).toString() );
-            // Lets get serverinformation
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-            String startUrl = imcref.getStartUrl();
-            res.sendRedirect( startUrl );
-
-            return false;
-        }
         return true;
     }
 
@@ -166,14 +106,10 @@ public class BillBoard extends HttpServlet { //Conference
     File getExternalTemplateRootFolder( HttpServletRequest req )//p ok
             throws IOException {
 
-         // Get the session
-         HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-         UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
 
         int metaId = this.getMetaId( req );
         return imcref.getExternalTemplateFolder( metaId, user);
@@ -191,10 +127,7 @@ public class BillBoard extends HttpServlet { //Conference
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface billref = ApplicationServer.getIMCPoolInterface();
-        // Get the session
-        HttpSession session = req.getSession( true );
-        UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         return new File( imcref.getExternalTemplateFolder( metaId, user ), this.getTemplateLibName( billref, metaId ) );
     }
 
@@ -326,16 +259,12 @@ public class BillBoard extends HttpServlet { //Conference
 
     String getExternalImageFolder( HttpServletRequest req ) throws IOException {
         int metaId = this.getMetaId( req );
-        HttpSession session = req.getSession( true );
-        UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );
-        if ( user == null ) {
-            return null;
-        }
 
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface billref = ApplicationServer.getIMCPoolInterface();
 
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, user.getLangPrefix());
         extFolder += this.getTemplateLibName( billref, metaId );
 
@@ -473,7 +402,7 @@ public class BillBoard extends HttpServlet { //Conference
         HttpSession session = req.getSession( true );
 
         //lets get if user authorized or not
-        boolean authorized = true;
+        boolean authorized;
         String stringMetaId = (String)session.getAttribute( "BillBoard.meta_id" );//Conference.meta_id
         if ( stringMetaId == null ) {
             authorized = false;

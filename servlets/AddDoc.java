@@ -42,7 +42,6 @@ public class AddDoc extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
         res.setContentType("text/html");
         Writer out = res.getWriter();
@@ -61,13 +60,8 @@ public class AddDoc extends HttpServlet {
         int meta_id_int = Integer.parseInt(sessionData.meta_id);
         String doc_type = "2";
 
+        UserDomainObject user = Utility.getLoggedOnUser(req);
 
-
-        // Check if user logged on
-        UserDomainObject user;
-        if ((user = Utility.getLoggedOnUserOrRedirect(req, res, start_url)) == null) {
-            return;
-        }
         String lang_prefix = user.getLangPrefix();
 
         boolean userHasRights = DocumentMapper.checkUsersRights(imcref, user, sessionData.meta_id, lang_prefix, doc_type);

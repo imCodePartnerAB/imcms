@@ -19,9 +19,6 @@ public class ChatViewer extends ChatBase {
 	public void service(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
 		HttpSession session = req.getSession(true);
 
-		// Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
 		// Lets get the standard SESSION parameters and validate them
 		Properties params = super.getSessionParameters(req) ;
 

@@ -5,6 +5,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.*;
 
@@ -38,12 +39,8 @@ public class AdminRandomTextsFile extends Administrator implements imcode.server
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         HttpSession session = req.getSession();
-        imcode.server.user.UserDomainObject user;
 
-        // Check if the user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, "StartDoc" ) ) == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req);
 
         res.setContentType( "text/html" );
         PrintWriter out = res.getWriter();

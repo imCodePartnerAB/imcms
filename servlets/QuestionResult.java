@@ -1,99 +1,96 @@
+
 import java.io.*;
 import java.util.*;
 import java.text.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import imcode.external.diverse.*;
-import imcode.util.*;
-import imcode.util.fortune.* ;
-import imcode.server.* ;
 
-import org.apache.log4j.Category ;
+import imcode.util.*;
+import imcode.util.fortune.*;
+import imcode.server.*;
+import imcode.server.user.UserDomainObject;
+
+import org.apache.log4j.Category;
 
 /**
- * @author  Monika Hurtig
+ * @author Monika Hurtig
  * @version 1.0
- * Date : 2001-09-05
+ *          Date : 2001-09-05
  */
 
-public class QuestionResult extends HttpServlet
-{
+public class QuestionResult extends HttpServlet {
     private final static String RESULTTEMPLATE = "QuestionResult.htm";
 
-    private static Category log = Category.getInstance(imcode.server.IMCConstants.ERROR_LOG) ;
+    private static Category log = Category.getInstance(imcode.server.IMCConstants.ERROR_LOG);
 
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
-	throws ServletException, IOException
-	{
+    public void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Check if user logged on
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        UserDomainObject user = Utility.getLoggedOnUser(req);
 
-		//get answer
-		String file = req.getParameter("file");
-		String answer = req.getParameter("answer");
+        //get answer
+        String file = req.getParameter("file");
+        String answer = req.getParameter("answer");
 
-		if (file == null) {
-		    file = "poll" ;
-		}
+        if (file == null) {
+            file = "poll";
+        }
 
-		if (answer == null) {
-		    // FIXME: What to do?
-		    return ;
-		}
+        if (answer == null) {
+            // FIXME: What to do?
+            return;
+        }
 
-		List currentPollList = imcref.getPollList(file+".current.txt") ;
+        List currentPollList = imcref.getPollList(file + ".current.txt");
 
-		if (currentPollList.isEmpty()) {
-		    log.error("QuestionResult: No current poll!") ;
-		    return ;
-		}
+        if (currentPollList.isEmpty()) {
+            log.error("QuestionResult: No current poll!");
+            return;
+        }
 
-		// So... the Poll.
-		Poll thePoll = (Poll) currentPollList.get(0) ;
+        // So... the Poll.
+        Poll thePoll = (Poll) currentPollList.get(0);
 
-		thePoll.addAnswer(answer) ;
+        thePoll.addAnswer(answer);
 
-		imcref.setPollList(file+".current.txt",currentPollList) ;
+        imcref.setPollList(file + ".current.txt", currentPollList);
 
-		double totalAnswerCount = thePoll.getTotalAnswerCount() ;
+        double totalAnswerCount = thePoll.getTotalAnswerCount();
 
-		double yesRatio = (double) thePoll.getAnswerCount("yes") / (double) totalAnswerCount ;
-		double noRatio =  (double) thePoll.getAnswerCount("no")  / (double) totalAnswerCount ;
+        double yesRatio = (double) thePoll.getAnswerCount("yes") / totalAnswerCount;
+        double noRatio = (double) thePoll.getAnswerCount("no") / totalAnswerCount;
 
-		NumberFormat pf = NumberFormat.getPercentInstance();
-		pf.setMaximumFractionDigits(0);
+        NumberFormat pf = NumberFormat.getPercentInstance();
+        pf.setMaximumFractionDigits(0);
 
-		String yesProcent = pf.format(yesRatio);
-		String noProcent = pf.format(noRatio);
+        String yesProcent = pf.format(yesRatio);
+        String noProcent = pf.format(noRatio);
 
-		//Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
-		Vector values = new Vector(8);
-		values.add("#question#");
-		values.add(thePoll.getQuestion());
-		values.add("#yesProcent#");
-		values.add(yesProcent);
-		values.add("#noProcent#");
-		values.add(noProcent);
-		values.add("#total#");
-		values.add(""+(int)totalAnswerCount);
+        //Add info for parsing to a Vector and parse it with a template to a htmlString that is printed
+        Vector values = new Vector(8);
+        values.add("#question#");
+        values.add(thePoll.getQuestion());
+        values.add("#yesProcent#");
+        values.add(yesProcent);
+        values.add("#noProcent#");
+        values.add(noProcent);
+        values.add("#total#");
+        values.add("" + (int) totalAnswerCount);
 
-		String parsed = imcref.parseExternalDoc( values, RESULTTEMPLATE, user, "106");
+        String parsed = imcref.parseExternalDoc(values, RESULTTEMPLATE, user, "106");
 
-		res.setContentType("text/html");
-		Writer out = res.getWriter();
-		out.write(parsed);
+        res.setContentType("text/html");
+        Writer out = res.getWriter();
+        out.write(parsed);
 
-		return ;
+        return;
 
-	} // End doGet
+    } // End doGet
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-	doGet(req,res) ;
+        doGet(req, res);
     }
 
 

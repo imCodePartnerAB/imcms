@@ -1,5 +1,6 @@
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 import java.io.*;
 import java.util.*;
@@ -7,6 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.external.diverse.*;
+import imcode.util.Utility;
 
 public class ConfCreator extends Conference {
 
@@ -20,26 +22,19 @@ public class ConfCreator extends Conference {
     public void doPost( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
         // Lets get the standard parameters and validate them
         Properties params = MetaInfo.createPropertiesFromMetaInfoParameters( super.getConferenceSessionParameters( req ) );
 
         // Lets get the new conference parameters
         Properties confParams = this.getNewConfParameters( req );
 
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
         }
 
         String action = req.getParameter( "action" );
         if ( action == null ) {
-            action = "";
             String header = "ConfCreator servlet. ";
             ConfError err = new ConfError( req, res, header, 3 );
             log( header + err.getErrorMsg() );
@@ -61,7 +56,6 @@ public class ConfCreator extends Conference {
             String metaId = params.getProperty( "META_ID" );
             String foundMetaId = confref.sqlProcedureStr( "A_FindMetaId", new String[]{metaId} );
             if ( !foundMetaId.equals( "1" ) ) {
-                action = "";
                 String header = "ConfCreator servlet. ";
                 ConfError err = new ConfError( req, res, header, 90 );
                 log( header + err.getErrorMsg() );
@@ -105,20 +99,13 @@ public class ConfCreator extends Conference {
     public void doGet( HttpServletRequest req, HttpServletResponse res )
             throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
         }
 
         String action = req.getParameter( "action" );
         if ( action == null ) {
-            action = "";
             String header = "ConfCreator servlet. ";
             ConfError err = new ConfError( req, res, header, 3 );
             log( header + err.getErrorMsg() );

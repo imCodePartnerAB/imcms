@@ -1,6 +1,7 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -19,22 +20,12 @@ public class SavePermissions extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        imcode.server.user.UserDomainObject user;
-
-        // Check if user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
-        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
-        int set_id = Integer.parseInt( req.getParameter( "set_id" ) );
-
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
 
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkDocAdminRights( meta_id, user, 4 ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {
@@ -82,6 +73,8 @@ public class SavePermissions extends HttpServlet {
                 temp_set.add( user_permission_data[i + 1] );
             }
 
+            int set_id = Integer.parseInt( req.getParameter( "set_id" ) );
+
             // Delete all extended permissions for this permissionset.
             imcref.sqlUpdateProcedure( "Delete" + newstr + "DocPermissionSetEx", new String[]{"" + meta_id, "" + set_id} );
 
@@ -112,7 +105,7 @@ public class SavePermissions extends HttpServlet {
                 String value_str = perm_ex_str.substring( us_index + 1 );
                 int perm = Integer.parseInt( perm_str );
                 int value = Integer.parseInt( value_str );
-                HashSet temp_set = null;
+                HashSet temp_set;
                 if ( user_set_id == 0			// If current user has full rights,
                         || ( user_set_id == 1 	// or has set-id 1
                         && set_id == 2 		// and is changing set-id 2

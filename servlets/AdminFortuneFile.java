@@ -2,7 +2,6 @@ import java.io.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import imcode.external.diverse.* ;
 import imcode.server.* ;
 import imcode.server.user.UserDomainObject;
 import imcode.util.* ;
@@ -36,9 +35,6 @@ public class AdminFortuneFile extends Administrator {
 
     // Get the session
 	HttpSession session = req.getSession();
-
-    // Check if user logged on
-    imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
 
 	res.setContentType("text/html");
 	PrintWriter out = res.getWriter();
@@ -298,15 +294,12 @@ public class AdminFortuneFile extends Administrator {
 		values.add("#options#");
 		values.add(options);
 
-
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 		String parsed = imcref.parseExternalDoc( values, "AdminFortuneFile.htm" , user, "admin");
 		out.print(parsed);
 		return;
 
 	    }
-
-
     }
 
 

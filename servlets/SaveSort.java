@@ -2,6 +2,7 @@
 import imcode.server.ApplicationServer;
 import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
 
@@ -26,24 +27,13 @@ public class SaveSort extends HttpServlet {
      * service()
      */
     public void service( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        imcode.server.user.UserDomainObject user;
-        int meta_id;
-        Vector childs = new Vector();
-        Vector sort_no = new Vector();
 
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
-        meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
-        int doc_menu_no = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
 
-        // Check if user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkDocAdminRights( meta_id, user, 262144 ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {
@@ -52,13 +42,15 @@ public class SaveSort extends HttpServlet {
             return;
         }
 
-        String temp_str = "";
+        String temp_str;
         String childsThisMenu[];
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         documentMapper.touchDocument( documentMapper.getDocument( meta_id ) );
 
         String[] foo = imcref.sqlQuery( "select to_meta_id from childs where meta_id = ?", new String[]{"" + meta_id} );
 
+        Vector childs = new Vector();
+        Vector sort_no = new Vector();
         for ( int i = 0; i < foo.length; ++i ) {
             temp_str = req.getParameter( foo[i] );
             if ( temp_str != null ) {
@@ -71,6 +63,7 @@ public class SaveSort extends HttpServlet {
 
         user.put( "flags", new Integer( 262144 ) );
 
+        int doc_menu_no = Integer.parseInt( req.getParameter( "doc_menu_no" ) );
         String sortParam = req.getParameter( "sort" );
         if ( sortParam != null ) {
             int sort_order = Integer.parseInt( req.getParameter( "sort_order" ) );

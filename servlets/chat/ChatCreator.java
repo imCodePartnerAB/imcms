@@ -37,186 +37,180 @@ public class ChatCreator extends ChatBase {
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-	//log("start doPost");
-	// Lets validate the session and get the session
-	if (super.checkSession(req,res) == false){
-	    log("checkSession == false");
-	    return ;
-	}
-	HttpSession session = req.getSession(false);
 
-	// Lets get an user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
-	if(user == null) return ;
+        HttpSession session = req.getSession(false);
+
+        // Lets get an user object
+        imcode.server.user.UserDomainObject user = super.getUserObj(req, res);
+        if (user == null) return;
         if (!isUserAuthorized(req, res, user)) {
-		log("isUserAuthorized==false");
-		return ;
-	    }
+            log("isUserAuthorized==false");
+            return;
+        }
 
-	String action = req.getParameter("action");
+        String action = req.getParameter("action");
 
-	if(action == null){
-	    action = "" ;
-	    String header = "ChatCreator servlet. " ;
-	    ChatError err = new ChatError(req,res,header,3) ;
-	    log(header + err.getErrorMsg()) ;
-	    return ;
-	}
+        if (action == null) {
+            String header = "ChatCreator servlet. ";
+            ChatError err = new ChatError(req, res, header, 3);
+            log(header + err.getErrorMsg());
+            return;
+        }
 
-	//peter jobbar här
-	Chat myChat = (Chat) session.getAttribute("myChat");
-	if (myChat == null) {
-	    myChat = createChat(req, user, getMetaId(req));
-	}
-	int metaId = myChat.getChatId();
+        //peter jobbar här
+        Chat myChat = (Chat) session.getAttribute("myChat");
+        if (myChat == null) {
+            myChat = createChat(req, user, getMetaId(req));
+        }
+        int metaId = myChat.getChatId();
 
-	if(action.equalsIgnoreCase("admin_chat")) {
-	    log("admin_chat");
-	    //ok nu hämtar vi in all data från formuläret och updaterar chat-objektet
+        if (action.equalsIgnoreCase("admin_chat")) {
+            log("admin_chat");
+            //ok nu hämtar vi in all data från formuläret och updaterar chat-objektet
             if (req.getParameter("addMsgType") != null && (!req.getParameter("msgType").trim().equals(""))) {
-		myChat.addMsgType(req.getParameter("msgType"));
-	    }
-	    if ( req.getParameter("removeMsgType") != null && req.getParameter("msgTypes")!=null) {
-		int type= Integer.parseInt(req.getParameter("msgTypes"));
-		if (type <100 || type >=104) {
-		    myChat.removeMsgType(type);
-		}
-	    }
-	    if (req.getParameterValues("authorized")!= null) {
-		myChat.setSelectedAuto(req.getParameterValues("authorized"));
-	    }
-	    if (req.getParameter("update") != null ) {
+                myChat.addMsgType(req.getParameter("msgType"));
+            }
+            if (req.getParameter("removeMsgType") != null && req.getParameter("msgTypes") != null) {
+                int type = Integer.parseInt(req.getParameter("msgTypes"));
+                if (type < 100 || type >= 104) {
+                    myChat.removeMsgType(type);
+                }
+            }
+            if (req.getParameterValues("authorized") != null) {
+                myChat.setSelectedAuto(req.getParameterValues("authorized"));
+            }
+            if (req.getParameter("update") != null) {
                 myChat.setRefreshTime(Integer.parseInt(req.getParameter("update")));
-	    }
-	    if (req.getParameter("reload") != null) {
+            }
+            if (req.getParameter("reload") != null) {
                 myChat.setAutoRefreshEnabled(Integer.parseInt(req.getParameter("reload")));
-	    }
-	    if (req.getParameter("inOut") != null) {
+            }
+            if (req.getParameter("inOut") != null) {
                 myChat.setShowEnterAndLeaveMessagesEnabled(Integer.parseInt(req.getParameter("inOut")));
-	    }
-	    if (req.getParameter("private") != null) {
+            }
+            if (req.getParameter("private") != null) {
                 myChat.setShowPrivateMessagesEnabled(Integer.parseInt(req.getParameter("private")));
-	    }
-	    if (req.getParameter("dateTime") != null) {
+            }
+            if (req.getParameter("dateTime") != null) {
                 myChat.setShowDateTimesEnabled(Integer.parseInt(req.getParameter("dateTime")));
-	    }
-	    if (req.getParameter("font") != null) {
+            }
+            if (req.getParameter("font") != null) {
                 myChat.setFontSize(Integer.parseInt(req.getParameter("font")));
-	    }
+            }
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	    IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface() ;
+            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+            IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
 
-	    //lets save to db
-	    if (req.getParameter("okChat") != null) {
+            //lets save to db
+            if (req.getParameter("okChat") != null) {
                 createChat(metaId, myChat, chatref, imcref, user, res);
                 return;
 
-	    }//end if(action.equalsIgnoreCase("okChat"))
+            }//end if(action.equalsIgnoreCase("okChat"))
 
-	    //check if template adminpage is wanted
-	    if (req.getParameter("admin_templates_meta") != null){
-		log("admin_templates_meta");
-		if(req.getParameter("add_templates")!= null){
-		    String newLibName  = req.getParameter("template_lib_name");
+            //check if template adminpage is wanted
+            if (req.getParameter("admin_templates_meta") != null) {
+                log("admin_templates_meta");
+                if (req.getParameter("add_templates") != null) {
+                    String newLibName = req.getParameter("template_lib_name");
                     if (newLibName == null) {
-			String header = "ChatCreator servlet. " ;
-			new ChatError(req,res,header, 80) ; //obs kolla om rätt nr
-			return ;
-		    }
-		    // Lets check if we already have a templateset with that name
+                        String header = "ChatCreator servlet. ";
+                        new ChatError(req, res, header, 80); //obs kolla om rätt nr
+                        return;
+                    }
+                    // Lets check if we already have a templateset with that name
                     String libNameExists = chatref.sqlProcedureStr("C_FindTemplateLib", new String[]{newLibName});
-		    if( !libNameExists.equalsIgnoreCase("-1") ) {
-			String header = "ChatCreator servlet. " ;
-			new ChatError(req,res,header, 84) ;//obs kolla om rätt nr
-			return ;
-		    }
-            log("lang_prefix for External Template Folder = " + user.getLangPrefix() );
-            chatref.sqlUpdateProcedure("C_AddTemplateLib", new String[]{newLibName});
-		    // Lets copy the original folders to the new foldernames
-		    FileManager fileObj = new FileManager() ;
-		    File templateSrc = new File(imcref.getExternalTemplateFolder(metaId, user), "original") ;
-		    File imageSrc = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user), "original") ;
-		    File templateTarget = new File(imcref.getExternalTemplateFolder(metaId, user), newLibName) ;
-		    File imageTarget = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user), newLibName) ;
+                    if (!libNameExists.equalsIgnoreCase("-1")) {
+                        String header = "ChatCreator servlet. ";
+                        new ChatError(req, res, header, 84);//obs kolla om rätt nr
+                        return;
+                    }
+                    log("lang_prefix for External Template Folder = " + user.getLangPrefix());
+                    chatref.sqlUpdateProcedure("C_AddTemplateLib", new String[]{newLibName});
+                    // Lets copy the original folders to the new foldernames
+                    FileManager fileObj = new FileManager();
+                    File templateSrc = new File(imcref.getExternalTemplateFolder(metaId, user), "original");
+                    File imageSrc = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user), "original");
+                    File templateTarget = new File(imcref.getExternalTemplateFolder(metaId, user), newLibName);
+                    File imageTarget = new File(RmiConf.getImagePathForExternalDocument(imcref, metaId, user), newLibName);
 
-		    fileObj.copyDirectory(templateSrc, templateTarget) ;
-		    fileObj.copyDirectory(imageSrc, imageTarget) ;
-		}//done add new template lib
+                    fileObj.copyDirectory(templateSrc, templateTarget);
+                    fileObj.copyDirectory(imageSrc, imageTarget);
+                }//done add new template lib
 
-		if (req.getParameter("change_templatelib")!=null){//ok lets handle the change set case
-		    log("change_templatelib");
-		    // Lets get the new library name and validate it
-		    String newLibName = req.getParameter("new_templateset_name")  ;
-		    //log("newLibName: "+newLibName);
-		    if (newLibName == null) {
-			String header = "ChatCreator servlet. " ;
-			new ChatError(req,res,header, 80) ;//obs kolla om rätt nr
-			return ;
-		    }
-		    // Lets find the selected template in the database and get its id
-		    // if not found, -1 will be returned
+                if (req.getParameter("change_templatelib") != null) {//ok lets handle the change set case
+                    log("change_templatelib");
+                    // Lets get the new library name and validate it
+                    String newLibName = req.getParameter("new_templateset_name");
+                    //log("newLibName: "+newLibName);
+                    if (newLibName == null) {
+                        String header = "ChatCreator servlet. ";
+                        new ChatError(req, res, header, 80);//obs kolla om rätt nr
+                        return;
+                    }
+                    // Lets find the selected template in the database and get its id
+                    // if not found, -1 will be returned
                     String templateId = chatref.sqlProcedureStr("C_GetTemplateIdFromName", new String[]{newLibName});
-		    if(templateId.equalsIgnoreCase("-1")) {
-			String header = "ChatCreator servlet. " ;
-			new ChatError(req,res,header,81) ;
-			return ;
-		    }
-		    // Ok, lets update the chat with this new templateset.
-		    //but first lets delete the old one.
+                    if (templateId.equalsIgnoreCase("-1")) {
+                        String header = "ChatCreator servlet. ";
+                        new ChatError(req, res, header, 81);
+                        return;
+                    }
+                    // Ok, lets update the chat with this new templateset.
+                    //but first lets delete the old one.
                     chatref.sqlUpdateProcedure("C_deleteChatTemplateset", new String[]{"" + metaId});
 
                     chatref.sqlUpdateProcedure("C_SetNewTemplateLib", new String[]{"" + metaId, newLibName});
-		}
-		if (req.getParameter("UPLOAD_CHAT")!=null){
-		    log("UPLOAD_CHAT");
-		    //ok lets handle the upload of templates and images
-		    String folderName = req.getParameter("TEMPLATE_NAME");
-		    String uploadType = req.getParameter("UPLOAD_TYPE");
-		    //log(folderName +" "+uploadType+" "+metaId);
-		    if (folderName == null || uploadType == null ) {
-			return;
-		    }
-		    Vector tags = new Vector();
+                }
+                if (req.getParameter("UPLOAD_CHAT") != null) {
+                    log("UPLOAD_CHAT");
+                    //ok lets handle the upload of templates and images
+                    String folderName = req.getParameter("TEMPLATE_NAME");
+                    String uploadType = req.getParameter("UPLOAD_TYPE");
+                    //log(folderName +" "+uploadType+" "+metaId);
+                    if (folderName == null || uploadType == null) {
+                        return;
+                    }
+                    Vector tags = new Vector();
                     tags.add("#META_ID#");
                     tags.add(metaId + "");
                     tags.add("#UPLOAD_TYPE#");
                     tags.add(uploadType);
                     tags.add("#FOLDER_NAME#");
                     tags.add(folderName);
-		    //sendHtml(req,res,vm, ADMIN_TEMPLATES_TEMPLATE_2) ;
-		    sendHtml(req,res,tags, ADMIN_TEMPLATES_TEMPLATE_2, null) ;
-		    return;
-		}
-	    }
-	    //check if template adminpage is wanted
-	    if (req.getParameter("adminTemplates")!=null){
-		log("adminTemplates");
-		//ok now lets get the template set name
+                    //sendHtml(req,res,vm, ADMIN_TEMPLATES_TEMPLATE_2) ;
+                    sendHtml(req, res, tags, ADMIN_TEMPLATES_TEMPLATE_2, null);
+                    return;
+                }
+            }
+            //check if template adminpage is wanted
+            if (req.getParameter("adminTemplates") != null) {
+                log("adminTemplates");
+                //ok now lets get the template set name
                 String templateSetName = chatref.sqlProcedureStr("C_GetTemplateLib", new String[]{"" + metaId});
-		if (templateSetName == null) {
-		    templateSetName="";
-		}
-		//ok lets get all the template set there is
+                if (templateSetName == null) {
+                    templateSetName = "";
+                }
+                //ok lets get all the template set there is
                 String[] templateLibs = chatref.sqlProcedure("C_GetAllTemplateLibs", new String[]{});
-		Vector vect = new Vector();
-		if (templateLibs != null){
-		    vect = super.convert2Vector(templateLibs);
-		}
-		Vector tags = new Vector();
+                Vector vect = new Vector();
+                if (templateLibs != null) {
+                    vect = super.convert2Vector(templateLibs);
+                }
+                Vector tags = new Vector();
                 tags.add("#TEMPLATE_LIST#");
                 tags.add(createOptionCode(templateSetName, vect));
                 tags.add("#CURRENT_TEMPLATE_SET#");
                 tags.add(templateSetName);
                 sendHtml(req, res, tags, ADMIN_TEMPLATES_TEMPLATE, null);
-		return;
+                return;
 
-	    }
+            }
 
-	}//end if(action.equalsIgnoreCase("ADD_CHAT"))
-	log("default köret");
-	sendHtml(req,res,createTaggs( myChat, user),HTML_TEMPLATE,myChat);
-	return ;
+        }//end if(action.equalsIgnoreCase("ADD_CHAT"))
+        log("default köret");
+        sendHtml(req, res, createTaggs(myChat, user), HTML_TEMPLATE, myChat);
+        return;
 
     } // End POST
 
@@ -292,83 +286,81 @@ public class ChatCreator extends ChatBase {
      * laddar admin sida osv
      */
     //laddar admin sida osv
-    public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
-	log("startar do get");
-	// Lets validate the session, e.g has the user logged in to Janus?
-	if (super.checkSession(req,res) == false)	return ;
-	HttpSession session = req.getSession(false);
+    public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        log("startar do get");
+        // Lets validate the session, e.g has the user logged in to Janus?
+        HttpSession session = req.getSession(false);
 
-	// Lets get an user object
-	imcode.server.user.UserDomainObject user = super.getUserObj(req,res) ;
-	if(user == null) return ;
+        // Lets get an user object
+        imcode.server.user.UserDomainObject user = super.getUserObj(req, res);
+        if (user == null) return;
 
-	if ( !isUserAuthorized( req, res, user ) ){
-	    return;
-	}
+        if (!isUserAuthorized(req, res, user)) {
+            return;
+        }
 
-	String action = req.getParameter("action") ;
-	if(action == null){
-	    action = (String)req.getAttribute("action");
-	    if(action == null){
-		action = "" ;
-		String header = "ChatCreator servlet. " ;
-		ChatError err = new ChatError(req,res,header,3) ;
-		log(header + err.getErrorMsg()) ;
-		return ;
-	    }
-	}
+        String action = req.getParameter("action");
+        if (action == null) {
+            action = (String) req.getAttribute("action");
+            if (action == null) {
+                String header = "ChatCreator servlet. ";
+                ChatError err = new ChatError(req, res, header, 3);
+                log(header + err.getErrorMsg());
+                return;
+            }
+        }
 
-	// ********* Create NEW Chat *********************************************************
-	if(action.equalsIgnoreCase("NEW")){
-	    log("NEW");
-	    //vi måste hämta allt som behövs från databasen och sedan fixa till mallen
+        // ********* Create NEW Chat *********************************************************
+        if (action.equalsIgnoreCase("NEW")) {
+            log("NEW");
+            //vi måste hämta allt som behövs från databasen och sedan fixa till mallen
 
-	    //skapa en temp chat
-	    int meta_id = Integer.parseInt((String)session.getAttribute("Chat.meta_id"));
-	    Chat myChat = createChat(req, user, meta_id);
-	    session.setAttribute("myChat",myChat);
-	    // Lets build the Responsepage to the loginpage
-	    Vector vect = createTaggs( myChat, user);
-	    sendHtml(req,res,vect,HTML_TEMPLATE,myChat);
-	    return ;
-	}
+            //skapa en temp chat
+            int meta_id = Integer.parseInt((String) session.getAttribute("Chat.meta_id"));
+            Chat myChat = createChat(req, user, meta_id);
+            session.setAttribute("myChat", myChat);
+            // Lets build the Responsepage to the loginpage
+            Vector vect = createTaggs(myChat, user);
+            sendHtml(req, res, vect, HTML_TEMPLATE, myChat);
+            return;
+        }
 
-	String templateAdmin = req.getParameter("ADMIN_TEMPLATES");
+        String templateAdmin = req.getParameter("ADMIN_TEMPLATES");
         if (templateAdmin != null) {//ok we have done upload template or image lets get back to the adminpage
             this.doPost(req, res);
-		return;
-	    }
+            return;
+        }
 
-	if (action.equalsIgnoreCase("admin_chat")){
-	    log("action =  admin_chat");
+        if (action.equalsIgnoreCase("admin_chat")) {
+            log("action =  admin_chat");
 
-	    //check which chat we have
-	    String chatName = req.getParameter("chatName");
-	    log("ChatName: " + chatName);
-	    Vector tags = new Vector();
+            //check which chat we have
+            String chatName = req.getParameter("chatName");
+            log("ChatName: " + chatName);
+            Vector tags = new Vector();
             tags.add("#chatName#");
             tags.add(chatName);
 
-	    String metaId = (String)session.getAttribute("Chat.meta_id");
-	    log("MetaId: " + metaId);
+            String metaId = (String) session.getAttribute("Chat.meta_id");
+            log("MetaId: " + metaId);
 
-	    ServletContext myContext = getServletContext();
-	    Chat myChat = (Chat)myContext.getAttribute("theChat"+metaId);
+            ServletContext myContext = getServletContext();
+            Chat myChat = (Chat) myContext.getAttribute("theChat" + metaId);
 
-	    log("Chat: " + myChat);
+            log("Chat: " + myChat);
 
-	    Vector vect = createTaggs( myChat, user);
-	    sendHtml(req,res,vect,HTML_TEMPLATE,myChat);
-	    return ;
+            Vector vect = createTaggs(myChat, user);
+            sendHtml(req, res, vect, HTML_TEMPLATE, myChat);
+            return;
 
         }
 
     } // End doGet
 
     private String getTemplateButtonHtml(int metaId, UserDomainObject user) throws IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	    IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface() ;
-	    return imcref.parseExternalDoc(null, HTML_TEMPLATES_BUTTON , user, "103", getTemplateLibName(chatref,metaId));
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        IMCPoolInterface chatref = ApplicationServer.getIMCPoolInterface();
+        return imcref.parseExternalDoc(null, HTML_TEMPLATES_BUTTON, user, "103", getTemplateLibName(chatref, metaId));
     }
 
     //peter keep

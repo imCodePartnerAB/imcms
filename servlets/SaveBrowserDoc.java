@@ -1,6 +1,7 @@
 
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.Parser;
 import imcode.util.Utility;
@@ -26,9 +27,6 @@ public class SaveBrowserDoc extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        imcode.server.user.UserDomainObject user;
         String htmlStr = "";
         int meta_id;
         int parent_meta_id;
@@ -43,11 +41,9 @@ public class SaveBrowserDoc extends HttpServlet {
         parent_meta_id = Integer.parseInt( req.getParameter( "parent_meta_id" ) );
         log( "meta_id:" + meta_id );
         log( "parent_meta_id:" + parent_meta_id );
-        // Check if user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
+
         // Check if user has write rights
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkDocAdminRights( meta_id, user, 65536 ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {
@@ -63,7 +59,7 @@ public class SaveBrowserDoc extends HttpServlet {
                 if ( param.indexOf( "bid" ) == 0 ) {
                     String bid = param.substring( 3 );
                     String to = req.getParameter( param );
-                    String sqlStr = null;
+                    String sqlStr;
                     try {
                         int t = Integer.parseInt( to );
                         sqlStr = "update browser_docs set to_meta_id = ? where meta_id = ? and browser_id = ?";
@@ -131,7 +127,6 @@ public class SaveBrowserDoc extends HttpServlet {
             vec.add( String.valueOf( parent_meta_id ) );
             vec.add( "#adminMode#" );
             vec.add( imcref.getMenuButtons( meta_id, user ) );
-            String lang_prefix = user.getLangPrefix();
 
             htmlStr = imcref.parseDoc( vec, "change_browser_doc.html", user);
         }

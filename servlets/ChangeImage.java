@@ -7,6 +7,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 /**
  * Edit imageref  - upload image to server.
@@ -14,25 +15,8 @@ import imcode.server.*;
 public class ChangeImage extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
         if ( req.getParameter( "preview" ) == null ) {
             doGet( req, res );
-            return;
-        }
-
-        HttpSession session = req.getSession( true );
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)session.getAttribute( "logon.isDone" );
-
-        if ( user == null ) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-            String scheme = req.getScheme();
-            String serverName = req.getServerName();
-            int p = req.getServerPort();
-            String port = ( p == 80 ) ? "" : ":" + p;
-            res.sendRedirect( scheme + "://" + serverName + port + start_url );
             return;
         }
 
@@ -46,10 +30,8 @@ public class ChangeImage extends HttpServlet {
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
         String image_url = imcref.getImageUrl();
         File image_path = Utility.getDomainPrefPath( "image_path" );
-        imcode.server.user.UserDomainObject user;
 
         int meta_id;
         int img_no;
@@ -73,29 +55,14 @@ public class ChangeImage extends HttpServlet {
         String imageListParam = req.getParameter( "imglist" );
         String img_preset = ( imageListParam == null ) ? "" : URLDecoder.decode( imageListParam );
 
-        // Get the session
-        HttpSession session = req.getSession( true );
-
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        user = (imcode.server.user.UserDomainObject)done;
-
-        if ( done == null ) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-            res.sendRedirect( start_url );
-            return;
-        }
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         // Check if user has write rights
         if ( !imcref.checkDocAdminRights( meta_id, user ) ) {
+            String start_url = imcref.getStartUrl();
             log( "User " + user.getUserId() + " was denied access to meta_id " + meta_id + " and was sent to " + start_url );
             res.sendRedirect( start_url );
             return;
         }
-
-
-
 
         //*lets get the root_dir_name that we need later on
         String root_dir_name = image_path.getName();
@@ -125,7 +92,9 @@ public class ChangeImage extends HttpServlet {
             }
 
             folderOptions.append( "<option value=\"" + optionValue + "\">" + optionName + "</option>\r\n" );
-        }//end while loop
+        }
+
+        HttpSession session = req.getSession( true );
         session.setAttribute( "imageFolderOptionList", folderOptions.toString() );
 
         String[] sql = imcref.sqlQuery( "select image_name,imgurl,width,height,border,v_space,h_space,target,target_name,align,alt_text,low_scr,linkurl from images\n" + "where meta_id = ? and name = ?", new String[]{"" + meta_id, "" + img_no} );

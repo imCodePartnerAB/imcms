@@ -1,6 +1,8 @@
 
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,20 +15,13 @@ public class ConfViewer extends Conference {
     private final static String HTML_TEMPLATE = "Conf_Set.htm";         // the relative path from web root to where the servlets are
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
         // Lets get the standard parameters and validate them
         // Properties params = super.getParameters(req) ;
 
         // Lets get the standard SESSION parameters and validate them
         Properties params = MetaInfo.createPropertiesFromMetaInfoParameters( super.getConferenceSessionParameters( req ) );
 
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
         }

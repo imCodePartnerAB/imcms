@@ -15,6 +15,7 @@ import javax.servlet.http.*;
 import imcode.external.diverse.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 import org.apache.log4j.*;
 
@@ -52,66 +53,13 @@ public class Administrator extends HttpServlet {
     } // checkparameters
 
     /**
-     Returns an user object
-     */
-
-    static imcode.server.user.UserDomainObject getUserObj( HttpServletRequest req,
-                                                                     HttpServletResponse res ) throws IOException {
-        if ( checkSession( req, res ) == true ) {
-            // Get the session
-            HttpSession session = req.getSession( true );
-            // Does the session indicate this user already logged in?
-            Object done = session.getAttribute( "logon.isDone" );  // marker object
-            imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
-            return user;
-        } else {
-            return null;
-        }
-    }
-
-
-    /**
-     Verifies that the user is logged in
-     */
-
-    protected static boolean checkSession( HttpServletRequest req, HttpServletResponse res )
-            throws IOException {
-
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
-
-        if ( user == null ) {
-            // No logon.isDone means he hasn't logged in.
-
-            // Lets get the login page
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-            // Save the request URL as the true target and redirect to the login page.
-            session.setAttribute( "login.target", req.getRequestURL().toString() );
-            String startUrl = imcref.getStartUrl();
-
-            res.sendRedirect(startUrl);
-            return false;
-        }
-        return true;
-    }
-
-    /**
      CheckAdminRights, returns true if the user is an admin.
      False if the user isn't an administrator
      */
-
-    protected static boolean checkAdminRights( HttpServletRequest req, HttpServletResponse res )
-            throws IOException {
-
+    protected static boolean checkAdminRights(HttpServletRequest req) {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-        if ( user == null ) {
-            return false;
-        } else {
-            return imcref.checkAdminRights( user );
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        return imcref.checkAdminRights( user );
     }
 
     /**
@@ -139,7 +87,7 @@ public class Administrator extends HttpServlet {
 
         // Lets get the path to the admin templates folder
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         File templateLib = this.getAdminTemplateFolder( imcref, user );
 
         // Lets add the server host
@@ -186,4 +134,4 @@ public class Administrator extends HttpServlet {
     }
 
 
-} // End class
+}

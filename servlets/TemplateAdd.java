@@ -16,18 +16,12 @@ public class TemplateAdd extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
-        // Check if user logged on
-        UserDomainObject user;
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkAdminRights( user ) ) {
             Utility.redirect( req, res, start_url );
             return;
         }
 
-        String lang_prefix = user.getLangPrefix();
         ServletOutputStream out = res.getOutputStream();
 
         //**********************************************************************************************
@@ -45,7 +39,7 @@ public class TemplateAdd extends HttpServlet {
                     htmlStr = imcref.parseDoc( null, "no_demotemplate.html", user).getBytes( "8859_1" );
                     mimeType = "text/html";
                 } else {
-                    mimeType = getServletContext().getMimeType( template + "." + (String)suffixAndStream[0] );
+                    mimeType = getServletContext().getMimeType( template + "." + suffixAndStream[0] );
                     htmlStr = temp;
                 }
                 System.out.println( "mimet: " + mimeType );
@@ -72,22 +66,15 @@ public class TemplateAdd extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        // Check if user logged on
-        UserDomainObject user;
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkAdminRights( user ) ) {
+            String start_url = imcref.getStartUrl();
             Utility.redirect( req, res, start_url );
             return;
         }
 
         int length = req.getContentLength();
 
-        String lang_prefix = user.getLangPrefix();
         PrintWriter out = res.getWriter();
 
         ServletInputStream in = req.getInputStream();
@@ -217,7 +204,7 @@ public class TemplateAdd extends HttpServlet {
             Vector vec = new Vector();
             vec.add( "#language#" );
             vec.add( lang );
-            String htmlStr = null;
+            String htmlStr;
             if ( demo ) {
                 htmlStr = imcref.parseDoc( vec, "templatedemo_upload_file_blank.html", user);
             } else {
@@ -235,7 +222,7 @@ public class TemplateAdd extends HttpServlet {
         File fn = new File( filename );
         filename = fn.getName();
         boolean overwrite = ( mp.getParameter( "overwrite" ) != null );
-        String htmlStr = null;
+        String htmlStr;
 
         // ********************************** OK
 

@@ -1,6 +1,6 @@
 package imcode.util;
 
-import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
 
 import javax.servlet.http.*;
 import javax.servlet.http.HttpUtils;
@@ -92,20 +92,9 @@ public class Utility {
         res.setHeader( "Pragma", "no-cache;" );
     }
 
-
-    public static imcode.server.user.UserDomainObject getLoggedOnUserOrRedirect (HttpServletRequest req, HttpServletResponse res) throws IOException {
-        return getLoggedOnUserOrRedirect( req, res, ApplicationServer.getIMCServiceInterface().getStartUrl()) ;
-    }
-
-    public static imcode.server.user.UserDomainObject getLoggedOnUserOrRedirect (HttpServletRequest req, HttpServletResponse res, String start_url) throws IOException {
-
+    public static UserDomainObject getLoggedOnUser (HttpServletRequest req) {
 		HttpSession session = req.getSession(true) ;
-		imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject) session.getAttribute("logon.isDone") ;
-
-		if (user == null) {
-			res.sendRedirect( start_url ) ;
-			return null;
-		}
+		UserDomainObject user = (UserDomainObject) session.getAttribute("logon.isDone") ;
 		return user;
 	}
 

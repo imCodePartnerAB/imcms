@@ -5,6 +5,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.*;
 import imcode.util.fortune.*;
@@ -41,13 +42,6 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
         HttpSession session = req.getSession();
 
-        imcode.server.user.UserDomainObject user;
-
-        // Check if the user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, "StartDoc" ) ) == null ) {
-            return;
-        }
-
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
 
@@ -58,6 +52,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
             return;
         }
 
+        UserDomainObject user = Utility.getLoggedOnUser( req ) ;
         List lines = (List)session.getAttribute( "lines" );
         String date1 = "";
         String date2 = "";

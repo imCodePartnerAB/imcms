@@ -25,21 +25,15 @@ public class SaveInclude extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, java.io.IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
         res.setContentType( "text/html" );
 
         Writer out = res.getWriter();
 
-        UserDomainObject user;
-
         String meta_id_str = req.getParameter( "meta_id" );
         int meta_id = Integer.parseInt( meta_id_str );
 
-        // Check if the user logged on
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Check if user has permission to edit includes for this document
         if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_INCLUDES ) ) {	// Checking to see if user may edit this

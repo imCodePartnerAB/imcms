@@ -1,13 +1,14 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
+import imcode.util.Utility;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Enumeration;
@@ -19,14 +20,9 @@ import java.util.Vector;
  */
 public class SaveNewBrowserDoc extends HttpServlet {
 
-    /**
-     * doPost()
-     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
-        imcode.server.user.UserDomainObject user;
         String htmlStr = "";
 
         res.setContentType( "text/html" );
@@ -38,24 +34,10 @@ public class SaveNewBrowserDoc extends HttpServlet {
         // get new_meta_id
         int meta_id = Integer.parseInt( req.getParameter( "new_meta_id" ) );
 
-        // Get the session
-        HttpSession session = req.getSession( true );
-
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        user = (imcode.server.user.UserDomainObject)done;
-
-        if ( done == null ) {
-            // No logon.isDone means he hasn't logged in.
-            String scheme = req.getScheme();
-            String serverName = req.getServerName();
-            int p = req.getServerPort();
-            String port = ( p == 80 ) ? "" : ":" + p;
-            res.sendRedirect( scheme + "://" + serverName + port + start_url );
-            return;
-        }
         // Check if user has write rights
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkDocAdminRights( meta_id, user ) ) {
+            String start_url = imcref.getStartUrl();
             log( "User " + user.getUserId() + " was denied access to meta_id " + meta_id + " and was sent to " + start_url );
             String scheme = req.getScheme();
             String serverName = req.getServerName();
@@ -147,7 +129,6 @@ public class SaveNewBrowserDoc extends HttpServlet {
             vec.add( "" );
             vec.add( "#getMetaId#" );
             vec.add( String.valueOf( parent_meta_id ) );
-            String lang_prefix = user.getLangPrefix();
             htmlStr = imcref.parseDoc( vec, "new_browser_doc.html", user);
         }
 

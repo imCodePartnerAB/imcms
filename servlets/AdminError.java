@@ -1,49 +1,40 @@
-import java.io.* ;
-import java.util.* ;
-import javax.servlet.*;
+
+import java.io.*;
+import java.util.*;
 import javax.servlet.http.*;
 
-import imcode.external.diverse.* ;
-import imcode.server.* ;
+import imcode.external.diverse.*;
+import imcode.server.*;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 public class AdminError extends Administrator {
 
-    public AdminError(HttpServletRequest req, HttpServletResponse res, String header,String msg)
-	throws ServletException, IOException {
+    public AdminError(HttpServletRequest req, HttpServletResponse res, String header, String msg) throws IOException {
 
-	Vector tags = new Vector() ;
-	Vector data = new Vector() ;
-	tags.add("ERROR_HEADER") ;
-	tags.add("ERROR_MESSAGE") ;
-	data.add(header) ;
-	data.add(msg) ;
+        Vector tags = new Vector();
+        Vector data = new Vector();
+        tags.add("ERROR_HEADER");
+        tags.add("ERROR_MESSAGE");
+        data.add(header);
+        data.add(msg);
 
-	String fileName = "AdminError.htm" ;
+        String fileName = "AdminError.htm";
 
-	// Lets get an user object
-	imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
-	if(user == null) {
-	    String aHeader = "Error in AdminCounter." ;
-	    String aMsg = "Couldnt create an user object."+ "<BR>" ;
-	    this.log(aHeader + aMsg) ;
-	    new AdminError(req,res,aHeader,aMsg) ;
-	    return ;
-	}
+        // Lets get the path to the admin templates folder
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        File templateLib = super.getAdminTemplateFolder(imcref, user);
 
-
-	// Lets get the path to the admin templates folder
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
-	File templateLib = super.getAdminTemplateFolder(imcref, user) ;
-
-	HtmlGenerator htmlObj = new HtmlGenerator(templateLib, fileName) ;
-	String html = htmlObj.createHtmlString(tags,data,req) ;
-	res.setContentType("text/html") ;
-	htmlObj.sendToBrowser(req,res,html) ;
-	return ;
+        HtmlGenerator htmlObj = new HtmlGenerator(templateLib, fileName);
+        String html = htmlObj.createHtmlString(tags, data, req);
+        res.setContentType("text/html");
+        htmlObj.sendToBrowser(req, res, html);
+        return;
     }
 
-    public void log( String str) {
-	System.err.println("AdminError: " + str) ;
+    public void log(String str) {
+        System.err.println("AdminError: " + str);
     }
 
-} // End of class
+}

@@ -290,7 +290,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 } catch ( java.text.ParseException ignored ) {
                 }
                 menuItem.setHeadline( (String)childIt.next() );                       // The headline of the child.
-                menuItem.setText( (String)childIt.next() );                           // The subtext for the child.
+                menuItem.setMenuText( (String)childIt.next() );                           // The subtext for the child.
                 menuItem.setImage( (String)childIt.next() );                          // An optional imageurl for this document.
                 childIt.next();                                                     // Ignored. The target frame for this document. Replaced by 'target'.
                 try {
@@ -333,7 +333,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#session_counter_date#", service.getSessionCounterDate() );
             tags.setProperty( "#lastDate#", datetimeFormatWithSeconds.format( document.getModifiedDatetime() ) );
             tags.setProperty( "#metaHeadline#", document.getHeadline() );
-            tags.setProperty( "#metaText#", document.getText() );
+            tags.setProperty( "#metaText#", document.getMenuText() );
 
             String meta_image = document.getImage();
             if ( !"".equals( meta_image ) ) {

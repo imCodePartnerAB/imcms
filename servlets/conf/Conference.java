@@ -3,6 +3,8 @@ import imcode.external.diverse.*;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCPoolInterface;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 import javax.servlet.http.*;
 import java.io.File;
@@ -50,30 +52,6 @@ public class Conference extends HttpServlet {
         return Integer.parseInt( metaId );
     }
 
-    /**
-     * Returns an user object. If an error occurs, an errorpage will be generated.
-     */
-
-    imcode.server.user.UserDomainObject getUserObj( HttpServletRequest req,
-                                                    HttpServletResponse res ) throws IOException {
-
-        if ( checkSession( req, res ) == true ) {
-
-            // Get the session
-            HttpSession session = req.getSession( true );
-            // Does the session indicate this user already logged in?
-            Object done = session.getAttribute( "logon.isDone" );  // marker object
-            imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
-
-            return user;
-        } else {
-            String header = "Conference servlet.";
-            ConfError err = new ConfError( req, res, header, 2 );
-            log( err.getErrorMsg() );
-            return null;
-        }
-    }
-
     // *************** LETS HANDLE THE SESSION META PARAMETERS *********************
 
 
@@ -119,34 +97,6 @@ public class Conference extends HttpServlet {
     }
 
     /**
-     * Verifies that the user has logged in. If he hasnt, he will be redirected to
-     * an url which we get from a init file name conference.
-     */
-
-    boolean checkSession( HttpServletRequest req, HttpServletResponse res )
-            throws IOException {
-
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-
-        // Lets get serverinformation
-
-        if ( done == null ) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-            session.setAttribute( "login.target", req.getRequestURL().toString() );
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-            String startUrl = imcref.getStartUrl();
-            res.sendRedirect( startUrl );
-
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Gives the folder to the root external folder
      */
 
@@ -154,12 +104,7 @@ public class Conference extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         int metaId = this.getMetaId( req );
-
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 
         return imcref.getExternalTemplateFolder( metaId, user);
     }
@@ -177,13 +122,7 @@ public class Conference extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
 
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
-
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         int metaId = this.getMetaId( req );
 
         File extFolder = imcref.getExternalTemplateFolder( metaId, user);
@@ -211,8 +150,6 @@ public class Conference extends HttpServlet {
     void sendHtml( HttpServletRequest req, HttpServletResponse res,
                    VariableManager vm, String htmlFile ) throws IOException {
 
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-
         // Lets get the TemplateFolder  and the foldername used for this certain metaid
         File templateLib = this.getExternalTemplateFolder( req );
 
@@ -235,6 +172,7 @@ public class Conference extends HttpServlet {
         vm.addProperty( "SERVLET_URL", "" );
 
         //String adminBtn = this.getAdminButtonLink( req, user, adminButtonVM ) ;
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         String adminBtn = this.getAdminButtonLink( req, user, adminButtonVM );
         vm.addProperty( "CONF_ADMIN_LINK", adminBtn );
 
@@ -280,10 +218,6 @@ public class Conference extends HttpServlet {
     boolean prepareUserForConf( HttpServletRequest req, HttpServletResponse res,
                                 MetaInfo.Parameters params, String loginUserId ) throws IOException {
 
-        // Lets get the user object
-        imcode.server.user.UserDomainObject user = this.getUserObj( req, res );
-        if ( user == null ) return false;
-
         // Lets get userparameters
         String metaId = "" + params.getMetaId();
 
@@ -293,8 +227,8 @@ public class Conference extends HttpServlet {
         // Ok, Lets prepare the user for the conference.
         // Lets get his lastLoginDate and update it to today
         String lastLoginDate = confref.sqlProcedureStr( "A_GetLastLoginDate2", new String[]{metaId, loginUserId} );
-        String firstName = "";
-        String lastName = "";
+        String firstName;
+        String lastName;
 
         // Ok, if lastlogindate is null, then it has to be the a user who has logged in
         // to the system and comes here to the conference for the first time
@@ -302,6 +236,7 @@ public class Conference extends HttpServlet {
         if ( lastLoginDate == null ) {
             // Ok, det är första gången användaren är här.
 
+            UserDomainObject user = Utility.getLoggedOnUser( req );
             firstName = user.getFirstName();
             lastName = user.getLastName();
 
@@ -375,12 +310,8 @@ public class Conference extends HttpServlet {
         // Lets get serverinformation
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         IMCPoolInterface confref = ApplicationServer.getIMCPoolInterface();
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        imcode.server.user.UserDomainObject user = (imcode.server.user.UserDomainObject)done;
 
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         String lang_prefix = imcref.getDefaultLanguageAsIso639_2();
 
         if( user != null){
@@ -527,7 +458,7 @@ public class Conference extends HttpServlet {
         HttpSession session = req.getSession( true );
 
         //lets get if user authorized or not
-        boolean authorized = true;
+        boolean authorized;
         String stringMetaId = (String)session.getAttribute( "Conference.meta_id" );
         if ( stringMetaId == null ) {
             authorized = false;

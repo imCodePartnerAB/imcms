@@ -13,6 +13,7 @@ import imcode.external.diverse.Html;
 import imcode.external.diverse.VariableManager;
 import imcode.server.IMCServiceInterface;
 import imcode.server.ApplicationServer;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import imcode.util.DateHelper;
@@ -65,21 +66,9 @@ public class AdminListDocs extends Administrator {
     protected void doGet( HttpServletRequest request, HttpServletResponse response )
             throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-
-        // Lets validate the session
-        if ( !checkSession( request, response ) ) {
-            return;
-        }
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( request, response );
-
-        if ( user == null ) {
-            return;
-        }
-
         // Lets verify that the user who tries to add a new user is an admin
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( imcref.checkAdminRights( user ) == false ) {
             return;
         }
@@ -106,25 +95,11 @@ public class AdminListDocs extends Administrator {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
-
-        // Lets validate the session
-        if ( !checkSession( request, response ) ) return;
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( request, response );
-
         // lets get ready for errors
-        String languagePrefix = user.getLangPrefix();
 
-        if ( user == null ) {
-            String header = "Error in AdminRoleBelongings.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            this.log( header + msg );
-            new AdminError( request, response, header, msg );
-            return;
-        }
 
         // Lets check if the user is an admin, otherwise throw him out.
+        UserDomainObject user = Utility.getLoggedOnUser( request );
         if ( !imcref.checkAdminRights( user ) ) {
             String header = "Error in AdminRoleBelongings.";
             String msg = "The user is not an administrator." + "<BR>";
@@ -238,6 +213,7 @@ public class AdminListDocs extends Administrator {
                 };
 
                 StringBuffer listOfDocs = new StringBuffer();
+                String languagePrefix = user.getLangPrefix();
                 for ( int i = 0; i < docTypesToShow.length; i++ ) {
                     String[][] queryResult = imcref.sqlProcedureMulti( "ListDocsByDate",
                                                                        new String[]{listMod, docTypesToShow[i], startDate, endDate, languagePrefix} );

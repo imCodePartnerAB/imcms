@@ -3,6 +3,8 @@ import javax.servlet.http.*;
 
 import imcode.external.diverse.* ;
 import imcode.server.* ;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 public class AdminError2 extends Administrator {
 
@@ -23,7 +25,7 @@ public class AdminError2 extends Administrator {
         VariableManager vm = new VariableManager() ;
 
 	// Lets get the errormessage from the error file
-	String myErrorMessage = this.getErrorMessage(req, res, errorCode) ;
+	String myErrorMessage = this.getErrorMessage(req, errorCode) ;
 
 	vm.addProperty("ERROR_HEADER", header) ;
 	vm.addProperty("ERROR_MESSAGE", myErrorMessage) ;
@@ -42,7 +44,7 @@ public class AdminError2 extends Administrator {
 	VariableManager vm = new VariableManager() ;
 
 	// Lets get the errormessage from the error file
-	String aMessage = this.getErrorMessage(req, res, errorCode) ;
+	String aMessage = this.getErrorMessage(req, errorCode) ;
 	aMessage += " " + msg ;
 
 	vm.addProperty("ERROR_HEADER", header) ;
@@ -89,17 +91,15 @@ public class AdminError2 extends Administrator {
        information from a file in the template folder called errmsg.ini
     */
 
-    private String getErrorMessage(HttpServletRequest req, HttpServletResponse res,int errCode) {
+    private String getErrorMessage(HttpServletRequest req, int errCode) {
 	try {
 	    // Lets get the path to the admin templates folder
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
 
-	    imcode.server.user.UserDomainObject user = getUserObj(req,res) ;
+        UserDomainObject user = Utility.getLoggedOnUser( req );
 	    File folder = this.getAdminTemplateFolder(imcref, user) ;
-	    //log("ExternalFolder was: " + folder) ;
 
 	    // Lets get the error code
-
 	    SettingsAccessor setObj = new SettingsAccessor( new File(folder, "ADMINERRMSG.INI")) ;
 	    setObj.setDelimiter("=") ;
 	    setObj.loadSettings() ;
@@ -127,7 +127,7 @@ public class AdminError2 extends Administrator {
         VariableManager vm = new VariableManager() ;
 
 	// Lets get the errormessage from the error file
-	myErrorMessage = this.getErrorMessage(req, res, errorCode) ;
+	myErrorMessage = this.getErrorMessage(req, errorCode) ;
 	vm.addProperty("ERROR_CODE", "" + errorCode) ;
 	vm.addProperty("ERROR_HEADER", header) ;
 	vm.addProperty("ERROR_MESSAGE", myErrorMessage) ;

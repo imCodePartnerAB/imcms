@@ -1,6 +1,7 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.ImageFileMetaData;
 import imcode.util.Utility;
@@ -24,13 +25,11 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
         String image_url = imcref.getImageUrl();
         File image_path = Utility.getDomainPrefPath( "image_path" );
 
-        imcode.server.user.UserDomainObject user;
-        String htmlStr = "";
-        int img_no = 0;
+        String htmlStr;
+        int img_no;
         imcode.server.Image image = new imcode.server.Image();
 
         res.setContentType( "text/html" );
@@ -226,28 +225,8 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         String imageref_link = req.getParameter( "imageref_link" );
         image.setImageRefLink( imageref_link );
 
-
-        // redirect data
-        String scheme = req.getScheme();
-        String serverName = req.getServerName();
-        int p = req.getServerPort();
-        String port = ( p == 80 ) ? "" : ":" + p;
-
-        // Get the session
-        HttpSession session = req.getSession( true );
-
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        user = (imcode.server.user.UserDomainObject)done;
-
-        if ( done == null ) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-
-            res.sendRedirect( scheme + "://" + serverName + port + start_url );
-            return;
-        }
         // Check if user has write rights
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkDocAdminRights( meta_id, user, 131072 ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {
@@ -258,6 +237,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         user.put( "flags", new Integer( 131072 ) );
 
         //the folderlist
+        HttpSession session = req.getSession( true );
         String dirList = (String)session.getAttribute( "imageFolderOptionList" );
         if ( dirList == null ) dirList = "";
 
@@ -360,7 +340,6 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 
             vec.add( "#folders#" );
             vec.add( dirList );
-            String lang_prefix = user.getLangPrefix();
             htmlStr = imcref.parseDoc( vec, "change_img.html", user);
             out.write( htmlStr );
             return;
@@ -402,7 +381,6 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
             vec.add( "#folders#" );
             vec.add( dirList );
 
-            String lang_prefix = user.getLangPrefix();
             htmlStr = imcref.parseDoc( vec, "change_img.html", user);
             out.write( htmlStr );
             return;

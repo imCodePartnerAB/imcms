@@ -22,16 +22,10 @@ public class FileAdmin extends HttpServlet {
     private static final int BUFFER_SIZE = 65536;
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        String host = req.getHeader( "Host" );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
-        // Check if user logged on
-        UserDomainObject user;
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
+        UserDomainObject user = Utility.getLoggedOnUser( req ) ;
         if ( !imcref.checkAdminRights( user ) ) {
             Utility.redirect( req, res, start_url );
             return;
@@ -71,15 +65,10 @@ public class FileAdmin extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        String host = req.getHeader( "Host" );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
-        UserDomainObject user;
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
+        UserDomainObject user = Utility.getLoggedOnUser( req ) ;
         if ( !imcref.checkAdminRights( user ) ) {
             Utility.redirect( req, res, start_url );
             return;
@@ -362,7 +351,8 @@ public class FileAdmin extends HttpServlet {
         File uniqueFile = findUniqueFilename( file );
         if ( file.equals( uniqueFile ) || file.renameTo( uniqueFile ) ) {
             FileOutputStream fout = new FileOutputStream( file );
-            fout.write( fileContents.getBytes( "8859_1" ) );
+            byte[] bytes = fileContents.getBytes( "8859_1" );
+            fout.write( bytes );
             fout.flush();
             fout.close();
             if ( !file.equals( uniqueFile ) ) {
@@ -428,7 +418,6 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        String lang_prefix = user.getLangPrefix();
         out.print( imcref.parseDoc( vec, "FileAdminMoveOverwriteWarning.html", user) );
     }
 
@@ -450,7 +439,6 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        String lang_prefix = user.getLangPrefix();
         out.print( imcref.parseDoc( vec, "FileAdminCopyOverwriteWarning.html", user) );
     }
 
@@ -466,7 +454,6 @@ public class FileAdmin extends HttpServlet {
         vec.add( newFilename );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        String lang_prefix = user.getLangPrefix();
         out.print( imcref.parseDoc( vec, "FileAdminFileExisted.html", user) );
     }
 
@@ -479,7 +466,6 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        String lang_prefix = user.getLangPrefix();
         out.print( imcref.parseDoc( vec, "FileAdminFileBlank.html", user) );
     }
 
@@ -508,7 +494,6 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        String lang_prefix = user.getLangPrefix();
         out.print( imcref.parseDoc( vec, "FileAdminDeleteWarning.html", user) );
         return;
     }
@@ -522,7 +507,6 @@ public class FileAdmin extends HttpServlet {
         vec.add( dir2.getCanonicalPath() );
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
-        String lang_prefix = user.getLangPrefix();
         out.print( imcref.parseDoc( vec, "FileAdminNameBlank.html", user) );
         return;
     }
@@ -693,7 +677,6 @@ public class FileAdmin extends HttpServlet {
                 for ( int j = 0; j < sub_list.length; j++ ) {
                     list.add( sub_list[j] );
                 }
-                sub_list = null;
             }
             if ( !dirfirst ) {
                 list.add( files[i] );
@@ -738,7 +721,6 @@ public class FileAdmin extends HttpServlet {
             vec.add( "" );
         }
 
-        String lang_prefix = user.getLangPrefix();
         return imcref.parseDoc( vec, "FileAdmin.html", user);
     }
 

@@ -44,12 +44,6 @@ public class GetExistingDoc extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        UserDomainObject user = Utility.getLoggedOnUserOrRedirect( req, res, start_url );
-        if ( null == user ) {
-            return;
-        }
 
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
@@ -76,6 +70,7 @@ public class GetExistingDoc extends HttpServlet {
             return;
         }
 
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( req.getParameter( "cancel" ) != null || req.getParameter( "cancel.x" ) != null ) {
             String tempstring = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( tempstring != null ) {
@@ -396,7 +391,7 @@ public class GetExistingDoc extends HttpServlet {
             String[] wantedDateFields = req.getParameterValues( "include_doc" );
             for ( int i = 0; null != wantedDateFields && i < wantedDateFields.length; i++ ) {
                 String wantedDateField = wantedDateFields[i];
-                String wantedIndexDateField = null;
+                String wantedIndexDateField;
                 if ( "created".equalsIgnoreCase( wantedDateField ) ) {
                     wantedIndexDateField = "created_datetime";
                 } else if ( "changed".equalsIgnoreCase( wantedDateField ) ) {
@@ -462,7 +457,7 @@ public class GetExistingDoc extends HttpServlet {
                 "#meta_id#", String.valueOf( document.getMetaId() ),
                 "#doc_type#", (String)docTypesHash.get( "" + document.getDocumentType() ),
                 "#meta_headline#", document.getHeadline(),
-                "#meta_text#", document.getText(),
+                "#meta_text#", document.getMenuText(),
                 "#date_created#", formatDate( dateFormat, document.getCreatedDatetime() ),
                 "#date_modified#", formatDate( dateFormat, document.getModifiedDatetime() ),
                 "#date_activated#", formatDate( dateFormat, document.getActivatedDatetime() ),

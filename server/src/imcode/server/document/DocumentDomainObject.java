@@ -53,7 +53,7 @@ public class DocumentDomainObject implements IMCConstants {
     private TemplateDomainObject template;
     /* Textdocs only */
     private int templateGroupId;
-    private String text;
+    private String menuText;
     /* url documents only*/
     private String urlRef;
 
@@ -215,12 +215,12 @@ public class DocumentDomainObject implements IMCConstants {
         this.templateGroupId = v;
     }
 
-    public String getText() {
-        return text;
+    public String getMenuText() {
+        return menuText;
     }
 
-    public void setText( String v ) {
-        this.text = v;
+    public void setMenuText( String v ) {
+        this.menuText = v;
     }
 
     /**

@@ -1,6 +1,7 @@
 
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
 import imcode.server.document.TextDocumentTextDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.util.Utility;
@@ -17,27 +18,14 @@ import java.io.Writer;
  */
 public class SaveText extends HttpServlet {
 
-    /**
-     * doPost()
-     */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
 
-        // Check if user logged on
-        imcode.server.user.UserDomainObject user;
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
-
-        // get meta_id
-        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
-
         // Check if user has permission to be here
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkDocAdminRights( meta_id, user, imcode.server.IMCConstants.PERM_DT_TEXT_EDIT_TEXTS ) ) {	// Checking to see if user may edit this
             String output = AdminDoc.adminDoc( meta_id, meta_id, user, req, res );
             if ( output != null ) {

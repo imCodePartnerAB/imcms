@@ -7,6 +7,7 @@ import java.util.*;
 import imcode.external.diverse.*;
 import imcode.server.*;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 import org.apache.log4j.*;
 
@@ -20,21 +21,8 @@ public class AdminUser extends Administrator {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        // Lets validate the session
-        if ( checkSession( req, res ) == false )
-            return;
-
-        // Lets get an user object
-        UserDomainObject user = getUserObj( req, res );
-        if ( user == null ) {
-            String header = "Error in AdminCounter.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-        }
-
         // check if user is a Useradmin, adminRole = 2
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
 
         // check if user is a Superadmin, adminRole = 1
@@ -109,14 +97,7 @@ public class AdminUser extends Administrator {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        // Lets validate the session
-        if ( checkSession( req, res ) == false )
-            return;
-
-        // Get the session
         HttpSession session = req.getSession( false );
-
-        //lets clear old session attribute
         try {
             session.removeAttribute( "userToChange" );
             session.removeAttribute( "next_url" );
@@ -126,17 +107,8 @@ public class AdminUser extends Administrator {
             log( "session has been invalidated so no need to remove parameters" );
         }
 
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-        if ( user == null ) {
-            String header = "Error in AdminCounter.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-        }
-
         // check if user is a Useradmin, adminRole = 2
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
 
         // check if user is a Superadmin, adminRole = 1
@@ -179,7 +151,7 @@ public class AdminUser extends Administrator {
         }
     } // end HTTP POST
 
-    private void redirectChangeUser( HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref, UserDomainObject user, boolean useradmin, HttpSession session, String userToChangeId ) throws ServletException, IOException {
+    private void redirectChangeUser( HttpServletRequest req, HttpServletResponse res, IMCServiceInterface imcref, UserDomainObject user, boolean useradmin, HttpSession session, String userToChangeId ) throws IOException {
         // ******* GENERATE AN CHANGE_USER PAGE**********
         log( "Change_User" );
 
@@ -214,10 +186,10 @@ public class AdminUser extends Administrator {
      * a error page will be generated and null will be returned.
      */
 
-    private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+    private String getCurrentUserId( HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
         String userId = req.getParameter( "user_Id" );
-	
+
         // Get the session
         HttpSession session = req.getSession( false );
 

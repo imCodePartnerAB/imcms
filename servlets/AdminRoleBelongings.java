@@ -18,6 +18,7 @@ import imcode.external.diverse.VariableManager;
 import imcode.util.Utility;
 
 import imcode.server.*;
+import imcode.server.user.UserDomainObject;
 
 /**
  * Takes care of administration of users by roles.
@@ -43,7 +44,7 @@ import imcode.server.*;
  * - AddUserRole
  * - ChangeUserActiveStatus
  * - GetLangPrefixFromId
- * 
+ *
  * @author Jerker Drottenmyr
  * @version 1.3 17 Oct 2000
  */
@@ -62,22 +63,9 @@ public class AdminRoleBelongings extends Administrator {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        // Lets validate the session
-        if ( checkSession( req, res ) == false ) {
-            return;
-        }
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-
-        if ( user == null ) {
-
-            return;
-        }
-
         // Lets verify that the user who tries to add a new user is an admin
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
-
             return;
         }
 
@@ -103,25 +91,11 @@ public class AdminRoleBelongings extends Administrator {
 
         String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
 
-        // Lets validate the session
-        if ( checkSession( req, res ) == false ) return;
-
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = getUserObj( req, res );
-
         // lets get ready for errors
-        String languagePrefix = user.getLangPrefix();
         String errorHeader = "AdminRoleBelongings";
 
-        if ( user == null ) {
-            String header = "Error in AdminRoleBelongings.";
-            String msg = "Couldnt create an user object." + "<BR>";
-            this.log( header + msg );
-            new AdminError( req, res, header, msg );
-            return;
-        }
-
         // Lets check if the user is an admin, otherwise throw him out.
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( imcref.checkAdminRights( user ) == false ) {
             String header = "Error in AdminRoleBelongings.";
             String msg = "The user is not an administrator." + "<BR>";
@@ -366,8 +340,8 @@ public class AdminRoleBelongings extends Administrator {
     }
 
     private String getUserOptionListTag( String roleId, IMCServiceInterface imcref ) {
-        String[][] userQueryResult = null;
-        String userOptionList = null;
+        String[][] userQueryResult;
+        String userOptionList;
 
         // lets get all user or users who has role role_id
         if ( roleId.equals( "ALL_USERS" ) ) {

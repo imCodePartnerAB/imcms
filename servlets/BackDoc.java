@@ -20,20 +20,15 @@ public class BackDoc extends HttpServlet {
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-        
+
         // Find the start-page
         int start_doc = imcref.getSystemData().getStartDocument();
 
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
 
-        UserDomainObject user;
-        if ( ( user = Utility.getLoggedOnUserOrRedirect( req, res, start_url ) ) == null ) {
-            return;
-        }
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         Stack history = (Stack)user.get( "history" );
-
         boolean useNextToLastTextDocument = req.getParameter( "top" ) == null;
         int meta_id = getLastTextDocumentFromHistory( history, useNextToLastTextDocument, imcref );
 

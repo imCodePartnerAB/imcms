@@ -156,7 +156,7 @@ public class DocumentIndex {
         indexDocument.add( Field.Keyword( "meta_id", "" + document.getMetaId() ) );
         indexDocument.add( unStoredKeyword( "meta_headline_keyword", document.getHeadline().toLowerCase() ) );
         indexDocument.add( Field.UnStored( "meta_headline", document.getHeadline() ) );
-        indexDocument.add( Field.UnStored( "meta_text", document.getText() ) );
+        indexDocument.add( Field.UnStored( "meta_text", document.getMenuText() ) );
         indexDocument.add( unStoredKeyword( "doc_type_id", "" + document.getDocumentType() ) );
         SectionDomainObject[] sections = document.getSections();
         for ( int i = 0; i < sections.length; i++ ) {

@@ -23,8 +23,6 @@ public class ChatBoard extends ChatBase {
     public void doGet(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
         res.setContentType("text/html");
 
-        if ( super.checkSession( req, res ) == false ) return;
-
         Utility.setNoCache(res);
 
 	// Lets get the user object

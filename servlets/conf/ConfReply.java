@@ -16,6 +16,8 @@ import imcode.server.ApplicationServer;
 import imcode.server.HTMLConv;
 import imcode.server.IMCPoolInterface;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -37,7 +39,7 @@ import java.util.Vector;
  * <p/>
  * stored procedures in use:
  * -
- * 
+ *
  * @author Rickard Larsson
  * @author Jerker Drottenmyr
  * @version 1.5 21 Nov 2000
@@ -57,16 +59,10 @@ public class ConfReply extends Conference {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
         // Lets get the parameters
         Properties params = this.getParameters( req );
 
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
         }
@@ -104,16 +100,10 @@ public class ConfReply extends Conference {
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
         // Lets get the parameters and validate them
         Properties params = this.getParameters( req );
 
-        // Lets get an user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, user ) ) {
             return;
         }
@@ -244,10 +234,6 @@ public class ConfReply extends Conference {
         }
         viewedDiscs.setProperty( discId, dateString ); // id
         session.setAttribute( "Conference.viewedDiscList", viewedDiscs );
-        // Ok, Lets print what we just updated
-        viewedDiscs = (Properties)session.getAttribute( "Conference.viewedDiscList" );
-        //log("*** ConfReply ***" + "\n") ;
-        //log(props2String(viewedDiscs)) ;
     }
 
     /**
@@ -303,7 +289,7 @@ public class ConfReply extends Conference {
         // Lets get the information regarding the replylevel
         int index = 5;
         String replyLevel = (String)dataV.elementAt( index );
-        String htmlCode = "";
+        String htmlCode;
         String imageStart = "<img src=\"";
         String imageEnd = "\">";
 

@@ -346,15 +346,15 @@ public class DocumentMapper {
 
         document.setKeywords( getKeywords( metaId ) );
 
-        String[] sprocResult1 = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS,
+        String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS,
                                                       new String[]{String.valueOf( document.getMetaId() ), "-1"} );
 
         int noOfColumns = 4;
-        for ( int i = 0, k = 0; i < sprocResult1.length; i = i + noOfColumns, k++ ) {
-            int roleId = Integer.parseInt( sprocResult1[i] );
-            String roleName = sprocResult1[i + 1];
+        for ( int i = 0, k = 0; i < sprocResult.length; i = i + noOfColumns, k++ ) {
+            int roleId = Integer.parseInt( sprocResult[i] );
+            String roleName = sprocResult[i + 1];
             RoleDomainObject role = new RoleDomainObject( roleId, roleName );
-            int rolePermissionSetId = Integer.parseInt( sprocResult1[i + 2] );
+            int rolePermissionSetId = Integer.parseInt( sprocResult[i + 2] );
             document.setPermissionSetForRole( role, rolePermissionSetId );
         }
 
@@ -556,7 +556,7 @@ public class DocumentMapper {
         String target = document.getTarget();
         TemplateDomainObject template = document.getTemplate();
         int templateGroupId = document.getTemplateGroupId();
-        String text = document.getText();
+        String text = document.getMenuText();
         UserDomainObject publisher = document.getPublisher();
 
         sqlUpdateMeta( service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline,
@@ -855,17 +855,6 @@ public class DocumentMapper {
         imcref.sqlUpdateQuery( "INSERT INTO meta_section VALUES(?,?)", new String[]{"" + metaId, "" + sectionId} );
     }
 
-    private boolean arrayContains( int[] array, int wantedValue ) {
-        boolean result = false;
-        for ( int i = 0; i < array.length; ++i ) {
-            if ( wantedValue == array[i] ) {
-                result = true;
-                break;
-            }
-        }
-        return result;
-    }
-
     private String getSortOrderAsSqlOrderBy( int sortOrder ) {
         String orderBy = "meta_headline";
         switch ( sortOrder ) {
@@ -900,9 +889,8 @@ public class DocumentMapper {
 
     private static void initTextDoc( IMCServiceInterface service, DocumentDomainObject inout_document ) {
         // all from the table text_doc
-        String[] textdoc_data1 = service.sqlProcedure( "GetTextDocData",
+        String[] textdoc_data = service.sqlProcedure( "GetTextDocData",
                                                        new String[]{String.valueOf( inout_document.getMetaId() )} );
-        String[] textdoc_data = textdoc_data1;
         if ( textdoc_data.length >= 4 ) {
             int template_id = Integer.parseInt( textdoc_data[0] );
             //String simple_name = textdoc_data[1];
@@ -1020,7 +1008,7 @@ public class DocumentMapper {
         document.setMetaId( Integer.parseInt( result[0] ) );
         document.setDocumentType( Integer.parseInt( result[2] ) );
         document.setHeadline( result[3] );
-        document.setText( result[4] );
+        document.setMenuText( result[4] );
         document.setImage( result[5] );
         document.setCreator( imcmsAAUM.getUser( Integer.parseInt( result[6] ) ) );
         document.setArchivedFlag( "0".equals( result[12] ) ? false : true );
@@ -1055,13 +1043,6 @@ public class DocumentMapper {
         String[] params = new String[]{"" + meta_id, "" + no};
         String[] results = service.sqlProcedure( SPROC_GET_TEXT, params, false );
         return results;
-    }
-
-    // todo make sure all sproc and sql mehtods are private
-    private static String[] sprocGetUserPermissionSet( IMCServiceInterface service, int metaId, int userId ) {
-        String[] sqlParams = {String.valueOf( metaId ), String.valueOf( userId )};
-        String[] sqlResult = service.sqlProcedure( SPROC_GET_USER_PERMISSION_SET, sqlParams );
-        return sqlResult;
     }
 
     private static void sprocUpdateInsertText( IMCServiceInterface service, int meta_id, int txt_no,

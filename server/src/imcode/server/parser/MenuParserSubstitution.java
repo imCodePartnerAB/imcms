@@ -263,7 +263,7 @@ class MenuParserSubstitution implements Substitution {
         Properties tags = new Properties();
         tags.setProperty( "#childMetaId#", "" + menuItem.getMetaId() );
         tags.setProperty( "#childMetaHeadline#", headline );
-        tags.setProperty( "#childMetaText#", menuItem.getText() );
+        tags.setProperty( "#childMetaText#", menuItem.getMenuText() );
         tags.setProperty( "#childMetaImage#", imageTag );
         tags.setProperty( "#childCreatedDate#", createdDate );
         tags.setProperty( "#childModifiedDate#", modifiedDate );
@@ -271,7 +271,7 @@ class MenuParserSubstitution implements Substitution {
         tags.setProperty( "#menuitemtreesortkey#", menuItem.getTreeSortKey());
         tags.setProperty( "#menuitemmetaid#", "" + menuItem.getMetaId());
         tags.setProperty( "#menuitemheadline#", headline );
-        tags.setProperty( "#menuitemtext#", menuItem.getText() );
+        tags.setProperty( "#menuitemtext#", menuItem.getMenuText() );
         tags.setProperty( "#menuitemimage#", imageTag );
         tags.setProperty( "#menuitemimageurl#", imageUrl );
         tags.setProperty( "#menuitemtarget#", menuItem.getTarget() );

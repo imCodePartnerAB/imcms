@@ -51,13 +51,6 @@ public class SearchDocuments extends HttpServlet {
      */
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        UserDomainObject user = Utility.getLoggedOnUserOrRedirect( req, res );
-        if ( null == user ) {
-            return;
-        }
-        HttpSession session = req.getSession();
-
         //this is the params we can get from the browser
         String searchString = req.getParameter( "question_field" ) == null ? "" : req.getParameter( "question_field" );
         String startNr = req.getParameter( "starts" ) == null ? "0" : req.getParameter( "starts" );
@@ -65,6 +58,7 @@ public class SearchDocuments extends HttpServlet {
         String prev_search = req.getParameter( "prev_search" ) == null ? "" : req.getParameter( "prev_search" );
 
         String sectionParameter = req.getParameter( "section" );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         SectionDomainObject section = sectionParameter == null
                                       ? null
                                       : imcref.getDocumentMapper().getSectionById(
@@ -78,10 +72,8 @@ public class SearchDocuments extends HttpServlet {
             originalSearchString = prev_search;
         }
 
-        String format = "yyyy-MM-dd HH:mm";
-
         //ok the rest of params we need to set up search sql
-        DocumentDomainObject[] searchResults = null;
+        DocumentDomainObject[] searchResults;
         int hits = 0;
         //the counter to tell vere in the hitarr to start
         int startNrInt = 0;
@@ -98,6 +90,9 @@ public class SearchDocuments extends HttpServlet {
         } catch ( NumberFormatException nfe ) {
             //do nothing lets start at 0
         }
+
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        HttpSession session = req.getSession();
 
         //check if nex or prev butons was selected or if we must do a new search i db
         if ( req.getParameter( "next_button" ) != null ) {
@@ -202,7 +197,7 @@ public class SearchDocuments extends HttpServlet {
         //lets set up the <-prev- 1 2 .. -next-> stuff
         boolean nextButtonOn = false;
         boolean prevButtonOn = false;
-        int hitPages = 0;
+        int hitPages;
         StringBuffer buttonsSetupHtml = new StringBuffer( "" );
 
         if ( hits > 0 ) {
@@ -323,43 +318,21 @@ public class SearchDocuments extends HttpServlet {
      * doGet()
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
-
-        imcode.server.user.UserDomainObject user;
         res.setContentType( "text/html" );
         ServletOutputStream out = res.getOutputStream();
 
-        // Get the session
-        HttpSession session = req.getSession( true );
-        // Does the session indicate this user already logged in?
-        Object done = session.getAttribute( "logon.isDone" );  // marker object
-        user = (imcode.server.user.UserDomainObject)done;
-
-        if ( done == null ) {
-            // No logon.isDone means he hasn't logged in.
-            // Save the request URL as the true target and redirect to the login page.
-            session.setAttribute( "login.target",
-                                  req.getRequestURL().toString() );
-            String scheme = req.getScheme();
-            String serverName = req.getServerName();
-            int p = req.getServerPort();
-            String port = ( p == 80 ) ? "" : ":" + p;
-            res.sendRedirect( scheme + "://" + serverName + port + start_url );
-            return;
-        }
-
-        String langPrefix = user.getLangPrefix();
-
         //ok lets see what folder to get the search-templates from.
         // @show = parameter with the folder name. If we get no parameter lets use folder original.
-        String templateStr = null;
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        String langPrefix = user.getLangPrefix();
         String templatePath = langPrefix + "/admin/search/";
         String show = req.getParameter( "show" );
         if ( show == null ) {
             show = "original"; // default folder for search-templates
         }
-        templateStr = imcref.getSearchTemplate( templatePath + show + "/" + SEARCH_PAGE_TEMPLATE );
+
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        String templateStr = imcref.getSearchTemplate( templatePath + show + "/" + SEARCH_PAGE_TEMPLATE );
 
 
         //the no_of_hits list
@@ -437,7 +410,7 @@ public class SearchDocuments extends HttpServlet {
             "#meta_id#", "" + document.getMetaId(),
             "#doc_type#", "" + document.getDocumentType(),
             "#meta_headline#", document.getHeadline(),
-            "#meta_text#", document.getText(),
+            "#meta_text#", document.getMenuText(),
             "#date_created#", "" + ObjectUtils.defaultIfNull( document.getCreatedDatetime(), "&nbsp;" ),
             "#date_modified#", "" + ObjectUtils.defaultIfNull( document.getModifiedDatetime(), "&nbsp;" ),
             "#date_activated#", "" + ObjectUtils.defaultIfNull( document.getActivatedDatetime(), "&nbsp;" ),

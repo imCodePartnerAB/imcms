@@ -5,6 +5,8 @@ import imcode.external.diverse.VariableManager;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCPoolInterface;
 import imcode.server.IMCServiceInterface;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +25,7 @@ import java.util.Vector;
  * Conf_Add_User.htm : Html file used to add a new user (adminmode)
  * Conf_Login_Error.htm : Html file used to generate a login failure. (adminmode)
  * </pre>
- * 
+ *
  * @author Rickard Larsson
  * @version 1.0
  *          Date : 2000-06-16
@@ -64,17 +66,11 @@ public class ConfLogin extends Conference {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
-        // Lets validate the session, e.g has the user logged in to Janus?
-        if ( super.checkSession( req, res ) == false ) return;
-
         // Lets get the standard parameters and validate them
         MetaInfo.Parameters params = super.getConferenceSessionParameters( req );
 
-        // Lets get the user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
         int testMetaId = params.getMetaId();
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, testMetaId, user ) ) {
             return;
         }
@@ -150,16 +146,11 @@ public class ConfLogin extends Conference {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
-        if ( super.checkSession( req, res ) == false ) return;
-
         // Lets get the standard parameters and validate them
         MetaInfo.Parameters params = super.getConferenceSessionParameters( req );
 
-        // Lets get the user object
-        imcode.server.user.UserDomainObject user = super.getUserObj( req, res );
-        if ( user == null ) return;
-
         int testMetaId = params.getMetaId();
+        UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !isUserAuthorized( req, res, testMetaId, user ) ) {
             return;
         }
