@@ -2,7 +2,7 @@
 <html>
 <head>
 <title><? install/htdocs/sv/jsp/internalerrorpage.jsp/1 ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 </head>
 <body>
 <H1><? install/htdocs/sv/jsp/internalerrorpage.jsp/2 ?></H1>

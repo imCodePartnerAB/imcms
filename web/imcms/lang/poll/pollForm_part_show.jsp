@@ -69,13 +69,13 @@ if( saveAnswers ) {
 
 if ( hide_result < 1 ){ // show link only if hide_result = 0 and saveAnswers == true
 	%> 
-	<br><br><a href="@servleturl@/GetDoc?meta_id=<%= meta_id %>&template=<%= result_template%>" target="_blank" onClick="openW(); return false;"><b><? install/htdocs/sv/poll/pollForm_part_show.jsp/3/1 ?></b></a><br>
+	<br><br><a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=<%= meta_id %>&template=<%= result_template%>" target="_blank" onClick="openW(); return false;"><b><? install/htdocs/sv/poll/pollForm_part_show.jsp/3/1 ?></b></a><br>
 
 <SCRIPT language=JavaScript>
 <!--
 var window_width = 600;
 var window_height = 400;
-var sUrl = "@servleturl@/GetDoc?meta_id=<%=meta_id%>&template=<%=result_template%>";
+var sUrl = "<%= request.getContextPath() %>/servlet/GetDoc?meta_id=<%=meta_id%>&template=<%=result_template%>";
 var sName = "resultWin";
 if(screen.height < 700){ 
 	var window_top = 0;

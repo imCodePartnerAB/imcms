@@ -201,7 +201,6 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
         // Check if user has write rights
         UserDomainObject user = Utility.getLoggedOnUser( req );
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String image_url = imcref.getImageUrl();
 
         res.setContentType( "text/html" );
         Writer out = res.getWriter();
@@ -244,7 +243,7 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
             //****************************************************************
             Vector vec = new Vector();
             vec.add( "#imgUrl#" );
-            vec.add( image_url );
+            vec.add( imcref.getImageUrl() );
             vec.add( "#imgName#" );
             vec.add( image_name );
             vec.add( "#imgRef#" );

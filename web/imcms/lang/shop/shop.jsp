@@ -1,10 +1,11 @@
+<%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <html>
     <head>
 	<title><? install/htdocs/sv/shop/shop.html/1 ?></title>
     </head>
     <body>
-	<form method="POST" action="@servleturl@/PutInShoppingCart">
-	    <input type="hidden" name="next" value="@rooturl@/shop/cart.jsp" />
+	<form method="POST" action="$contextPath/servlet/PutInShoppingCart">
+	    <input type="hidden" name="next" value="$contextPath/shop/cart.jsp" />
 	    <input type="hidden" name="priceformatgroupingseparator" value="." />
 	    <table border="1">
 		<tr>

@@ -2,7 +2,6 @@
 <html>
 <head>
 <title><? install/htdocs/sv/poll/templates/poll_form_template.html/1 ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 <?imcms:include file='../../inc/style.htm'?>
 </head>
@@ -402,7 +401,7 @@
 <tr>
 	<td>
 	<!--Include jsp page , incuding submit or cancel butto and link "show result" depending on if corresponding variable is set to 1   -->		
-	<?imcms:include url="@rooturl@/poll/pollForm_part_show.jsp"  sendsessionid="true" sendmetaid="true" sendcookies="true"?>
+	<?imcms:include url="/imcms/poll/pollForm_part_show.jsp"  sendsessionid="true" sendmetaid="true" sendcookies="true"?>
 	<!-- End of include page -->&nbsp;</td>
 </tr>
 </form>

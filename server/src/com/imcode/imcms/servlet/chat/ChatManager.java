@@ -31,7 +31,7 @@ public class ChatManager extends ChatBase {
 
         int testMetaId = params.getMetaId();
 
-        if ( !isUserAuthorized( res, testMetaId, user ) ) {
+        if ( !isUserAuthorized( res, testMetaId, user, req ) ) {
             return;
         }
 

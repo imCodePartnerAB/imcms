@@ -29,8 +29,7 @@ public class TemplateAdmin extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkAdminRights( user ) ) {
-            String start_url = imcref.getStartUrl();
-            res.sendRedirect( start_url );
+            Utility.redirectToStartDocument( req, res );
             return;
         }
 
@@ -48,8 +47,7 @@ public class TemplateAdmin extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkAdminRights( user ) ) {
-            String start_url = imcref.getStartUrl();
-            res.sendRedirect( start_url );
+            Utility.redirectToStartDocument( req, res );
             return;
         }
 

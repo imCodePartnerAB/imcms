@@ -5,8 +5,7 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
-String IMG_PATH    = "$contextPath/imcms/$language/images/admin/" ; // path to buttons (with trailing /)
-String imC_PATH    = "@rooturl@" ;              // "/imcms" if used - "" if not
+String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/" ; // path to buttons (with trailing /)
 
 String acceptedExt         = "HTM|HTML|VBS|JS|CSS|TXT|INC" ;
 String acceptedExtReadonly = "HTM|HTML|VBS|JS|CSS|TXT|INC|JSP|ASP" ;
@@ -16,8 +15,7 @@ String acceptedExtReadonly = "HTM|HTML|VBS|JS|CSS|TXT|INC|JSP|ASP" ;
  ******************************************************************* */
 
 String file        = request.getParameter("file") ;
-String thisPage    = request.getServletPath() ;
-thisPage           = imC_PATH + thisPage ;
+String thisPage = request.getContextPath() + request.getServletPath();
 String sTemp;
 
 String hdPath      = request.getParameter("hdPath") ;
@@ -194,7 +192,7 @@ if (isHelpWin) { %>
 <head>
 <title>:: imCMS ::</title>
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 
 <STYLE TYPE="text/css">
 <!--
@@ -260,7 +258,7 @@ B { font-weight:bold; }
 <head>
 <title>:: imCMS ::</title>
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 
 <STYLE TYPE="text/css">
 <!--

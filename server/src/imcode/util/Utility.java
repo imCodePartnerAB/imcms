@@ -1,8 +1,8 @@
 package imcode.util;
 
 import imcode.server.ApplicationServer;
-import imcode.server.WebAppGlobalConstants;
 import imcode.server.IMCServiceInterface;
+import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import org.apache.velocity.VelocityContext;
 
@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -25,8 +25,8 @@ public class Utility {
     }
 
     /**
-     Takes a path-string and returns a file. The path is prepended with the webapp dir if the path is relative.
-     **/
+     * Takes a path-string and returns a file. The path is prepended with the webapp dir if the path is relative.
+     */
     public static File getAbsolutePathFromString( String pathString ) {
         File path = new File( pathString );
         if ( !path.isAbsolute() ) {
@@ -36,17 +36,19 @@ public class Utility {
     }
 
     /**
-     Fetches a preference from the config file for a domain,
-     as a File representing an absolute path, with the webapp dir prepended if the path is relative.
-     @param pref The name of the preference to fetch.
+     * Fetches a preference from the config file for a domain,
+     * as a File representing an absolute path, with the webapp dir prepended if the path is relative.
+     *
+     * @param pref The name of the preference to fetch.
      */
     public static File getDomainPrefPath( String pref ) throws IOException {
         return getAbsolutePathFromString( getDomainPref( pref ) );
     }
 
     /**
-     Fetches a preference from the config file for a domain.
-     @param pref The name of the preference to fetch.
+     * Fetches a preference from the config file for a domain.
+     *
+     * @param pref The name of the preference to fetch.
      */
     public static String getDomainPref( String pref ) throws IOException {
         return Prefs.get( pref, PREFERENCES_FILENAME );
@@ -56,7 +58,8 @@ public class Utility {
      * Transforms a long containing an ip into a String.
      */
     public static String ipLongToString( long ip ) {
-        return ( ( ip >>> 24 ) & 255 ) + "." + ( ( ip >>> 16 ) & 255 ) + "." + ( ( ip >>> 8 ) & 255 ) + "." + ( ip & 255 );
+        return ( ( ip >>> 24 ) & 255 ) + "." + ( ( ip >>> 16 ) & 255 ) + "." + ( ( ip >>> 8 ) & 255 ) + "."
+               + ( ip & 255 );
     }
 
     /**
@@ -72,56 +75,60 @@ public class Utility {
         return ipInt;
     }
 
-
     /**
-     Make a HttpServletResponse non-cacheable
-     **/
+     * Make a HttpServletResponse non-cacheable
+     */
     public static void setNoCache( HttpServletResponse res ) {
         res.setHeader( "Cache-Control", "no-cache; must-revalidate;" );
         res.setHeader( "Pragma", "no-cache;" );
     }
 
-    public static UserDomainObject getLoggedOnUser (HttpServletRequest req) {
-		HttpSession session = req.getSession(true) ;
-		UserDomainObject user = (UserDomainObject) session.getAttribute("logon.isDone") ;
-		return user;
-	}
+    public static UserDomainObject getLoggedOnUser( HttpServletRequest req ) {
+        HttpSession session = req.getSession( true );
+        UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );
+        return user;
+    }
 
     public static boolean toBoolean( String property ) {
-        if (null == property) {
-            return false ;
+        if ( null == property ) {
+            return false;
         }
-        property = property.toLowerCase() ;
-        if ("1".equals(property) || "y".equals(property) || "yes".equals(property) || "true".equals( property )) {
-            return true ;
+        property = property.toLowerCase();
+        if ( "1".equals( property ) || "y".equals( property ) || "yes".equals( property ) || "true".equals( property ) ) {
+            return true;
         }
-        return false ;
+        return false;
     }
 
     public static int compareDatesWithNullFirst( Date date1, Date date2 ) {
-        if (null == date1 && null == date2) {
-            return 0 ;
-        } else if (null == date1) {
-            return -1 ;
-        } else if (null == date2) {
-            return +1 ;
+        if ( null == date1 && null == date2 ) {
+            return 0;
+        } else if ( null == date1 ) {
+            return -1;
+        } else if ( null == date2 ) {
+            return +1;
         } else {
-            return date1.compareTo( date2 ) ;
+            return date1.compareTo( date2 );
         }
     }
 
     public static void setDefaultHtmlContentType( HttpServletResponse res ) {
-        res.setContentType( "text/html; charset="+WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
+        res.setContentType( "text/html; charset=" + WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252 );
     }
 
-
-    public static String evaluateVelocity( String template, HttpServletRequest request ) throws Exception {
+    public static String evaluateVelocity( Reader templateReader, HttpServletRequest request ) throws Exception {
         UserDomainObject user = getLoggedOnUser( request );
         IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-        VelocityContext context = service.getVelocityContext(user) ;
-        StringWriter out = new StringWriter() ;
-        service.getVelocityEngine(user).evaluate( context, out, "velocity", template ) ;
-        return out.toString() ;
+        VelocityContext context = service.getVelocityContext( user );
+        StringWriter out = new StringWriter();
+        service.getVelocityEngine( user ).evaluate( context, out, "velocity", templateReader );
+        return out.toString();
+    }
+
+    public static void redirectToStartDocument( HttpServletRequest req, HttpServletResponse res ) throws IOException {
+
+        res.sendRedirect( req.getContextPath()+"/servlet/StartDoc" );
+
     }
 
 }

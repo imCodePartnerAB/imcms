@@ -15,14 +15,12 @@ import java.io.IOException;
 public class Restart extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Is user superadmin?
         if ( !user.isSuperAdmin() ) {
-            String start_url = imcref.getStartUrl();
-            res.sendRedirect( start_url );
+            Utility.redirectToStartDocument( req, res) ;
             return;
         }
 

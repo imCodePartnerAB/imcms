@@ -48,15 +48,12 @@ public class ChangeImage extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
         // Check if user has write rights
         if ( !imcref.checkDocAdminRights( meta_id, user ) ) {
-            String start_url = imcref.getStartUrl();
-            log( "User " + user.getId() + " was denied access to meta_id " + meta_id + " and was sent to " + start_url );
-            res.sendRedirect( start_url );
+            Utility.redirectToStartDocument( req, res );
             return;
         }
 
 
         //*lets get some path we need later on
-        String image_url = imcref.getImageUrl();
         File image_path = Utility.getDomainPrefPath( "image_path" );
 
 
@@ -234,7 +231,7 @@ public class ChangeImage extends HttpServlet {
 
         }
         vec.add( "#imgUrl#" );
-        vec.add( image_url );
+        vec.add( imcref.getImageUrl() );
         vec.add( "#getMetaId#" );
         vec.add( String.valueOf( meta_id ) );
         vec.add( "#img_no#" );

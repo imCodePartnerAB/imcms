@@ -50,7 +50,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 %>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 <title><? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?></title>
 
 </head>

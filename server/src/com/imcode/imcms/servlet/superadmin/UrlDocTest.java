@@ -26,7 +26,6 @@ public class UrlDocTest extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
         Map hash = imcref.sqlQueryHash( "select meta_id, url_ref from url_docs order by meta_id", new String[0] );
         String[] meta_id = (String[])hash.get( "meta_id" );
@@ -36,7 +35,7 @@ public class UrlDocTest extends HttpServlet {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         if ( !imcref.checkAdminRights( user ) ) {
-            res.sendRedirect( start_url );
+            Utility.redirectToStartDocument( req, res );
             return;
         }
 

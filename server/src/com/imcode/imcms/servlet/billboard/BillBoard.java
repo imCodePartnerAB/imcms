@@ -242,7 +242,8 @@ public class BillBoard extends HttpServlet {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, user.getLanguageIso639_2() );
+        String extFolder = "/imcms/" + user.getLanguageIso639_2() + "/images/"
+                        + imcref.getDocType(metaId) + '/';
         extFolder += this.getTemplateLibName( imcref, metaId );
 
         return extFolder;
@@ -386,12 +387,10 @@ public class BillBoard extends HttpServlet {
         String stringMetaId = (String)session.getAttribute( "BillBoard.meta_id" );//Conference.meta_id
         if ( stringMetaId == null ) {
             authorized = false;
-            //lets send unauthorized users out
-            String startUrl = imcref.getStartUrl();
-            res.sendRedirect( startUrl );
+            Utility.redirectToStartDocument( req, res );
         } else {
             int metaId = Integer.parseInt( stringMetaId );
-            authorized = isUserAuthorized( res, metaId, user );
+            authorized = isUserAuthorized( res, metaId, user, req );
         }
 
         return authorized;
@@ -405,7 +404,7 @@ public class BillBoard extends HttpServlet {
      * @param user
      */
     boolean isUserAuthorized( HttpServletResponse res, int metaId,
-                              imcode.server.user.UserDomainObject user )
+                              UserDomainObject user, HttpServletRequest req )
             throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -417,8 +416,7 @@ public class BillBoard extends HttpServlet {
 
         //lets send unauthorized users out
         if ( !authorized ) {
-            String startUrl = imcref.getStartUrl();
-            res.sendRedirect( startUrl );
+            Utility.redirectToStartDocument( req, res );
         }
 
         return authorized;

@@ -1,33 +1,28 @@
 package com.imcode.imcms.servlet;
 
-import java.io.* ;
-import java.util.* ;
-import javax.servlet.* ;
-import javax.servlet.http.* ;
-
-import imcode.util.* ;
-import imcode.server.* ;
+import imcode.server.ApplicationServer;
+import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 public class LogOut extends HttpServlet {
-	public void doGet ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+
+    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        HttpSession session = req.getSession (true) ;
-		session.invalidate() ;
+        HttpSession session = req.getSession( true );
+        session.invalidate();
 
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        res.setContentType("text/html") ;
-        ServletOutputStream out = res.getOutputStream () ;
-        Vector vec = new Vector() ;
-        vec.add("#start#") ;
-        String start_url = imcref.getStartUrl() ;
-        vec.add(start_url) ;
-        vec.add("#login#") ;
-        String login_url = imcref.getImcmsUrl() + user.getLanguageIso639_2() + "/login/";
-        vec.add(login_url) ;
-        String htmlStr = imcref.getAdminTemplate( "logged_out.html", user, vec ) ;
-		out.print(htmlStr) ;
-	}
+        Utility.setDefaultHtmlContentType( res );
+        res.getOutputStream().print( imcref.getAdminTemplate( "logged_out.html", user, null ) );
+    }
 }

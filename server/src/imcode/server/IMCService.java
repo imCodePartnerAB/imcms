@@ -3,7 +3,6 @@ package imcode.server;
 import imcode.server.db.ConnectionPool;
 import imcode.server.db.SqlHelpers;
 import imcode.server.document.*;
-import imcode.server.parser.AdminButtonParser;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
@@ -21,6 +20,7 @@ import org.apache.oro.text.perl.Perl5Util;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.Collator;
 import java.text.DateFormat;
@@ -43,9 +43,7 @@ final public class IMCService implements IMCServiceInterface {
     private File fortunePath;
     private File imcmsPath;             //  folder  /imcms
     private File filePath;
-    private String startUrl;
     private String imageUrl;            //  folder  /images
-    private String imcmsUrl;            //  folder  /imcms
     private String defaultLanguageAsIso639_2;
     private static final int DEFAULT_STARTDOCUMENT = 1001;
 
@@ -96,9 +94,7 @@ final public class IMCService implements IMCServiceInterface {
         filePath = getFilePropertyAndLogIt( props, "FilePath" );
         imcmsPath = getFilePropertyAndLogIt( props, "ImcmsPath" );
 
-        startUrl = getPropertyAndLogIt( props, "StartUrl" );
         imageUrl = getPropertyAndLogIt( props, "ImageUrl" );
-        imcmsUrl = getPropertyAndLogIt( props, "ImcmsUrl" );
         smtpServer = getPropertyAndLogIt( props, "SmtpServer" );
         smtpPort = getIntPropertyAndLogIt( props, "SmtpPort", 25 );
 
@@ -340,8 +336,6 @@ final public class IMCService implements IMCServiceInterface {
             return "";
         }
 
-        StringBuffer tempbuffer;
-        StringBuffer templatebuffer;
         DocumentPermissionSetDomainObject documentPermissionSet = documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document ) ;
         String documentTypeName = sqlQueryStr( "select type from doc_types where doc_type = ?", new String[]{"" + document.getDocumentTypeId()} );
         List parseVariables = Arrays.asList( new Object[] {
@@ -674,16 +668,10 @@ final public class IMCService implements IMCServiceInterface {
 
     /**
      * Return url-path to images.
+
      */
     public String getImageUrl() {
         return imageUrl;
-    }
-
-    /**
-     * Return url-path to imcmsimages.
-     */
-    public String getImcmsUrl() {
-        return imcmsUrl;
     }
 
     /**
@@ -700,13 +688,6 @@ final public class IMCService implements IMCServiceInterface {
     // Return file-path to imcmsimages
     public File getImcmsPath() {
         return imcmsPath;
-    }
-
-    /**
-     * Return  starturl.
-     */
-    public String getStartUrl() {
-        return startUrl;
     }
 
     public String getDefaultLanguageAsIso639_2() {

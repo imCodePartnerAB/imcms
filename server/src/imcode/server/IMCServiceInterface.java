@@ -15,6 +15,8 @@ import imcode.util.net.SMTP;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.VelocityContext;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Interface for the Imcode Net Server.
  */
@@ -111,15 +113,8 @@ public interface IMCServiceInterface {
     public String getImageUrl()
 	;
 
-    // Return url-path to imcmsimages.
-    public String getImcmsUrl();
-
     // get file-path to imcmsimages
     public File getImcmsPath()
-	;
-
-    // get starturl
-    public String getStartUrl()
 	;
 
     // get language prefix by id

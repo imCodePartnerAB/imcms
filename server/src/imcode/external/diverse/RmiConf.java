@@ -7,20 +7,6 @@ import imcode.server.user.UserDomainObject;
 
 public class RmiConf implements IMCConstants {
 
-
-    /**
-     * Get the url-path for the images for an external document.
-     * @param imcref The IMCServiceInterface instance.
-     * @param metaId The id for the external document.
-     * @param lang_prefix
-     * @return The url-path to the images for an external document.
-     */
-    public static String getExternalImageFolder(IMCServiceInterface imcref, int metaId, String lang_prefix) {
-	return imcref.getImcmsUrl() + lang_prefix + "/images/"
-	    + imcref.getDocType(metaId) + '/' ;
-    } // end getExternalImageHomeFolder
-
-
     /**
      * Get the path to the images for an external document.
      * @param imcref The IMCServiceInterface instance.

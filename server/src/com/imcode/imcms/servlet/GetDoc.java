@@ -125,8 +125,7 @@ public class GetDoc extends HttpServlet {
         // among the templates for the default-language. Number two, we should use just one function for
         // checking permissions. Number three, since the user obviously has logged in, give him the page in his own language!
 
-        // String no_permission_url = Utility.getDomainPref("no_permission_url");
-        String no_permission_url = imcref.getImcmsUrl() + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL;
+        String no_permission_url = "/imcms/" + user.getLanguageIso639_2() + "/login/" + NO_PERMISSION_URL;
         if ( !documentMapper.userHasAtLeastDocumentReadPermission( user, document ) ) {
             session.setAttribute( "login.target",
                                   req.getRequestURL().append( "?" ).append( req.getQueryString() ).toString() );

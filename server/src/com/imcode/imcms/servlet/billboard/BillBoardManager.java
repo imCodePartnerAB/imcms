@@ -51,7 +51,7 @@ public class BillBoardManager extends BillBoard	  //ConfManager
         if ( user == null ) return;
 
         int testMetaId = params.getMetaId();
-        if ( !isUserAuthorized( res, testMetaId, user ) ) {
+        if ( !isUserAuthorized( res, testMetaId, user, req ) ) {
             return;
         }
 

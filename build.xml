@@ -368,12 +368,6 @@
             <param name="buildlanguage" value="eng"/>
         </antcall>
 
-        <!-- copy translated login templates for defaultlanguage to directory /login-->
-        <copy todir="${login}">
-            <fileset dir="${imcms}/${defaultlanguage}/login/" />
-        </copy>
-
-         <!-- copy and translate texttemplates files -->
         <mkdir dir="${demotemplates}"/>
 
         <copy todir="${apisamples}" description="appending .txt on all jsp files making the source browsable" >
@@ -392,15 +386,6 @@
 
 
     <target name="web-lang" depends="init,tools">
-
-        <property name="imcmsimageurl"      value="${imcmsurl}/${buildlanguage}/images"/>
-
-        <filter token="htmleditorurl"       value="${imcmsurl}/${buildlanguage}/htmleditor"/>
-        <filter token="imcmshtmlurl"        value="${imcmsurl}/${buildlanguage}/html"/>
-        <filter token="imcmsjspurl"         value="${imcmsurl}/${buildlanguage}/jsp"/>
-        <filter token="imcmsscripturl"      value="${imcmsurl}/${buildlanguage}/scripts"/>
-        <filter token="shopurl"             value="${imcmsurl}/${buildlanguage}/shop"/>
-        <filter token="pollurl"             value="${imcmsurl}/${buildlanguage}/poll"/>
 
         <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
         <imtranslate bundle="imcms" bundlelanguage="${buildlanguage}"
@@ -508,14 +493,6 @@
             depends="check-build-properties,init-version-properties">
 
         <filter token="rooturl"             value="${rooturl}"/>
-        <filter token="servleturl"          value="${rooturl}/servlet"/>
-        <filter token="loginurl"            value="${rooturl}/login"/>
-        <filter token="imageurl"            value="${rooturl}/images"/>
-        <filter token="cssurl"              value="${rooturl}/css"/>
-        <filter token="postcardsurl"        value="${rooturl}/postcards"/>
-        <filter token="imcmsurl"            value="${imcmsurl}"/>
-        <filter token="imcmscssurl"         value="${imcmsurl}/css"/>
-        <filter token="apiuri"              value="${imcmsurl}/docs/apisamples"/>
 
         <filter token="defaultlanguage"     value="${defaultlanguage}"/>
 

@@ -1,6 +1,7 @@
 <%@ page language="java"
 import="java.util.*, java.text.*, imcode.util.shop.*"
-%>
+%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<vel:velocity>
 <html>
   <head>
     <title><? install/htdocs/sv/shop/cart.jsp/1 ?></title>
@@ -8,9 +9,9 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
 
   <body>
 
-  <form action="@servleturl@/PutInShoppingCart" method="POST">
-    <input type="hidden" name="send_next" value="@rooturl@/shop/cart.jsp" />
-    <input type="hidden" name="next" value="@rooturl@/shop/cart.jsp" />
+  <form action="<%= request.getContextPath() %>/servlet/PutInShoppingCart" method="POST">
+    <input type="hidden" name="send_next" value="$contextPath/imcms/$language/shop/cart.jsp" />
+    <input type="hidden" name="next" value="$contextPath/imcms/$language/shop/cart.jsp" />
     <input type="hidden" name="priceformatgroupingseparator" value="." />
 
     <%
@@ -79,3 +80,4 @@ import="java.util.*, java.text.*, imcode.util.shop.*"
     </form>
   </body>
 </html>
+</vel:velocity>

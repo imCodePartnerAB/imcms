@@ -1,16 +1,17 @@
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<vel:velocity>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 
 <title><? install/htdocs/imcms/html/link_editor.jsp/1 ?></title>
 
-<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
-<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" marginwidth="0" marginheight="0" leftmargin="0" topmargin="0" class="imcmsAdmBgCont" style="border:0; margin:0" onLoad="focusField(1,'createLinkDesc')">
-<vel:velocity>
+
 #gui_outer_start_noshade()
 #gui_head_noshade("<? global/imcms_administration ?>")
 <table border="0" cellspacing="0" cellpadding="0">
@@ -102,7 +103,6 @@
 </table>
 #gui_bottom_noshade()
 #gui_outer_end_noshade()
-</vel:velocity>
 <script language="javascript">
 <!--
 var ie4 = (document.all) ? 1 : 0;
@@ -254,3 +254,4 @@ hideLinkExample(0) ;
 
 </body>
 </html>
+</vel:velocity>

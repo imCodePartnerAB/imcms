@@ -18,6 +18,8 @@ import java.text.Collator;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.VelocityContext;
 
+import javax.servlet.http.HttpServletRequest;
+
 class MockIMCServiceInterface extends MockObject implements IMCServiceInterface {
 
    private final ExpectationList sqlProcedureCalls = new ExpectationList( "sqlProcedureCalls" );

@@ -17,7 +17,6 @@ public class ImageUpload extends HttpServlet {
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         File file_path = Utility.getDomainPrefPath( "image_path" );
-        String image_url = imcref.getImageUrl();
 
         res.setContentType( "text/html" );
 
@@ -108,7 +107,7 @@ public class ImageUpload extends HttpServlet {
         vec.add( "#keep_aspect#" );
         vec.add( "checked" );
         vec.add( "#imgUrl#" );
-        vec.add( image_url );
+        vec.add( imcref.getImageUrl() );
         vec.add( "#imgName#" );
         vec.add( "" );
         vec.add( "#imgRef#" );

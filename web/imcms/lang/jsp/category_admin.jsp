@@ -2,17 +2,17 @@
                  com.imcode.imcms.api.Category,
                  imcode.server.document.CategoryDomainObject"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<vel:velocity>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 
 <title><? install/htdocs/sv/jsp/category_admin/title ?></title>
-<link rel="STYLESHEET" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
-<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+<link rel="STYLESHEET" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'template')">
-<vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <%
@@ -363,6 +363,6 @@
 </table>
 #gui_bottom()
 #gui_outer_end()
-</vel:velocity>
 </body>
 </html>
+</vel:velocity>

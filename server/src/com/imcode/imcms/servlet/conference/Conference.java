@@ -307,7 +307,8 @@ public class Conference extends HttpServlet {
             lang_prefix = user.getLanguageIso639_2();
         }
 
-        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, lang_prefix);
+        String extFolder = "/imcms/" + lang_prefix + "/images/"
+                        + imcref.getDocType(metaId) + '/';
 
         return extFolder += this.getTemplateLibName( metaId );
     }
@@ -452,12 +453,10 @@ public class Conference extends HttpServlet {
         if ( stringMetaId == null ) {
             authorized = false;
             //lets send unauthorized users out
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-            String startUrl = imcref.getStartUrl();
-            res.sendRedirect( startUrl );
+            Utility.redirectToStartDocument( req, res );
         } else {
             int metaId = Integer.parseInt( stringMetaId );
-            authorized = isUserAuthorized( res, metaId, user );
+            authorized = isUserAuthorized( res, metaId, user, req );
         }
 
         return authorized;
@@ -471,7 +470,7 @@ public class Conference extends HttpServlet {
      * @param user
      */
     boolean isUserAuthorized( HttpServletResponse res, int metaId,
-                              imcode.server.user.UserDomainObject user )
+                              UserDomainObject user, HttpServletRequest req )
             throws IOException {
 
         // Lets get serverinformation
@@ -484,8 +483,7 @@ public class Conference extends HttpServlet {
 
         //lets send unauthorized users out
         if ( !authorized ) {
-            String startUrl = imcref.getStartUrl();
-            res.sendRedirect( startUrl );
+            Utility.redirectToStartDocument( req, res );
         }
 
         return authorized;

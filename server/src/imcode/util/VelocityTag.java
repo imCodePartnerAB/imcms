@@ -9,7 +9,7 @@ public class VelocityTag extends BodyTagSupport implements BodyTag {
 
     public int doEndTag() throws JspException {
         try {
-            pageContext.getOut().write( Utility.evaluateVelocity( bodyContent.getString(), (HttpServletRequest)pageContext.getRequest() ) );
+            pageContext.getOut().write( Utility.evaluateVelocity( bodyContent.getReader(), (HttpServletRequest)pageContext.getRequest() ) );
         } catch ( Exception e ) {
             throw new JspException( e ) ;
         }

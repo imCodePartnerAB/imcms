@@ -1,9 +1,8 @@
 <html>
 <head>
 <title><? templates/sv/FileAdmin.html/1 ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<noscript><link rel="STYLESHEET" type="text/css" href="@cssurl@/imcms_win_ie.css"></noscript>
+<noscript><link rel="STYLESHEET" type="text/css" href="$contextPath/css/imcms_win_ie.css"></noscript>
 <script language="JavaScript">
 <!--
 
@@ -11,11 +10,11 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
-var imC_PATH = "@rooturl@" ;       // if used: "/imcms". if not: ""
-var JSP_PATH = "@imcmsjspurl@" ;  // ie: "/imcms/jsp" or "/imcms/imcms/jsp"
+var imC_PATH = "$contextPath" ;
+var JSP_PATH = "$contextPath/imcms/$language/jsp" ;
 
-var CSS_IE   = "@cssurl@/imcms_win_ie.css"; // write this in the NOSCRIPT above too
-var CSS_NS   = "@cssurl@/imcms_win_ns.css";
+var CSS_IE   = "$contextPath/css/imcms_win_ie.css"; // write this in the NOSCRIPT above too
+var CSS_NS   = "$contextPath/css/imcms_win_ns.css";
 
 /*
 	Remember to fix this images' paths:

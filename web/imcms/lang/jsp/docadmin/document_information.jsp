@@ -54,16 +54,15 @@
         DateFormat dateFormat = new SimpleDateFormat( DateConstants.TIME_FORMAT_NO_SECONDS_STRING ) ;
         return dateFormat.format(time) ;
     }
-%><html>
+%><vel:velocity><html>
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_information_title ?></title>
 
-<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
-<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="document.getElementsByName('<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>').item(0).focus()">
-<vel:velocity>
 #gui_outer_start()
 #gui_head( '<? global/imcms_administration ?>' )
 <form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
@@ -314,7 +313,7 @@
 			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
 			if( !categoryType.hasImages() ) {%>
 		<div style="float: left; margin: auto 1em 1ex auto;">
-		<a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
+		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="3"><br>
 		<select name="<%= DocumentComposer.PARAMETER__CATEGORIES %>"<% if (1 != categoryType.getMaxChoices()) { %>size="4" multiple<% } %>>
 		<%= Html.createOptionListOfCategoriesOfTypeForDocument( documentMapper, categoryType, document) %>
 		</select></div><%
@@ -324,7 +323,7 @@
 			CategoryTypeDomainObject categoryType = categoryTypes[i] ;
 			if( categoryType.hasImages() ) { %>
 		<div style="float: left; margin: auto 1em 1ex auto;">
-		<a href="@imcmsjspurl@/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><%
+		<a href="$contextPath/imcms/$language/jsp/category_descriptions.jsp?category_type_name=<%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %>" target="_blank"><%= StringEscapeUtils.escapeHtml( categoryType.getName() ) %></a><br><%
 				
 				boolean radioButton = categoryType.getMaxChoices() == 1;
 				String typeStr = radioButton?"radio":"checkbox";

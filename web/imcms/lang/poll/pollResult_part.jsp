@@ -4,7 +4,7 @@ import="java.util.*, java.text.*, imcode.server.*, imcode.util.*, imcode.util.po
 %><%
 
 final String IMAGE_NAME = "blue_animation.gif";
-final String IMAGE_DIR = "@rooturl@/poll/images/" ;
+final String IMAGE_DIR = request.getContextPath()+"/poll/images/" ;
 
 // Get parameters from request
 String image_url = request.getParameter("imageName") != null ? IMAGE_DIR + request.getParameter("imageName") : IMAGE_DIR + IMAGE_NAME ;

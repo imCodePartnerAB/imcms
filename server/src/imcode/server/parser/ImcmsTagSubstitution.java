@@ -1,11 +1,14 @@
 package imcode.server.parser;
 
 import imcode.server.*;
-import imcode.server.document.*;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.SectionDomainObject;
+import imcode.server.document.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
-import imcode.util.FileCache;
 import imcode.util.Utility;
+import imcode.util.FileCache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
@@ -28,7 +31,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private static Pattern HTML_POSTBODY_PATTERN = null;
     private static Pattern IMCMS_TAG_ATTRIBUTES_PATTERN = null;
 
-    private final static Logger log = Logger.getLogger( "imcode.server.parser.ImcmsTagSubstitution" );
+    private final static Logger log = Logger.getLogger( ImcmsTagSubstitution.class.getName() );
 
     private FileCache fileCache = new FileCache();
 
@@ -79,7 +82,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         this.parserParameters = parserParameters;
         this.documentRequest = parserParameters.getDocumentRequest();
         this.document = (TextDocumentDomainObject)documentRequest.getDocument();
-        this.service = documentRequest.getServerObject() ;
+        this.service = documentRequest.getServerObject();
 
         this.includeMode = includemode;
         this.includeLevel = includelevel;
@@ -93,11 +96,11 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
     }
 
     private Map getImageMap( TextDocumentDomainObject document, boolean imagemode ) {
-        Map images = document.getImages() ;
-        Map imageMap = new HashMap() ;
+        Map images = document.getImages();
+        Map imageMap = new HashMap();
         for ( Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
             Integer imageIndex = (Integer)iterator.next();
-            TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)images.get(imageIndex) ;
+            TextDocumentDomainObject.Image image = (TextDocumentDomainObject.Image)images.get( imageIndex );
 
             StringBuffer value = new StringBuffer( 96 );
             if ( !"".equals( image.getUrl() ) ) {
@@ -106,7 +109,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
                     if ( !"".equals( image.getTarget() ) ) {
                         value.append( " target=\"" ).append( image.getTarget() ).append( "\"" );
                     }
-                    value.append( '>' ) ;
+                    value.append( '>' );
                 }
 
                 value.append( "<img src=\"" + service.getImageUrl() + image.getUrl() + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
@@ -283,20 +286,18 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             no = implicitIncludeNumber++; // Implicitly use the next number.
         }
         try {
-            Integer includedDocumentId = document.getIncludedDocumentId(no) ;
+            Integer includedDocumentId = document.getIncludedDocumentId( no );
             if ( includeMode ) {
-                String langPrefix = documentRequest.getUser().getLanguageIso639_2();
-                return imcode.util.Parser.parseDoc( fileCache.getCachedFileString( new File( service.getTemplatePath(), langPrefix
-                                                                                                           + "/admin/change_include.html" ) ),
-                                                    new String[]{
-                                                        "#meta_id#", String.valueOf( document.getId() ),
-                                                        "#include_id#", String.valueOf( no ),
-                                                        "#include_meta_id#", includedDocumentId == null
-                                                                             ? "" : ""+includedDocumentId
-                                                    } );
+                return service.getAdminTemplate( "change_include.html", documentRequest.getUser(),
+                                                 Arrays.asList( new String[]{
+                                                     "#meta_id#", String.valueOf( document.getId() ),
+                                                     "#include_id#", String.valueOf( no ),
+                                                     "#include_meta_id#", includedDocumentId == null
+                                                                          ? "" : "" + includedDocumentId
+                                                 } ) );
             } else if ( includeLevel > 0 ) {
-                if (null == includedDocumentId) {
-                    return "" ;
+                if ( null == includedDocumentId ) {
+                    return "";
                 }
                 ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters( parserParameters, includedDocumentId.intValue(), attributes );
                 String documentStr = textDocParser.parsePage( includedDocumentParserParameters, includeLevel - 1 );
@@ -400,15 +401,15 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         }
         // Get the 'no'-attribute of the <?imcms:text no="..."?>-tag
         String noStr = attributes.getProperty( "no" );
-        int no ;
+        int no;
         TextDocumentDomainObject.Text text = null;
         if ( null == noStr ) {
-            no = implicitTextNumber++ ;
-            text = (TextDocumentDomainObject.Text)textMap.get( new Integer(no) );
+            no = implicitTextNumber++;
+            text = (TextDocumentDomainObject.Text)textMap.get( new Integer( no ) );
         } else {
             noStr = noStr.trim();
-            no = Integer.parseInt( noStr ) ;
-            text = (TextDocumentDomainObject.Text)textMap.get( new Integer(no) );
+            no = Integer.parseInt( noStr );
+            text = (TextDocumentDomainObject.Text)textMap.get( new Integer( no ) );
             implicitTextNumber = no + 1;
         }
         String result;
@@ -426,13 +427,8 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         String finalresult = result;
         if ( textMode ) {
             String[] replace_tags = getLabelTags( attributes, no, finalresult );
-            String langPrefix = documentRequest.getUser().getLanguageIso639_2();
-            File admin_template_file = new File( service.getTemplatePath(), langPrefix + "/admin/textdoc/admin_text.frag" );
-            try {
-                finalresult = imcode.util.Parser.parseDoc( fileCache.getCachedFileString( admin_template_file ), replace_tags );
-            } catch ( IOException ex ) {
-                log.error( "Failed to load template '" + admin_template_file + "'" );
-            }
+
+            finalresult = service.getAdminTemplate( "textdoc/admin_text.frag", documentRequest.getUser(), Arrays.asList( replace_tags ) );
         }
 
         return finalresult;
@@ -447,7 +443,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         }
         String[] replace_tags = new String[]{
             "#meta_id#", String.valueOf( document.getId() ),
-            "#content_id#", ""+no,
+            "#content_id#", "" + no,
             "#content#", finalresult,
             "#label_url#", label_urlparam,
             "#label#", label
@@ -481,12 +477,12 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         int no = 0;
         String result = null;
         if ( null == noStr ) {
-            no = implicitImageNumber++ ;
-            result = (String)imageMap.get( new Integer(no) );
+            no = implicitImageNumber++;
+            result = (String)imageMap.get( new Integer( no ) );
         } else {
             noStr = noStr.trim();
-            no = Integer.parseInt( noStr ) ;
-            result = (String)imageMap.get( new Integer(no) );
+            no = Integer.parseInt( noStr );
+            result = (String)imageMap.get( new Integer( no ) );
             implicitImageNumber = no + 1;
         }
         if ( result == null ) {
@@ -496,19 +492,14 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
         String finalresult = result;
         if ( imageMode ) {
             String[] replace_tags = getLabelTags( attributes, no, finalresult );
-            String langPrefix = documentRequest.getUser().getLanguageIso639_2();
-            File admin_template_file;
+            String admin_template_file;
             if ( "".equals( result ) ) { // no data in the db-field.
-                admin_template_file = new File( service.getTemplatePath(), langPrefix + "/admin/textdoc/admin_no_image.frag" );
+                admin_template_file = "textdoc/admin_no_image.frag";
             } else {               // data in the db-field.
-                admin_template_file = new File( service.getTemplatePath(), langPrefix + "/admin/textdoc/admin_image.frag" );
+                admin_template_file = "textdoc/admin_image.frag";
             }
 
-            try {
-                finalresult = imcode.util.Parser.parseDoc( fileCache.getCachedFileString( admin_template_file ), replace_tags );
-            } catch ( IOException ex ) {
-                log.error( "Failed to load template '" + admin_template_file + "'" );
-            }
+            finalresult = service.getAdminTemplate( admin_template_file, documentRequest.getUser(), Arrays.asList( replace_tags ) );
         }
 
         return finalresult;

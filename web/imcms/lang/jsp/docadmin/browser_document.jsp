@@ -9,17 +9,17 @@
                                          java.util.*,
                                          org.apache.commons.lang.StringUtils"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<vel:velocity>
 <html>
 <head>
 
 <title><? install/htdocs/sv/jsp/docadmin/browser_document.jsp/1 ?></title>
 
-<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
-<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'new_browsers')">
-<vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <table border="0" cellspacing="0" cellpadding="0">
@@ -116,7 +116,6 @@
 </table>
 #gui_bottom()
 #gui_outer_end()
-</vel:velocity>
 <script language="JavaScript">
 <!--
 var el = eval("document.forms[1].elements");
@@ -130,3 +129,4 @@ if (el) {
 
 </body>
 </html>
+</vel:velocity>

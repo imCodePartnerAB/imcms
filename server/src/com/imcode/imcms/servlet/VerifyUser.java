@@ -47,8 +47,7 @@ public class VerifyUser extends HttpServlet {
         // if we don't have got any user from IMCService lets check out next url for redirect
         if ( user == null ) {
 
-            String access_denied_url = Utility.getDomainPref( "access_denied_url" );
-            String nexturl = access_denied_url; // default
+            String nexturl = req.getContextPath()+"/imcms/"+user.getLanguageIso639_2()+"/login/access_denied.jsp" ;
 
             // lets set session next_meta if we have got any from request, we will use it later when
             // login is successfull

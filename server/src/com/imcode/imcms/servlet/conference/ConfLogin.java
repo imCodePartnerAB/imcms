@@ -75,7 +75,7 @@ public class ConfLogin extends Conference {
 
         int testMetaId = params.getMetaId();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !isUserAuthorized( res, testMetaId, user ) ) {
+        if ( !isUserAuthorized( res, testMetaId, user, req ) ) {
             return;
         }
 
@@ -154,7 +154,7 @@ public class ConfLogin extends Conference {
 
         int testMetaId = params.getMetaId();
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if ( !isUserAuthorized( res, testMetaId, user ) ) {
+        if ( !isUserAuthorized( res, testMetaId, user, req ) ) {
             return;
         }
 

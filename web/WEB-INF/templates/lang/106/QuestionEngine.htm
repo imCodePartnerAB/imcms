@@ -2,7 +2,7 @@
      <tr align="center" valign="top" bgcolor="#996666"> 
          <td colspan="3"><img src="$contextPath/imcms/$language/images/106/question_mark.gif" width="135" height="46"></td>
      </tr>
-	<form name="weeklyQ" method="GET" action="@servleturl@/QuestionResult" target="_blank" style="background-color:#996666" onSubmit="checkChecked(); return false">
+	<form name="weeklyQ" method="GET" action="$contextPath/servlet/QuestionResult" target="_blank" style="background-color:#996666" onSubmit="checkChecked(); return false">
 			  <script language="JavaScript">
 				<!--
 				function checkChecked() {
@@ -11,7 +11,7 @@
 				  var thefile = f.infile.value;
 				  for (var i = 0 ; i < f.answer.length ; ++i) {
 				    if ( f.answer[i].checked ) {
-  				      window.open('@servleturl@/QuestionResult?answer=' + f.answer[i].value + '&file=' + thefile ,'visa','width=250,height=300');
+  				      window.open('$contextPath/servlet/QuestionResult?answer=' + f.answer[i].value + '&file=' + thefile ,'visa','width=250,height=300');
 				      return ;
 				    }
 				  }

@@ -363,7 +363,8 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         int metaId = getMetaId( req );
 
-        String extFolder = RmiConf.getExternalImageFolder( imcref, metaId, lang_prefix);
+        String extFolder = "/imcms/" + lang_prefix + "/images/"
+                        + imcref.getDocType(metaId) + '/';
         return extFolder += getTemplateLibName( metaId );
     }
 
@@ -390,13 +391,11 @@ public class ChatBase extends HttpServlet implements ChatConstants {
         String stringMetaId = (String)session.getAttribute( "Chat.meta_id" );
         if ( stringMetaId == null ) {
             authorized = false;
-            //lets send unauthorized users out
-            IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-            String startUrl = imcref.getStartUrl();
-            res.sendRedirect( startUrl );
+
+            Utility.redirectToStartDocument( req, res );
         } else {
             int metaId = Integer.parseInt( stringMetaId );
-            authorized = isUserAuthorized( res, metaId, user );
+            authorized = isUserAuthorized( res, metaId, user, req );
         }
 
         return authorized;
@@ -410,7 +409,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
      * @param user
      */
     protected boolean isUserAuthorized( HttpServletResponse res, int metaId,
-                                        UserDomainObject user )
+                                        UserDomainObject user, HttpServletRequest req )
             throws IOException {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
@@ -422,8 +421,7 @@ public class ChatBase extends HttpServlet implements ChatConstants {
 
         //lets send unauthorized users out
         if ( !authorized ) {
-            String startUrl = imcref.getStartUrl();
-            res.sendRedirect( startUrl );
+            Utility.redirectToStartDocument( req, res );
         }
 
         return authorized;

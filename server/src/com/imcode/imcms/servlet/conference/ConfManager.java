@@ -27,7 +27,7 @@ public class ConfManager extends Conference {
 
         UserDomainObject user = Utility.getLoggedOnUser( req );
         int testMetaId = params.getMetaId();
-        if ( !isUserAuthorized( res, testMetaId, user ) ) {
+        if ( !isUserAuthorized( res, testMetaId, user, req ) ) {
             return;
         }
 

@@ -3,17 +3,15 @@
                  imcode.server.document.HtmlDocumentDomainObject,
                  org.apache.commons.lang.ObjectUtils" contentType="text/html"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<vel:velocity>
 <html>
 <head>
-
 <title><? install/htdocs/sv/jsp/docadmin/html_document.jsp/1 ?></title>
-
-<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
-<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'frame_set')">
-<vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <table border="0" cellspacing="0" cellpadding="0">

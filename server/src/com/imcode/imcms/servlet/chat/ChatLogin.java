@@ -34,7 +34,7 @@ public class ChatLogin extends ChatBase {
         String metaId = req.getParameter( "meta_id" );
 
         int meta_id = Integer.parseInt( metaId );
-        if ( !isUserAuthorized( res, meta_id, user ) ) {
+        if ( !isUserAuthorized( res, meta_id, user, req ) ) {
             log( "user not Authorized" );
             return;
         }
@@ -159,7 +159,7 @@ public class ChatLogin extends ChatBase {
         String metaId = params.getProperty( "META_ID" );
         int meta_id = Integer.parseInt( metaId );
 
-        if ( !isUserAuthorized( res, meta_id, user ) ) {
+        if ( !isUserAuthorized( res, meta_id, user, req ) ) {
             return;
         }
 

@@ -8,16 +8,16 @@
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
     FileDocumentDomainObject document = (FileDocumentDomainObject)DocumentComposer.getObjectFromSessionWithKeyInRequest( request, DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME ) ;
 %>
+<vel:velocity>
 <html>
 <head>
 <title><? install/htdocs/sv/jsp/docadmin/file_document.jsp/1 ?></title>
 
-<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
-<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'file')">
-<vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <table border="0" cellspacing="0" cellpadding="0">
@@ -114,6 +114,6 @@
 </table>
 #gui_bottom()
 #gui_outer_end()
-</vel:velocity>
 </body>
 </html>
+</vel:velocity>

@@ -24,11 +24,10 @@ public class FileAdmin extends HttpServlet {
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
         UserDomainObject user = Utility.getLoggedOnUser( req ) ;
         if ( !imcref.checkAdminRights( user ) ) {
-            res.sendRedirect( start_url );
+            Utility.redirectToStartDocument( req, res );
             return;
         }
 
@@ -67,11 +66,10 @@ public class FileAdmin extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String start_url = imcref.getStartUrl();
 
         UserDomainObject user = Utility.getLoggedOnUser( req ) ;
         if ( !imcref.checkAdminRights( user ) ) {
-            res.sendRedirect( start_url );
+            Utility.redirectToStartDocument( req, res );
             return;
         }
 

@@ -5,18 +5,16 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
-String IMG_PATH   = "$contextPath/imcms/$language/images/" ; // path to buttons (with trailing /)
-String imC_PATH   = "@rooturl@" ;              // "/imcms" if used - "" if not
+String IMG_PATH   = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/" ; // path to buttons (with trailing /)
 
-/* *******************************************************************
+    /* *******************************************************************
  *           INIT                                                    *
  ******************************************************************* */
 
 String file       = request.getParameter("file") ;
 
 String frame      = (request.getParameter("frame") != null) ? request.getParameter("frame") : "FRAME" ;
-String thisPage   = request.getServletPath() ;
-thisPage          = imC_PATH + thisPage ;
+String thisPage = request.getContextPath() + request.getServletPath();
 
 String zoom       = "" ;
 String defZoom    = "1.0" ;
@@ -144,7 +142,7 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 <head>
 <title></title>
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 
 </head>
 <body marginwidth="10" marginheight="10" leftmargin="10" topmargin="10" bgcolor="#ffffff">
@@ -156,7 +154,7 @@ if (isImage) {
 		%>5<% 
 	} else {
 		%>6<% 
-	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;">&quot;<%= imC_PATH + file %>&quot;<%
+	} %> 0; font: 10px Verdana, Geneva, sans-serif; color:#999999;">&quot;<%= request.getContextPath() + file %>&quot;<%
 	if (width > 0 && height > 0 && !size.equals("")) {
 		%> (<%
 		if (width > 0 && height > 0) {
@@ -165,7 +163,7 @@ if (isImage) {
 		if (!size.equals("")) {
 			%><%= size %><%
 		} %>)<%
-	} %></div><img name="theImg" id="theImg" src="<%= imC_PATH + file %>"<%= border + zoom %>><%
+	} %></div><img name="theImg" id="theImg" src="<%= request.getContextPath() + file %>"<%= border + zoom %>><%
 } else {
 	%><%
 } %></div>
@@ -182,7 +180,7 @@ if (isImage) {
 <head>
 <title></title>
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 
 <STYLE TYPE="text/css">
 <!-- 
@@ -327,7 +325,7 @@ function findIt(str) {
 <html>
 <head>
 <title><? install/htdocs/sv/jsp/FileAdmin_preview.jsp/26 ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 </head>
 	<%
 	if (isStat) { /* Statistics Report (HTML page) */ %>

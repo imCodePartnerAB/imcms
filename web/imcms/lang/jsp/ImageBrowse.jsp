@@ -2,18 +2,18 @@
                  com.imcode.imcms.servlet.admin.ImageBrowse,
                  org.apache.commons.lang.StringEscapeUtils"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
+<vel:velocity>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 
 <title><? install/htdocs/sv/jsp/ImageBrowse.html/1 ?></title>
 
-<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
-<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'text')">
-<vel:velocity>
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 
@@ -104,7 +104,6 @@
 </form>
 #gui_bottom()
 #gui_outer_end()
-</vel:velocity>
 <div align="center" id="previewDiv"><%=imageBrowseFormData.getImagePreview()%></div>
 
 <script language="JavaScript">
@@ -121,3 +120,4 @@ if (isMoz) {
 
 </body>
 </html>
+</vel:velocity>

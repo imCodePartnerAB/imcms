@@ -36,7 +36,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
         if ( user == null ) return;
 
         int testMetaId = params.getMetaId() ;
-        if ( !isUserAuthorized( res, testMetaId, user ) ) {
+        if ( !isUserAuthorized( res, testMetaId, user, req ) ) {
             return;
         }
 
@@ -79,7 +79,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
         if ( user == null ) return;
 
         int testMetaId = params.getMetaId();
-        if ( !isUserAuthorized( res, testMetaId, user ) ) {
+        if ( !isUserAuthorized( res, testMetaId, user, req ) ) {
             return;
         }
 

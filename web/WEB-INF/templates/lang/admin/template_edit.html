@@ -1,11 +1,11 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 
 <title><? templates/sv/template_edit.html/1 ?></title>
 
-<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
-<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 <script language="JavaScript">
 <!--
@@ -13,7 +13,7 @@ function editFile() {
 	var f = document.forms.TemplateEdit;
 	var sTemplateUrl  = "/WEB-INF/templates/text/" + f.template.options[f.template.selectedIndex].value + ".html";
 	var sTemplateName = f.template.options[f.template.selectedIndex].text;
-	popWinOpen(800,570,"@imcmsjspurl@/FileAdmin_edit.jsp?template=1&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0,0);
+	popWinOpen(800,570,"$contextPath/imcms/$language/jsp/FileAdmin_edit.jsp?template=1&file=" + escape(sTemplateUrl) + "&templName=" + escape(sTemplateName),"templateEdit",0,0);
 }
 //-->
 </script>

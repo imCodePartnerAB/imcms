@@ -3,11 +3,10 @@
 <html>
 <head>
 <title><? templates/login/index.html/1 ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<link rel="stylesheet" href="@imcmscssurl@/imcms_admin_ns.css" type="text/css">
 
-<script src="@imcmsscripturl@/imcms_admin.js" type="text/javascript"></script>
+<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css" type="text/css">
+<script src="$contextPath/imcms/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF" onLoad="focusField(1,'name')">
@@ -19,9 +18,9 @@
 	<td>
 	<table border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><input type="button" class="imcmsFormBtn" style="width:100" name="Tillbaka" value="<? templates/login/index.html/2001 ?>" onClick="top.location='@servleturl@/StartDoc';"></td>
+		<td><input type="button" class="imcmsFormBtn" style="width:100" name="Tillbaka" value="<? templates/login/index.html/2001 ?>" onClick="top.location='$contextPath/servlet/StartDoc';"></td>
 		<td>&nbsp;</td>
-		<td><input type="button" class="imcmsFormBtn" style="width:115" name="PWreminder" value="<? templates/login/index.html/2002 ?>" onClick="top.location='@servleturl@/PasswordMailReminder';"></td>
+		<td><input type="button" class="imcmsFormBtn" style="width:115" name="PWreminder" value="<? templates/login/index.html/2002 ?>" onClick="top.location='$contextPath/servlet/PasswordMailReminder';"></td>
 		<td>&nbsp;</td>
         <td><input type="button" value="<? templates/login/index.html/2003 ?>" title="<? templates/login/index.html/2004 ?>" class="imcmsFormBtn" onClick="openHelpW(54)"></td>
 	</tr>
@@ -42,7 +41,7 @@
 <tr>
 	<td colspan="2" align="center">
 	<table border="0" cellspacing="0" cellpadding="1">
-	<form action="@servleturl@/VerifyUser" method="post">
+	<form action="$contextPath/servlet/VerifyUser" method="post">
 	<tr>
 		<td><span class="imcmsAdmText"><? templates/login/index.html/5 ?></span></td>
 		<td>&nbsp;</td>
