@@ -16,6 +16,8 @@ import imcode.util.*;
 import imcode.util.IMCServiceRMI;
 import imcode.util.Parser;
 
+import imcode.external.chat.*;
+
 /**
  * superclas for chat servlets.
  *
@@ -37,6 +39,20 @@ public class ChatBase extends HttpServlet {
 
 	private final static String ADMIN_BUTTON_TEMPLATE = "Chat_Admin_Button.htm";
 	private final static String UNADMIN_BUTTON_TEMPLATE = "Chat_Unadmin_Button.htm";
+	private static Map _allChats;
+	
+	
+	/**
+	*	Does the things that has to bee done only ones
+	*/
+	public void init(ServletConfig config)
+	throws ServletException
+	{
+		super.init(config);
+		log("init");
+		//lets create an empty one
+		_allChats = Collections.synchronizedMap(new HashMap());
+	}
 
 	/**
 	Returns the metaId from a request object, if not found, we will
@@ -63,7 +79,8 @@ public class ChatBase extends HttpServlet {
 		}
 		return metaId ;
 	}
-
+	
+	
 	/**
 	Returns the ForumId from a request object, if not found, we will
 	get the one from our session object. If still not found then null is returned.
@@ -230,7 +247,7 @@ public class ChatBase extends HttpServlet {
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ChatPoolServer = Utility.getDomainPref("conference_server",host) ;
+		String ChatPoolServer = Utility.getDomainPref("chat_server",host) ;
 
 		if (done == null)
 		{
@@ -377,7 +394,7 @@ public class ChatBase extends HttpServlet {
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ChatPoolServer = Utility.getDomainPref("conference_server",host) ;
+		String ChatPoolServer = Utility.getDomainPref("chat_server",host) ;
 
 
 		imcode.server.User user = getUserObj(req,res) ;
@@ -414,7 +431,7 @@ public class ChatBase extends HttpServlet {
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ChatPoolServer = Utility.getDomainPref("conference_server",host) ;
+		String ChatPoolServer = Utility.getDomainPref("chat_server",host) ;
 
 		String externalTemplateLib = "" ;
 		String metaId = this.getMetaId(req) ;
@@ -448,7 +465,7 @@ public class ChatBase extends HttpServlet {
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
+		String confPoolServer = Utility.getDomainPref("chat_server",host) ;
 		String extFolder = this.getExternalTemplateFolder(imcServer, metaId) ;
 		return extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
 		// return this.getExternalTemplateFolder(imcServer, metaId) ;
@@ -561,7 +578,7 @@ public class ChatBase extends HttpServlet {
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
+		String confPoolServer = Utility.getDomainPref("chat_server",host) ;
 
 		// This is the old version, which was ok before the double server installation
 		// Lets get the TemplateFolder  and the foldername used for this certain metaid
@@ -750,7 +767,7 @@ public class ChatBase extends HttpServlet {
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ChatPoolServer = Utility.getDomainPref("conference_server",host) ;
+		String ChatPoolServer = Utility.getDomainPref("chat_server",host) ;
 
 		// Ok, Lets prepare the user for the conference.
 		// Lets get his lastLoginDate and update it to today
@@ -865,7 +882,7 @@ public class ChatBase extends HttpServlet {
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
+		String confPoolServer = Utility.getDomainPref("chat_server",host) ;
 
 		String extFolder = this.getExternalImageFolder(imcServer, metaId) ;
 		return extFolder += this.getTemplateLibName(confPoolServer, metaId) ;
@@ -928,7 +945,7 @@ public class ChatBase extends HttpServlet {
 		// Lets get serverinformation
 		String host = req.getHeader("Host") ;
 		String imcServer = Utility.getDomainPref("userserver",host) ;
-		String ChatPoolServer = Utility.getDomainPref("conference_server",host) ;
+		String ChatPoolServer = Utility.getDomainPref("chat_server",host) ;
 
 		String adminLink = "&nbsp;";
 		String metaId = getMetaId( req );
@@ -1164,4 +1181,53 @@ public class ChatBase extends HttpServlet {
 			IMCServiceRMI.checkDocAdminRights( imcServer, metaId, user, 65536 ) );
 
 	}
+	
+	//******** methods to handle the cheared chat objects ************
+	/**
+	*checks if the chatobject exists or if it has to bee created
+	*@param chatId - the key to identify the chat
+	*@return true if one exists
+	*/
+	public boolean checkChat(String chatId)
+	{
+		return _allChats.containsKey(chatId);
+	}
+	
+	/**
+	*adds a chatobject into a global HashMap
+	*@param chatId - a string representation of the key
+	*@param theChat - the chat object too be stored
+	*@return true if ok, if there is a key whit the key false is returned
+	*/
+	public boolean addChat(String chatId, Chat theChat)
+	{
+		if ( !checkChat(chatId))
+		{
+			_allChats.put(chatId, theChat);
+			return true;
+		}else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	*removes a chat object 
+	*@param chatId - the key of the chat to remove
+	*/
+	public void removeChat(String chatId)
+	{
+		_allChats.remove(chatId);
+	}
+	
+	/**
+	*gets a chat
+	*@param chatId - the key of the chat to get
+	*@return The wanted Chat or null if there isn't anyone found
+	*/
+	public Chat getChat(String chatId)
+	{
+		return (Chat) _allChats.get(chatId);
+	}
+	
 } // End class
