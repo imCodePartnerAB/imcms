@@ -3,7 +3,15 @@ GO
 SET ANSI_NULLS OFF 
 GO
 
-ALTER   PROCEDURE SearchDocsIndex
+/****** Object:  Stored Procedure imcms.SearchDocsIndex    Script Date: 2002-09-24 12:00:43 ******/
+if exists (select * from sysobjects where id = object_id('dbo.SearchDocsIndex') and sysstat & 0xf = 4)
+	drop procedure dbo.SearchDocsIndex
+GO
+
+
+
+
+CREATE     PROCEDURE SearchDocsIndex
   @user_id INT,
   @serchString varchar (180),  -- Must be large enough to encompass an entire searchstring.
   @doc_types_string VARCHAR(30), -- Must be large enough to encompass all possible doc_types, commaseparated and expressed in decimal notation.
@@ -379,7 +387,11 @@ select @created_sd as 'cr-start' , @created_ed as 'cr-end',
 
 
 
+
+
+
 GO
+
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS ON 
