@@ -106,11 +106,11 @@ writeFormField("TEXTAREA","text\" id=\"txtCont",125,18,"100%",null);
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/change_text.html/9 ?></td>
-	<td align="right"><input type="button" value="<? sv/change_text.html/2009 ?>" name="replaceBreakBtn" onclick="replaceBreaks();" width="120" style="width:120" class="imcmsFormBtnSmall"></td>
+	<td align="right"><input type="button" value="<? sv/change_text.html/2009 ?>" name="replaceBreakBtn" id="replaceBreakBtn" onclick="replaceBreaks();" width="120" style="width:120" class="imcmsFormBtnSmall"></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? sv/change_text.html/10 ?></td>
-	<td align="right"><input type="button" value="<? sv/change_text.html/2010 ?>" name="createLinkBtn" onclick="openLinkEditor();" width="120" style="width:120" class="imcmsFormBtnSmall"></td>
+	<td align="right"><input type="button" value="<? sv/change_text.html/2010 ?>" name="createLinkBtn" id="createLinkBtn" onclick="openLinkEditor();" width="120" style="width:120" class="imcmsFormBtnSmall"></td>
 </tr>
 </form>
 </table>
@@ -121,7 +121,66 @@ imcmsGui("outer_end", null);
 
 
 <script language="javascript">
-<? sv/change_text.html/12 ?>
+<!--
+if (isMoz) {
+	document.getElementById("txtCont").style.width    = 656;
+	document.getElementById("txtCont").style.overflow = "auto";
+}
+
+function checkMode() {
+	var f = document.forms[0] ;
+	var elFormatRadio = (f.format_type) ? f.format_type : f.type ;
+	if (elFormatRadio) {
+		var oBtn1 = (isMoz) ? document.getElementById("replaceBreakBtn") : f.replaceBreakBtn ;
+		var oBtn2   = (isMoz) ? document.getElementById("createLinkBtn"): f.createLinkBtn ;
+		if (elFormatRadio[1].checked) { // HTML
+			oBtn1.disabled = 0 ;
+			oBtn2.disabled = 0 ;
+			if (isMoz) {
+				oBtn1.className = "imcmsFormBtnSmall" ;
+				oBtn2.className = "imcmsFormBtnSmall" ;
+			}
+		} else { // Text
+			oBtn1.disabled = 1 ;
+			oBtn2.disabled = 1 ;
+			if (isMoz) {
+				oBtn1.className = "imcmsFormBtnSmallDisabled" ;
+				oBtn2.className = "imcmsFormBtnSmallDisabled" ;
+			}
+		}
+	}
+}
+
+function replaceBreaks() {
+	var f = document.forms[0];
+	var theText = f.text.value;
+	if (!(f.format_type[1].checked == 1)) {
+		if(confirm("<? sv/change_text.html/12 ?>")){
+			f.format_type[1].checked = 1;
+			doReplaceBreaks();
+		}
+	} else {
+		doReplaceBreaks();
+	}
+}
+
+function doReplaceBreaks() {
+	var f = document.forms[0];
+	var theText = f.text.value;
+	var tempText = theText.toUpperCase();
+	var reFr = (isMoz && !isIE) ? /\n/g : /\r/g;
+	var reTo = (isMoz && !isIE) ? "<BR>\n" : "<BR>\r";
+	if (tempText.indexOf("<BR>") < 0) {
+		theText = theText.replace(reFr,reTo);
+		f.text.value = theText;
+	} else {
+		if (confirm("<? sv/change_text.html/2020 ?>")) {
+			theText = theText.replace(reFr,reTo);
+			f.text.value = theText;
+		}
+	}
+}
+//-->
 </script>
 </body>
 </html>
