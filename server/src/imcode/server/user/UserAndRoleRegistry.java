@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-public interface UserAndRoleMapper {
+public interface UserAndRoleRegistry {
 
     UserDomainObject getUser( String loginName );
 

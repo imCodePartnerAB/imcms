@@ -45,7 +45,7 @@ public class DocumentMapper {
     private static final String SPROC_SECTION_GET_ALL = "SectionGetAll";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
 
-    private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
+    private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAAUMAndRole;
 
     private ImcmsServices service;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
@@ -58,10 +58,10 @@ public class DocumentMapper {
     private static final String TEMPLATE__STATUS_ARCHIVED = "status/archived.frag";
     private static final String TEMPLATE__STATUS_APPROVED = "status/approved.frag";
 
-    public DocumentMapper( ImcmsServices service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
+    public DocumentMapper( ImcmsServices service, ImcmsAuthenticatorAndUserAndRoleMapper imcmsAAUMAndRole ) {
         this.service = service;
         documentPermissionSetMapper = new DocumentPermissionSetMapper( service );
-        this.imcmsAAUM = imcmsAAUM;
+        this.imcmsAAUMAndRole = imcmsAAUMAndRole;
         File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         File indexDirectory = new File( webAppPath, "WEB-INF/index" );
 
@@ -944,7 +944,7 @@ public class DocumentMapper {
         document.setHeadline( result[2] );
         document.setMenuText( result[3] );
         document.setMenuImage( result[4] );
-        document.setCreator( imcmsAAUM.getUser( Integer.parseInt( result[5] ) ) );
+        document.setCreator( imcmsAAUMAndRole.getUser( Integer.parseInt( result[5] ) ) );
         document.setPermissionSetOneIsMorePrivilegedThanPermissionSetTwo( getBooleanFromSqlResultString( result[6] ) );
         document.setLinkableByOtherUsers( getBooleanFromSqlResultString( result[7] ) );
         document.setVisibleInMenusForUnauthorizedUsers( getBooleanFromSqlResultString( result[8] ) );
@@ -959,7 +959,7 @@ public class DocumentMapper {
         document.setArchivedDatetime( parseDateFormat( dateFormat, result[14] ) );
         String publisherIdStr = result[15];
         if ( null != publisherIdStr ) {
-            UserDomainObject publisher = imcmsAAUM.getUser( Integer.parseInt( publisherIdStr ) );
+            UserDomainObject publisher = imcmsAAUMAndRole.getUser( Integer.parseInt( publisherIdStr ) );
             document.setPublisher( publisher );
         }
         document.setStatus( Integer.parseInt( result[16] ) );

@@ -76,11 +76,6 @@ public class DocumentService {
 
     /**
      * Saves the changes to a modified document. Note that this method is synchronized.
-     *
-     * @param document
-     * @throws NoPermissionException
-     * @throws MaxCategoriesOfTypeExceededException
-     *
      */
     public synchronized void saveChanges( Document document ) throws NoPermissionException, SaveException {
         getSecurityChecker().hasEditPermission( document );

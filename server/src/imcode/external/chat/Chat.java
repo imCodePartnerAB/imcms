@@ -1,7 +1,10 @@
 package imcode.external.chat;
 
-import java.util.*;
 import imcode.server.user.UserDomainObject;
+
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 /**
 *A Chat can contain zero or many ChatGroups.
 *A Chat can contain zero or many ChatMembers.
@@ -10,7 +13,7 @@ import imcode.server.user.UserDomainObject;
 */
 public class Chat{
 
-	private int _chatId;	
+	private int _chatId;
 	private String _name = "";
 	private Hashtable _chatMembers;
 	private Vector _chatMsgTypes;
@@ -31,22 +34,22 @@ public class Chat{
 	private Vector _authorizationSelected;
 
 	static{
-		_memberCounter = new Counter();	
+		_memberCounter = new Counter();
 	}
 
     public Chat(int metaId,Vector authorization,Vector msgTypes) {
 		_chatId = metaId;
-		
+
 		_authorization = authorization;
 		 _chatMsgTypes = msgTypes;
-				
+
 		_chatMembers = new Hashtable();
     	_authorizationSelected = new Vector();
-		
+
 		_msgTypeCounter = new Counter();
 		_msgTypeCounter.setStartValue(200);
 	}
-	
+
 	public void setSelectedAuto(String[] arr) {
 		_authorizationSelected.clear();
 		if (arr != null) {
@@ -58,7 +61,7 @@ public class Chat{
 	public Vector getSelectedAuto() {
 		return (Vector)	_authorizationSelected.clone();
 	}
-	
+
 	public boolean settingsPage() {
 		if (_reload 	== 3 ||
 			_inOut	== 3 ||
@@ -77,28 +80,28 @@ public class Chat{
 	public void setRefreshTime(int time) {
 		_updateTime = time;
 	}
-	
+
 	public int isAutoRefreshEnabled() {
 		return _reload;
-	}		
+	}
 	public void setAutoRefreshEnabled(int reload) {
 		_reload = reload;
 	}
-	
+
 	public int isShowEnterAndLeaveMessagesEnabled() {
 		return _inOut;
 	}
 	public void setShowEnterAndLeaveMessagesEnabled(int inOut) {
 		_inOut = inOut;
 	}
-	
+
 	public int isShowPrivateMessagesEnabled() {
 		return _privat;
 	}
 	public void setShowPrivateMessagesEnabled(int privat) {
 		_privat = privat;
 	}
-	
+
 	public int isShowPublicMessagesEnabled() {
 		return _publik;
 	}
@@ -109,7 +112,7 @@ public class Chat{
 	public void setShowDateTimesEnabled(int dateTime) {
 		_dateTime = dateTime;
 	}
-	
+
 	public int getfont() {
 		return _font;
 	}
@@ -124,7 +127,7 @@ public class Chat{
     public Vector getAuthorizations(){
 		return (Vector)_authorization.clone();
 	}
-	
+
 
 	public String getChatName(){
 		return _name == null?"":_name;
@@ -133,7 +136,7 @@ public class Chat{
 	public  int getChatId() {
 		return _chatId;
 	}
-	
+
 	public ChatMember createChatMember(UserDomainObject user, int referrerMetaId) {
 		_memberCounter.increment();
 		int memberNumber = _memberCounter.getValue();
@@ -141,24 +144,24 @@ public class Chat{
 		_chatMembers.put(String.valueOf(memberNumber), newMember);
 		return newMember;
 	}
-	 
+
 	public boolean hasMemberName(String name) {
-		Enumeration enum = _chatMembers.elements();
-		while (enum.hasMoreElements()) {
-			ChatMember temp = (ChatMember) enum.nextElement();
+		Enumeration enumeration = _chatMembers.elements();
+		while (enumeration.hasMoreElements()) {
+			ChatMember temp = (ChatMember) enumeration.nextElement();
 			if( name.equalsIgnoreCase(temp.getName()) ){
 				return true ;
 			}
 		}
 		return false;
 	}
-	
+
 	public void removeChatMember(int memberNumber) {
 		String memberNumberString = String.valueOf(memberNumber);
 		_chatMembers.remove(memberNumberString);
 	}
 
-	
+
 	public ChatMember getChatMember(int memberNumber) {
 		String memberNumberString = String.valueOf(memberNumber);
 		return (ChatMember)_chatMembers.get(memberNumberString);
@@ -169,7 +172,7 @@ public class Chat{
 		return (ChatGroup) chatGroup;
 	}
 
-	
+
 	public String toString(){
 		return "ChatId: " + _chatId + " ChatName: " + _name;
 	}
@@ -178,8 +181,8 @@ public class Chat{
 	public Vector getMsgTypes(){
   		return _chatMsgTypes;
  	}
-	
-	
+
+
 	public void  setMsgTypes(Vector v){
 		_chatMsgTypes = v;
 	}

@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
+public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserMapper, UserAndRoleRegistry, Authenticator {
 
     private static final String SPROC_GET_HIGHEST_USER_ID = "GetHighestUserId";
     private static final String SPROC_ADD_NEW_USER = "AddNewUser";
@@ -31,7 +31,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     private static final int USER_EXTERN_ID = 2;
 
     private ImcmsServices service;
-    private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserMapper.class );
+    private Logger log = Logger.getLogger( ImcmsAuthenticatorAndUserAndRoleMapper.class );
     private static final String SQL_SELECT_USERS = "SELECT user_id, login_name, login_password, first_name, last_name, "
                                                    + "title, company, address, city, zip, country, county_council, "
                                                    + "email, users.lang_id, lang_prefix, active, "
@@ -43,7 +43,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     private static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
     private static final String SQL_SELECT_ROLE_BY_ID = SQL_SELECT_ALL_ROLES + " WHERE role_id = ?";
 
-    public ImcmsAuthenticatorAndUserMapper( ImcmsServices service ) {
+    public ImcmsAuthenticatorAndUserAndRoleMapper( ImcmsServices service ) {
         this.service = service;
     }
 
@@ -80,10 +80,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         if ( sqlResult.length == 0 ) {
             user = null;
         } else {
-            user = new UserDomainObject();
-
+            user = new LazilyLoadedUserDomainObject(0, this, false);
             initUserFromSqlData( user, sqlResult );
-
         }
         return user;
     }
@@ -126,7 +124,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
      * @return An object representing the user with the given id.
      */
     public UserDomainObject getUser( int userId ) {
-        return new UserDomainObject( userId );
+        return new LazilyLoadedUserDomainObject( userId, this );
     }
 
     private String[][] sqlSelectAllUsers( boolean includeUserExtern, boolean includeInactiveUsers ) {
@@ -151,6 +149,10 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         UserDomainObject imcmsUser = getUser( loginName );
         tempUser.setId( imcmsUser.getId() );
         tempUser.setLoginName( loginName );
+        updateUser( tempUser );
+    }
+
+    private void updateUser( UserDomainObject tempUser ) {
         callSprocModifyUserProcedure( SPROC_UPDATE_USER, tempUser );
         removePhoneNumbers( tempUser );
         addPhoneNumbers( tempUser );
@@ -413,22 +415,24 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         user.setHomePhone( homePhone );
     }
 
+    public void initUserAttributes( UserDomainObject user ) {
+        initUserFromSqlData( user, sqlSelectUserById( user.getId() ) );
+    }
+
     public void initUserRoles( UserDomainObject user ) {
         user.setRoles( getRolesForUser( user ) );
     }
 
-    public void saveRole( RoleDomainObject role ) throws MapperException {
-        try {
-            service.sqlUpdateQuery( "UPDATE roles SET role_name = ? WHERE role_id = ?", new String[] { role.getName(), ""+role.getId() } ) ;
-        } catch (RuntimeException re) {
-            throw new ImcmsAuthenticatorAndUserMapper.MapperException(re.getCause());
+    public void saveRole( RoleDomainObject role ) {
+        service.sqlUpdateQuery( "UPDATE roles SET role_name = ? WHERE role_id = ?", new String[] { role.getName(), ""+role.getId() } ) ;
+    }
+
+    public void saveUser( UserDomainObject user ) {
+        if (0 == user.getId()) {
+            addUser(user) ;
+        } else {
+            updateUser(user) ;
         }
     }
 
-    public class MapperException extends Exception {
-
-        public MapperException( Throwable cause ) {
-            super(cause) ;
-        }
-    }
 }

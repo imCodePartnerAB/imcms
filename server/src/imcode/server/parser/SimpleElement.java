@@ -58,7 +58,7 @@ public class SimpleElement implements Element {
 	    result.append(((Text)node).getContent()) ;
 	    return ;
 	} else if (node.getNodeType() == ELEMENT_NODE) {
-	    Iterator childIterator = ((Element)node).getChildren().iterator() ; 
+	    Iterator childIterator = ((Element)node).getChildren().iterator() ;
 	    while ( childIterator.hasNext() ) {
 		getTextContent((Node)childIterator.next(),result) ;
 	    }
@@ -70,9 +70,9 @@ public class SimpleElement implements Element {
 	StringBuffer string = new StringBuffer() ;
 
 	string.append("<?imcms:").append(getName()) ;
-	Enumeration enum = getAttributes().propertyNames() ;
-	while(enum.hasMoreElements()) {
-	    String key = (String)enum.nextElement() ;
+	Enumeration enumeration = getAttributes().propertyNames() ;
+	while(enumeration.hasMoreElements()) {
+	    String key = (String)enumeration.nextElement() ;
 	    String value = getAttributes().getProperty(key) ;
 	    char quote = (value.indexOf('"') == -1) ? '"' : '\'' ;
 	    string.append(' ').append(key).append('=').append(quote).append(value).append(quote) ;

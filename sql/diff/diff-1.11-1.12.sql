@@ -23,3 +23,7 @@ COMMIT
 ALTER TABLE roles ADD CONSTRAINT roles_role_name UNIQUE ( role_name )
 
 -- 2004-11-15 Kreiger
+
+ALTER TABLE users ADD CONSTRAINT users_login_name UNIQUE ( login_name )
+
+-- 2004-11-18 Kreiger

@@ -50,8 +50,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
 
-    private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
-    private ExternalizedImcmsAuthenticatorAndUserMapper externalizedImcmsAuthAndMapper = null;
+    private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserMapperAndRole;
+    private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper = null;
     private DocumentMapper documentMapper;
     private TemplateMapper templateMapper;
     private Map languagePropertiesMap = new HashMap();
@@ -148,7 +148,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initDocumentMapper() {
-        documentMapper = new DocumentMapper( this, imcmsAuthenticatorAndUserMapper );
+        documentMapper = new DocumentMapper( this, imcmsAuthenticatorAndUserMapperAndRole );
     }
 
     private void initTemplateMapper() {
@@ -160,19 +160,19 @@ final public class DefaultImcmsServices implements ImcmsServices {
         String externalUserAndRoleMapperName = props.getProperty( "ExternalUserAndRoleMapper" );
 
         Authenticator externalAuthenticator = null;
-        UserAndRoleMapper externalUserAndRoleMapper = null;
+        UserAndRoleRegistry externalUserAndRoleRegistry = null;
 
         if ( null != externalAuthenticatorName && null != externalUserAndRoleMapperName ) {
             log.info( "ExternalAuthenticator: " + externalAuthenticatorName );
             log.info( "ExternalUserAndRoleMapper: " + externalUserAndRoleMapperName );
             externalAuthenticator =
             initExternalAuthenticator( externalAuthenticatorName, props );
-            externalUserAndRoleMapper =
+            externalUserAndRoleRegistry =
             initExternalUserAndRoleMapper( externalUserAndRoleMapperName, props );
-            if ( null == externalAuthenticator || null == externalUserAndRoleMapper ) {
+            if ( null == externalAuthenticator || null == externalUserAndRoleRegistry ) {
                 log.error( "Failed to initialize both authenticator and user-and-role-documentMapper, using default implementations." );
                 externalAuthenticator = null;
-                externalUserAndRoleMapper = null;
+                externalUserAndRoleRegistry = null;
             }
         } else if ( null == externalAuthenticatorName && null == externalUserAndRoleMapperName ) {
             log.info( "ExternalAuthenticator not set." );
@@ -181,10 +181,10 @@ final public class DefaultImcmsServices implements ImcmsServices {
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
             log.error( "External authenticator and external usermapper should both be either set or not set. Using default implementation." );
         }
-        imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( this );
+        imcmsAuthenticatorAndUserMapperAndRole = new ImcmsAuthenticatorAndUserAndRoleMapper( this );
         externalizedImcmsAuthAndMapper =
-        new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, externalAuthenticator,
-                                                         externalUserAndRoleMapper, getDefaultLanguageAsIso639_2() );
+        new ExternalizedImcmsAuthenticatorAndUserRegistry( imcmsAuthenticatorAndUserMapperAndRole, externalAuthenticator,
+                                                         externalUserAndRoleRegistry, getDefaultLanguageAsIso639_2() );
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
     }
 
@@ -224,22 +224,22 @@ final public class DefaultImcmsServices implements ImcmsServices {
         sessionCounter = getSessionCounterFromDb();
     }
 
-    private UserAndRoleMapper initExternalUserAndRoleMapper( String externalUserAndRoleMapperName,
+    private UserAndRoleRegistry initExternalUserAndRoleMapper( String externalUserAndRoleMapperName,
                                                              Properties userAndRoleMapperPropertiesSubset ) {
-        UserAndRoleMapper externalUserAndRoleMapper = null;
+        UserAndRoleRegistry externalUserAndRoleRegistry = null;
         if ( null == externalUserAndRoleMapperName ) {
-            externalUserAndRoleMapper = null;
+            externalUserAndRoleRegistry = null;
         } else if ( EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase( externalUserAndRoleMapperName ) ) {
             try {
-                externalUserAndRoleMapper = new LdapUserAndRoleMapper( userAndRoleMapperPropertiesSubset );
-            } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
-                log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.",
+                externalUserAndRoleRegistry = new LdapUserAndRoleRegistry( userAndRoleMapperPropertiesSubset );
+            } catch ( LdapUserAndRoleRegistry.LdapInitException e ) {
+                log.error( "LdapUserAndRoleRegistry could not be created, using default user and role documentMapper.",
                            e );
             }
         } else {
-            externalUserAndRoleMapper = (UserAndRoleMapper)createInstanceOfClass( externalUserAndRoleMapperName );
+            externalUserAndRoleRegistry = (UserAndRoleRegistry)createInstanceOfClass( externalUserAndRoleMapperName );
         }
-        return externalUserAndRoleMapper;
+        return externalUserAndRoleRegistry;
     }
 
     private Authenticator initExternalAuthenticator( String externalAuthenticatorName,
@@ -250,9 +250,9 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 externalAuthenticator = null;
             } else if ( EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase( externalAuthenticatorName ) ) {
                 try {
-                    externalAuthenticator = new LdapUserAndRoleMapper( authenticatorPropertiesSubset );
-                } catch ( LdapUserAndRoleMapper.LdapInitException e ) {
-                    log.error( "LdapUserAndRoleMapper could not be created, using default user and role documentMapper.",
+                    externalAuthenticator = new LdapUserAndRoleRegistry( authenticatorPropertiesSubset );
+                } catch ( LdapUserAndRoleRegistry.LdapInitException e ) {
+                    log.error( "LdapUserAndRoleRegistry could not be created, using default user and role documentMapper.",
                                e );
                 }
             } else {
@@ -439,8 +439,8 @@ final public class DefaultImcmsServices implements ImcmsServices {
         return new SMTP( config.getSmtpServer(), config.getSmtpPort() );
     }
 
-    public ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
-        return imcmsAuthenticatorAndUserMapper;
+    public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
+        return imcmsAuthenticatorAndUserMapperAndRole;
     }
 
     /**

@@ -1389,6 +1389,10 @@ ALTER TABLE [dbo].[users] WITH NOCHECK ADD
 	CONSTRAINT [PK_users] PRIMARY KEY  NONCLUSTERED
 	(
 		[user_id]
+	)  ON [PRIMARY] ,
+	CONSTRAINT [users_login_name] UNIQUE  NONCLUSTERED
+	(
+		[login_name]
 	)  ON [PRIMARY]
 GO
 

@@ -22,9 +22,9 @@ import java.util.*;
  * or @link http://ldap.akbkhome.com/objectclasstree/inetOrgPerson.html for details witch attributes that exists.
  */
 
-public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
+public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegistry {
 
-    private final static Logger log = Logger.getLogger( LdapUserAndRoleMapper.class );
+    private final static Logger log = Logger.getLogger( LdapUserAndRoleRegistry.class );
 
     public static final String DEFAULT_LDAP_ROLE = "LDAP";
     public final static String AUTHENTICATION_TYPE_SIMPLE = "simple";
@@ -91,7 +91,7 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
     private static final String LDAP_USER_OBJECTCLASS__INETORGPERSON = "inetOrgPerson";
     private static final String LDAP_USER_OBJECTCLASS_DEFAULT = LDAP_USER_OBJECTCLASS__INETORGPERSON;
 
-    public LdapUserAndRoleMapper( Properties ldapConfig ) throws LdapInitException {
+    public LdapUserAndRoleRegistry( Properties ldapConfig ) throws LdapInitException {
         String ldapStringOfAttributesMappedToRoles = ldapConfig.getProperty( "LdapAttributesMappedToRoles", "" );
         String[] ldapAttributesMappedToRoles = splitStringOnCommasAndSpaces( ldapStringOfAttributesMappedToRoles );
         Properties ldapUserAttributes = new Properties();
@@ -100,7 +100,7 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
             ldapUserAttributes.putAll( ldapUserAttributesSubset );
         }
         init( ldapConfig.getProperty( "LdapUrl", "ldap://localhost/" ),
-              LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE,
+              LdapUserAndRoleRegistry.AUTHENTICATION_TYPE_SIMPLE,
               ldapConfig.getProperty( "LdapUserObjectClass", LDAP_USER_OBJECTCLASS_DEFAULT ),
               ldapConfig.getProperty( "LdapBindDn", "" ),
               ldapConfig.getProperty( "LdapPassword", "" ),
@@ -115,7 +115,7 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
      * @param ldapPassword           A password that i used to log in (bind) to the ldap server
      */
 
-    public LdapUserAndRoleMapper( String ldapUrl,
+    public LdapUserAndRoleRegistry( String ldapUrl,
                                   String ldapAuthenticationType,
                                   String ldapUserObjectClass,
                                   String ldapUserName,

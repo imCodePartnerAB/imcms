@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
 import imcode.server.Imcms;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
@@ -55,10 +55,10 @@ public class UserBrowser extends HttpServlet {
     }
 
     private Page createPageFromRequest( HttpServletRequest request ) {
-        ImcmsAuthenticatorAndUserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS );
         String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
-        UserDomainObject[] users = userMapper.findUsersByNamePrefix( searchString, includeInactiveUsers );
+        UserDomainObject[] users = userMapperAndRole.findUsersByNamePrefix( searchString, includeInactiveUsers );
         Page page = new Page();
         page.setSearchString( searchString );
         page.setUsers( users );
@@ -67,13 +67,13 @@ public class UserBrowser extends HttpServlet {
     }
 
     private UserDomainObject getSelectedUserFromRequest( HttpServletRequest request ) {
-        ImcmsAuthenticatorAndUserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         String userIdStr = request.getParameter( REQUEST_PARAMETER__USER_ID );
         if ( null == userIdStr ) {
             return null;
         }
         int userId = Integer.parseInt( userIdStr );
-        UserDomainObject user = userMapper.getUser( userId );
+        UserDomainObject user = userMapperAndRole.getUser( userId );
         return user;
     }
 

@@ -1,16 +1,14 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import imcode.util.Html;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.Html;
-import org.apache.commons.lang.BooleanUtils;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -538,7 +536,7 @@ public class AdminUserProps extends Administrator {
         }
 
         if ( req.getParameter( "SAVE_USER" ) != null && adminTask.equalsIgnoreCase( "ADD_USER" ) ) {
-            addUser( session, req, userFromRequest, password2, res, imcref, user );
+            addUser( this, session, req, userFromRequest, password2, res, imcref, user );
             return;
         }
 
@@ -612,8 +610,8 @@ public class AdminUserProps extends Administrator {
 
         // check that the changed login name don´t already exists
         if ( !newLogin.equalsIgnoreCase( currentLogin ) ) {
-            ImcmsAuthenticatorAndUserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-            if ( null != userMapper.getUser( newLogin ) ) {
+            ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+            if ( null != userMapperAndRole.getUser( newLogin ) ) {
                 String header = "Error in AdminUserProps.";
                 log.debug( header + "- username already exists" );
                 new AdminError( req, res, header, msg );
@@ -725,7 +723,7 @@ public class AdminUserProps extends Administrator {
             }
         }
 
-        ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapperAndRole = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
 
         // if we are processing data from a admin template and
         // if user isSuperadmin or
@@ -755,7 +753,7 @@ public class AdminUserProps extends Administrator {
             boolean useradminRoleIsSelected = false;
             for ( int i = 0; i < roleIdsFromRequest.length; i++ ) {
                 int roleId = roleIdsFromRequest[i];
-                RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( roleId );
+                RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapperAndRole.getRoleById( roleId );
                 userFromRequest.addRole( role );
                 if ( role.equals( RoleDomainObject.USERADMIN ) ) {
                     useradminRoleIsSelected = true;
@@ -779,12 +777,12 @@ public class AdminUserProps extends Administrator {
             }
         }
 
-        imcmsAuthenticatorAndUserAndRoleMapper.updateUser( userFromRequest.getLoginName(), userFromRequest );
+        imcmsAuthenticatorAndUserAndRoleMapperAndRole.updateUser( userFromRequest.getLoginName(), userFromRequest );
 
         this.goNext( req, res, session );
     }
 
-    private void addUser( HttpSession session, HttpServletRequest req, UserDomainObject userFromRequest,
+    private static void addUser( AdminUserProps adminUserProps, HttpSession session, HttpServletRequest req, UserDomainObject userFromRequest,
                           String password2, HttpServletResponse res, ImcmsServices imcref, UserDomainObject user ) throws IOException {
         log.debug( "Lets add a new user to db" );
 
@@ -799,7 +797,7 @@ public class AdminUserProps extends Administrator {
             password2 = req.getParameter( "new_pwd2" );
         }
 
-        int[] roleIdsFromRequest = this.getRoleIdsFromRequest( "roles", req, res, imcref, user );
+        int[] roleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "roles", req, res, imcref, user );
 
         // Lets validate the password
         if ( !verifyPassword( userFromRequest.getPassword(), password2, req, res ) ) {
@@ -819,15 +817,15 @@ public class AdminUserProps extends Administrator {
                   + "<br>";
         }
 
-        ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserAndRoleMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
-        if ( null != imcmsAuthenticatorAndUserAndRoleMapper.getUser( userFromRequest.getLoginName() ) ) {
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapperAndRole = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+        if ( null != imcmsAuthenticatorAndUserAndRoleMapperAndRole.getUser( userFromRequest.getLoginName() ) ) {
             String header = "Error in AdminUserProps. ";
             log.debug( header + "- username already exists" );
             new AdminError( req, res, header, msg );
             return;
         }
 
-        if ( !validateParameters( req, res, user ) ) {
+        if ( !adminUserProps.validateParameters( req, res, user ) ) {
             return;
         }
 
@@ -837,20 +835,20 @@ public class AdminUserProps extends Administrator {
         boolean useradminRoleIsSelected = false;
         for ( int i = 0; i < roleIdsFromRequest.length; i++ ) {
             int roleId = roleIdsFromRequest[i];
-            RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapper.getRoleById( roleId );
+            RoleDomainObject role = imcmsAuthenticatorAndUserAndRoleMapperAndRole.getRoleById( roleId );
             userFromRequest.addRole( role );
             if ( role.equals( RoleDomainObject.USERADMIN ) ) {
                 useradminRoleIsSelected = true;
             }
         }
 
-        imcmsAuthenticatorAndUserAndRoleMapper.addUser( userFromRequest );
+        imcmsAuthenticatorAndUserAndRoleMapperAndRole.addUser( userFromRequest );
 
         if ( useradminRoleIsSelected ) {
             // Lets get the useradmin_roles from htmlpage
-            int[] userAdminRoleIdsFromRequest = this.getRoleIdsFromRequest( "useradmin_roles", req, res, imcref, user );
+            int[] userAdminRoleIdsFromRequest = adminUserProps.getRoleIdsFromRequest( "useradmin_roles", req, res, imcref, user );
             // Lets add the new useradmin roles.
-            addUserAdminRoles( imcref, userFromRequest.getId(), userAdminRoleIdsFromRequest );
+            adminUserProps.addUserAdminRoles( imcref, userFromRequest.getId(), userAdminRoleIdsFromRequest );
         }
 
 
@@ -876,11 +874,11 @@ public class AdminUserProps extends Administrator {
 
             if ( !( "" ).equals( workPhone ) ) {
                 int phoneNumberType = 2;
-                ImcmsAuthenticatorAndUserMapper.staticSprocPhoneNbrAdd( imcref, userFromRequest.getId(), workPhone, phoneNumberType );
+                ImcmsAuthenticatorAndUserAndRoleMapper.staticSprocPhoneNbrAdd( imcref, userFromRequest.getId(), workPhone, phoneNumberType );
             }
             if ( !( "" ).equals( mobilePhone ) ) {
                 int phoneNumberType = 3;
-                ImcmsAuthenticatorAndUserMapper.staticSprocPhoneNbrAdd( imcref, userFromRequest.getId(), workPhone, phoneNumberType );
+                ImcmsAuthenticatorAndUserAndRoleMapper.staticSprocPhoneNbrAdd( imcref, userFromRequest.getId(), workPhone, phoneNumberType );
             }
         }
 
@@ -899,7 +897,7 @@ public class AdminUserProps extends Administrator {
             return;
 
         } else {
-            this.goNext( req, res, session );
+            adminUserProps.goNext( req, res, session );
         }
         return;
     }
@@ -946,10 +944,10 @@ public class AdminUserProps extends Administrator {
             boolean found = false;  // marker that we is going to edit a selected phone number
             int tempId = 1;  // temporary phone id
 
-            Enumeration enum = phoneNumbers.elements();
+            Enumeration enumeration = phoneNumbers.elements();
 
-            while ( enum.hasMoreElements() ) {
-                String[] temp = (String[])enum.nextElement();
+            while ( enumeration.hasMoreElements() ) {
+                String[] temp = (String[])enumeration.nextElement();
                 if ( temp[0].equals( req.getParameter( "phone_id" ) ) ) {
                     selectedPhoneId = temp[0];
                     phoneNumbers.remove( temp );
@@ -991,10 +989,10 @@ public class AdminUserProps extends Administrator {
         if ( req.getParameter( "edit_phones" ) != null ) {
             log.debug( "edit_phones" );
 
-            Enumeration enum = phoneNumbers.elements();
+            Enumeration enumeration = phoneNumbers.elements();
 
-            while ( enum.hasMoreElements() && !found ) {
-                String[] temp = (String[])enum.nextElement();
+            while ( enumeration.hasMoreElements() && !found ) {
+                String[] temp = (String[])enumeration.nextElement();
                 if ( temp[0].equals( req.getParameter( "user_phones" ) ) ) {
                     vm.addProperty( "PHONE_ID", temp[0] );
                     vm.addProperty( "NUMBER", temp[1] );
@@ -1026,11 +1024,11 @@ public class AdminUserProps extends Administrator {
 
             log.debug( "lets delete_phones from templist" );
 
-            Enumeration enum = phoneNumbers.elements();
+            Enumeration enumeration = phoneNumbers.elements();
             found = false;
             //		log("Size"+phoneNumbers.size());
-            while ( enum.hasMoreElements() && !found ) {
-                String[] temp = (String[])enum.nextElement();
+            while ( enumeration.hasMoreElements() && !found ) {
+                String[] temp = (String[])enumeration.nextElement();
                 log.debug( temp[0] + " == " + req.getParameter( "user_phones" ) );
                 if ( temp[0].equals( req.getParameter( "user_phones" ) ) ) {
                     phoneNumbers.remove( temp );
@@ -1103,10 +1101,10 @@ public class AdminUserProps extends Administrator {
 
     private void addUserAdminRoles( ImcmsServices imcref, int userIdToAddUserAdminRolesTo,
                                     int[] useradminRoleIds ) {
-        ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserMapperAndRole = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
         for ( int i = 0; i < useradminRoleIds.length; i++ ) {
             int roleId = useradminRoleIds[i];
-            RoleDomainObject role = imcmsAuthenticatorAndUserMapper.getRoleById( roleId );
+            RoleDomainObject role = imcmsAuthenticatorAndUserMapperAndRole.getRoleById( roleId );
             if ( !RoleDomainObject.SUPERADMIN.equals( role ) && !RoleDomainObject.USERADMIN.equals( role ) ) {
                 imcref.sqlUpdateProcedure( "AddUseradminPermissibleRoles", new String[]{
                     "" + userIdToAddUserAdminRolesTo, "" + role.getId()
@@ -1285,9 +1283,9 @@ public class AdminUserProps extends Administrator {
     private Vector getPhonesVector( Vector phonesArrV, String lang_id, ImcmsServices imcref ) {
 
         Vector phonesV = new Vector();
-        Enumeration enum = phonesArrV.elements();
-        while ( enum.hasMoreElements() ) {
-            String[] tempPhone = (String[])enum.nextElement();
+        Enumeration enumeration = phonesArrV.elements();
+        while ( enumeration.hasMoreElements() ) {
+            String[] tempPhone = (String[])enumeration.nextElement();
             String[] typename = imcref.sqlProcedure( "GetPhonetypeName", new String[]{tempPhone[3], lang_id} );
             String temp = "(" + typename[0] + ") " + tempPhone[1];
 

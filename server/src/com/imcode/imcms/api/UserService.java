@@ -1,8 +1,9 @@
 package com.imcode.imcms.api;
 
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.server.db.IntegrityConstraintViolationSQLException;
 
 public class UserService {
 
@@ -12,7 +13,7 @@ public class UserService {
         this.contentManagementSystem = contentManagementSystem;
     }
 
-    private ImcmsAuthenticatorAndUserMapper getMapper() {
+    private ImcmsAuthenticatorAndUserAndRoleMapper getMapper() {
         return contentManagementSystem.getInternal().getImcmsAuthenticatorAndUserAndRoleMapper() ;
     }
 
@@ -119,7 +120,7 @@ public class UserService {
     public void deleteRole( String role ) throws NoPermissionException {
         getSecurityChecker().isSuperAdmin();
 
-        ImcmsAuthenticatorAndUserMapper mapper = getMapper();
+        ImcmsAuthenticatorAndUserAndRoleMapper mapper = getMapper();
         mapper.deleteRole( mapper.getRoleByName( role ) );
     }
 
@@ -135,8 +136,33 @@ public class UserService {
 
         try {
             getMapper().saveRole(role.getInternal()) ;
-        } catch ( ImcmsAuthenticatorAndUserMapper.MapperException e ) {
+        } catch ( IntegrityConstraintViolationSQLException icvse ) {
             throw new SaveException("A role with the name \""+role.getName()+"\" already exists.") ;
+        }
+    }
+
+    /**
+     * Create a new user. Don't forget to call {@link #saveUser(User)}.
+     * @param loginName The user's login name
+     * @param password The user's password
+     * @return A new user
+     */
+    public User createNewUser( String loginName, String password ) {
+        UserDomainObject internalUser = new UserDomainObject();
+        internalUser.setLoginName( loginName );
+        internalUser.setPassword( password );
+        return new User( internalUser );
+    }
+
+    public void saveUser( User user ) throws NoPermissionException, SaveException {
+        if (null == user) {
+            return ;
+        }
+        getSecurityChecker().isSuperAdmin();
+        try {
+            getMapper().saveUser(user.getInternal()) ;
+        } catch ( IntegrityConstraintViolationSQLException icvse ) {
+            throw new SaveException( "A user with the login name \""+user.getLoginName()+"\" already exists." ) ;
         }
     }
 }

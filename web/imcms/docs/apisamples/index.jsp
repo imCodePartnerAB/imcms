@@ -42,6 +42,7 @@ Log out (and become an non-logged in user), <a href="<%= request.getContextPath(
 </p>
 
 <h3>Users</h3>
+To create a user, <%= makeLinks( "user_create_user.jsp") %><br>
 To see what users that exists in the system, <%= makeLinks("user_listing.jsp") %><br>
 To get attributes for one user by login name, <%=makeLinks("user_get_user_by_login_name.jsp") %><br>
 

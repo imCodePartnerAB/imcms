@@ -2,17 +2,15 @@ package com.imcode.imcms.servlet.conference;
 
 import com.imcode.imcms.servlet.superadmin.AdminError2;
 import com.imcode.imcms.servlet.superadmin.AdminUserProps;
-import imcode.util.Html;
 import imcode.external.diverse.MetaInfo;
 import imcode.external.diverse.VariableManager;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
-import imcode.server.user.UserDomainObject;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
-import imcode.util.Utility;
+import imcode.server.user.*;
 import imcode.util.Html;
+import imcode.util.Utility;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -177,7 +175,7 @@ public class ConfLogin extends Conference {
 
         // Lets get serverinformation
         ImcmsServices imcref = Imcms.getServices();
-        ImcmsAuthenticatorAndUserMapper userMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
 
         // ************* VERIFY LOGIN TO CONFERENCE **************
         // Ok, the user wants to login
@@ -201,7 +199,7 @@ public class ConfLogin extends Conference {
                 log( header + err.getErrorMsg() );
                 return;
             }else{
-                user =  userMapper.getUser(Integer.parseInt(userId));
+                user =  userMapperAndRole.getUser(Integer.parseInt(userId));
             }
 
             // Ok, we found the user, lets verify that the user is a member of this conference
@@ -216,7 +214,7 @@ public class ConfLogin extends Conference {
                 DocumentDomainObject document = documentMapper.getDocument( params.getMetaId() );
                 addAllConferenceSelfRegRolesToUser(user, params.getMetaId()+"", imcref);
                 //renew the user object
-                user = userMapper.getUser(Integer.parseInt(user.getId()+""));
+                user = userMapperAndRole.getUser(Integer.parseInt(user.getId()+""));
                 okToLogIn = documentMapper.userHasMoreThanReadPermissionOnDocument( user, document);
                 if (okToLogIn) {
                     // user has permission to log in to this conferens so lets add him to it.
@@ -322,8 +320,8 @@ public class ConfLogin extends Conference {
             newUser.setWorkPhone(userParams.getProperty( "phone" ));
 
             // Add new user to db
-            ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
-            imcmsAuthenticatorAndUserMapper.addUser( newUser );
+            UserMapper userRegistry = imcref.getImcmsAuthenticatorAndUserAndRoleMapper();
+            userRegistry.addUser( newUser );
 
             // Ok, Lets add the users roles into db, first get the role his in the system with
             String userId = "" + user.getId();

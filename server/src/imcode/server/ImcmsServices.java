@@ -6,7 +6,7 @@ import imcode.server.document.DocumentMapper;
 import imcode.server.document.TemplateMapper;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.parser.ParserParameters;
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.net.SMTP;
 import org.apache.velocity.VelocityContext;
@@ -184,7 +184,7 @@ public interface ImcmsServices {
 
     DocumentMapper getDocumentMapper();
 
-    ImcmsAuthenticatorAndUserMapper getImcmsAuthenticatorAndUserAndRoleMapper();
+    ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper();
 
     String getDefaultLanguageAsIso639_2();
 

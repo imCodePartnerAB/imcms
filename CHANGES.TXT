@@ -21,6 +21,10 @@ Version 1.12.0
         - UserService.getRole(int) - Get a role by id, requires superadmin permission.
         - UserService.getRole(String) - Get a role by name, requires superadmin permission.
         - UserService.saveRole(Role) - Save changes to the role, requires superadmin permission.
+        - UserService.createNewUser(String, String) - Create a new user.
+        - UserService.saveUser(User) - Save a new or existing user, requires superadmin permission.
+        - User.set* - Added a bunch of setters.
+        - User.get* - Added a few missing setters.
     * Changed methods:
         - UserService.addNewRole(String) - Returns the new role.
         - DocumentService.saveChanges(Document) - Throws SaveException instead of MaxCategoriesOfTypeExceededException.

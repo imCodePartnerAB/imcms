@@ -1,6 +1,6 @@
 package com.imcode.imcms.api;
 
-import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.server.Imcms;
@@ -70,6 +70,10 @@ public class User {
         return internalUser.getEmailAddress();
     }
 
+    public String getOtherPhone() {
+        return internalUser.getOtherPhone();
+    }
+
     public String getWorkPhone() {
         return internalUser.getWorkPhone();
     }
@@ -112,7 +116,7 @@ public class User {
         return internalUser.canEdit(document.getInternal()) ;
     }
 
-    private ImcmsAuthenticatorAndUserMapper getMapper() {
+    private ImcmsAuthenticatorAndUserAndRoleMapper getMapper() {
         return Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
     }
 
@@ -167,6 +171,78 @@ public class User {
         Iterator roleNamesIterator = IteratorUtils.arrayIterator( internalUser.getRoles() );
         Collection roleNames = CollectionUtils.collect( roleNamesIterator, new RoleToRoleNameTransformer()) ;
         return (String[])roleNames.toArray( new String[roleNames.size()] );
+    }
+
+    public void setActive( boolean active ) {
+        internalUser.setActive( active );
+    }
+
+    public void setAddress( String address ) {
+        internalUser.setAddress( address );
+    }
+
+    public void setCity( String city ) {
+        internalUser.setCity( city );
+    }
+
+    public void setCompany( String company ) {
+        internalUser.setCompany( company );
+    }
+
+    public void setCountry( String country ) {
+        internalUser.setCountry( country );
+    }
+
+    public void setCountyCouncil( String countyCouncil ) {
+        internalUser.setCountyCouncil( countyCouncil );
+    }
+
+    public void setEmailAddress( String emailAddress ) {
+        internalUser.setEmailAddress( emailAddress );
+    }
+
+    public void setFaxPhone( String faxphone ) {
+        internalUser.setFaxPhone( faxphone );
+    }
+
+    public String getFaxPhone() {
+        return internalUser.getFaxPhone();
+    }
+
+    public void setFirstName( String firstName ) {
+        internalUser.setFirstName( firstName );
+    }
+
+    public void setHomePhone( String homephone ) {
+        internalUser.setHomePhone( homephone );
+    }
+
+    public void setLastName( String lastName ) {
+        internalUser.setLastName( lastName );
+    }
+
+    public void setMobilePhone( String mobilephone ) {
+        internalUser.setMobilePhone( mobilephone );
+    }
+
+    public void setOtherPhone( String otherphone ) {
+        internalUser.setOtherPhone( otherphone );
+    }
+
+    public void setPassword( String password ) {
+        internalUser.setPassword( password );
+    }
+
+    public void setTitle( String title ) {
+        internalUser.setTitle( title );
+    }
+
+    public void setWorkPhone( String workphone ) {
+        internalUser.setWorkPhone( workphone );
+    }
+
+    public void setZip( String zip ) {
+        internalUser.setZip( zip );
     }
 
     private static class RoleToRoleNameTransformer implements Transformer {
