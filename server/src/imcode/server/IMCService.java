@@ -1042,15 +1042,6 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 
     }
 	
-    protected StringBuffer getCachedFileStringBuffer(String filename) throws IOException {
-	StringBuffer tempbuffer = null ;
-	if (null == (tempbuffer = (StringBuffer)(fileCache.getElement(filename)))) {
-	    tempbuffer = loadFile(filename) ;
-	    fileCache.addElement(filename,tempbuffer) ;
-	}
-	return tempbuffer ;
-    }
-
     protected String getCachedFileString(String filename) throws IOException {
 	String temp = null ;
 	if (null == (temp = (String)(fileCache.getElement(filename)))) {
@@ -1277,9 +1268,9 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		String templatebuffer_filename = m_TemplateHome + lang_prefix + "/admin/adminbuttons/adminbuttons.html" ;
 		String superadmin_filename = m_TemplateHome + lang_prefix + "/admin/adminbuttons/superadminbutton.html" ;
 
-		tempbuffer = getCachedFileStringBuffer(tempbuffer_filename) ;
-		templatebuffer = getCachedFileStringBuffer(templatebuffer_filename) ;
-		superadmin = getCachedFileStringBuffer(superadmin_filename) ;
+		tempbuffer = new StringBuffer(getCachedFileString(tempbuffer_filename)) ;
+		templatebuffer = new StringBuffer(getCachedFileString(templatebuffer_filename)) ;
+		superadmin = new StringBuffer(getCachedFileString(superadmin_filename)) ;
 		
 	    } catch(IOException e) {
 		this.updateLogs("An error occurred reading the file" + e );
