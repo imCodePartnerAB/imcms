@@ -82,7 +82,6 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private int implicitImageNumber = 1 ;
 
     private String labelTemplate ;
-    private String sectionName ;
 
     private Document document;
 
@@ -161,7 +160,8 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 
     **/
     public String tagSection () {
-	return ""+document.getSection() ;
+	String section = document.getSection() ;
+	return section == null ? "" : section ;
     }
 
     /**
