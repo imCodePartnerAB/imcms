@@ -26,11 +26,11 @@ public class TemplateService {
      * @throws NoPermissionException If the current user isn't superadmin
      */
     public TemplateGroup[] getTemplatesGroups( TextDocument textDocument ) throws NoPermissionException {
-        securityChecker.hasEditPermission(textDocument);
+        securityChecker.hasEditPermission( textDocument );
         UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         TemplateGroupDomainObject[] internalTemplates = templateMapper.getAllTemplateGroupsAvailableForUserOnDocument( user, textDocument.getId() );
         TemplateGroup[] result = new TemplateGroup[internalTemplates.length];
-        for( int i = 0; i < internalTemplates.length; i++ ) {
+        for (int i = 0; i < internalTemplates.length; i++) {
             result[i] = new TemplateGroup( internalTemplates[i] );
         }
         return result;
@@ -44,10 +44,10 @@ public class TemplateService {
      * @throws NoPermissionException If the current user doesn't have permission to list the templates in the templategroup.
      */
     public Template[] getTemplates( TemplateGroup templateGroup ) throws NoPermissionException {
-        securityChecker.hasTemplateGroupPermission(templateGroup);
+        securityChecker.hasTemplateGroupPermission( templateGroup );
         TemplateDomainObject[] templates = templateMapper.getTemplatesInGroup( templateGroup.getInternal() );
         Template[] result = new Template[templates.length];
-        for( int i = 0; i < templates.length; i++ ) {
+        for (int i = 0; i < templates.length; i++) {
             TemplateDomainObject domainObject = templates[i];
             result[i] = new Template( domainObject );
         }
@@ -61,29 +61,30 @@ public class TemplateService {
      * @return An array of all templates that may be used for the given TextDocument.
      */
     public Template[] getPossibleTemplates( TextDocument textDocument ) throws NoPermissionException {
-        securityChecker.hasEditPermission(textDocument);
+        securityChecker.hasEditPermission( textDocument );
         TemplateGroup[] groups = getTemplatesGroups( textDocument );
         ArrayList temp = new ArrayList();
-        for( int i = 0; i < groups.length; i++ ) {
-            Template[] templates = getTemplates( groups[i]);
-            temp.addAll( Arrays.asList( templates ));
+        for (int i = 0; i < groups.length; i++) {
+            Template[] templates = getTemplates( groups[i] );
+            temp.addAll( Arrays.asList( templates ) );
         }
-        Template[] result = (Template[])temp.toArray( new Template[ temp.size()] );
+        Template[] result = (Template[]) temp.toArray( new Template[temp.size()] );
         return result;
     }
 
     public Template getTemplate( String templateName ) {
-        TemplateDomainObject template = templateMapper.getTemplateByName(templateName) ;
-        return (null != template) ? new Template(template) : null ;
+        TemplateDomainObject template = templateMapper.getTemplateByName( templateName );
+        return (null != template) ? new Template( template ) : null;
     }
 
-    public Template getTemplateById(int templateId) {
-        TemplateDomainObject template = templateMapper.getTemplateById(templateId);
-        return (null != template) ? new Template(template) : null ;
+    public Template getTemplateById( int templateId ) {
+        TemplateDomainObject template = templateMapper.getTemplateById( templateId );
+        return (null != template) ? new Template( template ) : null;
     }
 
-    public TemplateGroup getTemplateGroupById(int templateGroupId) {
-        return new TemplateGroup(templateMapper.getTemplateGroupById(templateGroupId));
+    public TemplateGroup getTemplateGroupById( int templateGroupId ) {
+        TemplateGroupDomainObject template = templateMapper.getTemplateGroupById( templateGroupId );
+        return (null != template) ? new TemplateGroup( template ) : null;
     }
 
 }
