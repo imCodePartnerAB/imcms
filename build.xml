@@ -30,6 +30,8 @@
   <property name="chat-templates"       value="${languagetemplates}/103"/>
   <property name="billboard-templates"  value="${languagetemplates}/104"/>
   <property name="postcard-templates"   value="${languagetemplates}/105"/>
+  <property name="fortune-templates"    value="${languagetemplates}/106"/>
+
 
   <property name="admintemplates" value="${languagetemplates}/admin"/>
   <property name="texttemplates"  value="${templates}/text"/>
@@ -111,7 +113,7 @@
   </target>
 
   <target name="build"
-          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help-images"
+          depends="server,servlets,templates,libraries,web,conf,dir,conference,chat,billboard,postcard,help-images,fortune-templates"
 	  description="Builds everything.">
 
     <copy file="install/web.xml" todir="${WEB-INF}"/>
@@ -444,5 +446,12 @@
        	<fileset dir="install/htdocs/imcms/helpimages" includes="*"/>
     </copy>
   </target>
+  <target name="fortune-templates"
+	depends="init,web"
+ 	description="Copies the fortune-templates.">
+	<copy todir="${fortune-templates}">
+	  <fileset dir="templates/${srclanguage}/fortunes"/>
+	</copy>
+	</target>	
 
 </project>
