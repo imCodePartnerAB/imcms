@@ -59,9 +59,12 @@
 <title><? install/htdocs/sv/jsp/docadmin/document_information.jsp/document_information_title ?></title>
 
 <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
-<body bgcolor="#FFFFFF" onLoad="document.getElementsByName('<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>').item(0).focus()">
+<body bgcolor="#FFFFFF" onLoad="focusField(0,'<%= StringEscapeUtils.escapeJavaScript( DocumentComposer.PARAMETER__HEADLINE ) %>')">
+
+
 #gui_outer_start()
 #gui_head( '<? global/imcms_administration ?>' )
 <form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
@@ -73,6 +76,7 @@
 </tr>
 </table>
 #gui_mid()
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
         <input type="hidden"
             name="<%= DocumentComposer.REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME %>"
@@ -106,7 +110,7 @@
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/6 ?><sup class="imNote">1</sup></td>
 		<td>
-            <input type="text" name="<%= DocumentComposer.PARAMETER__HEADLINE %>" size="105" maxlength="255" style="width: 100%"
+            <input type="text" name="<%= DocumentComposer.PARAMETER__HEADLINE %>" size="48" maxlength="255" style="width: 100%"
             value="<%= StringEscapeUtils.escapeHtml(document.getHeadline()) %>">
         </td>
 	</tr>
@@ -129,7 +133,7 @@
 		<table border="0" cellspacing="0" cellpadding="0" width="560">
 		<tr>
 			<td>
-                <input type="text" name="<%= DocumentComposer.PARAMETER__IMAGE %>" size="85" maxlength="255" style="width: 100%"
+                <input type="text" name="<%= DocumentComposer.PARAMETER__IMAGE %>" size="40" maxlength="255" style="width: 100%"
                     value="<%= StringEscapeUtils.escapeHtml( (String)ObjectUtils.defaultIfNull( document.getMenuImage(), "" )) %>">
             </td>
 			<td align="right">
@@ -256,12 +260,25 @@
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="1"></td>
 		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="1"></td>
 	</tr>
-	</table>
-</td>
+	</table></td>
 </tr>
 <tbody id="advanced">
 <tr>
-	<td>&nbsp;<br>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?>" )</td>
+	<td>
+	<table border="0" cellspacing="0" cellpadding="0" width="500">
+	<tr>
+		<td><span class="imcmsAdmHeading"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/21/1 ?></span></td>
+		<td>
+		<script language="javascript">
+		if (hasGetElementById) {
+			document.write('<td align="right"><input type="button" id="advanced_button" class="imcmsFormBtn" value="<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
+		} else {
+			document.write("&nbsp;");
+		}
+		</script></td>
+	</tr>
+	</table>
+	#gui_hr( "blue" )</td>
 </tr>
 <tr>
 	<td>
@@ -383,7 +400,7 @@
                 }
             }
         %>
-        <input type="text" name="<%= DocumentComposer.PARAMETER__KEYWORDS %>" size="105" maxlength="200" style="width: 100%"
+        <input type="text" name="<%= DocumentComposer.PARAMETER__KEYWORDS %>" size="48" maxlength="200" style="width: 100%"
                 value="<%= StringEscapeUtils.escapeHtml( StringUtils.join( keywords, ", " ) ) %>"><br>
 		<span class="imcmsAdmDim"><? install/htdocs/sv/jsp/docadmin/document_information.jsp/keywords_explanation ?></span><br>
 		<input type="CHECKBOX" name="<%= DocumentComposer.PARAMETER__SEARCH_DISABLED %>" value="1" <% if (document.isSearchDisabled()) { %> checked<% } %>> <? install/htdocs/sv/jsp/docadmin/document_information.jsp/37 ?></td>
@@ -406,7 +423,7 @@
 			<td><input type="radio" name="<%= DocumentComposer.PARAMETER__TARGET %>" <% if (null != target) { %> checked<% } %>></td>
 			<td class="imcmsAdmText">&nbsp;<? install/htdocs/sv/jsp/docadmin/document_information.jsp/1018 ?>&nbsp;</td>
 			<td>
-            <input type="text" name="<%= DocumentComposer.PARAMETER__TARGET %>" size="20" maxlength="20"
+            <input type="text" name="<%= DocumentComposer.PARAMETER__TARGET %>" size="9" maxlength="20" style="width:120"
                 value="<% if (null != target) { %><%= StringEscapeUtils.escapeHtml( target ) %><% } %>">
         </td>
 		</tr>
@@ -473,20 +490,23 @@
 	</table></td>
 </tr>
 </tbody>
-	<tr>
-		<td>#gui_hr( "blue" )</td>
-	</tr>
-	<tr>
-		<td><table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
+<tr>
+	<td>
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
 			<td class="imNoteComment"><sup class="imNote">1</sup>
 			<? install/htdocs/sv/jsp/docadmin/document_information.jsp/46 ?></td>
 			<td align="right">
 			<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
-                <script language="javascript">
-                    document.write('<td><input type="button" id="advanced_button" class="imcmsFormBtn" value="<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
-                </script>
+				<script language="javascript">
+				if (hasGetElementById) {
+					document.write('<td><input type="button" id="advanced_button" class="imcmsFormBtn" value="<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>" onClick="toggleAdvanced()"></td><td>&nbsp;</td>') ;
+				}
+				</script>
 				<td><input type="SUBMIT" class="imcmsFormBtn" value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> " name="<%= DocumentComposer.PARAMETER_BUTTON__OK %>"></td>
 				<td>&nbsp;</td>
 				<td><input type="RESET" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2005 ?>" name="reset"></td>
@@ -496,10 +516,10 @@
 			</table></td>
 		</tr>
 		</table></td>
-	</tr>
-	<tr>
-		<td>#gui_hr( "blue" )</td>
-	</tr>
+</tr>
+<tr>
+	<td>#gui_hr( "blue" )</td>
+</tr>
 <tr>
 	<td>&nbsp;</td>
 </tr>
@@ -518,29 +538,29 @@
     }
 %>
 <script language="javascript">
-    var viewCookieName = 'document_information_view' ;
-    if (document.getElementById && document.cookie.indexOf(viewCookieName+'=advanced') == -1) {
-        toggleAdvanced();
-    }
+var viewCookieName = 'document_information_view' ;
+if (hasGetElementById && document.cookie.indexOf(viewCookieName+'=advanced') == -1) {
+	toggleAdvanced();
+}
 
-    function toggleAdvanced() {
-        if (!document.getElementById) {
-            return ;
-        }
-        var advancedDisplay = document.getElementById('advanced').style.display ;
-        var advancedButtonValue = '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?> >>' ;
-        var viewCookie = viewCookieName+'=simple' ;
-        if ('none' == advancedDisplay) {
-            advancedDisplay = 'table-row-group' ;
-            advancedButtonValue = '<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>' ;
-            viewCookie = viewCookieName+'=advanced' ;
-        } else {
-            advancedDisplay = 'none' ;
-        }
-        document.getElementById('advanced').style.display = advancedDisplay ;
-        document.getElementById('advanced_button').value = advancedButtonValue ;
-        document.cookie = viewCookie ;
-    }
+function toggleAdvanced() {
+	if (!hasGetElementById) {
+		return ;
+	}
+	var advancedDisplay = document.getElementById('advanced').style.display ;
+	var advancedButtonValue = '<? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?> >>' ;
+	var viewCookie = viewCookieName+'=simple' ;
+	if ('none' == advancedDisplay) {
+		advancedDisplay = (isGecko) ? 'table-row-group' : 'block' ;
+		advancedButtonValue = '<< <? install/htdocs/sv/jsp/docadmin/document_information.jsp/advanced_button ?>' ;
+		viewCookie = viewCookieName+'=advanced' ;
+	} else {
+		advancedDisplay = 'none' ;
+	}
+	document.getElementById('advanced').style.display = advancedDisplay ;
+	document.getElementById('advanced_button').value = advancedButtonValue ;
+	document.cookie = viewCookie ;
+}
 </script>
 </body>
 </html>

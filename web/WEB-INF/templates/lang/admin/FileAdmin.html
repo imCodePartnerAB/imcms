@@ -40,7 +40,7 @@ wDir[2] = "";
 	/* isImage - image types (change in "FileAdmin_preview.jsp" too) */
 var pai = "\\.(GIF|JPE?G|PNG)$";
 	/* isViewFile - viewable file types (change in "FileAdmin_preview.jsp" too, if image) */
-var pa = "\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP)$";
+var pa = "(\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|JSP|ASP)$)|(\\.LOG)";
 	/* isEditFileText - viewable file types that will open in readonly mode in "FileAdmin_edit.jsp" */
 var pat = "\\.(HTM|HTML|VBS|JS|CSS|TXT|INC|JSP|ASP)$";
 	/* isEditFile - editable file types (change in "FileAdmin_edit.jsp" too) */
@@ -60,7 +60,7 @@ function checkFileType(iside, doReset) {
 	if (!(isMac && ie)) {
 		var f = document.forms[0];
 		/* Viewable file */
-		if (!doReset && (isViewFile(iside) && !isHiddenFold(iside)) || isStatFile(iside)) {
+		if (!doReset && isFile(iside) && (isViewFile(iside) || isStatFile(iside) || (isHtmlFile && !isHiddenFold(iside)))) {
 			if (iside == 2) {
 				f.preview2.disabled  = 0;
 				f.preview2.className = "imcmsFormBtnSmall";
