@@ -116,4 +116,9 @@ public class Utility {
         return FileUtility.collectRelativeSubdirectoriesStartingWith( imagePath );
     }
 
+    public static Object firstElementOfSetByOrderOf( Set set, Comparator comparator ) {
+        SortedSet sortedSet = new TreeSet( comparator );
+        sortedSet.addAll( set );
+        return sortedSet.iterator().next();
+    }
 }

@@ -32,7 +32,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         this.user = user;
     }
 
-    protected void saveFileDocumentFile( int fileDocumentId, FileDocumentDomainObject.FileDocumentFile fileVariant,
+    protected void saveFileDocumentFile( int fileDocumentId, FileDocumentDomainObject.FileVariant fileVariant,
                                        String variantName ) {
         try {
             InputStreamSource inputStreamSource = fileVariant.getInputStreamSource();
@@ -290,16 +290,16 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         for ( Iterator iterator = fileDocumentFiles.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry entry = (Map.Entry)iterator.next();
             String variantName = (String)entry.getKey();
-            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = (FileDocumentDomainObject.FileDocumentFile)entry.getValue();
+            FileDocumentDomainObject.FileVariant fileVariant = (FileDocumentDomainObject.FileVariant)entry.getValue();
 
-            String filename = fileDocumentFile.getFilename();
+            String filename = fileVariant.getFilename();
             if ( filename.length() > DB_FIELD_MAX_LENGTH__FILENAME ) {
                 filename = truncateFilename( filename, DB_FIELD_MAX_LENGTH__FILENAME );
             }
             String sqlInsert = "INSERT INTO fileupload_docs (meta_id, variant_name, filename, mime, created_as_image, default_variant) VALUES(?,?,?,?,?,?)";
             boolean isDefaultVariant = variantName.equals( fileDocument.getDefaultFileVariantName());
-            service.sqlUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), variantName, filename, fileDocumentFile.getMimeType(), fileDocumentFile.isCreatedAsImage() ? "1" : "0", isDefaultVariant ? "1" : "0"} );
-            saveFileDocumentFile( fileDocument.getId(), fileDocumentFile, variantName );
+            service.sqlUpdateQuery( sqlInsert, new String[]{""+ fileDocument.getId(), variantName, filename, fileVariant.getMimeType(), fileVariant.isCreatedAsImage() ? "1" : "0", isDefaultVariant ? "1" : "0"} );
+            saveFileDocumentFile( fileDocument.getId(), fileVariant, variantName );
         }
         deleteOtherFileDocumentFiles( fileDocument ) ;
     }

@@ -1,15 +1,15 @@
 package imcode.server.document;
 
 import imcode.util.InputStreamSource;
+import imcode.util.Utility;
 import org.apache.commons.lang.NullArgumentException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class FileDocumentDomainObject extends DocumentDomainObject {
 
-    private Map fileVariants = new HashMap() ;
-    private String defaultFileVariantName = "";
+    private HashMap fileVariants = new HashMap();
+    private String defaultFileVariantName ;
 
     protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
         // nothing lazily loaded
@@ -23,34 +23,42 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         documentVisitor.visitFileDocument( this );
     }
 
-    public void addFileVariant( String variantName, FileDocumentFile fileDocumentFile ) {
-        if (null == variantName) {
-            throw new NullArgumentException( "variantName" ) ;
+    public void addFileVariant( String fileVariantName, FileVariant fileVariant ) {
+        if ( null == fileVariantName ) {
+            throw new NullArgumentException( "fileVariantName" );
         }
-        if (!fileVariants.containsKey( defaultFileVariantName )) {
-            defaultFileVariantName = variantName ;
+        if ( !fileVariants.containsKey( defaultFileVariantName ) ) {
+            defaultFileVariantName = fileVariantName;
         }
-        fileVariants.put( variantName, fileDocumentFile ) ;
+        fileVariants.put( fileVariantName, fileVariant );
     }
 
     public Map getFileVariants() {
-        return fileVariants;
+        return (Map)fileVariants.clone();
     }
 
-    public FileDocumentFile getFileVariant( String fileVariantName ) {
-        return (FileDocumentFile)fileVariants.get( fileVariantName ) ;
+    public FileVariant getFileVariant( String fileVariantName ) {
+        return (FileVariant)fileVariants.get( fileVariantName );
     }
 
-    public FileDocumentFile removeFileVariant( String fileVariantName ) {
-        if (1 == fileVariants.size()) {
-            throw new IllegalStateException( "Can't remove last fileVariant.");
+    public FileVariant removeFileVariant( String fileVariantName ) {
+        FileVariant fileVariant = (FileVariant)fileVariants.remove( fileVariantName );
+        selectDefaultFileVariantName( fileVariantName );
+        return fileVariant;
+    }
+
+    private void selectDefaultFileVariantName( String fileVariantName ) {
+        if (fileVariants.isEmpty()) {
+            defaultFileVariantName = null ;
+        } else if ( defaultFileVariantName.equals( fileVariantName ) ) {
+            defaultFileVariantName = (String)Utility.firstElementOfSetByOrderOf( fileVariants.keySet(), String.CASE_INSENSITIVE_ORDER ) ;
         }
-        return (FileDocumentFile)fileVariants.remove( fileVariantName ) ;
     }
 
     public void setDefaultFileVariantName( String defaultFileVariantName ) {
-        if (!fileVariants.containsKey( defaultFileVariantName )) {
-            throw new IllegalArgumentException( "Cannot set defaultFileVariantName to non-existant key "+defaultFileVariantName) ;
+        if ( !fileVariants.containsKey( defaultFileVariantName ) ) {
+            throw new IllegalArgumentException( "Cannot set defaultFileVariantName to non-existant key "
+                                                + defaultFileVariantName );
         }
         this.defaultFileVariantName = defaultFileVariantName;
     }
@@ -59,23 +67,45 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
         return defaultFileVariantName;
     }
 
-    public FileDocumentFile getFileVariantOrDefault( String fileVariantName ) {
-        FileDocumentFile fileVariant = getFileVariant( fileVariantName ) ;
-        if (null == fileVariant) {
-            fileVariant = getDefaultFileVariant() ;
+    public FileVariant getFileVariantOrDefault( String fileVariantName ) {
+        FileVariant fileVariant = getFileVariant( fileVariantName );
+        if ( null == fileVariant ) {
+            fileVariant = getDefaultFileVariant();
         }
-        return fileVariant ;
+        return fileVariant;
     }
 
-    public FileDocumentFile getDefaultFileVariant() {
-        return (FileDocumentFile)fileVariants.get(defaultFileVariantName) ;
+    public FileVariant getDefaultFileVariant() {
+        return (FileVariant)fileVariants.get( defaultFileVariantName );
 
     }
 
-    public static class FileDocumentFile {
+    public void renameFileVariant( String oldFileVariantName, String newFileVariantName ) {
+        if ( null == oldFileVariantName ) {
+            throw new NullArgumentException( "oldFileVariantName" );
+        }
+        if ( null == newFileVariantName ) {
+            throw new NullArgumentException( "newFileVariantName" );
+        }
+        if (!fileVariants.containsKey( oldFileVariantName )) {
+            throw new IllegalStateException( "There is no fileVariant with the name " + oldFileVariantName );
+        }
+        if (oldFileVariantName.equals( newFileVariantName )) {
+            return ;
+        }
+        if (fileVariants.containsKey( newFileVariantName )) {
+            throw new IllegalStateException( "There already is a fileVariant with the name "+newFileVariantName ) ;
+        }
+        fileVariants.put(newFileVariantName, fileVariants.remove( oldFileVariantName )) ;
+        if (defaultFileVariantName.equals( oldFileVariantName )) {
+            defaultFileVariantName = newFileVariantName ;
+        }
+    }
 
-        private String filename ;
-        private String mimeType ;
+    public static class FileVariant {
+
+        private String filename;
+        private String mimeType;
         private InputStreamSource inputStreamSource;
         private boolean createdAsImage;
 

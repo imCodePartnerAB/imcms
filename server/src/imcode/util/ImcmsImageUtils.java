@@ -34,7 +34,7 @@ public class ImcmsImageUtils {
                                                           String variantName ) {
         ImageSize imageSize;
         try {
-            FileDocumentDomainObject.FileDocumentFile fileVariant = imageFileDocument.getFileVariantOrDefault( variantName );
+            FileDocumentDomainObject.FileVariant fileVariant = imageFileDocument.getFileVariantOrDefault( variantName );
             InputStream imageFileDocumentInputStream = fileVariant.getInputStreamSource().getInputStream();
             imageSize = new ImageParser().parseImageStream( imageFileDocumentInputStream, fileVariant.getFilename() );
         } catch ( IllegalArgumentException iae ) {

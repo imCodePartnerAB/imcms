@@ -133,7 +133,7 @@ class IndexDocumentAdapter {
         }
 
         public void visitFileDocument( FileDocumentDomainObject fileDocument ) {
-            FileDocumentDomainObject.FileDocumentFile fileVariant = fileDocument.getDefaultFileVariant();
+            FileDocumentDomainObject.FileVariant fileVariant = fileDocument.getDefaultFileVariant();
             indexDocument.add( unStoredKeyword( DocumentIndex.FIELD__MIME_TYPE, fileVariant.getMimeType() ) );
         }
     }

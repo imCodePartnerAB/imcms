@@ -27,12 +27,12 @@ class DocumentInitializingVisitor extends DocumentVisitor {
             String[] sqlRow = sqlResult[i];
 
             String variantName = sqlRow[0];
-            FileDocumentDomainObject.FileDocumentFile fileDocumentFile = new FileDocumentDomainObject.FileDocumentFile();
-            fileDocumentFile.setFilename( sqlRow[1] );
-            fileDocumentFile.setMimeType( sqlRow[2] );
-            fileDocumentFile.setCreatedAsImage( 0 != Integer.parseInt( sqlRow[3] ) );
-            fileDocumentFile.setInputStreamSource( new FileInputStreamSource( DocumentStoringVisitor.getFileForFileDocument( document.getId(), variantName ) ) );
-            document.addFileVariant( variantName, fileDocumentFile );
+            FileDocumentDomainObject.FileVariant fileVariant = new FileDocumentDomainObject.FileVariant();
+            fileVariant.setFilename( sqlRow[1] );
+            fileVariant.setMimeType( sqlRow[2] );
+            fileVariant.setCreatedAsImage( 0 != Integer.parseInt( sqlRow[3] ) );
+            fileVariant.setInputStreamSource( new FileInputStreamSource( DocumentStoringVisitor.getFileForFileDocument( document.getId(), variantName ) ) );
+            document.addFileVariant( variantName, fileVariant );
             if ( 0 != Integer.parseInt( sqlRow[4] ) ) {
                 document.setDefaultFileVariantName( variantName );
             }

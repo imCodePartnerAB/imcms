@@ -116,10 +116,10 @@ public class ChangeImage extends HttpServlet {
                 FileDocumentDomainObject fileDocument = (FileDocumentDomainObject)document;
                 Map fileVariants = fileDocument.getFileVariants();
                 for ( Iterator iterator = fileVariants.values().iterator(); iterator.hasNext(); ) {
-                    FileDocumentDomainObject.FileDocumentFile fileDocumentFile = (FileDocumentDomainObject.FileDocumentFile)iterator.next();
+                    FileDocumentDomainObject.FileVariant fileVariant = (FileDocumentDomainObject.FileVariant)iterator.next();
 
-                    if ( ArrayUtils.contains( IMAGE_MIME_TYPES, fileDocumentFile.getMimeType() ) ) {
-                        fileDocument.setHeadline( fileDocumentFile.getFilename() );
+                    if ( ArrayUtils.contains( IMAGE_MIME_TYPES, fileVariant.getMimeType() ) ) {
+                        fileDocument.setHeadline( fileVariant.getFilename() );
                         fileDocument.setStatus( DocumentDomainObject.STATUS_PUBLICATION_APPROVED );
                         documentMapper.saveNewDocument( document, user );
                         image.setUrlAndClearSize( "../servlet/GetDoc?meta_id=" + document.getId() );
