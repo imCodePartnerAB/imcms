@@ -13,6 +13,9 @@ import imcode.external.diverse.Html;
 public class SearchDocuments extends HttpServlet {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
+
+	/** The sproc that gets all sections **/
+	private final static String SPROC_SECTION_GET_ALL_SECTIONS = "SectionGetAll" ;
 	
 	//the templates we uses as default they are stored relative to the admin folder 
 	private final static String HIT_LINE_TEMPLATE 		= "search/search_list.html";
@@ -156,7 +159,7 @@ public class SearchDocuments extends HttpServlet {
 		}
 		
 		//the sections list
-		String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver,"get_all_sections") ;		
+		String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver, SPROC_SECTION_GET_ALL_SECTIONS) ;		
 		String option_list = "";		
 		if (all_sections != null) {
 			Vector onlyTemp = new Vector();
@@ -370,7 +373,7 @@ public class SearchDocuments extends HttpServlet {
 		}
 		
 		
-		String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver,"get_all_sections") ;		
+		String[] all_sections = IMCServiceRMI.sqlProcedure(imcserver, SPROC_SECTION_GET_ALL_SECTIONS) ;		
 		String option_list = "";		
 		if (all_sections != null) {
 			Vector onlyTemp = new Vector();
