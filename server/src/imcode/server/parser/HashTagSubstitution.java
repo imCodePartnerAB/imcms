@@ -34,7 +34,7 @@ public class HashTagSubstitution implements Substitution {
 	this.numberedtags = numberedtags ;
     }
 
-    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
+    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {
 	sb.append(hashTagHandler(patMat,patComp,tags,numberedtags)) ;
     }
 

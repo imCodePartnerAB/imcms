@@ -303,7 +303,7 @@ public class ImcmsTagSubstitution implements Substitution {
 		}
     }
 
-    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
+    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {
 	String tagname = matres.group(1) ;
 	String tagattributes = matres.group(2) ;
 	Properties attributes = new Properties() ;

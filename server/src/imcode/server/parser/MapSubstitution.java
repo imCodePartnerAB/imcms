@@ -28,7 +28,7 @@ public class MapSubstitution implements Substitution {
 	return map ;
     }
 
-    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
+    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {
 	String match = matres.group(0) ;
 	String replace = (String)map.get(match) ;
 	if (replace == null ) {

@@ -15,7 +15,7 @@ public class MenuParserSubstitution implements Substitution {
 
     private FileCache fileCache = new FileCache() ;
 
-    private static Category log = Category.getInstance("server") ;
+    private static Category log = Category.getRoot() ;
 
     static {
 
@@ -178,7 +178,7 @@ public class MenuParserSubstitution implements Substitution {
 	result.append(org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,substitution,template,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL)) ;
     }
 
-    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, String originalInput, PatternMatcher patMat, Pattern pat) {
+    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput, PatternMatcher patMat, Pattern pat) {
 	MatchResult menuMatres = patMat.getMatch() ;
 	String attributes_string = menuMatres.group(1) ;
 	String menutemplate = menuMatres.group(2) ;
