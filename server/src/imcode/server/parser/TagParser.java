@@ -827,7 +827,7 @@ class TagParser {
     /**
      * Take a String of attributes, as may be found inside a tag, (name="...", and so on...) and transform it into a Properties.
      */
-    public static Properties parseAttributes( String attributes_string, PatternMatcher patternMatcher,
+    public Properties parseAttributes( String attributes_string, PatternMatcher patternMatcher,
                                               HttpServletRequest request ) {
         Properties attributes = new Properties();
 
@@ -835,8 +835,9 @@ class TagParser {
         while ( patternMatcher.contains( attributes_input, ATTRIBUTES_PATTERN ) ) {
             MatchResult attribute_matres = patternMatcher.getMatch();
             String escapedValue = attribute_matres.group( 3 );
-            escapedValue = escapedValue.replaceAll( "\\$request\\.getContextPath\\(\\)", request.getContextPath() ) ;
-            attributes.setProperty( attribute_matres.group( 1 ), StringEscapeUtils.unescapeHtml( escapedValue ) );
+            String value = StringEscapeUtils.unescapeHtml( escapedValue );
+            value = tagVelocity(value) ;
+            attributes.setProperty( attribute_matres.group( 1 ), value );
         }
 
         return attributes;

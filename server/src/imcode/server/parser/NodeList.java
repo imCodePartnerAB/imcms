@@ -22,7 +22,7 @@ class NodeList extends LinkedList {
     /**
      * Parse a String of data into nodes. *
      */
-    NodeList( String data, HttpServletRequest request ) {
+    NodeList( String data, HttpServletRequest request, TagParser tagParser ) {
         PatternMatcher patternMatcher = new Perl5Matcher();
         PatternMatcherInput input = new PatternMatcherInput( data );
         int lastEndOffset = 0;
@@ -32,21 +32,21 @@ class NodeList extends LinkedList {
                 add( new SimpleText( data.substring( lastEndOffset, matchResult.beginOffset( 0 ) ) ) ); // ... put it in a text node.
             }
             lastEndOffset = matchResult.endOffset( 0 );
-            add( createElementNode( patternMatcher, request ) );
+            add( createElementNode( patternMatcher, request, tagParser ) );
         }
         if ( data.length() > lastEndOffset ) { // Add whatever was left after the last element, and the whole piece if there wasn't any elements.
             add( new SimpleText( data.substring( lastEndOffset ) ) );
         }
     }
 
-    private Element createElementNode( PatternMatcher patternMatcher, HttpServletRequest request ) {
+    private Element createElementNode( PatternMatcher patternMatcher, HttpServletRequest request, TagParser tagParser ) {
         MatchResult matchResult = patternMatcher.getMatch();
 
         String name = matchResult.group( 1 );
         String attributes_string = matchResult.group( 2 );
         String content = matchResult.group( 3 );
 
-        return new SimpleElement( name, TagParser.parseAttributes( attributes_string, patternMatcher, request ), new NodeList( content, request ) );
+        return new SimpleElement( name, tagParser.parseAttributes( attributes_string, patternMatcher, request ), new NodeList( content, request, tagParser ) );
     }
 
 }
