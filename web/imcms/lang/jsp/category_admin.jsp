@@ -23,6 +23,7 @@ imcmsGui("head", null);
     StringBuffer messageToUser = new StringBuffer("");
     CategoryDomainObject categoryToEdit = formData.getCategoryToEdit() ;
 %>
+
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="head" action="AdminCategories" method="post">
     <tr>
@@ -99,8 +100,17 @@ imcmsGui("mid", null);
                 <? install/htdocs/sv/jsp/category_admin/select_function ?></td>
             <td>&nbsp;</td>
         </tr>
-    <%} else if(request.getParameter(AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE) != null ) {   %>
+    <%} // ---------- add category type ------------
+    else if(request.getParameter(AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE) != null ) {
 
+        String categoryAddParameter = request.getParameter( AdminCategories.PARAMETER_CATEGORY_TYPE_ADD );
+        boolean uniqueCategoryTypeName = formData.isUniqueCategoryTypeName();
+        if( null != categoryAddParameter && !uniqueCategoryTypeName ) {
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/thereIsAlreadyaCategoryTypeWithTheName ?> \"");
+            messageToUser.append(request.getParameter("name") + "\" ");
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/3 ?>!");
+        }
+        %>
         <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__ADD_CATEGORY_TYPE %>" value="1">
         <tr>
             <td width="80" height="24" class="imcmsAdmText" nowrap><? global/Name ?></td>
@@ -115,16 +125,30 @@ imcmsGui("mid", null);
         <tr>
             <td>&nbsp;</td>
             <td height="24" class="imcmsAdmText" nowrap>
-             <input type="radio" name="max_choices" value="1" checked>&nbsp;<? install/htdocs/sv/jsp/category_admin/singel_choice ?></td>
+             <input type="radio" name="<%=AdminCategories.PARAMETER_MAX_CHOICES%>" value="1" checked>&nbsp;<? install/htdocs/sv/jsp/category_admin/singel_choice ?></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
              <td height="24" class="imcmsAdmText" nowrap>
-              <input type="radio" name="max_choices" value="0" >&nbsp;<? install/htdocs/sv/jsp/category_admin/multi_choice ?></td>
+              <input type="radio" name="<%=AdminCategories.PARAMETER_MAX_CHOICES%>" value="0" >&nbsp;<? install/htdocs/sv/jsp/category_admin/multi_choice ?></td>
         </tr>
 
+        <%if( messageToUser.length() > 0 ) { %>
+        <tr><td colspan="2">&nbsp;</td></tr>
+        <tr>
+            <td colspan="2" height="24" class="imcmsAdmText" ><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="red"> <%=messageToUser %> </font></td>
+        </tr>
+        <%}%>
+
     <% }  // ---------- edit category type ------------
-    else if(request.getParameter(AdminCategories.PARAMETER_MODE__EDIT_CATEGORY_TYPE) != null ) { %>
+    else if(request.getParameter(AdminCategories.PARAMETER_MODE__EDIT_CATEGORY_TYPE) != null ) {
+
+        if( request.getParameter( AdminCategories.PARAMETER_CATEGORY_TYPE_SAVE ) != null && !formData.isUniqueCategoryTypeName() ) {
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/thereIsAlreadyaCategoryTypeWithTheName ?> \"");
+            messageToUser.append(request.getParameter("name") + "\" ");
+            messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/3 ?>!");
+        }
+        %>
 
         <input type="hidden" name="<%= AdminCategories.PARAMETER_MODE__EDIT_CATEGORY_TYPE %>" value="1">
         <tr>
@@ -146,21 +170,28 @@ imcmsGui("mid", null);
             <tr>
                 <td>&nbsp;</td>
                 <td height="24" class="imcmsAdmText" nowrap>
-                 <input type="radio" name="max_choices" value="1" <%= formData.getCategoryTypeToEdit().getMaxChoices() == 1 ?  "checked" : "" %> >
+                 <input type="radio" name="<%=AdminCategories.PARAMETER_MAX_CHOICES%>" value="1" <%= formData.getCategoryTypeToEdit().getMaxChoices() == 1 ?  "checked" : "" %> >
                    &nbsp;<? install/htdocs/sv/jsp/category_admin/singel_choice ?></td>
             </tr>
             <tr>
                 <td>&nbsp;</td>
                  <td height="24" class="imcmsAdmText" nowrap>
-                  <input type="radio" name="max_choices" value="0" <%= formData.getCategoryTypeToEdit().getMaxChoices() == 0 ? "checked" : "" %> >
+                  <input type="radio" name="<%=AdminCategories.PARAMETER_MAX_CHOICES%>" value="0" <%= formData.getCategoryTypeToEdit().getMaxChoices() == 0 ? "checked" : "" %> >
                     &nbsp;<? install/htdocs/sv/jsp/category_admin/multi_choice ?></td>
             </tr>
+        <%}%>
+
+        <%if( messageToUser.length() > 0 ) { %>
+        <tr><td colspan="2">&nbsp;</td></tr>
+        <tr>
+            <td colspan="2" height="24" class="imcmsAdmText" ><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="red"> <%=messageToUser %> </font></td>
+        </tr>
         <%}%>
 
     <%} // ------ add category -------
     else if(request.getParameter(AdminCategories.PARAMETER_MODE__ADD_CATEGORY) != null) {
 
-        if( request.getParameter("category_add") != null && !formData.getUniqueName() ) {
+        if( request.getParameter("category_add") != null && !formData.getUniqueCategoryName() ) {
             messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/1 ?> \"");
             messageToUser.append(request.getParameter("name") + "\" ");
             messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/2 ?> \"" + categoryToEdit.getType().getName() + "\". ");
@@ -185,7 +216,7 @@ imcmsGui("mid", null);
     }  // ---------- edit category ------------
     else if(null != request.getParameter(AdminCategories.PARAMETER_MODE__EDIT_CATEGORY)) {
 
-        if( request.getParameter("category_save") != null && !formData.getUniqueName() ) {
+        if( request.getParameter("category_save") != null && !formData.getUniqueCategoryName() ) {
             messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/1 ?> \"");
             messageToUser.append(request.getParameter("name") + "\" ");
             messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/2 ?> \"" + formData.getCategoryToEdit().getType().getName() + "\". ");
@@ -323,9 +354,9 @@ imcmsGui("mid", null);
         <%
             if (!inDefaultMode) {
                 if( inAddCategoryTypeMode ) { %>
-                    <input type="submit" class="imcmsFormBtn" name="category_type_add" value="<? global/create ?>">
+                    <input type="submit" class="imcmsFormBtn" name="<%=AdminCategories.PARAMETER_CATEGORY_TYPE_ADD%>" value="<? global/create ?>">
                 <%}else if( inEditCategoryTypeMode && null != formData.getCategoryTypeToEdit() ) { %>
-                    <input type="submit" class="imcmsFormBtn" name="category_type_save" value="<? global/save ?>" >
+                    <input type="submit" class="imcmsFormBtn" name="<%=AdminCategories.PARAMETER_CATEGORY_TYPE_SAVE%>" value="<? global/save ?>" >
                 <%}else if( inAddCategoryMode ) { %>
                     <input type="submit" class="imcmsFormBtn" name="category_add" value="<? global/create ?>" >
                 <%}else if( inEditCategoryMode && null != formData.getCategoryToEdit() ) { %>

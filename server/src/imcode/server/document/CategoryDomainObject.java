@@ -11,13 +11,13 @@ public class CategoryDomainObject implements Comparable, Serializable {
     private int id;
     private CategoryTypeDomainObject type;
     private String description;
-    private String image;
+    private String imageUrl;
 
     public CategoryDomainObject(int id, String name, String description, String image, CategoryTypeDomainObject type) {
         this.description = description;
         this.type = type;
         this.name = name;
-        this.image = image;
+        this.imageUrl = image;
         this.id = id;
     }
 
@@ -56,8 +56,8 @@ public class CategoryDomainObject implements Comparable, Serializable {
         return description ;
     }
 
-     public String getImage() {
-        return image;
+     public String getImageUrl() {
+        return imageUrl;
     }
 
     public int compareTo( Object o ) {
@@ -72,8 +72,8 @@ public class CategoryDomainObject implements Comparable, Serializable {
         this.description = description;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public void setType(CategoryTypeDomainObject type) {

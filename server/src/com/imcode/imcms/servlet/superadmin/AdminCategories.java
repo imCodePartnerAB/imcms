@@ -5,6 +5,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -27,22 +28,21 @@ import com.imcode.imcms.servlet.admin.ImageBrowse;
  */
 public class AdminCategories extends HttpServlet {
 
-    public static final String ATTRIBUTE__FORM_DATA = "admincategoriesbean";
     private static final String JSP_TEMPLATE = "category_admin.jsp";
-
     private static final String SESSION_ATTRIBUTE__FORM_DATA = "formData";
-    private static final String REQUEST_ATTR_OR_PARAM__FORM_DATA_SESSION_ATTRIBUTE_NAME = SESSION_ATTRIBUTE__FORM_DATA+".sessionAttributeName";
-    private static final String PARAMETER__CATEGORY_TYPE_ADD = "category_type_add";
-    public static final String PARAMETER__NAME = "name";
+    private static final String REQUEST_ATTR_OR_PARAM__FORM_DATA_SESSION_ATTRIBUTE_NAME = SESSION_ATTRIBUTE__FORM_DATA + ".sessionAttributeName";
     private static final String PARAMETER__DESCRIPTION = "description";
-    public static final String PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE = "button__select_category_type";
     private static final String PARAMETER__ICON = "icon";
     private static final String PARAMETER__CATEGORIES = "categories";
+    private static final String PARAMETER__OLD_NAME = "oldName";
+    private static final String PARAMETER__CATEGORY_SAVE = "category_save";
+
+    public static final String ATTRIBUTE__FORM_DATA = "admincategoriesbean";
+    public static final String PARAMETER__NAME = "name";
+    public static final String PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE = "button__select_category_type";
     public static final String PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW = "select__select_category_type";
     public static final String PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO = "add_to_category_type";
     public static final String PARAMETER__BROWSE_FOR_IMAGE = "browseForImage";
-    private static final String PARAMETER__OLD_NAME = "oldName";
-    private static final String PARAMETER__CATEGORY_SAVE = "category_save";
     public static final String PARAMETER_MODE__EDIT_CATEGORY_TYPE = "edit_category_type";
     public static final String PARAMETER_MODE__DELETE_CATEGORY_TYPE = "delete_category_type";
     public static final String PARAMETER_MODE__ADD_CATEGORY_TYPE = "add_category_type";
@@ -52,215 +52,217 @@ public class AdminCategories extends HttpServlet {
     public static final String PARAMETER_MODE__VIEW_CATEGORY = "view_category";
     public static final String PARAMETER_MODE__DEFAULT = "default_mode";
     public static final String PARAMETER_BUTTON__CANCEL = "cancel";
+    public static final String PARAMETER_MAX_CHOICES = "max_choices";
+    public static final String PARAMETER_CATEGORY_TYPE_SAVE = "category_type_save";
+    public static final String PARAMETER_CATEGORY_TYPE_ADD = "category_type_add";
 
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request, response);
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+        doPost( request, response );
     }
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        // check params
+    protected void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         // Lets verify that the user who tries to add a new user is an admin
         IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
-        UserDomainObject user = Utility.getLoggedOnUser(req);
-        if (service.checkAdminRights(user) == false) {
+        UserDomainObject user = Utility.getLoggedOnUser( req );
+        if (service.checkAdminRights( user ) == false) {
             String header = "Error in AdminCategories. ";
-            Properties langproperties = service.getLangProperties(user);
-            String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
-            this.log(header + "- user is not an administrator");
-            new AdminError(req, res, header, msg);
+            Properties langproperties = service.getLangProperties( user );
+            String msg = langproperties.getProperty( "error/servlet/global/no_administrator" ) + "<br>";
+            this.log( header + "- user is not an administrator" );
+            new AdminError( req, res, header, msg );
             return;
         }
 
-        if (null != req.getParameter(PARAMETER_BUTTON__CANCEL) && null != req.getParameter(PARAMETER_MODE__DEFAULT)) {
+        if (null != req.getParameter( PARAMETER_BUTTON__CANCEL ) && null != req.getParameter( PARAMETER_MODE__DEFAULT )) {
             res.sendRedirect( "AdminManager" );
             return;
         }
 
-        FormData formData = new FormData();
+        DocumentMapper documentMapper = service.getDocumentMapper();
 
-        CategoryTypeDomainObject categoryType = getCategoryTypeFromRequest(req, service, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW);
-        CategoryDomainObject category = getCategoryFromIdInRequest(req, service);
+        FormData formBean = new FormData();
 
-        if (req.getParameter(PARAMETER__CATEGORY_TYPE_ADD) != null && !req.getParameter(PARAMETER__NAME).trim().equals("")) {
-            addCategoryType(service, req);
-        } else if (null != req.getParameter(PARAMETER_MODE__EDIT_CATEGORY_TYPE)) {
-            editCategoryType(req, categoryType, service, formData);
-        } else if (null != req.getParameter(PARAMETER_MODE__DELETE_CATEGORY_TYPE)) {
-            deleteCategoryType(categoryType, service, formData);
-        } else if (null != req.getParameter(PARAMETER_MODE__ADD_CATEGORY)) {
-            formData = addCategory(req, service, formData, res);
-        } else if (null != req.getParameter(PARAMETER_MODE__EDIT_CATEGORY)) {
-            formData = editCategory(req, service, res, formData);
-        } else if (req.getParameter(PARAMETER_MODE__DELETE_CATEGORY) != null) {
-            deleteCategory(category, service, req, categoryType, formData);
-        } else if (null != req.getParameter(PARAMETER_MODE__VIEW_CATEGORY)) {
-            viewCategory(categoryType, formData, category, req);
+        CategoryTypeDomainObject categoryType = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
+        CategoryDomainObject category = getCategoryFromIdInRequest( req, documentMapper );
+
+        if (req.getParameter( PARAMETER_CATEGORY_TYPE_ADD ) != null && !req.getParameter( PARAMETER__NAME ).trim().equals( "" )) {
+            addCategoryType( req, formBean, documentMapper );
+        } else if (null != req.getParameter( PARAMETER_MODE__EDIT_CATEGORY_TYPE )) {
+            editCategoryType( categoryType, req, formBean, documentMapper );
+        } else if (null != req.getParameter( PARAMETER_MODE__DELETE_CATEGORY_TYPE )) {
+            deleteCategoryType( categoryType, formBean, documentMapper );
+        } else if (null != req.getParameter( PARAMETER_MODE__ADD_CATEGORY )) {
+            formBean = addCategory( req, res, formBean, documentMapper );
+        } else if (null != req.getParameter( PARAMETER_MODE__EDIT_CATEGORY )) {
+            formBean = editCategory( req, res, formBean, documentMapper );
+        } else if (req.getParameter( PARAMETER_MODE__DELETE_CATEGORY ) != null) {
+            deleteCategory( category, categoryType, req, formBean, documentMapper );
+        } else if (null != req.getParameter( PARAMETER_MODE__VIEW_CATEGORY )) {
+            viewCategory( categoryType, category, req, formBean );
         }
 
         if (!res.isCommitted()) {
-            req.setAttribute(ATTRIBUTE__FORM_DATA, formData);
-            RequestDispatcher rd = this.getServletContext().getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP_TEMPLATE);
-            rd.forward(req, res);
+            req.setAttribute( ATTRIBUTE__FORM_DATA, formBean );
+            RequestDispatcher rd = this.getServletContext().getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP_TEMPLATE );
+            rd.forward( req, res );
         }
     }
 
-    private FormData editCategory(HttpServletRequest req, IMCServiceInterface service, HttpServletResponse res, FormData formData) throws ServletException, IOException {
+    private FormData editCategory( HttpServletRequest req, HttpServletResponse res, FormData formBean, DocumentMapper documentMapper ) throws ServletException, IOException {
 
-        CategoryDomainObject category = null ;
-        CategoryTypeDomainObject categoryTypeToEdit = null ;
-        String formDataSessionAttributeName = getFormDataSessionAttributeNameFromRequest(req);
+        CategoryDomainObject category = null;
+        CategoryTypeDomainObject categoryTypeToEdit = null;
+        String formDataSessionAttributeName = getFormDataSessionAttributeNameFromRequest( req );
         boolean returningFromImageBrowse = null != formDataSessionAttributeName;
         if (returningFromImageBrowse) {
-            formData = getFormDataFromSession(req, formDataSessionAttributeName);
-            category = formData.getCategoryToEdit();
-            categoryTypeToEdit = formData.getCategoryTypeToEdit() ;
-            String imageUrl = ImageBrowse.getImageUri(req);
+            formBean = getFormDataFromSession( req, formDataSessionAttributeName );
+            category = formBean.getCategoryToEdit();
+            categoryTypeToEdit = formBean.getCategoryTypeToEdit();
+            String imageUrl = ImageBrowse.getImageUri( req );
             if (null != imageUrl) {
-                category.setImage(imageUrl);
+                category.setImageUrl( imageUrl );
             }
         } else {
-            category = getCategoryFromIdInRequest(req, service);
-            categoryTypeToEdit = getCategoryTypeFromRequest(req, service, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW);
+            category = getCategoryFromIdInRequest( req, documentMapper );
+            categoryTypeToEdit = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_SHOW, documentMapper );
         }
 
-        formData.setCategoryTypeToEdit(categoryTypeToEdit);
-        if (req.getParameter(PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE) != null) {
-            formData.setCategoryToEdit(null);
+        formBean.setCategoryTypeToEdit( categoryTypeToEdit );
+        if (req.getParameter( PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE ) != null) {
+            formBean.setCategoryToEdit( null );
         } else {
-            formData.setCategoryToEdit(category);
+            formBean.setCategoryToEdit( category );
         }
 
         boolean nameIsUnique = true;
 
-        if (req.getParameter(PARAMETER__BROWSE_FOR_IMAGE) != null) {
-            setCategoryFromRequest(category, req, service);
-            putFormDataInSessionAndForwardToImageBrowse(formData, req, res, PARAMETER_MODE__EDIT_CATEGORY);
-        } else if (req.getParameter(PARAMETER__CATEGORY_SAVE) != null) {
-            boolean nameWasChanged = !req.getParameter(PARAMETER__OLD_NAME).toLowerCase().equals(req.getParameter(PARAMETER__NAME).toLowerCase());
-            CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest(req, service, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO);
+        if (req.getParameter( PARAMETER__BROWSE_FOR_IMAGE ) != null) {
+            setCategoryFromRequest( category, req, documentMapper );
+            putFormDataInSessionAndForwardToImageBrowse( formBean, req, res, PARAMETER_MODE__EDIT_CATEGORY );
+        } else if (req.getParameter( PARAMETER__CATEGORY_SAVE ) != null) {
+            boolean nameWasChanged = !req.getParameter( PARAMETER__OLD_NAME ).toLowerCase().equals( req.getParameter( PARAMETER__NAME ).toLowerCase() );
+            CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
             if (nameWasChanged) {
-                nameIsUnique = isUniqueName(service, categoryTypeToAddTo, req.getParameter(PARAMETER__NAME));
+                nameIsUnique = !categoryTypeToAddTo.hasCategoryWithName( categoryTypeToAddTo, req.getParameter( PARAMETER__NAME ) );
             }
             if (nameIsUnique) {
-                setCategoryFromRequest(category, req, service);
-                service.getDocumentMapper().updateCategory(category);
-                formData.setCategoryToEdit(null);
+                setCategoryFromRequest( category, req, documentMapper );
+                documentMapper.updateCategory( category );
+                formBean.setCategoryToEdit( null );
 
             }
         }
 
-        formData.setUniqueName(nameIsUnique);
-        return formData ;
+        formBean.setUniqueCategoryName( nameIsUnique );
+        return formBean;
     }
 
-    private void setCategoryFromRequest(CategoryDomainObject category, HttpServletRequest req, IMCServiceInterface service) {
-        category.setName(req.getParameter(PARAMETER__NAME));
-        category.setDescription(req.getParameter(PARAMETER__DESCRIPTION));
-        category.setImage(req.getParameter(PARAMETER__ICON));
-        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest(req, service, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO);
-        category.setType(categoryTypeToAddTo);
+    private void setCategoryFromRequest( CategoryDomainObject category, HttpServletRequest req, DocumentMapper documentMapper ) {
+        category.setName( req.getParameter( PARAMETER__NAME ) );
+        category.setDescription( req.getParameter( PARAMETER__DESCRIPTION ) );
+        category.setImageUrl( req.getParameter( PARAMETER__ICON ) );
+        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
+        category.setType( categoryTypeToAddTo );
     }
 
-    private FormData addCategory(HttpServletRequest req, IMCServiceInterface service, FormData formData, HttpServletResponse res) throws ServletException, IOException {
+    private FormData addCategory( HttpServletRequest req, HttpServletResponse res, FormData formData, DocumentMapper documentMapper ) throws ServletException, IOException {
         CategoryDomainObject newCategory = null;
-        String formDataSessionAttributeName = getFormDataSessionAttributeNameFromRequest(req);
+        String formDataSessionAttributeName = getFormDataSessionAttributeNameFromRequest( req );
         boolean returningFromImageBrowse = null != formDataSessionAttributeName;
+        CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest( req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, documentMapper );
         if (returningFromImageBrowse) {
-            formData = getFormDataFromSession(req, formDataSessionAttributeName);
+            formData = getFormDataFromSession( req, formDataSessionAttributeName );
             newCategory = formData.getCategoryToEdit();
-            String imageUrl = ImageBrowse.getImageUri(req);
+            String imageUrl = ImageBrowse.getImageUri( req );
             if (null != imageUrl) {
-                newCategory.setImage(imageUrl);
+                newCategory.setImageUrl( imageUrl );
             }
         } else {
-            CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromRequest(req, service, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO);
 
-            newCategory = new CategoryDomainObject(0,
-                    req.getParameter(PARAMETER__NAME),
-                    req.getParameter(PARAMETER__DESCRIPTION),
-                    req.getParameter(PARAMETER__ICON),
-                    categoryTypeToAddTo);
+            newCategory = new CategoryDomainObject( 0,
+                    req.getParameter( PARAMETER__NAME ),
+                    req.getParameter( PARAMETER__DESCRIPTION ),
+                    req.getParameter( PARAMETER__ICON ),
+                    categoryTypeToAddTo );
         }
-        formData.setCategoryToEdit(newCategory);
+        formData.setCategoryToEdit( newCategory );
 
-        if (req.getParameter(PARAMETER__BROWSE_FOR_IMAGE) != null) {
-            putFormDataInSessionAndForwardToImageBrowse(formData, req, res, PARAMETER_MODE__ADD_CATEGORY);
-        } else if (req.getParameter("category_add") != null && !newCategory.getName().trim().equals("")) {
-            if (isUniqueName(service, newCategory.getType(), newCategory.getName())) {
-                service.getDocumentMapper().addCategoryToDb(newCategory);
-                formData.setCategoryToEdit(new CategoryDomainObject(0, "", "", "", null));
-                formData.setUniqueName(true);
+        if (req.getParameter( PARAMETER__BROWSE_FOR_IMAGE ) != null) {
+            putFormDataInSessionAndForwardToImageBrowse( formData, req, res, PARAMETER_MODE__ADD_CATEGORY );
+        } else if (req.getParameter( "category_add" ) != null && !newCategory.getName().trim().equals( "" )) {
+            if (!categoryTypeToAddTo.hasCategoryWithName( newCategory.getType(), newCategory.getName() )) {
+                documentMapper.addCategoryToDb( newCategory.getType().getId(), newCategory.getName(), newCategory.getDescription(), newCategory.getImageUrl() );
+                formData.setCategoryToEdit( new CategoryDomainObject( 0, "", "", "", null ) );
+                formData.setUniqueCategoryName( true );
             } else {
-                formData.setUniqueName(false);
-                formData.setCategoryTypeToEdit(newCategory.getType());
+                formData.setUniqueCategoryName( false );
+                formData.setCategoryTypeToEdit( newCategory.getType() );
             }
         }
-        return formData ;
-    }
-
-    private FormData getFormDataFromSession(HttpServletRequest req, String formDataSessionAttributeName) {
-        FormData formData;
-        formData = (FormData) req.getSession().getAttribute(formDataSessionAttributeName) ;
         return formData;
     }
 
-    private String getFormDataSessionAttributeNameFromRequest(HttpServletRequest req) {
-        String formDataSessionAttributeName = req.getParameter(REQUEST_ATTR_OR_PARAM__FORM_DATA_SESSION_ATTRIBUTE_NAME);
+    private FormData getFormDataFromSession( HttpServletRequest req, String formDataSessionAttributeName ) {
+        FormData formData;
+        formData = (FormData) req.getSession().getAttribute( formDataSessionAttributeName );
+        return formData;
+    }
+
+    private String getFormDataSessionAttributeNameFromRequest( HttpServletRequest req ) {
+        String formDataSessionAttributeName = req.getParameter( REQUEST_ATTR_OR_PARAM__FORM_DATA_SESSION_ATTRIBUTE_NAME );
         return formDataSessionAttributeName;
     }
 
-    private CategoryDomainObject getCategoryFromIdInRequest(HttpServletRequest req, IMCServiceInterface service) {
+    private CategoryDomainObject getCategoryFromIdInRequest( HttpServletRequest req, DocumentMapper documentMapper ) {
         CategoryDomainObject categoryToEdit = null;
-        String categoryIdString = req.getParameter(PARAMETER__CATEGORIES);
-        boolean selectCategoryButtonPressed = req.getParameter(PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE) == null;
+        String categoryIdString = req.getParameter( PARAMETER__CATEGORIES );
+        boolean selectCategoryButtonPressed = req.getParameter( PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE ) == null;
         boolean aCategoryWasSelected = categoryIdString != null && selectCategoryButtonPressed;
         if (aCategoryWasSelected) {
-            int categoryId = Integer.parseInt(categoryIdString);
-            categoryToEdit = service.getDocumentMapper().getCategoryById(categoryId);
+            int categoryId = Integer.parseInt( categoryIdString );
+            categoryToEdit = documentMapper.getCategoryById( categoryId );
         }
         return categoryToEdit;
     }
 
-    private CategoryTypeDomainObject getCategoryTypeFromRequest(HttpServletRequest req, IMCServiceInterface service, String requestParameter) {
+    private CategoryTypeDomainObject getCategoryTypeFromRequest( HttpServletRequest req, String requestParameter, DocumentMapper documentMapper ) {
         CategoryTypeDomainObject categoryType = null;
-        String categoryTypeIdString = req.getParameter(requestParameter);
+        String categoryTypeIdString = req.getParameter( requestParameter );
         boolean gotCategoryTypeId = null != categoryTypeIdString;
         if (gotCategoryTypeId) {
-            int categoryTypeId = Integer.parseInt(categoryTypeIdString);
-            categoryType = service.getDocumentMapper().getCategoryTypeById(categoryTypeId);
+            int categoryTypeId = Integer.parseInt( categoryTypeIdString );
+            categoryType = documentMapper.getCategoryTypeById( categoryTypeId );
         }
         return categoryType;
     }
 
-    private void deleteCategory(CategoryDomainObject categoryToEdit, IMCServiceInterface service, HttpServletRequest req, CategoryTypeDomainObject categoryTypeToEdit, FormData formData) {
+    private void deleteCategory( CategoryDomainObject categoryToEdit, CategoryTypeDomainObject categoryTypeToEdit, HttpServletRequest req, FormData formData, DocumentMapper documentMapper ) {
         CategoryDomainObject categoryToEdit1 = categoryToEdit;
-        StringBuffer msg = new StringBuffer("");
         String[] documentsOfOneCategory = null;
         if (categoryToEdit1 != null) {
-            documentsOfOneCategory = service.getDocumentMapper().getAllDocumentsOfOneCategory(categoryToEdit1);
-            if (req.getParameter("category_delete") != null) {
+            documentsOfOneCategory = documentMapper.getAllDocumentsOfOneCategory( categoryToEdit1 );
+            if (req.getParameter( "category_delete" ) != null) {
                 DocumentDomainObject document;
                 for (int i = 0; i < documentsOfOneCategory.length; i++) {
-                    document = service.getDocumentMapper().getDocument(Integer.parseInt(documentsOfOneCategory[i]));
-                    service.getDocumentMapper().deleteOneCategoryFromDocument(document, categoryToEdit1);
+                    document = documentMapper.getDocument( Integer.parseInt( documentsOfOneCategory[i] ) );
+                    documentMapper.deleteOneCategoryFromDocument( document, categoryToEdit1 );
                 }
-                service.getDocumentMapper().deleteCategoryFromDb(categoryToEdit1);
+                documentMapper.deleteCategoryFromDb( categoryToEdit1 );
                 categoryToEdit1 = null;
                 documentsOfOneCategory = null;
             }
         }
 
-        formData.setCategoryTypeToEdit(categoryTypeToEdit);
-        formData.setCategoryToEdit(categoryToEdit1);
-        formData.setDocumentsOfOneCategory(documentsOfOneCategory);
+        formData.setCategoryTypeToEdit( categoryTypeToEdit );
+        formData.setCategoryToEdit( categoryToEdit1 );
+        formData.setDocumentsOfOneCategory( documentsOfOneCategory );
         categoryToEdit = categoryToEdit1;
     }
 
-    private void putFormDataInSessionAndForwardToImageBrowse(FormData formData, HttpServletRequest req, HttpServletResponse res, String callerMode) throws ServletException, IOException {
+    private void putFormDataInSessionAndForwardToImageBrowse( FormData formData, HttpServletRequest req, HttpServletResponse res, String callerMode ) throws ServletException, IOException {
         String uniqueSessionAttributeName;
         uniqueSessionAttributeName = SESSION_ATTRIBUTE__FORM_DATA + "." + System.currentTimeMillis();
-        req.getSession().setAttribute(uniqueSessionAttributeName, formData);
+        req.getSession().setAttribute( uniqueSessionAttributeName, formData );
 
         String returningUrl = "AdminCategories?" +
                 callerMode + "=" + "1" + "&"
@@ -268,49 +270,63 @@ public class AdminCategories extends HttpServlet {
                 + "="
                 + uniqueSessionAttributeName;
 
-        req.getRequestDispatcher("ImageBrowse?" + ImageBrowse.PARAMETER__CALLER + "="
-                + java.net.URLEncoder.encode(returningUrl)).forward(req, res);
+        req.getRequestDispatcher( "ImageBrowse?" + ImageBrowse.PARAMETER__CALLER + "="
+                + java.net.URLEncoder.encode( returningUrl ) ).forward( req, res );
     }
 
-    private void viewCategory(CategoryTypeDomainObject categoryTypeToEdit, FormData formBean, CategoryDomainObject categoryToEdit, HttpServletRequest req) {
-        formBean.setCategoryTypeToEdit(categoryTypeToEdit);
-        if (req.getParameter(PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE) != null) {
-            formBean.setCategoryToEdit(null);
+    private void viewCategory( CategoryTypeDomainObject categoryTypeToEdit, CategoryDomainObject categoryToEdit, HttpServletRequest req, FormData formBean ) {
+        formBean.setCategoryTypeToEdit( categoryTypeToEdit );
+        if (req.getParameter( PARAMETER_BUTTON__SELECT_CATEGORY_TYPE_TO_SHOW_OR_REMOVE ) != null) {
+            formBean.setCategoryToEdit( null );
         } else {
-            formBean.setCategoryToEdit(categoryToEdit);
+            formBean.setCategoryToEdit( categoryToEdit );
         }
     }
 
-    private void deleteCategoryType(CategoryTypeDomainObject categoryTypeToEdit, IMCServiceInterface service, FormData formBean) {
-        StringBuffer msg = new StringBuffer("");
+    private void deleteCategoryType( CategoryTypeDomainObject categoryTypeToEdit, FormData formBean, DocumentMapper documentMapper ) {
         int numberOfCategories = 0;
         if (categoryTypeToEdit != null) {
-            numberOfCategories = service.getDocumentMapper().getAllCategoriesOfType(categoryTypeToEdit).length;
+            numberOfCategories = documentMapper.getAllCategoriesOfType( categoryTypeToEdit ).length;
             if (numberOfCategories == 0) {
-                service.getDocumentMapper().deleteCategoryTypeFromDb(categoryTypeToEdit);
+                documentMapper.deleteCategoryTypeFromDb( categoryTypeToEdit );
             }
         }
-        formBean.setCategoryTypeToEdit(categoryTypeToEdit);
-        formBean.setNumberOfCategories(numberOfCategories);
+        formBean.setCategoryTypeToEdit( categoryTypeToEdit );
+        formBean.setNumberOfCategories( numberOfCategories );
     }
 
-    private void editCategoryType(HttpServletRequest req, CategoryTypeDomainObject categoryTypeToEdit, IMCServiceInterface service, FormData formBean) {
-        if (req.getParameter("category_type_save") != null) {
-            categoryTypeToEdit.setName(req.getParameter(PARAMETER__NAME).trim());
-            categoryTypeToEdit.setMaxChoices(Integer.parseInt(req.getParameter("max_choices")));
-            service.getDocumentMapper().updateCategoryType(categoryTypeToEdit);
+    private void editCategoryType( CategoryTypeDomainObject categoryTypeToEdit, HttpServletRequest req, FormData formBean, DocumentMapper documentMapper ) {
+        if (req.getParameter( PARAMETER_CATEGORY_TYPE_SAVE ) != null) {
+            String name = req.getParameter( PARAMETER__NAME ).trim();
+            if( documentMapper.isUniqueCategoryTypeName( name ) ) {
+                formBean.setUniqueCategoryTypeName( true );
+                int maxChoices = Integer.parseInt( req.getParameter( "max_choices" ) );
+                categoryTypeToEdit.setName( name );
+                categoryTypeToEdit.setMaxChoices( maxChoices );
+                documentMapper.updateCategoryType( categoryTypeToEdit );
+            } else {
+                formBean.setUniqueCategoryTypeName( false );
+            }
         }
 
-        formBean.setCategoryTypeToEdit(categoryTypeToEdit);
+        formBean.setCategoryTypeToEdit( categoryTypeToEdit );
     }
 
-    private void addCategoryType(IMCServiceInterface service, HttpServletRequest req) {
-        service.getDocumentMapper().addCategoryTypeToDb(req.getParameter(PARAMETER__NAME).trim(), Integer.parseInt(req.getParameter("max_choices")));
+    private void addCategoryType( HttpServletRequest req, FormData formBean, DocumentMapper documentMapper ) {
+        String categoryTypeName = req.getParameter( PARAMETER__NAME ).trim();
+        int maxChoices = Integer.parseInt( req.getParameter( PARAMETER_MAX_CHOICES ) );
+
+        if (documentMapper.isUniqueCategoryTypeName( categoryTypeName )) {
+            formBean.setUniqueCategoryTypeName( true );
+            documentMapper.addCategoryTypeToDb( categoryTypeName, maxChoices );
+        } else {
+            formBean.setUniqueCategoryTypeName( false );
+        }
     }
 
 
-    public static String createHtmlOptionListOfCategoryTypes(CategoryTypeDomainObject selectedType) {
-        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface() ;
+    public static String createHtmlOptionListOfCategoryTypes( CategoryTypeDomainObject selectedType ) {
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         CategoryTypeDomainObject[] categoryTypes = imcref.getDocumentMapper().getAllCategoryTypes();
         String temps = "";
         for (int i = 0; i < categoryTypes.length; i++) {
@@ -325,13 +341,13 @@ public class AdminCategories extends HttpServlet {
         return temps;
     }
 
-    public static String createHtmlOptionListOfCategoriesForOneType(CategoryTypeDomainObject categoryType, CategoryDomainObject selectedCategory) {
-        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface() ;
+    public static String createHtmlOptionListOfCategoriesForOneType( CategoryTypeDomainObject categoryType, CategoryDomainObject selectedCategory ) {
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
 
-        CategoryDomainObject[] categories = service.getDocumentMapper().getAllCategoriesOfType(categoryType);
+        CategoryDomainObject[] categories = documentMapper.getAllCategoriesOfType( categoryType );
         String temps = "";
         for (int i = 0; i < categories.length; i++) {
-            boolean selected = selectedCategory != null && selectedCategory.equals(categories[i]);
+            boolean selected = selectedCategory != null && selectedCategory.equals( categories[i] );
             temps += "<option value=\""
                     + categories[i].getId()
                     + "\""
@@ -342,31 +358,30 @@ public class AdminCategories extends HttpServlet {
         return temps;
     }
 
-    private boolean isUniqueName(IMCServiceInterface service, CategoryTypeDomainObject categoryType, String categoryName) {
-
-        CategoryDomainObject[] categories = service.getDocumentMapper().getAllCategoriesOfType(categoryType);
-        for (int i = 0; i < categories.length; i++) {
-            if (categories[i].getName().toLowerCase().equals(categoryName.trim().toLowerCase())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static class FormData {
 
         private CategoryTypeDomainObject categoryTypeToEdit;
         private CategoryDomainObject categoryToEdit;
         private int numberOfCategories;
         private String[] documentsOfOneCategory;
-        private boolean uniqueName;
+        private boolean uniqueCategoryName;
+
+        public boolean isUniqueCategoryTypeName() {
+            return uniqueCategoryTypeName;
+        }
+
+        public void setUniqueCategoryTypeName( boolean uniqueCategoryTypeName ) {
+            this.uniqueCategoryTypeName = uniqueCategoryTypeName;
+        }
+
+        private boolean uniqueCategoryTypeName;
 
 
         public CategoryDomainObject getCategoryToEdit() {
             return categoryToEdit;
         }
 
-        private void setCategoryToEdit(CategoryDomainObject categoryToEdit) {
+        private void setCategoryToEdit( CategoryDomainObject categoryToEdit ) {
             this.categoryToEdit = categoryToEdit;
         }
 
@@ -374,7 +389,7 @@ public class AdminCategories extends HttpServlet {
             return categoryTypeToEdit;
         }
 
-        private void setCategoryTypeToEdit(CategoryTypeDomainObject categoryTypeToEdit) {
+        private void setCategoryTypeToEdit( CategoryTypeDomainObject categoryTypeToEdit ) {
             this.categoryTypeToEdit = categoryTypeToEdit;
         }
 
@@ -382,7 +397,7 @@ public class AdminCategories extends HttpServlet {
             return numberOfCategories;
         }
 
-        private void setNumberOfCategories(int numberOfCategories) {
+        private void setNumberOfCategories( int numberOfCategories ) {
             this.numberOfCategories = numberOfCategories;
         }
 
@@ -390,16 +405,16 @@ public class AdminCategories extends HttpServlet {
             return documentsOfOneCategory;
         }
 
-        private void setDocumentsOfOneCategory(String[] documentsOfOneCategory) {
+        private void setDocumentsOfOneCategory( String[] documentsOfOneCategory ) {
             this.documentsOfOneCategory = documentsOfOneCategory;
         }
 
-        public boolean getUniqueName() {
-            return uniqueName;
+        public boolean getUniqueCategoryName() {
+            return uniqueCategoryName;
         }
 
-        private void setUniqueName(boolean bool) {
-            uniqueName = bool;
+        private void setUniqueCategoryName( boolean bool ) {
+            uniqueCategoryName = bool;
         }
     }
 

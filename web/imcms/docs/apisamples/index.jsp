@@ -16,7 +16,7 @@
 imCMS comes with an API for usage in servlets and jsp-pages, see <a href="../api/">the javadocs</a>.<br>
 Also, linked from this document are differens examples on how to use the api. Follow the links below.
 
-<h3>Example pages</h3>
+<h2>Example pages</h2>
 <p>Warning!</p>
 <p>
 The following links works differently depending on the user's permissions on the corresponding admin-pages. That is, what
@@ -25,7 +25,7 @@ That means that even though you don't specify a user in most of the API:s method
 is passed as an invisible parameter.
 </p>
 
-<h4>Exeption handling in jsp-pages</h4>
+<h3>Exeption handling in jsp-pages</h3>
 - NotLoggedInException, NoPermissionException and other.
 <p>
 If the user that is accessing the page doesn't have the right permissions a NoPermissionException is thrown from the methods.
@@ -35,31 +35,29 @@ There are two normal ways to handle this. <BR>
 In this sample page, the first choice is made; see <%=makeLinks("error.jsp")%> files for details.
 
 
-<h4>Who you are</h4>
+<h3>Who you are</h3>
 To see what user you are logged in as, <%= makeLinks("logged_in_user.jsp") %><br>
 <br>
 First, make sure that you are logged in, <a href="../../../login/index.html">../../../login/index.html</a><br>
 Log out (and become an non-logged in user), <a href="../../../servlet/LogOut">../../../servlet/LogOut</a>
 </p>
 
-<h4>Users</h4>
+<h3>Users</h3>
 To see what users that exists in the system, <%= makeLinks("user_listing.jsp") %><br>
 
-<h4>Roles</h4>
+<h3>Roles</h3>
 List all roles, <%= makeLinks("role_list_all.jsp") %><br>
 Add, <%= makeLinks("role_create_role.jsp") %><br>
 Delete, <%= makeLinks("role_delete_role.jsp") %><br>
 <br>
 List users with different roles, <%= makeLinks("role_get_user_with_role.jsp") %><br>
 
-<h4>Document</h4>
+<h3>Document</h3>
 The following samples modify document 1001.<br>
-It currently looks like this, <a href="../servlet/GetDoc?meta_id=1001">document</a><br>
+It currently looks like this, <a href="../../../servlet/GetDoc?meta_id=1001">../../../servlet/GetDoc?meta_id=1001</a><br>
 <br>
 Get the information about the document, <%= makeLinks("document_get_document_info.jsp") %><br>
 Change the document information, <%= makeLinks("document_change_document_info.jsp") %><br>
-<br>
-List all possible document categories, <%= makeLinks("categories_show_all.jsp") %><br>
 <br>
 Show template for a document, <%= makeLinks("document_show_templates.jsp") %><br>
 Change template for a document, <%= makeLinks("document_change_template.jsp") %><br>
@@ -85,10 +83,15 @@ Clear the first include, <%= makeLinks("document_clear_include.jsp") %><br>
 To create different kinds of document that is linked from the document above, <%= makeLinks("document_create_documents.jsp") %><br>
 <br>
 
-<h4>Searching for documents</h4>
+<h3>Categories</h3>
+List all possible document categories, <%= makeLinks("categories_show_all.jsp") %><br>
+Create a new Category type, and a category, <%= makeLinks("category_create.jsp") %><br>
+<br>
+
+<h3>Searching for documents</h3>
 Searching for documents, <%= makeLinks("document_search.jsp") %><br>
 
-<h4>Documents and permissions </h4>
+<h3>Documents and permissions </h3>
 You can manipulate documents in various ways. To do so the current user has to have specific roles, that in turn has to
 have specific rights. <%= makeLinks("document_permissions.jsp") %><br>
 Set the permissions for a role on a document, <%= makeLinks("document_set_permissions.jsp") %><br>
@@ -96,7 +99,7 @@ Set the permissions for a role on a document, <%= makeLinks("document_set_permis
 There are two different levels of configurable "restricted" permissions that can be modified.
 To see what specified "Restricted One" permissions a page has, see <%= makeLinks("document_permission_show_restricted_1.jsp") %><br>
 
-<h4>Database connection</h4>
+<h3>Database connection</h3>
 Get access to the database, <%= makeLinks("database_get_connection.jsp") %><br>
 
 </body>

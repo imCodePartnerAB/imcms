@@ -11,6 +11,7 @@
         <title>All categories</title>
     </head>
     <body>
+        The categories that exists in the system:<br>
         <ul>
     <%
         for (int i = 0; i < categoryTypes.length; i++) {

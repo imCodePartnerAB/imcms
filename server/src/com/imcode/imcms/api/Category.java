@@ -49,7 +49,7 @@ public class Category {
     }
 
     public String getImage(){
-        return internalCategory.getImage();
+        return internalCategory.getImageUrl();
     }
     
 

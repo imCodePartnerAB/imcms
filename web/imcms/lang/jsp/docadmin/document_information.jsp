@@ -334,8 +334,8 @@ imcmsGui("mid", null);
 					CategoryDomainObject category = categories[k];
 					boolean checked = selectedValuesSet.contains(category);
 					String checkedStr = checked?"checked":"";
-					boolean hasImage = !category.getImage().equals("");
-					String imageStr = hasImage ? "<img src=\"" + category.getImage() + "\"/>" : ""; %>
+					boolean hasImage = !category.getImageUrl().equals("");
+					String imageStr = hasImage ? "<img src=\"" + category.getImageUrl() + "\"/>" : ""; %>
 		<table border="0" cellspacing="2" cellpadding="0" style="float:left;">
 		<tr>
 			<td bgcolor="#000000">

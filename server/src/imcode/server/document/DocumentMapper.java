@@ -280,6 +280,17 @@ public class DocumentMapper {
         return categoryDomainObjects;
     }
 
+    public boolean isUniqueCategoryTypeName( String categoryTypeName ) {
+        CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
+        for (int i = 0; i < categoryTypes.length; i++) {
+            CategoryTypeDomainObject categoryType = categoryTypes[i];
+            if( categoryType.getName().equalsIgnoreCase( categoryTypeName) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public CategoryTypeDomainObject[] getAllCategoryTypes() {
         String sqlQuery = "SELECT category_type_id, name, max_choices FROM category_types ORDER BY name";
         String[][] sqlResult = service.sqlQueryMulti( sqlQuery, new String[0] );
@@ -387,9 +398,10 @@ public class DocumentMapper {
         service.sqlUpdateQuery( sqlstr, new String[]{categoryType.getId() + ""} );
     }
 
-    public void addCategoryTypeToDb( String name, int max_choices ) {
-        String sqlstr = "insert into category_types (name, max_choices) values(?,?)";
-        service.sqlUpdateQuery( sqlstr, new String[]{name, max_choices + ""} );
+    public CategoryTypeDomainObject addCategoryTypeToDb( String name, int max_choices ) {
+        String sqlstr = "insert into category_types (name, max_choices) values(?,?) SELECT @@IDENTITY";
+        String newId = service.sqlQueryStr( sqlstr, new String[]{name, max_choices + ""} );
+        return getCategoryTypeById( Integer.parseInt(newId) );
     }
 
     public void updateCategoryType( CategoryTypeDomainObject categoryType ) {
@@ -399,17 +411,18 @@ public class DocumentMapper {
         } );
     }
 
-    public void addCategoryToDb( CategoryDomainObject category ) {
-        String sqlstr = "insert into categories  (category_type_id, name, description, image) values(?,?,?,?)";
-        service.sqlUpdateQuery( sqlstr, new String[]{
-            category.getType().getId() + "", category.getName(), category.getDescription(), category.getImage()
+    public CategoryDomainObject addCategoryToDb( int categoryTypeId, String name, String description, String image ) {
+        String sqlstr = "insert into categories  (category_type_id, name, description, image) values(?,?,?,?) SELECT @@IDENTITY";
+        String newId = service.sqlQueryStr( sqlstr, new String[]{
+            categoryTypeId + "", name, description, image
         } );
+        return getCategoryById( Integer.parseInt(newId) );
     }
 
     public void updateCategory( CategoryDomainObject category ) {
         String sqlstr = "update categories set category_type_id = ?, name= ?, description = ?, image = ?  where category_id = ? ";
         service.sqlUpdateQuery( sqlstr, new String[]{
-            category.getType().getId() + "", category.getName(), category.getDescription(), category.getImage(),
+            category.getType().getId() + "", category.getName(), category.getDescription(), category.getImageUrl(),
             category.getId() + ""
         } );
     }
@@ -1734,6 +1747,5 @@ public class DocumentMapper {
                                                         user.getLanguageIso639_2()
                                                     } );
     }
-
 }
 
