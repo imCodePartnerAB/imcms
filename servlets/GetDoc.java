@@ -47,8 +47,6 @@ public class GetDoc extends HttpServlet {
             res.setContentLength( tempbytes.length );
             out.write( tempbytes );
         }
-        out.flush();
-        out.close();
     }
 
     public static String getDoc( int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res ) throws IOException {
