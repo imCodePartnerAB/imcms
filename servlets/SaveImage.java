@@ -67,7 +67,6 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	// get horizonal_space
 	String h_space = req.getParameter( "h_space" ) ;
 
-	//******************************
 	boolean keepAspectRatio = (req.getParameter("keepAspectRatio") != null);
 
 	// FIXME: Move to SProc
@@ -75,8 +74,6 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	String[] sql = IMCServiceRMI.sqlQuery(imcserver,sqlStr);
 	String origWidth = req.getParameter("origW"); // width
 	String origHeight = req.getParameter("origH"); // height
-
-	//*****************************
 
 	try {
 	    image.setImageHeight( Integer.parseInt( image_height ) ) ;
@@ -99,86 +96,6 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	    image.setImageWidth( 0 ) ;
 	}
 
-	// ****************************** Här börjar Mårtens lilla lekstuga
-	if(keepAspectRatio && (req.getParameter("ok") != null || req.getParameter("show_img") != null)) {
-	    int iHeight = 0 ;
-	    try {
-		iHeight = Integer.parseInt(image_height); // form width
-	    } catch ( NumberFormatException ex ) {
-		log("Failed to parse image_height") ;
-	    }
-	    int iWidth = 0 ;
-	    try {
-		iWidth = Integer.parseInt(image_width); // form height
-	    } catch ( NumberFormatException ex ) {
-		log("Failed to parse image_width") ;
-	    }
-
-	    int oldHeight = 0 ;
-	    try {
-		oldHeight = (sql.length>0)?Integer.parseInt(sql[3]):0; // database height
-	    } catch ( NumberFormatException ex ) {
-		log("Failed to parse oldHeight") ;
-	    }
-	    int oldWidth = 0 ;
-	    try {
-		oldWidth = (sql.length>0)?Integer.parseInt(sql[2]):0; // database width
-	    } catch ( NumberFormatException ex ) {
-		log("Failed to parse oldWidth") ;
-	    }
-
-	    //log("REQUESTED SIZE " + iWidth + "/" + iHeight);
-	    int oHeight = 0 ;
-	    try {
-		oHeight = Integer.parseInt(origHeight); // image height
-	    } catch ( NumberFormatException ex ) {
-		log("Failed to parse origHeight") ;
-	    }
-	    int oWidth = 0 ;
-	    try {
-		oWidth = Integer.parseInt(origWidth); // image width
-	    } catch ( NumberFormatException ex ) {
-		log("Failed to parse origHeight") ;
-	    }
-
-
-	    double asp_rat = ((double)oWidth/(double)oHeight);
-
-	    int heightDiff = Math.abs(iHeight - oldHeight);
-	    int widthDiff = Math.abs(iWidth - oldWidth);
-
-	    // Dominant value:
-	    // 1. greatest diff, 2. greatest int, 3. width
-
-	    if(widthDiff > heightDiff) {
-		iHeight = (int)(iWidth/asp_rat);
-	    } else if (heightDiff > widthDiff) {
-		iWidth = (int)(iHeight*asp_rat);
-	    } else if(heightDiff == widthDiff) {
-		if(iHeight>iWidth) {
-		    iWidth = (int)(iHeight*asp_rat);
-		} else {
-		    iHeight = (int)(iWidth/asp_rat);
-		}
-	    } else {
-		iHeight = (int)(iWidth*asp_rat);
-	    }
-
-	    image.setImageHeight( iHeight ) ;
-	    image.setImageWidth( iWidth ) ;
-	    image_width = "" + iWidth;
-	    image_height = "" + iHeight;
-
-	}
-
-	try {
-	    image.setImageWidth( Integer.parseInt( image_width ) ) ;
-	} catch ( NumberFormatException ex ) {
-	    image_width = "0" ;
-	    image.setImageWidth( 0 ) ;
-	}
-
-	// ****************************** Här börjar Mårtens lilla lekstuga
 	if(keepAspectRatio && (req.getParameter("ok") != null || req.getParameter("show_img") != null)) {
 	    int oHeight = 0 ;
 	    try {
@@ -220,8 +137,6 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 		log("Failed to parse oldWidth") ;
 	    }
 
-	    //log("REQUESTED SIZE " + iWidth + "/" + iHeight);
-
 	    double asp_rat = ((double)oWidth/(double)oHeight);
 
 	    int heightDiff = Math.abs(iHeight - oldHeight);
@@ -251,9 +166,6 @@ public class SaveImage extends HttpServlet implements imcode.server.IMCConstants
 	    //log("CALCULATED SIZE " + image_width + "/" + image_height);
 
 	}
-
-	//*******************************
-
 
 	try {
 	    image.setVerticalSpace( Integer.parseInt( v_space ) ) ;
