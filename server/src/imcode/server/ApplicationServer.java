@@ -50,24 +50,18 @@ public class ApplicationServer {
         ConnectionPool connectionPool = null;
 
         String jdbcDriver = props.getProperty( "JdbcDriver" );
-        String jdbcUrl = props.getProperty( "Url" );
-        String host = props.getProperty( "Host" );
-        String databaseName = props.getProperty( "DatabaseName" );
-        int port = Integer.parseInt(props.getProperty( "Port" ));
+        String jdbcUrl = props.getProperty( "JdbcUrl" );
         String user = props.getProperty( "User" );
         String password = props.getProperty( "Password" );
         int maxConnectionCount = Integer.parseInt( props.getProperty( "MaxConnectionCount" ) );
 
         log.debug( "JdbcDriver = " + jdbcDriver );
         log.debug( "JdbcUrl = " + jdbcUrl );
-        log.debug( "Host = " + host );
-        log.debug( "DatabaseName = " + databaseName );
-        log.debug( "Port = " + port );
         log.debug( "User = " + user );
         log.debug( "Password = " + password );
         log.debug( "MaxConnectionCount = " + maxConnectionCount );
 
-        connectionPool = ConnectionPool.createConnectionPool(jdbcUrl, host, port, databaseName, jdbcDriver, user, password, maxConnectionCount);
+        connectionPool = ConnectionPool.createConnectionPool( jdbcDriver, jdbcUrl, user, password, maxConnectionCount);
 
         return connectionPool;
     }

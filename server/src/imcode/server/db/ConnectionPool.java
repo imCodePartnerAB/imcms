@@ -12,17 +12,16 @@ public abstract class ConnectionPool {
 
     public abstract Connection getConnection() throws SQLException;
 
-    public static ConnectionPool createConnectionPool( String jdbcUrl, String host, int port, String databaseName,
-                                                       String jdbcDriver, String user, String password,
+    public static ConnectionPool createConnectionPool( String jdbcDriver, String jdbcUrl,
+                                                       String user, String password,
                                                        int maxConnectionCount ) {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         ConnectionPool connectionPool;
         try {
-            String serverUrl = jdbcUrl + host + ":" + port + ";DatabaseName=" + databaseName;
-            connectionPool = new ConnectionPoolForNonPoolingDriver( jdbcDriver, serverUrl, user, password, maxConnectionCount );
+            connectionPool = new ConnectionPoolForNonPoolingDriver( jdbcDriver, jdbcUrl, user, password, maxConnectionCount );
         } catch ( Exception ex ) {
-            log.fatal( "Failed to create connection pool Url: " + jdbcUrl + " Driver: " + jdbcDriver, ex );
+            log.fatal( "Failed to create connection pool. Url: " + jdbcUrl + " Driver: " + jdbcDriver, ex );
             throw new RuntimeException( ex );
         }
         stopWatch.stop();

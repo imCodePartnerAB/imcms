@@ -43,15 +43,10 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     public void setUp() throws Exception, ClassNotFoundException, IllegalAccessException, InstantiationException {
         Properties dbProperties = new Properties() ;
         dbProperties.load(new FileInputStream( System.getProperty(DATABASE_PROPERTIES_SYSTEM_PROPERTY, DEFAULT_DATABASE_PROPERTIES_FILE ))) ;
-        String serverName = dbProperties.getProperty( "db-host" );
-        String serverPort = dbProperties.getProperty( "db-port" );
-        String databaseName = dbProperties.getProperty( "db-name" );
         userName = dbProperties.getProperty( "db-user" ) ;
         passWord = dbProperties.getProperty( "db-pass" ) ;
         driverClassName = dbProperties.getProperty( "db-driver") ;
         dbUrl = dbProperties.getProperty( "db-url") ;
-
-        dbUrl += serverName + ':' + serverPort + ";DatabaseName=" + databaseName;
 
     }
 

@@ -133,10 +133,10 @@
 
     <target name="database-create" depends="init,sql">
 
-        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url-without-db-name}"
             userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${create-sql}" />
 
-        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port};DatabaseName=${db-name}"
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter="GO" delimitertype="row" onerror="abort" src="${dist-sql}" />
 
     </target>
@@ -144,7 +144,7 @@
 
     <target name="database-drop" depends="init,sql">
 
-        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
+        <sql classpathref="libraries" driver="${db-driver}" url="${db-url}"
             userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${drop-sql}" />
 
     </target>
@@ -501,8 +501,6 @@
 
         <filter token="db-driver"           value="${db-driver}"/>
         <filter token="db-url"              value="${db-url}"/>
-        <filter token="db-host"             value="${db-host}"/>
-        <filter token="db-port"             value="${db-port}"/>
         <filter token="db-name"             value="${db-name}"/>
         <filter token="db-user"             value="${db-user}"/>
         <filter token="db-pass"             value="${db-pass}"/>

@@ -42,7 +42,9 @@ Installing imCMS:
 
 Setting up imCMS:
     * Edit the file "server.properties" in the directory "tomcat/webapps/imcms/WEB-INF/conf",
-      and set the database parameters (Host, Port, DatabaseName, User, Password) according to your setup.
+      and set the database parameters (JdbcDriver, JdbcUrl, User, Password, MaxConnectionCount) according to your setup.
+      If using Microsofts JDBC-driver, note that it will "clone" connections past the MaxConnectionCount
+      unless property "SelectMethod=cursor" is set in the JdbcUrl.
 
     * Edit the file "host.properties" in the same directory,
       and set "smtp_server" to the hostname of your SMTP (outgoing mail) server.
