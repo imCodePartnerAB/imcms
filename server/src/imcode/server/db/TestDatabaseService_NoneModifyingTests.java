@@ -27,7 +27,13 @@ public class TestDatabaseService_NoneModifyingTests extends TestDatabaseService 
     }
 
     public void testSameResultFromSprocGetAllRoles() {
-        static_assertEquals( mimer.sprocGetAllRoles(), sqlServer.sprocGetAllRoles(), mySql.sprocGetAllRoles() );
+        DatabaseService.Table_roles[] ref = mimer.sprocGetAllRoles();
+        DatabaseService.Table_roles[] one = sqlServer.sprocGetAllRoles();
+        DatabaseService.Table_roles[] another = mySql.sprocGetAllRoles();
+        assertEquals( 2, ref.length );
+        assertEquals( 2, one.length );
+        assertEquals( 2, another.length );
+        static_assertEquals( ref, one, another );
     }
 
     public void testSameResultFromSprocGetAllUsers() {

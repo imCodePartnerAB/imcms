@@ -2,7 +2,7 @@ package imcode.server.db;
 import imcode.server.test.Log4JConfiguredTestCase;
 import org.apache.log4j.Logger;
 
-public class TestDatabaseService extends Log4JConfiguredTestCase {
+public abstract class TestDatabaseService extends Log4JConfiguredTestCase {
     protected static final String DB_HOST = "localhost";
 
     protected static final int SQLSERVER_PORT = 1433;
