@@ -163,8 +163,8 @@ function setEditorSize() {
 setEditorSize() ;
 
 function checkMode() {
-	var f = document.forms[0] ;
-	window.status = f.format_type + "" + (f.format_type.length > 0) + "" ;
+	var f = document.forms[0] ;<% 
+	//window.status = f.format_type + "" + (f.format_type.length > 0) + "" ; %>
 	if (!(f.format_type.length > 0)) {
 		f.format_type.checked = true ;
 	} else if (f.format_type.length == 2 && !f.format_type[0].checked && !f.format_type[1].checked) {
@@ -173,10 +173,10 @@ function checkMode() {
 }
 
 if (document.getElementById) {
-	document.getElementById("editorOpenText").style.display     = "block" ;
-	document.getElementById("editorOpenBtn").style.display      = "block" ;
-	document.getElementById("format_type2").style.display       = "block" ;
-	document.getElementById("format_type2_label").style.display = "inline" ;
+	if (document.getElementById("editorOpenText"))     document.getElementById("editorOpenText").style.display     = "block" ;
+	if (document.getElementById("editorOpenBtn"))      document.getElementById("editorOpenBtn").style.display      = "block" ;
+	if (document.getElementById("format_type2"))       document.getElementById("format_type2").style.display       = "block" ;
+	if (document.getElementById("format_type2_label")) document.getElementById("format_type2_label").style.display = "inline" ;
 }
 //-->
 </script>
