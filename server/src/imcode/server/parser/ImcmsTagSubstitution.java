@@ -277,7 +277,9 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	    String label = attributes.getProperty("label","") ;
 	    String label_urlparam = "" ;
 	    if (!"".equals(label)) {
-		label_urlparam = java.net.URLEncoder.encode(label) ;
+		org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util() ;
+		label_urlparam = perl5util.substitute("s!<.+?>!!g",label) ;
+		label_urlparam = java.net.URLEncoder.encode(label_urlparam) ;
 		label = imcode.util.Parser.parseDoc(labelTemplate, new String[] { "#label#", label }) ;
 	    }
 	    String[] replace_tags = new String[] {
