@@ -44,7 +44,7 @@ WHERE ( template_id > 1 and template_id < 6 ) and template_name not like ''Help%
 
 declare @groupId int
 select @groupId = group_id from templategroups
-where group_name like ''%imCMShelp''
+where group_name like ''%imCMShelp'' or group_name like ''%imCMS_help''
 
 IF @temp > 0 OR @groupId IS NULL
 	begin

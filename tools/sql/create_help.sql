@@ -158,7 +158,7 @@ select @groupId = max(group_id)+1 from templategroups
 
 --ok lets create the templategroup
 insert into templategroups(group_id, group_name)
-values(@groupId,''x_imCMShelp'')
+values(@groupId,''x_imCMS_help'')
 
 --ok lets add the templates and relate templates and templategroups'
 declare @template_id varchar(4), @template_name varchar(80), @simple_name varchar(80), @no_of_txt varchar(3), @no_of_img varchar(3), @no_of_url varchar(3)

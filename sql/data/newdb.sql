@@ -34,24 +34,27 @@ INSERT INTO meta (meta_id, description, doc_type, meta_headline, meta_text, meta
  VALUES           (1001,    '',          2,        'Startsidan',  '',        '',         1,        0,           0,      1,      0,         1,            0,       1,         'se',        '',             convert(char(10),getDate(),120),    convert(char(10),getDate(),120),     1,             1,             0,              convert(char(10),getDate(),120),   null,        '_self',  '',         1)
 SET IDENTITY_INSERT meta OFF
 INSERT INTO templates 
- VALUES (1,'start.html', 'Start', 'se', 1,1,1)
+ VALUES (1,'default_start.html', 'default_start', 'se', 1,1,1)
 INSERT INTO templategroups
- VALUES (0, 'Start')
+ VALUES (0, 'normal')
 INSERT INTO templates_cref
  VALUES(0,1)
 INSERT INTO templates 
- VALUES (6,'rr_start.html', 'ReadrunnerStart', 'se', 1,1,1)
+ VALUES (6,'rr_start.html', 'readrunner_start', 'se', 1,1,1)
 INSERT INTO templategroups
- VALUES (1, 'Readrunner')
+ VALUES (1, 'x_readrunner')
 INSERT INTO templates_cref
  VALUES(1,6)
 
 INSERT INTO templates 
  VALUES (7,'poll_form_template.html', 'poll_form_template', 'se', 0,0,0)
 INSERT INTO templategroups
- VALUES (2, 'Example-templates')
+ VALUES (2, 'x_example-templates')
 INSERT INTO templates_cref
  VALUES(2,7)
+
+INSERT INTO templategroups
+VALUES (3, 'x_includes')
   
 INSERT INTO templates 
  VALUES (8,'poll_result_default_template.html', 'poll_result_default_template', 'se', 0,0,0)

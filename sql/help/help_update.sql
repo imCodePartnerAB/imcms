@@ -1,28 +1,28 @@
 -- Script name = help_update.sql
- 
--- Run this script to update a database with the latest help-page 
- 
+
+-- Run this script to update a database with the latest help-page
+
 -- This script is autocreated by script "create_update_help.sql"
- 
+
 -- Soures database = help
 -- Server = ratatosk
 -- Create date = 2003-05-30
 -- Update intervall = meta_id from 1 to 400
- 
- 
+
+
 --Först kollar vi att det inte redan finns mallar med id 2 tom 5 för dessa skall vi använda till hjälpmallar
 --samt att vi hittar en befintlig mallgrupp för hjälpsidor
- 
-DECLARE @temp int 
+
+DECLARE @temp int
 declare @message varchar(100)
-SET @temp = 0  
+SET @temp = 0
 SELECT @temp = template_id
 FROM templates
 WHERE ( template_id > 1 and template_id < 6 ) and template_name not like 'Help%'
 
 declare @groupId int
 select @groupId = group_id from templategroups
-where group_name like '%imCMShelp'
+where group_name like '%imCMShelp' or group_name like '%imCMS_help'
 
 IF @temp > 0 OR @groupId IS NULL
 	begin
@@ -31,14 +31,14 @@ IF @temp > 0 OR @groupId IS NULL
 	IF @groupId IS NULL
 	    select 'Kan inte hitta id-nummret för mallgruppen för hjälpsidor, kolla group_name i tabellen templategroups!' as message
 	end
- 
+
 else
 begin
 
 -- ok vi kan börja ösa in i databasen
 
 Begin Tran
--- drop constraints 
+-- drop constraints
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_childs_meta1]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[childs] DROP CONSTRAINT FK_childs_meta1
@@ -84,13 +84,13 @@ ALTER TABLE [dbo].[url_docs] DROP CONSTRAINT FK_url_docs_meta
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_user_rights_meta]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 ALTER TABLE [dbo].[user_rights] DROP CONSTRAINT FK_user_rights_meta
---First delete all meta_id 
+--First delete all meta_id
 DELETE FROM meta WHERE meta_id >= 1 and meta_id <= 400
- 
+
 --Lets insert all meta_id
- 
+
 SET IDENTITY_INSERT meta ON
- 
+
 
      INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
      values (1,'',2,'Hj&auml;lpsidan','','',1,0,0,1,0,1,0,1,'se','','2003-05-30','2003-05-30',1,1,1,'_self','',1,'2003-05-30',NULL)
@@ -1291,43 +1291,29 @@ SET IDENTITY_INSERT meta ON
 
      INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
      values (400,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2003-05-30','2003-05-30',1,1,1,'_self','',1,'2003-05-30',NULL)
- 
+
 SET IDENTITY_INSERT meta OFF
- 
+
 -- Lets create constraints
 
-ALTER TABLE [dbo].[childs] ADD 
-	CONSTRAINT [FK_childs_meta1] FOREIGN KEY 
+ALTER TABLE [dbo].[childs] ADD
+	CONSTRAINT [FK_childs_meta1] FOREIGN KEY
 	(
 		[meta_id]
 	) REFERENCES [dbo].[meta] (
 		[meta_id]
 	)
 
-ALTER TABLE [dbo].[roles_rights] ADD 
-	CONSTRAINT [FK_roles_rights_meta] FOREIGN KEY 
+ALTER TABLE [dbo].[roles_rights] ADD
+	CONSTRAINT [FK_roles_rights_meta] FOREIGN KEY
 	(
 		[meta_id]
 	) REFERENCES [dbo].[meta] (
 		[meta_id]
 	)
 
-ALTER TABLE [dbo].[browser_docs] ADD 
-	CONSTRAINT [FK_browser_docs_meta] FOREIGN KEY 
-
-	(
-
-		[meta_id]
-
-	) REFERENCES [dbo].[meta] (
-
-		[meta_id]
-
-	)
-
-ALTER TABLE [dbo].[doc_permission_sets] ADD 
-
-	CONSTRAINT [FK_permission_sets_meta] FOREIGN KEY 
+ALTER TABLE [dbo].[browser_docs] ADD
+	CONSTRAINT [FK_browser_docs_meta] FOREIGN KEY
 
 	(
 
@@ -1339,10 +1325,9 @@ ALTER TABLE [dbo].[doc_permission_sets] ADD
 
 	)
 
+ALTER TABLE [dbo].[doc_permission_sets] ADD
 
-ALTER TABLE [dbo].[frameset_docs] ADD 
-
-	CONSTRAINT [FK_frameset_docs_meta] FOREIGN KEY 
+	CONSTRAINT [FK_permission_sets_meta] FOREIGN KEY
 
 	(
 
@@ -1355,9 +1340,9 @@ ALTER TABLE [dbo].[frameset_docs] ADD
 	)
 
 
-ALTER TABLE [dbo].[images] ADD 
+ALTER TABLE [dbo].[frameset_docs] ADD
 
-	CONSTRAINT [FK_images_meta] FOREIGN KEY 
+	CONSTRAINT [FK_frameset_docs_meta] FOREIGN KEY
 
 	(
 
@@ -1370,9 +1355,24 @@ ALTER TABLE [dbo].[images] ADD
 	)
 
 
-ALTER TABLE [dbo].[includes] ADD 
+ALTER TABLE [dbo].[images] ADD
 
-	CONSTRAINT [FK_includes_meta] FOREIGN KEY 
+	CONSTRAINT [FK_images_meta] FOREIGN KEY
+
+	(
+
+		[meta_id]
+
+	) REFERENCES [dbo].[meta] (
+
+		[meta_id]
+
+	)
+
+
+ALTER TABLE [dbo].[includes] ADD
+
+	CONSTRAINT [FK_includes_meta] FOREIGN KEY
 
 	(
 
@@ -1384,7 +1384,7 @@ ALTER TABLE [dbo].[includes] ADD
 
 	),
 
-	CONSTRAINT [FK_includes_meta1] FOREIGN KEY 
+	CONSTRAINT [FK_includes_meta1] FOREIGN KEY
 
 	(
 
@@ -1397,25 +1397,10 @@ ALTER TABLE [dbo].[includes] ADD
 	)
 
 
-ALTER TABLE [dbo].[meta_classification] ADD 
+ALTER TABLE [dbo].[meta_classification] ADD
 
 
-	CONSTRAINT [FK_meta_classification_meta] FOREIGN KEY 
-
-	(
-
-		[meta_id]
-
-	) REFERENCES [dbo].[meta] (
-
-		[meta_id]
-
-	)
-
-
-ALTER TABLE [dbo].[meta_section] ADD 
-
-	CONSTRAINT [FK_meta_section_meta] FOREIGN KEY 
+	CONSTRAINT [FK_meta_classification_meta] FOREIGN KEY
 
 	(
 
@@ -1428,23 +1413,9 @@ ALTER TABLE [dbo].[meta_section] ADD
 	)
 
 
-ALTER TABLE [dbo].[new_doc_permission_sets] ADD 
+ALTER TABLE [dbo].[meta_section] ADD
 
-	CONSTRAINT [FK_new_doc_permission_sets_meta] FOREIGN KEY 
-
-	(
-
-		[meta_id]
-
-	) REFERENCES [dbo].[meta] (
-
-		[meta_id]
-
-	)
-
-ALTER TABLE [dbo].[text_docs] ADD 
-
-	CONSTRAINT [FK_text_docs_meta] FOREIGN KEY 
+	CONSTRAINT [FK_meta_section_meta] FOREIGN KEY
 
 	(
 
@@ -1457,9 +1428,23 @@ ALTER TABLE [dbo].[text_docs] ADD
 	)
 
 
-ALTER TABLE [dbo].[texts] ADD 
+ALTER TABLE [dbo].[new_doc_permission_sets] ADD
 
-	CONSTRAINT [FK_texts_meta] FOREIGN KEY 
+	CONSTRAINT [FK_new_doc_permission_sets_meta] FOREIGN KEY
+
+	(
+
+		[meta_id]
+
+	) REFERENCES [dbo].[meta] (
+
+		[meta_id]
+
+	)
+
+ALTER TABLE [dbo].[text_docs] ADD
+
+	CONSTRAINT [FK_text_docs_meta] FOREIGN KEY
 
 	(
 
@@ -1472,9 +1457,9 @@ ALTER TABLE [dbo].[texts] ADD
 	)
 
 
-ALTER TABLE [dbo].[url_docs] ADD 
+ALTER TABLE [dbo].[texts] ADD
 
-	CONSTRAINT [FK_url_docs_meta] FOREIGN KEY 
+	CONSTRAINT [FK_texts_meta] FOREIGN KEY
 
 	(
 
@@ -1487,9 +1472,24 @@ ALTER TABLE [dbo].[url_docs] ADD
 	)
 
 
-ALTER TABLE [dbo].[user_rights] ADD 
+ALTER TABLE [dbo].[url_docs] ADD
 
-	CONSTRAINT [FK_user_rights_meta] FOREIGN KEY 
+	CONSTRAINT [FK_url_docs_meta] FOREIGN KEY
+
+	(
+
+		[meta_id]
+
+	) REFERENCES [dbo].[meta] (
+
+		[meta_id]
+
+	)
+
+
+ALTER TABLE [dbo].[user_rights] ADD
+
+	CONSTRAINT [FK_user_rights_meta] FOREIGN KEY
 
 	(
 
@@ -1502,12 +1502,12 @@ ALTER TABLE [dbo].[user_rights] ADD
 	)
 
 -- get all images
- 
+
 --delete old
 DELETE FROM images WHERE meta_id >= 1 and meta_id <= 400
- 
+
 --lets insert all new in images
- 
+
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
      values (2,0,0,0,0,0,'1','','_self','','top','','','../imcmsimages/se/helpimages/Admin-filadministration.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
@@ -1956,16 +1956,16 @@ INSERT INTO images ( meta_id , width , height , border , v_space , h_space , nam
      values (299,0,0,0,0,0,'1','','_self','','top','','','../imcmsimages/en/helpimages/AdminRandomTextsFile.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
      values (300,0,0,0,0,0,'1','','_self','','top','','','../imcmsimages/en/helpimages/ShowResults.gif','')
- 
--- now we get all data in texts 
---delete old 
+
+-- now we get all data in texts
+--delete old
 DELETE FROM texts WHERE meta_id >= 1 and meta_id <= 400
- 
--- insert new 
+
+-- insert new
 INSERT INTO texts( meta_id, name, text, type )
      values(2,1,'Administrera filer',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(2,2,'Genom att markera en katalog och sedan klicka p&aring; &quot;Byt katalog&quot; visas inneh&aring;llet i den katalogen. Genom att markera ..\ och klicka p&aring; &quot;Byt katalog&quot; s&aring; tar man sig ett steg h&ouml;gre upp i hierarkin.<BR><BR> F&ouml;r att ladda ner en fil till sin egen h&aring;rddisk/n&auml;tverk, leta fram filen och markera den, klicka sedan p&aring; &quot;Ladda ner&quot;. &quot;Ladda ner&quot; till v&auml;nster om filen finns i den v&auml;nstra rutan och &quot;Ladda ner&quot; till h&ouml;ger om filen finns i den h&ouml;gra rutan. Ett nytt f&ouml;nster &ouml;ppnas d&auml;r du f&aring;r v&auml;lja om du vill spara ned filen p&aring; din h&aring;rddisk/ditt n&auml;tverk eller om du vill &ouml;ppna filen. Spr&aring;ket i bilden &auml;r beroende p&aring; det spr&aring;k som din webbl&auml;sare har.<BR><BR> F&ouml;r att ladda upp en fil fr&aring;n sin egen h&aring;rddisk/n&auml;tverk, klicka p&aring; &quot;Browse&quot; (mitt i bilden). Ett nytt f&ouml;nster &ouml;ppnas d&auml;r du f&aring;r leta reda p&aring; filen. Spr&aring;ket i bilden &auml;r beroende p&aring; det spr&aring;k som din webbl&auml;sare har. N&auml;r filen &auml;r framletad, skall den katalog d&auml;r filen skall l&auml;ggas in i markeras. Om katalogen &auml;r markerad i den v&auml;nstra rutan, klicka p&aring; &quot;Ladda upp&quot; till v&auml;nster. &Auml;r katalogen markerad i den h&ouml;gra rutan, klicka p&aring; &quot;Ladda upp&quot; till h&ouml;ger. <BR><BR> F&ouml;r att kopiera en fil till en annan katalog,  leta fram filen i den v&auml;nstra rutan, markera filen och leta fram den katalog dit filen skall kopieras i den h&ouml;gra rutan och markera den. Klicka sedan p&aring; &quot;Kopiera -&gt;&quot;. Detta g&aring;r att g&ouml;ra tv&auml;rtom ocks&aring; - kopiera fil fr&aring;n den h&ouml;gra rutan till den v&auml;nstra. Klicka d&aring; p&aring; &quot;&lt;-Kopiera&quot; ist&auml;llet.<BR><BR>F&ouml;r att flytta en fil fr&aring;n en katalog till en annan katalog,  leta fram filen i den v&auml;nstra rutan, markera filen och leta fram den katalog dit filen skall flyttas i den h&ouml;gra rutan och markera den. Klicka sedan p&aring; &quot;Flytta -&gt;&quot;. Detta g&aring;r att g&ouml;ra tv&auml;rtom ocks&aring; - flytta en fil fr&aring;n den h&ouml;gra rutan till den v&auml;nstra. Klicka d&aring; p&aring; &quot;&lt;-Flytta&quot; ist&auml;llet.<BR><BR>F&ouml;r att byta namn p&aring; en katalog eller fil, markera den katalog/fil som skall bytas namn p&aring;. Skriv in det nya namnet i rutan under Nytt namn:. Klicka sedan p&aring; &quot;Byt namn&quot; till v&auml;nster eller h&ouml;ger beroende p&aring; om katalogen/filen finns i den v&auml;nstra eller h&ouml;gra rutan.<BR><BR> F&ouml;r att skapa katalog, markera den katalog som den nya katalogen skall hamna under. Skriv in namnet p&aring; katalogen i rutan under Nytt namn:. Klicka sedan p&aring; &quot;Skapa katalog&quot; till v&auml;nster eller h&ouml;ger beroende p&aring; i vilken ruta du har markerat katalogen.<BR><BR> F&ouml;r att radera en katalog eller fil, markera katalogen/filen och klicka sedan p&aring; &quot;Radera&quot;. Knappen till v&auml;nster om katalogen/filen finns i v&auml;nstra rutan, knappen till h&ouml;ger om katalogen/filen finns i h&ouml;gra rutan. En varningsruta d&auml;r hela s&ouml;kv&auml;gen till katalogen/filen finns visas. Klicka &quot;Ja&quot; om du &auml;r s&auml;ker p&aring; att katalogen/filen skall tas bort, annars p&aring; &quot;Nej&quot;.<BR><BR>&quot;Tillbaka&quot; leder till Administrat&ouml;rsmenyn.<BR><BR> 
+     values(2,2,'Genom att markera en katalog och sedan klicka p&aring; &quot;Byt katalog&quot; visas inneh&aring;llet i den katalogen. Genom att markera ..\ och klicka p&aring; &quot;Byt katalog&quot; s&aring; tar man sig ett steg h&ouml;gre upp i hierarkin.<BR><BR> F&ouml;r att ladda ner en fil till sin egen h&aring;rddisk/n&auml;tverk, leta fram filen och markera den, klicka sedan p&aring; &quot;Ladda ner&quot;. &quot;Ladda ner&quot; till v&auml;nster om filen finns i den v&auml;nstra rutan och &quot;Ladda ner&quot; till h&ouml;ger om filen finns i den h&ouml;gra rutan. Ett nytt f&ouml;nster &ouml;ppnas d&auml;r du f&aring;r v&auml;lja om du vill spara ned filen p&aring; din h&aring;rddisk/ditt n&auml;tverk eller om du vill &ouml;ppna filen. Spr&aring;ket i bilden &auml;r beroende p&aring; det spr&aring;k som din webbl&auml;sare har.<BR><BR> F&ouml;r att ladda upp en fil fr&aring;n sin egen h&aring;rddisk/n&auml;tverk, klicka p&aring; &quot;Browse&quot; (mitt i bilden). Ett nytt f&ouml;nster &ouml;ppnas d&auml;r du f&aring;r leta reda p&aring; filen. Spr&aring;ket i bilden &auml;r beroende p&aring; det spr&aring;k som din webbl&auml;sare har. N&auml;r filen &auml;r framletad, skall den katalog d&auml;r filen skall l&auml;ggas in i markeras. Om katalogen &auml;r markerad i den v&auml;nstra rutan, klicka p&aring; &quot;Ladda upp&quot; till v&auml;nster. &Auml;r katalogen markerad i den h&ouml;gra rutan, klicka p&aring; &quot;Ladda upp&quot; till h&ouml;ger. <BR><BR> F&ouml;r att kopiera en fil till en annan katalog,  leta fram filen i den v&auml;nstra rutan, markera filen och leta fram den katalog dit filen skall kopieras i den h&ouml;gra rutan och markera den. Klicka sedan p&aring; &quot;Kopiera -&gt;&quot;. Detta g&aring;r att g&ouml;ra tv&auml;rtom ocks&aring; - kopiera fil fr&aring;n den h&ouml;gra rutan till den v&auml;nstra. Klicka d&aring; p&aring; &quot;&lt;-Kopiera&quot; ist&auml;llet.<BR><BR>F&ouml;r att flytta en fil fr&aring;n en katalog till en annan katalog,  leta fram filen i den v&auml;nstra rutan, markera filen och leta fram den katalog dit filen skall flyttas i den h&ouml;gra rutan och markera den. Klicka sedan p&aring; &quot;Flytta -&gt;&quot;. Detta g&aring;r att g&ouml;ra tv&auml;rtom ocks&aring; - flytta en fil fr&aring;n den h&ouml;gra rutan till den v&auml;nstra. Klicka d&aring; p&aring; &quot;&lt;-Flytta&quot; ist&auml;llet.<BR><BR>F&ouml;r att byta namn p&aring; en katalog eller fil, markera den katalog/fil som skall bytas namn p&aring;. Skriv in det nya namnet i rutan under Nytt namn:. Klicka sedan p&aring; &quot;Byt namn&quot; till v&auml;nster eller h&ouml;ger beroende p&aring; om katalogen/filen finns i den v&auml;nstra eller h&ouml;gra rutan.<BR><BR> F&ouml;r att skapa katalog, markera den katalog som den nya katalogen skall hamna under. Skriv in namnet p&aring; katalogen i rutan under Nytt namn:. Klicka sedan p&aring; &quot;Skapa katalog&quot; till v&auml;nster eller h&ouml;ger beroende p&aring; i vilken ruta du har markerat katalogen.<BR><BR> F&ouml;r att radera en katalog eller fil, markera katalogen/filen och klicka sedan p&aring; &quot;Radera&quot;. Knappen till v&auml;nster om katalogen/filen finns i v&auml;nstra rutan, knappen till h&ouml;ger om katalogen/filen finns i h&ouml;gra rutan. En varningsruta d&auml;r hela s&ouml;kv&auml;gen till katalogen/filen finns visas. Klicka &quot;Ja&quot; om du &auml;r s&auml;ker p&aring; att katalogen/filen skall tas bort, annars p&aring; &quot;Nej&quot;.<BR><BR>&quot;Tillbaka&quot; leder till Administrat&ouml;rsmenyn.<BR><BR>
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(3,1,'Aktivera/avaktivera anv&auml;ndare
@@ -1992,9 +1992,9 @@ INSERT INTO texts( meta_id, name, text, type )
 ende sida.
 <BR>
 <BR>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(5,1,'Administrationssida f&ouml;r Browserkontroll
@@ -2006,16 +2006,16 @@ INSERT INTO texts( meta_id, name, text, type )
     <TR>
     <TD>
       <UL>
-	<LI><P><STRONG>Normal </STRONG> till&aring;ter Dig att g&aring; genom Browser-Control dokumentet till 
+	<LI><P><STRONG>Normal </STRONG> till&aring;ter Dig att g&aring; genom Browser-Control dokumentet till
   den sidan Du definerade f&ouml;r Din webbl&auml;sare.</P>
         <LI>
         <P><STRONG>Redigera </STRONG>till&aring;ter Dig att redigera Browser-Control dokumentet</P>
         <LI>
-        <P><STRONG>Tillbaka </STRONG>tar Dig tillbaka till senast bes&ouml;kt 
+        <P><STRONG>Tillbaka </STRONG>tar Dig tillbaka till senast bes&ouml;kt
         sida.</P></LI></UL>
       <P>De andra knapparna fungerar som vanligt.</P>
-      <P><STRONG>OBS! Om du &ouml;nskar &aring;terbes&ouml;ka denna administrationssida, klicka 
-      p&aring; l&auml;nk-knappen och sedan p&aring; den r&ouml;da pilen bredvid den aktuella 
+      <P><STRONG>OBS! Om du &ouml;nskar &aring;terbes&ouml;ka denna administrationssida, klicka
+      p&aring; l&auml;nk-knappen och sedan p&aring; den r&ouml;da pilen bredvid den aktuella
       l&auml;nken.</STRONG>
       <TABLE>
         </TABLE></P>
@@ -2072,7 +2072,7 @@ INSERT INTO texts( meta_id, name, text, type )
                   <li>
                     <p align="left">ladda upp exempelmallar till systemet</li>
                   <li>
-             
+
 
 
        <p align="left">visa de formatmallar som finns i systemet
@@ -2089,9 +2089,9 @@ INSERT INTO texts( meta_id, name, text, type )
                 </ul>
                 <p align="left">&quot;Tillbaka&quot; leder till
                 Administrat&ouml;rsmenyn.</p>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(9,1,'Byta namn p&aring; formatgrupp
@@ -2141,9 +2141,9 @@ INSERT INTO texts( meta_id, name, text, type )
      values(13,1,'Ta bort formatgrupp - varning
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(13,2,'Varning f&ouml;r att ta bort formatgrupp. Bilden visar vilka mallar som tillh&ouml;r den grupp som h&aring;ller p&aring; att tas bort. 
+     values(13,2,'Varning f&ouml;r att ta bort formatgrupp. Bilden visar vilka mallar som tillh&ouml;r den grupp som h&aring;ller p&aring; att tas bort.
 <BR>
-<BR>Om du vill ta bort gruppen, flytta d&aring; f&ouml;rst &ouml;ver mallarna (om de inte redan tillh&ouml;r n&aring;gon annan grupp ocks&aring;) till n&aring;gon annan grupp. Detta g&ouml;rs via gr&auml;nssnittet f&ouml;r L&auml;gg till/Ta bort formatmallar. 
+<BR>Om du vill ta bort gruppen, flytta d&aring; f&ouml;rst &ouml;ver mallarna (om de inte redan tillh&ouml;r n&aring;gon annan grupp ocks&aring;) till n&aring;gon annan grupp. Detta g&ouml;rs via gr&auml;nssnittet f&ouml;r L&auml;gg till/Ta bort formatmallar.
 <BR>
 <BR>Klicka sedan p&aring; &quot;OK&quot;.
 <BR>
@@ -2214,7 +2214,7 @@ INSERT INTO texts( meta_id, name, text, type )
         Kan man sidans MetaID skriver man in det direkt annars finns m&ouml;jlighet
         att s&ouml;ka fram sidan.
 <BR><BR>
-        
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(19,3,'<BR><BR>
@@ -2243,8 +2243,8 @@ INSERT INTO texts( meta_id, name, text, type )
         Aktiverat datum. Markera den sorterings- ordning du vill ha.</p>
         <p><span style="font-size:12.0pt;font-family:"Times New Roman"; mso-fareast-font-family:"Times New Roman";mso-ansi-language:SV;mso-fareast-language:
 SV;mso-bidi-language:AR-SA">Klicka sedan p&aring; "<b style="mso-bidi-font-weight: normal"><i style="mso-bidi-font-style:normal">S&ouml;k</i></b>". Resultatet av  s&ouml;kningen visas underst p&aring; sidan.</span>
- 
- 
+
+
  ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(19,4,'
@@ -2304,9 +2304,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(23,1,'Ladda upp ny exempelmall
@@ -2342,9 +2342,9 @@ INSERT INTO texts( meta_id, name, text, type )
                       Klicka sedan p&aring; "Ta bort exempelmall".
                       Exempelmallen tas bort (* vid mallen tas ocks&aring; bort). </li>
                   </ul>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(24,1,'Ladda upp ny formatmall - klart!
@@ -2415,8 +2415,8 @@ INSERT INTO texts( meta_id, name, text, type )
                 </ul>
                 <p>Valet g&ouml;rs genom att bl&auml;ddra fram det man vill g&ouml;ra i
                 rullgardinslistan och sedan klicka p&aring; knappen "G&aring; till adminsida" (dold under rullgardinslistan p&aring; bilden).</p>
-                <p>L&auml;nken "Tillbaka till startsidan" leder tillbaka till systemets f&ouml;rsta sida.<BR><BR> 
-  
+                <p>L&auml;nken "Tillbaka till startsidan" leder tillbaka till systemets f&ouml;rsta sida.<BR><BR>
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(29,1,'Administrera anv&auml;ndare och roller
@@ -2430,7 +2430,7 @@ INSERT INTO texts( meta_id, name, text, type )
 <BR><BR>
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(30,1,'Administrera roller 
+     values(30,1,'Administrera roller
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(30,2,'Knappen &quot;Administrera roller&quot; leder till den sida d&auml;r nya roller kan l&auml;ggas till, namnet bytas p&aring; en roll, r&auml;ttigheterna f&ouml;r rollen kan redigeras eller rollen kan tas bort.
@@ -2475,9 +2475,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(33,1,'Redigera r&auml;ttigheter f&ouml;r roll
@@ -2495,9 +2495,9 @@ INSERT INTO texts( meta_id, name, text, type )
               "Spara".</p>
               <p align="left">"Avbryt" leder tillbaka till f&ouml;reg&aring;ende
               sida utan att n&aring;gon f&ouml;r&auml;ndring i rollens r&auml;ttigheter gjorts.</p>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(34,1,'Ta bort roll - varning!
@@ -2539,9 +2539,9 @@ INSERT INTO texts( meta_id, name, text, type )
           e-postadressen till den person som &auml;r registrerad som webbmaster.<p><i><b>&Auml;ndra
           webmaster email: </b></i>H&auml;r anges e-postadressen till den person som
           &auml;r/skall vara ny webbmaster.
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(36,1,'L&auml;gga till/&auml;ndra text
@@ -2631,7 +2631,7 @@ INSERT INTO texts( meta_id, name, text, type )
     </tr>
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
-        arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som anges. En 
+        arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som anges. En
 <img border="0" src="../imcmsimages/se/helpimages/Lagg-t4.GIF" width="13" height="14"> i
         rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
@@ -2645,9 +2645,9 @@ INSERT INTO texts( meta_id, name, text, type )
             ers&auml;ttas med en ny frame d&auml;r den nya sidan visas.</li>
           <li><i>Annan frame</i> - h&auml;r anges namnet p&aring; den frame d&auml;r sidan
             skall visas.
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(40,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 1
@@ -2691,7 +2691,7 @@ INSERT INTO texts( meta_id, name, text, type )
                   <tr>
                     <td width="100%"><b>R&auml;tt att &auml;ndra texter: </b>Inneb&auml;r
 
-  
+
                     att man f&aring;r lov att &auml;ndra textinneh&aring;llet p&aring; sidan.</td>
                   </tr>
                   <tr>
@@ -2715,7 +2715,7 @@ INSERT INTO texts( meta_id, name, text, type )
                       respektive typ).</td>
                   </tr>
                 </table>
-</div> 
+</div>
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(41,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 1, f&ouml;r nya dokument
@@ -2783,9 +2783,9 @@ INSERT INTO texts( meta_id, name, text, type )
                   </tr>
                 </table>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(42,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 2
@@ -2850,9 +2850,9 @@ INSERT INTO texts( meta_id, name, text, type )
                   </tr>
                 </table>
 </div align="CENTER">
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(43,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 2, f&ouml;r nya dokument
@@ -2921,9 +2921,9 @@ INSERT INTO texts( meta_id, name, text, type )
                   </tr>
                 </table>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(44,1,'L&auml;gga till bild - Bildarkiv
@@ -3003,9 +3003,9 @@ INSERT INTO texts( meta_id, name, text, type )
     </tr>
   </table>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(48,1,'L&auml;gga till diagram - bild 2 - Skapa nytt diagram
@@ -3127,9 +3127,9 @@ fyller man i v&auml;rdena h&auml;r eller h&auml;mtar dem fr&aring;n Excel..</p>
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(49,4,'<BR><BR>
@@ -3154,7 +3154,7 @@ INSERT INTO texts( meta_id, name, text, type )
       n&auml;r rullgardinsmenyn sl&auml;pps tas raden bort. </td>
   </tr>
   <tr>
-    <td width="100%" height="19"><b>Ta bort kolumn: </b> 
+    <td width="100%" height="19"><b>Ta bort kolumn: </b>
 Tar bort en kolumn.
       Vilken kolumn som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="../imcmsimages/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardinsmenyn sl&auml;pps tas kolumnen bort. </td>
@@ -3167,9 +3167,9 @@ Tar bort en kolumn.
   </tr>
 </table>
 </div align="CENTER">
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(50,1,'L&auml;gga till diagram - bild 4
@@ -3256,7 +3256,7 @@ INSERT INTO texts( meta_id, name, text, type )
           <table border="0" width="500">
             <tr>
               <td>
-              
+
           <h4 style="TEXT-ALIGN: justify">Föregående</h4>
           <p class="MsoBodyText" style="TEXT-ALIGN: justify">Leder tillbaka till den sida som är huvudsida för den sida du befinner dig på.</p>
           <h4 style="TEXT-ALIGN: justify">Normal</h4>
@@ -3281,37 +3281,37 @@ INSERT INTO texts( meta_id, name, text, type )
           <p style="TEXT-ALIGN: justify">När klick sker på "<b style="mso-bidi-font-weight: normal">Länkar</b>" visas en sida
           där länkar/menyer skapas. Det går att lägga till länkar till:</p>
           <blockquote>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Textdokument</p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>URL-dokument (Internetsida)</p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Browserkontroll</p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>HTML-dokument</p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Fil</p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Diagram (OBS tilläggsmodul till imCMS)</p>
-            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Konferens (OBS tilläggsmodul till imCMS)</p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-   
-     Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+
+     Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Befintligt dokument</p>
           </blockquote>
@@ -3333,72 +3333,72 @@ INSERT INTO texts( meta_id, name, text, type )
           <h4 style="TEXT-ALIGN: justify">Rättigheter</h4>
           <p class="MsoBodyText" style="TEXT-ALIGN: justify">Här styrs de rättigheter
           som användarna har på sidan.</p>
-      
+
     <h4 style="TEXT-ALIGN: justify">Logga ut</h4>
           <p class="MsoBodyText" style="TEXT-ALIGN: justify">När klick sker på
           "<b style="mso-bidi-font-weight: normal">Logga ut</b>", loggas användaren ut från imCMS.</p>
           <h4 style="TEXT-ALIGN: justify">Admin</h4>
-          <p class="MsoBodyText" style="TEXT-ALIGN: justify" 
+          <p class="MsoBodyText" style="TEXT-ALIGN: justify"
      >Denna knapp visas
           endast för den som är super-admin och ett klick leder till
           administrationsläget för att:</p>
           <blockquote>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><A href="#_Administrera_användare"><span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">Administration
             av användare</span><span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">&nbsp;&nbsp;&nbsp;&nbsp;
             </span></a><span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">&nbsp;
             </span></p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><A href="#_Administrera_roller"> <span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">Administration av roller</span></a></p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
-        Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                                           
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
+        Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><A href="#_Administrera_IP-accesser"><span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">Administration
             av IP-accesser</span></a></p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span> </span><A href="#_Administrera_formatmallar/formatgrupper"> <span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">Administration
             av mallar</span></a></p>
-            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span> </span><A href="#_Visa_alla_dokument"><span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">Visa alla dokument</span></a></p>
-            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><A href="#_Ta_bort_ett"><span style="COLOR:windowtext; TEXT-DECORATION: none; text-underline: none">Ta bort ett dokument</span></a></p>
             <p class="&#13;&#10;-49"
- style="te:justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
-        Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+ style="te:justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
+        Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         &nbsp;
             </span></span><A href="#_Kontrollera_Internetlänkar"> <span style= "COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">Kontrollera
             Internet-länkar</span></a></p>
-            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
             </span></span><A href="#_Administrera_räknare"><span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">Administrera
             räknare</span></a></p>
-            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
             </span></span><A href="#_Administrera_systeminformation"><span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none"> Administrera
             systeminformation</span></a></p>
-            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">·<span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
             </span></span><A href="#_Administrera_filer"><span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">Administrera filer</span></a></p>
-            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
-        Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+            <p class="-49" style="TEXT-ALIGN: justify"><span style="FONT-FAMILY: Symbol">· <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
+        Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         &nbsp;
             </span> </span><A href="#_Förändrade_dokument"><span style="COLOR: windowtext; TEXT-DECORATION: none; text-underline: none">Förändrade dokument</span></a></p>
-            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">·&nbsp; <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal" 
-        Roman?? New 
+            <p class="-49" style="TEXT-ALIGN: justify"> <span style="FONT-FAMILY: Symbol">·&nbsp; <span style="FONT-WEIGHT: normal; FONT-SIZE: 7pt; LINE-HEIGHT: normal; FONT-STYLE: normal; FONT-VARIANT: normal"
+        Roman?? New
         Times>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Administrera konferenser (OBS konferenser är en tilläggsmodul
             till imCMS)</p>
@@ -3408,7 +3408,7 @@ INSERT INTO texts( meta_id, name, text, type )
             </tr>
             <tr>
               <td>
-              
+
               </td>
             </tr>
           </table>
@@ -3416,7 +3416,7 @@ INSERT INTO texts( meta_id, name, text, type )
 <CENTER></CENTER>
 <DIV></DIV>
 <div align="center" class="unnamed1"></div>
- 
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(56,1,'Konferens - &auml;ndra anv&auml;ndare
@@ -3509,9 +3509,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(61,1,'Konferens - administrera inl&auml;gg
@@ -3537,9 +3537,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(62,1,'Konferens - administrera mallset
@@ -3569,9 +3569,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </center>
 </div>
 
-<BR><BR> 
- 
- 
+<BR><BR>
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(63,1,'Konferens - administrera sj&auml;lvregistrering
@@ -3595,9 +3595,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(64,1,'Konferens - &auml;ndra befintlig mallfil
@@ -3689,9 +3689,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(67,1,'Konferens - sj&auml;lvregistrering
@@ -3718,9 +3718,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(68,1,'Konferens - konferensdata
@@ -3825,9 +3825,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(72,1,'L&auml;gga till bild
@@ -3862,9 +3862,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(72,3,'<div align="Center">
@@ -3960,9 +3960,9 @@ INSERT INTO texts( meta_id, name, text, type )
           </tr>
         </table>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(73,1,'L&auml;gga till bild - Browse/S&ouml;k
@@ -3977,7 +3977,7 @@ INSERT INTO texts( meta_id, name, text, type )
 den s&aring; att filnamnet visas i rutan f&ouml;r File name.</p>
 <p align="center">Klicka sedan p&aring; &quot;Open&quot;.</p>
 
-    </td>     
+    </td>
    </tr>
   </table>
   </center>
@@ -4013,9 +4013,9 @@ INSERT INTO texts( meta_id, name, text, type )
         </blockquote>
   <center>
 
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(75,1,'L&auml;gga till l&auml;nk till HTML-dokument - sida 1
@@ -4080,9 +4080,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
 </div>
 <p align="center">&nbsp;</p>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(76,1,'L&auml;gga till l&auml;nk till HTML-dokument - sida 2
@@ -4161,9 +4161,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
 </div>
 <p align="center">&nbsp;</p>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(78,1,'L&auml;gga till l&auml;nk till Text-dokument - sida 2
@@ -4189,9 +4189,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(78,3,'<br><h3 align="center">Exempel HTML-format</h3>
@@ -4246,12 +4246,12 @@ g&ouml;ra detta).</td>
     <td width="100%"><b>Befintligt dokument: </b>L&auml;gger till en l&auml;nk till en
       befintlig sida i systemet.</td>
   </tr>
-    
+
 </table>
 </div>
 <hr>
 <h2 align="center">Administrera befintliga l&auml;nkar</h2>
- 
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(79,4,'<p align="center">&nbsp;</p>
@@ -4278,9 +4278,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </center>
 </div>
 <p align="center">&nbsp;</p>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(80,1,'L&auml;gga till l&auml;nk till en fil - sida 1
@@ -4345,9 +4345,9 @@ INSERT INTO texts( meta_id, name, text, type )
 </div>
 <p align="center">&nbsp;</p>
 
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(81,1,'L&auml;gga till l&auml;nk till URL-dokument - sida 1
@@ -4412,9 +4412,9 @@ INSERT INTO texts( meta_id, name, text, type )
 </div>
 
 <p align="center"><b>N&auml;r man klickat p&aring; "OK" visas den sida d&auml;rsj&auml;lva Internet-adressen skrivs in.</b></p>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(82,1,'L&auml;gga till l&auml;nk till URL-dokument - sida 2
@@ -4425,9 +4425,9 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="450">
     <tr>
       <td>
-   
+
 <blockquote>
-   
+
 <p align="left">H&auml;r anges hela Internet-adressen till den sida som skall
 visas.</p>
 </blockquote>
@@ -4447,15 +4447,15 @@ visas.</p>
        		<li>
               <p align="left"><i>Annan frame</i> - h&auml;r anges namnet p&aring; den frame d&auml;r sidan skall visas.</li>
         </ul>
-   
+
       </td>
     </tr>
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(83,1,'Misslyckad inloggning
@@ -4481,12 +4481,12 @@ INSERT INTO texts( meta_id, name, text, type )
   </tr>
   <tr>
     <td width="100%"><b> Beh&ouml;righet: </b> Visar vilka roller som har n&aring;gon form
-      av r&auml;ttighet p&aring; sidan. 
+      av r&auml;ttighet p&aring; sidan.
       <ul>
         <li><i> Ingen </i> betyder att l&auml;nken inte visas f&ouml;r rollen, om inte <i> Visa
           rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig </i>&auml;r <img border="0" src="../imcmsimages/se/helpimages/Lagg-t4.GIF" width="13" height="14">.
         </li>
-   
+
      <li><i> L&auml;sa </i> betyder att anv&auml;ndare med rollen kan l&auml;sa allt p&aring; sidan, men inte kan &auml;ndra n&aring;got p&aring; den.</li>
         <li><i> Begr.2 </i> betyder att anv&auml;ndare med rollen kan g&ouml;ra de saker
           som Begr.2 till&aring;ts g&ouml;ra. F&ouml;r att &auml;ndra r&auml;ttigheter f&ouml;r Begr.2 se
@@ -4529,7 +4529,7 @@ INSERT INTO texts( meta_id, name, text, type )
   </tr>
 </table>
 </div align="CENTER">
-  
+
 ',1)
 
 INSERT INTO texts( meta_id, name, text, type )
@@ -4580,9 +4580,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(88,1,'Ta bort roll - varning
@@ -4656,12 +4656,12 @@ INSERT INTO texts( meta_id, name, text, type )
     </tr>
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
-        arkiveras. L&auml;nken kommer att tasbort vid det datum och klockslag som anges. 
+        arkiveras. L&auml;nken kommer att tasbort vid det datum och klockslag som anges.
 		En <img border="0" src="../imcmsimages/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Visa: </b>H&auml;r anges var sidan skall visas. 
+      <td width="100%"><b>Visa: </b>H&auml;r anges var sidan skall visas.
         <ul>
           <li><i>Samma frame</i> betyder att sidan &ouml;ppnas i den frame d&auml;r l&auml;nken
             finns. </li>
@@ -4678,9 +4678,9 @@ INSERT INTO texts( meta_id, name, text, type )
 <p align="center"><b>
 Efter det att man fyllt i denna sida och man klickat "Ok", kommer n&auml;sta inst&auml;llningssida upp. Vad den inneh&aring;ller beror p&aring; vilken typ av l&auml;nk  man valt att l&auml;gga till.<br><br>
 <i>Klicka p&aring; hj&auml;lpknappen p&aring; n&auml;sta sida f&ouml;r att se hj&auml;lp om denna funktion.</i></b></p>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(91,1,'Administrera avdelningar
@@ -4966,8 +4966,8 @@ Det går att välja hur många träffar som skall visas per sida. Val finns mellan 1
 </tr>
 </table
 </div>
- 
- 
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(102,2,'
@@ -5079,9 +5079,9 @@ Genom att kombinera s&ouml;kmetoderna kan man g&ouml;ra avancerade s&ouml;kninga
 </table>
 
 </div>
- 
 
- 
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(103,1,'Chatt - inloggning
@@ -5090,7 +5090,7 @@ INSERT INTO texts( meta_id, name, text, type )
      values(103,3,'<HTML>
 <BR>
 <strong>Alias:</strong> Om man inte vill chatta under eget namn (användarnamnet) så kan man skriva in ett eget påhittat namn i rutan och sedan klicka på <strong>Använd alias</strong>. Vid klicket hamnar man direkt inne i chatten (val ar rum kan göras senare).
-<br><br><strong>Välj rum: </strong>Markera i nedrullningslistan vilket chattrum som du vill gå in i. Klicka sedan på <strong>Gå&nbsp;till&nbsp;chatten</strong>. 
+<br><br><strong>Välj rum: </strong>Markera i nedrullningslistan vilket chattrum som du vill gå in i. Klicka sedan på <strong>Gå&nbsp;till&nbsp;chatten</strong>.
 </HTML>
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
@@ -5112,8 +5112,8 @@ För att ta bort ett chattrum - markera namnet på chattrummet i nedrullningslista
 	<li><em>Visa enbart publika meddelanden</em> - endast publika meddelanden visas i chattrummet (privata meddelanden visas ej).
 	<li><em>Öka/minska typsnitt</em> - tillåter att chattaren kan få välja vilken teckenstorlek som meddelandena skall visas i.</ul>
 </html>
- 
- 
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(105,1,'Chatt - chattrum
@@ -5124,15 +5124,15 @@ INSERT INTO texts( meta_id, name, text, type )
 <br>Överst visas de inlägg som gjorts. Är inlägget av avvikande färg betyder det att det är ett privat meddelande (inga andra än den som skrivit inlägget och mottagaren ser det).
 <br><br>I nedre delen av bilden skriver man in sitt inlägg och anger vilka inställningar som skall gälla för inlägget. Där visas också vem man är inloggad som och i vilket chattrum man befinner sig i (på bilden: alias: sixten i chattrummet Programmering).
 <br><br>Knappen "<strong>Kicka ut chattare</strong>" visas endast om man är inloggad som Administratör. Genom att markera en chattare och sedan klicka på "<strong>Kicka ut chattare</strong>" så kickas chattaren ut från chatten.
-<br><br>I den vita rutan skriver man sitt inlägg, väljer sedan i den vänstra nedrullnings-listan vilken typ av inlägg som skall göras och i den högra vem man vill chatta med. När inställningarna är gjorda klickar man på "<strong>Skicka/Uppdatera</strong>" och inlägget skickas iväg. 
+<br><br>I den vita rutan skriver man sitt inlägg, väljer sedan i den vänstra nedrullnings-listan vilken typ av inlägg som skall göras och i den högra vem man vill chatta med. När inställningarna är gjorda klickar man på "<strong>Skicka/Uppdatera</strong>" och inlägget skickas iväg.
 <br><br>Man behöver inte skriva ett meddelande för att kunna läsa andras. Lämna bara rutan tom när du klickar på "<strong>Skicka/Uppdatera</strong>" så får du alla nya meddelanden men skickar inte nåt själv.<br><br>
 <strong>Byta rum:</strong> välj rum i nedrullningslistan och klicka på "<strong>Gå till</strong>".<br><br>
 <strong>Inställningar</strong> - se länken <em>Chatt - inställningar</em>.<br><br>
 <strong>Logga ut</strong> - klicka på knappen så loggas du ut från chatten.<br><br>
 <strong>Admin</strong> - Admin-knappen visas bara om man är inloggad som Administratör för chatten. Knappen leder tillbaka till huvudadministrationssidan för chatten. Se rubrik <em>Lägga till chatt</em>.
 </HTML>
- 
- 
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(106,1,'Chatt - inställningar
@@ -5142,7 +5142,7 @@ INSERT INTO texts( meta_id, name, text, type )
 <BR>
 Här visas de inställningar som chattaren av Administratören har blivit tilldelad att få ändra. <br><br>
 <strong>Uppdatera automatiskt</strong> - inställning kan göras för hur ofta sidan automatiskt skall uppdateras. Val finns mellan 10 och 90 sekunder i intervaller om 10 sekunder.
-<br><br><strong>Visa in/utgång</strong> - in och utgång visas i chattrummet. 
+<br><br><strong>Visa in/utgång</strong> - in och utgång visas i chattrummet.
 <br><br><strong>Visa enbart privata meddelanden</strong> - endast privata meddelanden (viskningar) visas i chattrummet.
 <br><br><strong>Visa enbart publika meddelanden</strong> - endast publika meddelanden visas i chattrummet (privata meddelanden visas ej).
 <br><br><strong>Visa datum/tid vid meddelanden</strong> - datum och tid visas framför meddelandet.
@@ -5162,8 +5162,8 @@ INSERT INTO texts( meta_id, name, text, type )
 "<strong>Avsluta admin</strong>" leder tillbaka till huvudadministrationssidan för chatten.
 </html>
 <br><br>
- 
- 
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(108,1,'Chatt - uppdatera mallfil (template) i ett befintligt mallset
@@ -5197,13 +5197,13 @@ e name&quot; button under the select box where the file or directory is selected
 <BR>
 <BR>&quot;Back&quot; leads to the System Administration menu.
 <BR>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(202,1,'Admin files
@@ -5266,7 +5266,7 @@ INSERT INTO texts( meta_id, name, text, type )
 <BR>
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(206,3,'Select the type of document or web page you wish to check. "All&quot; will list documents/web pages of every type created during the given period. 
+     values(206,3,'Select the type of document or web page you wish to check. "All&quot; will list documents/web pages of every type created during the given period.
 <BR>
 <BR>Enter a start and end date for your search. The date should be in the YYYY-MM-DD format.
 <BR>
@@ -5308,16 +5308,16 @@ gn="left"><i> Show format template </i> shows all the design templates in the sy
                     <p align="left"><i> Assign templates </i> to a particular template directory </li>
                 </ul>
                 <p align="left">"Back" leads back to the main admin menu.</p>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(208,1,'Admin format templates / template directories 
+     values(208,1,'Admin format templates / template directories
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(209,2,'Select the current name in the drop-down box. Enter the new name by &quot;New name:&quot; Click on &quot;OK&quot;.
@@ -5344,8 +5344,8 @@ INSERT INTO texts( meta_id, name, text, type )
 
 template directories&quot;.
 <BR>
- 
- 
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(211,1,'Create template directory
@@ -5368,7 +5368,7 @@ INSERT INTO texts( meta_id, name, text, type )
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(213,2,'This warns that a directory is about to be removed. The picture shows the templates connected to the directory about to be removed.<BR>
-<BR> If you wish to remove the directory and not lose these templates, move the named templates to another directory first (if they do not already belong to another directory). Do this by clicking &quot;Cancel&quot; and going to the Add/Remove Template function. 
+<BR> If you wish to remove the directory and not lose these templates, move the named templates to another directory first (if they do not already belong to another directory). Do this by clicking &quot;Cancel&quot; and going to the Add/Remove Template function.
 <BR>
 <BR> Then click on &quot;OK&quot;.
 <BR>
@@ -5395,7 +5395,7 @@ INSERT INTO texts( meta_id, name, text, type )
 <BR>
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(215,1,'Add a new IP Access  
+     values(215,1,'Add a new IP Access
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(215,2,'Select the user from the drop-down box. Enter the corresponding IP number or range of IP numbers valid for the user in the relevant fields. Click on &quot;Save&quot;.
@@ -5460,13 +5460,13 @@ ll be found.<
         <p> The results of a search can be listed by Header, Meta ID, Page Type, Date Modified, Date Created, Date Archived or Date Activated. Select which sort order you want.</p>
         <p> Click on"<b style="mso-bidi-font-weight:
 normal"><i style="mso-bidi-font-style:normal"> Search </i></b>". The results of the search are found at the bottom of the page. Link any number of pages to your current page by ticking the checkbox next to the page found and then clicking "Link ticked page(s)"</span>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(220,1,'Change the name of a design template
@@ -5503,7 +5503,7 @@ INSERT INTO texts( meta_id, name, text, type )
                   <p align="left"><i>Select name:</i> Enter the name for the template here. A <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
                   by <i> "Overwrite existing file" </i> will overwrite any template of the same name in the system. Do not tick this box if you are unsure about deleting the existing template.</p>
                   <p align="left">Select which template directories should have access to this template from the select box to the right. This can be done any time, but a template must be assigned to at least one directory before it can be used.</p>
-                  
+
 
 <p align="left">By clicking on "Upload",
                   the design template will be copied into the directory/directories.</p>
@@ -5515,13 +5515,13 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(223,1,'Upload template model
@@ -5541,7 +5541,7 @@ INSERT INTO texts( meta_id, name, text, type )
                   <p align="left">To display the model for the template:</p>
                   <ul>
                     <li>
-            
+
 
       <p align="left"><i>Select template:</i> Select the template (with *) that you wish to see by selecting it from the drop-down box. Click on "Show template model". The template model will be displayed in a new window. </li>
                   </ul>
@@ -5550,13 +5550,13 @@ INSERT INTO texts( meta_id, name, text, type )
                     <li>
                       <p align="left"><i>Select template:</i> Select the template (with *) that has the model you wish to delete from the drop-down box. Click on "Remove template model". The template model will then be deleted (* by the design template disappears as well). </li>
                   </ul>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(224,2,'<p align="left">The picture here shows a design template loaded into the system. </p>
@@ -5627,25 +5627,25 @@ INSERT INTO texts( meta_id, name, text, type )
                     <p> Make page changes </li>
                   <li>
                     <p> Admin conferences </li>
-                
+
                 </ul>
-                <p> Select your administration choice, and 
+                <p> Select your administration choice, and
 
 then click "Go to Admin page" (hidden in the picture here).</p>
                 <p> The link "Back to start page" leads back to
  StartDoc, the system´s first page.
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(229,2,'&quot;Admin&quot; leads to the page where the user can be given new roles, have roles taken away or have members of a role moved to another role. Mark the role you wish to work with.
 <BR>
-<BR>&quot;De-/Activate&quot; leads to a page where users can be activated or deactivated.  Deactivation means that the user can no longer log into the system.  A deactivated user can be reactivated. NB. Only members of the selected role are shown. Select all roles and all the  roles and all users will be listed. 
+<BR>&quot;De-/Activate&quot; leads to a page where users can be activated or deactivated.  Deactivation means that the user can no longer log into the system.  A deactivated user can be reactivated. NB. Only members of the selected role are shown. Select all roles and all the  roles and all users will be listed.
 <BR>
 <BR>&quot;Back&quot; leads back to the previous page.
 <BR>
@@ -5654,7 +5654,7 @@ INSERT INTO texts( meta_id, name, text, type )
      values(229,1,'Admin users and roles
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(230,1,'Admin roles  
+     values(230,1,'Admin roles
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(230,2,'The &quot;Admin roles&quot; button leads to the page where new roles can be added, roles can be deleted, role names can be changed, and rights inherent to roles can be edited.
@@ -5679,7 +5679,7 @@ INSERT INTO texts( meta_id, name, text, type )
       <td>
                 <p align="left"> Enter the name of the new role that is to be added. </p>
                 <p align="left"> By setting a <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
-                by <i>"Permission to get password by e-mail"</i>, the users with this role can receive their password by e-mail, provided they do not have another role prohibiting this right. 
+                by <i>"Permission to get password by e-mail"</i>, the users with this role can receive their password by e-mail, provided they do not have another role prohibiting this right.
                 (Ordering a password is done at the log-in page with the link "Forgotten your password?").</p>
                 <p align="left"> By setting a <img border="0" src="/imcode/images/se/helpimages/Admin-4.GIF" width="13" height="14">
                 by <i>"Self-register rights in conference"</i>, this role can be distributed to users who register themselves on a self-registery page (for example, to participate in an online conference). The role(s) that are given to s
@@ -5694,13 +5694,13 @@ elf-registered users are determined by the conference administrator, who selects
   </table>
   </center>
 </div>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(233,1,'Edit authority / rights for roles
@@ -5737,18 +5737,18 @@ INSERT INTO texts( meta_id, name, text, type )
           servermaster:</i></b> The name of the new servermaster can be entered here.<i><b> </b></i><p><i><b> Current server master e-mail:</b></i>
           Shows the e-mail of the person now registered as servermaster <i><b> </b></i> <p><b><i> Change servermaster e-mail:</i></b>
           The new e-mail address of the new servermaster can be entered here.<h3><b> Enter web master </b></h3>
-          <p><b><i> Current webmaster: </i></b> Shows the name of the person who is now responsible for managing the web site.<p><b><i> Change 
+          <p><b><i> Current webmaster: </i></b> Shows the name of the person who is now responsible for managing the web site.<p><b><i> Change
 
 
 webmaster: </i></b> The name of the new webmaster can be entered here.<p><b><i> Current webmaster e-mail: </i></b> Shows the e-mail of the person now registered as webmaster.<p><i><b> Change
           web master e-mail: </b></i> The new e-mail address of the new webmaster can be entered here.
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(236,1,'Add /edit text
@@ -5758,7 +5758,7 @@ INSERT INTO texts( meta_id, name, text, type )
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(236,2,'<i> Change text Txt 10 </i> shows one of the textboxes (text box no. 10) from a web page in edit mode. <i> Meta ID </i> underneath tells you that you are editing a specific web page that has this specific Meta ID number.</p>
-              <p> The original text is shown in the textbox.&nbsp; In the text box you can edit, paste in or write text, copy or delete text. 
+              <p> The original text is shown in the textbox.&nbsp; In the text box you can edit, paste in or write text, copy or delete text.
               If it is normal text, check that <b> Format </b>: <i> Plain text </i>
               is ticked.
 ',1)
@@ -5821,9 +5821,9 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100%"><b> Publish from: </b> A future time and date can be given as a publishing date if the page is not to be published now.</td>
 
 
- 
 
-  
+
+
  </tr>
     <tr>
       <td width="100%"><b> To the archives: </b> A future time and date can be given as the date when this page is to be archived. The links to this page will be removed on the given date. Ticking <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
@@ -5843,8 +5843,8 @@ INSERT INTO texts( meta_id, name, text, type )
 </div>
 <p align="center"><b>
 <br><br></p>
- 
- 
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(240,1,'Rights for Dynamic Authority 1
@@ -5888,11 +5888,11 @@ INSERT INTO texts( meta_id, name, text, type )
                   </tr>
                 </table>
 </div align="CENTER">
- 
- 
- 
- 
- 
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(241,1,'Rights for Dynamic Authority 1, for new sub-pages
@@ -5931,8 +5931,8 @@ INSERT INTO texts( meta_id, name, text, type )
                   <tr>
                     <td width="100%"><b> Right to edit images: </b> The role-member has the right to add, remove and edit images on the page.</td>
                   </tr>
-           
-  
+
+
      <tr>
                     <td width="100%"><b> Right to edit links: </b> The role-member has the right to create links and thus new sub-pages to the page. Select the permitted document types for the links from the select box. (To select more than one type, hold down the "Ctrl" key while clicking).</td>
                   </tr>
@@ -5941,11 +5941,11 @@ INSERT INTO texts( meta_id, name, text, type )
                   </tr>
                 </table>
 </div align="CENTER">
- 
- 
- 
- 
- 
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(242,1,'Rights for Dynamic Authority 2
@@ -5992,14 +5992,14 @@ ve link text, icon image by the links PLUS key words for searches, and the date 
                   </tr>
                 </table>
 </div>
- 
- 
- 
- 
- 
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(243,1,'Rights for Dynamic Authority 2, for new sub-pages  
+     values(243,1,'Rights for Dynamic Authority 2, for new sub-pages
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(243,2,'<div align="center">
@@ -6035,8 +6035,8 @@ INSERT INTO texts( meta_id, name, text, type )
                   <tr>
                     <td width="100%"><b> Right to edit images: </b> The role-member has the right to add, remove and edit images on the page.</td>
                   </tr>
-            
-  
+
+
     <tr>
                     <td width="100%"><b> Right to edit links: </b> The role-member has the right to create links and thus new sub-pages to the page. Select the permitted document types for the links from the select box. (To select more than one type, hold down the "Ctrl" key while clicking).</td>
                   </tr>
@@ -6045,11 +6045,11 @@ INSERT INTO texts( meta_id, name, text, type )
                   </tr>
                 </table>
 </div align="CENTER">
- 
- 
- 
- 
- 
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(244,1,'Add image - Image Archive
@@ -6098,8 +6098,8 @@ INSERT INTO texts( meta_id, name, text, type )
     </tr>
     <tr>
       <td width="100%"><b> Publish from: </b> A future time and date can be given as the publishing date if the page is not to be published now.</td>
- 
-  
+
+
  </tr>
     <tr>
       <td width="100%"><b> To the archives: </b> A future time and date can be given for when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
@@ -6112,8 +6112,8 @@ INSERT INTO texts( meta_id, name, text, type )
           <li><i> New window </i> means that the page will be opened in a new browser window. </li>
           <li><i> Full window </i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one) in the current window.</li>
           <li><i> Other frame </i> - if a frameset is being used here you can control in which frame the page will appear.</li>
-    
-    
+
+
 </ul>
       </td>
     </tr>
@@ -6121,13 +6121,13 @@ INSERT INTO texts( meta_id, name, text, type )
 </div>
 <p align="center"><b>
 After having filled in this page (or at least filled in Header), and clicked on "OK", another page for diagram creation will appear.<br><br></p>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(248,1,'Create a diagram - Picture 2
@@ -6150,7 +6150,7 @@ INSERT INTO texts( meta_id, name, text, type )
 </div>
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(249,1,'Create a diagram - Picture 3 - 
+     values(249,1,'Create a diagram - Picture 3 -
 <BR>Data entry form for graph/chart and tables
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
@@ -6195,8 +6195,8 @@ nteger, the text written in this field will not be displayed.</td>
     <td width="100%" height="19"><b>Delete row: </b>This removes a row. The row that is actually removed is determined in the drop-down menu. <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">, When the drop-down menu is released, the row is removed. </td>
   </tr>
   <tr>
-  
-  
+
+
 <td width="100%" height="19"><b>Delete column: </b> This is to remove a column.  The column that is removed is determined by your selection in the drop-down menu.</td>
   </tr>
   <tr>
@@ -6218,8 +6218,8 @@ nteger, the text written in this field will not be displayed.</td>
   </table>
   </center>
 </div>
- 
-  
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(249,4,'<div align="CENTER">
@@ -6245,10 +6245,10 @@ INSERT INTO texts( meta_id, name, text, type )
   </tr>
 </table>
 </div>
- 
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(250,1,'Create a diagram - Picture 4 
+     values(250,1,'Create a diagram - Picture 4
 <BR>New diagram menu
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
@@ -6320,7 +6320,7 @@ INSERT INTO texts( meta_id, name, text, type )
           <table border="1" width="500">
             <tr>
               <td>
-              
+
           <h4 style="text-align:justify"> Previous </h4>
           <p class="MsoBodyText" style="text-align:justify"> This button takes you back to the most recently visited page (NB. the browser "back" button, on the other hand, takes you back step-by-step in the editing process on the current page before returning to the most recently visited page).</p>
           <h4 style="text-align:justify"> Normal </h4>
@@ -6361,7 +6361,7 @@ INSERT INTO texts( meta_id, name, text, type )
           <h4 style="text-align:justify"> Include </h4>
 
 
-       
+
    <p style="text-align:justify"> When you click on "<b style="mso-bidi-font-weight:normal"> Include </b>"
           any Include functionality is displayed in the form of a white admin textbox with an "<b style="mso-bidi-font-weight:normal"> OK </b><span style="mso-bidi-font-weight:bold">" button and a link marked "<i> Edit </i>".</span> </p>
           <p style="text-align:justify"> If no include textbox appears, there are no dynamic include possibilities on this template. Switch templates if you need to insert a page within a page.</p>
@@ -6392,7 +6392,7 @@ text-decoration:none;text-underline:none"> Show all pages </span></a></p>
 text-decoration:none;text-underline:none"> Remove a page </span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    
+
     </span></span>
 	<a href="#_Kontrollera_Internetl&auml;nkar"><span style="color:windowtext;text-decoration:none;text-underline:none"> Check Internet links </span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New  Roman""> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -6425,8 +6425,8 @@ windowtext;text-decoration:none;text-underline:none"> Page changes </span></a></
   </center>
 </div>
 <div align="center" class="unnamed1">
- 
- 
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(255,1,'Admin buttons
@@ -6507,13 +6507,13 @@ he forum in parentheses. Select the new number of discussions to be shown by cli
   </table>
   </center>
 </div>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(261,1,'Conference - admin contributions
@@ -6531,9 +6531,9 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(262,2,'<div align="center">
@@ -6550,13 +6550,13 @@ INSERT INTO texts( meta_id, name, text, type )
   </center>
 </div>
 <p align="center">&nbsp;</p>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(262,1,'Conference - admin template directory
@@ -6620,7 +6620,7 @@ INSERT INTO texts( meta_id, name, text, type )
 
  discussion, all the contributions in that discussion will be displayed on the window´s right-hand side. If <img border="0" src="/imcode/images/se/helpimages/Konf-k3.GIF" width="14" height="16">
         &nbsp;(EXPERT symbol) is shown in front of the header, the author of this contribution is registered as a specialist. After the "specialist symbol", the contribution´s header, text, author and date created are displayed.</p>
-        <p>You can control how the contributions are presented in your computer by clicking on 
+        <p>You can control how the contributions are presented in your computer by clicking on
         <i>"ascending" </i>or <i>"descending"</i>.
         Then click on "Sort". The contributions are sorted by the date created. </p>
         <p>A new discussion is created by clicking "New discussion".</p>
@@ -6639,13 +6639,13 @@ tion.</p>
   </table>
   </center>
 </div>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(266,1,'Conference view
@@ -6672,13 +6672,13 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(267,1,'Conference - self-registration
@@ -6741,7 +6741,7 @@ INSERT INTO texts( meta_id, name, text, type )
                   <li>
                     <p align="left"><i> Telephone number </i> - To add a telephone number, enter the country code (without +), local area code and finally
                     the telephone no. Then click on OK. To remove or change
-                    a telephone number: scroll down to the telephone number which is to be 
+                    a telephone number: scroll down to the telephone number which is to be
                     edited/removed by clicking on <img border="0" src="../imcmsimages/se/helpimages/Pil.GIF" width="17" height="22">.
                     After the telephone number is selected, click on either "Edit" or "Delete". If you choose "Edit", the telephone no. will be displayed in the above boxes and you can then edit the number.  When finised, Click on
                     "OK". </li>
@@ -6767,13 +6767,13 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(271,1,'Add /edit user
@@ -6835,7 +6835,7 @@ re
                 <li><i> None: </i> The placement of the text is determined by the visitor´s browser"s default setting.</li>
                 <li><i> Baseline: </i> The text begins at the bottom right-hand corner of the image, with the base of the text exactly at the baseline and continues directly under the image.</li>
                 <li><i> Top: </i> The first row of text begins at the top right-hand corner while the second row continues directly under the image.</li>
-                <li><i> Middle: </i> The first row of text starts in the center 
+                <li><i> Middle: </i> The first row of text starts in the center
 of the image (to the right of
  the
  right-hand edge), while row two continues under the image.</li>
@@ -6846,30 +6846,30 @@ of the image (to the right of
                 <li><i> Pic left: </i> The text is to the RIGHTof the image.</li>
                 <li><i> Pic right: </i> The text is to the LEFT of the image.</li>
               </ul>
-           
+
  </td>
 
-    
-     
+
+
  </tr>
           <tr>
-         
-   <td width="100%"><b> 
+
+   <td width="100%"><b>
 
 
 Image
  text while loading: </b> Text shown while the main image is being loaded (appropriate when the main image file is large, or when many visitors have slow Internet access). NB. Many visually-impaired visitors to your site are dependent on a good description here, as they have browsers which only read this text, without displaying the image itself.</td>
           </tr>
           <tr>
-            <td width="100%"><b> 
+            <td width="100%"><b>
 Alt image while loading: </b> Image shown while the main image is being loaded (appropriate when the main image file is large or when many visitors have slow Internet access).</td>
           </tr>
           <tr>
             <td width="100%"><b> Space around image: </b> Here is where you decide if there should be any empty space around the image.
               The size of this space is entered in pixels. Both vertical
               and horizontal space can be controlled.</td>
-     
-     </tr>   
+
+     </tr>
       <tr>
             <td width="100
 %"><b> Linked to www:
@@ -6882,27 +6882,27 @@ Alt image while loading: </b> Image shown while the main image is being loaded (
         <ul>
           <li><i> Current window:</i> Opens the page in the top-most window. NB. window, not frame. </li>
 <li><i> New window:</i> Opens the page in a new browser window. </li>
-          
+
 <li><i> Parent frame:</i> Opens the page in the frame or window where the frame set is found.</li>
           <li><i> Same frame:</i> Opens the page in the same frame where the link is found. </li>
-          
+
           <li><i> Other frame:</i> Opens the frame that you choose from the current frameset. Enter the name of the frame in the field to the right.</li>
               <ul>
 
 
-         
+
      </ul>
             </td>
           </tr>
         </table>
 </div align="Center">
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(273,2,'<div align="center">
@@ -6921,7 +6921,7 @@ INSERT INTO texts( meta_id, name, text, type )
 <p align="center">&nbsp;&nbsp;&nbsp; </p>
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
-     values(273,1,'Add an image- Browse/Search 
+     values(273,1,'Add an image- Browse/Search
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(274,1,'Add a file upload - Page 2
@@ -6943,10 +6943,10 @@ INSERT INTO texts( meta_id, name, text, type )
         <p class="MsoBodyText" align="left"> Click on "OK".</p>
         </blockquote>
   <center>
- 
- 
- 
- 
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(275,1,'Create a static HTML page - Page 1
@@ -6981,12 +6981,12 @@ hich are not already found on the page) that will help find this page in a site 
       <td width="100%"><b>Publish from: </b>A future time and date can be given as the publishing date if the page is not to be published now.</td>
 
 
- 
-  
+
+
  </tr>
     <tr>
       <td width="100%"><b>To the archives: </b>
-A 
+A
 future time and date can be given as the date when this page is to be archived. The links to this page will be removed on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
     </tr>
@@ -7005,13 +7005,13 @@ d>
 </div>
 <p align="center"><b>
 After having filled in this page (or at least filled in Header) and clicked on "OK", another page for the HTML code will appear.<br><br></p>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(276,1,'Create a static HTML page - Page 2
@@ -7048,7 +7048,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <h3 align="center">Advanced</h3>
   <table border="1" width="75%">
     <tr>
-      <td width="100%"><b>Key words (for searches): </b>These are additional words or codes (which 
+      <td width="100%"><b>Key words (for searches): </b>These are additional words or codes (which
 
 are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
@@ -7063,8 +7063,8 @@ td
 >
 
 
- 
-  
+
+
  </tr>
     <tr>
       <td width="100%"><b>To the archives: <
@@ -7081,20 +7081,20 @@ td
           <li><i>Other frame</i> - if a frameset is being used here you can control in which frame the page will appear.</li>
         </ul
 >
- 
+
      </td>
     </tr>
   </table>
 </div>
 <p align="center"><b>
 </p>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(278,3,'<br><h3 align="center">Example of HTML format</h3>
@@ -7147,13 +7147,13 @@ To return to the page click on "Normal".</p>
   </center>
 </div>
 <p align="center">&nbsp;</p>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(279,3,'<div align="center">
@@ -7186,7 +7186,7 @@ to view all the types of pages/links that can be created </p>
   <tr>
     <td width="100%"><b> Diagram: </b> Creates a graph and a link to it from the current page. NB. This function requi
 re
-s 
+s
 an extra imCMS module.</td>
   </tr>
   <tr>
@@ -7195,18 +7195,18 @@ an extra imCMS module.</td>
   <tr>
     <td width="100%"><b> Existing page: </b> Creates a link to one or more existing pages in this system.</td>
   </tr>
-    
+
 </table>
 </div align "center">
 <hr>
 <h2 align="center"> Administer existing links </h2>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(280,1,'Add a file upload - Page 1
@@ -7248,8 +7248,8 @@ dditional words or codes (which are not already found on the page) that will hel
 >
 
 
- 
-  
+
+
  </tr>
     <tr>
       <
@@ -7274,13 +7274,13 @@ he page will appear.</li>
 </div>
 <p align="center"><b>
 After having filled in this page (or at least filled in Header), and clicked on "OK", another page for file upload settings will appear. <br><br></p>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(281,1,'Create an Internet link - Page 1
@@ -7317,8 +7317,8 @@ td
 >
 
 
- 
-  
+
+
  </tr>
     <tr>
       <td width="100%"><b>To the archives: </
@@ -7342,13 +7342,13 @@ A future time and date can be given as the date when this page is to be archived
 </div>
 <p align="center"><b>
 After having filled in this page (or at least filled in Header) and clicked on "OK", another page for Internet link settings will appear.<br><br></p>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(282,2,'<div align="center">
@@ -7356,9 +7356,9 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="450">
     <tr>
       <td>
-   
+
 <blockquote>
-   
+
 <p align="left">You can control how the page is displayed here. </p>
 </blockquote>
                   <ul>
@@ -7367,17 +7367,16 @@ INSERT INTO texts( meta_id, name, text, type )
                   </ul>
                   <ul>
                     <li>
-                      <p align="left"><i>New window </i> means that the page will be opened in a new browser window. 
+                      <p align="left"><i>New window </i> means that the page will be opened in a new browser window.
 &nbsp;</li>
                   </ul>
                   <ul>
                     <li>
-                      <p align="left"><i>Full window </i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one) in the current window. 
+                      <p align="left"><i>Full window </i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one) in the current window.
 </li>
                   </ul>
                   <ul>
                     <li>
-       
 
 
 
@@ -7385,22 +7384,23 @@ INSERT INTO texts( meta_id, name, text, type )
 
 
 
-               <p align="left"><i>Other frame</i> - if a frameset is being used here you can control in which frame the page will appear. 
+
+               <p align="left"><i>Other frame</i> - if a frameset is being used here you can control in which frame the page will appear.
 </li>
                   </ul>
-   
+
       </td>
     </tr>
   </table>
   </center>
 </div>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(282,1,'Create an Internet link - Page 2
@@ -7426,9 +7426,9 @@ INSERT INTO texts( meta_id, name, text, type )
       <i> Show page link to unauthorised users </i>, visitors without page authority are allowed to see the link but prevented from visiting the page.</td>
   </tr>
   <tr>
-    <td width="100%"><b> Authority: </b> Displays the roles that have some level of authority on the page in question. 
+    <td width="100%"><b> Authority: </b> Displays the roles that have some level of authority on the page in question.
       <ul>
-        <li><i> None </i> means that not even the link is seen by this role unless <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14"><i> Show page link to unauthorised users </i> is ticked. 
+        <li><i> None </i> means that not even the link is seen by this role unless <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14"><i> Show page link to unauthorised users </i> is ticked.
         </li>
         <li><i> Read </i> means that users with this role can read everything on the page, but cannot make any change
 
@@ -7452,7 +7452,7 @@ ole authority table. A level of authority can be assigned there.</p>
   <tr>
     <td width="100%"><b> Define authority: </b> By clicking on "Define authority" either by <i> Dynamic Authority 1 </i> or <i> Dynamic Authority 2 </i>, a new settings page will appear where you can define in detail the authority to be given.  A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       means that Dynamic Authority 1 has more authority than Dynamic Authority 2 on this specific page.  This checkbox should be ticked if you wish to strongly differentiate the two dynamic levels of authority. This tick means that Dynamic Authority 1 is allowed to redefine the authority of dynamic authority 2 and change the roles assigned to the lower levels of the page.
-      "Define for new sub-pages" means that you can define the authority configuration of future sub-pages created from this page and that this configuration can be different than those on this 
+      "Define for new sub-pages" means that you can define the authority configuration of future sub-pages created from this page and that this configuration can be different than those on this
 page
 
 . Default settings for new sub-pages will otherwise be those found on this page. </td>
@@ -7463,11 +7463,11 @@ page
   </tr>
 </table>
 </div align="CENTER">
- 
- 
- 
- 
- 
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(285,1,'Delete a page
@@ -7513,8 +7513,8 @@ INSERT INTO texts( meta_id, name, text, type )
 ble>
   </center>
 </div>
- 
- 
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(288,1,'Delete  a role - Warning
@@ -7588,8 +7588,8 @@ dditional words or codes (which are not already found on the page) that will hel
 >
 
 
- 
-  
+
+
  </tr>
     <tr>
       <
@@ -7605,7 +7605,7 @@ idth="100%"><b> To the archives: </b> You can allocate a  future time and date f
           <li><i> New window </i> means that the page will be opened in a new browser window. </li>
           <li><i> Full window </i> means that the page will be opened in a new frame that replaces all other frames (if there are more than one) in the current window.</li>
           <li><i> Other frame </i> - if a frameset is being used here you can control in which frame the p
-age 
+age
 will
  appear.</li>
         </ul>
@@ -7617,13 +7617,13 @@ will
 After filling in this page (or at least the Header), and clicking on "OK", another page of settings will appear. This page will depend on the type of page you are creating.<br><br>
 
 <i> Click on the help button on the next page to receive further help regarding that function.</i></b></p>
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
+
+
+
 ',1)
 INSERT INTO texts( meta_id, name, text, type )
      values(291,1,'Admin sections
@@ -7794,9 +7794,9 @@ INSERT INTO texts( meta_id, name, text, type )
 INSERT INTO texts( meta_id, name, text, type )
      values(300,2,'Shows results for polls that have already been carried out. Click the <b>"Back"</b> button to go to the previous page.
 ',1)
- 
+
 -- add the templates and relate templates and templategroups
--- drop constraints 
+-- drop constraints
 
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_templates_cref_templates]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 
@@ -7807,16 +7807,16 @@ ALTER TABLE [dbo].[templates_cref] DROP CONSTRAINT FK_templates_cref_templates
 if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_text_docs_templates]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
 
 ALTER TABLE [dbo].[text_docs] DROP CONSTRAINT FK_text_docs_templates
- 
--- delete old help-template from templates and from templates_cref 
-DELETE FROM templates 
+
+-- delete old help-template from templates and from templates_cref
+DELETE FROM templates
 WHERE template_id < 12 and simple_name like 'Help%'
 
-DELETE FROM templates_cref 
-WHERE template_id < 12 and group_id = @groupId 
- 
+DELETE FROM templates_cref
+WHERE template_id < 12 and group_id = @groupId
+
 -- insert new help_templates to templates and templates_cref
- 
+
 INSERT INTO templates ( template_id , template_name , simple_name , lang_prefix , no_of_txt , no_of_img , no_of_url )
 	values (2,'Helpmenu_se.html','Helpmenu_se','se',0,0,0)
 INSERT INTO templates_cref(group_id, template_id)
@@ -7833,12 +7833,12 @@ INSERT INTO templates ( template_id , template_name , simple_name , lang_prefix 
 	values (5,'Help_en.html','Help_en','se',4,2,0)
 INSERT INTO templates_cref(group_id, template_id)
 	values (@groupId,5)
- 
+
 -- add constraints
 
-ALTER TABLE [dbo].[text_docs] ADD 
+ALTER TABLE [dbo].[text_docs] ADD
 
-	CONSTRAINT [FK_text_docs_templates] FOREIGN KEY 
+	CONSTRAINT [FK_text_docs_templates] FOREIGN KEY
 
 	(
 
@@ -7851,9 +7851,9 @@ ALTER TABLE [dbo].[text_docs] ADD
 	)
 
 
-ALTER TABLE [dbo].[templates_cref] ADD 
+ALTER TABLE [dbo].[templates_cref] ADD
 
-	CONSTRAINT [FK_templates_cref_templates] FOREIGN KEY 
+	CONSTRAINT [FK_templates_cref_templates] FOREIGN KEY
 
 	(
 
@@ -7868,7 +7868,7 @@ ALTER TABLE [dbo].[templates_cref] ADD
 -- lets set templates for all help meta_ids
 -- delete old text_docs
 DELETE FROM text_docs WHERE meta_id >= 1 and meta_id <= 400
- 
+
 -- insert new text_docs
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
       values (1,2, @groupId, 1,-1,-1)
@@ -8670,11 +8670,11 @@ INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_
       values (399,5, @groupId, 1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
       values (400,5, @groupId, 1,-1,-1)
- 
+
 -- insert all meta_id in childs
 --delete old
 DELETE FROM childs WHERE to_meta_id >= 1 and to_meta_id <= 400
- 
+
 --insert new
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
       values (1,2,1,500)
@@ -9090,12 +9090,12 @@ INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
       values (201,299,1,1470)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
       values (201,300,1,1480)
- 
+
 --lets set all role_rights
- 
+
 --delete old
 DELETE FROM roles_rights WHERE meta_id >= 1 and meta_id <= 400
- 
+
 -- we have to get the role_id for users and superadmin from the current database
  DECLARE @user_roleId varchar(1), @sa_roleId varchar(1)
 SELECT @user_roleId = role_id FROM roles
@@ -10703,14 +10703,14 @@ INSERT INTO roles_rights (role_id, meta_id, set_id )
       values (@user_roleId, 400, 3)
 INSERT INTO roles_rights (role_id, meta_id, set_id )
       values (@sa_roleId, 400,3)
- 
+
 
 If @@error = 0
 	BEGIN
            Commit Tran
            Print 'Commit Tran'
            Print 'OBS!! Glöm inte att uppdatera bilder i katalogerna för helpimages'
-	END    
+	END
 Else
 	BEGIN
             Rollback Tran
