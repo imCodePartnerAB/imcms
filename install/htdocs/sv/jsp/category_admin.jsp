@@ -21,7 +21,7 @@ imcmsGui("head", null);
 <%
     AdminCategories.FormData formData = (AdminCategories.FormData)request.getAttribute(AdminCategories.ATTRIBUTE__FORM_DATA);
     StringBuffer messageToUser = new StringBuffer("");
-
+    CategoryDomainObject categoryToEdit = formData.getCategoryToEdit() ;
 %>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
 <form name="head" action="AdminCategories" method="post">
@@ -162,7 +162,6 @@ imcmsGui("mid", null);
     <%} // ------ add category -------
     else if(request.getParameter(AdminCategories.PARAMETER_MODE__ADD_CATEGORY) != null) {
 
-        CategoryDomainObject categoryToEdit = formData.getCategoryToEdit();
         if( request.getParameter("category_add") != null && !formData.getUniqueName() ) {
             messageToUser.append("<? install/htdocs/sv/jsp/category_admin/message_name_already_exists/1 ?> \"");
             messageToUser.append(request.getParameter("name") + "\" ");
@@ -216,7 +215,7 @@ imcmsGui("mid", null);
         <%}%>
 
 
-        <% CategoryDomainObject categoryToEdit = formData.getCategoryToEdit() ;
+        <%
             if(categoryToEdit != null ){
                 boolean readonly = false;
             %>
@@ -248,30 +247,9 @@ imcmsGui("mid", null);
                 </select> &nbsp; <input type="submit" class="imcmsFormBtn" name="select_category_to_edit" value="<? global/select ?>"></td>
         </tr>
         <%}
-        if(formData.getCategoryToEdit() != null ){  %>
-        <tr>
-            <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_name ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXT","name",30,50,null, "<%= formData.getCategoryToEdit().getName()%>");
-            </script>&nbsp;ID: <%=formData.getCategoryToEdit().getId() %> </td>
-        </tr>
-        <tr><td colspan="2"></td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/description ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXTAREA","description",30,2,"100%",null);
-            </script><%= formData.getCategoryToEdit().getDescription()%></textarea></td>
-        </tr>
-        <tr><td colspan="2"></td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/icon ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXT","icon",30,255,null, "<%= formData.getCategoryToEdit().getImage()%>");
-            </script>
-            <%if(!formData.getCategoryToEdit().getImage().equals("")) { %>
-                &nbsp;<input type="image" src="<%=formData.getCategoryToEdit().getImage() %>" name="" value="" border="0">
-            <%}%></td>
-        </tr>
+        if(null != categoryToEdit) {
+            boolean readonly = true ;%>
+            <%@ include file="category_admin_category.jsp"%>
         <%}%>
     <%}  // ---------- delete category type------------
     else if(request.getParameter(AdminCategories.PARAMETER_MODE__DELETE_CATEGORY_TYPE) != null ) {
@@ -324,30 +302,9 @@ imcmsGui("mid", null);
         </tr>
         <tr><td colspan="2">&nbsp;</td></tr>
         <% }
-        if(formData.getCategoryToEdit() != null) { %>
-        <tr>
-            <td width="80" height="24" class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/category_name ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXT","name",30,50,null, "<%= formData.getCategoryToEdit().getName()%>");
-            </script></td>
-        </tr>
-        <tr><td colspan="2"></td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/description ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXTAREA","description",30,2,"100%",null);
-            </script><%= formData.getCategoryToEdit().getDescription()%></textarea></td>
-        </tr>
-        <tr><td colspan="2"></td></tr>
-        <tr>
-		    <td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/category_admin/icon ?> &nbsp;</td>
-            <td><script>
-                writeFormField("TEXT","icon",30,255,null, "<%= formData.getCategoryToEdit().getImage()%>");
-            </script>
-            <%if(!formData.getCategoryToEdit().getImage().equals("")) { %>
-                &nbsp;<input type="image" src="<%=formData.getCategoryToEdit().getImage() %>" name="" value="" border="0">
-            <%} %></td>
-        </tr>
+        if(null != categoryToEdit) {
+            boolean readonly = true ;%>
+            <%@ include file="category_admin_category.jsp"%>
         <%}%>
          <%if( messageToUser.length() > 0 ) { %>
         <tr><td colspan="2">&nbsp;</td></tr>
