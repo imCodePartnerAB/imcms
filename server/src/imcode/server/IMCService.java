@@ -1404,15 +1404,19 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 						       }
 						       ) ;
 		} else if (includelevel>0) {
-			int included_meta_id = Integer.parseInt((String)included_docs.get(String.valueOf(no))) ;
-			String document = new String(parsePage(included_meta_id,user,-1,includelevel-1),"8859_1") ;
-			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-			document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
-			return document ;
+		    int included_meta_id = Integer.parseInt((String)included_docs.get(String.valueOf(no))) ;
+		    String document = new String(parsePage(included_meta_id,user,-1,includelevel-1),"8859_1") ;
+		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+		    document = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,document) ;
+		    return document ;
 		}
 	    } catch (IOException ex) {
 		return "<!-- imcms:include failed: "+ex+" -->" ;
+   	    } catch (NumberFormatException ex) {
+		// There was no such include in the db.
+		return "" ;
 	    }
+
 	    return "" ;
 	}
 
