@@ -44,7 +44,7 @@ public class AdminRandomTexts extends Administrator {
         }
 
         //get fortunefiles
-        File fortune_path = Utility.getDomainPrefPath("FortunePath");
+        File fortune_path = imcref.getConfig().getFortunePath();
         File[] files = fortune_path.listFiles();
 
         StringBuffer options = new StringBuffer();

@@ -188,7 +188,7 @@ public class FileAdmin extends HttpServlet {
     }
 
     private File[] getRoots() throws IOException {
-        String rootpaths = Utility.getDomainPref( "fileadmin_rootpaths" );
+        String rootpaths = ApplicationServer.getIMCServiceInterface().getConfig().getFileAdminRootPaths();
         List rootList = new ArrayList();
         if ( rootpaths != null ) {
             StringTokenizer st = new StringTokenizer( rootpaths, ":;" );

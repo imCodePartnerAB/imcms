@@ -43,7 +43,7 @@ public class AdminFortunes extends Administrator {
 
         //get fortunefiles
 
-        File fortune_path = Utility.getDomainPrefPath("FortunePath");
+        File fortune_path = imcref.getConfig().getFortunePath();
         File[] files = fortune_path.listFiles();
 
         String options = "<option value=\"No_Choice\" selected>-- V&auml;lj Fil --</option>";
@@ -114,7 +114,7 @@ public class AdminFortunes extends Administrator {
             String options = "";
 
 
-            File fortune_path = Utility.getDomainPrefPath("FortunePath");
+            File fortune_path = imcref.getConfig().getFortunePath();
             File file = new File(fortune_path, whichFile + "statistics.txt");
             if (file.exists()) {	//öppna filen med detta namnet, om det finns en statisticsfil, annars skriv felmeddelande	//öppna filen med detta namnet, om det finns en statisticsfil, annars skriv felmeddelande
                 String openFile = imcref.getFortune(whichFile + "statistics.txt");

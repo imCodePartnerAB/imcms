@@ -191,11 +191,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
         return null;
     }
 
-    // get url-path to images
-    public String getImageUrl() {
-        return null;
-    }
-
     // Return url-path to imcmsimages.
     public String getImcmsUrl() {
         return null;  // TODO

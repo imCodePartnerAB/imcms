@@ -604,13 +604,6 @@ final public class IMCService implements IMCServiceInterface {
     }
 
     /**
-     * Return url-path to images.
-     */
-    public String getImageUrl() {
-        return config.getImageUrl();
-    }
-
-    /**
      * @return file-path to imcmsimages
      *         <p/>
      *         Return file-path to imcmsimages

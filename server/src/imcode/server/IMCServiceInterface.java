@@ -96,10 +96,6 @@ public interface IMCServiceInterface {
     public File getTemplatePath()
 	;
 
-    // get url-path to images
-    public String getImageUrl()
-	;
-
     // get file-path to imcmsimages
     public File getImcmsPath()
 	;

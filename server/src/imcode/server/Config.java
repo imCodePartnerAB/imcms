@@ -9,11 +9,13 @@ public class Config {
     private File fortunePath;
     private File filePath;
     private File imcmsPath;
+    private File imagePath;
     private String imageUrl;
     private String smtpServer;
     private int smtpPort;
     private String defaultLanguage;
     private String sessionCookieDomain;
+    private String fileAdminRootPaths;
 
     public void setTemplatePath( File templatePath ) {
         this.templatePath = templatePath;
@@ -100,5 +102,21 @@ public class Config {
 
     public void setSessionCookieDomain( String sessionCookieDomain ) {
         this.sessionCookieDomain = sessionCookieDomain;
+    }
+
+    public File getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath( File imagePath ) {
+        this.imagePath = imagePath;
+    }
+
+    public String getFileAdminRootPaths() {
+        return fileAdminRootPaths;
+    }
+
+    public void setFileAdminRootPaths( String fileAdminRootPaths ) {
+        this.fileAdminRootPaths = fileAdminRootPaths;
     }
 }

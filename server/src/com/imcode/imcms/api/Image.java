@@ -19,7 +19,7 @@ public class Image {
     public String getSrcUrl() { // image srcurl relative webapp ( /imcms/images/theimage.gif )
         String result = "";
         if( !"".equals(internalImage.getUrl())){
-            result =  ApplicationServer.getIMCServiceInterface().getImageUrl() + internalImage.getUrl();
+            result =  ApplicationServer.getIMCServiceInterface().getConfig().getImageUrl() + internalImage.getUrl();
         }
 
 

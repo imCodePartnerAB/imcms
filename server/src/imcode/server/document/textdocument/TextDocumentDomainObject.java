@@ -92,8 +92,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         getLazilyLoadedTextDocumentAttributes().menus.put( new Integer( menuIndex ), menu );
     }
 
-    public void setText( int textFieldIndex, TextDomainObject text ) {
-        getLazilyLoadedTextDocumentAttributes().texts.put( new Integer( textFieldIndex ), text );
+    public void setText( int textIndex, TextDomainObject text ) {
+        getLazilyLoadedTextDocumentAttributes().texts.put( new Integer( textIndex ), text );
     }
 
     public int getDefaultTemplateIdForRestrictedPermissionSetOne() {
@@ -169,6 +169,10 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     protected void loadAllLazilyLoadedDocumentTypeSpecificAttributes() {
         getLazilyLoadedTextDocumentAttributes();
+    }
+
+    public void setImage( int imageIndex, ImageDomainObject image ) {
+        getLazilyLoadedTextDocumentAttributes().images.put( new Integer( imageIndex ), image ) ;
     }
 
     private class LazilyLoadedTextDocumentAttributes implements Serializable, Cloneable {

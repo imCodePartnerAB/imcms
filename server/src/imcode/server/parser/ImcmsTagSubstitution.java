@@ -10,6 +10,7 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.FileCache;
+import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
@@ -105,53 +106,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             Integer imageIndex = (Integer)iterator.next();
             ImageDomainObject image = (ImageDomainObject)images.get( imageIndex );
 
-            StringBuffer value = new StringBuffer( 96 );
-            if ( !"".equals( image.getUrl() ) ) {
-
-                if ( !"".equals( image.getLinkUrl() ) ) {
-                    value.append( "<a href=\"" ).append( image.getLinkUrl() ).append( "\"" );
-                    if ( !"".equals( image.getTarget() ) ) {
-                        value.append( " target=\"" ).append( image.getTarget() ).append( "\"" );
-                    }
-                    value.append( '>' );
-                }
-
-                String imageUrl = service.getImageUrl() + image.getUrl();
-
-                value.append( "<img src=\"" + imageUrl + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-                if ( 0 != image.getWidth() ) {
-                    value.append( " width=\"" + image.getWidth() + "\"" );
-                }
-                if ( 0 != image.getHeight() ) {
-                    value.append( " height=\"" + image.getHeight() + "\"" );
-                }
-                value.append( " border=\"" + image.getBorder() + "\"" );
-
-                if ( 0 != image.getVerticalSpace() ) {
-                    value.append( " vspace=\"" + image.getVerticalSpace() + "\"" );
-                }
-                if ( 0 != image.getHorizontalSpace() ) {
-                    value.append( " hspace=\"" + image.getHorizontalSpace() + "\"" );
-                }
-                if ( !"".equals( image.getName() ) ) {
-                    value.append( " name=\"" + image.getName() + "\"" );
-                }
-                if ( !"".equals( image.getAlternateText() ) ) {
-                    value.append( " alt=\"" + image.getAlternateText() + "\"" );
-                }
-                if ( !"".equals( image.getLowResolutionUrl() ) ) {
-                    value.append( " lowscr=\"" + image.getLowResolutionUrl() + "\"" );
-                }
-                if ( !"".equals( image.getAlign() ) && !"none".equals( image.getAlign() ) ) {
-                    value.append( " align=\"" + image.getAlign() + "\"" );
-                }
-                if ( !"".equals( image.getLinkUrl() ) || imagemode ) {
-                    value.append( "></a>" );
-                } else {
-                    value.append( ">" );
-                }
-            }
-            imageMap.put( imageIndex, value.toString() );
+            imageMap.put( imageIndex, Utility.getImageTag( image ) );
         }
         return imageMap;
     }

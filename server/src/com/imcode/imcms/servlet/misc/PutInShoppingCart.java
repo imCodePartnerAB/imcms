@@ -226,25 +226,6 @@ public class PutInShoppingCart extends HttpServlet {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        String mailServer = Utility.getDomainPref( "smtp_server" );
-        String stringMailPort = Utility.getDomainPref( "smtp_port" );
-        String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
-
-        // Handling of default-values is another area where java can't hold a candle to perl.
-        int mailport = 25;
-        try {
-            mailport = Integer.parseInt( stringMailPort );
-        } catch ( NumberFormatException ignored ) {
-            // Do nothing, let mailport stay at default.
-        }
-
-        int mailtimeout = 10000;
-        try {
-            mailtimeout = Integer.parseInt( stringMailtimeout );
-        } catch ( NumberFormatException ignored ) {
-            // Do nothing, let mailtimeout stay at default.
-        }
-
         String mailFromAddress = Prefs.get( "mail-from-address", SHOP_CONFIG );
         String mailToAddress = Prefs.get( "mail-to-address", SHOP_CONFIG );
         String mailSubject = Prefs.get( "mail-subject", SHOP_CONFIG );
@@ -328,7 +309,7 @@ public class PutInShoppingCart extends HttpServlet {
 
         log.debug( "Sending mail to " + mailToAddress );
         /* Send the mail */
-        SMTP smtp = new SMTP( mailServer, mailport, mailtimeout );
+        SMTP smtp = imcref.getSMTP();
         smtp.sendMailWait( mailFromAddress, mailToAddress, mailSubject, mail );
 
     }

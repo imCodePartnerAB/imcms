@@ -88,7 +88,7 @@ public class EditFileDocumentPageFlow extends EditDocumentPageFlow {
         return mimeType;
     }
 
-    public static class FileItemInputStreamSource implements InputStreamSource, Serializable {
+    public static class FileItemInputStreamSource implements InputStreamSource {
 
         private final FileItem fileItem;
 

@@ -1,257 +1,220 @@
 package com.imcode.imcms.servlet.admin;
 
+import com.imcode.imcms.flow.EditDocumentInformationPageFlow;
+import com.imcode.imcms.servlet.ImageArchive;
 import imcode.server.ApplicationServer;
-import imcode.server.HTMLConv;
+import imcode.server.IMCConstants;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.GetImages;
-import imcode.util.ImageFileMetaData;
+import imcode.util.ImageData;
+import imcode.util.ImageParser;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringUtils;
+import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.ArrayList;
-
-import com.imcode.imcms.servlet.ImageArchive;
 
 public class ChangeImage extends HttpServlet {
-    final static String REQUEST_PARAM__IMAGE_FILE_DOCUMENT_ID = "imageFileDocumentId";
-    final static String REQUEST_PARAM__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE = "GotoImageArchive";
 
-    public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        if ( req.getParameter( "preview" ) == null ) {
-            doGet( req, res );
+    final static String REQUEST_PARAMETER__IMAGE_URL = "imageref";
+    final static String REQUEST_PARAMETER__IMAGE_FILE_DOCUMENT_ID = "imageFileDocumentId";
+    public final static String REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE = "GotoImageArchive";
+
+    public static final String REQUEST_ATTRIBUTE__PAGE = "page";
+    public static final String REQUEST_PARAMETER__OK_BUTTON = "ok";
+    public static final String REQUEST_PARAMETER__PREVIEW_BUTTON = "show_img";
+    private static final String REQUEST_PARAMETER__IMAGE_HEIGHT = "image_height";
+    private static final String REQUEST_PARAMETER__IMAGE_WIDTH = "image_width";
+    private static final String REQUEST_PARAMETER__IMAGE_BORDER = "image_border";
+    private static final String REQUEST_PARAMETER__VERTICAL_SPACE = "v_space";
+    private static final String REQUEST_PARAMETER__HORIZONTAL_SPACE = "h_space";
+    private static final String REQUEST_PARAMETER__IMAGE_NAME = "image_name";
+    private static final String REQUEST_PARAMETER__IMAGE_INDEX = "img_no";
+    public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
+    public static final String REQUEST_PARAMETER__DELETE_BUTTON = "delete";
+    private static final String REQUEST_PARAMETER__IMAGE_ALIGN = "image_align";
+    private static final String REQUEST_PARAMETER__IMAGE_ALT = "alt_text";
+    private static final String REQUEST_PARAMETER__IMAGE_LOWSRC = "low_scr";
+    public static final String REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER = "goToImageBrowser";
+
+    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+
+        ImageDomainObject image = getImageFromRequest( request );
+        UserDomainObject user = Utility.getLoggedOnUser( request );
+        IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( request.getParameter( "meta_id" ) ) );
+        int imageIndex = Integer.parseInt( request.getParameter( REQUEST_PARAMETER__IMAGE_INDEX ) );
+
+        if ( !userHasImagePermissionsOnDocument( user, document ) ) {	// Checking to see if user may edit this
+            goBack( document, response );
             return;
         }
 
-        Utility.setDefaultHtmlContentType( res );
-        ImageBrowse.getPage( req, res );
+        if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
+            goBack( document, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__DELETE_BUTTON ) ) {
+            image.setUrl( "" );
+            goToImageEditPage( document, imageIndex, image, request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__PREVIEW_BUTTON ) ) {
+            goToImageEditPage( document, imageIndex, image, request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_BROWSER ) ) {
+            request.setAttribute( ImageBrowse.PARAMETER__CALLER, "ChangeImage" );
+            ImageBrowse.getPage( request, response );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE ) ) {
+            ImageArchive imageArchive = ImageArchive.getInstance( request );
+            String label = getLabelParam( request );
+            String forwardReturnUrl = "ChangeImage?"
+                                      + "meta_id=" + Integer.parseInt( request.getParameter( "meta_id" ) ) + "&"
+                                      + "img=" + getImageNumberParam( request ) + "&"
+                                      + "label=" + label + "&" +
+                                      REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE + "=true";
+            imageArchive.setForwardReturnUrl( forwardReturnUrl );
+            imageArchive.forward( request, response );
+        } else {
+            document.setImage( imageIndex, image );
+            documentMapper.saveDocument( document, user );
+            imcref.updateMainLog( "ImageRef " + imageIndex + " =" + image.getUrl() +
+                                  " in  " + "[" + document.getId() + "] modified by user: [" +
+                                  user.getFullName() + "]" );
+            goBack( document, response );
+        }
     }
 
-    public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        int meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
+    private ImageDomainObject getImageFromRequest( HttpServletRequest req ) {
+        ImageDomainObject image = new ImageDomainObject();
+        try {
+            image.setWidth( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__IMAGE_WIDTH ) ) );
+        } catch ( NumberFormatException ignored ) {
+        }
+        ;
+        try {
+            image.setHeight( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__IMAGE_HEIGHT ) ) );
+        } catch ( NumberFormatException ignored ) {
+        }
+        ;
+        try {
+            image.setBorder( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__IMAGE_BORDER ) ) );
+        } catch ( NumberFormatException ignored ) {
+        }
+        ;
+        try {
+            image.setVerticalSpace( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__VERTICAL_SPACE ) ) );
+        } catch ( NumberFormatException ignored ) {
+        }
+        ;
+        try {
+            image.setHorizontalSpace( Integer.parseInt( req.getParameter( REQUEST_PARAMETER__HORIZONTAL_SPACE ) ) );
+        } catch ( NumberFormatException ignored ) {
+        }
+        ;
+        image.setUrl( req.getParameter( REQUEST_PARAMETER__IMAGE_URL ) );
+        image.setName( req.getParameter( REQUEST_PARAMETER__IMAGE_NAME ).trim() );
+        image.setAlign( req.getParameter( REQUEST_PARAMETER__IMAGE_ALIGN ) );
+        image.setAlternateText( req.getParameter( REQUEST_PARAMETER__IMAGE_ALT ) );
+        image.setLowResolutionUrl( req.getParameter( REQUEST_PARAMETER__IMAGE_LOWSRC ) );
+        image.setTarget( EditDocumentInformationPageFlow.getTargetFromRequest( req ) );
+        image.setLinkUrl( req.getParameter( "imageref_link" ) );
+        return image;
+    }
 
-        UserDomainObject user = Utility.getLoggedOnUser( req );
-        // Check if user has write rights
+    private void goBack( TextDocumentDomainObject document, HttpServletResponse response ) throws IOException {
+        response.sendRedirect( "AdminDoc?meta_id=" + document.getId() + "&flags="
+                               + IMCConstants.DISPATCH_FLAG__EDIT_TEXT_DOCUMENT_IMAGES );
+    }
+
+    public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        if ( !imcref.checkDocAdminRights( meta_id, user ) ) {
-            Utility.redirectToStartDocument( req, res );
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.getDocument( Integer.parseInt( request.getParameter( "meta_id" ) ) );
+        ImageDomainObject image = document.getImage( getImageNumberParam( request ) );
+        UserDomainObject user = Utility.getLoggedOnUser( request );
+
+        // Check if user has image rights
+        if ( !userHasImagePermissionsOnDocument( user, document ) ) {
+            Utility.redirectToStartDocument( request, response );
             return;
         }
 
-        int widthFromFile = 0;
-        int heightFromFile = 0;
-
-        DocumentMapper documentMapper = imcref.getDocumentMapper() ;
-        ImageDomainObject image = documentMapper.getDocumentImage( meta_id, getImageNumberParam( req ) );
-
-        String browsedImageUrl = getChosenImageFromImageBrowse( req );
-
-        String toFromImageArchive = req.getParameter( REQUEST_PARAM__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE );
-        if( null != toFromImageArchive ) {
-            ImageArchive imageArchive = ImageArchive.getInstance( req );
-            if ( !imageArchive.isImageSelected() ) {
-                String label = req.getParameter( "label" );
-                String forwardReturnUrl = "ChangeImage?"
-                                          + "meta_id=" + meta_id + "&"
-                                          + "img=" + getImageNumberParam(req) + "&"
-                                          + "label=" + label + "&" +
-                                          REQUEST_PARAM__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE + "=" + toFromImageArchive;
-                imageArchive.setForwardReturnUrl( forwardReturnUrl );
-                imageArchive.forward( req, res );
-            } else {
-                FileDocumentDomainObject imageFileDocument = imageArchive.getSelectedImage();
-                if( null != imageFileDocument ) {
-                    browsedImageUrl = "../servlet/GetDoc?meta_id="+imageFileDocument.getId() ;
-                    ImageFileMetaData imageFileMetaData = new ImageFileMetaData( imageFileDocument.getInputStreamSource().getInputStream(), imageFileDocument.getFilename() );
-                    widthFromFile = imageFileMetaData.getWidth();
-                    heightFromFile = imageFileMetaData.getHeight();
-                }
+        String browsedImageUrl = getChosenImageFromImageBrowse( request );
+        if ( null != browsedImageUrl ) {
+            image.setUrl( browsedImageUrl );
+            image.setWidth( 0 );
+            image.setHeight( 0 );
+        } else if ( null != request.getParameter( REQUEST_PARAMETER__GOING_TO_OR_COMING_FROM_IMAGE_ARCHIVE ) ) {
+            ImageArchive imageArchive = ImageArchive.getInstance( request );
+            FileDocumentDomainObject imageFileDocument = imageArchive.getSelectedImage();
+            if ( null != imageFileDocument ) {
+                image.setUrl( "../servlet/GetDoc?meta_id=" + imageFileDocument.getId() );
+                image.setWidth( 0 );
+                image.setHeight( 0 );
             }
         }
 
-        File image_path = Utility.getDomainPrefPath( "image_path" );
-        List imageFolders = GetImages.getImageFolders( image_path, true );
-        imageFolders.add( 0, image_path );
+        goToImageEditPage( document, getImageNumberParam( request ), image, request, response );
 
-        HttpSession session = req.getSession( true );
-        StringBuffer folderOptions = createImageFolderOptionList(imageFolders,image_path);
-        session.setAttribute( "imageFolderOptionList", folderOptions.toString() );
+    }
 
-        String imageUrl = ( "".equals( browsedImageUrl ) && null != image ? image.getUrl() : browsedImageUrl ); // selected OPTION or ""
+    private boolean userHasImagePermissionsOnDocument( UserDomainObject user, TextDocumentDomainObject document ) {
+        DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
+        TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject)documentMapper.getUsersMostPrivilegedPermissionSetOnDocument( user, document );
+        boolean imagePermission = textDocumentPermissionSet.getEditImages();
+        return imagePermission;
+    }
 
-        File imageFile = new File( image_path, imageUrl );
-        if (imageFile.isFile()) {
-            ImageFileMetaData imageFileMetaData = new ImageFileMetaData( new FileInputStream(imageFile), imageUrl );
-            widthFromFile = imageFileMetaData.getWidth();
-            heightFromFile = imageFileMetaData.getHeight();
+    private void goToImageEditPage( TextDocumentDomainObject document, int imageIndex, ImageDomainObject image,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response ) throws IOException, ServletException {
+
+        ImageData imageData = getImageData( image );
+        String label = getLabelParam( request );
+
+        new ImageEditPage( document, imageIndex, image, imageData, label ).forward( request, response );
+    }
+
+    private ImageData getImageData( ImageDomainObject image ) throws IOException {
+        IMCServiceInterface service = ApplicationServer.getIMCServiceInterface();
+        DocumentMapper documentMapper = service.getDocumentMapper();
+        File image_path = service.getConfig().getImagePath();
+        ImageData imageData = new ImageData( 0, 0 );
+        String imageUrl = image.getUrl();
+        if ( StringUtils.isNotBlank( imageUrl ) ) {
+            File imageFile = new File( image_path, image.getUrl() );
+            Perl5Util perl5util = new Perl5Util();
+            if ( perl5util.match( "/GetDoc\\?meta_id=(\\d+)/", imageUrl ) ) {
+                int imageFileDocumentId = Integer.parseInt( perl5util.group( 1 ) );
+                FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentMapper.getDocument( imageFileDocumentId );
+                imageData = getImageDataFromFileDocument( imageFileDocument );
+            } else if ( imageFile.isFile() ) {
+                imageData = new ImageParser().parseImageFile( imageFile );
+            }
         }
+        return imageData;
+    }
 
-        List vec = new ArrayList();
-        boolean useFileData = null == image;
-
-        if ( useFileData ) {
-                     vec.add( "#imgName#" );
-            vec.add( "" );
-            vec.add( "#imgRef#" );
-            vec.add( imageUrl );
-            vec.add( "#imgWidth#" );
-            vec.add( "" + widthFromFile );
-            vec.add( "#imgHeight#" );
-            vec.add( "" + heightFromFile );
-
-            vec.add( "#origW#" );
-            vec.add( "" + widthFromFile );
-            vec.add( "#origH#" );
-            vec.add( "" + heightFromFile );
-
-            vec.add( "#imgBorder#" );
-            vec.add( "0" );
-            vec.add( "#imgVerticalSpace#" );
-            vec.add( "0" );
-            vec.add( "#imgHorizontalSpace#" );
-            vec.add( "0" );
-            vec.add( "#target_name#" );
-            vec.add( "" );
-            vec.add( "#self_checked#" );
-            vec.add( "selected" );
-            vec.add( "#top_selected#" );
-            vec.add( "selected" );
-            vec.add( "#imgAltText#" );
-            vec.add( "" );
-            vec.add( "#imgLowScr#" );
-            vec.add( "" );
-            vec.add( "#imgRefLink#" );
-            vec.add( "" );
-        } else {
-            int current_width = 0;
-            try {
-                current_width = "".equals( browsedImageUrl ) ? image.getWidth() : widthFromFile;
-            } catch ( NumberFormatException ex ) {
-
-            }
-            int current_height = 0;
-            try {
-                current_height = "".equals( browsedImageUrl ) ? image.getHeight() : heightFromFile;
-            } catch ( NumberFormatException ex ) {
-
-            }
-            int aspect = 0;
-            if ( current_width * current_height != 0 ) {
-                aspect = 100 * current_width / current_height;
-            }
-
-            String keepAspect = "checked";
-
-            if ( widthFromFile * heightFromFile != 0 && aspect != ( 100 * widthFromFile / heightFromFile ) ) {
-                keepAspect = "";
-            }
-
-            vec.add( "#imgName#" );
-            vec.add( HTMLConv.toHTMLSpecial(image.getName()));
-            vec.add( "#imgRef#" );
-            vec.add( HTMLConv.toHTMLSpecial(imageUrl));
-            vec.add( "#imgWidth#" );
-            vec.add( current_width != 0 ? "" + current_width : "" + widthFromFile );
-            vec.add( "#origW#" ); // original imageWidth
-            vec.add( "" + widthFromFile );
-            vec.add( "#imgHeight#" );
-            vec.add( current_height != 0 ? "" + current_height : "" + heightFromFile );
-            vec.add( "#origH#" );
-            vec.add( "" + heightFromFile ); // original imageHeight
-
-            vec.add( "#keep_aspect#" );
-            vec.add( keepAspect );
-
-            vec.add( "#imgBorder#" );
-            vec.add( ""+image.getBorder() );
-            vec.add( "#imgVerticalSpace#" );
-            vec.add( ""+image.getVerticalSpace() );
-            vec.add( "#imgHorizontalSpace#" );
-            vec.add( ""+image.getHorizontalSpace() );
-            if ( "_top".equals( image.getTarget() ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#top_checked#" );
-            } else if ( "_self".equals( image.getTarget() ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#self_checked#" );
-            } else if ( "_blank".equals( image.getTarget() ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#blank_checked#" );
-            } else if ( "_parent".equals( image.getTarget() ) ) {
-                vec.add( "#target_name#" );
-                vec.add( "" );
-                vec.add( "#blank_checked#" );
-            } else {
-                vec.add( "#target_name#" );
-                vec.add( image.getTarget() );
-                vec.add( "#other_checked#" );
-            }
-            vec.add( "selected" );
-
-            if ( "baseline".equals( image.getAlign() ) ) {
-                vec.add( "#baseline_selected#" );
-            } else if ( "top".equals( image.getAlign() ) ) {
-                vec.add( "#top_selected#" );
-            } else if ( "middle".equals( image.getAlign() ) ) {
-                vec.add( "#middle_selected#" );
-            } else if ( "bottom".equals( image.getAlign() ) ) {
-                vec.add( "#bottom_selected#" );
-            } else if ( "texttop".equals( image.getAlign() ) ) {
-                vec.add( "#texttop_selected#" );
-            } else if ( "absmiddle".equals( image.getAlign() ) ) {
-                vec.add( "#absmiddle_selected#" );
-            } else if ( "absbottom".equals( image.getAlign() ) ) {
-                vec.add( "#absbottom_selected#" );
-            } else if ( "left".equals( image.getAlign() ) ) {
-                vec.add( "#left_selected#" );
-            } else if ( "right".equals( image.getAlign() ) ) {
-                vec.add( "#right_selected#" );
-            } else {
-                vec.add( "#none_selected#" );
-            }
-            vec.add( "selected" );
-
-            vec.add( "#imgAltText#" );
-            vec.add( image.getAlternateText());
-            vec.add( "#imgLowScr#" );
-            vec.add( image.getLowResolutionUrl() );
-            vec.add( "#imgRefLink#" );
-            vec.add( image.getLinkUrl() );
+    private ImageData getImageDataFromFileDocument( FileDocumentDomainObject imageFileDocument ) {
+        ImageData imageData;
+        try {
+            InputStream imageFileDocumentInputStream = imageFileDocument.getInputStreamSource().getInputStream();
+            imageData = new ImageParser().parseImageStream( imageFileDocumentInputStream, imageFileDocument.getFilename() );
+        } catch ( IOException ioe ) {
+            imageData = new ImageData( 0, 0 );
         }
-        vec.add( "#imgUrl#" );
-        vec.add( imcref.getImageUrl() );
-        vec.add( "#getMetaId#" );
-        vec.add( String.valueOf( meta_id ) );
-        vec.add( "#img_no#" );
-        vec.add( String.valueOf( getImageNumberParam( req ) ) );
-        vec.add( "#folders#" );
-        vec.add( folderOptions.toString() );
-
-        vec.add( "#label#" );
-        vec.add( getLabelParam( req ) );
-
-        String htmlStr = imcref.getAdminTemplate( "change_img.html", user, vec );
-        Utility.setDefaultHtmlContentType( res );
-        PrintWriter out = res.getWriter();
-        out.print( htmlStr );
-
+        return imageData;
     }
 
     private String getChosenImageFromImageBrowse( HttpServletRequest req ) {
@@ -259,16 +222,16 @@ public class ChangeImage extends HttpServlet {
         // an image filename as option value.
         String paramCancel = req.getParameter( ImageBrowse.PARAMETER_BUTTON__CANCEL );
         String imageListParam = "";
-        if( null == paramCancel ) {
+        if ( null == paramCancel ) {
             imageListParam = req.getParameter( "imglist" );
         }
 
-        String browsedImageUrl = ( imageListParam == null ) ? "" : URLDecoder.decode( imageListParam );
-        return browsedImageUrl;
+        return ( imageListParam == null ) ? null : URLDecoder.decode( imageListParam );
     }
 
     private int getImageNumberParam( HttpServletRequest req ) {
-        String imgNoStr = ( req.getParameter( "img_no" ) != null ) ? req.getParameter( "img_no" ) : req.getParameter( "img" );
+        String imgNoStr = ( req.getParameter( "img_no" ) != null )
+                          ? req.getParameter( "img_no" ) : req.getParameter( "img" );
         int img_no = Integer.parseInt( imgNoStr );
         return img_no;
     }
@@ -281,8 +244,7 @@ public class ChangeImage extends HttpServlet {
         return label;
     }
 
-
-    private StringBuffer createImageFolderOptionList( List imageFolders, File image_path) throws IOException {
+    private StringBuffer createImageFolderOptionList( List imageFolders, File image_path ) throws IOException {
 
         // create the image folder option list
 
@@ -337,22 +299,66 @@ public class ChangeImage extends HttpServlet {
             //filepathfix ex: images\nisse\kalle.gif to images/nisse/kalle.gif
             optionName = optionName.replace( File.separatorChar, '/' ) + fileName;
 
-            int i = optionName.lastIndexOf('-');
+            int i = optionName.lastIndexOf( '-' );
             String tempPathFirst = "";
             String tempPathLast = "";
             if ( i > 0 ) {
-                tempPathFirst = (optionName.substring(0,i)).replace( '-', ' ' );
-                tempPathLast = (optionName.substring(i));
+                tempPathFirst = ( optionName.substring( 0, i ) ).replace( '-', ' ' );
+                tempPathLast = ( optionName.substring( i ) );
                 optionName = tempPathFirst + tempPathLast;
             }
             optionName = optionName.replace( '-', '\\' );
-            folderOptions.append(
-                    "<option value=\"" + optionPath + "\""
-                    + ">"
-                    + optionName
-                    + "</option>\r\n" );
+            folderOptions.append( "<option value=\"" + optionPath + "\""
+                                  + ">"
+                                  + optionName
+                                  + "</option>\r\n" );
         }//end setUp option dir list
 
         return folderOptions;
     }
+
+    public static class ImageEditPage {
+
+        private TextDocumentDomainObject document;
+        private int imageIndex;
+        private ImageDomainObject image;
+        private ImageData imageFileData;
+        private String label;
+
+        public ImageEditPage( TextDocumentDomainObject document, int imageIndex, ImageDomainObject image,
+                              ImageData imageFileData, String label ) {
+            this.document = document;
+            this.image = image;
+            this.imageIndex = imageIndex;
+            this.imageFileData = imageFileData;
+            this.label = label;
+        }
+
+        public TextDocumentDomainObject getDocument() {
+            return document;
+        }
+
+        public ImageDomainObject getImage() {
+            return image;
+        }
+
+        public int getImageIndex() {
+            return imageIndex;
+        }
+
+        public ImageData getImageFileData() {
+            return imageFileData;
+        }
+
+        private void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+            request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+            UserDomainObject user = Utility.getLoggedOnUser( request );
+            request.getRequestDispatcher( "/imcms/" + user.getLanguageIso639_2() + "/jsp/change_img.jsp" ).forward( request, response );
+        }
+
+        public String getLabel() {
+            return label;
+        }
+    }
+
 }

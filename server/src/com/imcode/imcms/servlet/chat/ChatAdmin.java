@@ -63,7 +63,7 @@ public class ChatAdmin extends Administrator {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        String eMailServerMaster = Utility.getDomainPref("servermaster_email");
+        String eMailServerMaster = imcref.getSystemData().getServerMasterAddress();
 
         // Lets verify that the user who tries to add a new user is an admin
         UserDomainObject user = Utility.getLoggedOnUser(request);
@@ -117,7 +117,7 @@ public class ChatAdmin extends Administrator {
     private void listChats(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        String eMailServerMaster = Utility.getDomainPref("servermaster_email");
+        String eMailServerMaster = imcref.getSystemData().getServerMasterAddress();
         boolean noErrors = true;
 
         /*

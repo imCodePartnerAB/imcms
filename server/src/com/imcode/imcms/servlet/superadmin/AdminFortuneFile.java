@@ -59,7 +59,7 @@ public class AdminFortuneFile extends Administrator {
             //String fortune_path = Utility.getDomainPref("FortunePath",host);
 
 
-            File fortune_path = Utility.getDomainPrefPath( "FortunePath" );
+            File fortune_path = imcref.getConfig().getFortunePath();
             String readFile = (String)session.getAttribute( "file" );
             File file = new File( fortune_path, readFile + ".txt" );
             BufferedWriter fileW = new BufferedWriter( new FileWriter( file ) );

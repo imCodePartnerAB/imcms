@@ -106,7 +106,7 @@ if (isStat && frame.equalsIgnoreCase("MAIN")) {
 
 String image_ref = fn.getCanonicalPath() ;
 
-ImageFileMetaData imagefile = new ImageFileMetaData( new FileInputStream(new File(image_ref)), image_ref ) ;
+ImageData imagefile = new ImageParser().parseImageFile( new File(image_ref) ) ;
 int width = imagefile.getWidth() ;
 int height = imagefile.getHeight() ;
 

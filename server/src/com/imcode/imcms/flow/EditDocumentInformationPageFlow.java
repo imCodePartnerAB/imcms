@@ -272,6 +272,7 @@ public class EditDocumentInformationPageFlow extends EditDocumentPageFlow {
             boolean targetIsPredefinedTarget
                     = "_self".equalsIgnoreCase( target )
                       || "_blank".equalsIgnoreCase( target )
+                      || "_parent".equalsIgnoreCase( target )
                       || "_top".equalsIgnoreCase( target );
             if ( targetIsPredefinedTarget ) {
                 break;

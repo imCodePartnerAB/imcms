@@ -3,9 +3,10 @@ package com.imcode.imcms.servlet.admin;
 import imcode.server.ApplicationServer;
 import imcode.server.IMCServiceInterface;
 import imcode.server.user.UserDomainObject;
-import imcode.util.ImageFileMetaData;
+import imcode.util.ImageParser;
 import imcode.util.MultipartFormdataParser;
 import imcode.util.Utility;
+import imcode.util.ImageData;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -23,7 +24,7 @@ public class ImageUpload extends HttpServlet {
 
     public void doPost( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        File file_path = Utility.getDomainPrefPath( "image_path" );
+        File file_path = imcref.getConfig().getImagePath();
 
         Utility.setDefaultHtmlContentType( res );
 
@@ -106,7 +107,7 @@ public class ImageUpload extends HttpServlet {
         String image_ref = fn.getCanonicalPath();
         image_ref = image_ref.substring( file_path.getCanonicalPath().length() + 1 );
         image_ref = image_ref.replace( '\\', '/' );
-        ImageFileMetaData imagefile = new ImageFileMetaData( new FileInputStream( new File( file_path, image_ref ) ), image_ref );
+        ImageData imagefile = new ImageParser().parseImageFile( new File( file_path, image_ref ) );
         int width = imagefile.getWidth();
         int height = imagefile.getHeight();
 
@@ -114,7 +115,7 @@ public class ImageUpload extends HttpServlet {
         vec.add( "#keep_aspect#" );
         vec.add( "checked" );
         vec.add( "#imgUrl#" );
-        vec.add( imcref.getImageUrl() );
+        vec.add( imcref.getConfig().getImageUrl() );
         vec.add( "#imgName#" );
         vec.add( "" );
         vec.add( "#imgRef#" );

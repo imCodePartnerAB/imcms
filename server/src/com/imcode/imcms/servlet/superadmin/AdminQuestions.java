@@ -56,7 +56,7 @@ public class AdminQuestions extends Administrator implements imcode.server.IMCCo
 
         //get fortunefiles
 
-        File fortune_path = Utility.getDomainPrefPath("FortunePath");
+        File fortune_path = imcref.getConfig().getFortunePath();
         File[] files = fortune_path.listFiles();
 
         StringBuffer options = new StringBuffer();

@@ -84,7 +84,7 @@ public class AdminListDocs extends Administrator {
 
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        String eMailServerMaster = Utility.getDomainPref( "servermaster_email" );
+        String eMailServerMaster = imcref.getSystemData().getServerMasterAddress();
         // lets get ready for errors
 
 

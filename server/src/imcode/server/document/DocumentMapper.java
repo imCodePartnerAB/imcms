@@ -35,8 +35,6 @@ public class DocumentMapper {
     private static final int META_HEADLINE_MAX_LENGTH = 255;
     private static final int META_TEXT_MAX_LENGTH = 1000;
 
-    private static final String PREFERENCE__FILE_PATH = "file_path";
-
     // Stored procedure names used in this class
     // todo make sure all these is only used in one sprocMethod
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
@@ -691,7 +689,7 @@ public class DocumentMapper {
                 return;
             }
             File filePath = null;
-            filePath = Utility.getDomainPrefPath( PREFERENCE__FILE_PATH );
+            filePath = service.getConfig().getFilePath();
 
             File file = new File( filePath, "" + fileDocument.getId() );
             boolean sameFileOnDisk = inputStreamSource instanceof FileInputStreamSource && file.exists();
@@ -1648,7 +1646,7 @@ public class DocumentMapper {
         service.sqlUpdateProcedure( "DocumentDelete", new String[]{"" + document.getId()} );
     }
 
-    private static class FileInputStreamSource implements InputStreamSource, Serializable {
+    private static class FileInputStreamSource implements InputStreamSource {
 
         private final File file;
 

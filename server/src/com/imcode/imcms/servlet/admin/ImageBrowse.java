@@ -51,8 +51,8 @@ public class ImageBrowse extends HttpServlet {
             return;
         }
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
-        String image_url = imcref.getImageUrl();
-        File file_path = Utility.getDomainPrefPath("image_path");
+        String image_url = imcref.getConfig().getImageUrl();
+        File file_path = imcref.getConfig().getImagePath();
 
         String meta_id = request.getParameter("meta_id");
         String img_no = request.getParameter("img_no");
@@ -262,6 +262,9 @@ public class ImageBrowse extends HttpServlet {
         FormData formData = new FormData();
 
         String caller = request.getParameter(PARAMETER__CALLER);
+        if (null == caller) {
+            caller = (String)request.getAttribute(PARAMETER__CALLER);
+        }
         formData.setCaller(caller);
 
         formData.setMetaId(meta_id);

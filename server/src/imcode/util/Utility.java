@@ -5,6 +5,7 @@ import imcode.server.ApplicationServer;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,9 +16,10 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class Utility {
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
-    private static final String PREFERENCES_FILENAME = "host.properties";
+public class Utility {
 
     private Utility() {
 
@@ -32,25 +34,6 @@ public class Utility {
             path = new File( imcode.server.WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath(), pathString );
         }
         return path;
-    }
-
-    /**
-     * Fetches a preference from the config file for a domain,
-     * as a File representing an absolute path, with the webapp dir prepended if the path is relative.
-     *
-     * @param pref The name of the preference to fetch.
-     */
-    public static File getDomainPrefPath( String pref ) throws IOException {
-        return getAbsolutePathFromString( getDomainPref( pref ) );
-    }
-
-    /**
-     * Fetches a preference from the config file for a domain.
-     *
-     * @param pref The name of the preference to fetch.
-     */
-    public static String getDomainPref( String pref ) throws IOException {
-        return Prefs.get( pref, PREFERENCES_FILENAME );
     }
 
     /**
@@ -88,17 +71,6 @@ public class Utility {
         return user;
     }
 
-    public static boolean toBoolean( String property ) {
-        if ( null == property ) {
-            return false;
-        }
-        property = property.toLowerCase();
-        if ( "1".equals( property ) || "y".equals( property ) || "yes".equals( property ) || "true".equals( property ) ) {
-            return true;
-        }
-        return false;
-    }
-
     public static int compareDatesWithNullFirst( Date date1, Date date2 ) {
         if ( null == date1 && null == date2 ) {
             return 0;
@@ -116,9 +88,7 @@ public class Utility {
     }
 
     public static void redirectToStartDocument( HttpServletRequest req, HttpServletResponse res ) throws IOException {
-
         res.sendRedirect( req.getContextPath() + "/servlet/StartDoc" );
-
     }
 
     public static String getLinkedStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
@@ -147,4 +117,53 @@ public class Utility {
         }
     }
 
+    public static String getImageTag( ImageDomainObject image ) {
+        StringBuffer imageTagBuffer = new StringBuffer( 96 );
+        if ( !"".equals( image.getUrl() ) ) {
+
+            if ( StringUtils.isNotBlank( image.getLinkUrl() ) ) {
+                imageTagBuffer.append( "<a href=\"" ).append( StringEscapeUtils.escapeHtml( image.getLinkUrl() ) ).append( "\"" );
+                if ( !"".equals( image.getTarget() ) ) {
+                    imageTagBuffer.append( " target=\"" ).append( StringEscapeUtils.escapeHtml( image.getTarget() ) ).append( "\"" );
+                }
+                imageTagBuffer.append( '>' );
+            }
+
+            String imageUrl = ApplicationServer.getIMCServiceInterface().getConfig().getImageUrl() + image.getUrl();
+
+            imageTagBuffer.append( "<img src=\"" + StringEscapeUtils.escapeHtml( imageUrl ) + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
+            if ( 0 != image.getWidth() ) {
+                imageTagBuffer.append( " width=\"" + image.getWidth() + "\"" );
+            }
+            if ( 0 != image.getHeight() ) {
+                imageTagBuffer.append( " height=\"" + image.getHeight() + "\"" );
+            }
+            imageTagBuffer.append( " border=\"" + image.getBorder() + "\"" );
+
+            if ( 0 != image.getVerticalSpace() ) {
+                imageTagBuffer.append( " vspace=\"" + image.getVerticalSpace() + "\"" );
+            }
+            if ( 0 != image.getHorizontalSpace() ) {
+                imageTagBuffer.append( " hspace=\"" + image.getHorizontalSpace() + "\"" );
+            }
+            if ( !"".equals( image.getName() ) ) {
+                imageTagBuffer.append( " name=\"" + StringEscapeUtils.escapeHtml( image.getName() ) + "\"" );
+            }
+            if ( !"".equals( image.getAlternateText() ) ) {
+                imageTagBuffer.append( " alt=\"" + StringEscapeUtils.escapeHtml( image.getAlternateText() ) + "\"" );
+            }
+            if ( !"".equals( image.getLowResolutionUrl() ) ) {
+                imageTagBuffer.append( " lowscr=\"" + StringEscapeUtils.escapeHtml( image.getLowResolutionUrl() ) + "\"" );
+            }
+            if ( !"".equals( image.getAlign() ) && !"none".equals( image.getAlign() ) ) {
+                imageTagBuffer.append( " align=\"" + StringEscapeUtils.escapeHtml( image.getAlign() ) + "\"" );
+            }
+            imageTagBuffer.append( ">" );
+            if ( StringUtils.isNotBlank( image.getLinkUrl() ) ) {
+                imageTagBuffer.append( "</a>" );
+            }
+        }
+        String imageTag = imageTagBuffer.toString();
+        return imageTag;
+    }
 }

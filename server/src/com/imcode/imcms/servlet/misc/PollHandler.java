@@ -10,7 +10,6 @@ import java.util.* ;
 
 import org.apache.log4j.Logger ;
 
-import imcode.util.* ;
 import imcode.util.net.SMTP;
 import imcode.util.poll.*;
 
@@ -174,35 +173,10 @@ public class PollHandler extends HttpServlet {
     private void sendMail ( IMCServiceInterface imcref, String[] poll_param, String meta_id,
                             TreeMap textQuestions, TreeMap textAnswers ) throws IOException {
 
-
-		
-		String mailServer = Utility.getDomainPref( "smtp_server" );
-		String stringMailPort = Utility.getDomainPref( "smtp_port" );
-		String stringMailtimeout = Utility.getDomainPref( "smtp_timeout" );
-
-		// Handling of default-values is another area where java can't hold a candle to perl.
-		int mailport = 25 ;
-		try	{
-		    mailport = Integer.parseInt( stringMailPort );
-		}catch (NumberFormatException ignored){
-		    // Do nothing, let mailport stay at default.
-		}
-
-		int mailtimeout = 10000 ;
-		try {
-		    mailtimeout = Integer.parseInt( stringMailtimeout );
-		}catch (NumberFormatException ignored){
-		    // Do nothing, let mailtimeout stay at default.
-		}
-
 		String mailFromAddress = getText( imcref, Integer.parseInt(meta_id), Integer.parseInt(poll_param[9]) );
 		String mailToAddress   = getText( imcref, Integer.parseInt(meta_id), Integer.parseInt(poll_param[8]) ); // comma-separated string;
 		String mailSubject     = getText( imcref, Integer.parseInt(meta_id), Integer.parseInt(poll_param[10]) );
-		//String mailFormat      = imcref.replaceTagsInStringWithData(null, MAIL_FORMAT, imcref.getLanguageIso639_2()) ;
-		//String mailItemFormat  = imcref.replaceTagsInStringWithData(null, MAIL_ITEM_FORMAT, imcref.getLanguageIso639_2()) ;
-		
-		
-		
+
 		// get poll name
 		TextDomainObject poll_name = new TextDomainObject("",0);
 
@@ -242,7 +216,7 @@ public class PollHandler extends HttpServlet {
 		}
 		
 		// Send the mail 
-		SMTP smtp = new SMTP(mailServer,mailport,mailtimeout) ;
+		SMTP smtp = imcref.getSMTP() ;
 		smtp.sendMailWait(mailFromAddress, mailToAddress, mailSubject, mail.toString()) ;
 		log.debug("Sending mail to "+mailToAddress);
 
