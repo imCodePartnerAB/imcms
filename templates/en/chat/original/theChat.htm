@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>chatControl</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000" onload="parent._ChatMsgFrame.location='#SERVLET_URL#ChatBoard';">
+
+<FORM method=post action=#SERVLET_URL#ChatControl name=huvud>
+	<INPUT name=nick type=hidden value=#alias#> 
+	<INPUT name=chatRoom2 type=hidden value=#chatRoom#>
+	
+<TABLE border=0 cellPadding=0 cellSpacing=0 width=701>
+	<TR valign="bottom">
+		<TD colSpan=3 valign="bottom" width="500" nowrap>
+			<B>#alias#</B> in <B>#chatRoom#</B> 
+			<SELECT name=msgTypes>
+				#MSG_PREFIX#
+			</SELECT> 
+			<SELECT name=recipient> 
+				<option value="0" >All</option> 
+					#MSG_RECIVER#
+			</SELECT><br>			
+			<INPUT maxLength=250 name=msg size=80> 
+		</TD>
+		<td valign="bottom">
+			#CHAT_ADMIN_DISCUSSION#<br>
+			<INPUT name=sendMsg type=submit value=Send/Update> 
+		</td>
+	</TR>
+</FORM>
+	<TR>
+		<TD height=3 colSpan=4 >
+			<HR>
+		</td>
+	</TR>
+	<TR>
+		<TD height=8 nowrap colSpan=3>
+			<A href="#SERVLET_URL#ChatControl?settings=true">Settings</A>&nbsp;
+			<A href="http://www.imcode.se/chat/help.html" target=chathelp>Help page</A>
+		</TD>
+		<TD align="middle">
+			<B>Powered by <A href="http://www.imcms.net" target=_blank>imCMS</A></B>
+		</TD>
+	</TR>
+
+	<TR>
+		<TD colSpan=4 height=3>
+			<HR>
+		</TD>
+	</TR>
+	<TR>
+		<td>
+			<form action="#SERVLET_URL#ChatControl" target="_self" method="post">	 			
+				<b>Change room:</b> 
+        		<select name="newRooms">
+          			#CHAT_ROOMS#          
+        		</select>
+        		<input type="submit" value=" Go to " name="changeRoom">
+			</form>
+		</td>
+		<td>
+			<form action="#SERVLET_URL#ChatControl" target="_top" method="post">			
+        		<input type="submit" value=" Log out " name="logOut">
+			</form>
+		</td>
+		<td colspan="2">
+			<form action="#SERVLET_URL#ChatCreator" target="_parent" method="get">
+				<input type="hidden" name="action" value="admin_chat">
+				<input type="hidden" name="chatName" value="#chatName#">
+        		#CHAT_ADMIN_LINK#
+			</form>
+		</td>
+	</TR>
+</TABLE>
+     
+</body>
+</HTML>
+
+
+
+

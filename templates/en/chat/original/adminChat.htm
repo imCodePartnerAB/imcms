@@ -1,0 +1,161 @@
+<html>
+<head>
+<title>adminChat</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<form method="post" action="#SERVLET_URL#ChatCreator" name="AdminChat">
+	<input type="hidden" name="action" value="admin_chat">
+    <input type="hidden" name="chatName" value="#chatName#">
+
+  <table width="30%" border="0" cellspacing="0" height="216">
+    <tr bgcolor="#333366"> 
+      <td width="0%">&nbsp;</td>
+      <td colspan="4"> 
+        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrate 
+          chat</font></b></div>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%">&nbsp;</td>
+      <td colspan="4" align="right"> <a href="http://www.imcode.se/chat/help.html"
+ 		target="chathelp">Help page</a> </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%">&nbsp;</td>
+      <td width="28%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Chat Name:</font></td>
+      <td width="25%" align="center"> <font size="2"> <b> #chatName# </b></font></td>
+      <td width="25%">&nbsp;</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="35">&nbsp;</td>
+      <td width="28%" height="35"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Chat room:</font></td>
+      <td width="25%" height="35"> <font size="2"> 
+        <input type="text" name="chatRoom" size="20" value="#chatRoom#">
+        </font></td>
+      <td width="25%" height="35"><font size="2"> 
+        <input type="submit" name="addRoom" value=" Add room  ">
+        <input type="submit" name="removeRoom" value="  Remove room ">
+        </font></td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="29">&nbsp;</td>
+      <td width="28%" height="29">&nbsp;</td>
+      <td width="50%" height="29" colspan="2"> 
+        <select name="roomList">
+         #roomList#
+                </select>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="37"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"></font> 
+      </td>
+      <td width="28%" height="37">Message types:</td>
+      <td width="25%" height="37"> 
+        <input type="text" name="msgType" value="#msgType#">
+      </td>
+      <td width="25%" height="37"> 
+        <input type="submit" name="addMsgType" value=" Add message type  ">
+        <font size="2">
+        <input type="submit" name="removeMsgType" value="  Remove message type  ">
+        </font> </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="26"></td>
+      <td width="50%" height="26" colspan="2"> 
+          <select name="msgTypes">
+         #msgTypes#
+                </select>
+      </td>
+    </tr>
+    #templates#
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="26">Authorized users:</td>
+      <td width="50%" height="26" colspan="2"> 
+        <select name="authorized" size="3" multiple>
+       		#authorized#
+        </select>
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="26"></td>
+      <td width="50%" height="26" colspan="2">&nbsp; </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td colspan="2" height="26"><b>Optional settings:</b></td>
+      <td height="26">Yes/No/Optional</td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td colspan="2" height="26">Update automatically every 
+        <input type="text" name="updateTime" size="2" value="30">
+        seconds </td>
+      <td height="26"> 
+	  #reload#
+        
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td colspan="2" height="26">Display entrances/exits </td>
+      <td height="26"> 
+	  #inOut#
+        
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">Display only private messages </td>
+      <td height="26"> 
+	  #private#
+        
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">Display only public messages</td>
+      <td height="26"> 
+	  #public#
+        
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">Display date/time by messages</td>
+      <td height="26"> 
+	  #dateTime#
+        
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td height="26" colspan="2">Enlarge/reduce font</td>
+      <td height="26"> 
+	  #font#
+        
+      </td>
+    </tr>
+    <tr bgcolor="#bababa"> 
+      <td width="0%" height="26">&nbsp;</td>
+      <td width="28%" height="53"> 
+        <div align="center"></div>
+      </td>
+      <td width="25%" height="53"> 
+        <div align="center"> 
+          <input type="submit" name="okChat" value="OK">
+        </div>
+      </td>
+      <td width="25%" height="53">&nbsp; </td>
+    </tr>
+  </table>
+ 
+</form>
+<p>&nbsp; </p>
+</body>
+</html>
+

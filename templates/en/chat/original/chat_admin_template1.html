@@ -1,0 +1,120 @@
+<html>
+<head>
+	<title>Administrate Metadata</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#FFFFFF">
+<table width="500" border="0" cellspacing="0" height="216">
+	<tr bgcolor="#333366">      
+    	<td colspan="4"> 
+        	Administrate chat
+      	</td>
+    </tr>
+	
+    <tr bgcolor="#bababa">       
+    	<td colspan="4" align="right">
+			<a href="http://www.imcode.se/chat/help.html" target="chathelp">Help page</a>
+		</td>
+    </tr>
+	
+    <tr bgcolor="#bababa">       
+    	<td colspan="4">
+			Current template set is: <b>#CURRENT_TEMPLATE_SET#</b>
+		</td>
+    </tr>
+	
+	
+	
+<form name="NewTemplate" action="#SERVLET_URL#ChatCreator" method="post">
+<input type="hidden" name="admin_templates_meta" value="add">
+<input type="hidden" name="adminTemplates" value="ok">
+<input type="hidden" name="action" value="admin_chat">
+
+	<tr bgcolor="#bababa">
+		<td colspan="4"> 				
+        	<b>Edit new template set</b>
+     	</td>
+	</tr>
+	<tr bgcolor="#bababa">
+		<td>
+			Select name:
+		</td>
+		<td>
+			<input name="template_lib_name" size="25" maxlength="50">
+		</td>
+		<td>&nbsp;</td>
+		<td>
+		 	<input type="submit" name="add_templates" value="NEW  TEMPLATE SET" style="FONT-SIZE: 10px">
+		</td>		
+	</tr>
+</form>
+<form method="post" action="#SERVLET_URL#ChatCreator" name="NbrOfDiscssetTemplateForm">
+	<input type="hidden" name="admin_templates_meta" value="change">  
+	<input type="hidden" name="adminTemplates" value="OK">
+	<input type="hidden" name="action" value="admin_chat"> 					
+    <tr bgcolor="#bababa">
+    	<td colspan="4">
+      		 <b>Change template set</b>
+		</td>
+	</tr>
+	<tr bgcolor="#bababa">
+		<td>
+			Select template set:
+		<td>
+			<select name="new_templateset_name" size="1">          
+				#TEMPLATE_LIST#				
+			</select>		
+		</td>
+		<td>&nbsp;</td>               
+		<td>
+			<input type="submit" name="change_templatelib" value="CHANGE TEMPLATE SET" style="FONT-SIZE: 10px"> 
+    	</td>		
+  	</tr>
+</form>	
+<form method="post" action="#SERVLET_URL#ChatCreator" name="PrepareAddTemplate">
+	<input type="hidden" name="admin_templates_meta" value="update">
+	<input type="hidden" name="action" value="admin_chat"> 		        		         	
+	<tr bgcolor="#bababa">
+    	<td colspan="4">
+			<b>Update template file in an existing template set</b>
+		</td>
+	</tr>
+	<tr bgcolor="#bababa">
+		<td nowrap>
+			Select template set & type:
+		</td>
+		<td>
+			<select name="TEMPLATE_NAME">
+				#TEMPLATE_LIST#
+			</select>
+		</td>
+		<td>
+        	<select name="UPLOAD_TYPE">
+          		<option value="image">IMAGE</option>
+          		<option value="Template" selected>TEMPLATE</option>
+        	</select>
+		</td>
+		<td>
+			<input type="submit" value="ADMINISTRATE" name="UPLOAD_CHAT" style="FONT-SIZE: 10px"> 
+    	</td>
+	</tr>
+</form>	
+<form method="post" action="#SERVLET_URL#ChatCreator" name="PrepareAddTemplate">
+	<input type="hidden" name="action" value="admin_chat">        		         	
+	<tr bgcolor="#bababa">
+    	<td colspan="4">
+			&nbsp;
+		</td>
+	</tr>
+	<tr bgcolor="#bababa">
+		<td align="center" colspan="4">			
+        	<input type="submit" value="END ADMIN" name="unadmin" style="FONT-SIZE: 10px"> 		
+    	</td>
+	</tr>
+</form>	
+</table>
+ 
+</form>
+<p>&nbsp; </p>
+</body>
+</html>

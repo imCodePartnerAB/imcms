@@ -1,0 +1,109 @@
+<html>
+<head>
+<title>ConfAdd</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    
+<Script Language=JavaScript1.2>
+<!--
+function AddLink()
+        {
+          var DaLink
+          DaLink = prompt('type the webaddress, f. ex. www.yahoo.com','');
+          if (DaLink)
+            {
+              FooStr = DaLink.toUpperCase();
+              I = FooStr.indexOf('HTTP://');
+  
+              DisplayURL = DaLink
+
+              if (I < 0)
+                AddStr = 'http://';
+              else
+                {
+                AddStr = '';
+                DisplayURL = DaLink.substr(0,I) + DaLink.substr(I+7,DaLink.length);
+                }
+              document.NewMsgForm.ADDTEXT.value = document.NewMsgForm.ADDTEXT.value + '<A HRef=' + AddStr + DaLink + ' Target=_new>' + DisplayURL + '</A>' + '&nbsp;' ;
+            }
+        }
+
+ function DoMail()
+        {
+          var MailLink
+          MailLink = prompt('type the e-mail address, e.g. donald.duck@stanford.edu','');
+          if (MailLink){
+            document.NewMsgForm.ADDTEXT.value = document.NewMsgForm.ADDTEXT.value + ' ' + '<A HRef="mailto:' + MailLink + '"' + 'Target=_new>' +' ' + MailLink + '</A>' + '&nbsp;' ;
+          }
+        }
+
+      function DoPreview()
+        {
+          parent.MsgFrame.location = 'DoPreview.asp?Rubrik=' + escape(document.NewMsgForm.ADDHEADER.value) + '&Desc=' + escape(document.NewMsgForm.ADDTEXT.value);
+        }
+
+
+      function FocusField()
+        {
+          parent.SubjListFrame.focus();
+          
+               document.NewMsgForm.ADDHEADER.focus();
+          
+        }
+//-->
+</Script>
+  </Head>
+
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<table width="320" cellpadding="0" cellspacing="0" border="0">
+  <tr> 
+    <td width="285" valign="middle" bgcolor="#333999" height="20"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;&nbsp;<b>FORUM: 
+      #CURRENT_FORUM_NAME#</b></font> </td>
+    <td width="35" bgcolor="#333999">&nbsp; </td>
+  </tr>
+  <tr> 
+    <td width="285" height="3"><img src="#IMAGE_URL#1pix.gif" width=1" height="3"></td>
+  </tr>
+</table>
+<form method="post" action="#SERVLET_URL#ConfAdd" target=_parent name="NewMsgForm">
+  <table border=0 width="270" cellpadding="0" cellspacing="0">
+    <tr> 
+      <td colspan=2 valign=Top>&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2"><font color="#000000">NEW CONTRIBUTION
+        <br>
+        &nbsp;&nbsp;<font size="1">by #FIRST_NAME# #LAST_NAME#</font></font></font></td>
+    </tr>
+    <tr> 
+      <td valign=Top colspan=2> <br>
+        &nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">HEADER</font> 
+        <br>
+        &nbsp;
+        <input type=Text name="ADDHEADER" maxlength=50 size=30 value="#DISC_HEADER#">
+        <br>
+        <br>
+      </td>
+    </tr>
+    <tr valign="top"> 
+      <td colspan=2>&nbsp;&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">TEXT</font>
+        <font face="Verdana, Arial, Helvetica, sans-serif" size="1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Attachment:&nbsp;&nbsp;<A HRef="javascript:AddLink()">link</A> 
+        &nbsp;<A HRef="javascript:DoMail()">mail</A></font> <BR>
+&nbsp;
+        <textarea wrap="Virtual" name="ADDTEXT" rows=10 cols=30></textarea>
+      </td>
+    </tr>
+    <tr valign="top"> 
+      <td colspan="2" height="30"> 
+        <div align="right"> &nbsp;&nbsp; <font size=3> 
+          <input type="hidden" name="ADDTYPE" value="#ADD_TYPE#">
+          <input type="hidden" name="ADD1" value="Add">
+          </font> <font size=3>
+          <input type="hidden" name="CANCEL1" value="Cancel">
+          </font> 
+          <input type="image" border="0" name="ADD" src="#IMAGE_URL#conf_send.gif" >
+          <input type="image" border="0" name="CANCEL" src="#IMAGE_URL#conf_cancel.gif" >
+          <font size=3> </font> </div>
+      
+    </tr>
+  </table>
+</form>
+  <br>
+</body>
+</html>
