@@ -23,7 +23,7 @@ public class FileCache {
     }
     */
 
-    protected StringBuffer loadFile(File file) {
+    protected StringBuffer loadFile(File file) throws IOException {
 	StringBuffer tempbuffer = new StringBuffer() ;
 	try {
 	    char[] charbuffer = new char[16384] ;
@@ -35,8 +35,8 @@ public class FileCache {
 	    }
 	    br.close();
 	} catch (IOException ex) {
-	    log.error("File not found during parsing.", ex) ;
-	    tempbuffer.append(ex.getMessage()) ;
+	    log.warn("File not found: "+file) ;
+	    throw ex ;
 	}
 	return tempbuffer ;
     }

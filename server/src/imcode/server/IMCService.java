@@ -2807,7 +2807,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    }
 	    reader.close();
 	} catch (IOException ignored) {
-	    // ignored
+	    log.debug("Failed to load quote-list "+quoteListName) ;
 	}
 	return theList ;
     }
@@ -2824,9 +2824,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	Iterator quotesIterator = quoteList.iterator() ;
 	while (quotesIterator.hasNext()) {
 	    quoteWriter.writeQuote((Quote)quotesIterator.next()) ;
-		writer.flush();
 	}
-		writer.close();
+	writer.flush();
+	writer.close();
     }
 
 
@@ -2844,7 +2844,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    }
 	    reader.close();
 	} catch (IOException ignored) {
-	    // ignored
+	    log.debug("Failed to load poll-list "+pollListName) ;
 	}
 	return theList ;
     }
@@ -2861,8 +2861,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	Iterator pollIterator = pollList.iterator() ;
 	while (pollIterator.hasNext()) {
 	    pollWriter.writePoll((Poll)pollIterator.next()) ;
-		writer.flush();
 	}
+	writer.flush();
 	writer.close();
     }
 

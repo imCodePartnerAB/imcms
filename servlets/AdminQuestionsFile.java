@@ -75,9 +75,11 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 	    // Get the current poll
 	    List currentPollList = IMCServiceRMI.getPollList(imcserver,whichFile+".current.txt") ;
+
 	    if ( currentPollList.isEmpty() ) {
 		// There was no poll, get one.
 		currentPollList = this.getNewQuestion(imcserver,whichFile) ;
+		IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",currentPollList) ;
 	    }
 	    Poll currentPoll = (Poll) currentPollList.get(0) ;
 
@@ -87,9 +89,8 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 	    // Replace the current poll if it changed.
 	    if (!newCurrentPoll.getQuestion().equals(currentPoll.getQuestion())) {
-		if (!"".equals(currentPoll.getQuestion()) && !"".equals(newCurrentPoll.getQuestion())) {
-		    IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
-
+		IMCServiceRMI.setPollList(imcserver,whichFile+".current.txt",newPollList) ;
+		if (!"".equals(currentPoll.getQuestion()) && currentPoll.getTotalAnswerCount() > 0) {
 		    List statsList = IMCServiceRMI.getPollList(imcserver,whichFile+".stat.txt") ;
 		    statsList.add(currentPoll) ;
 		    IMCServiceRMI.setPollList(imcserver,whichFile+".stat.txt", statsList) ;
@@ -109,29 +110,24 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    text  = (req.getParameter("text")).trim();
 
 	    boolean ok = true;
-	    if( !checkDate(date1) )	
-		{
-			date1=errMsgDate;
-			ok = false;
+	    if( !checkDate(date1) ) {
+		date1=errMsgDate;
+		ok = false;
 	    }
 
-	    if( !checkDate(date2) )	
-		{
-			date2=errMsgDate;
-			ok = false;
+	    if( !checkDate(date2) ) {
+		date2=errMsgDate;
+		ok = false;
 	    }
-		
-		try 
-		{
-			DateRange range = new DateRange(dateForm.parse(date1), dateForm.parse(date2));
-			if( !checkDates(req,range) )	
-			{
-				date1=errMsgDate; date2=errMsgDate;
-				ok = false;
+
+	    try {
+		DateRange range = new DateRange(dateForm.parse(date1), dateForm.parse(date2));
+		if( !checkDates(req,range) ) {
+		    date1=errMsgDate; date2=errMsgDate;
+		    ok = false;
 	    	}
-	    }
-		catch(ParseException ignored) { }			
-		
+	    } catch(ParseException ignored) { }
+
 	    if( text.length()<1 )
 		{
 		text=errMsgTxt;
