@@ -1,7 +1,10 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
+import com.imcode.imcms.api.NoPermissionException;
+import com.imcode.imcms.api.SecurityChecker;
+import com.imcode.imcms.api.User;
 
 public class UserService {
 

@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.ContentManagementSystem;
-import com.imcode.imcms.RequestConstants;
+import com.imcode.imcms.api.*;
 import imcode.server.IMCService;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IMCServiceRMI;

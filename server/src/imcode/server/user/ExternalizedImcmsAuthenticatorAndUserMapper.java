@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.imcode.imcms.RoleConstants;
+import com.imcode.imcms.api.RoleConstants;
 import imcode.server.IMCConstants;
 
 public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {

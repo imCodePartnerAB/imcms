@@ -1,4 +1,4 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 import imcode.server.document.TemplateDomainObject;
 import imcode.server.IMCService;
@@ -8,6 +8,10 @@ import imcode.server.document.TemplateGroupDomainObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import com.imcode.imcms.api.SecurityChecker;
+import com.imcode.imcms.api.Template;
+import com.imcode.imcms.api.TemplateGroup;
 
 public class TemplateService {
     private SecurityChecker securityChecker;

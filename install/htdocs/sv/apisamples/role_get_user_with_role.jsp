@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.*"%>
+<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
 
 <H3>Getting all users with a specific role</H3>
 <%

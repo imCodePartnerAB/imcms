@@ -1,10 +1,14 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 import imcode.server.IMCText;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateDomainObject;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.NoPermissionException;
+import com.imcode.imcms.api.SecurityChecker;
+import com.imcode.imcms.api.Template;
 
 public class TextDocument extends Document {
 
@@ -12,10 +16,10 @@ public class TextDocument extends Document {
         super( securityChecker, document, documentMapper, permissionSetMapper );
     }
 
-    public TextDocument.TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
+    public TextField getTextField( int textFieldIndexInDocument ) throws NoPermissionException {
         securityChecker.hasEditPermission( internalDocument );
         IMCText imcmsText = documentMapper.getTextField( internalDocument, textFieldIndexInDocument ) ;
-        TextDocument.TextField textField = new TextDocument.TextField(imcmsText) ;
+        TextField textField = new TextField(imcmsText) ;
         return textField;
     }
 

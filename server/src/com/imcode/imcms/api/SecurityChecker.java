@@ -1,4 +1,4 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -6,6 +6,8 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.Arrays;
 import java.util.HashSet;
+
+import com.imcode.imcms.api.NoPermissionException;
 
 class SecurityChecker {
 

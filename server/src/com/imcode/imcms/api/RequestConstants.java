@@ -1,4 +1,4 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 /**
  * These constanst is used in an jsp/servlet environement to get a referense to various instances.

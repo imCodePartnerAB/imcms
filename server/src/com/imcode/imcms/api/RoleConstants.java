@@ -1,4 +1,4 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 public interface RoleConstants {
     final static String USERS = "Users";

@@ -33,11 +33,17 @@ public class TemplateDomainObject {
 
         if( id != templateDomainObject.id )
             return false;
+        if( simple_name != null ? !simple_name.equals( templateDomainObject.simple_name ) : templateDomainObject.simple_name != null )
+            return false;
 
         return true;
     }
 
     public int hashCode() {
-        return id;
+        int result;
+        result = id;
+        result = 29 * result + (simple_name != null ? simple_name.hashCode() : 0);
+        return result;
     }
+
 }

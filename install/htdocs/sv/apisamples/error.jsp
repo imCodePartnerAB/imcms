@@ -1,9 +1,21 @@
-<%@ page import="java.io.PrintWriter"%>
+<%@ page import="java.io.PrintWriter,
+                 com.imcode.imcms.api.NoPermissionException"%>
 <%@page isErrorPage="true"  %>
 
-<h2>This is an sample error page</h2>
-Received an exception of type <%= exception.getClass() %><br>
-<br>
-Message: <%=exception.getMessage()%> <br>
-<br>
-Stack trace: <%exception.printStackTrace( new PrintWriter(out) ); %> <br>
+<h2>An error uccured in one of the API sample pages.</h2>
+<%
+    if( exception instanceof NoPermissionException ){
+        out.println( "You dont have the right permission to do this. <br><br>");
+    } else {
+        if( exception instanceof NullPointerException ) {
+            out.println( "A NullPointerException uccured<br>");
+            out.println( "It could be because of that you are not logged in.<br><br>");
+        }
+        out.println( "Exception type: " + exception.getClass().getName()  + "<br>" );
+        out.println( "Message: " + exception.getMessage()  + "<br>" );
+        out.println( "Stack trace");
+        PrintWriter writer = new PrintWriter( out );
+        exception.printStackTrace( writer );
+    }
+
+%>

@@ -1,4 +1,5 @@
-<%@ page import="com.imcode.imcms.*,java.util.*" %>
+<%@ page import="com.imcode.imcms.api.*,
+                 java.util.*" errorPage="error.jsp" %>
 
 <h1>Show document permissions</h1>
 There are three basic kinds of permissions<br>
@@ -13,9 +14,7 @@ In between "<%=DocumentPermissionSet.FULL%>" and "<%=DocumentPermissionSet.READ%
   <li><%=DocumentPermissionSet.RESTRICTED_1 %></li>
   <li><%=DocumentPermissionSet.RESTRICTED_2 %></li>
 </ul>
-and can be set differently for different pages (and sub pages).
-To learn more about these, and what can be specified about them, see <a href="document_modify_permission_se_restricted_1.jsp">document_modify_permission_se_restricted_1.jsp</a><br>
-<br>
+and can be set differently for different pages (and sub pages).<br>
 Every document has a mapping of permissions to roles.<br>
 This is a map of the format (RoleName,DocumentPermissionSet)<br><br>
 <% int documentId = 1001; %>

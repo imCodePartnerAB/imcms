@@ -1,4 +1,4 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
@@ -20,7 +20,7 @@ public class DocumentService {
      *
      * @param documentId The id number of the document requested, also somtimes known as "meta_id"
      * @return The document
-     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     * @throws com.imcode.imcms.api.NoPermissionException If the current user dosen't have the rights to read this document.
      */
     public TextDocument getTextDocument( int documentId ) throws NoPermissionException {
         securityChecker.hasDocumentRights( documentId );

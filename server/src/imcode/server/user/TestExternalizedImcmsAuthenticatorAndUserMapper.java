@@ -1,6 +1,6 @@
 package imcode.server.user;
 
-import com.imcode.imcms.RoleConstants;
+import com.imcode.imcms.api.*;
 
 import java.util.Arrays;
 

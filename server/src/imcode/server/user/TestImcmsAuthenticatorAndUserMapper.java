@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 
-import com.imcode.imcms.RoleConstants;
+import com.imcode.imcms.api.*;
 
 public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
    private ImcmsAuthenticatorAndUserMapper imcmsAAUM;

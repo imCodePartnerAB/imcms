@@ -1,4 +1,4 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 import imcode.server.document.TemplateGroupDomainObject;
 

@@ -1,4 +1,4 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 import imcode.server.document.TemplateDomainObject;
 
@@ -11,10 +11,6 @@ public class Template {
 
     public String getName() {
         return internalTemplate.getSimple_name();
-    }
-
-    public int getId() {
-        return internalTemplate.getId();
     }
 
     public boolean equals( Object o ) {
@@ -40,6 +36,6 @@ public class Template {
     }
 
     public String toString() {
-        return getName() + "(id = " + getId() + ")";
+        return getName();
     }
 }

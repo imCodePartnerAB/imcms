@@ -7,26 +7,23 @@ Christoffer:
 
 Hasse
 - Se till att ingenting i API:et är mer public än det behöver vara
-- Ordna strategi för hur domänobjekten ska hållas uppdaterade och i synch, särskillt document objektet
-- Gå igenom och kolla vad taggarna heter och hänvisa till i api:et?
-- Namnen på rättigheterna, jämför med htmls sidan, är det samma som i databasen. På engelska och svenska?
-- Tänk igenom TextDocument och Document klasserna. Ska det vara arv?
-- Språkparameter i API:et där det behövs. Javas inbyggda?
-- Gå igenom så att det sker säkerhetskollar på samtliga metoder
 - Gå igenom API klasserna så att de är dokumenterade och logiska namn
 - Stavningskontrollera API:et
+
+- Språkparameter i API:et där det behövs. Javas inbyggda?
+
+- Gå igenom och kolla vad taggarna heter och hänvisa till i api:et?
+- Namnen på rättigheterna, jämför med htmls sidan, är det samma som i databasen. På engelska och svenska?
+- Gå igenom så att det sker säkerhetskollar på samtliga metoder
 - Rita på något sätt paket-beroende trädet
 - Fixa inloggningen på sample sidorna
 - "Stored procedures, A stored procedure is written using Transact-SQL (T-SQL). T-SQL is a subset of ANSI SQL-92 that has extensions to the Standard. T-SQL includes variables, conditional logic, loops and flow control."
 PostgreSQL är open source och stödjer stored procedures
 
 Hillar, prioritera
-(?) Inloggningschecken till filtret
-(?) Duplicering av APIet i Servletarna
 
 API:et (prio)
 (2) Skapa behörighet på viss sida
-(2) Ange formatmall och format-grupp för valfri sida
 (2) Ange documentnummer för valfri sida och valfri includ tag
 (2) API: förhindra tilldelning av User (döpa om? mejla Hillar och Lennart) Går ej att fixa idag annat än att gå in i dabasen.
 
@@ -34,11 +31,14 @@ API:et (prio)
 (3) Visa/tilldela vilka roller en användare som är user admin får administrera
 (3) Visa behöriga användare för viss sida
 
+(4) Inloggningschecken till filtret
 (4) Skapa/ändra docinfo för valfri sida avancerade delar.
 (4) Skapa ny avdelning
 (4) Hantering av extern användare, useradmin.jsp, och rollerna, useradmin
 (4) Gör det möjligt att öppna upp säkerheten
 (4) Ta bort roll från användare
+
+(5) Duplicering av APIet i Servletarna
 
 Snarast
 - Servlets in i paket, och fixa om urlerna till att döljas för surfaren

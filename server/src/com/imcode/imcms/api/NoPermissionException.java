@@ -1,4 +1,4 @@
-package com.imcode.imcms;
+package com.imcode.imcms.api;
 
 /**
  * This exception is thrown from almost all methods in the service classes. It is thrown when the current logged

@@ -29,7 +29,7 @@
     <property name="readrunner"	           value="${webroot}/readrunner"/>
     <property name="shop"	           value="${webroot}/shop"/>
     <property name="poll"	           value="${webroot}/poll"/>
-    <property name="apisample"	           value="${webroot}/apisample"/>
+    <property name="apisamples"	           value="${webroot}/apisamples"/>
 
     <!-- 'WEB-INF' - Everything put here is private to the webapp -->
     <property name="WEB-INF"        value="${webroot}/WEB-INF"/>
@@ -249,9 +249,18 @@
 	<copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
     </target>
 
+        <!-- Generate documentation for the api -->
+    <target name="apiDoc" depends="build" description="Generates javadoc.">
+        <javadoc packagenames="imcode.imcms.api.*" sourcepath="server/src/" destdir="${apisamples}/docs" windowtitle="Imcms API">
+            <packageset dir="server/src/" defaultexcludes="yes">
+                <include name="com/imcode/imcms/api/**"/>
+            </packageset>
+        </javadoc>
+    </target>
+
 
     <!-- Install the webapp, bypassing the war-file -->
-    <target name="install" depends="init,build,check-deployroot" description="Copies the webapp directly into the webapp-directory in the deployroot.">
+    <target name="install" depends="init,build,check-deployroot,apiDoc" description="Copies the webapp directly into the webapp-directory in the deployroot.">
 	<copy todir="${webapproot}">
 	    <fileset dir="${build}"/>
 	</copy>

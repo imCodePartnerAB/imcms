@@ -1,4 +1,5 @@
-<%@ page import="com.imcode.imcms.*"%>
+<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
+
 <%
     ContentManagementSystem imcmsSystem = (ContentManagementSystem)request.getAttribute(RequestConstants.SYSTEM);
     UserService userService = imcmsSystem.getUserService();

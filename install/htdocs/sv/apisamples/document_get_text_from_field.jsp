@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.*"%>
+<%@ page import="com.imcode.imcms.api.*" errorPage="error.jsp" %>
 
 <%!
     int documentId = 1001 ;

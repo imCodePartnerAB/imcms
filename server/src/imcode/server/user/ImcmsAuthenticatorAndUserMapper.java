@@ -4,7 +4,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.db.DBConnect;
 import org.apache.log4j.Logger;
 
-import com.imcode.imcms.RoleConstants;
+import com.imcode.imcms.api.RoleConstants;
 
 import java.util.*;
 

@@ -3,7 +3,8 @@
                  javax.servlet.ServletException,
                  java.io.IOException,
                  com.imcode.imcms.*,
-                 imcode.server.WebAppGlobalConstants"%>
+                 imcode.server.WebAppGlobalConstants,
+                 com.imcode.imcms.api.*"%>
 <%!
 
 private final static String ACTION_SAVE_USER       = "SAVE_USER" ;
