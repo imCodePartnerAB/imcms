@@ -1,9 +1,10 @@
 package imcode.server;
 
-import javax.servlet.http.HttpServletRequest;
-
-import imcode.server.user.UserDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.user.UserDomainObject;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
 
@@ -12,6 +13,7 @@ import imcode.server.document.DocumentDomainObject;
 public class DocumentRequest implements Cloneable {
 
     private HttpServletRequest httpServletRequest;
+    private HttpServletResponse httpServletResponse;
 
     private ImcmsServices serverObject;
     private UserDomainObject user;
@@ -22,12 +24,14 @@ public class DocumentRequest implements Cloneable {
     private Revisits revisits;
 
     public DocumentRequest( ImcmsServices serverObject, UserDomainObject user, DocumentDomainObject document,
-                            DocumentDomainObject referrer, HttpServletRequest httpServletRequest ) {
+                            DocumentDomainObject referrer, HttpServletRequest httpServletRequest,
+                            HttpServletResponse httpServletResponse ) {
         this.serverObject = serverObject;
         this.user = user;
-        this.httpServletRequest = httpServletRequest;
         this.document = document ;
         this.referrer = referrer;
+        this.httpServletRequest = httpServletRequest;
+        this.httpServletResponse = httpServletResponse;
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -78,4 +82,7 @@ public class DocumentRequest implements Cloneable {
         this.emphasize = null != emphasize ? (String[])emphasize.clone() : null ;
     }
 
+    public HttpServletResponse getHttpServletResponse() {
+        return httpServletResponse;
+    }
 }

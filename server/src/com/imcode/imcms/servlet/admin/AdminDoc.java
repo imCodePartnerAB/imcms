@@ -146,7 +146,7 @@ public class AdminDoc extends HttpServlet {
             switch ( doc_type ) {
 
                 default:
-                    DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req );
+                    DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req, res );
                     ParserParameters parserParameters = new ParserParameters();
                     parserParameters.setDocumentRequest( documentRequest );
                     parserParameters.setFlags( flags );

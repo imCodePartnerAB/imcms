@@ -7,7 +7,13 @@ Version 1.12.0
       change the values "JdbcDriver" and "JdbcUrl" in "server.properties" to "net.sourceforge.jtds.jdbc.Driver" and
       "jdbc:jtds:sqlserver://{host}:{port}/;AppName=imCMS;DatabaseName={databasename}" respectively,
       substituting correct values for "{host}", "{port}", and "{databasename}". (Bug 1850)
-      
+
+    Of interest to template creators:
+
+    * Local includes can now be made using <?imcms:include path="/relative/to/context/path"?>.
+      These save a http-request to localhost, are a magnitude more efficient than url-includes, and
+      don't spam the access-log. (Bug 2684)
+
     Of interest to API-using developers:
 
     * Added classes:

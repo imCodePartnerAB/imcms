@@ -93,7 +93,7 @@ public class GetDoc extends HttpServlet {
             referringDocument = documentMapper.getDocument( referring_meta_id );
         }
 
-        documentRequest = new DocumentRequest( imcref, user, document, referringDocument, req );
+        documentRequest = new DocumentRequest( imcref, user, document, referringDocument, req, res );
         documentRequest.setEmphasize( req.getParameterValues( "emp" ) );
 
         Cookie[] cookies = req.getCookies();

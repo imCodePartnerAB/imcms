@@ -2,31 +2,20 @@ package imcode.server.parser;
 
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.*;
-import imcode.server.document.CategoryDomainObject;
-import imcode.server.document.CategoryTypeDomainObject;
-import imcode.server.document.DocumentMapper;
-import imcode.server.document.SectionDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateConstants;
-import imcode.util.FileCache;
-import imcode.util.ImcmsImageUtils;
+import imcode.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
 class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
@@ -149,7 +138,7 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
      * @param patMat     A pattern matcher.
      */
     private String tagInclude( Properties attributes, PatternMatcher patMat ) {
-        int no = 0;
+        int no ;
         String attributevalue;
 
         if ( null != ( attributevalue = attributes.getProperty( "no" ) ) ) {	    // If we have the attribute no="number"...
@@ -160,99 +149,35 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
             } catch ( NumberFormatException ex ) {
                 return "<!-- imcms:include no failed: " + ex + " -->";
             }
+        } else if ( null != ( attributevalue = attributes.getProperty( "path" ) ) ) {
+            return includePath( attributevalue );
         } else if ( null != ( attributevalue = attributes.getProperty( "file" ) ) ) { // If we have the attribute file="filename"...
-            // Fetch a file from the disk
-            try {
-                return fileCache.getCachedFileString( new File( service.getIncludePath(), attributevalue ) ); // Get a file from the include directory
-            } catch ( IOException ex ) {
-                return "<!-- imcms:include file failed: " + ex + " -->";
-            }
+            return includeFile( attributevalue );
         } else if ( null != ( attributevalue = attributes.getProperty( "document" ) ) ) { // If we have the attribute document="meta-id"
-            try {
-                if ( includeLevel > 0 ) {
-                    int included_meta_id = Integer.parseInt( attributevalue );
-                    ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters( parserParameters, included_meta_id, attributes );
-                    String documentStr = textDocParser.parsePage( includedDocumentParserParameters, includeLevel - 1 );
-                    documentStr = org.apache.oro.text.regex.Util.substitute( patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
-                    documentStr = org.apache.oro.text.regex.Util.substitute( patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
-                    return documentStr;
-                }
-            } catch ( NumberFormatException ex ) {
-                return "<!-- imcms:include document failed: " + ex + " -->";
-            } catch ( IOException ex ) {
-                return "<!-- imcms:include document failed: " + ex + " -->";
-            } catch ( RuntimeException ex ) {
-                return "<!-- imcms:include document failed: " + ex + " -->";
-            }
-            return "";
+            return includeDocument( attributevalue, attributes, patMat );
         } else if ( null != ( attributevalue = attributes.getProperty( "url" ) ) ) { // If we have an attribute of the form url="url:url"
-            try {
-                String urlStr = attributevalue;
-                String commaSeparatedNamesOfParametersToSend = attributes.getProperty( "sendparameters" );
-
-                urlStr += -1 == urlStr.indexOf( '?' ) ? "?" : "&";
-                Set parameterNamesToSend = createSetFromCommaSeparatedString( commaSeparatedNamesOfParametersToSend );
-                urlStr += createQueryStringFromRequest( documentRequest.getHttpServletRequest(), parameterNamesToSend );
-
-                if ( urlStr.startsWith( "/" ) ) {  // lets add hostname if we got a relative path
-                    urlStr = documentRequest.getHttpServletRequest().getScheme()
-                             + "://" + documentRequest.getHttpServletRequest().getServerName()
-                             + ':'
-                             + documentRequest.getHttpServletRequest().getServerPort()
-                             + urlStr;
-                }
-                URL url = new URL( urlStr );
-                String urlProtocol = url.getProtocol();
-                if ( "file".equalsIgnoreCase( urlProtocol ) ) { // Make sure we don't have to defend against file://urls...
-                    return "<!-- imcms:include url failed: file-url not allowed -->";
-                }
-                String sessionId = documentRequest.getHttpServletRequest().getSession().getId();
-                URLConnection urlConnection = url.openConnection();
-                urlConnection.setRequestProperty( "User-Agent",
-                                                  documentRequest.getHttpServletRequest().getHeader( "User-agent" ) );
-                if ( null != attributes.getProperty( "sendsessionid" ) ) {
-                    urlConnection.addRequestProperty( "Cookie", ImcmsSetupFilter.JSESSIONID_COOKIE_NAME + "="
-                                                                + sessionId );
-                }
-                if ( null != attributes.getProperty( "sendcookies" ) ) {
-                    Cookie[] requestCookies = documentRequest.getHttpServletRequest().getCookies();
-                    for ( int i = 0; requestCookies != null && i < requestCookies.length; ++i ) {
-                        Cookie theCookie = requestCookies[i];
-                        if ( !ImcmsSetupFilter.JSESSIONID_COOKIE_NAME.equals( theCookie.getName() ) ) {
-                            urlConnection.addRequestProperty( "Cookie", theCookie.getName() + "="
-                                                                        + theCookie.getValue() );
-                        }
-                    }
-                }
-                if ( null != attributes.getProperty( "sendmetaid" ) ) {
-                    urlConnection.setRequestProperty( "X-Meta-Id", "" + document.getId() );
-                }
-
-                InputStream connectionInputStream = urlConnection.getInputStream();
-                String contentType = urlConnection.getContentType();
-                String contentEncoding = StringUtils.substringAfter( contentType, "charset=" );
-                if ( "".equals( contentEncoding ) ) {
-                    contentEncoding = WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252;
-                }
-                InputStreamReader urlInput = new InputStreamReader( connectionInputStream, contentEncoding );
-                int charsRead = -1;
-                final int URL_BUFFER_LEN = 16384;
-                char[] buffer = new char[URL_BUFFER_LEN];
-                StringBuffer urlResult = new StringBuffer();
-                while ( -1 != ( charsRead = urlInput.read( buffer, 0, URL_BUFFER_LEN ) ) ) {
-                    urlResult.append( buffer, 0, charsRead );
-                }
-                return urlResult.toString();
-            } catch ( MalformedURLException ex ) {
-                return "<!-- imcms:include url failed: " + ex + " -->";
-            } catch ( IOException ex ) {
-                return "<!-- imcms:include url failed: " + ex + " -->";
-            } catch ( RuntimeException ex ) {
-                return "<!-- imcms:include url failed: " + ex + " -->";
-            }
+            return includeUrl( attributevalue, attributes );
         } else { // If we have none of the attributes no, file, url, or document
             no = implicitIncludeNumber++; // Implicitly use the next number.
         }
+        return includeEditing( attributes, no, patMat );
+    }
+
+    private String includePath( String path ) {
+        HttpServletRequest request = documentRequest.getHttpServletRequest();
+        HttpServletRequestWrapper metaIdHeaderHttpServletRequest = new ImcmsTagSubstitution.MetaIdHeaderHttpServletRequest( request, document.getId() );
+        HttpServletResponseWrapper collectingHttpServletResponse = new CollectingHttpServletResponse( documentRequest.getHttpServletResponse() ) ;
+        try {
+            request.getRequestDispatcher( path ).include( metaIdHeaderHttpServletRequest, collectingHttpServletResponse );
+            return collectingHttpServletResponse.toString() ;
+        } catch ( ServletException ex ) {
+            return "<!-- imcms:include path failed: " + ex + " -->";
+        } catch ( IOException ex ) {
+            return "<!-- imcms:include path failed: " + ex + " -->";
+        }
+    }
+
+    private String includeEditing( Properties attributes, int no, PatternMatcher patMat ) {
         try {
             String label = attributes.getProperty( "label" );
             label = label == null ? "" : label;
@@ -272,14 +197,108 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
                 }
                 ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters( parserParameters, includedDocumentId.intValue(), attributes );
                 String documentStr = textDocParser.parsePage( includedDocumentParserParameters, includeLevel - 1 );
-                documentStr = org.apache.oro.text.regex.Util.substitute( patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
-                documentStr = org.apache.oro.text.regex.Util.substitute( patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
+                documentStr = Util.substitute( patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
+                documentStr = Util.substitute( patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
                 return documentStr;
             } else {
                 return "<!-- imcms:include failed: max include-level reached. -->";
             }
         } catch ( IOException ex ) {
             return "<!-- imcms:include failed: " + ex + " -->";
+        }
+    }
+
+    private String includeUrl( String urlStr, Properties attributes ) {
+        try {
+            String commaSeparatedNamesOfParametersToSend = attributes.getProperty( "sendparameters" );
+
+            urlStr += -1 == urlStr.indexOf( '?' ) ? "?" : "&";
+            Set parameterNamesToSend = createSetFromCommaSeparatedString( commaSeparatedNamesOfParametersToSend );
+            urlStr += createQueryStringFromRequest( documentRequest.getHttpServletRequest(), parameterNamesToSend );
+
+            if ( urlStr.startsWith( "/" ) ) {  // lets add hostname if we got a relative path
+                urlStr = documentRequest.getHttpServletRequest().getScheme()
+                         + "://" + documentRequest.getHttpServletRequest().getServerName()
+                         + ':'
+                         + documentRequest.getHttpServletRequest().getServerPort()
+                         + urlStr;
+            }
+            URL url = new URL( urlStr );
+            String urlProtocol = url.getProtocol();
+            if ( "file".equalsIgnoreCase( urlProtocol ) ) { // Make sure we don't have to defend against file://urls...
+                return "<!-- imcms:include url failed: file-url not allowed -->";
+            }
+            String sessionId = documentRequest.getHttpServletRequest().getSession().getId();
+            URLConnection urlConnection = url.openConnection();
+            urlConnection.setRequestProperty( "User-Agent",
+                                              documentRequest.getHttpServletRequest().getHeader( "User-agent" ) );
+            if ( null != attributes.getProperty( "sendsessionid" ) ) {
+                urlConnection.addRequestProperty( "Cookie", ImcmsSetupFilter.JSESSIONID_COOKIE_NAME + "="
+                                                            + sessionId );
+            }
+            if ( null != attributes.getProperty( "sendcookies" ) ) {
+                Cookie[] requestCookies = documentRequest.getHttpServletRequest().getCookies();
+                for ( int i = 0; requestCookies != null && i < requestCookies.length; ++i ) {
+                    Cookie theCookie = requestCookies[i];
+                    if ( !ImcmsSetupFilter.JSESSIONID_COOKIE_NAME.equals( theCookie.getName() ) ) {
+                        urlConnection.addRequestProperty( "Cookie", theCookie.getName() + "="
+                                                                    + theCookie.getValue() );
+                    }
+                }
+            }
+            if ( null != attributes.getProperty( "sendmetaid" ) ) {
+                urlConnection.setRequestProperty( "X-Meta-Id", "" + document.getId() );
+            }
+
+            InputStream connectionInputStream = urlConnection.getInputStream();
+            String contentType = urlConnection.getContentType();
+            String contentEncoding = StringUtils.substringAfter( contentType, "charset=" );
+            if ( "".equals( contentEncoding ) ) {
+                contentEncoding = WebAppGlobalConstants.DEFAULT_ENCODING_WINDOWS_1252;
+            }
+            InputStreamReader urlInput = new InputStreamReader( connectionInputStream, contentEncoding );
+            int charsRead = -1;
+            final int URL_BUFFER_LEN = 16384;
+            char[] buffer = new char[URL_BUFFER_LEN];
+            StringBuffer urlResult = new StringBuffer();
+            while ( -1 != ( charsRead = urlInput.read( buffer, 0, URL_BUFFER_LEN ) ) ) {
+                urlResult.append( buffer, 0, charsRead );
+            }
+            return urlResult.toString();
+        } catch ( MalformedURLException ex ) {
+            return "<!-- imcms:include url failed: " + ex + " -->";
+        } catch ( IOException ex ) {
+            return "<!-- imcms:include url failed: " + ex + " -->";
+        } catch ( RuntimeException ex ) {
+            return "<!-- imcms:include url failed: " + ex + " -->";
+        }
+    }
+
+    private String includeDocument( String attributevalue, Properties attributes, PatternMatcher patMat ) {
+        try {
+            if ( includeLevel > 0 ) {
+                int included_meta_id = Integer.parseInt( attributevalue );
+                ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters( parserParameters, included_meta_id, attributes );
+                String documentStr = textDocParser.parsePage( includedDocumentParserParameters, includeLevel - 1 );
+                documentStr = Util.substitute( patMat, HTML_PREBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
+                documentStr = Util.substitute( patMat, HTML_POSTBODY_PATTERN, NULL_SUBSTITUTION, documentStr );
+                return documentStr;
+            }
+        } catch ( NumberFormatException ex ) {
+            return "<!-- imcms:include document failed: " + ex + " -->";
+        } catch ( IOException ex ) {
+            return "<!-- imcms:include document failed: " + ex + " -->";
+        } catch ( RuntimeException ex ) {
+            return "<!-- imcms:include document failed: " + ex + " -->";
+        }
+        return "";
+    }
+
+    private String includeFile( String attributevalue ) {// Fetch a file from the disk
+        try {
+            return fileCache.getCachedFileString( new File( service.getIncludePath(), attributevalue ) ); // Get a file from the include directory
+        } catch ( IOException ex ) {
+            return "<!-- imcms:include file failed: " + ex + " -->";
         }
     }
 
@@ -681,4 +700,20 @@ class ImcmsTagSubstitution implements Substitution, ImcmsConstants {
         return documentRequest.getHttpServletRequest().getContextPath();
     }
 
+    public class MetaIdHeaderHttpServletRequest extends HttpServletRequestWrapper {
+
+        private int metaId;
+
+        public MetaIdHeaderHttpServletRequest( HttpServletRequest request, int metaId ) {
+            super(request);
+            this.metaId = metaId;
+        }
+
+        public String getHeader( String headerName ) {
+            if ("x-meta-id".equalsIgnoreCase( headerName )) {
+                return ""+metaId ;
+            }
+            return super.getHeader( headerName ) ;
+        }
+    }
 }
