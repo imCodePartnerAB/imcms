@@ -47,7 +47,7 @@
         </change>
         <change>
             <p>
-                Made enter submit a text field when using "<attr>rows</attr>='<value>1</value>'".
+                Made enter submit a text field when using "rows='1'".
             </p>
             <bug id="2881"/>
         </change>
@@ -138,6 +138,17 @@
                 to be used as values in searches on the field "phase".
             </p>
             <bug id="2880"/>
+        </change>
+    </changes>
+
+    <changes for="developers">
+        <change>
+            <p>
+                The java code in the <path>tools</path> directory were not built with
+                source="1.4" and target="1.4".
+                This caused parts of imCMS to break when compiled with java 1.5 and run on java 1.4.
+            </p>
+            <bug id="2878"/>
         </change>
     </changes>
 

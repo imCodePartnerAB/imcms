@@ -80,7 +80,7 @@
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="config|path|tag|class|package|method">
+    <xsl:template match="config|path|tag|class|package|method|variable">
         <span class="{name()}">
             <xsl:apply-templates/>
         </span>

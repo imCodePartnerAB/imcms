@@ -41,7 +41,7 @@ li {
 .path, .localfile, .package {
     color: darkgreen;
 }
-.tag, .class, .method {
+.tag, .class, .method, .variable {
     color: darkblue;
     white-space: nowrap;
 }
