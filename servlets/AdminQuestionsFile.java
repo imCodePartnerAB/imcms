@@ -49,7 +49,6 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    return ;
 	}
 
-
 	res.setContentType("text/html");
 	Writer out = res.getWriter();
 
@@ -101,9 +100,7 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    res.sendRedirect("AdminQuestions") ;
 	    return;
 
-	} 
-	else if (req.getParameter("add")!=null)
-	{
+	} else if (req.getParameter("add")!=null) {
 	    //hämta parametrar
 	    date1 = (req.getParameter("date1")).trim();
 	    date2 = (req.getParameter("date2")).trim();
@@ -121,50 +118,46 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	    }
 
 	    try {
-		DateRange range = new DateRange(dateForm.parse(date1), dateForm.parse(date2));
+		DateRange range = new DateRange(dateForm.parse(date1), new Date(dateForm.parse(date2).getTime()+ONE_DAY));
 		if( !checkDates(req,range) ) {
 		    date1=errMsgDate; date2=errMsgDate;
 		    ok = false;
-	    	}
+		}
 	    } catch(ParseException ignored) { }
 
-	    if( text.length()<1 )
-		{
+	    if( text.length()<1 ) {
 		text=errMsgTxt;
 		ok = false;
 	    }
 
-	    if( ok )
-		{
+	    if( ok ) {
 		addLineToList(req,lines);
 		date1 = "";
 		date2 = "";
 		text  = "";
 	    }
-	} 
-	else if (req.getParameter("edit")!=null)
-	{
+	} else if (req.getParameter("edit")!=null) {
 	    //hämta raden som är markerad
 	    String row = req.getParameter("AdminFile") ;
 
-	    if (row != null) 
+	    if (row != null)
 		{
-			//lägg till en eventuellt redan uppflyttad rad
-	    	addLineToList(req,lines);
-			int theRow = Integer.parseInt(row);
-			Poll poll = (Poll)lines.get(theRow);
-			DateRange dates = poll.getDateRange();
+		    //lägg till en eventuellt redan uppflyttad rad
+		    addLineToList(req,lines);
+		    int theRow = Integer.parseInt(row);
+		    Poll poll = (Poll)lines.get(theRow);
+		    DateRange dates = poll.getDateRange();
 
-			date1 = dateForm.format(dates.getStartDate());
-			date2 = dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY));
-			text  = poll.getQuestion();
-			lines.remove(poll);
-	    }
-		else
+		    date1 = dateForm.format(dates.getStartDate());
+		    date2 = dateForm.format(new Date(dates.getEndDate().getTime()-ONE_DAY));
+		    text  = poll.getQuestion();
+		    lines.remove(poll);
+		}
+	    else
 		{
-			date1 = (req.getParameter("date1")).trim();
-	    	date2 = (req.getParameter("date2")).trim();
-	    	text  = (req.getParameter("text")).trim();
+		    date1 = (req.getParameter("date1")).trim();
+		    date2 = (req.getParameter("date2")).trim();
+		    text  = (req.getParameter("text")).trim();
 		}
 	} else if (req.getParameter("remove")!=null){
 	    // retrieve list of rows to remove
@@ -256,41 +249,35 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 
 
     private boolean checkDate(String dateStr){
-	try
-	    {
-		dateForm.parse(dateStr);
-	    }catch(java.text.ParseException pe){
-		return false;
-	    }
+	try {
+	    dateForm.parse(dateStr);
+	}catch(java.text.ParseException pe){
+	    return false;
+	}
 	return true;
     }
-	
-	private boolean checkDates(HttpServletRequest req, DateRange range)
-	{
-		HttpSession session = req.getSession();
-		List questionList = (List)session.getAttribute("lines");
-		
-		Iterator qIterator = questionList.iterator() ;
-		while ( qIterator.hasNext() ) 
-		{
-	    	Poll aPollQuestion = (Poll)qIterator.next() ;
-			
-			if( (range).overlap(aPollQuestion.getDateRange()) ) {return false ;	}
-		}
-		
-		return true;
+
+    private boolean checkDates(HttpServletRequest req, DateRange range) {
+	HttpSession session = req.getSession();
+	List questionList = (List)session.getAttribute("lines");
+
+	Iterator qIterator = questionList.iterator() ;
+	while ( qIterator.hasNext() ) {
+	    Poll aPollQuestion = (Poll)qIterator.next() ;
+	    if( (range).overlap(aPollQuestion.getDateRange()) ) {return false ;	}
+	}
+
+	return true;
     }
 
-    private List getNewQuestion(String imcserver,String whichFile) throws ServletException, IOException
-    {
+    private List getNewQuestion(String imcserver,String whichFile) throws ServletException, IOException {
 
 	List questionList = IMCServiceRMI.getQuoteList(imcserver,whichFile+".poll.txt") ;
 
 	Date date = new Date();
 	Iterator qIterator = questionList.iterator() ;
 
-	while ( qIterator.hasNext() ) 
-	{
+	while ( qIterator.hasNext() ) {
 	    Quote aPollQuestion = (Quote)qIterator.next() ;
 
 	    if (aPollQuestion.getDateRange().contains(date)) {
@@ -307,6 +294,6 @@ public class AdminQuestionsFile extends Administrator implements imcode.server.I
 	DateRange dateRange = new DateRange(new Date(0),new Date(0)) ;
 	newPollList.add(new Poll("",dateRange)) ;
 	return newPollList ;
-	}
+    }
 
 } // End of class

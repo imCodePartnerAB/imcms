@@ -281,6 +281,19 @@
   </target>
 
 
+  <!-- Run JUnit-tests -->
+  <target name="test"
+          depends="server"
+	  description="Runs JUnit-tests.">
+
+    <java classname="junit.swingui.TestRunner" fork="yes">
+      <classpath>
+	<pathelement path="${classes}"/>
+	<pathelement path="install/lib/junit.jar"/>
+      </classpath>
+    </java>
+  </target>
+
   <!-- Generate documentation -->
   <target name="doc"
 	  depends="init"
@@ -386,7 +399,7 @@
 	  description="Copies the jar-files.">
 
     <copy todir="${lib}">
-      <fileset dir="install/lib"/>
+      <fileset dir="install/lib" excludes="junit.jar"/>
     </copy>
 
   </target>

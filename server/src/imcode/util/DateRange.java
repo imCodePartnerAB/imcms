@@ -8,15 +8,21 @@ This class represents a range of Dates.
 
 **/
 public class DateRange {
-	private final static String CVS_REV = "$Revision$" ;
+
+    private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 
     private Date startDate ;
     private Date endDate ;
 
     public DateRange(Date startDate, Date endDate) {
-	this.startDate = startDate ;
-	this.endDate = endDate ;
+	if (startDate.after(endDate)) {
+	    this.startDate = endDate ;
+	    this.endDate = startDate ;
+	} else {
+	    this.startDate = startDate ;
+	    this.endDate = endDate ;
+	}
     }
 
     /**
@@ -46,7 +52,7 @@ public class DateRange {
        @return whether or not this DateRange contains the specified date.
     **/
     public boolean contains(Date date) {
-	return (startDate.compareTo(date) <= 0) && endDate.after(date) ;
+	return !startDate.after(date) && endDate.after(date) ;
     }
 
     /**
@@ -70,14 +76,14 @@ public class DateRange {
     public boolean equals(DateRange dateRange) {
 	return this.startDate.equals(dateRange.startDate) && this.endDate.equals(dateRange.endDate) ;
     }
-	
+
     /**
        Compares this DateRange to another.
 
        @return true If and only if the ranges overlap.
     **/
     public boolean overlap(DateRange dateRange) {
-    return this.contains(dateRange.startDate) || this.contains(dateRange.endDate) ;
+	return (startDate.before(dateRange.endDate) && endDate.after(dateRange.startDate)) ;
     }
-			
+
 }
