@@ -49,6 +49,10 @@ public class AdminQuestionsFile extends Administrator {
 			return;
 		}	
 		
+		String date1 = " ";
+			String date2 = " ";
+			String text = " ";
+		
 		if (req.getParameter("save")!=null)
 		{				
 			//out.println("okbuttonpushed <br> ");
@@ -65,13 +69,32 @@ public class AdminQuestionsFile extends Administrator {
 			//hämta nuvarande rader
 			Map lines = (Map)session.getAttribute("lines");
 			
+			date1 = (req.getParameter("date1")).trim();
+				date2 = (req.getParameter("date2")).trim();
+				text = (req.getParameter("text")).trim();
+								
+				if( checkDate(date1) && checkDate(date2) && text.length()>1 )
+				{
+					String fullLine = date1 + " " + date2 + " " + text;
+						//hitta högsta radnr
+					int last = 0;//( (Integer)lines.lastKey() ).intValue();
+					Set keys = lines.keySet();
+					Iterator rowI = keys.iterator();
+					while(rowI.hasNext())
+					{
+						int temp = (((Integer)rowI.next()).intValue());
+						last = temp>last?temp:last;
+					}
+					lines.put(new Integer(last+1),fullLine);
+				}
+			
 			boolean dates = true;//this.checkDates(lines,res);
 			
 			if (!dates)
 			{ 
-				String text = "FEL: Enkäternas datum måste vara unika! ";
-				String date1 = " ";
-				String date2 = " ";
+				text = "FEL: Enkäternas datum måste vara unika! ";
+				date1 = " ";
+				 date2 = " ";
 				String options = "<option value=\"No_Choice\" selected>-- V&auml;lj Rad --</option>";
 				
 				Set keyRows = lines.keySet();
@@ -118,9 +141,9 @@ public class AdminQuestionsFile extends Administrator {
 				
 				//FIX så linjen blir ok med #
 					String fullLine = ((String)lines.get(row)).trim();
-					String date1 = fullLine.substring(0,6);
-					String date2 = fullLine.substring(7,13);
-					String text = HTMLConv.toHTML(fullLine.substring(14));
+					  date1= fullLine.substring(0,6);
+				 date2	 = fullLine.substring(7,13);
+					 text = HTMLConv.toHTML(fullLine.substring(14));
 				
 					//out.println(date1 + "#" + date2 + "#" + text + "#" + "<br>");
 					fileW.write(date1 + "#" + date2 + "#" + text + "#" );
@@ -140,9 +163,9 @@ public class AdminQuestionsFile extends Administrator {
 		{
 			
 			String options = "<option value=\"No_Choice\" selected>-- V&auml;lj Rad --</option>";
-			String date1 = " ";
-			String date2 = " ";
-			String text = " ";
+			 date1 = " ";
+			 date2 = " ";
+		text = " ";
 			
 			if ((req.getParameter("add")).equals("add"))
 			{
