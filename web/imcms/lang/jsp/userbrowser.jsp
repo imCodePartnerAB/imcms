@@ -81,13 +81,7 @@
                     UserDomainObject[] users = userBrowserPage.getUsers();
                     for ( int i = 0; i < users.length; i++ ) {
                     UserDomainObject user = users[i];
-                    %><option value="<%= user.getId() %>">
-                        <%= user.getLastName() %>, <%= user.getFirstName() %>
-                        [<%= user.getLoginName() %>]
-                        <%= StringUtils.isBlank(user.getTitle()) ? "" : ", "+user.getTitle() %>
-                        <%= StringUtils.isBlank(user.getCompany()) ? "" : ", "+user.getCompany() %>
-                        <%= StringUtils.isBlank(user.getEmailAddress()) ? "" : "&lt;"+user.getEmailAddress()+"&gt;" %>
-                    </option><%
+                    %><option value="<%= user.getId() %>"><%= user.getLastName() %>, <%= user.getFirstName() %> [<%= user.getLoginName() %>] <%= StringUtils.isBlank(user.getTitle()) ? "" : ", "+user.getTitle() %> <%= StringUtils.isBlank(user.getCompany()) ? "" : ", "+user.getCompany() %> <%= StringUtils.isBlank(user.getEmailAddress()) ? "" : "&lt;"+user.getEmailAddress()+"&gt;" %></option><%
                 } %>
             </select></td>
             <td width="20%" align="right">
