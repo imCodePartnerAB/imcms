@@ -25,6 +25,7 @@ public class GetDoc extends HttpServlet {
     private static Category log = Logger.getInstance(GetDoc.class.getName());
     private static String noActiveDocUrl = "no_active_document.html";
     private static String noPageUrl = "no_page.html";
+    private static String noPermissionUrl = "no_permission.html";
 
     public void doPost( HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         doGet( req, res );
@@ -60,7 +61,7 @@ public class GetDoc extends HttpServlet {
             throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
 
-        String no_permission_url = Utility.getDomainPref("no_permission_url");
+
         File file_path = Utility.getDomainPrefPath("file_path");
 
         Vector vec = new Vector();
@@ -145,6 +146,8 @@ public class GetDoc extends HttpServlet {
         // among the templates for the default-language. Number two, we should use just one function for
         // checking permissions. Number three, since the user obviously has logged in, give him the page in his own language!
 
+       // String no_permission_url = Utility.getDomainPref("no_permission_url");
+        String no_permission_url = imcref.getImcmsUrl() + user.getLangPrefix() + "/login/" + noPermissionUrl;
         if (!imcref.checkDocRights(meta_id, user)) {
             session.setAttribute("login.target",
                     req.getRequestURL().append("?").append(req.getQueryString()).toString());

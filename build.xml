@@ -559,9 +559,7 @@
         </antcall>
 
         <!-- copy translated login templates for defaultlanguage to directory /login-->
-        <copy todir="${defaultlogin}">
-             <fileset dir="${imcms}/${defaultlanguage}/login"/>
-        </copy>
+        <copy file="${imcms}/${defaultlanguage}/login/index.html" todir="${defaultlogin}"/>
 
          <!-- copy and translate texttemplates files -->
         <antcall target="texttemplates">

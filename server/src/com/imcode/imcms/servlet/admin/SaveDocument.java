@@ -140,7 +140,7 @@ public class SaveDocument extends HttpServlet {
         Date date = null;
         try {
             date = dateformat.parse( dateStr );
-        } catch ( ParseException pe ) {
+        } catch ( Exception e ) {
             return null ;
         }
 
@@ -148,7 +148,7 @@ public class SaveDocument extends HttpServlet {
         try {
             timeformat.setTimeZone( TimeZone.getTimeZone( "GMT" ));
             time = timeformat.parse( timeStr );
-        } catch ( ParseException pe ) {
+        } catch ( Exception e ) {
             return date ;
         }
 

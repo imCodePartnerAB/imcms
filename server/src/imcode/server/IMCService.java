@@ -705,9 +705,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String parseDoc( java.util.List variables, String admin_template_name, UserDomainObject user ) {
         // FIXME Fugly workaround
         String langPrefix = getUserLangPrefixOrDefaultLanguage( user );
+        String htmlStr;
         try {
-            String htmlStr = fileCache.getCachedFileString(
+            if( "logged_out.html".equals(admin_template_name)){
+                htmlStr = fileCache.getCachedFileString(
+                    new File( imcmsPath, langPrefix + "/login/" + admin_template_name ) );
+            }else{
+                htmlStr = fileCache.getCachedFileString(
                     new File( templatePath, langPrefix + "/admin/" + admin_template_name ) );
+            }
+
+
             if ( variables == null ) {
                 return htmlStr;
             }
