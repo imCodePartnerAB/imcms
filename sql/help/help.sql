@@ -6,8 +6,8 @@
 -- This script is autocreated by script "create_help.sql"
 -- Soures database = help
 -- Server = LENNART
--- Create date = 2002-03-05
--- Included help-page =  meta_id < 291
+-- Create date = 2002-03-07
+-- Included help-page =  meta_id < 401
  
  
 GO
@@ -28,545 +28,805 @@ begin
 SET IDENTITY_INSERT meta ON
 -- lets insert new meta_id 
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (1,'',2,'Hj&auml;lpsidan','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (1,'',2,'Hj&auml;lpsidan','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (2,'',2,'Administrera filer','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (2,'',2,'Administrera filer','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (3,'',2,'Aktivera/avaktivera användare','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (3,'',2,'Aktivera/avaktivera användare','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (4,'',2,'Administrera användarroller','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (4,'',2,'Administrera användarroller','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (5,'',2,'Administrationssida f&ouml;r Browserkontroll','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (5,'',2,'Administrationssida f&ouml;r Browserkontroll','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (6,'',2,'Förändrade dokument - bild 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (6,'',2,'Förändrade dokument - bild 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (7,'',2,'Förändrade dokument - bild 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (7,'',2,'Förändrade dokument - bild 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (8,'',2,'Administrera formatmallar/formatgrupper','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (8,'',2,'Administrera formatmallar/formatgrupper','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (9,'',2,'Byta namn på formatgrupp','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (9,'',2,'Byta namn på formatgrupp','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (10,'',2,'Lägga till/ta bort formatmallar','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (10,'',2,'Lägga till/ta bort formatmallar','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (11,'',2,'Skapa formatgrupp','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (11,'',2,'Skapa formatgrupp','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (12,'',2,'Ta bort formatgrupp','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (12,'',2,'Ta bort formatgrupp','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (13,'',2,'Ta bort formatgrupp - varning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (13,'',2,'Ta bort formatgrupp - varning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (14,'',2,'Administrationssida för IP-accesser - bild 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (14,'',2,'Administrationssida för IP-accesser - bild 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (15,'',2,'Lägga till ny IP-access ','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (15,'',2,'Lägga till ny IP-access ','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (16,'',2,'Ta bort IP-accesser - varning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (16,'',2,'Ta bort IP-accesser - varning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (17,'',2,'Administrera räknare','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (17,'',2,'Administrera räknare','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (18,'',2,'Kontrollera internet-länkar','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (18,'',2,'Kontrollera internet-länkar','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (19,'',2,'L&auml;gga till l&auml;nk till ett befintligt dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (19,'',2,'L&auml;gga till l&auml;nk till ett befintligt dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (20,'',2,'Byt namn på formatmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (20,'',2,'Byt namn på formatmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (21,'',2,'Hämta uppladdad formatmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (21,'',2,'Hämta uppladdad formatmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (22,'',2,'Ladda upp ny formatmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (22,'',2,'Ladda upp ny formatmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (23,'',2,'Ladda upp ny exempelmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (23,'',2,'Ladda upp ny exempelmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (24,'',2,'Ladda upp ny formatmall - klart!','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (24,'',2,'Ladda upp ny formatmall - klart!','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (25,'',2,'Ta bort formatmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (25,'',2,'Ta bort formatmall','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (26,'',2,'Ta bort formatmall - varning!','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (26,'',2,'Ta bort formatmall - varning!','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (27,'',2,'Visa formatmallar','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (27,'',2,'Visa formatmallar','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (28,'',2,'Administratörsmenyn','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (28,'',2,'Administratörsmenyn','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (29,'',2,'Administrera användare och roller','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (29,'',2,'Administrera användare och roller','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (30,'',2,'Administrera roller ','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (30,'',2,'Administrera roller ','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (31,'',2,'Byt namn på roll','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (31,'',2,'Byt namn på roll','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (32,'',2,'Lägg till ny roll','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (32,'',2,'Lägg till ny roll','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (33,'',2,'Redigera rättigheter för roll','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (33,'',2,'Redigera rättigheter för roll','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (34,'',2,'Ta bort roll - varning!','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (34,'',2,'Ta bort roll - varning!','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (35,'',2,'Administrera systeminformation','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (35,'',2,'Administrera systeminformation','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (36,'',2,'Lägga till/ändra text','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (36,'',2,'Lägga till/ändra text','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (37,'',2,'Visa alla dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (37,'',2,'Visa alla dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (38,'',2,'Ändra användaregenskaper','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (38,'',2,'Ändra användaregenskaper','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (39,'',2,'Ändra dokumentinfo','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (39,'',2,'Ändra dokumentinfo','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (40,'',2,'Rättigheter för begränsad behörighet 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (40,'',2,'Rättigheter för begränsad behörighet 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (41,'',2,'Rättigheter för begränsad behörighet 1, för nya dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (41,'',2,'Rättigheter för begränsad behörighet 1, för nya dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (42,'',2,'Rättigheter för begränsad behörighet 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (42,'',2,'Rättigheter för begränsad behörighet 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (43,'',2,'Rättigheter för begränsad behörighet 2, för nya dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (43,'',2,'Rättigheter för begränsad behörighet 2, för nya dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (44,'',2,'Lägga till bild - Bildarkiv','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (44,'',2,'Lägga till bild - Bildarkiv','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (45,'',2,'Meddelande','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (45,'',2,'Meddelande','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (46,'',2,'L&auml;gga till l&auml;nk till Browserkontroll - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (46,'',2,'L&auml;gga till l&auml;nk till Browserkontroll - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (47,'',2,'Lägga till diagram - bild 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (47,'',2,'Lägga till diagram - bild 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (48,'',2,'Lägga till diagram - bild 2 - Skapa nytt diagram','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (48,'',2,'Lägga till diagram - bild 2 - Skapa nytt diagram','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (49,'',2,'Lägga till diagram - bild 3 - Inmatningsformulär för diagram och tabeller','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (49,'',2,'Lägga till diagram - bild 3 - Inmatningsformulär för diagram och tabeller','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (50,'',2,'Lägga till diagram - bild 4 - Nytt diagram meny','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (50,'',2,'Lägga till diagram - bild 4 - Nytt diagram meny','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (51,'',2,'Rättighet att få lösenord via e-post saknas','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (51,'',2,'Rättighet att få lösenord via e-post saknas','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (52,'',2,'Lösenord via e-post','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (52,'',2,'Lösenord via e-post','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (53,'',2,'Inkludera en befintlig sida i en annan sida','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (53,'',2,'Inkludera en befintlig sida i en annan sida','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (54,'',2,'Inloggning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (54,'',2,'Inloggning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (55,'',2,'Knappraden','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (55,'',2,'Knappraden','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (56,'',2,'Konferens - ändra användare','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (56,'',2,'Konferens - ändra användare','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (57,'',2,'Konferens - administrera användardata','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (57,'',2,'Konferens - administrera användardata','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (58,'',2,'Konferens - varning vid byte av mallset','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (58,'',2,'Konferens - varning vid byte av mallset','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (59,'',2,'Konferens - administrera diskussion','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (59,'',2,'Konferens - administrera diskussion','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (60,'',2,'Konferens - administrera forum','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (60,'',2,'Konferens - administrera forum','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (61,'',2,'Konferens - administrera inlägg','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (61,'',2,'Konferens - administrera inlägg','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (62,'',2,'Konferens - administrera mallset','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (62,'',2,'Konferens - administrera mallset','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (63,'',2,'Konferens - administrera självregistrering','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (63,'',2,'Konferens - administrera självregistrering','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (64,'',2,'Konferens - ändra befintlig mallfil','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (64,'',2,'Konferens - ändra befintlig mallfil','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (65,'',2,'Konferens - inloggning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (65,'',2,'Konferens - inloggning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (66,'',2,'Konferensvy','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (66,'',2,'Konferensvy','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (67,'',2,'Konferens - självregistrering','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (67,'',2,'Konferens - självregistrering','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (68,'',2,'Konferens - konferensdata','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (68,'',2,'Konferens - konferensdata','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (69,'',2,'Konferens - skapa en ny diskussion','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (69,'',2,'Konferens - skapa en ny diskussion','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (70,'',2,'Konferens - skapa en ny kommentar','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (70,'',2,'Konferens - skapa en ny kommentar','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (71,'',2,'Lägga till/redigera användare','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (71,'',2,'Lägga till/redigera användare','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (72,'',2,'Lägga till bild','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (72,'',2,'Lägga till bild','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (73,'',2,'Lägga till bild - Browse/Sök','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (73,'',2,'Lägga till bild - Browse/Sök','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (74,'',2,'L&auml;gga till l&auml;nk till en fil - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (74,'',2,'L&auml;gga till l&auml;nk till en fil - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (75,'',2,'L&auml;gga till l&auml;nk till HTML-dokument - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (75,'',2,'L&auml;gga till l&auml;nk till HTML-dokument - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (76,'',2,'L&auml;gga till l&auml;nk till HTML-dokument - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (76,'',2,'L&auml;gga till l&auml;nk till HTML-dokument - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (77,'',2,'L&auml;gga till l&auml;nk till Text-dokument - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (77,'',2,'L&auml;gga till l&auml;nk till Text-dokument - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (78,'',2,'L&auml;gga till l&auml;nk till Text-dokument - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (78,'',2,'L&auml;gga till l&auml;nk till Text-dokument - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (79,'',2,'L&auml;gga till l&auml;nk - funktion','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (79,'',2,'L&auml;gga till l&auml;nk - funktion','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (80,'',2,'L&auml;gga till l&auml;nk till en fil - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (80,'',2,'L&auml;gga till l&auml;nk till en fil - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (81,'',2,'L&auml;gga till l&auml;nk till URL-dokument - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (81,'',2,'L&auml;gga till l&auml;nk till URL-dokument - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (82,'',2,'L&auml;gga till l&auml;nk till URL-dokument - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (82,'',2,'L&auml;gga till l&auml;nk till URL-dokument - sida 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (83,'',2,'Misslyckad inloggning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (83,'',2,'Misslyckad inloggning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (84,'',2,'Rättigheter','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (84,'',2,'Rättigheter','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (85,'',2,'Ta bort ett dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (85,'',2,'Ta bort ett dokument','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (86,'',2,'Ta bort ett dokument - varning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (86,'',2,'Ta bort ett dokument - varning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (87,'',2,'Ändra utseende på dokumentet','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (87,'',2,'Ändra utseende på dokumentet','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (88,'',2,'Ta bort roll - varning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (88,'',2,'Ta bort roll - varning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (89,'',2,'Administrera roller - huvudsida','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (89,'',2,'Administrera roller - huvudsida','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (90,'',2,'L&auml;gga till l&auml;nk - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (90,'',2,'L&auml;gga till l&auml;nk - sida 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (91,'',2,'Administrera avdelningar','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (91,'',2,'Administrera avdelningar','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (92,'',2,'Lägg till ny avdelning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (92,'',2,'Lägg till ny avdelning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (93,'',2,'Ta bort avdelning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (93,'',2,'Ta bort avdelning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (94,'',2,'Varning - Ta bort avdelning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (94,'',2,'Varning - Ta bort avdelning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (95,'',2,'Ändra namn på avdelning','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (95,'',2,'Ändra namn på avdelning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (96,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (96,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (97,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (97,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (98,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (98,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (99,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (99,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (100,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (100,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (101,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (101,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (102,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (102,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (103,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (103,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (104,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (104,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (105,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (105,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (106,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (106,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (107,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (107,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (108,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (108,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (109,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (109,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (110,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (110,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (111,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (111,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (112,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (112,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (113,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (113,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (114,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (114,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (115,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (115,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (116,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (116,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (117,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (117,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (118,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (118,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (119,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (119,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (120,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (120,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (121,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (121,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (122,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (122,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (123,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (123,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (124,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (124,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (125,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (125,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (126,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (126,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (127,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (127,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (128,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (128,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (129,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (129,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (130,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (130,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (131,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (131,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (132,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (132,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (133,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (133,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (134,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (134,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (135,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (135,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (136,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (136,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (137,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (137,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (138,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (138,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (139,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (139,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (140,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (140,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (141,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (141,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (142,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (142,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (143,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (143,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (144,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (144,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (145,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (145,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (146,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (146,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (147,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (147,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (148,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (148,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (149,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (149,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (150,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (150,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (151,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (151,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (152,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (152,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (153,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (153,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (154,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (154,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (155,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (155,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (156,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (156,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (157,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (157,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (158,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (158,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (159,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (159,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (160,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (160,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (161,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (161,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (162,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (162,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (163,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (163,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (164,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (164,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (165,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (165,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (166,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (166,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (167,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (167,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (168,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (168,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (169,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (169,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (170,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (170,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (171,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (171,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (172,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (172,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (173,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (173,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (174,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (174,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (175,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (175,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (176,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (176,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (177,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (177,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (178,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (178,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (179,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (179,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (180,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (180,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (181,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (181,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (182,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (182,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (183,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (183,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (184,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (184,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (185,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (185,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (186,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (186,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (187,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (187,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (188,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (188,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (189,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (189,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (190,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (190,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (191,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (191,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (192,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (192,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (193,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (193,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (194,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (194,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (195,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (195,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (196,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (196,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (197,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (197,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (198,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (198,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (199,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (199,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (200,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (200,'',2,'','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (201,'',2,'Help Page in English','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (201,'',2,'Help Page in English','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (202,'',2,'Administrate files&nbsp;','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (202,'',2,'Administrate files&nbsp;','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (203,'',2,'De-/Activate user','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (203,'',2,'De-/Activate user','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (204,'',2,'Administrate user roles','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (204,'',2,'Administrate user roles','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (205,'',2,'Administration page for Browser-sensitive switch','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (205,'',2,'Administration page for Browser-sensitive switch','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (206,'',2,'Page changes - picture 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (206,'',2,'Page changes - picture 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (207,'',2,'Page changes - Picture 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (207,'',2,'Page changes - Picture 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (208,'',2,'Administrate format templates / template directories ','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (208,'',2,'Administrate format templates / template directories ','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (209,'',2,'Change name of template directory','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (209,'',2,'Change name of template directory','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (210,'',2,'Add / Delete Design Templates','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (210,'',2,'Add / Delete Design Templates','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (214,'',2,'Administration Page for IP Access - Image 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (211,'',2,'Create template directory','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (215,'',2,'Add a new IP Access &nbsp;','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (212,'',2,'Delete a template directory','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (217,'',2,'Administrate counter','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (213,'',2,'Delete template directory - Warning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (218,'',2,'Check Internet links','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (214,'',2,'Administration Page for IP Access - Image 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (219,'',2,'Add link to an existing page','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (215,'',2,'Add a new IP Access &nbsp;','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (220,'',2,'Change the name of a design template','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (216,'',2,'Delete IP access - Warning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (221,'',2,'Get uploaded design template','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (217,'',2,'Administrate counter','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (222,'',2,'Upload a new design template','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (218,'',2,'Check Internet links','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (223,'',2,'Upload template model','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (219,'',2,'Add link to an existing page','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (224,'',2,'Upload a design template','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (220,'',2,'Change the name of a design template','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (228,'',2,'Administration menu','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (221,'',2,'Get uploaded design template','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (229,'',2,'Administrate users and roles','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (222,'',2,'Upload a new design template','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (230,'',2,'Administrate roles &nbsp;','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (223,'',2,'Upload template model','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (231,'',2,'Change name of a role','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (224,'',2,'Upload a design template','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (232,'',2,'Add a new role','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (225,'',2,'Delete a design template','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (233,'',2,'Edit authority / rights for roles','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (226,'',2,'Delete a design template - Warning!','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (235,'',2,'Administrate system information','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (227,'',2,'Show design templates','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (236,'',2,'Add / edit text','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (228,'',2,'Administration menu','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (244,'',2,'Add image - Image Archive','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (229,'',2,'Administrate users and roles','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (245,'',2,'Message','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (230,'',2,'Administrate roles &nbsp;','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (246,'',2,'Add a Browser-sensitive switch - Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (231,'',2,'Change name of a role','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (247,'',2,'Create a diagram - Picture 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (232,'',2,'Add a new role','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (248,'',2,'Create a diagram - Picture 2 - Creating the diagram','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (233,'',2,'Edit authority / rights for roles','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (249,'',2,'Create a diagram - Picture 3 - Data entry form for graph/chart and tables','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (234,'',2,'Delete a role - Warning!','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (250,'',2,'Create a diagram - Picture 4 - New diagram menu','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (235,'',2,'Administrate system information','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (251,'',2,'Right to receive password via e-mail missing','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (236,'',2,'Add / edit text','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (252,'',2,'Password via e-mail','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (237,'',2,'Show all pages','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (253,'',2,'Include an existing page in another page','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (238,'',2,'Change user preferences','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (254,'',2,'Log-in','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (239,'',2,'Change page information','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (255,'',2,'Admin buttons','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (240,'',2,'Rights for Dynamic Authority 1','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (256,'',2,'Conference - change user','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (241,'',2,'Rights for Dynamic Authority 1, for new sub-pages','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (257,'',2,'Conference - administrate user data','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (242,'',2,'Rights for Dynamic Authority 2','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (258,'',2,'Conference - warning about changing template set','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (243,'',2,'Rights for Dynamic Authority 2, for new sub-pages  ','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (259,'',2,'Conference - administrate discussion','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (244,'',2,'Add image - Image Archive','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (260,'',2,'Conference - administrate forum','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (245,'',2,'Message','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (261,'',2,'Conference - administrate contributions','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (246,'',2,'Add a Browser-sensitive switch - Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (262,'',2,'Conference - administrate template directory','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (247,'',2,'Create a diagram - Picture 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (263,'',2,'Conference - administrate self-registration','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (248,'',2,'Create a diagram - Picture 2 - Creating the diagram','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (264,'',2,'Conference - edit an existing template file','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (249,'',2,'Create a diagram - Picture 3 - Data entry form for graph/chart and tables','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (265,'',2,'Conference - log-in','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (250,'',2,'Create a diagram - Picture 4 - New diagram menu','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (266,'',2,'Conference view','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (251,'',2,'Right to receive password via e-mail missing','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (267,'',2,'Conference - self-registration','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (252,'',2,'Password via e-mail','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (268,'',2,'Conference - conference data','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (253,'',2,'Include an existing page in another page','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (269,'',2,'Conference - create a new discussion','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (254,'',2,'Log-in','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (270,'',2,'Conference - create a new contribution','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (255,'',2,'Admin buttons','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (271,'',2,'Add / edit user','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (256,'',2,'Conference - change user','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (272,'',2,'Add an image','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (257,'',2,'Conference - administrate user data','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (273,'',2,'Add an image- Browse/Search&nbsp;','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (258,'',2,'Conference - warning about changing template set','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (274,'',2,'Add a file upload - Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (259,'',2,'Conference - administrate discussion','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (275,'',2,'Create a static HTML page - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (260,'',2,'Conference - administrate forum','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (276,'',2,'Create a static HTML page - Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (261,'',2,'Conference - administrate contributions','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (277,'',2,'Create a text page - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (262,'',2,'Conference - administrate template directory','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (278,'',2,'Create a text page - Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (263,'',2,'Conference - administrate self-registration','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (279,'',2,'Add a link - function','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (264,'',2,'Conference - edit an existing template file','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (280,'',2,'Add a file upload - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (265,'',2,'Conference - log-in','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (281,'',2,'Create an Internet link - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (266,'',2,'Conference view','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (282,'',2,'Create an Internet link- Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (267,'',2,'Conference - self-registration','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (283,'',2,'Failed Log-in','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (268,'',2,'Conference - conference data','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (289,'',2,'Administrate roles - main page','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (269,'',2,'Conference - create a new discussion','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
-  values (290,'',2,'Add a link - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-05','2002-03-05',1,1,0,'_self','',1,'2002-03-05',NULL)
+  values (270,'',2,'Conference - create a new contribution','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (271,'',2,'Add / edit user','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (272,'',2,'Add an image','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (273,'',2,'Add an image- Browse/Search&nbsp;','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (274,'',2,'Add a file upload - Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (275,'',2,'Create a static HTML page - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (276,'',2,'Create a static HTML page - Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (277,'',2,'Create a text page - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (278,'',2,'Create a text page - Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (279,'',2,'Add a link - function','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (280,'',2,'Add a file upload - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (281,'',2,'Create an Internet link - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (282,'',2,'Create an Internet link- Page 2','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (283,'',2,'Failed Log-in','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (284,'',2,'Authority','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (285,'',2,'Delete a page','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (286,'',2,'Remove a page - Warning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (287,'',2,'Change page appearance','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (288,'',2,'Delete  a role - Warning','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (289,'',2,'Administrate roles - main page','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (290,'',2,'Add a link - Page 1','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (291,'',2,'Administrate sections','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (292,'',2,'Add site section','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (293,'',2,'Delete Site Section','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (294,'',2,'Warning - Delete Site Section','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (295,'',2,'Change name of site section','','',1,0,0,1,0,1,0,1,'se','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (296,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (297,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (298,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (299,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (300,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (301,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (302,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (303,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (304,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (305,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (306,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (307,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (308,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (309,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (310,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (311,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (312,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (313,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (314,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (315,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (316,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (317,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (318,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (319,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (320,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (321,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (322,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (323,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (324,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (325,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (326,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (327,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (328,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (329,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (330,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (331,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (332,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (333,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (334,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (335,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (336,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (337,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (338,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (339,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (340,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (341,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (342,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (343,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (344,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (345,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (346,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (347,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (348,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (349,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (350,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (351,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (352,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (353,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (354,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (355,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (356,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (357,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (358,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (359,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (360,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (361,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (362,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (363,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (364,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (365,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (366,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (367,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (368,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (369,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (370,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (371,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (372,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (373,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (374,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (375,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (376,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (377,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (378,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (379,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (380,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (381,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (382,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (383,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (384,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (385,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (386,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (387,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (388,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (389,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (390,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (391,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (392,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (393,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (394,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (395,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (396,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (397,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (398,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (399,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
+INSERT INTO meta( meta_id , description , doc_type , meta_headline , meta_text , meta_image , owner_id , permissions , shared , expand , show_meta , help_text_id , archive , status_id , lang_prefix , classification , date_created , date_modified , sort_position , menu_position , disable_search , target , frame_name , activate , activated_datetime , archived_datetime )
+  values (400,'',2,'','','',1,0,0,1,0,1,0,1,'en','','2002-03-07','2002-03-07',1,1,0,'_self','',1,'2002-03-07',NULL)
 SET IDENTITY_INSERT meta OFF
  
 -- now insert all images 
@@ -798,11 +1058,19 @@ values (209,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-grupp-b
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (210,333,249,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-formatgrupp-tilldela-mall.gif','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (211,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-skapa.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (212,331,85,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-ta-bort.gif','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (213,303,137,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-formatgrupp-ta-bort-varning.gif','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (214,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-ip-access.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (214,0,0,0,0,0,'2','','_self','','top','','','en/helpimages/Admin-admin-ip-access.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (215,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-IP-access-ny.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (216,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-IP-access-varning.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (217,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-raknare.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
@@ -822,6 +1090,12 @@ values (223,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-mallar-
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (224,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-mallar-uppl-gickbra.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (225,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-mall.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (226,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-tabort-varning.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (227,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-mallar-visa-formatmallar.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (228,0,0,1,0,0,'1','','_self','','top','','','en/helpimages/Admin-meny.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (229,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-adm-anvoroller.GIF','')
@@ -834,11 +1108,29 @@ values (232,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (233,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-redigera.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (234,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-roller-ta-bort-varning.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (235,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-systeminfo.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (236,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Andra-text-html.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (236,0,0,0,0,0,'2','','_self','','top','','','en/helpimages/Admin_text_html.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (237,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-visa-alla-dok.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (237,0,0,0,0,0,'2','','_self','','top','','','se/helpimages/Admin-visa-dok2.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (238,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-andraanvegenskaper.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (239,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Dokumentinfo.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (240,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Rattigheter-behorighet1.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (241,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Rattigheter-behorighet1.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (242,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Behorighet2.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (243,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Behorighet2-nya-dok.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (244,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Bildarkiv.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
@@ -928,9 +1220,29 @@ values (282,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/NyURL.GIF',''
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (283,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Losen-felaktigt.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (284,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Rattigheter.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (285,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-dok.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (286,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-dok-varning.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (287,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/utseende3.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (288,0,0,0,0,0,'1','','_self','','top','','','se/helpimages/Admin-ta-bort-roll-varning.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (289,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Admin-roller-huvudsida.GIF','')
 INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
 values (290,0,0,0,0,0,'1','','_self','','top','','','en/helpimages/Lagg-till-dokument.GIF','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (291,238,134,0,0,0,'1','','_self','','top','','','se/helpimages/Index-val.gif','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (292,375,0,0,0,0,'1','','_self','','top','','','se/helpimages/Index-ny.gif','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (293,236,140,0,0,0,'1','','_self','','top','','','se/helpimages/Index-tabort.gif','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (294,348,216,0,0,0,'1','','_self','','top','','','se/helpimages/Index-tabort_varning.gif','')
+INSERT INTO images ( meta_id , width , height , border , v_space , h_space , name , image_name , target , target_name , align , alt_text , low_scr , imgurl , linkurl )
+values (295,348,145,0,0,0,'1','','_self','','top','','','se/helpimages/Index-byt-namn.gif','')
  
 -- now insert all data in texts 
 INSERT INTO texts( meta_id, name, text, type )
@@ -3622,68 +3934,65 @@ INSERT INTO texts( meta_id, name, text, type )
 ',1)
  
 INSERT INTO texts( meta_id, name, text, type )
-       values(84,2,'<p align="center">H&auml;r styrs vilken/vilka roller som skall f&aring; g&ouml;ra vad med
+       values(84,2,'<p align="center"> H&auml;r styrs vilken/vilka roller som skall f&aring; g&ouml;ra vad med
 sidan. </p>
 <div align="CENTER">
 <table border="1" width="100%">
   <tr>
-    <td width="100%"><b>Rubrik: </b>Visar dokumentets rubrik (l&auml;nktexten).
+    <td width="100%"><b> Rubrik: </b> Visar dokumentets rubrik (l&auml;nktexten).
       Genom att <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
-      f&ouml;r <i>Visa rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig</i> till&aring;ts
+      f&ouml;r <i> Visa rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig </i> till&aring;ts
       obeh&ouml;riga att se l&auml;nken men kan inte komma in p&aring; sj&auml;lva sidan.</td>
   </tr>
   <tr>
-    <td width="100%"><b>Beh&ouml;righet: </b>Visar vilka roller som har n&aring;gon form
+    <td width="100%"><b> Beh&ouml;righet: </b> Visar vilka roller som har n&aring;gon form
       av r&auml;ttighet p&aring; sidan. 
       <ul>
-        <li><i>Ingen </i>betyder att l&auml;nken inte visas f&ouml;r rollen, om inte <i>Visa
+        <li><i> Ingen </i> betyder att l&auml;nken inte visas f&ouml;r rollen, om inte <i> Visa
           rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig </i>&auml;r <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">.
         </li>
-        <li><i>L&auml;sa</i
-> betyder att anv&auml;ndare med rollen kan l&auml;sa allt p&aring;
+        <li><i> L
+&auml;sa </i> betyder att anv&auml;ndare med rollen kan l&auml;sa allt p&aring;
           sidan, men inte kan &auml;ndra n&aring;got p&aring; den.</li>
-        <li><i>Begr.2 </i>betyder att anv&auml;ndare med rollen kan g&ouml;ra de saker
+        <li><i> Begr.2 </i> betyder att anv&auml;ndare med rollen kan g&ouml;ra de saker
           som Begr.2 till&aring;ts g&ouml;ra. F&ouml;r att &auml;ndra r&auml;ttigheter f&ouml;r Begr.2 se
-          <b>Definiera beh&ouml;righeter.</b></li>
-        <li><i>Begr.1 </i>betyder att anv&auml;ndare med rollen kan g&ouml;ra de saker
+          <b> Definiera beh&ouml;righeter.</b></li>
+        <li><i> Begr.1 </i> betyder att anv&auml;ndare med rollen kan g&ouml;ra de saker
           som Begr.1 till&aring;ts g&ouml;ra. F&ouml;r att &auml;ndra r&auml;ttigheter f&ouml;r Begr.2 se
-          <b>Definiera beh&ouml;righeter.</b><i> </i></li>
-        <li><i>Full </i>betyder att anv&auml;ndare med den rollen har fullst&auml;ndiga
+          <b> Definiera beh&ouml;righeter.</b><i> </i></li>
+        <li><i> Full </i> betyder att anv&auml;ndare med den rollen har fullst&auml;ndiga
           r&auml;ttigheter p&aring; sidan och kan &auml;ndra allting.</li>
       </ul>
-      <p>R&auml;ttigheterna &auml;ndras genom att klicka i den vita cirkeln f&ouml;r
-      l&auml;mplig r&auml;ttighet. Om Ingen markeras kommer rollen att flyttas ned till <i>R
-oller
-      utan beh&ouml;righet</i> n&auml;r man klickar p&aring; "Spara".</p>
+      <p> R&auml;ttigheterna &auml;ndras genom att klicka i den vita cirkeln f&ouml;r
+      l&auml;mplig r&auml;ttighet. Om Ingen markeras kommer rollen att 
+flyttas ned till <i> Roller
+      utan beh&ouml;righet </i> n&auml;r man klickar p&aring; "Spara".</p>
     </td>
   </tr>
   <tr>
     <td width="100%">
-      <p align="left"><b>Roller utan beh&ouml;righet: </b>Genom att markera en roll
+      <p align="left"><b> Roller utan beh&ouml;righet: </b> Genom att markera en roll
       och klicka p&aring; "L&auml;gg till" kan fler roller ges r&auml;ttigheter p&aring;
-      sidan. Rollen flyttas upp till <b>Beh&ouml;righet </b>och r&auml;ttigheten kan
+      sidan. Rollen flyttas upp till <b> Beh&ouml;righet </b> och r&auml;ttigheten kan
       markeras.</p>
     </td>
   </tr>
   <tr>
-    <td width="100%"><b>Definiera beh&ouml;righet: </b>Genom att klicka p&aring;
-      "Definiera" vid antingen <i>Begr&auml;nsad beh&ouml;righet 1 </i>eller <i>Begr&auml;nsad
-      beh&ouml;righet 2 </i>f&aring;s den sida upp d&auml;r dessa r&auml;ttigheter kan &auml;ndras.
+    <td width="100%"><b> Definiera beh&ouml;righet: </b> Genom att klicka p&aring;
+      "Definiera" vid antingen <i> Begr&auml;nsad beh&ouml;righet 1 </i> eller <i> Begr&auml;nsad
+      beh&ouml;righet 2 </i> f&aring;s den sida upp d&auml;r dessa r&auml;ttigheter kan &auml;ndras.
       En <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       betyder att Begr&auml;nsad 1 &auml;r mer priviligerad &auml;n Begr&auml;nsad 2 f&ouml;r den
-      h&auml;r sidan. Om den rutan skall bockas f&ouml;r beror p&aring; hur beh&ouml;righ
-eterna
-      f&ouml;r respektive &auml;r inst&auml;lld. Denna&nbsp; <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
-      &auml;r en hj&auml;lp s&aring; att administrat&ouml;ren av sidan l&auml;tt skall kunna se
-      vilken begr&auml;nsning som har mest r&auml;ttigheter att g&ouml;ra saker p&aring; sidan.
+      h&auml;r sidan och därmed kan &auml;ndra r&auml;tt
+igheter f&ouml;r Begr&auml;nsad 2.
       "Definiera f&ouml;r nya dokument" betyder att r&auml;ttigheterna st&auml;lls
       in f&ouml;r sidor som skapas fr&aring;n aktuell sida. Default &auml;r att de &auml;rver de
       r&auml;ttigheter som ursprungssidan har. </td>
   </tr>
   <tr>
-    <td width="100%"><b>Skapad av: </b>(namnet p&aring; den anv&auml;ndare som skapat
+    <td width="100%"><b> Skapad av: </b>(namnet p&aring; den anv&auml;ndare som skapat
       sidan). Genom en <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
-      vid <i>Dela ut dokumentet </i>ges m&ouml;jlighet f&ouml;r andra anv&auml;ndare att
+      vid <i> Dela ut dokumentet </i> ges m&ouml;jlighet f&ouml;r andra anv&auml;ndare att
       l&auml;nka till sidan fr&aring;n "sina" dokument.</td>
   </tr>
 </table>
@@ -4002,11 +4311,15 @@ INSERT INTO texts( meta_id, name, text, type )
 <BR>To upload a file from your harddisk or network, click on &quot;Browse&quot; (in the middle of the form). A new window will open which allows you to search for and select the file.  Once again the language here will be taken from the web browser you 
 
 
+
+
 are using. When you have found the file and selected it, the directory where the file should be copied should be marked. If you mark the directory in the lefthand box, use the Upload button on the left. If you mark the directory in the righthand box, use the Upload button on the right.
 <BR> 
 <BR>To copy a file to another directory,  find the file in the left box, mark the file. Go then to the righthand box and find the directory you wish to copy the file to and mark the directory. Click thereafter on &quot;Copy -&gt;&quot;. You can as well do this the other way around and copy from the right to the left box. Click instead on &quot;&lt;- Copy&quot;.
 <BR>
-<BR>To move a file from a directory to another directory,  select the file in the lefthand box, mark the file and in the righthand box find the directory where you wish to move the file and mark that directory. Click thereafter on &quot;Move -&gt;&quot;. You can as well do this the other way around and copy from the right to the
+<BR>To move a file from a directory to another directory,  select the file in the lefthand box, mark the file and in the righthand box find the directory where you wish to move the file and mark that directory. Click thereafter on &quot;Move -&gt;&quot;. You can as well do this the other way around and copy from the right to
+ t
+he
  l
 ef
 t box. Click instead on &quot;&lt;- Move&quot;.
@@ -4015,13 +4328,17 @@ t box. Click instead on &quot;&lt;- Move&quot;.
 <BR>
 <BR>To create a new directory, mark the directory under which the new directory should be located. Enter the name in the field &quot;New name:&quot;. Click thereafter on &quot;New name&quot; on the left or right depending if the directory is marked in the lefthand or righthand box.
 <BR>
-<BR>To delete a directory or file, mark that directory or file and then click on &quot;Delete&quot;. The botton on the left should be used if the directory or file is marked in the lefthand box and rhet right button should be used if the directory or file is marked in the righthand box. A warning showing the complete search root to the directory or fil
+<BR>To delete a directory or file, mark that directory or file and then click on &quot;Delete&quot;. The botton on the left should be used if the directory or file is marked in the lefthand box and rhet right button should be used if the directory or file is marked in the righthand box. A warning showing the complete search root to the director
+y or
+ fil
 e wi
 ll b
 e displayed. Click &quot;Yes&quot; if you are sure that that directory or file should be removed, otherwise push &quot;No&quot;.
 <BR>
 <BR>&quot;Back&quot; leads to the System Administration menu.
 <BR>
+ 
+ 
  
  
  
@@ -4132,6 +4449,8 @@ INSERT INTO texts( meta_id, name, text, type )
                     <p align="left"><i>Load template model</i> in the form of a screen-dump image i
 
 
+
+
 nto the system so administrators understand the intended use of the design template.</li>
                   <li>
                     <p align="left"><i>Show format template</i> shows all the design templates in the system and how many/which pages are using them.</li>
@@ -4145,6 +4464,8 @@ nto the system so administrators understand the intended use of the design templ
                     <p align="left"><i>Assign templates</i> to a particular template directory</li>
                 </ul>
                 <p align="left">"Back" leads back to the main administrator menu.</p>
+ 
+ 
  
  
  
@@ -4183,6 +4504,40 @@ INSERT INTO texts( meta_id, name, text, type )
 ',1)
  
 INSERT INTO texts( meta_id, name, text, type )
+       values(211,1,'Create template directory
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(211,2,'<center> Enter the name of the new directory. Click thereafter on "Create".</p>
+
+"Back" takes you to Administrate templates/template directories.
+</center>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(212,1,'Delete a template directory
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(212,2,'Select the template directory you wish to remove by marking it in the roll-down menu. Click thereafter on &quot;Delete&quot;. <BR>&quot;Back&quot; takes you to Administrate templates/template directories.
+<BR>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(213,1,'Delete template directory - Warning
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(213,2,'Warning that a directory is about to be removed. The picture shows the templates that are connected to the directory that is to be removed.<BR>
+<BR> If you wish to remove the directory and not lose these templates, move the named templates to another directory first (if they do not already belong to another directory). Do this by canceling this directory removal and going to the Add/Remove Template function. 
+<BR>
+<BR> Click thereafter on &quot;OK&quot;.
+<BR>
+<BR> If you do not want to remove a directory click on &quot;Cancel&quot;.
+<BR>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
        values(214,2,'By connecting the user name to the IP number of the user&acute;s computer, a user can get direct authorised access to the system without having to log in. The user gets a user name connected to the IP number. Several users within a specific range of IP numbers can have a user name in common.&nbsp;
 ',1)
  
@@ -4213,6 +4568,14 @@ INSERT INTO texts( meta_id, name, text, type )
        values(215,2,'Select the user by pulling down the roll-down menu. Enter the corresponding IP number or range of IP numbers valid for the user. Click on &quot;Save&quot;.
 <BR>
 <BR>To return to the previous image without adding an IP number - click on &quot;Cancel&quot;.
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(216,1,'Delete IP access - Warning
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(216,2,'To remove an IP access - click on &quot;OK&quot;, to return to the previous page - click on &quot;Cancel&quot;.
 ',1)
  
 INSERT INTO texts( meta_id, name, text, type )
@@ -4263,6 +4626,8 @@ INSERT INTO texts( meta_id, name, text, type )
         <p>By marking "<i><b>Created</b></i>" only pages created during the given period will be found.<
 
 
+
+
 /p>
         <p>If you mark"<b><i>Modified</i></b>" only those pages modified during the period will be found.</p>
         <p>The results of a search can be listed by Header, Meta ID, Page Type, Date Modified, Date Created,Date Archived or Date Activated. Mark which sorting order you want.</p>
@@ -4270,6 +4635,8 @@ INSERT INTO texts( meta_id, name, text, type )
 mso-fareast-font-family:"Times New Roman";mso-ansi-language:SV;mso-fareast-language:
 SV;mso-bidi-language:AR-SA">Click on"<b style="mso-bidi-font-weight:
 normal"><i style="mso-bidi-font-style:normal">Search</i></b>". The results of the search are found at the bottom of the page. Link any number of pages to your current page by ticking the checkbox by the page found and then pushing "Link ticked page(s)"</span>
+ 
+ 
  
  
  
@@ -4319,6 +4686,8 @@ INSERT INTO texts( meta_id, name, text, type )
                   <p align="left">Mark in the list to the right
 
 
+
+
  which template directories should have access to this template. This can be done at a later point in time but a template must be assigned to at least one directory to be used.</p>
                   <p align="left">By clicking on "Upload"
                   the design template will be copied into the directory/directories.</p>
@@ -4330,6 +4699,8 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
+ 
+ 
  
  
  
@@ -4357,6 +4728,8 @@ INSERT INTO texts( meta_id, name, text, type )
      
 
 
+
+
                  <p align="left"><i>Select template:</i> Select the template (with *)
                       which you wish to see by finding it in the roll-down menu.
                       Click on "Show template model". The model usage of the template will be displayed in a new window. </li>
@@ -4372,6 +4745,8 @@ INSERT INTO texts( meta_id, name, text, type )
  
  
  
+ 
+ 
 ',1)
  
 INSERT INTO texts( meta_id, name, text, type )
@@ -4383,6 +4758,42 @@ INSERT INTO texts( meta_id, name, text, type )
  
 INSERT INTO texts( meta_id, name, text, type )
        values(224,1,'Upload a design template
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(225,1,'Delete a design template
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(225,2,'Select the template you wish to remove by marking it in the roll-down menu. Between the parentheses [ ] is the number of pages using the template.
+<BR>
+<BR> By clicking on &quot;Delete&quot; the template is removed. Before the template is removed a page appears allowing you to select another template for the pages using the template to be removed.
+<BR>
+<BR>&quot;Back&quot; takes you to the previous page.
+<BR>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(226,1,'Delete a design template - Warning!
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(226,2,'Select the alternative template that the affected pages should use once you remove the template. Select this new template by marking it in the roll-down menu. NB: All these pages will be assigned the same template.<BR>
+<BR> Click thereafter on &quot;OK&quot;.
+<BR>
+<BR>&quot;Cancel&quot; takes you back to the previous page.
+<BR>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(227,1,'Show design templates
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(227,2,'On the lefthand side of the picture you see all of the templates available. The number of pages using each template is displayed between parentheses [ ]. Mark the template and click on &quot;List pages&quot;. The pages are listed on the righthand side of the picture. By marking a page and then clicking on &quot;Show page&quot; you will open the page in question.&nbsp;
+<BR>&nbsp;
+<BR>&quot;Back&quot; takes you to Administrate templates/template directories.
+<BR>
 ',1)
  
 INSERT INTO texts( meta_id, name, text, type )
@@ -4421,10 +4832,14 @@ INSERT INTO texts( meta_id, name, text, type )
                 <p>Make your choice by finding th
 
 
+
+
 e area you wish to administrate and "Go to
                 Admin page" (hidden in the picture here).</p>
                 <p>The link "Back to start page" leads back
                 StartDoc, the system´s first page.
+ 
+ 
  
  
  
@@ -4480,6 +4895,8 @@ INSERT INTO texts( meta_id, name, text, type )
                 by <i>"Self-register rights in conference "</i> this role has the right to be distributed to users who register themselves on a self-registery page (for example, to participat in an online conference). Which role(s) are given to self-registered
 
 
+
+
  users are determined by the conference administrator who selects from a list of roles which permit self-registry.
              NB! Conferences are created with the extra module imConf and may not be available in your system.</p>
                 <p align="left">When the selection has been made - click on
@@ -4490,6 +4907,8 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
+ 
+ 
  
  
  
@@ -4505,6 +4924,19 @@ INSERT INTO texts( meta_id, name, text, type )
               <p align="left">When the selection is made - click on
               "Save".</p>
               <p align="left">"cancel" leads to the previous page without changing the role´s rights.</p>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(234,1,'Delete a role - Warning!
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(234,2,'The users who are a member of the role you wish to remove are displayed here(the first 50). If no users are displayed the role has no members.&nbsp;
+<BR>
+<BR> You can see as well those pages where the role has been given page authority. removing the role may mean that these pages will no longer be accessible to the removed role´s members(if they do not have another role giving them access to these pages).
+<BR>
+<BR> To remove the role, click on &quot;OK&quot;. If you do not wish to remove the role, click on &quot;Cancel&quot;.
+<BR>
 ',1)
  
 INSERT INTO texts( meta_id, name, text, type )
@@ -4527,8 +4959,12 @@ INSERT INTO texts( meta_id, name, text, type )
     
 
 
+
+
       webmaster: </i></b>Here is where the name of the new webmaster can be entered.<p><b><i>Current webmaster e-mail: </i></b>Shows the e-mail of the person now registered as webmaster.<p><i><b>Change
           web master e-mail: </b></i>Here is the new e-mail address of the new webmaster can be entered.
+ 
+ 
  
  
  
@@ -4547,6 +4983,351 @@ INSERT INTO texts( meta_id, name, text, type )
               <p>The original text is shown in the textbox.&nbsp; In the text box you can edit, paste in or write text, copy or delete text, 
               If it is normal text check that <b>Format</b>: <i>Plain text</i>
               is ticked.
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(237,1,'Show all pages
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(237,2,'
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(237,3,'First, select the page range to be displayed by selecting the first number to be listed. The default setting is always the first available page. You can as well select the interval to be displayed. Finally push on the &quot;List&quot; button to display the numerical list of pages according to the start page and interval size you requested.
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(237,4,'All the pages in the interval are displayed with their sub-pages (pages linked from that page). If you click on a page that is preceded by a &#9679; the page will be shown. Click on a page preceded with a &deg; the list with that Meta ID at the top is displayed. It is then possible to inspect the links on the page and see if these lisked pages have sub-pages themselves. Sub-pages preceded by a &#9679; can be clicked on to display the actual page.
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(238,1,'Change user preferences
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(238,2,'User category- Select a category and click on "Show users" to display the users in this category.<br><br>
+
+<li> Anonymous users: Users who log into the system with IP number and without identifying themselves.</li>
+<li> Authenticated users: Users who log into the system with user name and password.</li>
+<li> Conference users: Users who register themselves into the system.</li>
+
+<br><br> To register a new user - click on "Add user".
+
+<br><br> To edit a user - click on the user to mark that user and then click on "Edit".
+
+To return to the previous page push on "Back".
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(239,1,'Change page information
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(239,2,'<h3 align="center"> Basic page information and settings can be edited here </h3>
+<div align="center">
+  <table border="1" width="75%">
+    <tr>
+      <td width="100%"><b> Header:</b> This text is the main link in itself.</td>
+    </tr>
+    <tr>
+      <td width="100%"><b> Text:</b> Additional description shown by the link.(NB!
+        This text is only displayed if the design template in use permits link texts). If you do not want any description of the link, leave this box blank.</td>
+    </tr>
+    <tr>
+      <td width="100%"><b> Image icon:</b> Here is where you enter the path to the thumbnail image or icon symbol which is already loaded into the system such as "/images/picture1.gif" to the image to be displayed.  (NB!
+        This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
+    </tr>
+  </table>
+  <h3 align="center"> Advanced </h3>
+  <table border="1" w
+
+
+idth="75%">
+    <tr>
+      <td width="100
+
+%"><b> Key words (for searches): </b> These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        in the checkbox <i> Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
+    </tr>
+    <tr>
+      <td width="100%"><b> Share: </b><i> Show this page link to unauthorised users
+</i> means that this link can be seen by persons without the authority to view the page.  They will be denied access to the page if they select the link. <i> Allow unauthorised local links to this page </i> means that other web administrators in your system lacking editing rights on  this page are allowed to create links to this page.</td>
+    </tr>
+    <tr>
+      <td width="100%"><b> Publish from: </b> A future time and date can be given as publi
+sh
+in
+g date if the page is not to be published now.</td>
+ 
+  
+ </tr>
+    <tr>
+      <td width="100%"><b> To the archives: </b> A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        in the checkbox <i> Archive now </i> means that the page will be archived immediately.</td>
+    </tr>
+    <tr>
+      <td width="100%"><b> Display in: </b> Here is where you can control how the page is displayed.
+        <ul>
+          <li><i> Same frame </i> means that the page will be opened in the same frame as where the link is found. </li>
+          <li><i> New window </i> means that the page will be opened in a new browser window. </li>
+          <li><i> Full window </i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one)in the current window.</li>
+        
+  <l
+i><i
+> Other frame </i> - if a frameset is being used here you can control 
+in w
+hich frame the page will appear.</li>
+        </ul>
+      </td>
+    </tr>
+  </table>
+</div>
+<p align="center"><b>
+<br><br></p>
+ 
+ 
+ 
+ 
+ 
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(240,1,'Rights for Dynamic Authority 1
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(240,2,'<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="0" width="550">
+    <tr>
+      <td>
+<p align="center"></p>
+                <p align="left"> By ticking one or more boxes below and pushing "OK", all members of roles having the <i> Dynamic Authority  1 </i> level of authority on this page will be granted these rights on this specific page.
+</p>
+        <p>&nbsp;</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<div align="CENTER">
+                <table border="1" width="75%">
+                  <tr>
+                    <td width="100%"><b> Right to edit page information: </b> This means that the role-member has the right to change header(main link text), additional descriptive link text and the icon image symbol by the links.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit advanced page  information: </b> This means that the role-member has the right to change header(main link text),
+
+
+ additional descriptive link text, icon image by the links PLUS key words for searches,
+                      date of publication and archivation and permit unauthorised linking to the page by other site administrators.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to change rights for roles: </b> This means that the role-member has the right to change, add, remove rights and roles on this page. </td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit text: </b> This means that the role-member has the right to add, remove and edit texts on the  page.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit images
+: </b> This means that the role-member has the right to add, remove and edit images on the  page.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit li
+nk
+s
+
+: </b> This means that the role-member has the right to create links and thus new sub-pages to the  page. Permitted document types that can be created are determined by those marked in this list.
+                      (Click on the type, for more than one name hold down the "Ctrl" key while clicking on the types).</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to switch templates: </b> This means that the role-member can change the graphic appearance of the page. Permitted template directories that can be accessed are those marked in the roll-down menu
+                      (Click on the name, for more than one name hold down the "Ctrl" key while clicking on the names).</td>
+                  </tr>
+                </table>
+</div align="CENTER">
+ 
+ 
+ 
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(241,1,'Rights for Dynamic Authority 1, for new sub-pages
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(241,2,'<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="0" width="550">
+    <tr>
+      <td>
+<p align="center">
+      "Define for new sub-pages" means that the authority of pages created from this page can be predefined.</p>
+                <p align="left"> By ticking one or more boxes below and pushing "OK", all members of roles having the <i> Dynamic Authority  1 </i> level of authority on new sub-pages created from this page will be granted these rights on those pages from now on.
+</p>
+        <p>&nbsp;</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<div align="CENTER">
+                <table border="1" width="75%">
+                  <tr>
+                    <td width="100%"><b> Right to edit page information: </b> This means that the role-member has the right to change header(main link text), additional descriptive link text and the icon image symbol by the links.</td>
+                  </tr>
+                  <tr>
+                    <td w
+
+
+idth="100%"><b> Right to edit advanced page  information: </b> This means that the role-member has the right to change header(main link text), additional descriptive link text, icon image by the links PLUS key words for searches,
+                      date of publication and archivation and permit unauthorised linking to the page by other site administrators.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to change rights for roles: </b> This means that the role-member has the right to change, add, remove rights and roles on this page. </td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit text: </b> This means that the role-member has the right to add, remove and edit texts on the  page.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit images
+: </b> This means that the role-member has the right to add, remove 
+an
+d 
+edit images on the  page.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit links
+: </b> This means that the role-member has the right to create links and thus new sub-pages to the  page. Permitted document types that can be created are determined by those marked in this list.
+                      (Click on the type, for more than one name hold down the "Ctrl" key while clicking on the types).</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to switch templates: </b> This means that the role-member can change the graphic appearance of the page. Permitted template directories that can be accessed are those marked in the roll-down menu
+                      (Click on the name, for more than one name hold down the "Ctrl" key while clicking on the names).</td>
+                  </tr>
+                </table>
+</div align="CENTER">
+ 
+ 
+ 
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(242,1,'Rights for Dynamic Authority 2
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(242,2,'<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="0" width="550">
+    <tr>
+      <td>
+<p align="center"></p>
+                <p align="left"> By ticking one or more boxes below and pushing "OK", all members of roles having the <i> Dynamic Authority  2 </i> level of authority on this page will be granted these rights on this specific page.
+</p>
+        <p>&nbsp;</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<div align="CENTER">
+                <table border="1" width="75%">
+                  <tr>
+                    <td width="100%"><b> Right to edit page information: </b> This means that the role-member has the right to change header(main link text), additional descriptive link text and the icon image symbol by the links.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit advanced page  information: </b> This means that the role-member has the right to change header(main link text),
+
+
+ additional descriptive link text, icon image by the links PLUS key words for searches,
+                      date of publication and archivation and permit unauthorised linking to the page by other site administrators.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to change rights for roles: </b> This means that the role-member has the right to change, add, remove rights and roles on this page. </td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit text: </b> This means that the role-member has the right to add, remove and edit texts on the  page.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit images
+: </b> This means that the role-member has the right to add, remove and edit images on the  page.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit li
+nk
+s
+
+: </b> This means that the role-member has the right to create links and thus new sub-pages to the  page. Permitted document types that can be created are determined by those marked in this list.
+                      (Click on the type, for more than one name hold down the "Ctrl" key while clicking on the types).</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to switch templates: </b> This means that the role-member can change the graphic appearance of the page. Permitted template directories that can be accessed are those marked in the roll-down menu
+                      (Click on the name, for more than one name hold down the "Ctrl" key while clicking on the names).</td>
+                  </tr>
+                </table>
+</div align="CENTER">
+ 
+ 
+ 
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(243,1,'Rights for Dynamic Authority 2, for new sub-pages  
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(243,2,'<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="0" width="550">
+    <tr>
+      <td>
+<p align="center">
+      "Define for new sub-pages" means that the authority of pages created from this page can be predefined.</p>
+                <p align="left"> By ticking one or more boxes below and pushing "OK", all members of roles having the <i> Dynamic Authority  2 </i> level of authority on new sub-pages created from this page will be granted these rights on those pages from now on.
+</p>
+        <p>&nbsp;</td>
+    </tr>
+  </table>
+  </center>
+</div>
+<div align="CENTER">
+                <table border="1" width="75%">
+                  <tr>
+                    <td width="100%"><b> Right to edit page information: </b> This means that the role-member has the right to change header(main link text), additional descriptive link text and the icon image symbol by the links.</td>
+                  </tr>
+                  <tr>
+                    <td w
+
+
+idth="100%"><b> Right to edit advanced page  information: </b> This means that the role-member has the right to change header(main link text), additional descriptive link text, icon image by the links PLUS key words for searches,
+                      date of publication and archivation and permit unauthorised linking to the page by other site administrators.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to change rights for roles: </b> This means that the role-member has the right to change, add, remove rights and roles on this page. </td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit text: </b> This means that the role-member has the right to add, remove and edit texts on the  page.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit images
+: </b> This means that the role-member has the right to add, remove 
+an
+d 
+edit images on the  page.</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to edit links
+: </b> This means that the role-member has the right to create links and thus new sub-pages to the  page. Permitted document types that can be created are determined by those marked in this list.
+                      (Click on the type, for more than one name hold down the "Ctrl" key while clicking on the types).</td>
+                  </tr>
+                  <tr>
+                    <td width="100%"><b> Right to switch templates: </b> This means that the role-member can change the graphic appearance of the page. Permitted template directories that can be accessed are those marked in the roll-down menu
+                      (Click on the name, for more than one name hold down the "Ctrl" key while clicking on the names).</td>
+                  </tr>
+                </table>
+</div align="CENTER">
+ 
+ 
+ 
 ',1)
  
 INSERT INTO texts( meta_id, name, text, type )
@@ -4578,52 +5359,58 @@ INSERT INTO texts( meta_id, name, text, type )
 ',1)
  
 INSERT INTO texts( meta_id, name, text, type )
-       values(247,2,'<h3 align="center">Create a page</h3>
+       values(247,2,'<h3 align="center"> Create a page </h3>
 <div align="center">
   <table border="1" width="75%">
     <tr>
-      <td width="100%"><b>Header:</b> This text will be the main link in itself.</td>
+      <td width="100%"><b> Header:</b> This text will be the main link in itself.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Text:</b> Additional description shown by the link.(NB!
+      <td width="100%"><b> Text:</b> Additional description shown by the link.(NB!
         This text is only displayed if the design template in use permits link texts). If you do not want any description of the link, leave this box blank.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Image icon:</b> Here is where you enter the path to the thumbnail image or icon symbol which is already loaded into the system such as "/images/picture1.gif" to the image to be displayed.  (NB!
+      <td width="100%"><b> Image icon:</b> Here is where you enter the path to the thumbnail image or icon symbol which is already loaded into the system such as "/images/picture1.gif" to the image to be displayed.  (NB!
         This image is only displayed if the design template in use permits link image icons). If you do not wish to have a small image by the link, leave this box blank.</td>
     </tr>
   </table>
-  <h3 align="center">Advanced</h3>
+  <h3 align="center"> Advanced </h3>
   <table border="1" width="75%">
     <tr>
-      <td width="100
+      <td wid
 
 
-%"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
-        in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
+th="100
+
+%"><b> Key words (for searches): </b> These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        in the checkbox <i> Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
     <tr>
-      <td width="100%"><b>Share: </b><i>Show this page link to unauthorised users
-</i>means that this link can be seen by persons without the authority to view the page.  They will be denied access to the page if they select the link. <i>Allow unauthorised local links to this page </i> means that other web administrators in your system lacking editing rights on  this page are allowed to create links to this page.</td>
+      <td width="100%"><b> Share: </b><i> Show this page link to unauthorised users
+</i> means that this link can be seen by persons without the authority to view the page.  They will be denied access to the page if they select the link. <i> Allow unauthorised local links to this page </i> means that other web administrators in your system lacking editing rights on  this page are allowed to create links to this page.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</td>
-
+      <td width="100%"><b> Publish from: </b> A future time and date can be given as publishing date if the page is not to be 
+pu
+bl
+ished now.</td>
  
   
  </tr>
     <tr>
-      <td width="100%"><b>To the archives: </b>A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
-        in the checkbox <i>Archive now</i> means that the page will be archived immediately.</td>
+      <td width="100%"><b> To the archives: </b> A future time and date can be given as the date when this page is to be archived. The links to this page will be on the given date. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        in the checkbox <i> Archive now </i> means that the page will be archived immediately.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Display in: </b>Here is where you can control how the page is displayed.
+      <td width="100%"><b> Display in: </b> Here is where you can control how the page is displayed.
         <ul>
-          <li><i>Same frame</i> means that the page will be opened in the same frame as where the link is found. </li>
-          <li><i>New window</i> means that the page will be opened in a new browser window. </li>
-          <li><i>Full window</i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one)in the current window.</li>
-          <li><i>Other frame</i> - if a frameset is being used here you can cont
-rol 
+          <li><i> Same frame </i> means that the page will be opened in the same frame as where the link is found. </li>
+          <li><i> New window </i> means that the page will be opened in a new browser window. </li>
+          <li><i> Full window </i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one)in the current window.</li>
+          <li><i> Other frame </i> - if a fr
+ames
+et i
+s being used here you can control 
 in w
 hich frame the page will appear.</li>
         </ul>
@@ -4633,6 +5420,8 @@ hich frame the page will appear.</li>
 </div>
 <p align="center"><b>
 After having filled in this page (or at least filled in Header)and clicked on "OK", another page for diagram creation will appear.<br><br></p>
+ 
+ 
  
  
  
@@ -4699,6 +5488,8 @@ INSERT INTO texts( meta_id, name, text, type )
       or can be given here as the distance between the data points on the respective axis. NB: If the value give
 
 
+
+
 n here is not an integer that text written in this field will not be displayed.</td>
   </tr>
   <tr>
@@ -4716,7 +5507,8 @@ n here is not an integer that text written in this field will not be displayed.<
       When the roll-down menu is released the row is removed. </td>
   </tr>
   <tr>
-    
+  
+  
 <t
 d 
 width="100%" height="19"><b>Delete column: </b> This is to remove a column.  Which column is removed is determined by your selection in the roll-down menu.
@@ -4738,12 +5530,16 @@ width="100%" height="19"><b>Delete column: </b> This is to remove a column.  Whi
 
 <p align="center">If you would like a supporting table of data to be published under the graph/chart, fill in the values here or cut and paste from Excel.</p>
       </td>
-    </t
+
+   
+ </t
 r>
   </
 table>
   </center>
 </div>
+ 
+ 
  
  
  
@@ -4770,6 +5566,8 @@ INSERT INTO texts( meta_id, name, text, type )
     <td width="100%" height="19"><b>Delete column: </b> This is to remove a column.  Which column is removed is deter
 
 
+
+
 mined by your selection in the roll-down menu.
       <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">,
       When the roll-down menu is released,the column is removed. </td>
@@ -4779,6 +5577,8 @@ mined by your selection in the roll-down menu.
   </tr>
 </table>
 </div align="CENTER">
+ 
+ 
  
  
  
@@ -4878,12 +5678,16 @@ INSERT INTO texts( meta_id, name, text, type )
           <p style="text-align:justify">When you click on "<b style="mso-bidi-font
 
 
+
+
 -weight:normal">Text</b>"
           small arrows will appear on the page where it is possible to add text (or HTML code). To add text - click on one of these arrows
           at the location you wish you text to appear. If there are no arrows, the current template does not support text. In this case change the template if you need to insert text.</p>
           <h4 style="text-align:justify">Image</h4>
           <p class="MsoBodyText" style="text-align:justify">When you click on          "<b style="mso-bidi-font-weight:normal">Image</b>" a small green "portrait" <i style="mso-bidi-font-style:normal"> </i>appears along with an arrow at those locations where  you may add images. To load up an image - click on the portrait symbol or the arrow where you wish to put the image. If there is already an image on the page and a small arrow appears by it in the admin image mode, click on the arrow to be able to change images.</p>
-          <p class="MsoBodyText" style="text-align:justify"
+          <p class="MsoBodyText" style="text-align:just
+if
+y"
 >I
 f 
 no symbol or arrows appear when you push "image", the cuttenr template does not support adding images.  Images that do not get arrows next to them in this mode are embedded in the template. In this case you must switch templates if images are to be added.</p>
@@ -4892,7 +5696,9 @@ no symbol or arrows appear when you push "image", the cuttenr template does not 
           <blockquote>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Text document</p>
-            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbs
+            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&n
+bsp;
+&nbs
 p;&n
 bsp;
 &nbsp;&nbsp;
@@ -4904,7 +5710,9 @@ bsp;
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>File upload</p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </span></span>Diagram (NB:
+            </span></span>
+Diagra
+m (NB:
  requi
 res an
  extra software module to
@@ -4918,7 +5726,9 @@ res an
           <p class="MsoBodyText" style="text-align:justify">What these link types are is explained under the corresponding headers.</p>
           <h4 style="text-align:justify">Template</h4>
           <p class="MsoBodyText" style="text-align:justify">This is where you can switch the design template used by the current page.</p>
-          <h4 style="text-align:justify">Include</h4>
+          <h4 style="text-align:justif
+y">Inclu
+de</h4>
 
        
    <p st
@@ -4930,7 +5740,9 @@ yle="text-align:justify">When you click on "<b style="mso-bidi-font-weight:norma
           <p class="MsoBodyText" style="text-align:justify">This is where the data about the page and settings for the page are edited.</p>
           <h4 style="text-align:justify">Authority</h4>
           <p class="MsoBodyText" style="text-align:justify">Here is where you can decide which roles have which right on this page.</p>
-          <h4 style="text-align:justify">Log out
+          <h4 style="text-al
+ign:justif
+y">Log out
 </h4>
    
        <p 
@@ -4942,7 +5754,9 @@ class="MsoBodyText" style="text-align:justify">When you click on
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><a href="#_Administrera_anv&auml;ndare"><span style="color:windowtext;text-decoration:none;text-underline:none">Administrate
             users</span><span style="color: windowtext; text-decoration: none; text-underline: none">&nbsp;&nbsp;&nbsp;&nbsp;
-            </span></a><span style="color: wi
+            </span></
+a><span styl
+e="color: wi
 ndowtext; te
 xt-decoratio
 n: none; text-underline: none">&nbsp;
@@ -4953,7 +5767,9 @@ windowtext;text-decoration:none;text-underline:none">Administrate roles</span></
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><a href="#_Administrera_IP-accesser"><span style="color:windowtext;text-decoration:none;text-underline:none">Administrate
             IP access</span></a></p>
-            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&n
+bsp;
         
     </span></s
 pan><a href="#
@@ -4965,7 +5781,9 @@ text-decoration:none;text-underline:none">Show all pages</span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><a href="#_Ta_bort_ett"><span style="color:windowtext;
 text-decoration:none;text-underline:none">Remove a page</span></a></p>
-            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Ti
+            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&mi
+ddot;<span style
+="font:7.0pt "Ti
 mes New Roman"">
 &nbsp;&nbsp;&nbs
 p;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -4976,7 +5794,9 @@ p;&nbsp;&nbsp;&nbsp;&nbsp;
             counter</span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><a href="#_Administrera_systeminformation"><span style="color:windowtext;text-decoration:none;text-underline:none">Administrate
-            system messages</span></a><
+   
+         system me
+ssages</span></a><
 /p>
             <
 p class="-49" styl
@@ -4987,7 +5807,9 @@ text-decoration:none;text-underline:none">Administrate files</span></a></p>
             </span></span><a href="#_F&ouml;r&auml;ndrade_dokument"><span style="color:
 windowtext;text-decoration:none;text-underline:none">Page changes</span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </span></span>Administrate conferences (NB: Conferences require an extra software module to
+            </span></span>Administrate conferences (NB: Conferences 
+require an extra sof
+tware module to
    
          imCMS)</p>
 
@@ -5008,6 +5830,8 @@ ote>
   </center>
 </div>
 <div align="center" class="unnamed1">
+ 
+ 
  
  
  
@@ -5100,12 +5924,16 @@ INSERT INTO texts( meta_id, name, text, type )
         for which 
 
 
+
+
 you wish to alter the number of forums to be displayed by clicking on the list at the right. The current number of discussions allowed to be shown in this forum is displayed after the forum in parentheses. select the new number of discussions to be shown by clicking on <img border="0" src="/imcode/images/se/helpimages/Pil.GIF" width="16" height="21">
         and marking the desired number. Click then on "Update".</td>
     </tr>
   </table>
   </center>
 </div>
+ 
+ 
  
  
  
@@ -5126,6 +5954,8 @@ INSERT INTO texts( meta_id, name, text, type )
         change the text as desired and tick the check
 
 
+
+
 box of that contribution with a tick<img border="0" src="/imcode/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
         . Click thereafter on "RESAVE".</p>
         <p>To return to user mode in the conference, click on "End admin".</td>
@@ -5133,6 +5963,8 @@ box of that contribution with a tick<img border="0" src="/imcode/images/se/helpi
   </table>
   </center>
 </div>
+ 
+ 
  
  
  
@@ -5152,6 +5984,8 @@ INSERT INTO texts( meta_id, name, text, type )
         <p><i>Update template file: </i>To update a template file in an existing directory, first select the directory to be updated. Select thereafter the type of file to be updat
 
 
+
+
 ed(The conference
         supports two types of files: images and html files). When these selections have been made, click on "Administrate".</p>
         <p>To quit administration mode, click on "End admin".</td>
@@ -5160,6 +5994,8 @@ ed(The conference
   </center>
 </div>
 <p align="center">&nbsp;</p>
+ 
+ 
  
  
  
@@ -5237,6 +6073,8 @@ INSERT INTO texts( meta_id, name, text, type )
         (NEW symbol) is shown before a discussion this is either a new discussion or there is a new contribution in this dicussion since you last logged into the conference. To see the co
 
 
+
+
 ntributions made since your last visit, push on "Update".
         <p>By clicking on the header of a discussion, all the contributions in that discussion will be displayed on the window´s righthand side. If <img border="0" src="/imcode/images/se/helpimages/Konf-k3.GIF" width="14" height="16">
         (EXPERT symbol) is shown in front of the header, the author of this contribution is registered as a specialist. After the "specialist symbol" the contribution´s header, text, author and date created are presented.</p>
@@ -5245,14 +6083,18 @@ ntributions made since your last visit, push on "Update".
         Click thereafter on "Sort". The contributions are sorted by the date created. </p>
         <p>A new discussion is created by clicking "New discussion".</p>
         <p>A new contribution is made by clicking on one of the "contribute" or comment button.
-        The reason that there are several bu
+        The reason that there are severa
+l 
+bu
 tt
 on
 s for "contribute" is that some contributions can be very long and a user need not scroll up or down to submit the contribution.</p>
         <p>To search among the contributions there is an inbuilt search function normally displayed in the top righthand corner of the window. Searches are valid for all contributions in a forum. You can search for words in the header, body or by author. Select first which of these three you wish to search among and then enter the key words. Click thereafter on "Search". The search can be limited by giving a start and end date of the search. Dates must be given in the yyyy-mm-dd format, for example 2002-02-26 or in the preset special forms like "yesterday" or "today".</p>
         <h2 align="center"><b>Administration</b></h2>
         <p>To administrate a forum, click on the "Admin" button
-        in the upper lefthand corner. You will then come to an administration page where a forum can be added, removed or have its name changed. You can also 
+        in the upper lefthand corner. You will then come to an administration page where a forum can be added, removed or have its name changed. You c
+an a
+lso 
 dete
 rmin
 e how many discussions should be displayed at one time in the forum.</p>
@@ -5265,6 +6107,8 @@ e how many discussions should be displayed at one time in the forum.</p>
   </table>
   </center>
 </div>
+ 
+ 
  
  
  
@@ -5292,12 +6136,16 @@ INSERT INTO texts( meta_id, name, text, type )
         <i>TELEPHONE (WORK): </i>Enter your work phone<b
 
 
+
+
 r>
         <i>E-MAIL:</i> Enter the e-mail address where you wish to receive messages from/about this system/site.</td>
     </tr>
   </table>
   </center>
 </div>
+ 
+ 
  
  
  
@@ -5379,6 +6227,8 @@ INSERT INTO texts( meta_id, name, text, type )
                     edited/removed by clicking on <img border="0" src="/imcode
 
 
+
+
 /images/se/helpimages/Pil.GIF" width="17" height="22">.
                     After the telephone number is marked - click on the corresponding button
                     for that which you wish to do. If you choose "Edit", the telephone no. will be displayed in the boxes and then you can edit the number.  When finised, Click on
@@ -5389,7 +6239,9 @@ INSERT INTO texts( meta_id, name, text, type )
                     can be removed so the user cannot log into the system but remains registered.</li>
                   <li>
                     <p align="left"><i>User type</i>- authenticated
-                    users are users that log into the system with a user name and password. Conference users are user
+                    users are users that log into the system with a user name and password. Conference users are 
+us
+er
 s
 
  
@@ -5408,6 +6260,8 @@ s
   </table>
   </center>
 </div>
+ 
+ 
  
  
  
@@ -5452,6 +6306,8 @@ INSERT INTO texts( meta_id, name, text, type )
  
 
 
+
+
          <tr>
             <td width="100%"><b>Image:</b> Here is where the path to the file in your computer/network is displayed.</td>
           </tr>
@@ -5467,7 +6323,9 @@ INSERT INTO texts( meta_id, name, text, type )
             <td width="100%"><b>Image name: </b>Here is where the name of the image is given.  It is not shown at any other location.</td>
           </tr>
           <tr>
-            <td width="100%"><b>Format: </b>The image´s width, height and border or frame (if any)
+            <td width="100%"><b>Format: </b>The image´s width, height and border or frame (if 
+an
+y)
  a
 re
  controlled here. All measurements given are in pixels.</td>
@@ -5479,7 +6337,9 @@ re
                 <li><i>None: </i>The placement of the text is determined by the visitor´s browsers default setting.</li>
                 <li><i>Baseline: </i>The text begins at the bottom righthand corner of the image with the base of the text exactly at the baseline and continues directly under the image.</li>
                 <li><i>Top: </i>The first row of text begins at the top righthand corner while the second row continues directly under the image.</li>
-                <li><i>Middle: </i>The first row of text starts in the cente
+                <li><i>Middle: </i>The first row of text starts in t
+he c
+ente
 r of
  th
 e image
@@ -5493,7 +6353,9 @@ e image
                 <li><i>Pic left: </i>The text is to the RIGHT of the image.</li>
                 <li><i>Pic right: </i>The text is to the LEFT of the image.</li>
               </ul>
-            </td>
+     
+      
+ </td>
 
     
      
@@ -5509,8 +6371,10 @@ Alt image while loading: </b>Image shown while the main image is being loaded(ap
           <tr>
             <td width="100%"><b>Space around image: </b>Here is where you decide if there should be any empty space or "air" around the image.
               The size of this space is entered in pixels. Both vertical
-              and horizontal space can be controlled.</td>
-          </t
+              and horizontal space can be controlled.</td
+>
+     
+     </t
 r>
     
       <
@@ -5527,7 +6391,9 @@ tr>
 <li><i>Parent frame:</i> Opens the page in the frame or window where the frame set is found.</li>
           <li><i>Same frame:</i> Opens the page in the same frame as where the link is found. </li>
           
-          <li><i>Other frame:</i> - Opens the frame which you choose in the current frameset is being used. You control in which frame will appear by enteri
+          <li><i>Other frame:</i> - Opens the frame which you choose in the current frameset is being used. You control in which frame w
+ill appear
+ by enteri
 ng the nam
 e in the 
 field to the right.</li>
@@ -5537,6 +6403,8 @@ field to the right.</li>
           </tr>
         </table>
 </div align="Center">
+ 
+ 
  
  
  
@@ -5584,10 +6452,14 @@ INSERT INTO texts( meta_id, name, text, type )
         the correct mime 
 
 
+
+
 ending.</p>
         <p class="MsoBodyText" align="left">Click on "OK".</p>
         </blockquote>
   <center>
+ 
+ 
  
  
  
@@ -5619,6 +6491,8 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100
 
 
+
+
 %"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
@@ -5627,7 +6501,9 @@ INSERT INTO texts( meta_id, name, text, type )
 </i>means that this link can be seen by persons without the authority to view the page.  They will be denied access to the page if they select the link. <i>Allow unauthorised local links to this page </i> means that other web administrators in your system lacking editing rights on  this page are allowed to create links to this page.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</td>
+      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</
+td
+>
 
  
   
@@ -5642,7 +6518,9 @@ INSERT INTO texts( meta_id, name, text, type )
           <li><i>Same frame</i> means that the page will be opened in the same frame as wehere the link is found. </li>
           <li><i>New window</i> means that the page will be opened in a new browser window. </li>
           <li><i>Full window</i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one)in the current window.</li>
-          <li><i>Other frame</i> - if a frameset is being used here you can con
+          <li><i>Other frame</i> - if a frameset is being used here you
+ can
+ con
 trol
  in 
 which frame the page will appear.</li>
@@ -5653,6 +6531,8 @@ which frame the page will appear.</li>
 </div>
 <p align="center"><b>
 After having filled in this page (or at least filled in Header)and clicked on "OK", another page for the HTML code will appear.<br><br></p>
+ 
+ 
  
  
  
@@ -5701,6 +6581,8 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100
 
 
+
+
 %"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
@@ -5709,7 +6591,9 @@ INSERT INTO texts( meta_id, name, text, type )
 </i>means that this link can be seen by persons without the authority to view the page.  They will be denied access to the page if they select the link. <i>Allow unauthorised local links to this page </i> means that other web administrators in your system lacking editing rights on  this page are allowed to create links to this page.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</td>
+      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</
+td
+>
 
  
   
@@ -5724,7 +6608,9 @@ INSERT INTO texts( meta_id, name, text, type )
           <li><i>Same frame</i> means that the page will be opened in the same frame as wehere the link is found. </li>
           <li><i>New window</i> means that the page will be opened in a new browser window. </li>
           <li><i>Full window</i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one)in the current window.</li>
-          <li><i>Other frame</i> - if a frameset is being used here you can con
+          <li><i>Other frame</i> - if a frameset is being used here you
+ can
+ con
 trol
  in 
 which frame the page will appear.</li>
@@ -5735,6 +6621,8 @@ which frame the page will appear.</li>
 </div>
 <p align="center"><b>
 </p>
+ 
+ 
  
  
  
@@ -5781,6 +6669,8 @@ INSERT INTO texts( meta_id, name, text, type )
             <p align="left">
 
 
+
+
 To return to the page click on "Normal".</p>
         </blockquote>
 <p align="center">&nbsp;</p>
@@ -5790,6 +6680,8 @@ To return to the page click on "Normal".</p>
   </center>
 </div>
 <p align="center">&nbsp;</p>
+ 
+ 
  
  
  
@@ -5815,6 +6707,8 @@ to view all the types of pages/links that can be created</p>
     <td width="100%"><b>Browser-sensitive switch: </b>Creates links to alternative page
 
 
+
+
 s diverting visitors automatically depending on what browser and or platform (PC/Mac)the visitor is using. As browser/platform combinations can display your pages differently, you may want to ensure that visitors see similar pages. This switch can also be used as an alternative link for all browser/platform cominations to a page allowing you to use different link header and text to the same page.</td>
   </tr>
   <tr>
@@ -5824,7 +6718,9 @@ s diverting visitors automatically depending on what browser and or platform (PC
     <td width="100%"><b>File upload: </b>Allows you to upload a great number of documents/files onto the system and creates a link from the current page to the file. Visitors can download the file which uses that computer´s software to run the file.  </td>
   </tr>
   <tr>
-    <td width="100%"><b>Diagram: </b>Creates a graph and  a link to it from the current page. NB! This function requires a
+    <td width="100%"><b>Diagram: </b>Creates a graph and  a link to it from the current page. NB! This function requir
+es
+ a
  e
 xt
 ra imCMS module.</td>
@@ -5840,6 +6736,8 @@ ra imCMS module.</td>
 </div align "center">
 <hr>
 <h2 align="center">Administrate existing links</h2>
+ 
+ 
  
  
  
@@ -5871,6 +6769,8 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100
 
 
+
+
 %"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
@@ -5879,7 +6779,9 @@ INSERT INTO texts( meta_id, name, text, type )
 </i>means that this link can be seen by persons without the authority to view the page.  They will be denied access to the page if they select the link. <i>Allow unauthorised local links to this page </i> means that other web administrators in your system lacking editing rights on  this page are allowed to create links to this page.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</td>
+      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</
+td
+>
 
  
   
@@ -5894,7 +6796,9 @@ INSERT INTO texts( meta_id, name, text, type )
           <li><i>Same frame</i> means that the page will be opened in the same frame as wehere the link is found. </li>
           <li><i>New window</i> means that the page will be opened in a new browser window. </li>
           <li><i>Full window</i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one)in the current window.</li>
-          <li><i>Other frame</i> - if a frameset is being used here you can con
+          <li><i>Other frame</i> - if a frameset is being used here you
+ can
+ con
 trol
  in 
 which frame the page will appear.</li>
@@ -5905,6 +6809,8 @@ which frame the page will appear.</li>
 </div>
 <p align="center"><b>
 After having filled in this page (or at least filled in Header)and clicked on "OK", another page for file upload settings will appear. <br><br></p>
+ 
+ 
  
  
  
@@ -5936,6 +6842,8 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100
 
 
+
+
 %"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
@@ -5944,7 +6852,9 @@ INSERT INTO texts( meta_id, name, text, type )
 </i>means that this link can be seen by persons without the authority to view the page.  They will be denied access to the page if they select the link. <i>Allow unauthorised local links to this page </i> means that other web administrators in your system lacking editing rights on  this page are allowed to create links to this page.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</td>
+      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</
+td
+>
 
  
   
@@ -5959,7 +6869,9 @@ INSERT INTO texts( meta_id, name, text, type )
           <li><i>Same frame</i> means that the page will be opened in the same frame as where the link is found. </li>
           <li><i>New window</i> means that the page will be opened in a new browser window. </li>
           <li><i>Full window</i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one)in the current window.</li>
-          <li><i>Other frame</i> - if a frameset is being used here you can cont
+          <li><i>Other frame</i> - if a frameset is being used here you 
+can 
+cont
 rol 
 in w
 hich frame the page will appear.</li>
@@ -5970,6 +6882,8 @@ hich frame the page will appear.</li>
 </div>
 <p align="center"><b>
 After having filled in this page (or at least filled in Header)and clicked on "OK", another page for Internet link settings will appear.<br><br></p>
+ 
+ 
  
  
  
@@ -6005,6 +6919,8 @@ INSERT INTO texts( meta_id, name, text, type )
        
 
 
+
+
                <p align="left"><i>Other frame</i> - if a frameset is being used here you can control in which frame the page will appear. 
 </li>
                   </ul>
@@ -6014,6 +6930,8 @@ INSERT INTO texts( meta_id, name, text, type )
   </table>
   </center>
 </div>
+ 
+ 
  
  
  
@@ -6032,6 +6950,137 @@ INSERT INTO texts( meta_id, name, text, type )
 INSERT INTO texts( meta_id, name, text, type )
        values(283,1,'Failed Log-in
 ',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(284,1,'Authority
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(284,2,'<p align="center"> This is where you can control which roles can do what on each page.</p>
+<div align="CENTER">
+<table border="1" width="100%">
+  <tr>
+    <td width="100%"><b> Header: </b> The page title to be displayed(main link text).
+      By ticking <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      the checkbox <i> Show page link to unauthorised users </i> visitors without page authority are allowed to see the link but prevented from visiting the page.</td>
+  </tr>
+  <tr>
+    <td width="100%"><b> Authority: </b> Displays the roles that have some level of authority on the page in question. 
+      <ul>
+        <li><i> None </i> means that not even the link is seen by this role unless <i> Show page link to unauthorised users </i> is ticked <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">.
+        </li>
+        <li><i> Read </i> betyder att anv&auml;ndare med rollen kan l&auml;sa allt p&aring;
+          si
+
+
+dan, men inte kan &auml;ndra n&aring;got p&aring; den.</li>
+        <li><i> Dynamic Authority 2 </i> means users with this role can do what Dynamic Authority 2 is allowed on this page. To edit the authority of Dynamic Authority 2 see
+          <b> Define authority.</b></li>
+        <li><i> Dynamic Authority 1 </i> means users with this role can do what Dynamic Authority 1 is allowed on this page. To edit the authority of Dynamic Authority 1 see
+          <b> Define authority.</b><i> </i></li>
+        <li><i> Full </i> means that the users having this authority can make any change on this page.</li>
+      </ul>
+      <p> The level of authority is changed for a role by clicking on a new white radio button. If none is marked the role will be moved to <i> Roles without authority </i> once you click on "Save".</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%">
+      <p align="left"><b> Roles without authority: </b> By marking a role
+      and clicking on "Add" can new roles
+ a
+lr
+eady in the system be brought up onto the page´s role authority table. The role is moved up to <b> Page Authority </b> an a level of authority can be assigned.</p>
+    </td>
+  </tr>
+  <tr>
+    <td width="100%"><b> Define authority: </b> By clicking on "Define authority" either by <i> Dynamic Authority 1 </i> or <i> Dynamic Authority 2 </i> a new settings page will appear where you can define in detail the authority to be given.  A <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      means that Dynamic Authority 1 has more authority than Dynamic Authority 2 on this specific page.  This checkbox should be ticked if you wish to strongly differenciate the two dynamic levels of authority. The tick <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      means that Dynamic Authority 1 is allows to redefine the authority of dynamic authority 2 and change the roles assigned to the lower levels of the page.
+      "Defi
+ne f
+or n
+ew sub-pages" means that you can define the authority configuration of future sub-pages created from this page and this configuration can be different than those on this page. Default settings for new sub-pages will otherwise be those found on this page. </td>
+  </tr>
+  <tr>
+    <td width="100%"><b> Created by: </b>(the name of the user that created this page). By ticking the checkbox <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      next to <i> Allow unauthorised local links to this page </i> you can allow other site administrators who do not have authority on this page to link to it.</td>
+  </tr>
+</table>
+</div align="CENTER">
+ 
+ 
+ 
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(285,1,'Delete a page
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(285,2,'<div align="center">
+  <center>
+  <table border="0" width="480">
+    <tr>
+      <td>
+<p align="left"> Enter the Meta ID of the page to be removed. Click
+on "Delete". A warning will appear requiring confirmation prior to the page being deleted from the database.</p>
+<p align="left">"Back" takes you back to the previous page.</p>
+
+      </td>
+    </tr>
+  </table>
+  </center>
+</div>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(286,1,'Remove a page - Warning
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(286,2,'<p align="center"> Click on &quot;OK&quot; if you are sure you wish to remove the page.</p>
+<p align="center">&quot;Cancel&quot; brings you to the previous page without removing any pages.</p>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(287,1,'Change page appearance
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(287,2,'<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="0" width="550">
+    <tr>
+      <td>
+            <p align="left"> Current template directory and template is shown. To change the appearance - click on <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+            the template. If the template you wish  to use is in a different directory, click on <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+            by template directory, select the new template directory and click on "Change directory". The templates in the directory can be seen by clicking on <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">
+            by "templates". Mark the template and then click on     "Save". To see the template, click on 
+            "Preveiw template". NB: This works only if a model of the template (i.e. gif image from a screen dump) has been loaded.</p>
+      </td>
+    </tr>
+  </ta
+
+
+ble>
+  </center>
+</div>
+ 
+ 
+ 
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(288,1,'Delete  a role - Warning
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(288,2,'If you are certain you wish to remove this role, click on  &quot;OK&quot;, otherwise click on &quot;Cancel&quot;.
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(288,3,'
+',0)
  
 INSERT INTO texts( meta_id, name, text, type )
        values(289,1,'Administrate roles - main page
@@ -6084,6 +7133,8 @@ INSERT INTO texts( meta_id, name, text, type )
       <td width="100
 
 
+
+
 %"><b>Key words (for searches): </b>These are additional words or codes (which are not already found on the page) that will help find this page in a site search. A <img border="0" src="/imcode/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         in the checkbox <i>Block searches from finding this page </i> prevents the page from ever turning up in local site searches.
     </tr>
@@ -6092,7 +7143,9 @@ INSERT INTO texts( meta_id, name, text, type )
 </i>means that this link can be seen by persons without the authority to view the page.  They will be denied access to the page if they select the link. <i>Allow unauthorised local links to this page </i> means that other web administrators in your system lacking editing rights on  this page are allowed to create links to this page.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</td>
+      <td width="100%"><b>Publish from: </b>A future time and date can be given as publishing date if the page is not to be published now.</
+td
+>
 
  
   
@@ -6107,7 +7160,9 @@ INSERT INTO texts( meta_id, name, text, type )
           <li><i>Same frame</i> means that the page will be opened in the same frame as wehere the link is found. </li>
           <li><i>New window</i> means that the page will be opened in a new browser window. </li>
           <li><i>Full window</i> means that the page will be opened in a new frame which replaces all other frames (if there are more than one)in the current window.</li>
-          <li><i>Other frame</i> - if a frameset is being used here you can con
+          <li><i>Other frame</i> - if a frameset is being used here you
+ can
+ con
 trol
  in 
 which frame the page will appear.</li>
@@ -6123,6 +7178,131 @@ After having filled in this page (or at least filled in Header)and clicked on "O
  
  
  
+ 
+ 
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(291,1,'Administrate sections
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(291,3,'
+<br>
+<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="0" width="360">
+    <tr>
+      <td width="360">
+                  <p align="left"> To create a new site section click on &quot;<b> Add </b>&quot;.</p>
+                  <p align="left"> To remove a site section click on &quot;<b> Delete </b>&quot;.</p>
+                  <p align="left"> To change the name of a section click on &quot;<b> Edit </b>&quot;.&nbsp;</p>
+                  <p align="left">&quot;<b> Back </b>&quot; takes you to the main Adminstration Menu.</p>
+      </td>
+    </tr>
+  </table>
+  </center>
+</div>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(292,1,'Add site section
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(292,3,'
+
+
+
+
+<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="0" width="400">
+    <tr>
+      <td>
+                  <p align="left"> Enter the name of the new section in <i> New section.</i> <br> Click on
+                  &quot;<b> Add </b>&quot;.</p>
+                  <p align="left"><i> List of existing </i>: shows a list
+                  of all the registered sections. The number of pages in each section is shown between parentheses [
+                  ]&nbsp;.</p>
+                  <p align="left">&nbsp;&quot;<b> Back </b>&quot; takes you to Administrate sections.</p>
+        <p>&nbsp;</td>
+    </tr>
+  </table>
+  </center>
+</div>
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(293,1,'Delete Site Section
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(293,3,'
+
+<div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="0" width="385">
+    <tr>
+      <td width="383">
+                  <p align="left"> Select the setion to be removed from the roll-down menu. The number of pages connected to the section are shown between the parentheses, [ ]&nbsp;.</p>
+                  <p align="left"> Click on &quot;<b> Delete </b>&quot;.</p>
+                  <p align="left"><b> Back </b>&quot; takes you to Administrate
+                  sections.</p>
+      </td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(294,1,'Warning - Delete Site Section
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(294,3,'
+
+<br>
+<div align="center">
+  <center>
+
+  <table border="0" cellpadding="0" cellspacing="0" width="389">
+    <tr>
+      <td width="387">
+                  <p align="left"> A warning appears to show how many pages are connected to the section you wish to remove. Select a new section for these pages by marking the new section in the roll-down menu. If they are not to be connected to a section - select "Delete connections". </p>
+                  <p align="left"> Click on &quot;<b> OK </b>&quot;.</p>
+                  <p align="left">&quot;<b> Cancel </b>&quot; takes you to Delete Site Section.</p>
+      </td>
+    </tr>
+  </table>
+    </center>
+</div>
+
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(295,1,'Change name of site section
+',1)
+ 
+INSERT INTO texts( meta_id, name, text, type )
+       values(295,3,'
+
+<br><div align="center">
+  <center>
+  <table border="0" cellpadding="0" cellspacing="0" width="404">
+    <tr>
+      <td width="402">
+                  <p align="left"> Select the section to be renamed from the roll-down menu. The number of pages connected to the section are displayed between the parentheses, [ ]&nbsp; .</p>
+                  <p align="left"> Enter the new name of the section and click thereafter on <br>&quot;<b> Change name </b>&quot;.</p>
+                  <p align="left">&quot;<b> Back </b>&quot; takes you back to 
+                  Administrate site section.</p>
+      </td>
+    </tr>
+  </table>
+  </center>
+</div>
 ',1)
  
  
@@ -6575,9 +7755,17 @@ INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (210,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (211,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (212,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (213,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (214,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (215,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (216,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (217,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
@@ -6595,6 +7783,12 @@ INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (224,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (225,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (226,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (227,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (228,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (229,5,@groupId,1,-1,-1)
@@ -6607,9 +7801,25 @@ INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (233,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (234,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (235,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (236,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (237,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (238,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (239,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (240,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (241,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (242,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (243,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (244,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
@@ -6691,9 +7901,239 @@ INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (283,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (284,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (285,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (286,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (287,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (288,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (289,5,@groupId,1,-1,-1)
 INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
     values (290,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (291,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (292,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (293,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (294,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (295,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (296,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (297,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (298,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (299,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (300,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (301,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (302,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (303,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (304,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (305,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (306,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (307,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (308,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (309,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (310,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (311,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (312,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (313,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (314,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (315,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (316,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (317,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (318,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (319,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (320,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (321,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (322,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (323,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (324,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (325,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (326,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (327,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (328,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (329,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (330,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (331,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (332,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (333,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (334,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (335,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (336,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (337,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (338,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (339,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (340,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (341,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (342,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (343,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (344,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (345,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (346,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (347,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (348,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (349,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (350,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (351,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (352,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (353,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (354,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (355,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (356,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (357,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (358,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (359,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (360,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (361,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (362,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (363,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (364,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (365,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (366,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (367,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (368,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (369,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (370,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (371,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (372,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (373,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (374,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (375,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (376,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (377,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (378,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (379,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (380,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (381,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (382,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (383,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (384,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (385,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (386,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (387,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (388,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (389,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (390,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (391,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (392,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (393,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (394,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (395,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (396,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (397,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (398,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (399,5,@groupId,1,-1,-1)
+INSERT INTO text_docs ( meta_id , template_id , group_id , sort_order , default_template_1 , default_template_2 )
+    values (400,5,@groupId,1,-1,-1)
  
 -- get all childs to meta_id < @metaMax
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
@@ -6905,9 +8345,17 @@ INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,210,1,580)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,211,1,590)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,212,1,600)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,213,1,610)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,214,1,620)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,215,1,630)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,216,1,640)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,217,1,650)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
@@ -6925,6 +8373,12 @@ INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,224,1,720)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,225,1,730)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,226,1,740)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,227,1,750)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,228,1,760)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,229,1,770)
@@ -6937,9 +8391,25 @@ INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,233,1,810)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,234,1,820)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,235,1,830)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,236,1,840)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,237,1,850)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,238,1,860)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,239,1,870)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,240,1,880)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,241,1,890)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,242,1,900)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,243,1,910)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,244,1,920)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
@@ -7021,9 +8491,29 @@ INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,283,1,1310)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,284,1,1320)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,285,1,1330)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,286,1,1340)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,287,1,1350)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,288,1,1360)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,289,1,1370)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,290,1,1380)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,291,1,1390)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,292,1,1400)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,293,1,1410)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,294,1,1420)
+INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
+    values (201,295,1,1430)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
     values (201,1002,1,1640)
 INSERT INTO childs ( meta_id , to_meta_id , menu_sort , manual_sort_order )
@@ -7917,6 +9407,18 @@ INSERT INTO roles_rights (role_id, meta_id ,set_id )
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,210,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,211,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,211,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,212,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,212,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,213,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,213,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (0,214,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,214,3)
@@ -7924,6 +9426,10 @@ INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (0,215,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,215,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,216,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,216,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (0,217,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
@@ -7957,6 +9463,18 @@ INSERT INTO roles_rights (role_id, meta_id ,set_id )
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,224,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,225,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,225,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,226,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,226,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,227,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,227,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (0,228,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,228,3)
@@ -7981,6 +9499,10 @@ INSERT INTO roles_rights (role_id, meta_id ,set_id )
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,233,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,234,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,234,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (0,235,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,235,3)
@@ -7988,6 +9510,34 @@ INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (0,236,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,236,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,237,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,237,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,238,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,238,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,239,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,239,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,240,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,240,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,241,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,241,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,242,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,242,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,243,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,243,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (0,244,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
@@ -8149,6 +9699,26 @@ INSERT INTO roles_rights (role_id, meta_id ,set_id )
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,283,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,284,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,284,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,285,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,285,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,286,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,286,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,287,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,287,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,288,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,288,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (0,289,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,289,3)
@@ -8156,5 +9726,445 @@ INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (0,290,3)
 INSERT INTO roles_rights (role_id, meta_id ,set_id )
     values (1,290,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,291,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,291,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,292,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,292,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,293,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,293,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,294,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,294,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,295,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,295,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,296,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,296,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,297,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,297,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,298,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,298,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,299,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,299,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,300,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,300,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,301,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,301,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,302,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,302,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,303,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,303,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,304,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,304,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,305,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,305,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,306,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,306,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,307,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,307,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,308,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,308,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,309,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,309,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,310,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,310,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,311,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,311,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,312,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,312,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,313,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,313,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,314,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,314,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,315,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,315,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,316,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,316,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,317,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,317,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,318,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,318,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,319,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,319,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,320,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,320,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,321,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,321,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,322,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,322,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,323,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,323,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,324,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,324,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,325,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,325,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,326,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,326,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,327,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,327,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,328,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,328,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,329,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,329,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,330,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,330,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,331,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,331,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,332,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,332,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,333,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,333,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,334,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,334,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,335,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,335,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,336,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,336,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,337,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,337,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,338,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,338,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,339,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,339,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,340,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,340,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,341,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,341,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,342,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,342,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,343,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,343,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,344,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,344,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,345,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,345,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,346,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,346,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,347,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,347,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,348,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,348,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,349,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,349,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,350,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,350,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,351,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,351,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,352,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,352,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,353,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,353,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,354,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,354,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,355,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,355,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,356,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,356,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,357,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,357,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,358,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,358,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,359,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,359,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,360,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,360,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,361,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,361,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,362,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,362,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,363,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,363,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,364,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,364,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,365,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,365,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,366,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,366,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,367,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,367,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,368,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,368,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,369,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,369,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,370,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,370,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,371,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,371,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,372,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,372,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,373,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,373,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,374,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,374,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,375,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,375,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,376,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,376,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,377,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,377,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,378,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,378,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,379,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,379,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,380,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,380,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,381,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,381,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,382,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,382,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,383,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,383,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,384,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,384,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,385,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,385,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,386,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,386,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,387,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,387,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,388,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,388,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,389,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,389,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,390,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,390,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,391,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,391,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,392,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,392,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,393,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,393,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,394,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,394,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,395,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,395,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,396,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,396,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,397,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,397,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,398,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,398,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,399,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,399,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (0,400,3)
+INSERT INTO roles_rights (role_id, meta_id ,set_id )
+    values (1,400,3)
  
 end
