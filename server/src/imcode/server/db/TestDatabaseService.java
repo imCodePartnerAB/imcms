@@ -25,6 +25,8 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     static String MYSQL_DATABASE_USER = "root";
     static String MYSQL_DATABASE_PASSWORD = "";
 
+    DatabaseService[] databaseServices = null;
+
     // If you change anything in the scripts that creates the database
     // you propably have to change some of the following constants.
     private final static int USER_ADMIN_ID = 1;
@@ -45,6 +47,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private final static int DOC_TEST_SECOND_ID = 9002;
     private final static int DOC_TEST_THIRD_ID_FILE_DOC_TYPE = 9003;
     private final static int DOC_TEST_ID_DETACHED = 9999;
+    private static final int DOC_TYPE_TEXT_ID = 2;
 
     private static final String DOC_THIRD_DOC_FILENAME = "testfilename.txt";
 
@@ -53,14 +56,13 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     private static final int PHONE_TYPE_OTHER = 0;
 
     private static final int LANG_ID_SWEDEN = 1;
-
-    DatabaseService[] databaseServices = null;
+    private static final int DOC_TYPE_FILE_ID = 8;
 
     protected void setUp() throws IOException {
         databaseServices = new DatabaseService[]{
-            static_initMimer(),
             static_initMySql(),
             static_initSqlServer(),
+            static_initMimer(),
         };
     }
 
@@ -87,6 +89,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_CheckUserDocSharePermission( dbService );
             test_sproc_checkUserAdminrole( dbService );
             test_sproc_GetFileName( dbService );
+            test_sproc_GetDocType( dbService );
         }
     }
 
@@ -181,6 +184,11 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
         assertNull( databaseService.sproc_GetFileName(DOC_ID_FIRST_PAGE) ) ;
         assertNull( databaseService.sproc_GetFileName(DOC_ID_NON_EXISTING) ) ;
         assertTrue( DOC_THIRD_DOC_FILENAME.equals(databaseService.sproc_GetFileName(DOC_TEST_THIRD_ID_FILE_DOC_TYPE))) ;
+    }
+
+    private void test_sproc_GetDocType( DatabaseService databaseService) {
+        assertEquals( DOC_TYPE_TEXT_ID, databaseService.sproc_GetDocType( DOC_FIRST_TEST_ID ));
+        assertEquals( DOC_TYPE_FILE_ID , databaseService.sproc_GetDocType( DOC_TEST_THIRD_ID_FILE_DOC_TYPE ));
     }
 
     public void test_sproc_AddNewuser() {

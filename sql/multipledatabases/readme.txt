@@ -35,7 +35,6 @@ getbrowserdocchilds.prc
 getcategoryusers.prc
 getcurrentsessioncounter.prc
 getcurrentsessioncounterdate.prc
-getdoctype.prc
 getdoctypes.prc
 getdoctypesforuser.prc
 getdoctypeswithnewpermissions.prc

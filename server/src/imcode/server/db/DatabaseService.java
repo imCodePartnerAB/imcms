@@ -1116,4 +1116,15 @@ public class DatabaseService {
         } ) ;
         return (String)(queryResult.size() > 0 ? queryResult.get(0) : null) ;
     }
+
+    int sproc_GetDocType( int meta_id ) {
+        String sql = "SELECT doc_type FROM meta WHERE meta_id = ?";
+        Object[] paramValues = new Object[]{ new Integer( meta_id ) };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                return new Integer(rs.getInt("doc_type"));
+            }
+        } );
+        return ((Integer)queryResult.get(0)).intValue();
+    }
 }
