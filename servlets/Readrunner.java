@@ -35,59 +35,68 @@ public class Readrunner extends HttpServlet {
 	    return ;
 	}
 
-	String theText = req.getParameter("text") ;
-	if (null == theText) {
-	    theText = "" ;
-	}
-
-	ReadrunnerParameters readrunnerParameters = getReadrunnerParameters(req) ;
-	ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter() ;
-
-	String theFilteredText = readrunnerFilter.filter(theText,new Perl5Matcher(), readrunnerParameters) ;
-
-	String[] vp = new String[] {
-	    "&",   "&amp;",
-	    "<",   "&lt;",
-	    ">",   "&gt;",
-	    "\"",  "&quot;",
-	} ;
-
-	String theHtmlEscapedText = Parser.parseDoc(theText,vp) ;
-
-	Vector vec = new Vector() ;
-	vec.add("#host#") ;           vec.add(host) ;
-	vec.add("#meta_id#") ;        vec.add(""+metaId) ;
-	vec.add("#text#") ;           vec.add(theHtmlEscapedText) ;
-	vec.add("#readrunnertext#") ; vec.add(theFilteredText) ;
-	vec.add("#quotecount#") ;     vec.add(""+readrunnerFilter.getReadrunnerQuoteSubstitutionCount()) ;
-
-	PatternCompiler patComp  = new Perl5Compiler() ;
-	Pattern textTagPattern = null ;
-	try {
-	    textTagPattern   = patComp.compile("#text\\d+#") ;
-	} catch (MalformedPatternException ignored) {
-	    // ignored, there's nothing wrong with the pattern
-	}
-
-	PatternMatcher  patMat   = new Perl5Matcher() ;
-	Map textMap              = new IMCTextMap(imcref,metaId) ;
-	MapSubstitution mapSubst = new MapSubstitution(textMap,true) ;
-
-	String theReadrunnedPage = imcref.parseDoc(vec,"readrunner/template.html", user.getLangPrefix()) ;
-
-	// Replace tags of the form "#text1#" with the corresponding text from the document we came from.
-	theReadrunnedPage = Util.substitute(patMat,textTagPattern,mapSubst,theReadrunnedPage,Util.SUBSTITUTE_ALL) ;
-
 	// Check if we want to download
 	if (null != req.getParameter("download")) {
-	    res.setHeader("Content-Disposition", "attachment;filename=\"readrunner.html\"") ;
+	    String filename = req.getParameter("unique_id") ;
+	    if (null == filename) {
+		return ;
+	    }
+	    File downloadFile = new File(readrunnerPath, filename) ;
+
+	    res.setHeader("Content-Disposition", "attachment;filename=\""+filename+"\"") ;
 	    res.setContentType("text/html");
+
 	    Writer out = res.getWriter() ;
 
-	    out.write(theReadrunnedPage) ;
+	    BufferedReader fileReader = new BufferedReader(new FileReader(downloadFile)) ;
+	    int read = 0 ;
+	    char[] buf = new char[32768] ;
+	    while( -1 != (read = fileReader.read(buf)) ) {
+		out.write(buf,0,read) ;
+	    }
+	    out.flush() ;
+
 	} else {
-	    // Write out the page to a temporary file
-	    File tempFile = File.createTempFile("readrunner",".html",readrunnerPath) ;
+	    String theText = req.getParameter("text") ;
+	    if (null == theText) {
+		theText = "" ;
+	    }
+
+	    ReadrunnerParameters readrunnerParameters = getReadrunnerParameters(req) ;
+	    ReadrunnerFilter readrunnerFilter = new ReadrunnerFilter() ;
+
+	    // Do the actual readrunner-filtering
+	    String theFilteredText = readrunnerFilter.filter(theText,new Perl5Matcher(), readrunnerParameters) ;
+
+	    // Create a temporary file to write to
+	    Random rand = new Random() ;
+	    File tempFile = File.createTempFile("readrunner"+rand.nextInt(),".html",readrunnerPath) ;
+
+	    // Set up replacement of a couple of #tags#
+	    Vector vec = new Vector() ;
+	    vec.add("#host#") ;           vec.add(host) ;
+	    vec.add("#meta_id#") ;        vec.add(""+metaId) ;
+	    vec.add("#readrunnertext#") ; vec.add(theFilteredText) ;
+	    vec.add("#quotecount#") ;     vec.add(""+readrunnerFilter.getReadrunnerQuoteSubstitutionCount()) ;
+	    vec.add("#unique_id#") ;      vec.add(tempFile.getName()) ;
+
+	    // Load the template and do the actual replacing
+	    String theReadrunnedPage = imcref.parseDoc(vec,"readrunner/template.html", user.getLangPrefix()) ;
+
+	    // Set up replacement of "#text123#"-tags.
+	    PatternCompiler patComp  = new Perl5Compiler() ;
+	    Pattern textTagPattern = null ;
+	    try {
+		textTagPattern   = patComp.compile("#text\\d+#") ;
+	    } catch (MalformedPatternException ignored) {
+		// ignored, there's nothing wrong with the pattern
+	    }
+	    PatternMatcher  patMat   = new Perl5Matcher() ;
+	    Map textMap              = new IMCTextMap(imcref,metaId) ;
+	    MapSubstitution mapSubst = new MapSubstitution(textMap,true) ;
+
+	    // Replace tags of the form "#text1#" with the corresponding text from the document we came from.
+	    theReadrunnedPage = Util.substitute(patMat,textTagPattern,mapSubst,theReadrunnedPage,Util.SUBSTITUTE_ALL) ;
 
 	    Writer fileOut = new FileWriter(tempFile) ;
 	    fileOut.write(theReadrunnedPage) ;
