@@ -5,7 +5,7 @@
 <!-- Start log4j configuration -->
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" threshold="debug">
 
-  <!-- Renderer for HttpServletRequest -->
+  <!-- Renderer for DocumentRequest -->
   <renderer
     renderingClass="imcode.util.log.FakeRequestRenderer"
     renderedClass="imcode.server.DocumentRequest"/>
