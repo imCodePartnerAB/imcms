@@ -8,7 +8,7 @@ public interface PollHandlingSystem {
 
 	/**
 		Save a poll parameter to db
-		called from IMCServer.saveText
+		called from IMCServer.saveTextAttribute
 	 */
 	public void savePollparameter(String text_type, int meta_id, int text_no, String textstring);
 

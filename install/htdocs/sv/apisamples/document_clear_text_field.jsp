@@ -15,8 +15,4 @@
     String newPlainText = "";
     document.setPlainTextField( textFieldIndexInDocument, newPlainText ) ;
 %>
-
-<p>
-This page has now changed the first and second fileds in the page <%=documentId%>.<br>
-You can watch the changes by clicking on this link <a href="../servlet/GetDoc?meta_id=1001">document <%=documentId%></a>
-</p>
+Done.

@@ -258,11 +258,6 @@ public class DocumentMapper {
         }
     }
 
-    public void saveHeadline( DocumentDomainObject document ) {
-        String sqlStr = "update meta set meta_headline = '" + document.getHeadline() + "'where meta_id = " + document.getMetaId();
-        service.sqlUpdateQuery( sqlStr );
-    }
-
     public void sqlUpdateModifiedDatesOnDocumentAndItsParent( int meta_id, Date date, Date time ) {
         String modifiedDateStr = IMCConstants.DATE_FORMAT.format( date );
         String modifiedTimeStr = IMCConstants.DATE_FORMAT.format( time );
@@ -272,6 +267,31 @@ public class DocumentMapper {
         // Update the date_modified for all parents.
         String[] params = new String[]{ String.valueOf(meta_id)};
         service.sqlUpdateProcedure( SPROC_UPDATE_PARENTS_DATE_MODIFIED, params) ;
+    }
+
+    private void updateOneField( DocumentDomainObject document, String fieldName, String valueStr ) {
+        String whereString = " where meta_id = " + document.getMetaId();
+        String updateStr = "update meta set ";
+        String sqlStr = updateStr + fieldName + " = " + valueStr + whereString ;
+        service.sqlUpdateQuery( sqlStr );
+    }
+
+    public void saveTextAttribute( DocumentDomainObject document ) {
+        String fieldName = "meta_text";
+        String valueStr = "'" + document.getText() + "'";
+        updateOneField( document, fieldName, valueStr );
+    }
+
+    public void saveHeadlineAttribute( DocumentDomainObject document ) {
+        String fieldName = "meta_headline";
+        String valueStr = "'" + document.getHeadline() + "'";
+        updateOneField( document, fieldName, valueStr );
+    }
+
+    public void saveImageAttribute( DocumentDomainObject document ) {
+        String fieldName = "meta_image";
+        String valueStr = "'" + document.getImage() + "'";
+        updateOneField( document, fieldName, valueStr );
     }
 }
 

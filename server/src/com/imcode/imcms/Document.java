@@ -72,6 +72,16 @@ public class Document {
 
     public void setHeadline( String headline ) {
         internalDocument.setHeadline( headline );
-        documentMapper.saveHeadline( internalDocument );
+        documentMapper.saveHeadlineAttribute( internalDocument );
+    }
+
+    public void setMenuText( String menuText ) {
+        internalDocument.setText( menuText );
+        documentMapper.saveTextAttribute( internalDocument );
+    }
+
+    public void setMenuImageURL( String imageUrl ) {
+        internalDocument.setImage( imageUrl );
+        documentMapper.saveImageAttribute( internalDocument );
     }
 }
