@@ -103,7 +103,8 @@ To see what specified "Restricted One" permissions a page has, see <%= makeLink(
 <h3>Database connection</h3>
 Get access to the database, <%= makeLink("database_get_connection.jsp") %><br>
 
-
+<h3>Performance test data creation </h3>
+Get access to the database, <%= makeLink("createPerformanceTestData.jsp") %><br>
 
 </body>
 </html>

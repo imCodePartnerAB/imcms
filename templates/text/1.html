@@ -28,17 +28,24 @@ A:hover   { color:#0000ff; }
 
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
-	<td><?imcms:include no="1" label='<? templates/text/1.html/3 ?> 1'?></td>
+	<td><?imcms:include no="1" label='Include 1'?></td>
+</tr>
+<tr>
+	<td><?imcms:include no="2" label='Include 2'?></td>
+</tr>
+
+<tr>
+	<td><?imcms:include no="3" label='Include 3'?></td>
 </tr>
 </table>
 
 <table border="0" cellspacing="0" cellpadding="0" width="620" align="center">
 <tr>
 	<td>
-	<?imcms:image no='1' label='<? templates/text/1.html/1 ?> 1'?>
+	<?imcms:image no='1' label='Image 1'?>
 	<?imcms:text no='1' label='Text 1' post='<br><br>'?>
 
-	<?imcms:menu no="1" label='<? templates/text/1.html/2 ?> 1'?>
+	<?imcms:menu no="1" label='Link menu 1'?>
 	<table border="0" cellspacing="0" cellpadding="3">
 	<?imcms:menuloop?>
 	<tr valign="top">
@@ -52,16 +59,16 @@ A:hover   { color:#0000ff; }
 	<?/imcms:menu?>
 
 	<?imcms:text no='2' label='Text 2' pre='<br>'?>
-	<?imcms:image no='2' label='<? templates/text/1.html/1 ?> 2' post='<br>'?>
+	<?imcms:image no='2' label='Image 2' post='<br>'?>
 
 	<?imcms:text no='3' label='Text 3' pre='<br>'?>
-	<?imcms:image no='3' label='<? templates/text/1.html/1 ?> 3' post='<br>'?>
+	<?imcms:image no='3' label='Image 3' post='<br>'?>
 
 	<?imcms:text no='4' label='Text 4' pre='<br>'?>
-	<?imcms:image no='4' label='<? templates/text/1.html/1 ?> 4' post='<br>'?>
+	<?imcms:image no='4' label='Image 4' post='<br>'?>
 
 	<?imcms:text no='5' label='Text 5' pre='<br>'?>
-	<?imcms:image no='5' label='<? templates/text/1.html/1 ?> 5' post='<br>'?>
+	<?imcms:image no='5' label='Image 5' post='<br>'?>
 
 	<br clear="all">
 	<table border="0" cellspacing="0" cellpadding="2" bgcolor="#ffffff" class="infoTbl" align="center"
@@ -73,7 +80,11 @@ A:hover   { color:#0000ff; }
 
 <b>Info meta_id <?imcms:metaid?>:</b>
 
-<? templates/text/1.html/4 ?></td>
+<pre>
+Changed:     <?imcms:datetime format="EEEE MMMM d yyyy" type="m" lang="en"?>
+Created:     <?imcms:datetime format="EEEE MMMM d yyyy" type="c" lang="en"?>
+Date now:    <?imcms:datetime format="EEEE MMMM d yyyy" type="n" lang="en"?>
+Active user: <?imcms:user get='FirstName'?> <?imcms:user get='LastName'?></pre></td>
 		<td>&nbsp;&nbsp;</td>
 	</tr>
 	</table>
@@ -84,11 +95,11 @@ A:hover   { color:#0000ff; }
 
 	<i>#metaHeadline#</i><br>
 
-	<br><br><? templates/text/1.html/5 ?>&nbsp;#session_counter#&nbsp;&nbsp;<? templates/text/1.html/6 ?>&nbsp;#session_counter_date#<br><br>
+	<br><br>Number of visits (sessions) to this site:&nbsp;#session_counter#&nbsp;&nbsp;since&nbsp;#session_counter_date#<br><br>
 
 	Powered by imCode imCMS<br>
 
-	<?imcms:image no="3" label='<? templates/text/1.html/1 ?> 3'?>
+	<?imcms:image no="3" label='Image 3'?>
 
 	#changePage##adminMode#</div></td>
 </tr>
