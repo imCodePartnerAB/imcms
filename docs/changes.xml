@@ -680,6 +680,13 @@
             </p>
             <bug id="2798"/>
         </change>
+        <change>
+            <p>
+                The changelog (previously <path>CHANGES.TXT</path>, now <path>CHANGES.HTML</path>)
+                is now generated from an xml-file using an xsl-stylesheet. 
+            </p>
+            <bug id="2765"/>
+        </change>
     </changes>
 </changeset>
 <changeset version="1.11.1">
