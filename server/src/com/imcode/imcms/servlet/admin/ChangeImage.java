@@ -81,22 +81,7 @@ public class ChangeImage extends HttpServlet {
             request.setAttribute( ImageBrowse.PARAMETER__CALLER, "ChangeImage" );
             ImageBrowse.getPage( request, response );
         } else if ( null != request.getParameter( REQUEST_PARAMETER__GO_TO_IMAGE_SEARCH ) ) {
-            DocumentFinder documentFinder = new DocumentFinder() ;
-            documentFinder.setSelectDocumentCommand(new DocumentFinder.SelectDocumentCommand() {
-                public void selectDocument( DocumentDomainObject documentFound, HttpServletRequest request,
-                                              HttpServletResponse response ) throws IOException, ServletException {
-                    FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound ;
-                    if ( null != imageFileDocument ) {
-                        image.setUrl( "../servlet/GetDoc?meta_id=" + imageFileDocument.getId() );
-                        image.setWidth( 0 );
-                        image.setHeight( 0 );
-                    }
-                    goToImageEditPage( document, imageIndex, image, request, response );
-                }
-            } );
-            Query imageFileDocumentQuery = createImageFileDocumentQuery();
-            documentFinder.setRestrictingQuery(imageFileDocumentQuery) ;
-            documentFinder.forward( request, response );
+            findImageFileDocuments( document, imageIndex, image, request, response );
         } else {
             document.setImage( imageIndex, image );
             documentMapper.saveDocument( document, user );
@@ -105,6 +90,32 @@ public class ChangeImage extends HttpServlet {
                                   user.getFullName() + "]" );
             goBack( document, response );
         }
+    }
+
+    private void findImageFileDocuments( final TextDocumentDomainObject document, final int imageIndex,
+                                         final ImageDomainObject image, final HttpServletRequest request,
+                                         final HttpServletResponse response ) throws IOException, ServletException {
+        DocumentFinder documentFinder = new DocumentFinder() ;
+        documentFinder.setCancelCommand(new DocumentFinder.CancelCommand() {
+            public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+                goToImageEditPage( document, imageIndex, image, request, response );
+            }
+        }) ;
+        documentFinder.setSelectDocumentCommand(new DocumentFinder.SelectDocumentCommand() {
+            public void selectDocument( DocumentDomainObject documentFound, HttpServletRequest request,
+                                          HttpServletResponse response ) throws IOException, ServletException {
+                FileDocumentDomainObject imageFileDocument = (FileDocumentDomainObject)documentFound ;
+                if ( null != imageFileDocument ) {
+                    image.setUrl( "../servlet/GetDoc?meta_id=" + imageFileDocument.getId() );
+                    image.setWidth( 0 );
+                    image.setHeight( 0 );
+                }
+                goToImageEditPage( document, imageIndex, image, request, response );
+            }
+        } );
+        Query imageFileDocumentQuery = createImageFileDocumentQuery();
+        documentFinder.setRestrictingQuery(imageFileDocumentQuery) ;
+        documentFinder.forward( request, response );
     }
 
     private Query createImageFileDocumentQuery() {

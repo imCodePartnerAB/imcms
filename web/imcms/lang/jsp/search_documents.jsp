@@ -37,15 +37,19 @@
 #gui_outer_start()
 #gui_head( "<? templates/sv/search/search_documents.html/1 ?>" )
 
+<form method="GET" action="SearchDocuments">
+
 <table border="0" cellspacing="0" cellpadding="0">
     <tr>
         <td><input type="button" value="<? global/help ?>" title="<? global/openthehelppage ?>" class="imcmsFormBtn" onClick="openHelpW(101)"></td>
+        <% if (documentFinder.isCancelable()) { %>
+            <td><input class="imcmsFormBtn" type="submit" name="<%= SearchDocumentsPage.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/back ?>"></td>
+        <% } %>
     </tr>
 </table>
 
 #gui_mid()
 
-<form method="GET" action="SearchDocuments">
 <% if (null != HttpSessionUtils.getSessionAttributeNameFromRequest(request, DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER)) { %>
     <input type="hidden" name="<%= DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER %>" value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request, DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER) %>">
 <% } %>

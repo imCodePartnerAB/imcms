@@ -14,10 +14,11 @@ public class SearchDocuments extends HttpServlet {
 
         DocumentFinder documentFinder = DocumentFinder.getInstance( request ) ;
         SearchDocumentsPage page = SearchDocumentsPage.fromRequest( request );
-        
-        DocumentDomainObject selectedDocument = page.getSelectedDocument() ;
-        if (null != selectedDocument) {
-            documentFinder.selectDocument( selectedDocument, request, response );
+
+        if (page.isCancelButtonPressed()) {
+            documentFinder.cancel(request,response) ;
+        } else if (null != page.getSelectedDocument()) {
+            documentFinder.selectDocument( page.getSelectedDocument(), request, response );
         } else {
             documentFinder.forwardWithPage( page, request, response );
         }

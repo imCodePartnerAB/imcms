@@ -19,6 +19,7 @@ public class DocumentFinder {
     public static final String REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER = "finder";
     private SelectDocumentCommand selectDocumentCommand;
     private Query restrictingQuery;
+    private CancelCommand cancelCommand;
 
     public static DocumentFinder getInstance( HttpServletRequest request ) {
         DocumentFinder documentFinder = (DocumentFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, DocumentFinder.REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER );
@@ -72,9 +73,25 @@ public class DocumentFinder {
         return restrictingQuery;
     }
 
+    public boolean isCancelable() {
+        return null != cancelCommand;
+    }
+
+    public void cancel( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+        cancelCommand.cancel( request, response );
+    }
+
+    public void setCancelCommand( CancelCommand cancelCommand ) {
+        this.cancelCommand = cancelCommand;
+    }
+
     public interface SelectDocumentCommand {
 
         public void selectDocument( DocumentDomainObject document, HttpServletRequest request,
                                     HttpServletResponse response ) throws IOException, ServletException;
+    }
+
+    public interface CancelCommand {
+        public void cancel(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
     }
 }

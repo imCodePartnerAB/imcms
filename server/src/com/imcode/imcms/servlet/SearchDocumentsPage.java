@@ -36,6 +36,7 @@ public class SearchDocumentsPage {
     public static final String REQUEST_ATTRIBUTE__PAGE = "page";
     public static final String REQUEST_PARAMETER__SELECTED_DOCUMENT_ID = "select";
     public static final String REQUEST_PARAMETER__SEARCH_BUTTON = "search";
+    public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
 
     private static final int DEFAULT_DOCUMENTS_PER_PAGE = 10;
     private final static Logger log = Logger.getLogger( SearchDocumentsPage.class.getName() );
@@ -48,6 +49,7 @@ public class SearchDocumentsPage {
     private DocumentDomainObject selectedDocument;
     private Query query;
     private boolean searchButtonPressed;
+    private boolean cancelButtonPressed;
 
     static SearchDocumentsPage fromRequest( HttpServletRequest request ) {
         SearchDocumentsPage page = new SearchDocumentsPage();
@@ -60,6 +62,10 @@ public class SearchDocumentsPage {
         DocumentMapper documentMapper = ApplicationServer.getIMCServiceInterface().getDocumentMapper();
 
         DocumentFinder documentFinder = DocumentFinder.getInstance(request);
+
+        if ( documentFinder.isCancelable() ) {
+            cancelButtonPressed = null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON );
+        }
 
         if (documentFinder.isDocumentsSelectable()) {
             try {
@@ -189,4 +195,7 @@ public class SearchDocumentsPage {
         this.documentsPerPage = documentsPerPage;
     }
 
+    public boolean isCancelButtonPressed() {
+        return cancelButtonPressed;
+    }
 }
