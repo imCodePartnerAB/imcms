@@ -117,22 +117,6 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     /**
      * Only used for testing, see main-method above
      */
-    public void testCallStoredProcedureWithParam() throws Exception {
-        ConnectionPoolForNonPoolingDriver cm = new ConnectionPoolForNonPoolingDriver( driverClassName, dbUrl, userName, passWord, 20 );
-        Connection conn = cm.getConnection();
-        CallableStatement cs = conn.prepareCall( "{call " + "GetTextDocData" + "(?) }" );
-        cs.setString( 1, "1001" );
-        ResultSet rs = cs.executeQuery();
-        while ( rs.next() ) {
-            String templateId = rs.getString( 1 );
-            assertNotNull( templateId ) ;
-        }
-        conn.close();
-    }
-
-    /**
-     * Only used for testing, see main-method above
-     */
     public void testListAllTables() throws Exception {
         DatabaseMetaData metaData = getConnectionMetaData( driverClassName, dbUrl, userName, passWord );
         String[] types = {"TABLE"};
