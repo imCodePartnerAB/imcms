@@ -61,6 +61,13 @@ function fixHTML(inStr) {
 		
 		inStr = inStr.replace(/<br>[\n\r]<br>/gi,"<br><br>\n");
 		inStr = inStr.replace(/<br>[\n\r]{1,}<\/{1}/gi,"<br></");
+		
+		inStr = inStr.replace(/^\s+/, "") ;
+		inStr = inStr.replace(/\s+$/, "") ;
+		inStr = inStr.replace(/^(<(BR|P) \/>)+/i, "") ;
+		inStr = inStr.replace(/(<(BR|P) \/>)+$/i, "") ;
+		inStr = inStr.replace(/^<P>/i, "") ;
+		inStr = inStr.replace(/<\/P>$/i, "") ;
 	}
 	return inStr.trim() ;
 }
@@ -717,14 +724,7 @@ HTMLArea.prototype.generate = function () {
 		}
 		f.onsubmit = function() {
 			if (textarea.style.display == "none") {
-				var sEditorContent = fixHTML(editor.getHTML()) ;
-				sEditorContent = sEditorContent.replace(/^\s+/, "") ;
-				sEditorContent = sEditorContent.replace(/\s+$/, "") ;
-				sEditorContent = sEditorContent.replace(/^(<(BR|P) \/>)+/i, "") ;
-				sEditorContent = sEditorContent.replace(/(<(BR|P) \/>)+$/i, "") ;
-				sEditorContent = sEditorContent.replace(/^<P>/i, "") ;
-				sEditorContent = sEditorContent.replace(/<\/P>$/i, "") ;
-				editor._textArea.value = sEditorContent ;
+				editor._textArea.value = fixHTML(editor.getHTML()) ;
 				var a = this.__msh_prevOnSubmit;
 				// call previous submit methods if they were there.
 				if (typeof a != "undefined") {
