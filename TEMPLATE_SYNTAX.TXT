@@ -31,6 +31,8 @@ Block-tags
         Objects available:
             * $request - The javax.servlet.HttpServletRequest.
             * $response - The javax.servlet.HttpServletResponse.
+            * $document - A com.imcode.imcms.api.TextDocument
+            * $viewing - A com.imcode.imcms.api.TextDocumentViewing
 
 
 Single tags
@@ -77,9 +79,10 @@ Single tags
         Attributes:
             * no - The number of this include in the text document.
             * label - A small text describing the intended use for this include.
-            * file - The name of a file in the "/WEB-INF/includes" directory.
             * path - Include the output of another resource in the webapp, relative to the webapp root.
                      Example: "/jsp/example.jsp".
+                     A TextDocumentViewing object is available in jsps included this way,
+                     through the method TextDocumentViewing.fromRequest(request).
             * document - The id of another textdocument to include.
                 Allows for another attribute:
                 * template - The name of a template to use for the included textdocument.
@@ -89,6 +92,7 @@ Single tags
                 * sendsessionid - Send the JSESSIONID cookie to the server.
                 * sendcookies - Send all other cookies to the server.
                 * sendmetaid - Send the id of the current document in the http header "X-Meta-Id".
+            * file - The name of a file in the "/WEB-INF/includes" directory.
 
 
     <?imcms:datetime?>

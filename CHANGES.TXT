@@ -46,8 +46,7 @@ Version 2.0.0
       These don't require a http-request to localhost as url-includes do, are a magnitude more efficient,
       and don't spam the access-log. (Bug 2684)
     * Jakarta Velocity can now be used in templates, between "<?imcms:velocity?> ... <?/imcms:velocity?>" tags.
-      Right now the httpservletrequest and the httpservletresponse can be accessed,
-      with "$request" and "$response" respectively, almost just like in JSP. (Bug 2668)
+      See the file "TEMPLATE_SYNTAX.TXT" for details. (Bug 2668)
     * Attributes "pre" and "post" can now be used on "<?imcms:menu?>". (Bonus from refactorings in bug 2668.)
     * Attribute "defaulttemplate" can now be used on "<?imcms:menu?>". It should contain the name of a template
       to use for new text documents.
@@ -85,6 +84,8 @@ Version 2.0.0
         - Role - Represents a user-role. (Bug 2676)
         - SaveException - Thrown when something can't be saved.
         - AlreadyExistsException - Extends SaveException.
+        - TextDocumentViewing - Accessible in included JSPs and velocity code.
+          Represents one viewing of a text document. (Bug 2776)
     * Changed classes:
         - MaxCategoriesOfTypeExceededException - Extends SaveException
         - CategoryAlreadyExistsException - Extends AlreadyExistsException

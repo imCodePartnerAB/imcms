@@ -72,16 +72,40 @@ public class ParserParameters implements Cloneable {
         return clone ;
     }
 
-    public boolean isMenuMode() {
-        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)documentRequest.getUser().getPermissionSetFor( documentRequest.getDocument() );
-        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
-    }
-
     public void setAdminButtonsVisible( boolean adminButtonsVisible ) {
         this.adminButtonsVisible = adminButtonsVisible;
     }
 
     public boolean isAdminButtonsVisible() {
         return adminButtonsVisible;
+    }
+
+    private TextDocumentPermissionSetDomainObject getPermissionSet() {
+        return (TextDocumentPermissionSetDomainObject)documentRequest.getUser().getPermissionSetFor( documentRequest.getDocument() );
+    }
+
+    public boolean isTextMode() {
+        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
+        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
+    }
+
+    public boolean isMenuMode() {
+        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
+        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS ) != 0 && permissionSet.getEditMenus();
+    }
+
+    public boolean isImageMode() {
+        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
+        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0 && permissionSet.getEditImages();
+    }
+
+    public boolean isIncludesMode() {
+        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
+        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0 && permissionSet.getEditIncludes();
+    }
+
+    public boolean isTemplateMode() {
+        TextDocumentPermissionSetDomainObject permissionSet = getPermissionSet();
+        return ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0 && permissionSet.getEditTemplates();
     }
 }

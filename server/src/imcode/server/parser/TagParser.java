@@ -1,5 +1,6 @@
 package imcode.server.parser;
 
+import com.imcode.imcms.api.TextDocumentViewing;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.*;
 import imcode.server.document.*;
@@ -8,16 +9,13 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.*;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.*;
-import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.MethodInvocationException;
-import org.apache.velocity.exception.ResourceNotFoundException;
+import org.apache.velocity.app.VelocityEngine;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -79,24 +77,27 @@ class TagParser {
     private DocumentRequest documentRequest;
     private TextDocumentDomainObject document;
 
+    private TextDocumentViewing viewing;
+
     TagParser( TextDocumentParser textdocparser, ParserParameters parserParameters,
-                          boolean includemode, int includelevel,
-                          boolean textmode,
-                          boolean imagemode ) {
+               int includelevel,
+               TextDocumentViewing viewing ) {
         this.textDocParser = textdocparser;
         this.parserParameters = parserParameters;
         this.documentRequest = parserParameters.getDocumentRequest();
         this.document = (TextDocumentDomainObject)documentRequest.getDocument();
         this.service = documentRequest.getServerObject();
 
-        this.includeMode = includemode;
+        this.includeMode = viewing.isEditingIncludes();
         this.includeLevel = includelevel;
 
-        this.textMode = textmode;
+        this.textMode = viewing.isEditingTexts();
         this.textMap = document.getTexts();
 
-        this.imageMode = imagemode;
+        this.imageMode = viewing.isEditingImages();
         this.imageMap = getImageMap( document, imageMode, documentRequest );
+
+        this.viewing = viewing ;
 
     }
 
@@ -790,18 +791,12 @@ class TagParser {
         VelocityContext velocityContext = new VelocityContext();
         velocityContext.put( "request", parserParameters.getDocumentRequest().getHttpServletRequest() );
         velocityContext.put( "response", parserParameters.getDocumentRequest().getHttpServletResponse() );
+        velocityContext.put( "viewing", viewing ) ;
+        velocityContext.put( "document", viewing.getTextDocument() ) ;
         StringWriter stringWriter = new StringWriter();
         try {
             velocityEngine.init();
             velocityEngine.evaluate( velocityContext, stringWriter, null, content );
-        } catch ( ParseErrorException e ) {
-            throw new UnhandledException( e );
-        } catch ( MethodInvocationException e ) {
-            throw new UnhandledException( e );
-        } catch ( ResourceNotFoundException e ) {
-            throw new UnhandledException( e );
-        } catch ( IOException e ) {
-            throw new UnhandledException( e );
         } catch ( Exception e ) {
             throw new UnhandledException( e );
         }

@@ -1,7 +1,7 @@
 package imcode.server.parser;
 
+import com.imcode.imcms.api.TextDocumentViewing;
 import imcode.server.DocumentRequest;
-import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -57,29 +57,13 @@ public class TextDocumentParser {
     }
 
     public String parsePage( ParserParameters parserParameters, int includelevel ) throws IOException {
+        TextDocumentViewing viewing = new TextDocumentViewing( parserParameters );
+        TextDocumentViewing.putInRequest( viewing );
+
         DocumentRequest documentRequest = parserParameters.getDocumentRequest();
-        int flags = parserParameters.getFlags();
 
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentRequest.getDocument();
         UserDomainObject user = documentRequest.getUser();
-        DocumentMapper documentMapper = service.getDocumentMapper();
-
-        TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( document );
-
-        boolean textmode = false;
-        boolean imagemode = false;
-        boolean templatemode = false;
-        boolean includemode = false;
-
-        if ( flags > 0 ) {
-            textmode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS ) != 0 && permissionSet.getEditTexts();
-            imagemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_IMAGES ) != 0
-                        && permissionSet.getEditImages();
-            templatemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE ) != 0
-                           && permissionSet.getEditTemplates();
-            includemode = ( flags & ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_INCLUDES ) != 0
-                          && permissionSet.getEditIncludes();
-        }
 
         String template = getTemplate( document, parserParameters );
 
@@ -89,9 +73,9 @@ public class TextDocumentParser {
 
         final String imcmsMessage = service.getAdminTemplate( "textdoc/imcms_message.html", user, null );
 
-        Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, templatemode, parserParameters );
+        Properties hashTags = getHashTags( user, datetimeFormatWithSeconds, document, viewing.isEditingTemplate(), parserParameters );
         MapSubstitution hashtagsubstitution = new MapSubstitution( hashTags, true );
-        TagParser tagParser = new TagParser( this, parserParameters, includemode, includelevel, textmode, imagemode );
+        TagParser tagParser = new TagParser( this, parserParameters, includelevel, viewing );
 
         String tagsReplaced = tagParser.replaceTags(patMat, template) ;
         tagsReplaced = Util.substitute( patMat, HASHTAG_PATTERN, hashtagsubstitution, tagsReplaced, Util.SUBSTITUTE_ALL );
