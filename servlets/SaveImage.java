@@ -96,16 +96,42 @@ public class SaveImage extends HttpServlet {
 			image.setImageWidth( 0 ) ;
 		}
 		
-	// ****************************** Här börjar Mårtens lilla lekstuga
-if(keepAspectRatio && req.getParameter("ok") != null) {
-	int iHeight = Integer.parseInt(image_height); // form width
-	int iWidth = Integer.parseInt(image_width); // form height
-	log("REQUESTED SIZE " + iWidth + "/" + iHeight);
-	int oldWidth = (sql.length>0)?Integer.parseInt(sql[2]):0; // database width
-	int oldHeight = (sql.length>0)?Integer.parseInt(sql[3]):0; // database height
-	
-	int oHeight = Integer.parseInt(origHeight); // image height
-	int oWidth = Integer.parseInt(origWidth); // image width
+// ****************************** Här börjar Mårtens lilla lekstuga
+		if(keepAspectRatio && req.getParameter("ok") != null) {
+		    try {
+			int iHeight = Integer.parseInt(image_height); // form width
+		    } catch ( NumberFormatException ex ) {
+			iHeight = 0 ;
+		    }
+		    try {
+			int iWidth = Integer.parseInt(image_width); // form height
+		    } catch ( NumberFormatException ex ) {
+			iWidth = 0 ;
+		    }
+
+		    try {
+			int oldHeight = (sql.length>0)?Integer.parseInt(sql[3]):0; // database height
+		    } catch ( NumberFormatException ex ) {
+			oldHeight = 0 ;
+		    }
+		    try {
+			int oldWidth = (sql.length>0)?Integer.parseInt(sql[2]):0; // database width
+		    } catch ( NumberFormatException ex ) {
+			oldWidth = 0 ;
+		    }
+
+		    //log("REQUESTED SIZE " + iWidth + "/" + iHeight);
+		    try {
+			int oHeight = Integer.parseInt(origHeight); // image height
+		    } catch ( NumberFormatException ex ) {
+			oHeight = 0 ;
+		    }
+		    try {
+			int oWidth = Integer.parseInt(origWidth); // image width
+		    } catch ( NumberFormatException ex ) {
+			oWidth = 0 ;
+		    }
+
 	
 	double asp_rat = ((double)oWidth/(double)oHeight);
 	
@@ -156,8 +182,12 @@ if(keepAspectRatio && req.getParameter("ok") != null) {
 
 		// get imageref
 		String image_ref = req.getParameter( "imageref" ) ;
-		if ( image_ref.length() > 0 && image_ref.indexOf("/")==-1 ) {
-				image_ref = image_url+image_ref ;
+		if ( image_ref.length() > 0 ) {
+		    if (image_ref.indexOf(image_url)==0) {
+			image_ref = image_ref.substring(image_url.length()) ;
+		    } else if (image_ref.indexOf("/")!=-1) {
+			image_ref = image_ref.substring(image_ref.lastIndexOf("/")) ;
+		    }
 		}
 		image.setImageRef( image_ref ) ;
 
@@ -237,17 +267,16 @@ if(keepAspectRatio && req.getParameter("ok") != null) {
 					String imagePath = Utility.getDomainPref( "image_path",host );
 		//****************************************************************
 			// Delete relative path if there...
-			String imageName = (image_ref.lastIndexOf("/") != -1)?image_ref.substring(image_ref.lastIndexOf("/") +1):image_ref;	
-			ImageIcon icon = new ImageIcon(imagePath + imageName);
-			int width = icon.getIconWidth();
-			int height = icon.getIconHeight();
+					//String imageName = (image_ref.lastIndexOf("/") != -1)?image_ref.substring(image_ref.lastIndexOf("/") +1):image_ref;	
+			//ImageIcon icon = new ImageIcon(imagePath + imageName);
+			int width = 0 ;//icon.getIconWidth();
+			int height = 0 ; //icon.getIconHeight();
 		//****************************************************************
 			Vector vec = new Vector () ;
 			vec.add("#imgName#") ;
 			vec.add(image_name) ;
 			vec.add("#imgRef#") ;
-			vec.add(Utility.getDomainPref( "image_url",host ) + image_ref) ;
-			log("SaveImage: image_ref");
+			vec.add(image_url+image_ref) ;
 			vec.add("#imgWidth#") ;
 			vec.add(image_width) ;
 			vec.add("#imgHeight#") ;
