@@ -56,7 +56,7 @@
         *##if( $documentPermissionSet.getEditDocumentInformation() )<a href="AdminDoc?meta_id=$document.Id&flags=1" id="admHrefDokinfo"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/dokinfo.gif" alt="<? templates/sv/adminbuttons/adminbutton_1.html/2001 ?>" id="admBtnDokinfo" border="0"></a>#end#*
         *##if( $documentPermissionSet.getEditPermissions() )<a href="AdminDoc?meta_id=$document.Id&flags=4" id="admHrefRattigheter"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/rattigheter.gif" alt="<? templates/sv/adminbuttons/adminbutton_4.html/2001 ?>" id="admBtnRattigheter" border="0"></a>#end#*
         *#<a href="LogOut" id="admHrefLoggaut"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/loggaut.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2002 ?>" id="admBtnLoggaut" border="0"></a>#*
-        *##if ( $user.isSuperAdmin() )<a href="AdminManager" target="_blank" id="admHrefAdmin"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/admin.gif" alt="<? templates/sv/adminbuttons/superadminbutton.html/2001 ?>" id="admBtnAdmin" border="0"></a>#end#*
+        *##if ( $user.isSuperAdmin() || $user.isUserAdmin() )<a href="AdminManager" target="_blank" id="admHrefAdmin"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/admin.gif" alt="<? templates/sv/adminbuttons/superadminbutton.html/2001 ?>" id="admBtnAdmin" border="0"></a>#end#*
         *#<a href="javascript:void(0)" onClick="openHelpW(1);return(false)" target="_blank"  id="admHrefHelp"><img src="$contextPath/imcms/$language/images/admin/adminbuttons/help.gif" alt="<? templates/sv/adminbuttons/adminbuttons.html/2003 ?>" id="admBtnHelp" border="0"></a>
 	</td>
 </tr>
