@@ -16,20 +16,20 @@ public class TestLanguagePropertyFilesInSync extends TestCase {
 
     public void testTemplatesLanguagePropertyFiles() throws IOException {
         String dir = "templates";
-        compareLanguagePropertyFiles( dir, "en", "sv" );
-        compareLanguagePropertyFiles( dir, "sv", "en" );
+        compareLanguagePropertyFiles( dir, "eng", "swe" );
+        compareLanguagePropertyFiles( dir, "swe", "eng" );
     }
 
     public void testHtdocsLanguagePropertyFiles() throws IOException {
         String dir = "install/htdocs";
-        compareLanguagePropertyFiles( dir, "en", "sv" );
-        compareLanguagePropertyFiles( dir, "sv", "en" );
+        compareLanguagePropertyFiles( dir, "eng", "swe" );
+        compareLanguagePropertyFiles( dir, "swe", "eng" );
     }
 
     public void testSqlLanguagePropertyFiles() throws IOException {
         String dir = "sql";
-        compareLanguagePropertyFiles( dir, "en", "sv" );
-        compareLanguagePropertyFiles( dir, "sv", "en" );
+        compareLanguagePropertyFiles( dir, "eng", "swe" );
+        compareLanguagePropertyFiles( dir, "swe", "eng" );
     }
 
     private void compareLanguagePropertyFiles( String dir, String lang1, String lang2 ) throws IOException {

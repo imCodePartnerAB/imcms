@@ -14,7 +14,7 @@ public class TestForMissingLanguageProperties extends TestCase {
 
     private final static String START_TOKEN = "<? ";
     private final static String END_TOKEN = " ?>";
-    private String[] propertyFilenames = { "imcms_sv.properties", "imcms_en.properties" } ;
+    private String[] propertyFilenames = { "imcms_swe.properties", "imcms_eng.properties" } ;
 
     public void testHtdocs() throws IOException {
         File dir = new File( "install/htdocs" );
