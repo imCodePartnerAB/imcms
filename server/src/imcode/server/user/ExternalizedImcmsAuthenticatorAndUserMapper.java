@@ -14,11 +14,9 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
       this.externalAuthenticator = externalAuthenticator;
       this.externalUserMapper = externalUserMapper;
       this.defaultLanguage = defaultLanguage;
-
-      synchRolesWithExternal();
    }
 
-   private void synchRolesWithExternal() {
+   public void synchRolesWithExternal() {
       String[] externalRoleNames = externalUserMapper.getAllRoleNames();
       imcmsAuthenticatorAndUserMapper.addRoleNames( externalRoleNames );
    }
@@ -49,9 +47,9 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
          deactivateExternalUserInImcms( loginName, imcmsUser );
          result = null;
       } else if( !imcmsUserIsInternal && externalUserExists && !imcmsUserExists ) {
-         result = addExternalUserToImcms( loginName, externalUser );
+         result = synchExternalUserInImcms( loginName, externalUser, imcmsUserExists );
       } else if( !imcmsUserIsInternal && externalUserExists && imcmsUserExists ) {
-         result = updateExternalUserInImcms( loginName, externalUser );
+         result = synchExternalUserInImcms( loginName, externalUser, imcmsUserExists );
       } else if( imcmsUserIsInternal && !externalUserExists && !imcmsUserExists ) {
          throw new InternalError( "Impossible condition. 'Internal' user doesn't exist in imcms." );
       } else if( imcmsUserIsInternal && !externalUserExists && imcmsUserExists ) {
@@ -72,26 +70,32 @@ public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, 
       return externalUser;
    }
 
-   private User updateExternalUserInImcms( String loginName, User externalUser ) {
-      // TODO: Update the role-assignments for the user and make sure all roles exist
+   private User synchExternalUserInImcms( String loginName, User externalUser, boolean imcmsUserExists ) {
       externalUser.setImcmsExternal( true );
-      imcmsAuthenticatorAndUserMapper.updateUser( loginName, externalUser );
-      User updatedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
-      return updatedUser;
+
+      if( imcmsUserExists ) {
+         imcmsAuthenticatorAndUserMapper.updateUser( loginName, externalUser );
+      } else {
+         imcmsAuthenticatorAndUserMapper.addUser( externalUser );
+      }
+
+      User synchedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
+      updateRoleAssignments( synchedUser );
+      return synchedUser ;
+   }
+
+
+   private void updateRoleAssignments( User user ) {
+      String[] roleNames = externalUserMapper.getRoleNames( user );
+      for( int i = 0; i < roleNames.length; i++ ) {
+         String roleName = roleNames[i];
+         imcmsAuthenticatorAndUserMapper.assignRoleToUser( user, roleName );
+      }
    }
 
    private void deactivateExternalUserInImcms( String loginName, User imcmsUser ) {
       imcmsUser.setActive( false );
       imcmsAuthenticatorAndUserMapper.updateUser( loginName, imcmsUser );
-   }
-
-   private User addExternalUserToImcms( String loginName, User externalUser ) {
-      // TODO: Add roles for the user and assign them to the user
-
-      externalUser.setImcmsExternal( true );
-      imcmsAuthenticatorAndUserMapper.addUser( externalUser );
-      User addedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
-      return addedUser;
    }
 
    public User getUser( int id ) {

@@ -50,6 +50,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    public void testLdapOnlyExisting() {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, new String[]{} );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ADDUSERROLE, null );
 
       User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
@@ -61,6 +62,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ADDUSERROLE, null );
 
       User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
 
@@ -72,6 +74,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_HASBRA );
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ADDUSERROLE, null );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERROLES, new String[]{ImcmsAuthenticatorAndUserMapper.ALWAYS_EXISTING_USERS_ROLE} );
 
       User user = externalizedImcmsAndUserMapper.getUser( LOGIN_NAME_HASBRA );
@@ -82,9 +85,10 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
       mockImcmsService.verify();
    }
 
-   public void testAddRoleFromOtherIntoImcms() {
+   public void testAddRoleFromExternalIntoImcms() {
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_ROLEFINDNAME, new String[]{"-1"} );
       mockImcmsService.addExpectedSQLUpdateProcedureCall( SPROC_ROLEADDNEW );
-      externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, new SmbAuthenticator(), ldapUserMapper, "se" );
+      externalizedImcmsAndUserMapper.synchRolesWithExternal();
       mockImcmsService.verify();
    }
 

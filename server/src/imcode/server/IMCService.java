@@ -132,6 +132,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       log.info( "SessionCounterDate: " + m_SessionCounterDate );
 
       textDocParser = new TextDocumentParser( this, m_conPool, m_TemplateHome, m_IncludePath, m_ImageUrl, m_ServletUrl );
+
+      initAuthenticatorAndUserMapper();
    }
 
    public int getSessionCounter() {
@@ -151,12 +153,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
    public User verifyUser( String login, String password ) {
       User result = null;
 
-      try {
-         initAuthenticatorAndUserMapper();
-      } catch( LdapUserMapper.LdapInitException e ) {
-         log.error( "temporärt meddelande", e );
-      }
-
       boolean userAuthenticates = imcmsAndLdapAuthAndMapper.authenticate( login, password );
       User user = imcmsAndLdapAuthAndMapper.getUser( login );
       if( userAuthenticates ) {
@@ -173,15 +169,21 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       return result;
    }
 
-   private void initAuthenticatorAndUserMapper() throws LdapUserMapper.LdapInitException {
+   private void initAuthenticatorAndUserMapper() {
       String ldapServerURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
       String ldapAuthenticationType = "simple";
       String ldapUserName = "imcode\\hasbra";
       String ldapPassword = "hasbra";
 
-      LdapUserMapper ldapUserMapper = new LdapUserMapper( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword, new String[0] );
+      LdapUserMapper ldapUserMapper = null;
+      try {
+         ldapUserMapper = new LdapUserMapper( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword, new String[0] );
+      } catch( LdapUserMapper.LdapInitException e ) {
+         log.error( "Failed to initialize external ldap system", e );
+      }
 
       imcmsAndLdapAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( new ImcmsAuthenticatorAndUserMapper( this, log ), new SmbAuthenticator(), ldapUserMapper, this.getLanguage() );
+      imcmsAndLdapAuthAndMapper.synchRolesWithExternal();
    }
 
    public User getUserById( int id ) {
@@ -1172,14 +1174,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     Send a procedure to the database and return a string.
     **/
    public String sqlProcedureStr( String procedure, String[] params, boolean trim ) {
-      if( params.length > 0 ) {
-         StringBuffer procedureBuffer = new StringBuffer( procedure );
-         procedureBuffer.append( " ?" );
-         for( int i = 1; i < params.length; ++i ) {
-            procedureBuffer.append( ",?" );
-         }
-         procedure = procedureBuffer.toString();
-      }
+
       DBConnect dbc = new DBConnect( m_conPool );
       dbc.setTrim( trim );
       dbc.getConnection();

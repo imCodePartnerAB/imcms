@@ -20,7 +20,9 @@ abstract class UserBaseTestCase extends TestCase {
    protected static final String SPROC_GETALLROLES = "GetAllRoles";
    protected static final String SPROC_GETUSERROLES = "GetUserRoles";
    protected static final String SPROC_ROLEADDNEW = "RoleAddNew";
-//   protected static final String SPROC_ROLEFINDNAME = "RoleFindName";
+   protected static final String SPROC_ROLEFINDNAME = "RoleFindName";
+   protected static final String SPROC_ADDUSERROLE = "AddUserRole";
+
 
    public UserBaseTestCase() {
       super( "UserBaseTestCase" );

@@ -153,11 +153,11 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
    }
 
    public synchronized void addRole( String roleName ) {
-/*      String[] userId = service.sqlProcedure("RoleFindName", new String[] {roleName}) ;
+      String[] userId = service.sqlProcedure("RoleFindName", new String[] {roleName}) ;
       boolean roleExists = -1 != Integer.parseInt(userId[0]) ;
-      if (!roleExists) {*/
+      if (!roleExists) {
          service.sqlUpdateProcedure( "RoleAddNew", new String[]{roleName} );
-      //}
+      }
    }
 
    public void addRoleNames( String[] externalRoleNames ) {
@@ -165,5 +165,11 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
          String externalRoleName = externalRoleNames[i];
          this.addRole( externalRoleName );
       }
+   }
+
+   public void assignRoleToUser( User user, String roleName ) {
+      String userIdStr = String.valueOf(user.getUserId()) ;
+      String rolesIdStr = service.sqlProcedureStr("GetRoleIdByRoleName", new String[]{roleName});
+      service.sqlUpdateProcedure( "AddUserRole", new String[]{ userIdStr, rolesIdStr } ) ;
    }
 }
