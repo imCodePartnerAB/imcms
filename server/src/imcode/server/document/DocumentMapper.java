@@ -281,7 +281,7 @@ public class DocumentMapper {
     }
 
     public CategoryDomainObject getCategoryById(int categoryId) {
-        String sqlQuery = "SELECT categories.name, categories.description, category.image, category_types.category_type_id, category_types.name, category_types.max_choices\n"
+        String sqlQuery = "SELECT categories.name, categories.description, categories.image, category_types.category_type_id, category_types.name, category_types.max_choices\n"
                 + "FROM categories\n"
                 + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
                 + "WHERE categories.category_id = ?";
