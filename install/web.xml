@@ -45,7 +45,7 @@
 
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.conference.AdminConference</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.conference.Conference.AdminConference</servlet-class>
+        <servlet-class>com.imcode.imcms.servlet.conference.AdminConference</servlet-class>
     </servlet>
 
     <servlet>
