@@ -120,6 +120,7 @@ public class GetDoc extends HttpServlet {
 
 	int doc_type ;
 	DocumentRequest documentRequest ;
+	Revisits revisits ;
 	String referrer = req.getHeader("Referer") ; // Note, intended misspelling of "Referrer", according to the HTTP spec.
 	Document referringDocument = null ;
 	Perl5Util perlrx = new Perl5Util() ;
@@ -133,6 +134,34 @@ public class GetDoc extends HttpServlet {
  	}
 	try {
 	    documentRequest = new DocumentRequest(imcref,req.getRemoteAddr(),session.getId(), user,meta_id,referringDocument) ;
+		revisits = new Revisits() ;
+
+		Cookie[] cookies = req.getCookies() ;
+
+		// Find cookies and put in hash.
+		Hashtable cookieHash = new Hashtable() ;
+
+		for (int i = 0; cookies != null && i < cookies.length; ++i) {
+			Cookie currentCookie=cookies[i] ;
+			cookieHash.put(currentCookie.getName(), currentCookie.getValue()) ;
+		}
+
+		if (cookieHash.get("imVisits")==null)
+		{
+			Date now = new Date() ;
+			long lNow = now.getTime() ;
+			String sNow = "" + lNow ;
+			Cookie resCookie = new Cookie("imVisits", session.getId() + sNow) ;
+			resCookie.setMaxAge(31500000) ;
+			resCookie.setPath("/") ;
+			res.addCookie(resCookie) ;
+			revisits.setRevisitsId(session.getId()) ;
+			revisits.setRevisitsDate(sNow) ;
+		}else{
+			revisits.setRevisitsId(cookieHash.get("imVisits").toString()) ;
+		}
+		documentRequest.setRevisits(revisits) ;
+
 	    doc_type = documentRequest.getDocument().getDocumentType() ;
 	} catch (IndexOutOfBoundsException ex) {
 	    return imcref.parseDoc( null,"no_page.html",user.getLangPrefix() ) ;

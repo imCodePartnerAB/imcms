@@ -21,16 +21,23 @@ public class FakeRequestRenderer implements ObjectRenderer {
 
 	Document document = docReq.getDocument() ;
 	Document referrer = docReq.getReferrer() ;
+	Revisits revisits ;
 
 	StringBuffer result = new StringBuffer(docReq.getRemoteAddr()) ;
 	result.append(' ').append(docReq.getUser().getUserId()) ;
 
-	result.append(' ').append(docReq.getSessionId()) ;
+	result.append(" sessionID=").append(docReq.getSessionId()) ;
+	revisits = docReq.getRevisits() ;
 
+	result.append(";imVisits=").append(revisits.getRevisitsId()) ;
+	if (null != revisits.getRevisitsDate()) {
+		result.append(revisits.getRevisitsDate()) ;
+	}
 	result.append(' ').append(renderDocument(document)) ;
 	if (null != referrer) {
 	    result.append(' ').append(renderDocument(referrer)) ;
 	}
+
 	return result.toString() ;
     }
 

@@ -15,6 +15,7 @@ public class DocumentRequest {
     private Document referrer ;
 
     private IMCServiceInterface serverObject ;
+	private  Revisits            revisits ;
 
     public DocumentRequest(IMCServiceInterface serverObject, String remoteAddr, String sessionId, User user, int metaId, Document referrer) {
 	this.serverObject = serverObject ;
@@ -27,6 +28,14 @@ public class DocumentRequest {
 
     public IMCServiceInterface getServerObject() {
 	return this.serverObject ;
+    }
+    
+	public void setRevisits(Revisits revisits) {
+	this.revisits= revisits;
+    }
+	
+	public Revisits getRevisits() {
+	return this.revisits ;
     }
 
     public String getRemoteAddr() {
@@ -48,5 +57,4 @@ public class DocumentRequest {
     public Document getReferrer() {
 	return referrer ;
     }
-
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" [<!ENTITY data SYSTEM "abc">]>
 
 
 <!-- Start log4j configuration -->
