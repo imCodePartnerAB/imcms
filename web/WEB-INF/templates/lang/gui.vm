@@ -215,3 +215,22 @@
 <span class="imcmsAdmHeading">$heading</span><br>
 #gui_hr( 'blue' )
 #end
+
+#macro( gui_start_of_page $titleAndHeading $backServlet $action )
+<html>
+<head>
+<title>$titleAndHeading</title>
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
+</head>
+<body>
+#gui_outer_start()
+#gui_head( "$titleAndHeading" )
+#gui_head_help_and_back_buttons( 35  "$backServlet" "" "$action" )
+#gui_mid()
+#end
+
+#macro( gui_end_of_page )
+#gui_bottom()
+#gui_outer_end()
+#end
