@@ -15,6 +15,7 @@ import java.net.*;
  *
  * Html template in use:
  * BillBoard_Add.htm
+ * BillBoard_Add_Reply.htm
  *
  * Html parstags in use:
  * #ADD_TYPE#
@@ -324,20 +325,14 @@ public class BillBoardAdd extends BillBoard
 			String addTypeHeader = "" ;
 			if(params.getProperty("ADD_TYPE").equalsIgnoreCase("REPLY"))
 			{
-				//BillBoardError err = new BillBoardError() ;
-				//addTypeHeader = err.getErrorMessage(req, 72) ;
-				//OBS HÅRD KODAR MÅSTE ÄNDRAS
-				addTypeHeader = "SKICKA SVAR";
+				HTML_TEMPLATE = "BillBoard_Add_Reply.htm" ;
+				
 			}
 			else
 			{
-				//BillBoardError err = new BillBoardError() ;
-				//addTypeHeader = err.getErrorMessage(req, 73) ;
-				//OBS HÅRD KODAR MÅSTE ÄNDRAS
-				addTypeHeader = "SKAPA NYTT ANSLAG";
+				
+				HTML_TEMPLATE = "BillBoard_Add.htm" ;
 			}
-
-			vm.addProperty("ADD_TYPE_HEADER", addTypeHeader) ;
 
 			
 			this.sendHtml(req,res,vm, HTML_TEMPLATE) ;
