@@ -3,7 +3,6 @@ package imcode.server.parser;
 import imcode.readrunner.ReadrunnerFilter;
 import imcode.server.DocumentRequest;
 import imcode.server.IMCConstants;
-import imcode.server.IMCService;
 import imcode.server.IMCServiceInterface;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentMapper;
@@ -138,10 +137,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 String[] vectT = serverObject.sqlProcedure( "GetTemplateId", new String[]{template_name} );
                 if ( vectT.length > 0 ) {
                     try {
-                        int temp_template = Integer.parseInt( (String)vectT[0] );
+                        int temp_template = Integer.parseInt( vectT[0] );
                         if ( temp_template > 0 ) {
                             documentTemplateId = temp_template;
-                            documentRequest.getDocument().setTemplate( TemplateMapper.getTemplate( (IMCService)serverObject, documentTemplateId ) );
+                            documentRequest.getDocument().setTemplate( TemplateMapper.getTemplate( serverObject, documentTemplateId ) );
                         }
                     } catch ( NumberFormatException nfe ) {
                         //do nothing, we keep the original template
@@ -295,7 +294,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 menuItem.setSortKey( Integer.parseInt( (String)childIt.next() ) );      // What order the internalDocument is sorted in in the menu, using sort-order 2 (manual sort)
                 menuItem.setTreeSortKey( (String)childIt.next() );
                 menuItem.setDocumentType( Integer.parseInt( (String)childIt.next() ) ); // The doctype of the child.
-                menuItem.setArchivedFlag( !"0".equals( (String)childIt.next() ) );          // Child is considered archived?
+                menuItem.setArchivedFlag( !"0".equals( childIt.next() ) );          // Child is considered archived?
                 menuItem.setTarget( (String)childIt.next() );                         // The target for this internalDocument.
                 try {
                     menuItem.setCreatedDatetime( DATETIMEFORMAT.parse( (String)childIt.next() ) ); // The datetime the child was created.
@@ -319,7 +318,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 } catch ( NullPointerException ignored ) {
                 } catch ( ParseException ignored ) {
                 }
-                menuItem.setEditable( "0".equals( (String)childIt.next() ) );           // if the user may admin it.
+                menuItem.setEditable( "0".equals( childIt.next() ) );           // if the user may admin it.
                 menuItem.setFilename( (String)childIt.next() );                       // The filename, if it is a file-doc.
 
                 if ( ( !menuItem.isActive() || menuItem.isArchived() ) && !menumode ) { // if not menumode, and internalDocument is inactive or archived, don't include it.
@@ -349,6 +348,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#session_counter_date#", serverObject.getSessionCounterDate() );
             tags.setProperty( "#lastDate#", DATETIMEFORMAT.format( myDoc.getModifiedDatetime() ) );
             tags.setProperty( "#metaHeadline#", myDoc.getHeadline() );
+            tags.setProperty( "#metaText#", myDoc.getText() );
 
             String meta_image = myDoc.getImage();
             if ( !"".equals( meta_image ) ) {
