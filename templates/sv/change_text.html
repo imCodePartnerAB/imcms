@@ -1,6 +1,13 @@
 <HTML>
 <HEAD>
 <TITLE>Redigera text</TITLE>
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+}
+//-->
+</SCRIPT>
 </HEAD>
 <BODY bgcolor="#FFFFFF">
   <FORM METHOD="POST" ACTION="SaveText">
@@ -51,7 +58,7 @@
 			<INPUT TYPE="SUBMIT" VALUE="  OK  " NAME="ok">
 		    </td>
 		    <td>
-			<INPUT TYPE="SUBMIT" VALUE="Avbryt" NAME="cancel">
+			<INPUT TYPE="SUBMIT" VALUE="Avbryt" NAME="cancel">&nbsp;<a href="GetDoc?meta_id=36" target="_blank" onClick="openHelp('36'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 		    </td>
 		</tr>
 	    </table>
@@ -67,17 +74,12 @@
     <INPUT TYPE="HIDDEN" NAME="meta_id" VALUE="#meta_id#">
     <INPUT TYPE="HIDDEN" NAME="txt_no" VALUE="#txt_no#">
 </FORM>
-<SCRIPT language='JavaScript'>
-<!--
-function openHelp(id){
-	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
-}
-//-->
-</SCRIPT>
+
 <!-- Focuses on textfield if browser supports javascript -->
 <script language="JavaScript">
 <!--
 document.forms[0].text.focus();
 //-->
 </script>
-</BODY></HTML>
+</BODY>
+</HTML>
