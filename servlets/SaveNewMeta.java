@@ -95,12 +95,13 @@ public class SaveNewMeta extends HttpServlet {
         String activated_date = req.getParameter( "activated_date" );
         String activated_time = req.getParameter( "activated_time" );
         String activated_datetime;
+
         if( activated_date != null && activated_time != null ) {
-            activated_datetime = activated_date + ' ' + activated_time;
+            activated_datetime = activated_date + ' ' + ("".equals(activated_time) ? "00:00" : activated_time);
             try {
                 DateHelper.DATE_TIME_FORMAT_IN_DATABASE.parse( activated_datetime );
             } catch( ParseException ex ) {
-                activated_datetime = null;
+                activated_datetime = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime );
             }
         } else {
             activated_datetime = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( nowDateTime );
@@ -110,7 +111,7 @@ public class SaveNewMeta extends HttpServlet {
         String archived_time = req.getParameter( "archived_time" );
         String archived_datetime = null;
         if( archived_date != null && archived_time != null ) {
-            archived_datetime = archived_date + ' ' + archived_time;
+            archived_datetime = archived_date + ' ' + ("".equals(archived_time) ? "00:00" : archived_time);
             try {
                 DateHelper.DATE_TIME_FORMAT_IN_DATABASE.parse( archived_datetime );
             } catch( ParseException ex ) {
