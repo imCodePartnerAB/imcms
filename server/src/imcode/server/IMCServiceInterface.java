@@ -281,7 +281,11 @@ public interface IMCServiceInterface {
 	// checkDocAdminRights
 	public boolean checkDocAdminRights(int meta_id, User user)
 	 ;
-
+	
+	//get greatest permission_set
+	public int getUserHighestPermissionSet (int meta_id, int user_id)
+	 ;
+	
 	// save template to disk
 	public  int saveTemplate(String name,String file_name,byte[] data,boolean overwrite,String lang_prefix)
 	 ;
