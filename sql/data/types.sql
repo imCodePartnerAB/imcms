@@ -40,7 +40,8 @@ INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(131072,2,'se','Ändra bild')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(262144,2,'se','Ändra meny')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(524288,2,'se','Ändra utseende')
-
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'se','Ändra include')
+																											 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,2,'uk','Edit texts')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,5,'uk','Edit')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(65536,6,'uk','Edit')
@@ -51,6 +52,7 @@ INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) 
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(131072,2,'uk','Edit pictures')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(262144,2,'uk','Edit menus')
 INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(524288,2,'uk','Change template')
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'uk','Change include')
 
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(1,'se','Ändra rubrik')
 INSERT INTO permissions (permission_id, lang_prefix, description) VALUES(2,'se','Ändra dokinfo')

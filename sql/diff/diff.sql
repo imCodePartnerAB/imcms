@@ -38,5 +38,8 @@ alter table text_docs
 add default_template_2 INT DEFAULT -1 NOT NULL
 
 
--- 2001/09/26 12:19:50
 -- 2001-09-26
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'se','Ändra include')
+INSERT INTO doc_permissions (permission_id, doc_type, lang_prefix, description) VALUES(1048576,2,'uk','Change include')
+
+-- 2001-09-28 
