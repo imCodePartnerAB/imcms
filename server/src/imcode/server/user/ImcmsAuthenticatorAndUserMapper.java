@@ -191,6 +191,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
       roleNamesSet.add(RoleConstants.USERS) ;
 
       String[] roleNames = (String[])roleNamesSet.toArray(new String[roleNamesSet.size()]);
+      Arrays.sort(roleNames);
+
       return roleNames;
    }
 
