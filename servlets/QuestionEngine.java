@@ -31,26 +31,23 @@ public class QuestionEngine extends HttpServlet
 		
 		//get parameters
 		String inFile = req.getParameter("file");
-
-		File statisticsFile = new File(fortune_path , inFile + "statistics.txt");
+		
+		File statisticsFile = new File(fortune_path , inFile + "enkatstatistics.txt");
 		statisticsFile.createNewFile();
 		
 		String question="Ingen text kan visas";
 		
 		//check if files exists
-		File currentFile = new File(fortune_path , inFile + "current.txt");
+		File currentFile = new File(fortune_path , inFile + "enkatcurrent.txt");
 		if (currentFile.createNewFile())
 		{
-			//out.println("currentFile.createNewFile()");
 			//om filen inte fanns, skapa den och skriv in aktuell text
-			question =this.getNewQuestion(host,imcServer,inFile);
+			question = this.getNewQuestion(host,imcServer,inFile);
 		}
 		else
 		{
-			//out.println("!currentFile.createNewFile()");
 			//gets the filecontent 
-			String resFile = IMCServiceRMI.getFortune(imcServer,inFile + "current.txt");
-			//out.println("resFile: " + resFile );
+			String resFile = IMCServiceRMI.getFortune(imcServer,inFile + "enkatcurrent.txt");
 			
 			StringTokenizer tokens = new StringTokenizer(resFile,"#");
 		
@@ -70,15 +67,19 @@ public class QuestionEngine extends HttpServlet
 		
 				if( ( date1.before(date) || (dateF.format(date1)).equals(dateF.format(date))  ) && ( date2.after(date) || (dateF.format(date2)).equals(dateF.format(date)) ) )
 				{
-					//out.println("date correct " );
 					question = tokens.nextToken();
 				}
 				else
 				{
-					//out.println("date not correct " );
 					//save old question
-					this.saveOldQuestion(host,imcServer,inFile);
-					//out.println("after question " );
+					String svarFile = IMCServiceRMI.getFortune(imcServer,inFile + "enkatcurrent.txt");
+	
+		String file = new String(fortune_path + "\\" + inFile + "enkatstatistics.txt");
+		BufferedWriter fileW = new BufferedWriter( new FileWriter(file,true) );
+		fileW.newLine();
+		fileW.write(svarFile);
+		fileW.flush();
+		fileW.close();
 					
 					//get new question
 					question = this.getNewQuestion(host,imcServer,inFile);
@@ -120,26 +121,12 @@ public class QuestionEngine extends HttpServlet
 		return ;
 	}	
 
-	public void saveOldQuestion(String host, String imcServer,String inFile)
-	throws ServletException, IOException
-	{
-		String svarFile = IMCServiceRMI.getFortune(imcServer,inFile + "current.txt");
-		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
-		String file = new String(fortune_path + inFile + "statistics.txt");
-		BufferedWriter fileW = new BufferedWriter( new FileWriter(file,true) );
-		fileW.newLine();
-		fileW.write(svarFile);
-		fileW.flush();
-		fileW.close();
-		
-	}
-
 
 	public String getNewQuestion(String host, String imcServer,String inFile)
 	throws ServletException, IOException
 	{
 	
-		BufferedReader readFile = new BufferedReader( new StringReader( IMCServiceRMI.getFortune(imcServer,inFile + ".txt") ) );
+		BufferedReader readFile = new BufferedReader( new StringReader( IMCServiceRMI.getFortune(imcServer,inFile + "enkat.txt") ) );
 		SimpleDateFormat dateF = new SimpleDateFormat("yyMMdd");
 	
 		//the dates
@@ -172,7 +159,7 @@ public class QuestionEngine extends HttpServlet
 		}
 		//update svarfilen
 		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
-		File file = new File(fortune_path,inFile + "current.txt");
+		File file = new File(fortune_path,inFile + "enkatcurrent.txt");
 		BufferedWriter fileW = new BufferedWriter( new FileWriter(file) );
 		fileW.write(dateF.format(date1) + "#" + dateF.format(date2) +"#" + theQuestion + "#" +"ja: 0" + "#" + "nej: 0" + "#"); 
 		fileW.flush();
