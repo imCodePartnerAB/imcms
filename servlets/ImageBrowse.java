@@ -87,7 +87,7 @@ public class ImageBrowse extends HttpServlet {
 		}
 		else
 		{
-			img_tag = "<img src='"+image_url+img_preset+"'>" ;
+			img_tag = "<img src='"+image_url+img_preset+"' align=\"top\">" ;
 		}
 		
 		String canon_path = file_path.getCanonicalPath() ;
@@ -101,7 +101,7 @@ public class ImageBrowse extends HttpServlet {
 	//	}
 		List imgList = GetImages.getImageFiles(file_path, true, true);
 		StringBuffer options = new StringBuffer(imgList.size()*64) ;
-//##################start		
+		
 		
 		String adminImgPath = user.getLangPrefix()+"/admin/";
 		
@@ -163,9 +163,6 @@ public class ImageBrowse extends HttpServlet {
 			nextButton = nextButtonHtmlObj.createHtmlString( nextButtonVm, req );
 		} 
 		
-		//ok lets get a listIterator that starts at the first image to show
-	//	Iterator it=imgList.Iterator();
-//####################stop
 			
 		
 		
