@@ -40,16 +40,6 @@
     <title>CVS</title>
 
     <para>
-      <footnote id="userfriendly">
-	<para>
-	  Notera att <quote>användar-vänlighet</quote> är
-	  något som är mycket subjektivt.
-  	  Många människor anser att ett massa färgade rutor med val som man kan klicka på är användar-vänliga.
-	  Det finns de som anser att dylika gränssnitt bara är i vägen,
-	  och anser att gränssnitt med högre signal/brus-kvot är användar-vänliga.
-	  Här menas den tidigare betydelsen, men författaren föredrar den senare.
-	</para>
-      </footnote>
     </para>
 
     <sect2>
@@ -141,7 +131,17 @@
       </para>
       <para>
 	Det finns ett antal
-	användar-vänliga<footnoteref linkend="userfriendly">
+	användar-vänliga
+	<footnote id="userfriendly">
+	  <para>
+	    Notera att <quote>användar-vänlighet</quote> är
+	    något som är mycket subjektivt.
+  	    Många människor anser att ett massa färgade rutor med val som man kan klicka på är användar-vänliga.
+	    Det finns de som anser att dylika gränssnitt bara är i vägen,
+	    och anser att gränssnitt med högre signal/brus-kvot är användar-vänliga.
+	    Här menas den tidigare betydelsen, men författaren föredrar den senare.
+	  </para>
+        </footnote>
 	CVS-klienter som ger en fin vy över filerna i CVSen,
 	och menyer fulla av val.
 	Några av dessa går att finna på
@@ -302,7 +302,7 @@
 	    <screen>
 	      <prompt>C:\> </prompt><command>d:</command>
               <prompt>D:\> </prompt><command>cd \projekt</command>
-	      <prompt>D:\projekt> </prompt>
+	      <prompt>D:\projekt&gt; </prompt>
 	    </screen>
 	  </para>
         </example>
@@ -311,7 +311,7 @@
       <para>
         När du bestämt dig för var filerna ska ligga skriver du:
 	<synopsis>
-	  <prompt>D:\projekt> </prompt><command>cvs checkout <replaceable>projekt</replaceable></command>
+	  <prompt>D:\projekt&gt; </prompt><command>cvs checkout <replaceable>projekt</replaceable></command>
 	</synopsis>
 	Där <replaceable>projekt</replaceable> är det projekt du vill checka ut från CVS-servern.
 	<footnote id="cvsprojekt">
@@ -325,7 +325,7 @@
 	  <title>cvs checkout</title>
 	  <para>
 	    <screen>
-	      <prompt>D:\projekt> </prompt><command>cvs checkout imCMS</command>
+	      <prompt>D:\projekt&gt; </prompt><command>cvs checkout imCMS</command>
 	    </screen>
 	  </para>
         </example>
@@ -417,7 +417,7 @@
 		 med så kallade <quote>conflict markers</quote>:
 		 <quote>&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</quote>
 		 <quote>========</quote>
-		 <quote>>>>>>></quote>.
+		 <quote>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</quote>.
 		 Detta måste åtgärdas innan du kan checka in den här filen.
             </seg>
 	  </seglistitem>
