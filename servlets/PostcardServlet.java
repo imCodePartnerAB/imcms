@@ -59,7 +59,7 @@ public class PostcardServlet extends HttpServlet {
 		}
 	
 		//här ska vi ladda första sidan av sidan skicka citat köret
-		System.out.println("doGet");
+		//System.out.println("doGet");
 		HttpSession session = req.getSession(true);
 		
 		//lets get the params we need later on
@@ -69,6 +69,8 @@ public class PostcardServlet extends HttpServlet {
 		String[] pCStuff = {qText,qRow,metaId};
 		
 		session.setAttribute("postCardStuff",pCStuff);
+		
+		qText = URLEncoder.encode(HTMLConv.toHTML(qText));
 		res.sendRedirect("/imcms/servlet/GetDoc?meta_id="+metaId+"&param="+qText);
 		
 		return;
@@ -104,7 +106,7 @@ public class PostcardServlet extends HttpServlet {
 		String[] pCStuff = (String[])session.getAttribute("postCardStuff")	;		
 		if (pCStuff != null)
 		{
-			qText = pCStuff[0];
+			qText = HTMLConv.toHTML(pCStuff[0]);
 			qLine = pCStuff[1];
 			metaId = pCStuff[2];
 		}
@@ -117,12 +119,12 @@ public class PostcardServlet extends HttpServlet {
 		{
 			//some thing gon wrong, but I dont care I give them the first line'
 			//instead of the one the wanted
-			System.out.println("qLine wasn't a number");
+			//System.out.println("qLine wasn't a number");
 			qInt = 1;
 		}
 				
-		String resFile = IMCServiceRMI.getFortune(imcserver,QUOTE_FILE);
-		
+		String resFile = HTMLConv.toHTML(IMCServiceRMI.getFortune(imcserver,QUOTE_FILE));
+		//System.out.println(resFile);
 		StringTokenizer token = new StringTokenizer(resFile, "#", false);
 		int counter = 0; 
 		String qTextToSend="";
@@ -139,7 +141,8 @@ public class PostcardServlet extends HttpServlet {
 				qText = tmp;
 				break;
 			}
-		*/
+		*/	System.out.println(qText);
+			System.out.println(tmp);
 			if (qText.equals(tmp))
 			{
 				qTextToSend = tmp;
@@ -149,8 +152,7 @@ public class PostcardServlet extends HttpServlet {
 		
 		qTextToSend = HTMLConv.toHTML(qTextToSend);		
 		//ok now we have the quot in the string qLine		
-		//System.out.println("jippi: "+qLine);
-		
+		//System.out.println("jippi: "+qTextToSend);	
 		//lets get the info we need
 		String friendName 		= req.getParameter("mailText0");	
 		String friendEmail 		= req.getParameter("mailTo");
@@ -159,6 +161,7 @@ public class PostcardServlet extends HttpServlet {
 		String imageNr			= req.getParameter("vykort");							
 		//lets get the image url from db (we need serverObj, metaId and imageId to do it)
 		RmiLayer rmi = new RmiLayer(user) ;	
+	
 		String sqlStr = "Select imgurl from images where meta_id='"+metaId+"' and name='"+imageNr+"'";		
 		
 		String imageUrl = rmi.execSqlQueryStr(imcserver, sqlStr ) ;
@@ -169,7 +172,7 @@ public class PostcardServlet extends HttpServlet {
 		{
 			imageUrl = "/imcms/images/"+imageUrl;
 		}
-		
+		//System.out.println(imageUrl);
 				
 		//create the taggs to parse
 		Vector vect = new Vector();
@@ -181,10 +184,10 @@ public class PostcardServlet extends HttpServlet {
 		
 		//ok nu ska vi parsa skiten med ett mall skrälle
 		File pcTemplate = new File(templateLib, HTML_TEMPLATE);
-		String html = IMCServiceRMI.parseDoc( imcserver,getTemplate(pcTemplate) , vect);
-			
+		String html = IMCServiceRMI.parseDoc( imcserver,getTemplate(pcTemplate) , vect);	;
 		//lets get the name to use on the file
 		String pcFileName = (String) session.getAttribute("pcFileName");
+		//System.out.println("pcFileName: "+pcFileName);
 		if (pcFileName == null)
 		{
 			//lets get the first part of the name
@@ -194,6 +197,7 @@ public class PostcardServlet extends HttpServlet {
       		String dateString = formatter.format(currentTime);	
 			//ok now lets get the second part (the counter)
 			File counterFile = new File(templateLib, "postcardCounter.count");
+			//System.out.println(counterFile.getPath())	;
 			PostcardCounter count;
 			try{
 				ObjectInputStream in = new ObjectInputStream(new FileInputStream(counterFile));
@@ -221,17 +225,21 @@ public class PostcardServlet extends HttpServlet {
 			}
 			//lets setup the new name
 			pcFileName = dateString +"_"+ postcardNr +".html";	
-			session.setAttribute("pcFileName", pcFileName);				
+			session.setAttribute("pcFileName", pcFileName);	
+			//System.out.println("pcFileName: "+pcFileName)			;
 		}
 		
 		//ok lets save the bottom frame page, incase it has been removed
 		//by some stupid sysAdmin
-		File bottom = new File( templateLib, POSTCARD_BOTTOM); 	
-		String bottomString = IMCServiceRMI.parseDoc( imcserver,getTemplate(bottom) , new Vector());
+	
+		File bottom = new File( templateLib, POSTCARD_BOTTOM); 		
+		String bottomString = IMCServiceRMI.parseDoc( imcserver,getTemplate(bottom) , new Vector());	
 		File imagePathFile = new File(imcode.util.Utility.getDomainPref("image_path",host));
-		File postcardFolder = new File(imagePathFile.getParent(),POSTCARD_FOLDER);
-		File bottomFile = new File(postcardFolder,"bottom.html");
-		BufferedWriter buff = new BufferedWriter( new FileWriter(bottomFile) );					
+		File postcardFolder = new File(imagePathFile.getParent(),POSTCARD_FOLDER);	
+		File bottomFile = new File(postcardFolder,"bottom.html");	
+		FileWriter writ = new FileWriter(bottomFile);
+		BufferedWriter buff = new BufferedWriter( writ );	
+					
 		buff.write(bottomString,0,bottomString.length());
 		buff.flush();
 		buff.close();
@@ -307,7 +315,6 @@ public class PostcardServlet extends HttpServlet {
 		{	//use the default langue
 			templateLib.append( "se\\105\\" );
 		}
-	
 		return new File(templateLib.toString()) ;
 	}
 	
@@ -348,7 +355,7 @@ public class PostcardServlet extends HttpServlet {
 	{
 		//if(msg == null)msg="null";
 		super.log(msg) ;
-		System.out.println("PostCardServlet: " + msg) ;
+		//System.out.println("PostCardServlet: " + msg) ;
 
 	}
 	
