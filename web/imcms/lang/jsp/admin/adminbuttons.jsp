@@ -27,7 +27,7 @@
     #adminPanelTd1_1  { }
       .adminPanelLogo  { font: bold 11px Verdana,Geneva,sans-serif; color:#ddddff; letter-spacing:-1px; }
     #adminPanelTd1_2  {  }
-      .adminPanelText  { font: 11px Verdana,Geneva,sans-serif; color:#ffffff; }
+      .adminPanelText, .adminPanelText SPAN { font: 11px Verdana,Geneva,sans-serif; color:#ffffff; }
     #adminPanelTd1_3  {  }
   .adminPanelTd2      { padding:3px; height:32; vertical-align:top; }
 
