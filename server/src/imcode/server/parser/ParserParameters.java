@@ -50,6 +50,9 @@ public class ParserParameters {
 	return	this.externalParam == null ? "":this.externalParam;
     }
 
+    /**
+       @return The readrunner-parameters set for this parser, or null if none were set.
+    **/
     public ReadrunnerParameters getReadrunnerParameters() {
 	return this.readrunnerParameters ;
     }

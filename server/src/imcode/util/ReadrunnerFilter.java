@@ -70,6 +70,9 @@ public class ReadrunnerFilter {
 
     public String filter(String text, PatternMatcher patMat, ReadrunnerParameters readrunnerParameters) {
 
+	if (null == readrunnerParameters) {
+	    readrunnerParameters = new ReadrunnerParameters(false, false) ;
+	}
 	org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util() ;
 	List firsttaglist = new ArrayList() ;
 
