@@ -11,3 +11,5 @@ templates/**
 *.TXT
 build.properties.template
 build.xml
+imcms_eng.properties
+imcms_swe.properties
