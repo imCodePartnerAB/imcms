@@ -27,9 +27,14 @@ The following links works differently depending on the user's permissions on the
 user you are logged in as, and what administrative permissions that user has.<br>
 That means that even though you don't specify a user in most of the API:s method, usually the current logged in user
 is passed as an invisible parameter.<br>
-If you're not logged in as any user, you get a NullpointerException when trying any of the following jsp-pages.
-When logged out, the only link that should work is the sample of exception handling at the bottom of this document.</p>
+
+<H3>NotLoggedInException, NoPermissionException and exception handling in jsp-pages</H3>
 <p>
+If the user that is accessing the page doesn't have the right permissions a NoPermissionException is thrown from the methods.
+There are two normal ways to handle this. <BR>
+1. In the jsp pages page-tag set the errorpage attribute and let that page handle the response to the user<BR>
+2. Use try/catch in a normal Java way.<BR>
+In this sample page, the first choice is made; see <%=makeLink("error.jsp")%> files for details.
 
 <h3>How to use this examples</h3>
 When you click on a jsp-link below that page is going to be run, and produce a result.<br>
@@ -95,13 +100,6 @@ This doesn't work yet:<br>
 <h3>Database connection</h3>
 Get access to the database, <%= makeLink("database_get_connection.jsp") %><br>
 
-<H3>NoPermissionException and exception handling in jsp-pages</H3>
-<P>
-If the user that is accessing the page doesn't have the right permissions a NoPermissionException is thrown from the methods.
-There are two normal ways to handle this. <BR>
-1. In the jsp pages page-tag set the errorpage attribute and let that page handle the response to the user<BR>
-2. Use try/catch in an normal Java way.<BR>
-In this sample page, the first choice is made; see restrictedoperations.jsp and error.jsp files for details.
 </body>
 </html>
 

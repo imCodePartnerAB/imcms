@@ -1,7 +1,7 @@
 <%@ page import="com.imcode.imcms.api.*"
          errorPage="no_category_type_by_that_name.jsp"%><%
 
-             ContentManagementSystem imcms = (ContentManagementSystem) request.getAttribute(
+             DefaultContentManagementSystem imcms = (DefaultContentManagementSystem) request.getAttribute(
                      RequestConstants.SYSTEM);
              DocumentService documentService = imcms.getDocumentService();
              String categoryTypeName = request.getParameter("category_type_name") ;
