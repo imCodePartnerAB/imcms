@@ -1,6 +1,7 @@
 
 import imcode.server.*;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentMapper;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -16,17 +17,16 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
-import java.sql.SQLException;
 
 public class GetDoc extends HttpServlet {
 
-    private static Category trackLog = Logger.getInstance(IMCConstants.ACCESS_LOG);
-    private static Category log = Logger.getInstance(GetDoc.class.getName());
+    private static Category trackLog = Logger.getInstance( IMCConstants.ACCESS_LOG );
+    private static Category log = Logger.getInstance( GetDoc.class.getName() );
     private static String noActiveDocUrl = "no_active_document.html";
     private static final String ENCODING_CP1252 = "cp1252";
 
     /**
-     doGet()
+     * doGet()
      */
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 
@@ -38,7 +38,7 @@ public class GetDoc extends HttpServlet {
 
         try {
             meta_id = Integer.parseInt( req.getParameter( "meta_id" ) );
-        } catch( NumberFormatException ex ) {
+        } catch ( NumberFormatException ex ) {
             // Find the start-page
             meta_id = imcref.getSystemData().getStartDocument();
             log.debug( "Exception occured" + ex );
@@ -51,7 +51,8 @@ public class GetDoc extends HttpServlet {
         }
     }
 
-    public static String getDoc( int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res ) throws IOException {
+    public static String getDoc( int meta_id, int parent_meta_id, HttpServletRequest req, HttpServletResponse res )
+            throws IOException {
         IMCServiceInterface imcref = ApplicationServer.getIMCServiceInterface();
         String start_url = imcref.getStartUrl();
 
@@ -66,15 +67,16 @@ public class GetDoc extends HttpServlet {
 
         HttpSession session = req.getSession( true );
         UserDomainObject user = (UserDomainObject)session.getAttribute( "logon.isDone" );  // marker object
-        if( user == null ) {
+        if ( user == null ) {
             // Check the name and password for validity
             String ip = req.getRemoteAddr();
 
             user = StartDoc.ipAssignUser( ip );
 
             // Valid login.  Make a note in the session object.
-            if( user == null ) {
-                session.setAttribute( "login.target", req.getRequestURL().append("?").append(req.getQueryString()).toString() );
+            if ( user == null ) {
+                session.setAttribute( "login.target",
+                                      req.getRequestURL().append( "?" ).append( req.getQueryString() ).toString() );
                 res.sendRedirect( start_url );
                 return null;
             }
@@ -83,7 +85,7 @@ public class GetDoc extends HttpServlet {
             // get type of browser
             String value = req.getHeader( "User-Agent" );
 
-            if( value == null ) {
+            if ( value == null ) {
                 value = "";
             }
             session.setAttribute( "browser_id", value );
@@ -92,7 +94,7 @@ public class GetDoc extends HttpServlet {
 
         }
 
-        if( session.getAttribute( "open poll popup" ) != null ) {
+        if ( session.getAttribute( "open poll popup" ) != null ) {
             String poll_meta_id = (String)session.getAttribute( "open poll popup" );
             session.removeAttribute( "open poll popup" );
             res.sendRedirect( "../popup.jsp?meta_id=" + meta_id + "&popup_meta_id=" + poll_meta_id );
@@ -100,7 +102,7 @@ public class GetDoc extends HttpServlet {
         }
 
         String[] emp_ary = req.getParameterValues( "emp" );
-        if( emp_ary != null ) {
+        if ( emp_ary != null ) {
             user.put( "emphasize", emp_ary );
         }
 
@@ -110,16 +112,18 @@ public class GetDoc extends HttpServlet {
         String referrer = req.getHeader( "Referer" ); // Note, intended misspelling of "Referrer", according to the HTTP spec.
         DocumentDomainObject referringDocument = null;
         Perl5Util perlrx = new Perl5Util();
-        if( null != referrer && perlrx.match( "/meta_id=(\\d+)/", referrer ) ) {
+        DocumentMapper documentMapper = imcref.getDocumentMapper();
+        if ( null != referrer && perlrx.match( "/meta_id=(\\d+)/", referrer ) ) {
             int referring_meta_id = Integer.parseInt( perlrx.group( 1 ) );
             try {
-                referringDocument = imcref.getDocument( referring_meta_id );
-            } catch( IndexOutOfBoundsException ex ) {
+                referringDocument = documentMapper.getDocument( referring_meta_id );
+            } catch ( IndexOutOfBoundsException ex ) {
                 referringDocument = null;
             }
         }
         try {
-            documentRequest = new DocumentRequest(imcref, user, meta_id, referringDocument, req);
+            DocumentDomainObject document = documentMapper.getDocument( meta_id );
+            documentRequest = new DocumentRequest( imcref, user, document, referringDocument, req );
 
             // Get all cookies from request
             Cookie[] cookies = req.getCookies();
@@ -127,14 +131,14 @@ public class GetDoc extends HttpServlet {
             // Find cookies and put in hash.
             Hashtable cookieHash = new Hashtable();
 
-            for( int i = 0; cookies != null && i < cookies.length; ++i ) {
+            for ( int i = 0; cookies != null && i < cookies.length; ++i ) {
                 Cookie currentCookie = cookies[i];
                 cookieHash.put( currentCookie.getName(), currentCookie.getValue() );
             }
 
             revisits = new Revisits();
 
-            if( cookieHash.get( "imVisits" ) == null ) {
+            if ( cookieHash.get( "imVisits" ) == null ) {
                 Date now = new Date();
                 long lNow = now.getTime();
                 String sNow = "" + lNow;
@@ -150,41 +154,40 @@ public class GetDoc extends HttpServlet {
             documentRequest.setRevisits( revisits );
 
             doc_type = documentRequest.getDocument().getDocumentType();
-        } catch( IndexOutOfBoundsException ex ) {
-            return imcref.parseDoc( vec, "no_page.html", user);
+        } catch ( IndexOutOfBoundsException ex ) {
+            return imcref.parseDoc( vec, "no_page.html", user );
         }
 
         // FIXME: One of the places that need fixing. Number one, we should put the no-permission-page
         // among the templates for the default-language. Number two, we should use just one function for
         // checking permissions. Number three, since the user obviously has logged in, give him the page in his own language!
 
-        if( !imcref.checkDocRights( meta_id, user ) ) {
-            session.setAttribute( "login.target", req.getRequestURL().append( "?" ).append( req.getQueryString() ).toString() );
+        if ( !imcref.checkDocRights( meta_id, user ) ) {
+            session.setAttribute( "login.target",
+                                  req.getRequestURL().append( "?" ).append( req.getQueryString() ).toString() );
             String redirect = no_permission_url;
             res.sendRedirect( redirect );
             return null;
         }
 
-        try { // check for not active document and redirect to info page if user don't have any admin rights on this document.
-            DocumentDomainObject reqDoc = new DocumentDomainObject(imcref, meta_id);
-            Vector params = new Vector();
-            if(!reqDoc.isActive() && !imcref.checkDocAdminRights( meta_id, user )){
-               params.add("#start#");   params.add("StartDoc");
-               params.add("#back#");    params.add("BackDoc");
-               return imcref.parseDoc(params, noActiveDocUrl, user );
-            }
-        }catch(SQLException sqlex ){}
-
-
+        DocumentDomainObject reqDoc = imcref.getDocumentMapper().getDocument( meta_id );
+        Vector params = new Vector();
+        if ( !reqDoc.isActive() && !imcref.checkDocAdminRights( meta_id, user ) ) {
+            params.add( "#start#" );
+            params.add( "StartDoc" );
+            params.add( "#back#" );
+            params.add( "BackDoc" );
+            return imcref.parseDoc( params, noActiveDocUrl, user );
+        }
 
         Stack history = (Stack)user.get( "history" );
-        if( history == null ) {
+        if ( history == null ) {
             history = new Stack();
             user.put( "history", history );
         }
 
         Integer meta_int = new Integer( meta_id );
-        if( history.empty() || !history.peek().equals( meta_int ) ) {
+        if ( history.empty() || !history.peek().equals( meta_int ) ) {
             history.push( meta_int );
         }
 
@@ -202,12 +205,12 @@ public class GetDoc extends HttpServlet {
             return null;
         }
 
-        switch( doc_type ) {
+        switch ( doc_type ) {
 
             case 5:	//URL-doc
-                String url_ref = imcref.isUrlDoc(meta_id, user);
+                String url_ref = imcref.isUrlDoc( meta_id, user );
                 Perl5Util regexp = new Perl5Util();
-                if( !regexp.match("m!^\\w+:|^[/.]!", url_ref) ) {
+                if ( !regexp.match( "m!^\\w+:|^[/.]!", url_ref ) ) {
                     url_ref = "http://" + url_ref;
                 }
                 res.sendRedirect( url_ref );
@@ -217,13 +220,12 @@ public class GetDoc extends HttpServlet {
 
             case 6:	//browser-doc
                 String br_id = (String)session.getAttribute( "browser_id" );
-                String tmp = imcref.sqlQueryStr(
-                        "select top 1 to_meta_id\n"
-                        + "from browser_docs\n"
-                        + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
-                        + "where meta_id = ? and ? like user_agent order by value desc",
-                        new String[]{"" + meta_id, br_id});
-                if( tmp != null && (!"".equals( tmp )) ) {
+                String tmp = imcref.sqlQueryStr( "select top 1 to_meta_id\n"
+                                                 + "from browser_docs\n"
+                                                 + "join browsers on browsers.browser_id = browser_docs.browser_id\n"
+                                                 + "where meta_id = ? and ? like user_agent order by value desc",
+                                                 new String[]{"" + meta_id, br_id} );
+                if ( tmp != null && ( !"".equals( tmp ) ) ) {
                     meta_id = Integer.parseInt( tmp );
                 }
 
@@ -234,7 +236,7 @@ public class GetDoc extends HttpServlet {
 
             case 7:	//frameset-doc
                 String html_str_temp = imcref.isFramesetDoc( meta_id, user );
-                if( html_str_temp == null ) {
+                if ( html_str_temp == null ) {
                     throw new RuntimeException( "Null-frameset encountered." );
                 }
                 htmlStr = html_str_temp;
@@ -244,29 +246,34 @@ public class GetDoc extends HttpServlet {
 
             case 8:	//fileupload-doc
                 String sqlStr = "select mime from fileupload_docs where meta_id = ?";
-                String mimetype = imcref.sqlQueryStr(sqlStr, new String[] { ""+meta_id });
+                String mimetype = imcref.sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
                 sqlStr = "select filename from fileupload_docs where meta_id = ?";
-                String filename = imcref.sqlQueryStr(sqlStr, new String[]{"" + meta_id});
+                String filename = imcref.sqlQueryStr( sqlStr, new String[]{"" + meta_id} );
                 BufferedInputStream fr;
                 try {
-                    fr = new BufferedInputStream( new FileInputStream( new File( file_path, String.valueOf( meta_id ) + "_se" ) ) );
-                } catch( IOException ex ) {
-                    htmlStr = imcref.parseDoc( vec, "no_page.html", user);
+                    fr =
+                    new BufferedInputStream(
+                            new FileInputStream( new File( file_path, String.valueOf( meta_id ) + "_se" ) ) );
+                } catch ( IOException ex ) {
+                    htmlStr = imcref.parseDoc( vec, "no_page.html", user );
                     return htmlStr;
                 }
                 int len = fr.available();
                 ServletOutputStream out = res.getOutputStream();
                 res.setContentLength( len );
                 res.setContentType( mimetype );
-                String content_disposition = (null != req.getParameter( "download" ) ? "attachment" : "inline") + "; filename=\"" + filename + "\"";
+                String content_disposition = ( null != req.getParameter( "download" ) ? "attachment" : "inline" )
+                                             + "; filename=\""
+                                             + filename
+                                             + "\"";
                 res.setHeader( "Content-Disposition", content_disposition );
                 try {
                     int bytes_read;
                     byte buffer[] = new byte[32768];
-                    while( -1 != (bytes_read = fr.read( buffer )) ) {
+                    while ( -1 != ( bytes_read = fr.read( buffer ) ) ) {
                         out.write( buffer, 0, bytes_read );
                     }
-                } catch( java.net.SocketException ex ) {
+                } catch ( java.net.SocketException ex ) {
                     log.debug( "Exception occured" + ex );
                 }
                 fr.close();
@@ -279,9 +286,9 @@ public class GetDoc extends HttpServlet {
             default:
 
                 String externalparam = null;
-                if( req.getParameter( "externalClass" ) != null || req.getAttribute( "externalClass" ) != null ) {
+                if ( req.getParameter( "externalClass" ) != null || req.getAttribute( "externalClass" ) != null ) {
                     String className;
-                    if( req.getParameter( "externalClass" ) != null ) {
+                    if ( req.getParameter( "externalClass" ) != null ) {
                         className = req.getParameter( "externalClass" );
                     } else {
                         className = (String)req.getAttribute( "externalClass" );
@@ -290,7 +297,7 @@ public class GetDoc extends HttpServlet {
                         Class cl = Class.forName( className );
                         imcode.external.GetDocControllerInterface obj = (imcode.external.GetDocControllerInterface)cl.newInstance();
                         externalparam = obj.createString( req );
-                    } catch( Exception e ) {
+                    } catch ( Exception e ) {
                         StringWriter sw = new StringWriter();
                         e.printStackTrace( new PrintWriter( sw ) );
                         externalparam = "<!-- Exception: " + sw.toString() + " -->";

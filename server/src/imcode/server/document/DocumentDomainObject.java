@@ -35,8 +35,9 @@ public class DocumentDomainObject implements IMCConstants {
     private UserDomainObject creator ;
     private UserDomainObject publisher;
     private String languageIso639_2;
-    private Set sections = new HashSet();
+    private Set sections = new HashSet() ;
     private Set categories = new HashSet() ;
+    private Set keywords = new HashSet() ;
     private Map rolesMappedToPermissionSetIds = new HashMap();
 
 
@@ -69,76 +70,8 @@ public class DocumentDomainObject implements IMCConstants {
 
     }
 
-    public DocumentDomainObject(IMCServiceInterface serverObject, int meta_id)
-            throws IndexOutOfBoundsException, SQLException {
-        String[] result = serverObject.sqlProcedure("GetDocumentInfo", new String[]{ ""+meta_id });
-
-        //lets start and do some controlls of the resulted data
-        if (result == null || result.length < 25) {
-            throw new IndexOutOfBoundsException("No such document: " + meta_id);
-        }
-
-        DateFormat dateform = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        //ok lets set all the document stuff
-        try {
-            setMetaId(Integer.parseInt(result[0]));
-            setDocumentType(Integer.parseInt(result[2]));
-        } catch (NumberFormatException nfe) {
-            throw new SQLException(
-                    "SQL: GetDocumentInfo " + meta_id + " returned corrupt data! '" + result[0] + "' '"
-                    + result[2]
-                    + "'");
-        }
-        setHeadline(result[3]);
-        setText(result[4]);
-        setImage(result[5]);
-        setTarget(result[21]);
-
-        setArchivedFlag(!"0".equals(result[12]));
-
-        setSections(DocumentMapper.getSections(serverObject,meta_id));
-
-        try {
-            setCreatedDatetime(dateform.parse(result[16]));
-        } catch (NullPointerException npe) {
-            setCreatedDatetime(null);
-        } catch (java.text.ParseException pe) {
-            setCreatedDatetime(null);
-        }
-        try {
-            setModifiedDatetime(dateform.parse(result[17]));
-        } catch (NullPointerException npe) {
-            setModifiedDatetime(null);
-        } catch (java.text.ParseException pe) {
-            setModifiedDatetime(null);
-        }
-        try {
-            setActivatedDatetime(dateform.parse(result[23]));
-        } catch (NullPointerException npe) {
-            setActivatedDatetime(null);
-        } catch (java.text.ParseException pe) {
-            setActivatedDatetime(null);
-        }
-        try {
-            setArchivedDatetime(dateform.parse(result[24]));
-        } catch (NullPointerException npe) {
-            setArchivedDatetime(null);
-        } catch (java.text.ParseException pe) {
-            setArchivedDatetime(null);
-        }
-        if (getDocumentType() == DOCTYPE_FILE) {
-            setFilename(serverObject.getFilename(meta_id));
-        }
-        if (getDocumentType() == DOCTYPE_TEXT) {
-            String[] textdoc_data = serverObject.sqlProcedure("GetTextDocData",
-                                                              new String[]{String.valueOf(meta_id)});
-
-            if (textdoc_data.length >= 4) {
-                setTemplate( serverObject.getTemplateMapper().getTemplateById( Integer.parseInt( textdoc_data[0] ) ) );
-                setMenuSortOrder(Integer.parseInt(textdoc_data[2]));
-                setTemplateGroupId(Integer.parseInt(textdoc_data[3]));
-            }
-        }
+    public void setKeywords( String[] keywords ) {
+        this.keywords = new HashSet(Arrays.asList(keywords));
     }
 
     public SectionDomainObject[] getSections() {
@@ -146,7 +79,7 @@ public class DocumentDomainObject implements IMCConstants {
     }
 
     public void setSections(SectionDomainObject[] sections) {
-        this.sections.addAll(Arrays.asList(sections));
+        this.sections = new HashSet(Arrays.asList(sections));
     }
 
     /**
@@ -527,5 +460,9 @@ public class DocumentDomainObject implements IMCConstants {
 
     public void removeAllSection( SectionDomainObject section ) {
         sections.clear();
+    }
+
+    public String[] getKeywords() {
+        return (String[]) keywords.toArray(new String[keywords.size()]) ;
     }
 }

@@ -107,7 +107,7 @@ public class SaveSort extends HttpServlet {
                     // Build an option-list
                     StringBuffer fileMetaIds = new StringBuffer();
                     for ( int i = 0; i < file_meta_ids.length; ++i ) {
-                        imcode.server.document.DocumentDomainObject doc = imcref.getDocument(
+                        imcode.server.document.DocumentDomainObject doc = imcref.getDocumentMapper().getDocument(
                                 Integer.parseInt( file_meta_ids[i] ) );
                         fileMetaIds.append( "<option>[" + file_meta_ids[i] + "] " + doc.getHeadline() + "</option>" );
                     }

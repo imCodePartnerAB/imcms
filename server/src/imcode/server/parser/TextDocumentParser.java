@@ -167,7 +167,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Perl5Substitution emphasize_substitution = new Perl5Substitution( emphasize_string );
 
             Properties tags = new Properties();	// A properties object to hold the results from the db...
-            Map textMap = service.getTexts( meta_id );
+            Map textMap = service.getDocumentMapper().getTexts( meta_id );
             HashMap imageMap = new HashMap();
 
             Iterator imit = Arrays.asList( images ).iterator();

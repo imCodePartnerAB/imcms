@@ -490,10 +490,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
     public void setPollList( String pollListName, List pollList ) throws IOException {
    }
 
-   public DocumentDomainObject getDocument( int meta_id ) {
-      return null;
-   }
-
    public String getSection( int meta_id ) {
       return null;
    }
@@ -512,10 +508,6 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
 
    public boolean checkAdminRights( UserDomainObject user ) {
       return false;
-   }
-
-    public Map getTexts( int meta_id ) {
-      return null;
    }
 
    public int getSessionCounter() {

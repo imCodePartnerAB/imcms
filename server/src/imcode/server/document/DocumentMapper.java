@@ -198,7 +198,7 @@ public class DocumentMapper {
             String categoryDescription = sqlResult[i][2];
 
             categoryDomainObjects[i] =
-                    new CategoryDomainObject( categoryId, categoryName, categoryDescription, categoryType );
+            new CategoryDomainObject( categoryId, categoryName, categoryDescription, categoryType );
         }
         return categoryDomainObjects;
     }
@@ -298,16 +298,9 @@ public class DocumentMapper {
         }
     }
 
-    public static String getClassificationsAsOneString( IMCServiceInterface imcref, int meta_id ) {
-        String[] classifications = sqlSelectGetClassificationStrings( imcref, meta_id );
-        String classification = "";
-        if ( classifications.length > 0 ) {
-            classification += classifications[0];
-            for ( int i = 1; i < classifications.length; ++i ) {
-                classification += "; " + classifications[i];
-            }
-        }
-        return classification;
+    public String getKeywordsAsOneString( int meta_id ) {
+        String[] keywords = getKeywords( meta_id );
+        return StringUtils.join( keywords, ", " );
     }
 
     public DocumentDomainObject getDocument( int metaId ) {
@@ -343,7 +336,9 @@ public class DocumentMapper {
             document.setPublisher( publisher );
         }
 
-        document.setSections( getSections( service, metaId ) );
+        document.setSections( getSections( metaId ) );
+
+        document.setKeywords( getKeywords( metaId ) );
 
         try {
             document.setCreatedDatetime( dateform.parse( (String)documentData.get( "date_created" ) ) );
@@ -442,7 +437,7 @@ public class DocumentMapper {
             String tree_sort_index = sqlResult[i + 3];
             DocumentDomainObject child = getDocument( to_meta_id );
             menuItems[i / 4] =
-                    new MenuItemDomainObject( parent, child, menu_sort, manual_sort_order, tree_sort_index );
+            new MenuItemDomainObject( parent, child, menu_sort, manual_sort_order, tree_sort_index );
         }
         Arrays.sort( menuItems, new MenuItemDomainObject.TreeKeyCoparator() );
 
@@ -461,7 +456,7 @@ public class DocumentMapper {
     /**
      * @return the sections for a document, empty array if there is none.
      */
-    public static SectionDomainObject[] getSections( IMCServiceInterface service, int meta_id ) {
+    public SectionDomainObject[] getSections( int meta_id ) {
         String[][] sectionData = service.sqlProcedureMulti( SPROC_SECTION_GET_INHERIT_ID,
                                                             new String[]{String.valueOf( meta_id )} );
 
@@ -711,10 +706,6 @@ public class DocumentMapper {
         }
     }
 
-    public static void sprocClassification_Fix( IMCServiceInterface imcref, int meta_id, String classification ) {
-        sprocSaveClassification( imcref, meta_id, classification );
-    }
-
     public static void sprocDeleteInclude( IMCServiceInterface imcref, int including_meta_id, int include_id ) {
         imcref.sqlUpdateProcedure( "DeleteInclude", new String[]{"" + including_meta_id, "" + include_id} );
     }
@@ -732,8 +723,45 @@ public class DocumentMapper {
         return included_docs;
     }
 
-    public static void sprocSaveClassification( IMCServiceInterface imcref, int meta_id, String classification ) {
-        imcref.sqlUpdateProcedure( SPROC_CLASSIFICATION_FIX, new String[]{"" + meta_id, "" + classification} );
+    public void saveDocumentKeywords( int meta_id, String separatedKeywords ) {
+        Set allKeywords = new HashSet( Arrays.asList( getAllKeywords() ) );
+        String[] keywords = separatedKeywords.split( "\\W+" );
+        deleteKeywordsFromDocument( meta_id );
+        for ( int i = 0; i < keywords.length; i++ ) {
+            String keyword = keywords[i];
+            final boolean keywordExists = allKeywords.contains( keyword );
+            if ( !keywordExists ) {
+                addKeyword( keyword );
+            }
+            addExistingKeywordToDocument( meta_id, keyword );
+        }
+        deleteUnusedKeywords();
+    }
+
+    private void addExistingKeywordToDocument( int meta_id, String keyword ) {
+        int keywordId = Integer.parseInt(
+                service.sqlQueryStr( "SELECT class_id FROM classification WHERE code = ?", new String[]{keyword} ) );
+        service.sqlUpdateQuery( "INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)",
+                                new String[]{"" + meta_id, "" + keywordId} );
+    }
+
+    private void deleteUnusedKeywords() {
+        service.sqlUpdateQuery(
+                "DELETE FROM classification WHERE class_id NOT IN (SELECT class_id FROM meta_classification)",
+                new String[0] );
+    }
+
+    private void addKeyword( String keyword ) {
+        service.sqlUpdateQuery( "INSERT INTO classification VALUES(?)", new String[]{keyword} );
+    }
+
+    private String[] getAllKeywords() {
+        return service.sqlQuery( "SELECT code FROM classification", new String[0] );
+    }
+
+    private void deleteKeywordsFromDocument( int meta_id ) {
+        String sqlDeleteKeywordsFromDocument = "DELETE FROM meta_classification WHERE meta_id = ?";
+        service.sqlUpdateQuery( sqlDeleteKeywordsFromDocument, new String[]{"" + meta_id} );
     }
 
     public static void sprocSetInclude( IMCServiceInterface imcref, int including_meta_id, int include_id,
@@ -871,12 +899,12 @@ public class DocumentMapper {
     }
 
     private void inheritClassifications( int from_parentId, int to_newMetaId ) {
-        String classifications = getClassificationsAsOneString( service, from_parentId );
-        sprocSaveClassification( service, to_newMetaId, classifications );
+        String classifications = getKeywordsAsOneString( from_parentId );
+        saveDocumentKeywords( to_newMetaId, classifications );
     }
 
     private void inheritSection( int from_parentId, int to_metaId ) {
-        SectionDomainObject[] sections = getSections( service, from_parentId );
+        SectionDomainObject[] sections = getSections( from_parentId );
         setSectionsForDocument( service, to_metaId, sections );
     }
 
@@ -1085,12 +1113,12 @@ public class DocumentMapper {
                                } );
     }
 
-    private static String[] sqlSelectGetClassificationStrings( IMCServiceInterface imcref, int meta_id ) {
+    public String[] getKeywords( int meta_id ) {
         String sqlStr;
         sqlStr =
-                "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
-        String[] classifications = imcref.sqlQuery( sqlStr, new String[]{"" + meta_id} );
-        return classifications;
+        "select code from classification c join meta_classification mc on mc.class_id = c.class_id where mc.meta_id = ?";
+        String[] keywords = service.sqlQuery( sqlStr, new String[]{"" + meta_id} );
+        return keywords;
     }
 
     private static String[] sqlSelectTemplateInfoFromTextDocs( IMCServiceInterface imcref, String parent_meta_id ) {
@@ -1157,6 +1185,33 @@ public class DocumentMapper {
         String sqlStr = "update meta set date_modified = ? where meta_id = ?";
         service.sqlUpdateQuery( sqlStr, new String[]{dateformat.format( date ), "" + document.getMetaId()} );
         indexDocument( document );
+    }
+
+    /**
+     * Retrieve the texts for a internalDocument
+     *
+     * @param meta_id The id of the internalDocument.
+     * @return A Map (String -> TextDocumentTextDomainObject) with all the  texts in the internalDocument.
+     */
+    public Map getTexts( int meta_id ) {
+
+        // Now we'll get the texts from the db.
+        String[] texts = service.sqlProcedure( "GetTexts", new String[]{String.valueOf( meta_id )}, false );
+        Map textMap = new HashMap();
+        Iterator it = Arrays.asList( texts ).iterator();
+        while ( it.hasNext() ) {
+            try {
+                it.next(); // the key, not needed
+                String txt_no = (String)it.next();
+                int txt_type = Integer.parseInt( (String)it.next() );
+                String value = (String)it.next();
+                textMap.put( txt_no, new TextDocumentTextDomainObject( value, txt_type ) );
+            } catch ( NumberFormatException e ) {
+                log.error( "SProc 'GetTexts " + meta_id + "' returned a non-number where a number was expected.", e );
+                return null;
+            }
+        }
+        return textMap;
     }
 
     private boolean userIsSuperAdminOrHasPermissionSetId( int documentId, UserDomainObject user,

@@ -189,7 +189,7 @@ public class SaveNewMeta extends HttpServlet {
 
             // Save the classifications to the db
             if( classification != null ) {
-                DocumentMapper.sprocSaveClassification( imcref, metaId, classification );
+                imcref.getDocumentMapper().saveDocumentKeywords( metaId, classification );
             }
 
             DocumentMapper.sprocUpdateInheritPermissions( imcref, metaId, parentMetaId, Integer.parseInt(doc_type) );

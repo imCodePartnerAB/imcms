@@ -1292,43 +1292,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return fileCache.getCachedFileString( new File( m_TemplateHome, path ) );
     }
 
-
-    /**
-     Retrieve the texts for a internalDocument
-     @param meta_id The id of the internalDocument.
-     @return A Map (Integer -> TextDocumentTextDomainObject) with all the  texts in the internalDocument.
-     **/
-    public Map getTexts( int meta_id ) {
-
-        // Now we'll get the texts from the db.
-        String[] texts = sqlProcedure( "GetTexts", new String[]{String.valueOf( meta_id )}, false );
-        Map textMap = new HashMap();
-        Iterator it = Arrays.asList( texts ).iterator();
-        while ( it.hasNext() ) {
-            try {
-                it.next(); // the key, not needed
-                String txt_no = (String)it.next();
-                int txt_type = Integer.parseInt( (String)it.next() );
-                String value = (String)it.next();
-                textMap.put( txt_no, new TextDocumentTextDomainObject( value, txt_type ) );
-            } catch ( NumberFormatException e ) {
-                log.error( "SProc 'GetTexts " + meta_id + "' returned a non-number where a number was expected.", e );
-                return null;
-            }
-        }
-        return textMap;
-    }
-
-    /**
-     Get the data for one internalDocument
-     @param meta_id The id fore the wanted internalDocument
-     @return a imcode.server.internalDocument.Document representation of the internalDocument, or null if there was none.
-     @throws IndexOutOfBoundsException if there was no such internalDocument.
-     **/
-    public DocumentDomainObject getDocument( int meta_id ) throws IndexOutOfBoundsException {
-        return documentMapper.getDocument( meta_id );
-    }
-
     /**
      Set a user flag
      **/

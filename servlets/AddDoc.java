@@ -224,12 +224,10 @@ public class AddDoc extends HttpServlet {
         vec.add("#parent_meta_id#");
         vec.add(((String[]) hash.get("meta_id"))[0]);
 
-        // Here i'll select all classification-strings and
-        // concatenate them into one semicolon-separated string.
-        String classification = DocumentMapper.getClassificationsAsOneString(imcref, Integer.parseInt(meta_id));
+        String keywords = imcref.getDocumentMapper().getKeywordsAsOneString(Integer.parseInt(meta_id));
 
         vec.add("#classification#");
-        vec.add(classification);
+        vec.add(keywords);
 
         // Lets fix the date information (date_created, modified etc)
         Date dt = imcref.getCurrentDate();

@@ -5,11 +5,12 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.WebAppGlobalConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.SectionDomainObject;
+import imcode.server.document.WhitespaceLowerCaseAnalyzer;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.lucene.analysis.SimpleAnalyzer;
+import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
@@ -25,7 +26,6 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 /**
@@ -44,6 +44,8 @@ public class SearchDocuments extends HttpServlet {
     private final static String NAV_ACTIVE = "search_nav_active.html";
     private final static String NAV_INACTIVE = "search_nav_inactive.html";
     private final static String NAV_AHREF = "search_nav_ahref.html";
+
+    private final static Logger log = Logger.getLogger( "SearchDocuments" );
 
     /**
      * doPost()
@@ -72,6 +74,15 @@ public class SearchDocuments extends HttpServlet {
                                       : imcref.getDocumentMapper().getSectionById(
                                               Integer.parseInt( sectionParameter ) );
 
+        String[] docTypeIdParameters = req.getParameterValues( "doc_type_id" );
+        int[] docTypeIds = null;
+        if ( null != docTypeIdParameters ) {
+            docTypeIds = new int[docTypeIdParameters.length];
+            for ( int i = 0; i < docTypeIdParameters.length; i++ ) {
+                docTypeIds[i] = Integer.parseInt( docTypeIdParameters[i] );
+            }
+        }
+
         // Lets save searchstring typed by user
         String originalSearchString = searchString;
 
@@ -85,20 +96,6 @@ public class SearchDocuments extends HttpServlet {
         java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat( format );
 
         //ok the rest of params we need to set up search sql
-        String doctypes = "2,5,6,7,8,102,103,104,107";
-        String created_start = "";
-        String create_stop = formatter.format( date );
-        String changed_start = "";
-        String changed_stop = "";
-        String activated_start = "";
-        String activated_stop = "";
-        String archived_start = "";
-        String archived_stop = "";
-        String activate = "1";
-
-        // lets set up the search string
-        searchString = buildSearchString( searchString );
-
         DocumentDomainObject[] searchResults = null;
         int hits = 0;
         //the counter to tell vere in the hitarr to start
@@ -134,27 +131,23 @@ public class SearchDocuments extends HttpServlet {
             }
         } else {
 
-            try {
-                searchResults = searchDocuments( user.getUserId(),
-                                                 searchString,
-                                                 new int[]{2, 5, 6, 7, 8},
-                                                 Integer.parseInt( fromDoc ),
-                                                 Integer.parseInt( toDoc ),
-                                                 sortBy,
-                                                 new Date(),
-                                                 new Date(),
-                                                 new Date(),
-                                                 new Date(),
-                                                 new Date(),
-                                                 new Date(),
-                                                 new Date(),
-                                                 new Date(),
-                                                 section, false,
-                                                 true );
-                session.setAttribute( "search_hit_list", searchResults );
-            } catch ( ParseException e ) {
-                e.printStackTrace();  // TODO
-            }
+            searchResults = searchDocuments( user.getUserId(),
+                                             searchString,
+                                             docTypeIds,
+                                             Integer.parseInt( fromDoc ),
+                                             Integer.parseInt( toDoc ),
+                                             sortBy,
+                                             new Date(),
+                                             new Date(),
+                                             new Date(),
+                                             new Date(),
+                                             new Date(),
+                                             new Date(),
+                                             new Date(),
+                                             new Date(),
+                                             section, false,
+                                             true );
+            session.setAttribute( "search_hit_list", searchResults );
         }
 
         if ( searchResults != null ) {
@@ -332,25 +325,38 @@ public class SearchDocuments extends HttpServlet {
         return;
     } // End of doPost
 
-    private DocumentDomainObject[] searchDocuments( int userId, String searchString, int[] doctypes, int fromDoc, int toDoc,
+    private DocumentDomainObject[] searchDocuments( int userId, String searchString, int[] docTypeIds, int fromDoc, int toDoc,
                                                     String sortBy, Date created_start, Date create_stop, Date changed_start,
                                                     Date changed_stop, Date activated_start, Date activated_stop,
                                                     Date archived_start, Date archived_stop, SectionDomainObject section, boolean only_addable,
-                                                    boolean activate ) throws IOException, ParseException {
+                                                    boolean activate ) throws IOException {
         File webAppPath = WebAppGlobalConstants.getInstance().getAbsoluteWebAppPath();
         File indexDirectory = new File( webAppPath, "WEB-INF/index" );
         IndexReader indexReader = IndexReader.open( indexDirectory );
         IndexSearcher indexSearcher = new IndexSearcher( indexReader );
-        Query query = MultiFieldQueryParser.parse( searchString, new String[]{"headline", "meta_text", "text"},
-                                                   new SimpleAnalyzer() );
+        BooleanQuery query = new BooleanQuery();
+        if ( null != searchString && !"".equals( searchString.trim() ) ) {
+            try {
+                Query textQuery = MultiFieldQueryParser.parse( searchString,
+                                                               new String[]{"meta_headline", "meta_text", "text", "keyword"},
+                                                               new WhitespaceLowerCaseAnalyzer() );
+                query.add( textQuery, true, false );
+            } catch ( ParseException e ) {
+                log.warn( e.getMessage() + " in search-string " + searchString );
+            }
+        }
 
         if ( null != section ) {
-            Query sectionQuery = new TermQuery( new Term( "section", section.getName() ) );
-            BooleanQuery booleanQuery = new BooleanQuery();
-            booleanQuery.add( query, true, false );
-            booleanQuery.add( sectionQuery, true, false );
-            query = booleanQuery;
+            Query sectionQuery = new TermQuery( new Term( "section", section.getName().toLowerCase() ) );
+            query.add( sectionQuery, true, false );
         }
+
+        for ( int i = 0; null != docTypeIds && i < docTypeIds.length; i++ ) {
+            int docTypeId = docTypeIds[i];
+            query.add( new TermQuery( new Term( "doc_type_id", "" + docTypeId ) ), true, false );
+        }
+
+        log.debug( "Query: " + query.toString() );
         Hits hits = indexSearcher.search( query );
         DocumentDomainObject[] result = new DocumentDomainObject[hits.length()];
         for ( int i = 0; i < hits.length(); ++i ) {
@@ -359,6 +365,7 @@ public class SearchDocuments extends HttpServlet {
                     metaId );
             result[i] = document;
         }
+        indexSearcher.close();
 
         return result;
     }
@@ -454,62 +461,22 @@ public class SearchDocuments extends HttpServlet {
         return;
     } // End of doGet
 
-    private String buildSearchString( String searchString ) {
-        StringTokenizer token = new StringTokenizer( searchString, " \"+-", true );
-        StringBuffer buff = new StringBuffer();
-        while ( token.hasMoreTokens() ) {
-            String str = token.nextToken();
-            if ( " ".equals( str ) ) {
-                continue;
-            }
-            if ( str.equals( "\"" ) ) {
-                buff.append( "\"" );
-                boolean found = false;
-                while ( token.hasMoreTokens() && !found ) {
-                    str = token.nextToken();
-                    if ( str.equals( "\"" ) ) {
-                        buff.append( "\"" );
-                        found = true;
-                    } else {
-                        buff.append( str );
-                    }
-                    if ( found ) {
-                        buff.append( "," );
-                    }
-                }
-            } else if ( str.equals( "+" ) ) {
-                buff.append( "\"and\"," );
-            } else if ( str.equals( "-" ) ) {
-                buff.append( "\"not\"," );
-            } else {
-                buff.append( "\"" + str + "\"," );
-            }
-        }
-        if ( buff.length() > 0 ) {
-            String lastChar = buff.substring( buff.length() - 1 );
-            if ( ( "," ).equals( lastChar ) ) {
-                buff.deleteCharAt( buff.length() - 1 );
-            }
-        }
-        return buff.toString();
-    }
-
     private static StringBuffer parseSearchResults( String oneRecHtmlSrc,
-                                                    DocumentDomainObject[] sqlResults, int startValue,
+                                                    DocumentDomainObject[] searchResults, int startValue,
                                                     int numberToParse ) {
-        StringBuffer searchResults = new StringBuffer( "" );
+        StringBuffer htmlSearchResults = new StringBuffer( "" );
         int stop = startValue + numberToParse;
-        if ( stop >= sqlResults.length ) {
-            stop = sqlResults.length;
+        if ( stop >= searchResults.length ) {
+            stop = searchResults.length;
         }
         // Lets parse the searchresults
         for ( int i = startValue; i < stop; i++ ) {
-            DocumentDomainObject document = sqlResults[i];
+            DocumentDomainObject document = searchResults[i];
             String[] oneHitTags = SearchDocuments.getSearchHitTags( i, document );
 
-            searchResults.append( Parser.parseDoc( oneRecHtmlSrc, oneHitTags ) );
+            htmlSearchResults.append( Parser.parseDoc( oneRecHtmlSrc, oneHitTags ) );
         }
-        return searchResults;
+        return htmlSearchResults;
     }
 
     /**

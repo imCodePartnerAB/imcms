@@ -13,18 +13,19 @@ public class DocumentRequest implements Cloneable {
 
     private HttpServletRequest httpServletRequest;
 
+    private IMCServiceInterface serverObject;
     private UserDomainObject user;
     private DocumentDomainObject document;
     private DocumentDomainObject referrer;
 
-    private IMCServiceInterface serverObject;
     private Revisits revisits;
 
-    public DocumentRequest( IMCServiceInterface serverObject, UserDomainObject user, int metaId, DocumentDomainObject referrer, HttpServletRequest httpServletRequest ) {
+    public DocumentRequest( IMCServiceInterface serverObject, UserDomainObject user, DocumentDomainObject document,
+                            DocumentDomainObject referrer, HttpServletRequest httpServletRequest ) {
         this.serverObject = serverObject;
         this.user = user;
         this.httpServletRequest = httpServletRequest;
-        this.document = serverObject.getDocument( metaId );
+        this.document = document ;
         this.referrer = referrer;
     }
 

@@ -2,6 +2,7 @@
 import imcode.server.ApplicationServer;
 import imcode.server.DocumentRequest;
 import imcode.server.IMCServiceInterface;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.parser.ParserParameters;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Parser;
@@ -110,7 +111,8 @@ public class AdminDoc extends HttpServlet {
         switch( doc_type ) {
 
             default:
-                DocumentRequest documentRequest = new DocumentRequest( imcref, user, meta_id, null, req);
+                DocumentDomainObject document = imcref.getDocumentMapper().getDocument( meta_id );
+                DocumentRequest documentRequest = new DocumentRequest( imcref, user, document, null, req);
                 String result = imcref.parsePage( documentRequest, flags, new ParserParameters() );
                 return result;
 

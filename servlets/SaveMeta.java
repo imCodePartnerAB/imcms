@@ -416,7 +416,7 @@ public class SaveMeta extends HttpServlet {
 
         // Save the classifications to the db
         if ( classification != null ) {
-            DocumentMapper.sprocClassification_Fix( imcref, Integer.parseInt( metaIdStr ), classification );
+            imcref.getDocumentMapper().saveDocumentKeywords( Integer.parseInt( metaIdStr ), classification );
         }
 
         //ok lets save the default templates

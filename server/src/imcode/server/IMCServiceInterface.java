@@ -229,17 +229,7 @@ public interface IMCServiceInterface {
 
     public void setPollList(String pollListName, List pollList) throws IOException ;
 
-    public imcode.server.document.DocumentDomainObject getDocument(int meta_id) ;
-
     public boolean checkAdminRights(UserDomainObject user) ;
-
-    /**
-       Retrieve the texts for a internalDocument
-       @param meta_id The id of the internalDocument.
-       @return A Map (Integer -> TextDocumentTextDomainObject) with all the  texts in the internalDocument.
-    **/
-    public Map getTexts(int meta_id);
-
 
     public int getSessionCounter();
 
