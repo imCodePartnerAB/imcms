@@ -83,7 +83,7 @@ public class SearchDocumentsPage extends OkCancelPage {
         super( null, null );
     }
 
-    protected void updateFromRequest( HttpServletRequest request ) {
+    public void updateFromRequest( HttpServletRequest request ) {
 
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 

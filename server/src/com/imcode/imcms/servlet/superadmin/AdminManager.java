@@ -164,7 +164,7 @@ public class AdminManager extends Administrator {
         AdminManagerPage adminManagerPage = null;
         if ( tabToShow.equals( PARAMETER_VALUE__SHOW_NEW ) ) {
 
-            newDocumentsSubreport.setMaxDocumentCount( 0 );
+            newDocumentsSubreport.setMaxDocumentCount( 10 );
 
             AdminManagerPage newDocumentsAdminManagerPage = new AdminManagerPage();
             newDocumentsAdminManagerPage.setTabName( "new" );
@@ -172,7 +172,7 @@ public class AdminManager extends Administrator {
 
             newDocumentsAdminManagerPage.addSubreport( newDocumentsSubreport );
 
-            modifiedDocumentsSubreport.setMaxDocumentCount( 0 );
+            modifiedDocumentsSubreport.setMaxDocumentCount( 10 );
             newDocumentsAdminManagerPage.addSubreport( modifiedDocumentsSubreport );
 
             adminManagerPage = newDocumentsAdminManagerPage;
@@ -183,13 +183,13 @@ public class AdminManager extends Administrator {
             reminderAdminManagerPage.setTabName( "reminders" );
             reminderAdminManagerPage.setHeading( new LocalizedMessage( "web/imcms/lang/jsp/admin/admin_manager.jsp/tab_name/1" ) );
 
-            documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
+            documentsArchivedWithinOneWeekSubreport.setMaxDocumentCount( 10 );
             reminderAdminManagerPage.addSubreport( documentsArchivedWithinOneWeekSubreport );
 
-            documentsUnpublishedWithinOneWeekSubreport.setMaxDocumentCount( 0 );
+            documentsUnpublishedWithinOneWeekSubreport.setMaxDocumentCount( 10 );
             reminderAdminManagerPage.addSubreport( documentsUnpublishedWithinOneWeekSubreport );
 
-            documentsUnmodifiedForSixMonthsSubreport.setMaxDocumentCount( 0 );
+            documentsUnmodifiedForSixMonthsSubreport.setMaxDocumentCount( 10 );
             reminderAdminManagerPage.addSubreport( documentsUnmodifiedForSixMonthsSubreport );
 
             adminManagerPage = reminderAdminManagerPage;
@@ -215,7 +215,9 @@ public class AdminManager extends Administrator {
 
             AdminManagerPage searchAdminManagerPage = new AdminManagerPage() {
                 public void forward( HttpServletRequest request, HttpServletResponse response, UserDomainObject user ) throws IOException, ServletException {
-                    DocumentFinder documentFinder = new DocumentFinder( new AdminManagerSearchPage( this ) );
+                    AdminManagerSearchPage page = new AdminManagerSearchPage( this );
+                    DocumentFinder documentFinder = new DocumentFinder( page );
+                    page.updateFromRequest( request );
                     documentFinder.addExtraSearchResultColumn( new DatesSummarySearchResultColumn() );
                     documentFinder.forward( request, response );
                 }

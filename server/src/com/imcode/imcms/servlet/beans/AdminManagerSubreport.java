@@ -71,6 +71,10 @@ public class AdminManagerSubreport {
         return 0 == maxDocumentCount || i < maxDocumentCount ;
     }
 
+    public boolean isAboveMaxDocumentCount( int i ) {
+        return 0 != maxDocumentCount && i > maxDocumentCount;
+    }
+
     public void setSearchQueryString( String searchQueryString ) {
         this.searchQueryString = searchQueryString;
     }
