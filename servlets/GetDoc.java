@@ -295,7 +295,7 @@ public class GetDoc extends HttpServlet {
 	Cookie[] cookies = req.getCookies() ;
 
 	// Find a readrunner-cookie and extract readrunner-info from it.
-	for (int i = 0; i < cookies.length; ++i) {
+	for (int i = 0; cookies != null && i < cookies.length; ++i) {
 	    Cookie aCookie = cookies[i] ;
 	    if ("RRsettings".equals(aCookie.getName())) {
 		log.debug("Found Readrunner-cookie 'RRsettings', with value '"+aCookie.getValue()+"'");
