@@ -6,6 +6,9 @@ import java.util.* ;
 import imcode.util.log.* ;
 
 public class ParserParameters {
+	private final static String CVS_REV = "$Revision$" ;
+	private final static String CVS_DATE = "$Date$" ;
+
 	private String _template; 	//used to store the template if not default is wanted
 	private String _param;		//used to store the parameter param
 	private String _externalParam; //used to store the param prodused from external class.
