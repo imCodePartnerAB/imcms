@@ -1,0 +1,60 @@
+<html>
+    <head>
+	<title>Shop</title>
+    </head>
+    <body>
+	<form method="POST" action="@servleturl@/PutInShoppingCart">
+	    <input type="hidden" name="next" value="/shop/cart.jsp" />
+	    <input type="hidden" name="priceformatgroupingseparator" value="." />
+	    <table border="1">
+		<tr>
+		    <th>Description 1</th>
+		    <th>Description 2</th>
+		    <th>Description 3</th>
+		    <th>Price</th>
+		    <th>Put in shopping cart</th>
+		</tr>
+		<tr>
+		    <td>Item 1</td>
+		    <td>Longer description of item 1</td>
+		    <td>More description of item 1</td>
+		    <td>1.000,00</td>
+		    <td><input type="checkbox" name="number_1" value="1" /></td>
+		    <input type="hidden" name="desc1_1" value="Item 1" />
+		    <input type="hidden" name="desc2_1" value="Longer description of item 1" />
+		    <input type="hidden" name="desc3_1" value="More description of item 1" />
+		    <input type="hidden" name="desc4_1" value="" />
+		    <input type="hidden" name="desc5_1" value="" />
+		    <input type="hidden" name="price_1" value="1.000,00" />
+		</tr>
+		<tr>
+		    <td>Item 2</td>
+		    <td>Longer description of item 2</td>
+		    <td>More description of item 2</td>
+		    <td>2.000,00</td>
+		    <td><input type="checkbox" name="number_2" value="1" /></td>
+		    <input type="hidden" name="desc1_2" value="Item 2" />
+		    <input type="hidden" name="desc2_2" value="Longer description of item 2" />
+		    <input type="hidden" name="desc3_2" value="More description of item 2" />
+		    <input type="hidden" name="desc4_2" value="" />
+		    <input type="hidden" name="desc5_2" value="" />
+		    <input type="hidden" name="price_2" value="2.000,00" />
+		</tr>
+		<tr>
+		    <td>Item 3</td>
+		    <td>Longer description of item 3</td>
+		    <td>More description of item 3</td>
+		    <td>3.000,00</td>
+		    <td><input type="checkbox" name="number_3" value="1" /></td>
+		    <input type="hidden" name="desc1_3" value="Item 3" />
+		    <input type="hidden" name="desc2_3" value="Longer description of item 3" />
+		    <input type="hidden" name="desc3_3" value="More description of item 3" />
+		    <input type="hidden" name="desc4_3" value="" />
+		    <input type="hidden" name="desc5_3" value="" />
+		    <input type="hidden" name="price_3" value="3.000,00" />
+		</tr>
+	    </table>
+	    <input type="submit" value="Put selected items in shopping cart" />
+	</form>
+    </body>
+</html>
