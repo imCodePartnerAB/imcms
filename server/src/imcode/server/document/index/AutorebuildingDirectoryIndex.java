@@ -28,8 +28,6 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     private final Object newIndexBuildingLock = new Object();
     private boolean buildingNewIndex;
 
-    private static final String INDEX_SEGMENTS_FILE_NAME = "segments";
-
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow queries?
         BooleanQuery.setMaxClauseCount( Integer.MAX_VALUE );
@@ -43,9 +41,12 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
         if ( IndexReader.indexExists( indexDirectory ) ) {
             try {
                 long indexModifiedTime = IndexReader.lastModified(indexDirectory);
-                Date nextExecutionTime = new Date( indexModifiedTime + indexingSchedulePeriodInMilliseconds );
-                log.info( "First indexing scheduled at " + formatDatetime( nextExecutionTime ) );
-                scheduledIndexDelay = nextExecutionTime.getTime() - System.currentTimeMillis();
+                long time = System.currentTimeMillis();
+                long nextTime = indexModifiedTime+indexingSchedulePeriodInMilliseconds;
+                if (nextTime > time) {
+                    log.info( "First indexing scheduled at " + formatDatetime( new Date( nextTime ) ) );
+                    scheduledIndexDelay = nextTime - time;
+                }
             } catch ( IOException e ) {
                 log.warn("Failed to get last modified time of index.", e) ;
             }
