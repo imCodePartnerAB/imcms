@@ -1,60 +1,125 @@
+Version 1.10.0
+
+= Of interest to users:
+
+    * Filedocuments of types "png", "gif", or "jpeg" can now be used as images. (Bug 2128)
+    * Completely redid the image-selecting interface to allow for the new filedocuments-as-images paradigm. (Bug 2128)
+    * Replaced dropdown for selecting document publisher with a user-select dialog,
+      and made the document creator settable in the same manner. (Bug 2149)
+    * Allow filedocument filenames of up to 255 characters, truncating somewhat intelligently if needed. (Bug 2088)
+    * Only show links to documents which the user has at least read permission on,
+      or which are visible to non-authorized users. (Bug 2387)
+    * Fixed exception when adding documents to a menu sorted by "manual" order. (Bug 2390)
+    * Setting the modified time of a document is now possible,
+      but it will still be updated the next time the document is modified. (Bug 2367)
+
+= Of interest to template creators:
+
+    * The label attribute now works for the include-tag: <?imcms:include label="Include label"?> (Bug 1622)
+    * The outputdescription-attribute of the documentcategories tag now takes two values, "true" or "only" (Bug 2151):
+        - "true": <?imcms:documentcategories outputdescription="true"?> will output "categoryname - categorydescription"
+        - "only": <?imcms:documentcategories outputdescription="only"?> will output "categorydescription"
+        - Not present: <?imcms:documentcategories?> will output "categoryname".
+
+= Of interest to administrators:
+
+    * The file "host.properties" is gone, and everything is put in "server.properties". (Bug 2424)
+    * Worked a little more on indexing robustness. (Bug 2354)
+    * Made the indexing work at a lower priority. (Bug 2362)
+    * Remove documents from the index when deleted. (Bug 2365)
+    * Fixed a bug in the linkchecker where some broken links would be flagged as OK. (Bug 2336)
+    * If "SessionCookieDomain" is set in "server.properties",
+      a second JSESSIONID cookie will be set with the given domain. (Bug 1886)
+
+
+= Of interest to API-using developers:
+
+    * Added methods TextDocument.getTextFields(), TextDocument.getImages(), and TextDocument.getIncludes() (Bug 2344)
+    * Added accessors Document.setVisibleInMenusForUnauthorizedUsers(boolean visibleInMenusForUnauthorizedUsers)
+      and Document.isVisibleInMenusForUnauthorizedUsers() (Bug 2351)
+    * Added accessor Document.setCreator(User creator) (Bug 2388)
+    * Added method Document.getDocumentPermissionSetForUser() (Bug 2153)
+
+= Of interest to developers:
+
+    * Removed user-"categories". (Bug 2149)
+    * Refactored the code for creating and editing documents. (Bug 2039)
+
+
+Version 1.9.3:
+
+    * Only show links to documents which the user has at least read permission on,
+      or which are visible to non-authorized users. (Bug 2387)
+
+
+Version 1.9.2:
+
+    * Fixed exception when adding documents to a menu sorted by "manual" order. (Bug 2390)
+    * Remove documents from the index when deleted. (Bug 2365)
+
+
+Version 1.9.1:
+
+    * Made the indexing a little more robust. (Bugs 2354, 2361, 2362)
+
+
 Version 1.9.0:
 
 = Of interest to users:
 
-* Simple/advanced view toggle for docinfo.
-* Admin-pages will now work on non-javascript-enabled browsers.
-* All admin-pages now use the new blue/white look.
-* The link checker will now also check linked images and urls in text-fields.
-* "Administer conferences" functionality moved to "List new/updated pages".
-* The session counter now counts sessions, not logins.
-  This means that each visitor is only counted once per browser session,
-  instead of once when entering the site and then again when logging in.
+    * Simple/advanced view toggle for docinfo.
+    * Admin-pages will now work on non-javascript-enabled browsers.
+    * All admin-pages now use the new blue/white look.
+    * The link checker will now also check linked images and urls in text-fields.
+    * "Administer conferences" functionality moved to "List new/updated pages".
+    * The session counter now counts sessions, not logins.
+      This means that each visitor is only counted once per browser session,
+      instead of once when entering the site and then again when logging in.
 
 = Of interest to template creators:
 
-* New template tag: <?imcms:contextpath?> will be replaced by the "context path" of the webapp.
-  The context path is the root path to the webapp, usually the name of the webapp preceded by a slash,
-  for example "/imcms". This is useful when one wants to construct an absolute URL.
-  Example: <img src="<?imcms:contextpath?>/images/imCMSpower.gif" alt="Powered by imCMS">
+    * New template tag: <?imcms:contextpath?> will be replaced by the "context path" of the webapp.
+      The context path is the root path to the webapp, usually the name of the webapp preceded by a slash,
+      for example "/imcms". This is useful when one wants to construct an absolute URL.
+      Example: <img src="<?imcms:contextpath?>/images/imCMSpower.gif" alt="Powered by imCMS">
 
 = Of interest to administrators:
 
-* The webapp should now be possible to rename without having to change any templates.
-* We now return correct HTTP status codes: 404 for "Not found", and 403 for "Forbidden/Permission denied".
-* Changed database parameters to allow for different database-drivers:
-  The parameters "Url", "Host", "Port", "DatabaseName" in imcms/WEB-INF/conf/server.properties were replaced
-  by the single option "JdbcUrl",  which for the Microsoft JDBC driver maps to the old parameters as follows:
-  jdbc:microsoft:sqlserver://<Host>:<Port>;DatabaseName=<DatabaseName>
-* The "MaxConnectionCount" in server.properties is ignored by the Microsoft JDBC Driver, unless one sets
-  the driver parameter "SelectMethod" to "cursor".
-  To do this, append ";SelectMethod=cursor" (note the semicolon) to the JdbcUrl.
-  The default is "SelectMethod=direct", and this causes the MS JDBC driver to clone connections internally.
-  See http://support.microsoft.com/default.aspx?scid=kb;EN-US;313220 for more information.
-* Conference, billboard, and chat should now work on case sensitive filesystems, for example on linux.
-* Reindexing of documents is now scheduled every 24 hours from startup. Reindexing is done to
-  a new directory, "imcms/WEB-INF/index.new",  which replaces the current index "imcms/WEB-INF/index" when complete.
+    * The webapp should now be possible to rename without having to change any templates.
+    * We now return correct HTTP status codes: 404 for "Not found", and 403 for "Forbidden/Permission denied".
+    * Changed database parameters to allow for different database-drivers:
+      The parameters "Url", "Host", "Port", "DatabaseName" in imcms/WEB-INF/conf/server.properties were replaced
+      by the single option "JdbcUrl",  which for the Microsoft JDBC driver maps to the old parameters as follows:
+      jdbc:microsoft:sqlserver://<Host>:<Port>;DatabaseName=<DatabaseName>
+    * The "MaxConnectionCount" in server.properties is ignored by the Microsoft JDBC Driver, unless one sets
+      the driver parameter "SelectMethod" to "cursor".
+      To do this, append ";SelectMethod=cursor" (note the semicolon) to the JdbcUrl.
+      The default is "SelectMethod=direct", and this causes the MS JDBC driver to clone connections internally.
+      See http://support.microsoft.com/default.aspx?scid=kb;EN-US;313220 for more information.
+    * Conference, billboard, and chat should now work on case sensitive filesystems, for example on linux.
+    * Reindexing of documents is now scheduled every 24 hours from startup. Reindexing is done to
+      a new directory, "imcms/WEB-INF/index.new",  which replaces the current index "imcms/WEB-INF/index" when complete.
 
 = Of interest to API-using developers:
 
-* Moved the apisamples from "/apisamples/" to "/imcms/docs/apisamples/".
-* DocumentService.saveChanges(Document) is now synchronized as a poor mans transaction to prevent database conflicts.
-* Added method DocumentService.getCategoryType(int categoryTypeId)
-* Added method DocumentService.createNewCategoryType(String name, int maxChoices)
-* Added method DocumentService.createNewCategory(String name, String description, String imageUrl, CategoryType categoryType)
-* Added method TemplateService.getAllTemplateGroups()
-* Added accessors Template.getId() and TemplateGroup.getId().
-* Added convenience method DocumentService.parseLuceneSearchQuery(String) which returns a SearchQuery parsed according
-  to Lucene syntax, see http://jakarta.apache.org/lucene/docs/queryparsersyntax.html
+    * Moved the apisamples from "/apisamples/" to "/imcms/docs/apisamples/".
+    * DocumentService.saveChanges(Document) is now synchronized as a poor mans transaction to prevent database conflicts.
+    * Added method DocumentService.getCategoryType(int categoryTypeId)
+    * Added method DocumentService.createNewCategoryType(String name, int maxChoices)
+    * Added method DocumentService.createNewCategory(String name, String description, String imageUrl, CategoryType categoryType)
+    * Added method TemplateService.getAllTemplateGroups()
+    * Added accessors Template.getId() and TemplateGroup.getId().
+    * Added convenience method DocumentService.parseLuceneSearchQuery(String) which returns a SearchQuery parsed according
+      to Lucene syntax, see http://jakarta.apache.org/lucene/docs/queryparsersyntax.html
 
 = Of interest to developers:
 
-* Cleaned up the file organization in the project.
-* Renamed all the ant-targets using more consistent names.
-* The API now has its own connection pool,
-  so developers using the API can't accidentally starve the system of connections.
-* Jakarta Velocity (http://jakarta.apache.org/velocity/) can now be used in admintemplates and JSP-pages.
-* Searchable tokens in the index may now only consist of letters, digits, and underscores, instead of non-whitespace.
-  This makes html index a little bit better, so that for example <b>bold</b> is indexed as two words ("b" and "bold").
-* There's a new test for checking which language properties are in use,
-  run with the ant target "check-language-properties-in-use".
+    * Cleaned up the file organization in the project.
+    * Renamed all the ant-targets using more consistent names.
+    * The API now has its own connection pool,
+      so developers using the API can't accidentally starve the system of connections.
+    * Jakarta Velocity (http://jakarta.apache.org/velocity/) can now be used in admintemplates and JSP-pages.
+    * Searchable tokens in the index may now only consist of letters, digits, and underscores, instead of non-whitespace.
+      This makes html index a little bit better, so that for example <b>bold</b> is indexed as two words ("b" and "bold").
+    * There's a new test for checking which language properties are in use,
+      run with the ant target "check-language-properties-in-use".

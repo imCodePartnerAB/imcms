@@ -1,6 +1,7 @@
 package imcode.server.db;
 
 import org.apache.log4j.*;
+import org.apache.commons.collections.ExtendedProperties;
 
 import java.sql.*;
 import java.util.Collection;
@@ -41,12 +42,14 @@ public class TestConnectionPoolForNonPoolingDriver extends TestCase {
     }
 
     public void setUp() throws Exception, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Properties dbProperties = new Properties() ;
-        dbProperties.load(new FileInputStream( System.getProperty(DATABASE_PROPERTIES_SYSTEM_PROPERTY, DEFAULT_DATABASE_PROPERTIES_FILE ))) ;
-        userName = dbProperties.getProperty( "db-user" ) ;
-        passWord = dbProperties.getProperty( "db-pass" ) ;
-        driverClassName = dbProperties.getProperty( "db-driver") ;
-        dbUrl = dbProperties.getProperty( "db-url") ;
+        ExtendedProperties databaseProperties = new ExtendedProperties() ;
+        String databasePropertiesFilename = System.getProperty(DATABASE_PROPERTIES_SYSTEM_PROPERTY, DEFAULT_DATABASE_PROPERTIES_FILE );
+
+        databaseProperties.load(new FileInputStream( databasePropertiesFilename)) ;
+        userName = databaseProperties.getString( "db-user" ) ;
+        passWord = databaseProperties.getString( "db-pass" ) ;
+        driverClassName = databaseProperties.getString( "db-driver") ;
+        dbUrl = databaseProperties.getString( "db-url") ;
 
     }
 

@@ -1,15 +1,16 @@
-Install imCMS:
+Installing imCMS:
 
 
 Prerequisites:
     * Install the Java Development Kit version 1.4 or later.
 
-    * Install Apache Tomcat 4+,
+    * Install Apache Tomcat 4 or later,
       or another servlet-api 2.3 (or later) compatible servlet engine.
 
     * Install Microsoft SQL Server 2000.
 
-    * Download the Microsoft JDBC driver for SQL Server 2000 Service Pack 2 or later from www.microsoft.com.
+    * Download the Microsoft JDBC driver for SQL Server 2000 Service Pack 2 or later
+      from http://www.microsoft.com/downloads/
 
 
 Building:
@@ -17,45 +18,45 @@ Building:
       If you don't know what this means, you don't need to.
 
 
-Setting up the database:
-    * Create a new empty database with collation "Finnish_Swedish_CI_AS".
-      This can be done with the SQL statement
-          "CREATE DATABASE [<databasename>] COLLATE Finnish_Swedish_CI_AS",
-      where <databasename> is the name you want for your database. See create_db.sql for
-      a simple script to use.
-
-    * To set up the imCMS-database run "imcms.sql" on the empty database.
-
-
 Installing imCMS:
-    * Install the file "imcms.war" in the "tomcat/webapps" directory.
-      If the war-file isn't named "imcms.war", rename it first,
-      or it will be unpacked in a directory named after the file,
-      and internal references to the url-path "/imcms" will not work.
-
-    * Copy the JDBC files (3 files) from the /lib directory where you have unpacked the JDBC driver
-    	to directory "tomcat/webapps/imcms/WEB_INF/lib". 	
+    * Rename the file "imcms-<version>.war" to "imcms.war",
+      and install it in the "tomcat/webapps" directory.
 
     * Start Tomcat.
-      The servlet engine will find the war-file you installed, and unpack it.
+      Tomcat will find the war-file you installed, and unpack it into a directory named after the war-file.
+
+    * Copy the JDBC jar-files (3 files) from the /lib directory where you have unpacked the JDBC driver
+      to directory "tomcat/webapps/imcms/WEB-INF/lib".
+
+
+Setting up the database:
+    * Create a new empty database with your preferred collation.
+      We use the collation "Finnish_Swedish_CI_AS".
+      This can be done with the SQL statement
+
+          CREATE DATABASE [<databasename>] COLLATE Finnish_Swedish_CI_AS
+
+      where <databasename> is the name you want for your database.
+      See "tomcat/webapps/imcms/WEB-INF/sql/create_db-<version>.sql" for a simple script to use.
+
+    * To set up the imCMS-database run the sql script
+      "tomcat/webapps/imcms/WEB-INF/sql/imcms-<version>.sql" on the empty database.
 
 
 Setting up imCMS:
     * Edit the file "server.properties" in the directory "tomcat/webapps/imcms/WEB-INF/conf",
-      and set the database parameters (JdbcDriver, JdbcUrl, User, Password, MaxConnectionCount) according to your setup.
+      and set the database parameters ("JdbcDriver", "JdbcUrl", "User", "Password", "MaxConnectionCount")
+      according to your setup.
       If using Microsofts JDBC-driver, note that it will "clone" connections past the MaxConnectionCount
       unless property "SelectMethod=cursor" is set in the JdbcUrl.
-
-    * Edit the file "host.properties" in the same directory,
-      and set "smtp_server" to the hostname of your SMTP (outgoing mail) server.
+      Set "SmtpServer" to the hostname of your SMTP (outgoing mail) server.
 
     * Restart Tomcat to reload the settings.
 
 
 Running:
-      Try logging in at " http://localhost:8080/imcms/login/ " as user "admin" with password "admin".
+    * Try logging in at " http://localhost:8080/imcms/login/ " as user "admin" with password "admin".
       (Replace "localhost:8080" with whatever hostname and port your servlet engine is running on.)
 
 
 You're done!
-

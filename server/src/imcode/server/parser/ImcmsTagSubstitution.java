@@ -1,16 +1,16 @@
 package imcode.server.parser;
 
+import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.*;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.SectionDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.FileCache;
-import imcode.util.Utility;
 import imcode.util.Html;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,8 +27,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
-
-import com.imcode.imcms.servlet.ImcmsSetupFilter;
 
 class ImcmsTagSubstitution implements Substitution, IMCConstants {
 

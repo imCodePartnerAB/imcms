@@ -46,6 +46,8 @@
     <property name="classes" value="${WEB-INF}/classes"/>
     <property name="fortunes" value="${WEB-INF}/fortunes"/>
     <property name="templates" value="${WEB-INF}/templates"/>
+    <property name="sql" value="${WEB-INF}/sql"/>
+    <property name="sql-diff" value="${sql}/diff"/>
 
     <!-- Paths for other templates -->
     <property name="texttemplates" value="${templates}/text"/>
@@ -305,6 +307,10 @@
             <fileset file="sql/tables/create_db.sql"/>
         </cat>
 
+        <copy todir="${sql-diff}">
+            <fileset dir="sql/diff" includes="diff-*.sql"/>
+        </copy>
+
         <taskdef name="imtranslate" classname="imcode.anttasks.Translate" classpath="tools/build"/>
         <imtranslate bundle="imcms" bundlelanguage="${defaultlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
@@ -351,9 +357,6 @@
         <mkdir dir="${login}"/>
         <mkdir dir="${webroot}/css"/>
         <mkdir dir="${webroot}/images"/>
-        <mkdir dir="${webroot}/javascript"/>
-        <mkdir dir="${webroot}/jsp"/>
-        <mkdir dir="${webroot}/user"/>
 
         <mkdir dir="${WEB-INF}/includes"/>
         <mkdir dir="${WEB-INF}/logs"/>
@@ -382,6 +385,10 @@
                 <include name="*.jsp"/>
             </fileset>
             <mapper type="glob" from="*" to="*.txt"/>
+        </copy>
+
+        <copy todir="${docs}">
+            <fileset dir="${basedir}" includes="*.TXT"/>
         </copy>
 
         <!-- Create empty files needed by fortune -->
@@ -487,10 +494,10 @@
         <property name="srcdist-zip" value="${dist}/${srcdist}.zip"/>
         <property name="srcdist-tgz" value="${dist}/${srcdist}.tar.gz"/>
 
-        <property name="dist-sql" value="${dist}/imcms${versionfilesuffix}.sql"/>
-        <property name="sprocs-sql" value="${dist}/imcms-sprocs${versionfilesuffix}.sql"/>
-        <property name="create-sql" value="${dist}/create_db${versionfilesuffix}.sql"/>
-        <property name="drop-sql" value="${dist}/drop_db${versionfilesuffix}.sql"/>
+        <property name="dist-sql" value="${sql}/imcms${versionfilesuffix}.sql"/>
+        <property name="sprocs-sql" value="${sql}/imcms-sprocs${versionfilesuffix}.sql"/>
+        <property name="create-sql" value="${sql}/create_db${versionfilesuffix}.sql"/>
+        <property name="drop-sql" value="${sql}/drop_db${versionfilesuffix}.sql"/>
 
     </target>
 
