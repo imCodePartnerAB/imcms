@@ -15,8 +15,8 @@ CLASSES = AddDoc.class \
           FileAdmin.class \
           GetDoc.class \
           GetExistingDoc.class \
-          GetImages.class \    
-          ImageBrowse.class \
+          GetImages.class \
+	  ImageBrowse.class \
           ImageUpload.class \
           LastRequest.class \
           LogOut.class \
