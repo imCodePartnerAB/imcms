@@ -11,13 +11,22 @@ import java.util.Hashtable;
 public class Program {
    public static void main( String[] args ) throws NamingException {
 
+      /*
       String ldapServerURL = "ldap://ldap-vcn1.vtd.volvo.se:389/dc=vcn,dc=ds,dc=volvo,dc=net" ;
       //String ldapServerURL = "ldap://ldap-vcn1.vtd.volvo.se:389/" ;
       String ldapAuthenticationType = "simple";
       String ldapUserName = "CN=cs-ad-ldapquery,OU=ServiceAccounts,OU=AdOperation,OU=CS,DC=vcn,DC=ds,DC=volvo,DC=net" ;
       String ldapPassword = "#D8leYS" ;
+*/
+      String userName = "hasbra" ;
 
-      String userName = "user" ;
+      String ldapServerURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com" ;
+      //String ldapServerURL = "ldap://ldap-vcn1.vtd.volvo.se:389/" ;
+      String ldapUserIdentifyingAttribute = "samaccountname" ;
+      String ldapUserObjectClass = "person";
+      String ldapAuthenticationType = "simple";
+      String ldapUserName = "imcode\\hasbra" ;
+      String ldapPassword = "hasbra" ;
 
       DirContext ctx = s_setaupInitialDirContext( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword );
 
@@ -25,7 +34,7 @@ public class Program {
       searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
       String name = "";
       // See http://www.cis.ohio-state.edu/cs/Services/rfc/rfc-text/rfc2254.txt
-      String filter = "(&(objectClass=Person)(cn="+userName+"))" ;
+      String filter = "(&(objectClass="+ldapUserObjectClass+")("+ldapUserIdentifyingAttribute+"="+userName+"))" ;
 
       NamingEnumeration namingEnumeration = ctx.search( name, filter, searchControls );
       while( namingEnumeration.hasMoreElements() ) {

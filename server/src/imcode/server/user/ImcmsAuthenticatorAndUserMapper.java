@@ -5,8 +5,6 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-import com.imcode.imcms.Role;
-
 public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authenticator {
 
    // todo: make sure that these stored procedures are accesed (called) only used within this class

@@ -32,6 +32,15 @@ plugin-db-pass =
 plugin-db-timeout = 30
 plugin-db-maxconnections = 20
 
+smb-domain-name =
+smb-domain-server =
+
+ldap-url =
+ldap-user =
+ldap-pass =
+ldap-user-objectclass = user
+ldap-user-identifying-attribute = sAMAccountName
+ldap-attributes-mapped-to-roles = company, co
 
 # The smtp-server used for sending mails.
 

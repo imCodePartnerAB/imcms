@@ -44,8 +44,12 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
     //   static final String INETORGPERSON_PREFERED_LANGUAGE = "preferredLanguage";
     //   static final String INETORGPERSON_USER_IDENTITY = "uid";
 
-    /** Non standard */
+    /** Non standard taken from microsofts user oid=1.2.840.113556.1.5.9
+     * http://www.unav.es/cti/ldap-smb/ldap-smb-AD-schemas.html
+     * */
     private static final String NONSTANDARD_USERID = "sAMAccountName";
+
+    /** nonstandard, probably Microsoft specific */
     static final String NONSTANDARD_COMPANY = "company";
     private static final String NONSTANDARD_COUNTRY = "co";
 
@@ -83,7 +87,7 @@ public class LdapUserAndRoleMapper implements Authenticator, UserAndRoleMapper {
     }
 
     /**
-     * @param ldapURL The full path to where the ldap-service is located _and_ the node where to start the searches, e.g.  "ldap://computername:389/CN=Users,DC=companyName,DC=com"
+     * @param ldapUrl The full path to where the ldap-service is located _and_ the node where to start the searches, e.g.  "ldap://computername:389/CN=Users,DC=companyName,DC=com"
      * @param ldapAuthenticationType Curently only AUTHENTICATION_TYPE_SIMPLE is suported
      * @param ldapUserName A name that is used to log in (bind) to the ldap server
      * @param ldapPassword A password that i used to log in (bind) to the ldap server

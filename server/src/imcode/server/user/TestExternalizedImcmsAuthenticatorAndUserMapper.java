@@ -1,7 +1,5 @@
 package imcode.server.user;
 
-import org.apache.log4j.Logger;
-
 import java.util.Arrays;
 
 public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
@@ -16,23 +14,19 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
 
    public void setUp() throws LdapUserAndRoleMapper.LdapInitException {
       mockImcmsService = new MockIMCServiceInterface();
-      String ldapURL = "ldap://ldap-vcn1.vtd.volvo.se:389/dc=vcn,dc=ds,dc=volvo,dc=net" ;
-      String ldapUserObjectClass = "person" ;
-      String ldapUserIdentifyingAttribute = "cn" ;
-         String ldapUserName = "CN=cs-ad-ldapquery,OU=ServiceAccounts,OU=AdOperation,OU=CS,DC=vcn,DC=ds,DC=volvo,DC=net" ;
-         String ldapPassword = "#D8leYS";
-      ldapUserMapper = new LdapUserAndRoleMapper( ldapURL,
-                                                  LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE,
-                                                  ldapUserObjectClass,
-                                                  ldapUserIdentifyingAttribute,
-                                                  ldapUserName,
-                                                  ldapPassword,
-                                                  new String[]{LdapUserAndRoleMapper.NONSTANDARD_COMPANY} );
+//      String ldapURL = "ldap://ldap-vcn1.vtd.volvo.se:389/dc=vcn,dc=ds,dc=volvo,dc=net";
+//      String ldapUserIdentifyingAttribute = "cn";
+//      String ldapUserName = "CN=cs-ad-ldapquery,OU=ServiceAccounts,OU=AdOperation,OU=CS,DC=vcn,DC=ds,DC=volvo,DC=net";
+//      String ldapPassword = "#D8leYS";
+
+      String ldapURL = "ldap://loke:389/CN=Users,DC=imcode,DC=com";
+      String ldapUserObjectClass = "person";
+      String ldapUserIdentifyingAttribute = "samaccountname";
+      String ldapUserName = "imcode\\hasbra";
+      String ldapPassword = "hasbra";
+      ldapUserMapper = new LdapUserAndRoleMapper( ldapURL, LdapUserAndRoleMapper.AUTHENTICATION_TYPE_SIMPLE, ldapUserObjectClass, ldapUserIdentifyingAttribute, ldapUserName, ldapPassword, new String[]{LdapUserAndRoleMapper.NONSTANDARD_COMPANY} );
       imcmsAuthenticatorAndUserMapper = new ImcmsAuthenticatorAndUserMapper( mockImcmsService );
-      externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper,
-                                                                                        ldapUserMapper,
-                                                                                        ldapUserMapper,
-                                                                                        "se" );
+      externalizedImcmsAndUserMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, ldapUserMapper, ldapUserMapper, "se" );
    }
 
    public void testImcmsOnlyExisting() {
@@ -50,6 +44,7 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    }
 
    public void testLdapOnlyAuthentication() {
+      mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, new String[]{} );
       boolean userAuthenticates = externalizedImcmsAndUserMapper.authenticate( LOGIN_NAME_HASBRA, LOGIN_NAME_HASBRA );
 
       assertTrue( userAuthenticates );
@@ -122,19 +117,18 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
 
    public void testNullExternalAuthenticator() {
       try {
-         ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper(imcmsAuthenticatorAndUserMapper,null,ldapUserMapper,"se") ;
+         new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, null, ldapUserMapper, "se" );
          fail();
-      } catch ( IllegalArgumentException ex ) {
+      } catch( IllegalArgumentException ex ) {
          //OK
       }
    }
 
    public void testNullExternalUserMapper() {
       try {
-         ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = 
-          new ExternalizedImcmsAuthenticatorAndUserMapper(imcmsAuthenticatorAndUserMapper,ldapUserMapper,null,"se") ;
+         new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, ldapUserMapper, null, "se" );
          fail();
-      } catch ( IllegalArgumentException ex ) {
+      } catch( IllegalArgumentException ex ) {
          //OK
       }
    }
@@ -142,9 +136,9 @@ public class TestExternalizedImcmsAuthenticatorAndUserMapper extends UserBaseTes
    public void testNullAuthenticatorAndNullUserMapper() {
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
       mockImcmsService.addExpectedSQLProcedureCall( SPROC_GETUSERBYLOGIN, SQL_RESULT_ADMIN );
-      ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper(imcmsAuthenticatorAndUserMapper,null,null,"se") ;
-      authAndMapper.authenticate(LOGIN_NAME_ADMIN,LOGIN_NAME_ADMIN) ;
-      authAndMapper.getUser( LOGIN_NAME_ADMIN ) ;
+      ExternalizedImcmsAuthenticatorAndUserMapper authAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( imcmsAuthenticatorAndUserMapper, null, null, "se" );
+      authAndMapper.authenticate( LOGIN_NAME_ADMIN, LOGIN_NAME_ADMIN );
+      authAndMapper.getUser( LOGIN_NAME_ADMIN );
       authAndMapper.synchRolesWithExternal();
    }
- }
+}
