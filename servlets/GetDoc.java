@@ -132,7 +132,7 @@ public class GetDoc extends HttpServlet {
 	    }
  	}
 	try {
-	    documentRequest = new DocumentRequest(imcref,req.getRemoteAddr(),user,meta_id,referringDocument) ;
+	    documentRequest = new DocumentRequest(imcref,req.getRemoteAddr(),session.getId(), user,meta_id,referringDocument) ;
 	    doc_type = documentRequest.getDocument().getDocumentType() ;
 	} catch (IndexOutOfBoundsException ex) {
 	    return imcref.parseDoc( null,"no_page.html",user.getLangPrefix() ) ;

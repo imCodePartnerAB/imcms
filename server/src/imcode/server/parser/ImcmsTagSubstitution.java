@@ -199,7 +199,10 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 		if (includeLevel>0) {
 		    int included_meta_id = Integer.parseInt(attributevalue) ;
 		    // Recursively parse the wanted page.
-		    DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(), documentRequest.getRemoteAddr(), documentRequest.getUser(), included_meta_id, document) ;
+		    DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(),
+										  documentRequest.getRemoteAddr(),
+										  documentRequest.getSessionId(),
+										  documentRequest.getUser(), included_meta_id, document) ;
 		    String documentStr = textDocParser.parsePage(includedDocumentRequest,-1,includeLevel-1,paramsToParse) ;
 		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
 		    documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
@@ -252,7 +255,10 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 						   ) ;
 	    } else if (includeLevel>0) {
 		int included_meta_id = Integer.parseInt((String)included_docs.get(String.valueOf(no))) ;
-		DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(), documentRequest.getRemoteAddr(), documentRequest.getUser(), included_meta_id,document) ;
+		DocumentRequest includedDocumentRequest = new DocumentRequest(documentRequest.getServerObject(),
+									      documentRequest.getRemoteAddr(),
+									      documentRequest.getSessionId(),
+									      documentRequest.getUser(), included_meta_id,document) ;
 		String documentStr = textDocParser.parsePage(includedDocumentRequest,-1,includeLevel-1,paramsToParse) ;         ;
 		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_PREBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;
 		documentStr = org.apache.oro.text.regex.Util.substitute(patMat,HTML_POSTBODY_PATTERN,NULL_SUBSTITUTION,documentStr) ;

@@ -126,7 +126,7 @@ public class AdminDoc extends HttpServlet {
 	switch ( doc_type ) {
 
 	default:
-	    DocumentRequest documentRequest = new DocumentRequest(imcref,req.getRemoteAddr(),user,meta_id,null) ;
+	    DocumentRequest documentRequest = new DocumentRequest(imcref,req.getRemoteAddr(),req.getSession(true).getId(),user,meta_id,null) ;
 	    String result = imcref.parsePage( documentRequest,flags,new ParserParameters() ) ;
 	    return result ;
 
