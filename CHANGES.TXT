@@ -120,6 +120,9 @@ Version 2.0.0
     * Changed methods:
         - DocumentService.saveChanges(Document) - Throws SaveException instead of MaxCategoriesOfTypeExceededException.
         - TextDocument.setInclude(int,TextDocument) - Now requires you to call DocumentService.saveChanges() afterwards.
+        - TextDocument.Menu.getDocuments() - Returns the same documents as can be seen when editing the menu.
+        - TextDocument.Menu.getMenuItems() - Returns the same menuitems as can be seen when editing the menu.
+            No longer throws NoPermissionException.
         - UserService.addNewRole(String) - Returns the new role.
     * Undeprecated methods:
         - TextDocument.setTemplate(Template) - Use when you don't care about setting a template group. (Bug 2791)

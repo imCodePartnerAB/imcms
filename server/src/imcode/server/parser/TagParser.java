@@ -86,7 +86,7 @@ class TagParser {
         this.parserParameters = parserParameters;
         this.documentRequest = parserParameters.getDocumentRequest();
         this.document = (TextDocumentDomainObject)documentRequest.getDocument();
-        this.service = documentRequest.getServerObject();
+        this.service = documentRequest.getServices();
 
         this.includeMode = viewing.isEditingIncludes();
         this.includeLevel = includelevel;

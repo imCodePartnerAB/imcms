@@ -1,10 +1,9 @@
 package com.imcode.imcms.api;
 
-import imcode.server.ImcmsServices;
 import imcode.server.MockImcmsServices;
-import imcode.server.user.UserDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
+import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -87,52 +86,6 @@ public class TestUserService extends TestCase {
 
     private boolean containsSqlCall( Predicate predicate ) {
         return CollectionUtils.exists( mockImcmsServices.getSqlCalls(), predicate);
-    }
-
-    private static class MockContentManagementSystem extends ContentManagementSystem {
-
-        private ImcmsServices imcmsServices;
-        private User currentUser;
-
-        SecurityChecker getSecurityChecker() {
-            return new SecurityChecker( this );
-        }
-
-        public UserService getUserService() {
-            return null;  // TODO
-        }
-
-        public DocumentService getDocumentService() {
-            return null;  // TODO
-        }
-
-        public User getCurrentUser() {
-            return currentUser ;
-        }
-
-        public DatabaseService getDatabaseService() {
-            return null;  // TODO
-        }
-
-        public TemplateService getTemplateService() {
-            return null;  // TODO
-        }
-
-        public MailService getMailService() {
-            return null;  // TODO
-        }
-
-        ImcmsServices getInternal() {
-            return imcmsServices ;
-        }
-
-        public void setInternal(ImcmsServices imcmsServices) {
-            this.imcmsServices = imcmsServices ;
-        }
-
-        public void setCurrentUser( User user ) {
-            currentUser = user ;
-        }
     }
 
     private abstract static class SqlCallPredicate implements Predicate {

@@ -41,10 +41,20 @@ class MenuParser {
         return (MenuDomainObject)menus.get( new Integer( id ) );
     }
 
-    private String getMenuModePrefix( int menuIndex, Properties menuattributes ) {
-        Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
-        ImcmsServices serverObject = parserParameters.getDocumentRequest().getServerObject();
+    private String getMenuModePrefix( int menuIndex, List parseTags ) {
+        ImcmsServices services = parserParameters.getDocumentRequest().getServices();
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
+        Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
+        String result = services.getAdminTemplate( "textdoc/menulabel.frag", user, parseTags );
+        if ( null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex ) {
+            result += services.getAdminTemplate( "textdoc/add_doc.html", user, parseTags )
+                      +
+                      services.getAdminTemplate( "textdoc/sort_order.html", user, parseTags );
+        }
+        return result;
+    }
+
+    private List createParseTags( int menuIndex, Properties menuattributes ) {
         MenuDomainObject menu = getMenuByIndex( menuIndex );
         List parseTags = Arrays.asList( new String[]{
             "#menuindex#", "" + menuIndex,
@@ -55,27 +65,16 @@ class MenuParser {
             "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId(),
             "#defaulttemplate#", URLEncoder.encode( StringUtils.defaultString( menuattributes.getProperty( "defaulttemplate" ) ) )
         } );
-        String result = serverObject.getAdminTemplate( "textdoc/menulabel.frag", user, parseTags );
-        if ( null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex ) {
-
-            result += serverObject.getAdminTemplate( "textdoc/add_doc.html", user, parseTags )
-                      +
-                      serverObject.getAdminTemplate( "textdoc/sort_order.html", user, parseTags );
-        }
-        return result;
+        return parseTags;
     }
 
-    private String getMenuModeSuffix( int menuIndex ) {
+    private String getMenuModeSuffix( int menuIndex, List parseTags ) {
         Integer editingMenuIndex = parserParameters.getEditingMenuIndex();
+        ImcmsServices services = parserParameters.getDocumentRequest().getServices();
         if ( null != editingMenuIndex && editingMenuIndex.intValue() == menuIndex ) {
-            return parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/archive_del_button.html", parserParameters.getDocumentRequest().getUser(), null );
+            return services.getAdminTemplate( "textdoc/archive_del_button.html", parserParameters.getDocumentRequest().getUser(), null );
         } else {
-            List parseTags = Arrays.asList( new String[]{
-                "#menuindex#", "" + menuIndex,
-                "#flags#", "" + parserParameters.getFlags(),
-                "#meta_id#", "" + parserParameters.getDocumentRequest().getDocument().getId()
-            } );
-            return parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/admin_menu.frag", parserParameters.getDocumentRequest().getUser(), parseTags );
+            return services.getAdminTemplate( "textdoc/admin_menu.frag", parserParameters.getDocumentRequest().getUser(), parseTags );
         }
     }
 
@@ -83,14 +82,14 @@ class MenuParser {
         DocumentDomainObject document = parserParameters.getDocumentRequest().getDocument();
 
         UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-        IdNamePair[] docTypes = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper().getCreatableDocumentTypeIdsAndNamesInUsersLanguage( document, user );
+        IdNamePair[] docTypes = parserParameters.getDocumentRequest().getServices().getDocumentMapper().getCreatableDocumentTypeIdsAndNamesInUsersLanguage( document, user );
         Map docTypesMap = new HashMap();
         for ( int i = 0; i < docTypes.length; i++ ) {
             IdNamePair docType = docTypes[i];
             docTypesMap.put( new Integer( docType.getId() ), docType );
         }
 
-        String existing_doc_name = parserParameters.getDocumentRequest().getServerObject().getAdminTemplate( "textdoc/existing_doc_name.html", parserParameters.getDocumentRequest().getUser(), null );
+        String existing_doc_name = parserParameters.getDocumentRequest().getServices().getAdminTemplate( "textdoc/existing_doc_name.html", parserParameters.getDocumentRequest().getUser(), null );
         docTypesMap.put( new Integer( EXISTING_DOCTYPE_ID ), new IdNamePair( EXISTING_DOCTYPE_ID, existing_doc_name ) );
 
         final int[] docTypeIdsOrder = {
@@ -134,8 +133,9 @@ class MenuParser {
         NodeList menuNodes = new NodeList( menutemplate, parserParameters.getDocumentRequest().getHttpServletRequest() ); // Build a tree-structure of nodes in memory, which "only" needs to be traversed. (Vood)oo-magic.
         nodeMenu( new SimpleElement( "menu", menuattributes, menuNodes ), result, currentMenu, patMat, menuIndex, tagParser ); // Create an artificial root-node of this tree. An "imcms:menu"-element.
         if ( menuMode ) { // If in menuMode, make sure to include all the stuff from the proper admintemplates.
-            result.append( getMenuModeSuffix( menuIndex ) );
-            result.insert( 0, getMenuModePrefix( menuIndex, menuattributes ) );
+            List parseTags = createParseTags( menuIndex, menuattributes );
+            result.append( getMenuModeSuffix( menuIndex, parseTags ) );
+            result.insert( 0, getMenuModePrefix( menuIndex, parseTags ) );
         }
         return result.toString();
     }
@@ -215,8 +215,7 @@ class MenuParser {
             public boolean evaluate( Object o ) {
                 DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
                 UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-                if ( document.isVisibleInMenusForUnauthorizedUsers()
-                     || user.canAccess( document ) ) {
+                if ( user.canSeeDocumentInMenus( document ) ) {
                     if ( editingMenu( menuIndex ) || document.isPublishedAndNotArchived() ) {
                         return true;
                     }
@@ -224,6 +223,7 @@ class MenuParser {
                 return false;
             }
         } );
+
         int menuItemIndexStart = 0;
         try {
             menuItemIndexStart = Integer.parseInt( menuAttributes.getProperty( "indexstart" ) );
@@ -384,7 +384,7 @@ class MenuParser {
 
         UserDomainObject user = documentRequest.getUser();
 
-        ImcmsServices serverObject = documentRequest.getServerObject();
+        ImcmsServices serverObject = documentRequest.getServices();
         String a_href = serverObject.getAdminTemplate( "textdoc/menuitem_a_href.frag", user, menuItemAHref );
 
         tags.setProperty( "#menuitemlinkonly#", a_href );

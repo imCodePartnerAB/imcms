@@ -38,7 +38,7 @@ public class DocumentRequest implements Cloneable {
         return super.clone() ;
     }
 
-    public ImcmsServices getServerObject() {
+    public ImcmsServices getServices() {
         return this.serverObject;
     }
 

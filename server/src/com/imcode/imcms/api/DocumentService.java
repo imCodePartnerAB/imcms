@@ -12,7 +12,8 @@ public class DocumentService {
         this.contentManagementSystem = contentManagementSystem;
     }
 
-    Document wrapDocumentDomainObject( DocumentDomainObject document ) {
+    static Document wrapDocumentDomainObject( DocumentDomainObject document,
+                                              ContentManagementSystem contentManagementSystem ) {
         ApiWrappingDocumentVisitor apiWrappingDocumentVisitor = new ApiWrappingDocumentVisitor(contentManagementSystem) ;
         document.accept(apiWrappingDocumentVisitor) ;
         return apiWrappingDocumentVisitor.getDocument() ;
@@ -31,7 +32,7 @@ public class DocumentService {
         DocumentDomainObject doc = getDocumentMapper().getDocument( documentId );
         Document result = null;
         if ( null != doc ) {
-            result = wrapDocumentDomainObject( doc );
+            result = wrapDocumentDomainObject( doc, contentManagementSystem );
             getSecurityChecker().hasAtLeastDocumentReadPermission( result );
         }
         return result;
@@ -71,7 +72,7 @@ public class DocumentService {
 
     private Document createNewDocument( int doctype, Document parent ) throws NoPermissionException {
         getSecurityChecker().hasEditPermission( parent );
-        return wrapDocumentDomainObject( getDocumentMapper().createDocumentOfTypeFromParent( doctype, parent.getInternal(), contentManagementSystem.getCurrentUser().getInternal() ) );
+        return wrapDocumentDomainObject( getDocumentMapper().createDocumentOfTypeFromParent( doctype, parent.getInternal(), contentManagementSystem.getCurrentUser().getInternal() ), contentManagementSystem );
     }
 
     /**
@@ -218,7 +219,7 @@ public class DocumentService {
             Document[] documents = new Document[documentDomainObjects.length];
             for ( int i = 0; i < documentDomainObjects.length; i++ ) {
                 DocumentDomainObject documentDomainObject = documentDomainObjects[i];
-                documents[i] = wrapDocumentDomainObject( documentDomainObject );
+                documents[i] = wrapDocumentDomainObject( documentDomainObject, contentManagementSystem );
             }
             return documents;
         } catch ( IndexException e ) {
@@ -241,12 +242,12 @@ public class DocumentService {
         return xmlDocument ;
     }
 
-    private static class ApiWrappingDocumentVisitor extends DocumentVisitor {
+    static class ApiWrappingDocumentVisitor extends DocumentVisitor {
 
         private ContentManagementSystem contentManagementSystem ;
         private Document document;
 
-        private ApiWrappingDocumentVisitor( ContentManagementSystem contentManagementSystem ) {
+        ApiWrappingDocumentVisitor( ContentManagementSystem contentManagementSystem ) {
             this.contentManagementSystem = contentManagementSystem;
         }
 

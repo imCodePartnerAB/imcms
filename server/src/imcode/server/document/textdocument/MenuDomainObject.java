@@ -138,4 +138,8 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public int hashCode() {
         return sortOrder + menuItems.hashCode() ;
     }
+
+    public int getSize() {
+        return menuItems.size();
+    }
 }

@@ -460,12 +460,6 @@ public class UserDomainObject extends Hashtable {
         return hasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__READ, document );
     }
 
-    public boolean canList( DocumentDomainObject document ) {
-        return document.isPublishedAndNotArchived()
-               && canAccess( document )
-               || canEdit( document );
-    }
-
     public boolean isSuperAdminOrHasFullPermissionOn( DocumentDomainObject document ) {
         return isSuperAdminOrHasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__FULL, document ) ;
     }
@@ -620,5 +614,11 @@ public class UserDomainObject extends Hashtable {
             }
         }
         return false ;
+    }
+
+    public boolean canSeeDocumentInMenus(DocumentDomainObject document) {
+        return document.isVisibleInMenusForUnauthorizedUsers()
+               || canAccess( document );
+
     }
 }

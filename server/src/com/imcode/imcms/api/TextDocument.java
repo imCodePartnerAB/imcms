@@ -2,6 +2,7 @@ package com.imcode.imcms.api;
 
 import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
+import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
@@ -87,8 +88,7 @@ public class TextDocument extends Document {
         Transformer fromDomainToAPITransformer = new Transformer() {
             public Object transform(Object o) {
                 Integer tempMetaId = (Integer) o;
-
-                return contentManagementSystem.getDocumentService().wrapDocumentDomainObject(getDocumentMapper().getDocument(tempMetaId.intValue()));
+                return DocumentService.wrapDocumentDomainObject(getDocumentMapper().getDocument(tempMetaId.intValue()), contentManagementSystem );
             }
         };
 
@@ -209,7 +209,7 @@ public class TextDocument extends Document {
         if (null != includedDocumentId) {
             DocumentDomainObject includedDocument = getDocumentMapper().getDocument(includedDocumentId.intValue());
             if (null != includedDocument) {
-                return contentManagementSystem.getDocumentService().wrapDocumentDomainObject(includedDocument);
+                return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem );
             }
         }
         return null;
@@ -249,6 +249,10 @@ public class TextDocument extends Document {
     public void setImage( int imageIndex, Image image ) {
         TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getInternal() ;
         textDocument.setImage( imageIndex, image.getInternal());
+    }
+
+    ContentManagementSystem getContentManagementSystem() {
+        return contentManagementSystem;
     }
 
     public static class TextField {
@@ -300,13 +304,15 @@ public class TextDocument extends Document {
         }
     }
 
-    public class MenuItem {
+    public static class MenuItem {
         MenuItemDomainObject internalMenuItem;
         Document child;
 
-        public MenuItem(MenuItemDomainObject internalMenuItem) {
+        public MenuItem( MenuItemDomainObject internalMenuItem, ContentManagementSystem contentManagementSystem ) {
             this.internalMenuItem = internalMenuItem;
-            child = contentManagementSystem.getDocumentService().wrapDocumentDomainObject(internalMenuItem.getDocument());
+            DocumentService.ApiWrappingDocumentVisitor visitor = new DocumentService.ApiWrappingDocumentVisitor( contentManagementSystem );
+            internalMenuItem.getDocument().accept( visitor );
+            child = visitor.getDocument() ;
         }
 
         public Document getDocument() {
@@ -351,7 +357,7 @@ public class TextDocument extends Document {
         }
     }
 
-    public class Menu {
+    public static class Menu {
         /**
          * Menu sorted by headline. *
          */
@@ -371,20 +377,25 @@ public class TextDocument extends Document {
 
         private TextDocumentDomainObject internalTextDocument;
         private int menuIndex;
+        private ContentManagementSystem contentManagementSystem;
 
-        private Menu(TextDocument document, int menuIndex) {
+        Menu(TextDocument document, int menuIndex) {
             this.internalTextDocument = document.getInternalTextDocument();
             this.menuIndex = menuIndex;
+            this.contentManagementSystem = document.getContentManagementSystem() ;
         }
 
-        public MenuItem[] getMenuItems() throws NoPermissionException {
+        public MenuItem[] getMenuItems() {
             MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems();
-            MenuItem[] menuItems = new MenuItem[menuItemsDomainObjects.length];
+            List menuItems = new ArrayList(menuItemsDomainObjects.length);
+            UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
             for (int i = 0; i < menuItemsDomainObjects.length; i++) {
                 MenuItemDomainObject menuItemDomainObject = menuItemsDomainObjects[i];
-                menuItems[i] = new MenuItem(menuItemDomainObject);
+                if (user.canSeeDocumentInMenus( menuItemDomainObject.getDocument() )) {
+                    menuItems.add(new MenuItem(menuItemDomainObject, contentManagementSystem ));
+                }
             }
-            return menuItems;
+            return (MenuItem[])menuItems.toArray( new MenuItem[menuItems.size()] );
         }
 
         /**
@@ -395,9 +406,9 @@ public class TextDocument extends Document {
          * @throws DocumentAlreadyInMenuException If the owner already is in the menu.
          */
         public void addDocument(Document documentToAdd) throws NoPermissionException, DocumentAlreadyInMenuException {
-            getSecurityChecker().hasEditPermission(documentToAdd);
-            getSecurityChecker().userHasPermissionToAddDocumentToAnyMenu(documentToAdd);
-            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(getDocumentMapper().getDocumentReference( documentToAdd.getInternal() ) ));
+            contentManagementSystem.getSecurityChecker().hasEditPermission(documentToAdd);
+            contentManagementSystem.getSecurityChecker().userHasPermissionToAddDocumentToAnyMenu(documentToAdd);
+            internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(contentManagementSystem.getInternal().getDocumentMapper().getDocumentReference( documentToAdd.getInternal() ) ));
         }
 
         /**
@@ -407,23 +418,18 @@ public class TextDocument extends Document {
          * @throws NoPermissionException If you lack permission to edit the menudocument.
          */
         public void removeDocument(Document documentToRemove) throws NoPermissionException {
-            getSecurityChecker().hasEditPermission(documentToRemove);
+            contentManagementSystem.getSecurityChecker().hasEditPermission(documentToRemove);
             internalTextDocument.getMenu(menuIndex).removeMenuItemByDocumentId(documentToRemove.getId());
         }
 
         public Document[] getDocuments() {
-            MenuItemDomainObject[] menuItemDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems();
-            List documentList = new ArrayList();
-            for (int i = 0; i < menuItemDomainObjects.length; i++) {
-                MenuItemDomainObject menuItemDomainObject = menuItemDomainObjects[i];
-                DocumentDomainObject documentDomainObject = menuItemDomainObject.getDocument();
-                imcode.server.user.UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-                if (user.canList( documentDomainObject )) {
-                    Document document = contentManagementSystem.getDocumentService().wrapDocumentDomainObject(documentDomainObject);
-                    documentList.add(document);
-                }
+            MenuItem[] menuItems = getMenuItems() ;
+            Document[] documents = new Document[menuItems.length];
+            for (int i = 0; i < menuItems.length; i++) {
+                MenuItem menuItem = menuItems[i];
+                documents[i] = menuItem.getDocument() ;
             }
-            return (Document[]) documentList.toArray(new Document[documentList.size()]);
+            return documents ;
         }
 
         public void setSortOrder( int sortOrder ) {

@@ -266,6 +266,7 @@
                 <include name="com/imcode/imcms/api/**"/>
                 <include name="com/imcode/util/**"/>
                 <exclude name="**/Test*.java"/>
+                <exclude name="**/Mock*.java"/>
             </fileset>
         </javadoc>
     </target>
