@@ -24,58 +24,25 @@ public class ChatGroup
 	private MsgBuffer _msgPool;
 	private List _groupMembers;
 	private Counter _msgNrCounter;
-	private List _msgTypes;
+	private Counter _membersCounter;
+	
 
 
 	/**
 	*Default constructor
 	*@param groupNumber The groupNumber that this ChatGroup will have
 	*/
-	protected ChatGroup(int groupNumber)
+	protected ChatGroup(int groupNumber,String groupName)
 	{
 		_groupId = groupNumber;
+		_name = groupName;
 		_groupMembers = Collections.synchronizedList(new LinkedList());
 		_msgPool = new MsgBuffer();
 		_msgNrCounter = new Counter();
-		_msgTypes = Collections.synchronizedList(new LinkedList());
+		_membersCounter = new Counter();
+	
 	}
 	
-	/**
-	*Adds a new msgTypes
-	@param msgType the name of the message stype to add to the list
-	*of msg-types
-	*/	
-	public void addMessageType(String msgType)
-	{
-		_msgTypes.add(msgType);
-	}
-	
-	/**
-	*Gets a ListIterator of all the mag-types fore this room
-	*@return A ListIterator of all the msgtypes in this room
-	*/
-	public  ListIterator getAllMsgTypes()
-	{
-		return _msgTypes.listIterator(0);
-	}
-	
-	public String getMsgTypeName(int typeNr)
-	{
-		ListIterator iter = _msgTypes.listIterator(0);
-		boolean funnen = false;
-		String theName = "";
-		while (iter.hasNext() || !funnen)
-		{
-			MsgType temp = (MsgType) iter.next();
-			if (temp.getIdNr() == typeNr)
-			{
-				theName = temp.getName();
-				funnen = true;
-			}
-		}
-			
-		return theName;
-	}
 	/**
 	*Gets the id for this group
 	*@return The idnumber for this group
