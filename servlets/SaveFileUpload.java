@@ -10,28 +10,8 @@ import imcode.util.* ;
 
 public class SaveFileUpload extends HttpServlet {
 
-	static protected Hashtable mimetypes ;
-
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-
-		// Read an apache style mime-types file (mime	ext1 ext2 ext3)
-		// and invert it into a hashtable with the extensions as keys.
-		mimetypes = new Hashtable() ;
-		try {
-			Properties mt = Prefs.getProperties(new File(Prefs.get("mime.types","servlet.cfg"))) ;
-			Enumeration enum = mt.propertyNames() ;
-			while ( enum.hasMoreElements() ) {
-				String mime = (String)enum.nextElement() ;
-				StringTokenizer file_exts = new StringTokenizer(mt.getProperty(mime)," \t") ;
-				while ( file_exts.hasMoreTokens() ) {
-					mimetypes.put(file_exts.nextToken(), mime.toLowerCase()) ;
-				}
-			}
-		} catch ( IOException ex ) {
-			log("Unable to load mime-types-file: "+ex.getMessage()) ;
-		}
-
 	}
 
 	public void doPost ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
@@ -39,7 +19,7 @@ public class SaveFileUpload extends HttpServlet {
 		String imcserver 			= imcode.util.Utility.getDomainPref("adminserver",host) ;
 		String start_url        	= imcode.util.Utility.getDomainPref( "start_url",host ) ;
 		File file_path 				= new File(imcode.util.Utility.getDomainPref( "file_path", host ));
-		int uploadsize 				= Integer.parseInt(Utility.getDomainPref( "max_uploadsize",host )) ;
+		//int uploadsize 				= Integer.parseInt(Utility.getDomainPref( "max_uploadsize",host )) ;
 
 		imcode.server.User user ;
 
@@ -56,9 +36,9 @@ public class SaveFileUpload extends HttpServlet {
 		ServletInputStream in = req.getInputStream() ;
 		ServletOutputStream out = res.getOutputStream() ;
 
-		if (length<1||length>uploadsize) {
-			return ;
-		}
+		//if (length<1||length>uploadsize) {
+		//return ;
+		//}
 
 		byte buffer[] = new byte[ length ] ;
 		int bytes_read = 0;
@@ -124,22 +104,38 @@ public class SaveFileUpload extends HttpServlet {
 		} else*/ if ( mp.getParameter("ok")!=null ) {
 			String file = mp.getParameter("file") ;
 			String filename = mp.getFilename("file") ;
-			String mime = mp.getParameter("mime") ;
+			String oldname = mp.getParameter("oldname") ;
+			String mime = mp.getParameter("mime") ; // The users choice in the listbox (""==autodetect,"other"==other)
 			String other = mp.getParameter("other") ;
-			int dot = filename.lastIndexOf(".") ;
-			if (mime == null ||"".equals(mime) ) {
-			    if ( dot != -1 ) {
+			if (null == filename || "".equals(filename)) {
+			    // We weren't given a new filename to play with.
+			    // We probably weren't given a file either, but let's not assume that.
+			    // We use the previous name instead.
+			    filename = oldname ;
+			}
+			if (filename == null) {
+			    // We don't have a filename... use the empty string.
+			    filename = "" ;
+			}
+
+			int dot = filename.indexOf('.') ;
+			if (mime == null ||"".equals(mime) ) { // Autodetect?
+			    if ( dot != -1 ) { // Were we given a filename containing an extension?
+				// So... get the extension!
 				String ext = filename.substring(dot+1).toLowerCase() ;
-				String mimetemp = (String)mimetypes.get(ext) ;
-				if ( mimetemp != null ) {
-				    mime = mimetemp ;
-				} else {
+				// The extension may correspond to a mime-type.
+				String mimetemp = (String)Utility.getMimeTypeFromExtension(ext) ;
+				if ( mimetemp != null ) { // Did we find a mime-type?
+				    mime = mimetemp ; // Yep! Use it.
+				} else { // No. We have no mime-type. Use standard binary stream mime-type as default.
 				    mime = "application/octet-stream" ; 
 				}
+			    } else { // Must not forget that there may not be a dot.
+				mime = "application/octet-stream" ; 
 			    }
-			} else {
-			    mime = other ;
-			}
+			} else if (mime.equals("other")) { // The user selected "other" in the listbox
+			    mime = other ; // FIXME: What if other is the empty string? Well, of course, it _is_ the user's choice...
+			} 
 			File fn = null ;
 			if (file.length() > 0) {
 				fn = new File(filename) ;
@@ -159,7 +155,7 @@ public class SaveFileUpload extends HttpServlet {
 			try {
 				IMCServiceRMI.sqlUpdateQuery( imcserver, sqlStr ) ;
 			} catch ( RemoteException ex ) {
-				log ("Det sket sig med databasen...") ;
+				log ("Failed to update db with new fileupload") ;
 			}
 			if (file.length() > 0) {
 				FileOutputStream fos = new FileOutputStream(fn) ;
