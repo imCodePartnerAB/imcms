@@ -220,12 +220,12 @@ function isStatFile(iside) {
 
 function dblClickAction(iside) {
 	if (!(isMac && ie)) {
-		if (isEditFileText(iside)) {
-			editFile(iside,1);
-		} else if (isImageFile(iside) || isStatFile(iside)) {
+		if (isImageFile(iside) || isStatFile(iside)) {
 			previewFile(iside);
 		} else if (isHtmlFile(iside) && !isHiddenFold(iside)) {
 			openFile(iside);
+		} else if (isEditFileText(iside)) {
+			editFile(iside,1);
 		} else if (isFile(iside) || isViewFile(iside)) {
 			var fBtn = eval('document.forms[0].download' + iside);
 			fBtn.click();
@@ -241,14 +241,14 @@ function previewFile(iside) {
 	var sdir = (iside == 2) ? f.dir2w.value : f.dir1w.value;
 	var sfile = getFile(iside);
 	sfile = (webRoot != "") ? webRoot + '/' + sfile : wDir[iside] + '/' + sfile;
-	if (isEditFileText(iside)) { // view textfiles "readonly"
-		editFile(iside,1);
-	} else if (isImageFile(iside)) { // file
-		popWinOpen(800,570,JSP_PATH + "/FileAdmin_preview.jsp?file=" + escape(sfile),"filePreview",0);
-	} else if (isStatFile(iside)) { // stat
+	if (isStatFile(iside)) { // stat
 		popWinOpen(800,570,JSP_PATH + "/FileAdmin_preview.jsp?isStat=1&file=" + escape(sfile),"filePreview",0);
 	} else if (isHtmlFile(iside) && !isHiddenFold(iside)) { // html
 		openFile(iside);
+	} else if (isEditFileText(iside)) { // view textfiles "readonly"
+		editFile(iside,1);
+	} else if (isImageFile(iside)) { // file
+		popWinOpen(800,570,JSP_PATH + "/FileAdmin_preview.jsp?file=" + escape(sfile),"filePreview",0);
 	} else if (isFile(iside)) { // other files
 		var fBtn = eval('document.forms[0].download' + iside);
 		fBtn.click();
