@@ -2,7 +2,6 @@ package imcode.server.db;
 
 import org.apache.log4j.Logger;
 
-import java.util.Vector;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -37,13 +36,15 @@ public class DatabaseService {
 
     private String ADITIONAL_TEST_DATA = "5.insertaditionaltestdata.sql";
 
-    private static String SQL92_TYPE_TIMESTAMP = "timestamp";
-    private static String SQL_SERVER_TIMESTAMP_TYPE = "datetime";
+    private static final String SQL92_TYPE_TIMESTAMP = "timestamp";
+    private static final String SQL99_CLOB = "CLOB";
+
+    private static String SQLSERVER_AND_MYSQL_TIMESTAMP_TYPE = "datetime";
+    private static final String SQL_SERVER_TEXT = "TEXT";
 
     private static Logger log = Logger.getLogger( DatabaseService.class );
 
     private SQLProcessor sqlProcessor;
-
     SQLProcessor getSQLProcessor() { return sqlProcessor; }
 
     private int databaseType;
@@ -76,6 +77,8 @@ public class DatabaseService {
                 break;
         }
 
+        // String jTraceUrl = "jdbc:jtrace:driver=" + jdbcDriver + "&url=" + serverUrl;
+
         int maxConnectionCount = 20;
         try {
             ConnectionPool connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
@@ -88,18 +91,16 @@ public class DatabaseService {
 
     void initializeDatabase() {
         try {
-            Vector commands = readCommandsFromFile( DROP_TABLES );
+            ArrayList commands = readCommandsFromFile( DROP_TABLES );
             executeCommands( commands );
             log.info( "Dropped tables" );
 
             commands = readCommandsFromFile( CREATE_TABLES );
-            switch( databaseType ) {
-                case SQL_SERVER:
-                case MY_SQL:
-                    commands = changeTimestampToDateTimeType( commands );
-                    break;
-            }
-            executeCommands( commands );
+            executeCreateCommands( commands );
+
+            // I tried to use batchUpdate but for the current Mimer driver that only works for SELECT, INSERT, UPDATE,
+            // and DELETE operations and this method is also used for create table and drop table commands. /Hasse
+            // sqlProcessor.executeBatchUpdate( con, (String[])commands.toArray( new String[commands.size()] ) );
             log.info( "Created tables" );
 
             commands = readCommandsFromFile( ADD_TYPE_DATA );
@@ -119,13 +120,31 @@ public class DatabaseService {
         }
     }
 
+    private void executeCreateCommands( ArrayList commands ) {
+        switch( databaseType ) {
+            case SQL_SERVER:
+                commands = changeClobToText( commands );
+                commands = changeTimestampToDateTime( commands );
+                break;
+            case MY_SQL:
+                commands = changeTimestampToDateTime( commands );
+                commands = changeClobToText( commands );
+                break;
+        }
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            //            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
+            sqlProcessor.executeUpdate( command, null );
+        }
+    }
+
     void initTestData() throws IOException {
-        Vector commands = readCommandsFromFile( ADITIONAL_TEST_DATA );
+        ArrayList commands = readCommandsFromFile( ADITIONAL_TEST_DATA );
         sqlProcessor.executeBatchUpdate( (String[])commands.toArray( new String[commands.size()] ) );
     }
 
-    private Vector changeCharInCurrentTimestampCast( Vector commands ) {
-        Vector modifiedCommands = new Vector();
+    private ArrayList changeCharInCurrentTimestampCast( ArrayList commands ) {
+        ArrayList modifiedCommands = new ArrayList();
         // CAST(CURRENT_TIMESTAMP AS CHAR(80)) is changed to CAST(CURRENT_TIMESTAMP AS CHAR)"
         String patternStr = "CAST *\\( *CURRENT_TIMESTAMP *AS *CHAR *\\( *[0-9]+ *\\) *\\)";
         String replacementStr = "CAST(CURRENT_TIMESTAMP AS CHAR)";
@@ -141,17 +160,27 @@ public class DatabaseService {
         return modifiedCommands;
     }
 
-    private Vector changeTimestampToDateTimeType( Vector commands ) {
-        Vector modifiedCommands = new Vector();
+    private ArrayList changeClobToText( ArrayList commands ) {
+        ArrayList modifiedCommands = new ArrayList();
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
-            String modifiedCommand = command.replaceAll( SQL92_TYPE_TIMESTAMP, SQL_SERVER_TIMESTAMP_TYPE );
+            String modifiedCommand = command.replaceAll( SQL99_CLOB, SQL_SERVER_TEXT );
             modifiedCommands.add( modifiedCommand );
         }
         return modifiedCommands;
     }
 
-    private void executeCommands( Vector commands ) {
+    private ArrayList changeTimestampToDateTime( ArrayList commands ) {
+        ArrayList modifiedCommands = new ArrayList();
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            String modifiedCommand = command.replaceAll( SQL92_TYPE_TIMESTAMP, SQLSERVER_AND_MYSQL_TIMESTAMP_TYPE );
+            modifiedCommands.add( modifiedCommand );
+        }
+        return modifiedCommands;
+    }
+
+    private void executeCommands( ArrayList commands ) {
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
             //            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
@@ -163,12 +192,12 @@ public class DatabaseService {
         // sqlProcessor.executeBatchUpdate( con, (String[])commands.toArray( new String[commands.size()] ) );
     }
 
-    private Vector readCommandsFromFile( String fileName ) throws IOException {
+    private ArrayList readCommandsFromFile( String fileName ) throws IOException {
         File sqlScriptingFile = new File( FILE_PATH + fileName );
 
         BufferedReader reader = new BufferedReader( new FileReader( sqlScriptingFile ) );
         StringBuffer commandBuff = new StringBuffer();
-        Vector commands = new Vector();
+        ArrayList commands = new ArrayList();
         String aLine;
         do {
             aLine = reader.readLine();

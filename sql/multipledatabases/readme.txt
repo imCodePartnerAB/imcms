@@ -1,37 +1,49 @@
-Skripten i denna katalog körs av DatabaseService när man instantierar denna klass.
+Skripten i denna katalog körs av klassen DatabaseService när man instantierar denna.
 Se den klassen för att se vilka databaser som stödjs.
 (I skrivandets stund är det SQLServer, Mimer och MySQL)
 
-Vid förändring av skripen i denna katalog, se till att validera innehållet mot SQL 92,
+Vid förändring av skripen i denna katalog, se till att validera innehållet mot SQL 92/99 i möjligaste mån,
 http://developer.mimer.com/validator/parser92/index.tml
+http://developer.mimer.com/validator/parser92/index.tml
+Se även till att alla tester genom testklassen TestDatabaseService fortsätter att gå att köra.
 
-Innan man kör skripten måste man skapa en tom databas. Se respektive databasleverantörs instruktioner för hur man gör detta.
+För att kunna skapa DatabaseService objectet behöver man en tom databas.
+Se respektive databasleverantörs instruktioner för hur man gör detta.
 Mimer: Kör ett skript med kommandot CREATE DATABANK innan create.sql skriptet körs. Se mimer.sql.
+Räcker med att köra när databasen är nyskapat, en gång.
+
+Arbetar med:
+3 fel när jag ändrade till CLOB.
+Endast för mimer...
+- sproc_getDocs
+- 2* sproc_getChilds,
+- sproc_CheckUserDocSharePermission
+"Could not receive data from server, java.net.SocketException: Connection reset"
+
 
 Kvar att undersöka/göra
 * Default värden satta till NULL är borttagna
 * Andra default värden är inte satta (ännu, går det, finns det en standard?)
-* Microsofts text & ntext (unicode variant av text) utbytt mot VARCHAR(255), MySQL stödjer inte större. Alternativ? CLOB?
-* CREATE TABLE meta, meta_text varchar (1000) -> varchar (255)
-* CREATE TABLE user_flags, description varchar (256) - varchar (255)
-* CREATE TABLE frameset_docs, varchar(8000) -> varchar (255)
-* CREATE TABLE texts, text varchar(8000) -> varchar (255)
-* Microsofts Indexeringen är droppad, skapa annan? Verkar ingå i standardsql
+* Indexeringen är droppad så länge men borde gå att lägga till.
 * Sparar help.sql tills jag vet mer hur detta skapats.
 
-Nedan är förändringar mot den scriptet tables.ascii.sql
+Nedan är förändringar mot scriptet tables.ascii.sql
 * Splittat i två separata skript. Ett för drop table och ett för create table.
 * Satt in ; i slutet av varje kommando. (Standard SQL).
 * tinyint är bytt mot smallint i alla tabeller
 * Microsofts (och MySQL) "datetime" & "smalldatetime" har bytts ut mot "timestamp" (Då detta är Standard SQL, vid körning av create table commandon
  byts alla ut mot datetime innan de körs. Därefter går det att arbeta på vanligt sätt med jdbc även mot SQLServer)
-* I user tabellen är external bytt mot external_user (extern är ett reserverat ord i Standard SQL)
-* I browsers tabellen är 'value' bytt mot 'browser_value' (value är ett reserverat ord i Standard SQL)
-* I sys_data tabellen är 'value' bytt mot 'sysdata_value' (value är ett reserverat ord i Standard SQL)
+* CREATE TABLE meta, meta_text varchar (1000) -> CLOB (vilket i SQLServer och MySQL fallen sedan byts ut mot TEXT)
+* CREATE TABLE frameset_docs, TEXT ->  CLOB (vilket i SQLServer och MySQL fallen sedan byts ut mot TEXT)
+* CREATE TABLE texts, TEXT -> CLOB (vilket i SQLServer och MySQL fallen sedan byts ut mot TEXT)
+* CREATE TABLE user_flags, description varchar (256) - varchar (255)
+* I user tabellen är namnet 'external' bytt mot external_user (extern är ett reserverat ord i Standard SQL)
+* I browsers tabellen är namnet 'value' bytt mot 'browser_value' (value är ett reserverat ord i Standard SQL)
+* I sys_data tabellen är namnet 'value' bytt mot 'sysdata_value' (value är ett reserverat ord i Standard SQL)
 * Bytte ut CAST( URRENT_TIME AS CHAR(80)) -> CAST( CURRENT_TIME AS CHAR) kodmässigt då MySQL inte stödde castning CHAR(siffror).
 För att slippa göra trim på strängar i koden ändrade jag de (få) ställena med char till varchar. Detta för att MySQL trimmar alla
 CHAR default, och det går inte att stänga av, så för att garanterat få samma beteende gjorde jag detta.
-* CREATE TABLE lang_prefixes, lang_prefix char (3),
+* CREATE TABLE lang_prefixes, lang_prefix char(3),
 * CREATE TABLE roles, role_name char (25) NOT NULL
 * CREATE TABLE user_types, type_name char (30) och lang_prefix char (3) NOT NULL ,
 

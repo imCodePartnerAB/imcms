@@ -17,6 +17,6 @@ INSERT INTO meta (meta_id, description, doc_type, meta_headline, meta_text, meta
  VALUES           (9999,    '',          2,        'Testsida',  '',        '',         1,        0,           0,      1,      0,         1,            0,       1,         'se',        '',             CURRENT_TIMESTAMP,    CURRENT_TIMESTAMP,     1,             1,             0,              CURRENT_TIMESTAMP,   null,        '_self',  '',         1);
 INSERT INTO text_docs VALUES (9999, 1, 0, 1, -1, -1);
 
-INSERT INTO users VALUES (3,'TestUser', 'user', 'User', 'Extern','','','','','','','','',0,1001,0,1,1,1,CURRENT_TIMESTAMP);
+INSERT INTO users VALUES (3,'TestUser', 'TestUser', 'TestUser', 'TestUser','','','','','','','','',0,1001,0,1,1,1,CURRENT_TIMESTAMP);
 INSERT INTO roles VALUES(3, 'TestRole', 1, 0);
-
+INSERT INTO phones VALUES (1, '666-666', 3, 0);
