@@ -5,6 +5,7 @@ import javax.servlet.http.*;
 import imcode.external.diverse.* ;
 import imcode.util.* ;
 
+
 public class AdminManager extends Administrator {
 	private final static String CVS_REV = "$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
@@ -69,6 +70,7 @@ public class AdminManager extends Administrator {
 	throws ServletException, IOException {    
 	// Lets get the parameters and validate them, we dont have any own
 	// parameters so were just validate the metadata
+  
   		  
 	String whichButton = req.getParameter("AdminTask") ;
 	this.log("Argument till server:" + whichButton) ;	
@@ -99,12 +101,19 @@ public class AdminManager extends Administrator {
 	    url += "AdminListDocs" ;
 	} else if( whichButton.equalsIgnoreCase("AdminConference")) { 
 	    url += "AdminConference" ;
+	} else if( whichButton.equalsIgnoreCase("AdminFortunes")) { 
+	    url += "AdminFortunes" ;
 	} else {
 	    // Ok, were came here cause no valid argument was sent to us
 	    // Lets send the user back to the Get function.	
 	    this.doGet(req,res) ;
 	    return ;
 	}
+	
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		out.println("url" +url);
+	
 	// Ok, Lets redirect the user to the right adminservlet	
 	this.log("redirects + to:" + url) ;		
  	res.sendRedirect(url) ;
