@@ -256,7 +256,7 @@ ALTER TABLE [dbo].[A_selfreg_roles] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [dbo].[A_templates] WITH NOCHECK ADD 
-	CONSTRAINT [PK_templates] PRIMARY KEY  NONCLUSTERED 
+	CONSTRAINT [PK_A_templates] PRIMARY KEY  NONCLUSTERED 
 	(
 		[template_id]
 	)  ON [PRIMARY] 

@@ -32,18 +32,13 @@ db-pass =
 db-maxconnections = 20
 
 
-# The parameters for the database used by the plugins.
-
-plugin-db-host =
-plugin-db-port = 1433
-plugin-db-name =
-plugin-db-user =
-plugin-db-pass =
-plugin-db-timeout = 30
-plugin-db-maxconnections = 20
+# SMB-authentication-parameters
 
 smb-domain-name =
 smb-domain-server =
+
+
+# LDAP-authentication-parameters
 
 ldap-url =
 ldap-user =
@@ -51,6 +46,7 @@ ldap-pass =
 ldap-user-objectclass = user
 ldap-user-identifying-attribute = sAMAccountName
 ldap-attributes-mapped-to-roles = company, co
+
 
 # The smtp-server used for sending mails.
 
@@ -117,9 +113,9 @@ log4j-config = log4j-nodebug.xml
 
 # Tomcat settings for quick deployment during development
 
-tomcat.admin.username = admin
-tomcat.admin.password =
-webapp.manager.url = http://localhost:8080/manager
+tomcat-admin-username = admin
+tomcat-admin-password =
+tomcat-webapp-manager-url = http://localhost:8080/manager
 
 
 # If you want to include an addon under addons/ in the build, name the directory here.

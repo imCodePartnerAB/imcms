@@ -37,10 +37,10 @@ WHERE role_id =0 AND user_id = @userId
 
 SELECT @searchString = replace(@searchString, '*', '%' ) 
 
-IF @category = -1 BEGIN  -- if all category
+IF @category = -1 BEGIN
 
      IF @isSuperadmin = 1 BEGIN  
-	IF @showAll = 0 BEGIN  -- like searchstring 	
+	IF @showAll = 0 BEGIN
 		SELECT user_id, last_name + ', ' + first_name + ' ['+LTRIM(RTRIM(login_name))+']'
 		FROM users
 		WHERE ( first_name like @searchString+'%' OR last_name like @searchString+'%' OR login_name like @searchString+'%' ) 
@@ -57,8 +57,8 @@ IF @category = -1 BEGIN  -- if all category
 	END	
      END
      
-     ELSE BEGIN	-- useradmin
-	IF @showAll = 0 BEGIN  -- like searchstring 	
+     ELSE BEGIN
+	IF @showAll = 0 BEGIN
 		SELECT user_id, last_name + ', ' + first_name + ' ['+LTRIM(RTRIM(login_name))+']'
 		FROM users
 		WHERE ( first_name like @searchString+'%' OR last_name like @searchString+'%' OR login_name like @searchString+'%' ) 
@@ -97,10 +97,10 @@ IF @category = -1 BEGIN  -- if all category
       END	
 END
 
-ELSE BEGIN  -- select only user with selected category
+ELSE BEGIN
 
-    IF @isSuperadmin = 1 BEGIN  -- if not a superadmin	
-	IF @showAll = 0 BEGIN  -- like searchstring
+    IF @isSuperadmin = 1 BEGIN
+	IF @showAll = 0 BEGIN
 		SELECT user_id, last_name + ', ' + first_name + ' ['+LTRIM(RTRIM(login_name))+']'
 		FROM users
 		WHERE 	user_type = @category
@@ -119,8 +119,8 @@ ELSE BEGIN  -- select only user with selected category
 	END
     END
 
-    ELSE BEGIN -- useradmin
-	IF @showAll = 0 BEGIN  -- like searchstring 
+    ELSE BEGIN
+	IF @showAll = 0 BEGIN
 		SELECT user_id, last_name + ', ' + first_name + ' ['+LTRIM(RTRIM(login_name))+']'
 		FROM users
 		WHERE user_type = @category

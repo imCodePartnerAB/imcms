@@ -23,7 +23,7 @@
     <!-- The directory to build in. -->
     <property name="build"          value="${basedir}/build"/>
     <property name="dist"           value="${basedir}/dist"/>
-    <property name="sql.temp.dir"   value="${basedir}/sqltemp"/>
+    <property name="sql-temp-dir"   value="${basedir}/sqltemp"/>
 
     <!-- Where to put generated documentation -->
     <property name="doc" value="${basedir}/doc"/>
@@ -146,6 +146,8 @@
 
         <property name="dist-sql" value="${dist}/imcms${versionfilesuffix}.sql"/>
         <property name="sprocs-sql" value="${dist}/imcms-sprocs${versionfilesuffix}.sql"/>
+        <property name="create-sql" value="${dist}/create_db${versionfilesuffix}.sql"/>
+        <property name="drop-sql" value="${dist}/drop_db${versionfilesuffix}.sql"/>
 
     </target>
 
@@ -180,12 +182,6 @@
         <filter token="db-user"             value="${db-user}"/>
         <filter token="db-pass"             value="${db-pass}"/>
         <filter token="db-maxconnections"   value="${db-maxconnections}"/>
-
-        <filter token="plugin-db-host"      value="${plugin-db-host}"/>
-        <filter token="plugin-db-port"      value="${plugin-db-port}"/>
-        <filter token="plugin-db-name"      value="${plugin-db-name}"/>
-        <filter token="plugin-db-user"      value="${plugin-db-user}"/>
-        <filter token="plugin-db-pass"      value="${plugin-db-pass}"/>
 
         <filter token="smb-domain-server"   value="${smb-domain-server}" />
         <filter token="smb-domain-name"     value="${smb-domain-name}" />
@@ -343,7 +339,7 @@
 
         <delete dir="${build}"/>
         <delete dir="${dist}"/>
-        <delete dir="${sql.temp.dir}"/>
+        <delete dir="${sql-temp-dir}"/>
         <ant dir="tools" target="clean"/>
 
     </target>
@@ -359,7 +355,7 @@
     </target>
 
 
-    <target name="tomcat-deploy" depends="install, tomcat-noinstall-deploy"
+    <target name="tomcat-deploy" depends="dist, install, tomcat-noinstall-deploy"
         description="install and deploy in running instance of tomcat"/>
 
 
@@ -367,15 +363,15 @@
         <copy todir="${build}/WEB-INF/lib" flatten="true">
             <fileset dir="lib" includes="nodist/*"/>
         </copy>
-        <taskdef name="install" classname="org.apache.catalina.ant.InstallTask"/>
-        <install url="${webapp.manager.url}" username="${tomcat.admin.username}" password="${tomcat.admin.password}"
-            path="/${webappname}" war="file:${webapproot}"/>
+        <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="libraries"/>
+        <deploy url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
+            path="/${webappname}" war="file:${wardist}"/>
     </target>
 
 
     <target name="tomcat-undeploy" description="remove build in running instance of tomcat">
-        <taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask"/>
-        <remove url="${webapp.manager.url}" username="${tomcat.admin.username}" password="${tomcat.admin.password}"
+        <taskdef name="remove" classname="org.apache.catalina.ant.RemoveTask" classpathref="libraries"/>
+        <remove url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
             path="/${webappname}"/>
     </target>
 
@@ -385,8 +381,8 @@
 
 
     <target name="tomcat-noinstall-reload" description="reloads the web app in tomcat">
-        <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask"/>
-         <reload url="${webapp.manager.url}" username="${tomcat.admin.username}" password="${tomcat.admin.password}"
+        <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask" classpathref="libraries"/>
+         <reload url="${tomcat-webapp-manager-url}" username="${tomcat-admin-username}" password="${tomcat-admin-password}"
             path="/${webappname}"/>
     </target>
 
@@ -464,31 +460,58 @@
     </target>
 
 
+    <target name="createdb" depends="init,sql">
+
+	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
+		userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="continue" src="${drop-sql}" />
+
+	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port}"
+		userid="${db-user}" password="${db-pass}" delimiter="GO" onerror="abort" src="${create-sql}" />
+    
+	<sql classpathref="libraries" driver="${db-driver}" url="${db-url}${db-host}:${db-port};DatabaseName=${db-name}"
+		userid="${db-user}" password="${db-pass}" delimiter="GO" delimitertype="row" onerror="abort" src="${dist-sql}" />
+    </target>
+
+
     <!-- Generates the sql-scripts -->
     <target name="sql" depends="init,check-webappname,tools" description="Concatenates the SQL-scripts into one large script.">
 
-        <delete dir="${sql.temp.dir}" includeEmptyDirs="true"/>
-        <mkdir dir="${sql.temp.dir}" />
+        <mkdir dir="${sql-temp-dir}" />
 
-        <cat destfile="${sql.temp.dir}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
-            <fileset dir="sql/tables" includes="tables.ascii.sql"/>
-            <fileset dir="sql/sprocs"/>
-            <fileset dir="sql/data" includes="types.sql"/>
-            <fileset dir="sql/data" includes="newdb.sql"/>
+        <cat destfile="${sql-temp-dir}/imcms${versionfilesuffix}.sql" orderby="path" filtering="true">
+            <fileset file="sql/tables/tables.ascii.sql"/>
+            <fileset  dir="sql/sprocs"/>
+
+            <fileset file="sql/conf/conf_tables.sql"/>
+            <fileset file="sql/conf/conf_sprocs.sql"/>
+
+            <fileset file="sql/billboard/billboard_tables.sql"/>
+            <fileset file="sql/billboard/billboard_sprocs.sql"/>
+
+            <fileset file="sql/chat/chat_tables.sql"/>
+            <fileset file="sql/chat/chat_sprocs.sql"/>
+            <fileset file="sql/chat/chat_newdb.sql"/>
+
+            <fileset file="sql/data/types.sql"/>
+            <fileset file="sql/data/newdb.sql"/>
         </cat>
+
         <cat destfile="${sprocs-sql}" orderby="path" filtering="true">
             <fileset dir="sql/sprocs"/>
         </cat>
 
-        <cat destfile="${dist}/create_db${versionfilesuffix}.sql" orderby="path" filtering="true">
-            <fileset dir="sql/tables" includes="delete_db.sql"/>
-            <fileset dir="sql/tables" includes="create_db.sql"/>
+        <cat destfile="${drop-sql}" orderby="path" filtering="true">
+            <fileset file="sql/tables/delete_db.sql"/>
+        </cat>
+
+        <cat destfile="${create-sql}" orderby="path" filtering="true">
+            <fileset file="sql/tables/create_db.sql"/>
         </cat>
 
         <imtranslate bundle="imcms" bundlelanguage="${defaultlanguage}"
             starttoken="&lt;? " endtoken=" ?&gt;"
             todir="${dist}" filtering="true">
-            <fileset dir="${sql.temp.dir}" includes="imcms${versionfilesuffix}.sql"/>
+            <fileset file="${sql-temp-dir}/imcms${versionfilesuffix}.sql"/>
         </imtranslate>
     </target>
 
