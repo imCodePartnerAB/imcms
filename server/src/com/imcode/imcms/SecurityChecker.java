@@ -53,7 +53,7 @@ class SecurityChecker {
         };
     }
 
-    UserDomainObject getAccessingUser() {
+    UserDomainObject getCurrentLoggedInUser() {
         return accessingUser;
     }
 

@@ -3,11 +3,8 @@ package imcode.server ;
 import java.util.* ;
 
 public class Table implements java.io.Serializable {
-	private final static String CVS_REV="$Revision$" ;
-	private final static String CVS_DATE = "$Date$" ;
 	Hashtable table = new Hashtable(10,0.5f) ;
 	Vector fieldData = new Vector() ;
-
 
 	public Table() {
 	}

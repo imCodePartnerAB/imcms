@@ -9,16 +9,10 @@ import imcode.server.*;
 import imcode.server.user.UserDomainObject;
 import imcode.server.parser.ParserParameters;
 
-import org.apache.log4j.*;
-
 /**
  Administrate a document.
  */
 public class AdminDoc extends HttpServlet {
-    private final static String CVS_REV = "$Revision$";
-    private final static String CVS_DATE = "$Date$";
-
-    private static Logger log = Logger.getLogger( AdminDoc.class.getName() );
 
     /**
      init()
@@ -34,13 +28,12 @@ public class AdminDoc extends HttpServlet {
         String host = req.getHeader( "Host" );
         IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterfaceByHost( host );
         String start_url = imcref.getStartUrl();
-        String servlet_url = Utility.getDomainPref( "servlet_url", host );
+
         // Find the start-page
         int start_doc = imcref.getSystemData().getStartDocument();
+
         imcode.server.user.UserDomainObject user;
-        String htmlStr = "";
         int meta_id;
-        String sqlStr;
 
         // Check if user logged on
         if( (user = Check.userLoggedOn( req, res, start_url )) == null ) {
@@ -58,8 +51,6 @@ public class AdminDoc extends HttpServlet {
             parent_meta_id = start_doc;
         }
 
-        int doc_type = imcref.getDocType( meta_id );
-
         String tempstring = AdminDoc.adminDoc( meta_id, parent_meta_id, user, req, res );
 
         if( tempstring != null ) {
@@ -72,11 +63,8 @@ public class AdminDoc extends HttpServlet {
     public static String adminDoc( int meta_id, int parent_meta_id, UserDomainObject user, HttpServletRequest req, HttpServletResponse res ) throws IOException {
 
         IMCServiceInterface imcref = IMCServiceRMI.getIMCServiceInterface( req );
-        String start_url = imcref.getStartUrl();
         String host = req.getHeader( "host" );
         String servlet_url = Utility.getDomainPref( "servlet_url", host );
-        // Find the start-page
-        int start_doc = imcref.getSystemData().getStartDocument();
 
         String htmlStr = "";
         String lang_prefix = user.getLangPrefix();

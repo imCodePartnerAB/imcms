@@ -170,7 +170,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 			int temp_template = Integer.parseInt( (String)vectT.get(0) );
 			if (temp_template > 0) {
 			    template_id = temp_template+"";
-			    documentRequest.getDocument().setTemplate(new Template(temp_template,template_name)) ;
+			    documentRequest.getDocument().setTemplate(new TemplateDomainObject(temp_template,template_name)) ;
 			}
 		    } catch(NumberFormatException nfe){
 			//do nothing, we keep the original template

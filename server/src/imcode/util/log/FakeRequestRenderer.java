@@ -50,7 +50,7 @@ public class FakeRequestRenderer implements ObjectRenderer {
 	int    metaId   = document.getMetaId() ;
 	int    docType  = document.getDocumentType() ;
 	String headline = document.getHeadline() ;
-	Template template = document.getTemplate() ;
+	TemplateDomainObject template = document.getTemplate() ;
 
 	StringBuffer result = new StringBuffer() ;
 	result.append('/') ;

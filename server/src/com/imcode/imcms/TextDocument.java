@@ -1,6 +1,7 @@
 package com.imcode.imcms;
 
 import imcode.server.IMCText;
+import imcode.server.TemplateDomainObject;
 import imcode.server.document.DocumentMapper;
 import imcode.server.document.DocumentPermissionSetMapper;
 
@@ -33,8 +34,12 @@ public class TextDocument extends Document {
             imcmsText,
             internalDocument.getMetaId(),
             textFieldIndexInDocument,
-            super.securityChecker.getAccessingUser(),
+            super.securityChecker.getCurrentLoggedInUser(),
             String.valueOf( textType ) );
+    }
+
+    public Template getTemplate() {
+        return new Template(internalDocument.getTemplate());
     }
 
     public static class TextField {

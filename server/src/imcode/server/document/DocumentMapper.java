@@ -15,10 +15,18 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DocumentMapper {
+    private Logger log = Logger.getLogger( DocumentMapper.class );
+    protected IMCService service;
+    protected ImcmsAuthenticatorAndUserMapper imcmsAAUM;
+
+    public DocumentMapper( IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
+        this.service = service;
+        this.imcmsAAUM = imcmsAAUM;
+    }
+
     /**
      * Stored procedure names used in this class
      */
-    private static final String SPROC_GET_TEST_DOC_DATA = "GetTextDocData";
     private static final String SPROC_SECTION_GET_INHERIT_ID = "SectionGetInheritId";
     private static final String SPROC_GET_FILE_NAME = "GetFileName";
     private static final String SPROC_GET_DOCUMENT_INFO = "GetDocumentInfo";
@@ -31,24 +39,7 @@ public class DocumentMapper {
     private static final String SPROC_INHERIT_PERMISSONS = "InheritPermissions";
     private static final String SPROC_CLASSIFICATION_FIX = "Classification_Fix";
 
-    private IMCService service;
-    private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
-    private static Logger log = Logger.getLogger( DocumentMapper.class );
-    /**
-     *
-     * @param metaId
-     * @param permissionSetId
-     * @param langPrefix
-     * @return Map of type (permissionId<Integer>, hasPermission<Boolean>)
-     */
-    /*    private Map sprocGetDocTypesWithPermissions( int metaId, int permissionSetId, String langPrefix ) {
-            String[] params = new String[]{ String.valueOf(metaId), String.valueOf(permissionSetId), langPrefix };
-            String[] result = service.sqlProcedure( SPROC_GET_DOC_TYPES_WITH_PERMISSIONS, params );
-        }
-    */
-    //    private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "GetTemplateGroupsWithPermissions";
-    //    private static final String SPROC_GET_ROLES_DOC_PERMISSONS = "getrolesdocpermissions";
-
+    // todo make sure all sproc and sql mehtods are private
     private static String[] sprocGetUserPermissionSet( IMCService service, int metaId, int userId ) {
         String[] sqlParams = {String.valueOf( metaId ), String.valueOf( userId )};
         String[] sqlResult = service.sqlProcedure( SPROC_GET_USER_PERMISSION_SET, sqlParams );
@@ -75,11 +66,6 @@ public class DocumentMapper {
     public static String[] sprocSectionGetInheritId( IMCServiceInterface service, int meta_id ) {
         String[] section_data = service.sqlProcedure( SPROC_SECTION_GET_INHERIT_ID, new String[]{String.valueOf( meta_id )} );
         return section_data;
-    }
-
-    private String[] sprocGetTestDocData( int metaId ) {
-        String[] textdoc_data = service.sqlProcedure( SPROC_GET_TEST_DOC_DATA, new String[]{String.valueOf( metaId )} );
-        return textdoc_data;
     }
 
     private String[] sprocGetText( int meta_id, int no ) {
@@ -176,12 +162,10 @@ public class DocumentMapper {
         sqlUpdateOneField( document, fieldName, valueStr );
     }
 
-    public static void sqlUpdateModifiedDate( IMCServiceInterface imcref, int parent_meta_id, Date dateModified ) {
-        String sqlStr = "update meta\n";
-        String dateModifiedStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( dateModified );
-        sqlStr += "set date_modified = '" + dateModifiedStr + "'\n";
-        sqlStr += "where meta_id = " + parent_meta_id;
-        imcref.sqlUpdateQuery( sqlStr );
+    public static void sqlUpdateModifiedDate( IMCServiceInterface service, int meta_id, Date date ) {
+        String dateModifiedStr = DateHelper.DATE_TIME_FORMAT_IN_DATABASE.format( date );
+        String sqlStr = "update meta set date_modified = '" + dateModifiedStr + "' where meta_id = " + meta_id;
+        service.sqlUpdateQuery( sqlStr );
     }
 
     private void sqlUpdateCreatedDate( IMCService service, int metaId, Date dateTime ) {
@@ -210,11 +194,6 @@ public class DocumentMapper {
         Date date = new Date();
         SimpleDateFormat dateformat = new SimpleDateFormat( DateHelper.DATE_TIME_SECONDS_FORMAT_STRING );
         service.sqlUpdateQuery( "update meta set date_modified = '" + dateformat.format( date ) + "' where meta_id = " + meta_id );
-    }
-
-    public DocumentMapper( IMCService service, ImcmsAuthenticatorAndUserMapper imcmsAAUM ) {
-        this.service = service;
-        this.imcmsAAUM = imcmsAAUM;
     }
 
     public DocumentDomainObject getDocument( int metaId ) {
@@ -284,10 +263,10 @@ public class DocumentMapper {
                 document.setFilename( sprocGetFilename( service, metaId ) );
             }
             if( document.getDocumentType() == DocumentDomainObject.DOCTYPE_TEXT ) {
-                String[] textdoc_data = sprocGetTestDocData( metaId );
+                String[] textdoc_data = TemplateMapper.sprocGetTextDocData( service, metaId );
 
                 if( textdoc_data.length >= 4 ) {
-                    document.setTemplate( new Template( Integer.parseInt( textdoc_data[0] ), textdoc_data[1] ) );
+                    document.setTemplate( new TemplateDomainObject( Integer.parseInt( textdoc_data[0] ), textdoc_data[1] ) );
                     document.setMenuSortOrder( Integer.parseInt( textdoc_data[2] ) );
                     document.setTemplateGroupId( Integer.parseInt( textdoc_data[3] ) );
                 }
@@ -543,6 +522,21 @@ public class DocumentMapper {
             }
         }
         return classification;
+    }
+
+    /**
+     * Save template -> text_docs, sort
+     */
+    public static void saveTextDoc( IMCServiceInterface service, UserDomainObject user, int meta_id, Table doc ) {
+        String sqlStr = "";
+        sqlStr = "update text_docs\n";
+        sqlStr += "set template_id= " + doc.getString( "template" );
+        sqlStr += ", group_id= " + doc.getString( "group_id" );
+        sqlStr += " where meta_id = " + meta_id;
+
+        service.sqlUpdateQuery( sqlStr );
+
+        ((IMCService)service).updateLogs( "Text docs  [" + meta_id + "] updated by user: [" + user.getFullName() + "]" );
     }
 }
 

@@ -1,7 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.IMCConstants;
-import imcode.server.Template;
+import imcode.server.TemplateDomainObject;
 
 import java.util.Date;
 
@@ -26,7 +26,7 @@ public class DocumentDomainObject implements IMCConstants {
     private String filename;
 
     /* Textdocs only */
-    private Template template;
+    private TemplateDomainObject template;
     private int templateGroupId;
     private int menuSortOrder;
     /** Document-type for text-documents. **/
@@ -283,7 +283,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Get the value of template.
      * @return value of template.
      */
-    public Template getTemplate() {
+    public TemplateDomainObject getTemplate() {
         return template;
     }
 
@@ -291,7 +291,7 @@ public class DocumentDomainObject implements IMCConstants {
      * Set the value of template.
      * @param v  Value to assign to template.
      */
-    public void setTemplate( Template v ) {
+    public void setTemplate( TemplateDomainObject v ) {
         this.template = v;
     }
 

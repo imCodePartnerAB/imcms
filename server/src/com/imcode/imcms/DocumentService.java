@@ -31,7 +31,7 @@ public class DocumentService {
     }
 
     public TextDocument createNewTextDocument( int parentId, int parentMenuNumber ) {
-        UserDomainObject user = securityChecker.getAccessingUser();
+        UserDomainObject user = securityChecker.getCurrentLoggedInUser();
         DocumentDomainObject newDoc = documentMapper.createNewTextDocument( user, parentId, parentMenuNumber );
         TextDocument result = new TextDocument( securityChecker, newDoc, documentMapper, documentPermissionSetMapper );
         return result;

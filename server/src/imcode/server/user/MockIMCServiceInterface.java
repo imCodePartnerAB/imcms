@@ -78,7 +78,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
    }
 
    // save textdoc
-   public void saveTextDoc( int meta_id, UserDomainObject user, Table doc ) {
+   public void saveTextDoc( IMCService service, UserDomainObject user, int meta_id, Table doc ) {
    }
 
    // Save a url_doc
@@ -463,7 +463,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-   public Template getTemplate( int meta_id ) {
+   public TemplateDomainObject getTemplate( int meta_id ) {
       return null;
    }
 

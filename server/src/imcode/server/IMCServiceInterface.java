@@ -15,11 +15,11 @@ import imcode.readrunner.* ;
 public interface IMCServiceInterface {
 
     /** Verify a Internet/Intranet user. Data from any SQL Database. **/
-    imcode.server.user.UserDomainObject verifyUser(String login, String password)
+    UserDomainObject verifyUser(String login, String password)
 	;
 
     /** Get a user by user-id **/
-    imcode.server.user.UserDomainObject getUserById(int userId)
+    UserDomainObject getUserById(int userId)
 	;
 
 
@@ -30,7 +30,7 @@ public interface IMCServiceInterface {
     /**
        Save a text field
     **/
-    void saveText(imcode.server.user.UserDomainObject user,int meta_id,int txt_no,IMCText text, String text_type)
+    void saveText(UserDomainObject user,int meta_id,int txt_no,IMCText text, String text_type)
 	;
 
     /**
@@ -48,38 +48,34 @@ public interface IMCServiceInterface {
     /**
        Delete a internalDocument
     **/
-    void deleteDocAll(int meta_id,imcode.server.user.UserDomainObject user)
+    void deleteDocAll(int meta_id,UserDomainObject user)
 	;
 
-    void addExistingDoc(int meta_id,imcode.server.user.UserDomainObject user,int existing_meta_id,int doc_menu_no)
+    void addExistingDoc(int meta_id,UserDomainObject user,int existing_meta_id,int doc_menu_no)
 	;
 
-    void saveManualSort(int meta_id,imcode.server.user.UserDomainObject user,java.util.Vector childs, java.util.Vector sort_no)
+    void saveManualSort(int meta_id,UserDomainObject user,java.util.Vector childs, java.util.Vector sort_no)
 	;
 
     /**
        Remove children from a menu
     **/
-    void deleteChilds(int meta_id,int menu,imcode.server.user.UserDomainObject user,String childsThisMenu[])
+    void deleteChilds(int meta_id,int menu,UserDomainObject user,String childsThisMenu[])
 	;
 
     // archive childs
-    void archiveChilds(int meta_id,imcode.server.user.UserDomainObject user,String childsThisMenu[])
+    void archiveChilds(int meta_id,UserDomainObject user,String childsThisMenu[])
 	;
 
     /** Copy documents and insert them in a new textdocument and menu **/
     String[] copyDocs( int meta_id, int doc_menu_no,  UserDomainObject user, String[] childsThisMenu, String copyPrefix)  ;
 
-    // save textdoc
-    public void saveTextDoc(int meta_id,imcode.server.user.UserDomainObject user,imcode.server.Table doc)
-	;
-
     // Save a url_doc
-    void saveUrlDoc(int meta_id,imcode.server.user.UserDomainObject user,imcode.server.Table doc)
+    void saveUrlDoc(int meta_id,UserDomainObject user,imcode.server.Table doc)
 	;
 
     // Save a new url_doc
-    void saveNewUrlDoc(int meta_id,imcode.server.user.UserDomainObject user,imcode.server.Table doc)
+    void saveNewUrlDoc(int meta_id,UserDomainObject user,imcode.server.Table doc)
 	;
 
     // List all archived docs
@@ -91,11 +87,11 @@ public interface IMCServiceInterface {
 	;
 
     // Save a new frameset
-    void saveNewFrameset(int meta_id,imcode.server.user.UserDomainObject user,imcode.server.Table doc)
+    void saveNewFrameset(int meta_id,UserDomainObject user,imcode.server.Table doc)
 	;
 
     // Save a frameset
-    void saveFrameset(int meta_id,imcode.server.user.UserDomainObject user,imcode.server.Table doc)
+    void saveFrameset(int meta_id,UserDomainObject user,imcode.server.Table doc)
 	;
 
     // check if url doc
@@ -107,7 +103,7 @@ public interface IMCServiceInterface {
 	;
 
     // remove child from child table
-    void removeChild(int meta_id,int parent_meta_id,imcode.server.user.UserDomainObject user)
+    void removeChild(int meta_id,int parent_meta_id,UserDomainObject user)
 	;
 
     // activate child to child table
@@ -355,9 +351,7 @@ public interface IMCServiceInterface {
 
     public imcode.server.document.DocumentDomainObject getDocument(int meta_id) ;
 
-    public Template getTemplate(int meta_id) ;
-
-    public boolean checkAdminRights(imcode.server.user.UserDomainObject user) ;
+    public boolean checkAdminRights(UserDomainObject user) ;
     public void setReadrunnerUserData(UserDomainObject user, ReadrunnerUserData rrUserData) ;
 
     public ReadrunnerUserData getReadrunnerUserData(UserDomainObject user) ;
