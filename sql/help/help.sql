@@ -1305,9 +1305,7 @@ talog,  leta fram filen i den v&auml;nstra rutan, markera filen och leta fram de
 <BR> F&ouml;r att byta namn p&aring; en katalog eller fil, markera den katalog/fil som skall bytas namn p&aring;. Skriv in det nya namnet i rutan under Nytt namn:. Klicka sedan p&aring; &quot;Byt namn&quot; till v&auml;nster eller h&ouml;ger beroende p&aring; om katalogen/filen finns i den v&auml;nstra eller h&ouml;gra rutan.
 <BR>
 <BR> F&ouml;r att skapa katalog, markera den katalog som den nya katalogen skall hamna under. Skriv in namnet p&aring; katalogen i rutan under Nytt namn:. Klicka sedan p&aring; &quot;Skapa katalog&quot; till v&auml;nster eller h&ouml;ger beroende p&aring; i 
-vilk
-en r
-uta du har markerat katalogen.
+vilken ruta du har markerat katalogen.
 <BR>
 <BR> F&ouml;r att radera en katalog eller fil, markera katalogen/filen och klicka sedan p&aring; &quot;Radera&quot;. Knappen till v&auml;nster om katalogen/filen finns i v&auml;nstra rutan, knappen till h&ouml;ger om katalogen/filen finns i h&ouml;gra rutan. En varningsruta d&auml;r hela s&ouml;kv&auml;gen till katalogen/filen finns visas. Klicka &quot;Ja&quot; om du &auml;r s&auml;ker p&aring; att katalogen/filen skall tas bort, annars p&aring; &quot;Nej&quot;.
 <BR>
@@ -1345,9 +1343,7 @@ INSERT INTO texts( meta_id, name, text, type )
 <BR>
 <BR>F&ouml;r att flytta en anv&auml;ndare till en annan roll - klicka f&ouml;rst p&aring; anv&auml;ndaren och sedan p&aring; den roll som anv&auml;ndaren skall flyttas till och till sist klicka p&aring; &quot;Flytta&quot;. Anv&auml;ndaren flyttas fr&aring;n aktuell roll till den nya rollen.
 <BR>
-<BR>&quot;Avbryt&quot; leder tillbaka till föregå
-
-ende sida.
+<BR>&quot;Avbryt&quot; leder tillbaka till föregå ende sida.
 <BR>
 <BR>
  
@@ -1602,9 +1598,7 @@ INSERT INTO texts( meta_id, name, text, type )
 ',1)
  
 INSERT INTO texts( meta_id, name, text, type )
-       values(19,2,'Det finns tv&aring; s&auml;tt att l&auml;gga till en l&auml;nk till ett befintlig sida.
-        Kan man sidans MetaID skriver man in det direkt annars finns m&ouml;jlighet
-        att s&ouml;ka fram sidan.
+       values(19,2,'Det finns tv&aring; s&auml;tt att l&auml;gga till en l&auml;nk till ett befintlig sida. Kan man sidans MetaID skriver man in det direkt annars finns m&ouml;jlighet att s&ouml;ka fram sidan.
 <BR><BR>
         
 ',1)
@@ -1625,10 +1619,7 @@ INSERT INTO texts( meta_id, name, text, type )
         begr&auml;nsa s&ouml;kningen genom att bara markera den/de typer av sidor som
         man vill s&ouml;ka efter.</p>
         <p>"<b><i>Inkludera dokument mellan dessa datum</i></b>" -
-        h&auml;r kan man begr&auml;nsa s&ouml;kningen genom att 
-skriva in 
-
-start- och
+        h&auml;r kan man begr&auml;nsa s&ouml;kningen genom att skriva in start- och
         slutdatum.</p>
         <p>Genom att markera "<i><b>Skapat</b></i>" visas de sidor som
         &auml;r skapade under perioden.</p>
@@ -1695,10 +1686,7 @@ INSERT INTO texts( meta_id, name, text, type )
                   vid <i>"Skriv &ouml;ver existerande" </i> g&ouml;r att om en
                   formatmall med det namnet redan finns, skrivs den &ouml;ver. S&auml;tt
                   inte <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
-                  om du inte &auml;r riktigt s&auml;ker p&aring; att du 
-
-
-verkligen skall
+                  om du inte &auml;r riktigt s&auml;ker p&aring; att du verkligen skall
                   skriva &ouml;ver den befintliga mallen.</p>
                   <p align="left"> Markera i rutan till h&ouml;ger den/de
                   formatgrupper som skall ha tillg&aring;ng till mallen. Detta
@@ -1730,8 +1718,7 @@ INSERT INTO texts( meta_id, name, text, type )
                       <p align="left"><i>Ange exempelmall: </i>Leta reda p&aring; den formatmall som du vill ladda
                   upp genom att anv&auml;nda "Browse/S&ouml;k" (namnet beror
                   p&aring; vilket spr&aring;k din webbl&auml;sare anv&auml;nder).</li>
-                    <li>
-  <p align="left"><i>V&auml;lj mall: </i>V&auml;lj den mall som
+                    <li> <p align="left"><i>V&auml;lj mall: </i>V&auml;lj den mall som
                       exempelmallen skall h&ouml;ra ihop med genom att bl&auml;ddra i rullgardinslistan.
                       Mallar m&auml;rkta med en * har redan en exempelmall knuten
                       till sig.</li>
@@ -1741,8 +1728,7 @@ INSERT INTO texts( meta_id, name, text, type )
                   <p align="left">F&ouml;r att visa exempelmall:</p>
                   <ul>
                     <li>
-                      <p align="left"><i>V&
-auml;lj mall:</i> V&auml;lj den mall (med *)
+                      <p align="left"><i>V&auml;lj mall:</i> V&auml;lj den mall (med *)
                       som du vill se p&aring; genom att bl&auml;ddra fram den i rullgardinslistan.
                       Klicka sedan p&aring; "Visa exempelmall". Mallen
                       visas p&aring; en ny sida. </li>
@@ -1837,10 +1823,7 @@ INSERT INTO texts( meta_id, name, text, type )
                     <p>Administrera filer</li>
                 </ul>
                 <p>Valet g&ouml;rs genom att bl&auml;ddra fram det man vill g&ouml;ra i
-                rullgardinslistan och sedan klicka p&aring; knappen "G&aring
-
-
-; till
+                rullgardinslistan och sedan klicka p&aring; knappen "G&aring; till
                 adminsida" (dold under rullgardinslistan p&aring; bilden).</p>
                 <p>L&auml;nken "Tillbaka till startsidan" leder tillbaka
                 till systemets f&ouml;rsta sida.
@@ -1902,10 +1885,7 @@ INSERT INTO texts( meta_id, name, text, type )
                 (Best&auml;llningen av l&ouml;senordet g&ouml;rs p&aring; inloggningssidan).</p>
                 <p align="left">Genom att s&auml;tta en <img border="0" src="/images/se/helpimages/Admin-4.GIF" width="13" height="14">
                 vid <i>"Sj&auml;lvregistreringsr&auml;tt i konferens"</i> f&aring;r
-                en anv&auml;ndare som tillh&ouml;r rollen r
-
-
-&auml;tt att registrera sig
+                en anv&auml;ndare som tillh&ouml;r rollen r&auml;tt att registrera sig
                 sj&auml;lv f&ouml;r att kunna delta i en konferens. OBS att Konferens
                 &auml;r en till&auml;ggsmodul till imCMS.</p>
                 <p align="left">N&auml;r valen &auml;r gjorda - klicka p&aring;
@@ -1938,10 +1918,7 @@ INSERT INTO texts( meta_id, name, text, type )
               <p align="left">N&auml;r valen &auml;r gjorda - klicka p&aring;
               "Spara".</p>
               <p align="left">"Avbryt" leder tillbaka till f&ouml;reg&aring;ende
-              sida utan att n&aring;gon f&ouml;r&auml;ndring 
-
-
-i rollens r&auml;ttigheter gjorts.</p>
+              sida utan att n&aring;gon f&ouml;r&auml;ndring i rollens r&auml;ttigheter gjorts.</p>
  
  
  
@@ -1983,11 +1960,7 @@ INSERT INTO texts( meta_id, name, text, type )
           ny servermaster.<i><b> </b></i><p><i><b>Aktuell servermaster email:</b></i>
           Visar e-postadressen till den person som &auml;r registrerad som
           servermaster. <i><b> </b></i> <p><b><i>&Auml;ndra servermaster email:</i></b>
-          H&auml;r anges e-postadressen till den person som &auml;r/skall v
-ara ny
-  
-
-        servermaster.<h3><b>Ange webmaster</b></h3>
+          H&auml;r anges e-postadressen till den person som &auml;r/skall vara ny servermaster.<h3><b>Ange webmaster</b></h3>
           <p><b><i>Aktuell webmaster: </i></b>Visar namnet p&aring; den person som
           &auml;r registrerad som webbmaster f&ouml;r n&auml;rvarande.<p><b><i>&Auml;ndra
           webmaster: </i></b>H&auml;r anges namnet p&aring; den person som skall vara ny
@@ -2082,8 +2055,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" width="100%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <imgb
-order="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <imgborder="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -2146,10 +2118,7 @@ INSERT INTO texts( meta_id, name, text, type )
                       ikon-bilden vid l&auml;nken.</td>
                   </tr>
                   <tr>
-                    <td width="100%"><b>R&auml;tt att &
-
-
-auml;ndra avancerad
+                    <td width="100%"><b>R&auml;tt att &auml;ndra avancerad
                       dokumentinformation: </b>Inneb&auml;r att man f&aring;r lov att
                       &auml;ndra p&aring; Rubrik (texten p&aring; l&auml;nken), den f&ouml;rklarande
                       texten till l&auml;nken, ikon-bilden vid l&auml;nken, s&ouml;kord,
@@ -2181,10 +2150,7 @@ auml;ndra avancerad
                       respektive typ).</td>
                   </tr>
                   <tr>
-                    <td width="100%"><b>R&auml;tt att &auml;ndra mallar: </b>I
-nn
-eb&a
-uml;r
+                    <td width="100%"><b>R&auml;tt att &auml;ndra mallar: </b>Inneb&auml;r
                       att man f&aring;r lov att byta utseende p&aring; sidan. Vilken/vilka
                       mallgrupper best&auml;ms av vilka som markeras i listan
                       (klicka p&aring; namnet s&aring; blir den bl&aring;markerad, f&ouml;r att
@@ -2224,11 +2190,7 @@ INSERT INTO texts( meta_id, name, text, type )
                   <tr>
                     <td width="100%"><b>R&auml;tt att &auml;ndra dokumentinformation: </b>Inneb&auml;r
                       att man f&aring;r lov att &auml;ndra p&aring; Rubrik (texten p&aring;
-                      l&auml;nken), den f&ouml;rklarande texten till l&auml;nken och
- 
-
-
-                     ikon-bilden vid l&auml;nken.</td>
+                      l&auml;nken), den f&ouml;rklarande texten till l&auml;nken och ikon-bilden vid l&auml;nken.</td>
                   </tr>
                   <tr>
                     <td width="100%"><b>R&auml;tt att &auml;ndra avancerad
@@ -2242,10 +2204,7 @@ INSERT INTO texts( meta_id, name, text, type )
                     <td width="100%"><b>R&auml;tt att &auml;ndra r&auml;ttigheter f&ouml;r
                       roller: </b>Inneb&auml;r att man kan g&aring; in och &auml;ndra, l&auml;gga
                       till och ta bort roller och &auml;ndra beh&ouml;righeter f&ouml;r
-                      dessa roller 
-p&
-ar
-ing; sidan. </td>
+                      dessa roller p&aring; sidan. </td>
                   </tr>
                   <tr>
                     <td width="100%"><b>R&auml;tt att &auml;ndra texter: </b>Inneb&auml;r
@@ -2260,11 +2219,7 @@ ing; sidan. </td>
                       att man f&aring;r lov att skapa undersidor till sidan. Vilka
                       typer av sidor best&auml;ms av vilka som markeras i listan
                       (klicka p&aring; namnet s&aring; blir den bl&aring;markerad, f&ouml;r att
-                      markera flera, h&aring;ll ned "Ctrl" och klicka p&aring;
-         
-    
-    
-     respektive typ).</td>
+                      markera flera, h&aring;ll ned "Ctrl" och klicka p&aring; respektive typ).</td>
                   </tr>
                   <tr>
                     <td width="100%"><b>R&auml;tt att &auml;ndra mallar: </b>Inneb&auml;r
@@ -2308,10 +2263,7 @@ INSERT INTO texts( meta_id, name, text, type )
                       ikon-bilden vid l&auml;nken.</td>
                   </tr>
                   <tr>
-                    <td width="100%"><b>R&auml;tt att &auml;ndra
-
-
- avancerad
+                    <td width="100%"><b>R&auml;tt att &auml;ndra avancerad
                       dokumentinformation: </b>Inneb&auml;r att man f&aring;r lov att
                       &auml;ndra p&aring; Rubrik (texten p&aring; l&auml;nken), den f&ouml;rklarande
                       texten till l&auml;nken, ikon-bilden vid l&auml;nken, s&ouml;kord,
@@ -2344,10 +2296,7 @@ INSERT INTO texts( meta_id, name, text, type )
                       respektive typ).</td>
                   </tr>
                   <tr>
-                    <td width="100%"><b>R&auml;tt att &auml;ndra mallar: </b>Inneb&au
-ml;r
-
-  
+                    <td width="100%"><b>R&auml;tt att &auml;ndra mallar: </b>Inneb&auml;r
                     att man f&aring;r lov att byta utseende p&aring; sidan. Vilken/vilka
                       mallgrupper best&auml;ms av vilka som markeras i listan
                       (klicka p&aring; namnet s&aring; blir den bl&aring;markerad, f&ouml;r att
@@ -2405,10 +2354,7 @@ INSERT INTO texts( meta_id, name, text, type )
                     <td width="100%"><b>R&auml;tt att &auml;ndra r&auml;ttigheter f&ouml;r
                       roller: </b>Inneb&auml;r att man kan g&aring; in och &auml;ndra, l&auml;gga
                       till och ta bort roller och &auml;ndra beh&ouml;righeter f&ouml;r
-                      dessa roller 
-p&
-ar
-ing; sidan. </td>
+                      dessa roller p&aring; sidan. </td>
                   </tr>
                   <tr>
                     <td width="100%"><b>R&auml;tt att &auml;ndra texter: </b>Inneb&auml;r
@@ -2423,11 +2369,7 @@ ing; sidan. </td>
                       att man f&aring;r lov att skapa undersidor till sidan. Vilka
                       typer av sidor best&auml;ms av vilka som markeras i listan
                       (klicka p&aring; namnet s&aring; blir den bl&aring;markerad, f&ouml;r att
-                      markera flera, h&aring;ll ned "Ctrl" och klicka p&aring;
-         
-    
-    
-     respektive typ).</td>
+                      markera flera, h&aring;ll ned "Ctrl" och klicka p&aring; respektive typ).</td>
                   </tr>
                   <tr>
                     <td width="100%"><b>R&auml;tt att &auml;ndra mallar: </b>Inneb&auml;r
@@ -2496,10 +2438,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En markering vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;go
-
-
-n
+        vid s&ouml;kning. En markering vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
     <tr>
@@ -2519,10 +2458,7 @@ n
         anges. En markering vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
-      <td width="100%"><b>Visa: </b>H&auml;r anges var sidan s
-ka
-ll
- visas.&nbsp;
+      <td width="100%"><b>Visa: </b>H&auml;r anges var sidan ska ll visas.&nbsp;
         <ul>
           <li><i>Samma frame</i> betyder att sidan &ouml;ppnas i den frame d&auml;r l&auml;nken
             finns.&nbsp;</li>
@@ -2634,10 +2570,7 @@ width="100%" height="19"><b>Delta x (x- och y-axel): </b>Autogenereras
       kolumn. Den nya kolumnen l&auml;ggs till sist. </td>
   </tr>
   <tr>
-    <td width="100%" height="19
-"><b>Ta 
-bo
-rt rad: </b>Tar bort en rad. Vilken rad
+    <td width="100%" height="19"><b>Ta bort rad: </b>Tar bort en rad. Vilken rad
       som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardingsmenyn sl&auml;pps tas raden bort. </td>
   </tr>
@@ -2698,10 +2631,7 @@ INSERT INTO texts( meta_id, name, text, type )
       n&auml;r rullgardinsmenyn sl&auml;pps tas raden bort. </td>
   </tr>
   <tr>
-    <td width="100%" height="19"><b>Ta bort kolumn: </b> Tar bor
-t en kolum
-
-n.
+    <td width="100%" height="19"><b>Ta bort kolumn: </b> Tar bort en kolumn.
       Vilken kolumn som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="/images/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardinsmenyn sl&auml;pps tas kolumnen bort. </td>
   </tr>
@@ -2839,10 +2769,7 @@ INSERT INTO texts( meta_id, name, text, type )
           ikon som det st&aring;r <i style="mso-bidi-font-style:normal">Bild </i>p&aring;
           och en liten pil p&aring; de platser p&aring; sidan d&auml;r det g&aring;r att l&auml;gga in
           bilder. F&ouml;r att l&auml;gga till sj&auml;lva bilden - klicka antingen p&aring;
-          ikonen eller p&aring; den lilla 
-pi
-le
-n p&aring; den plats d&auml;r bilden skall l&auml;ggas
+          ikonen eller p&aring; den lilla pilen p&aring; den plats d&auml;r bilden skall l&auml;ggas
           till. Om den redan finns en bild inlagd p&aring; sidan och den skall bytas
           ut, klicka p&aring; den lilla pilen bredvid bilden..</p>
           <p class="MsoBodyText" style="text-align:justify">Om ingen ikon eller
@@ -2855,10 +2782,7 @@ n p&aring; den plats d&auml;r bilden skall l&auml;ggas
           <blockquote>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Textdokument</p>
-            <p 
-clas
-s="-
-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>URL-dokument (Internetsida)</p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Browserkontroll</p>
@@ -2866,10 +2790,7 @@ s="-
             </span></span>HTML-dokument</p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Fil</p>
-            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<s
-pan st
-yle="f
-ont:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;
+            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;
             </span></span>Diagram (OBS till&auml;ggsmodul till imCMS)</p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span>Konferens (OBS till&auml;ggsmodul till imCMS)</p>
@@ -2879,9 +2800,7 @@ ont:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;
           <p class="MsoBodyText" style="text-align:justify">Vad varje l&auml;nk
           betyder, f&ouml;rklaras under respektive rubrik.</p>
           <h4 style="text-align:justify">Utseende</h4>
-          <p class="MsoBodyText" style="text-align:justify">H&auml;r byts den mall
-          som styr utseendet p&aring; sida
-n.</p>
+          <p class="MsoBodyText" style="text-align:justify">H&auml;r byts den mall som styr utseendet p&aring; sidan.</p>
       
     <h4 style="text-align:justify">Include</h4>
           <p style="text-align:justify">N&auml;r klick sker p&aring; "<b style="mso-bidi-font-weight:normal">Include</b>"
@@ -2897,9 +2816,7 @@ n.</p>
           <p class="MsoBodyText" style="text-align:justify">H&auml;r styrs de r&auml;ttigheter
           som anv&auml;ndarna har p&aring; sidan.</p>
       
-    <h4 
-st
-yle="text-align:justify">Logga ut</h4>
+    <h4 style="text-align:justify">Logga ut</h4>
           <p class="MsoBodyText" style="text-align:justify">N&auml;r klick sker p&aring;
           "<b style="mso-bidi-font-weight:normal">Logga ut</b>", loggas anv&auml;ndaren
           ut fr&aring;n imCMS.</p>
@@ -2910,10 +2827,7 @@ yle="text-align:justify">Logga ut</h4>
           <blockquote>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><a href="#_Administrera_anv&auml;ndare"><span style="color:windowtext;text-decoration:none;text-underline:none">Administration
-            av anv&auml;ndare</span><span style="color: windowtext; text-decoration: none; text-underline:
- none">&nb
-
-sp;&nbsp;&nbsp;&nbsp;
+            av anv&auml;ndare</span><span style="color: windowtext; text-decoration: none; text-underline: none">&nbsp;&nbsp;&nbsp;&nbsp;
             </span></a><span style="color: windowtext; text-decoration: none; text-underline: none">&nbsp;
             </span></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2923,9 +2837,7 @@ windowtext;text-decoration:none;text-underline:none">Administration av roller</s
             </span></span><a href="#_Administrera_IP-accesser"><span style="color:windowtext;text-decoration:none;text-underline:none">Administration
             av IP-accesser</span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span 
-style="f
-ont:
-7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><a href="#_Administrera_formatmallar/formatgrupper"><span style="color:windowtext;text-decoration:none;text-underline:none">Administration
             av mallar</span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2934,19 +2846,14 @@ text-decoration:none;text-underline:none">Visa alla dokument</span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><a href="#_Ta_bort_ett"><span style="color:windowtext;
 text-decoration:none;text-underline:none">Ta bort ett dokument</span></a></p>
-            <p class="
--49" s
-tyle="te
-xt-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><a href="#_Kontrollera_Internetl&auml;nkar"><span style="color:windowtext;text-decoration:none;text-underline:none">Kontrollera
             Internet-l&auml;nkar</span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </span></span><a href="#_Administrera_r&auml;knare"><span style="color:windowtext;text-decoration:none;text-underline:none">Administrera
             r&auml;knare</span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </span></span><a href="#_Administrera_systeminformation"><span styl
-e="c
-olor:windowt
+            </span></span><a href="#_Administrera_systeminformation"><span style="color:windowt
 ext;text-decoration:none;text-underline:none">Administrera
             systeminformation</span></a></p>
             <p class="-49" style="text-align:justify"><span style="font-family:Symbol">&middot;<span style="font:7.0pt "Times New Roman"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -3042,8 +2949,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>F&ouml;r att ta bort en diskussion: <img border="0" src="/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
-        f&ouml;r den diskussion som du vill ta bort och klicka sedan p&aring; "TA
-        BORT".
+        f&ouml;r den diskussion som du vill ta bort och klicka sedan p&aring; "TA BORT".
         <p>F&ouml;r att l&auml;mna administrationsl&auml;get: klicka p&aring; "Avsluta admin".</td>
     </tr>
   </table>
@@ -3070,10 +2976,7 @@ INSERT INTO texts( meta_id, name, text, type )
         genom att klicka p&aring; det i listan till h&ouml;ger. Ange det nya namnet i
         f&auml;ltet under <i>Nytt namn</i>. Klicka sedan p&aring; "&Auml;ndra". En
         varningsbild dyker upp d&auml;r du f&aring;r bekr&auml;fta att du vill byta namn.</p>
-        <p><i>Antalet diskussioner som visas:</i> H&auml;r anges hur m&aring;n
-
-
-ga
+        <p><i>Antalet diskussioner som visas:</i> H&auml;r anges hur m&aring;nga
         diskussioner som skall visas &aring;t g&aring;ngen i ett forum. Markera det forum
         du vill &auml;ndra antalet diskussioner i genom att klicka p&aring; det i listan
         till h&ouml;ger. Det befintliga antalet diskussioner som visas i forumet
@@ -3259,9 +3162,7 @@ t tillkommit nya inl&auml;gg
         skapades.</p>
         <p>Det g&aring;r att ange hur kommentarerna skall sorteras genom att klicka i
         <i>"Stigande" </i>eller <i>"</i><i>F</i><i>allande"</i>.
-        Klicka sedan p&aring; "Sorter
-a"
-. 
+        Klicka sedan p&aring; "Sortera". 
 Kommentarerna sorteras d&aring; efter
         det datum de lades in. </p>
         <p>Ny diskussion skapas genom att klicka p&aring; "Ny diskussion".</p>
@@ -3273,10 +3174,7 @@ Kommentarerna sorteras d&aring; efter
         upp till h&ouml;ger i f&ouml;nstret. S&ouml;kning kan g&ouml;ras bland ett forums
         inl&auml;gg. Det g&aring;r att s&ouml;ka p&aring; antingen rubriker, inneh&aring;ll eller
         f&ouml;rfattare. F&ouml;rst v&auml;ljs vad du vill s&ouml;ka bland, sedan skall
-        s&ouml;kordet skrivas in. Klicka sedan p&aring; "
-S&ou
-ml;k
-". S&ouml;kningen kan
+        s&ouml;kordet skrivas in. Klicka sedan p&aring; "S&ouml;k". S&ouml;kningen kan
         begr&auml;nsas genom att ange start- och slutdatum f&ouml;r s&ouml;kningen. Ett
         datum m&aring;ste anges i formen yyyy-mm-dd eller i specialformerna
         "ig&aring;r" och "idag".</p>
@@ -3289,8 +3187,7 @@ ml;k
         "Senare inl&auml;gg". D&auml;r kan diskussionen tas bort.</p>
         <p>F&ouml;r att administrera kommentarer, klicka p&aring; "Admin" i
         f&ouml;nstrets nedre del. D&aring; visas en bild d&auml;r kommentarer kan tas bort
-        eller &auml;ndras.</p
->
+        eller &auml;ndras.</p>
     </td>
     </tr>
   </table>
@@ -3413,10 +3310,7 @@ INSERT INTO texts( meta_id, name, text, type )
                     <p align="left"><i> Telefonnummer </i> - f&ouml;r att l&auml;gga till
                     telefonnummer - ange landskod (inget + framf&ouml;r), riktnr och
                     telefonnr.&nbsp; Klicka sedan p&aring; OK. F&ouml;r att ta bort eller
-                    &
-auml;ndr
-
-a ett telefonnr: bl&auml;ddra fram det telefonnr som skall
+                    &auml;ndra ett telefonnr: bl&auml;ddra fram det telefonnr som skall
                     &auml;ndras/tas bort genom att klicka p&aring; <img border="0" src="/images/se/helpimages/Pil.GIF" width="17" height="22">.
                     N&auml;r telefonnr &auml;r markerat - klicka p&aring; den knapp som
                     g&auml;ller f&ouml;r det du vill g&ouml;ra. Om "&Auml;ndra" &auml;r
@@ -3426,10 +3320,7 @@ a ett telefonnr: bl&auml;ddra fram det telefonnr som skall
                   <li>
                     <p align="left"><i> Aktiverad - </i> en <img border="0" src="/images/se/helpimages/Lagg-t1.GIF" width="13" height="14">
                     g&ouml;r att anv&auml;ndaren &auml;r aktiverad och kan logga in. <img border="0" src="/images/se/helpimages/Lagg-t2.GIF" width="13" height="14">
-                    kan tas bort om anv&auml;ndaren inte l&aum
-l;ngre skall kunna
- l
-ogga
+                    kan tas bort om anv&auml;ndaren inte l&auml;ngre skall kunna  logga
                     in i systemet.</li><br><br>
                   <li>
                     <p align="left"><i> Anv&auml;ndartyp </i>- autentiserade
@@ -3519,10 +3410,7 @@ INSERT INTO texts( meta_id, name, text, type )
               anger vilket bildf&auml;lt p&aring; sidan som &aring;syftas).</td>
           </tr>
           <tr>
-            <td width="100%"><b> Bildnamn: </b> H&auml
-
-
-;r kan ett namn p&aring; bilden
+            <td width="100%"><b> Bildnamn: </b> H&auml;r kan ett namn p&aring; bilden
               anges, det visas dock ingenstans p&aring; sidan.</td>
           </tr>
           <tr>
@@ -3538,10 +3426,7 @@ INSERT INTO texts( meta_id, name, text, type )
                 <li><i> Ingen: </i> Textens placering styrs av webbl&auml;sarens
                   default-inst&auml;llning.</li>
                 <li><i> Baslinjen: </i> Texten b&ouml;rjar vid nedre h&ouml;gra h&ouml;rnet av
-                  bilden o
-ch
- f
-orts&auml;tter sedan under bilden.</li>
+                  bilden och forts&auml;tter sedan under bilden.</li>
                 <li><i> Toppen: </i> Textens f&ouml;rsta rad b&ouml;rjar vid bildens &ouml;vre
                   h&ouml;gre h&ouml;rn och rad tv&aring; forts&auml;tter sedan under bilden.</li>
                 <li><i> Mitten: </i> Textens f&ouml;rsta rad b&ouml;rjar vid bildens mitt
@@ -3554,9 +3439,7 @@ orts&auml;tter sedan under bilden.</li>
                 <li><i> Exakt mitten: </i> Textens mittpunkt (h&ouml;jdm&auml;ssigt)
                   hamnar vid bildens mitt (till h&ouml;ger om bilden).&nbsp;</li>
                 <li><i> L&auml;ngst ner:
- </i
-> Te
-xtens l&auml;gsta del (som bokstaven g)
+ </i> Textens l&auml;gsta del (som bokstaven g)
                   placeras i h&ouml;jd med bildens nedre kant (till h&ouml;ger om
                   bilden).</li>
                 <li><i> Bild v&auml;nster: </i> Texten placeras till h&ouml;ger om bilden.</li>
@@ -3575,10 +3458,7 @@ xtens l&auml;gsta del (som bokstaven g)
               stor bild som tar l&aring;ng tid att ladda upp).</td>
           </tr>
           <tr>
-            <t
-d widt
-h="100
-%"><b>"Luft" kring bilden: </b> H&auml;r anges om
+            <td width="100%"><b>"Luft" kring bilden: </b> H&auml;r anges om
               det skall finnas ett tomt utrymme (luft)&nbsp; kring bilden.
               Storleken p&aring; "luften" anges i pixlar. B&aring;de vertikal
               och horisontell "luft" anges.</td>
@@ -3594,9 +3474,7 @@ h="100
               </b> f&ouml;r att v&auml;lja alternativ.
               <ul>
                 <li><i> Aktuellt f&ouml;nster: </i>&Ouml;ppnar sidan som bilden l&auml;nkar
-                  till i det &ouml;versta f&ouml;nstret (OBS 
-ej frame
-)</li>
+                  till i det &ouml;versta f&ouml;nstret (OBS ej frame)</li>
                 <li><i> Nytt f&ouml;nster: </i> Sidan &ouml;ppnas i ett nytt f&ouml;nster.</li>
                 <li><i> Moderram: </i> Sidan &ouml;ppnas i framen eller f&ouml;nstret som
                   inneh&aring;ller framesetet.</li>
@@ -3719,9 +3597,7 @@ INSERT INTO texts( meta_id, name, text, type )
     </tr>
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
-        arkiveras. L&auml;nken kommer att
- t
-as
+        arkiveras. L&auml;nken kommer att tas
  bort vid det datum och klockslag som
         anges. En <img border="0" src="/images/se/helpimages/Lagg-t5.GIF" width="13" height="14"> i
         rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
@@ -3816,10 +3692,7 @@ r&auml;ff
     </tr>
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
-        arkiveras. L&auml;nken kommer att t
-as
- b
-ort vid det datum och klockslag som
+        arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
         anges. En <img border="0" src="/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
@@ -3941,9 +3814,7 @@ Olika webbl&auml;sare kan g&ouml;ra
 </div align "center">
 <hr>
 <h2 align="cen
-ter">Adminis
-tr
-era befintliga l&auml;nkar</h2>
+ter">Administrera befintliga l&auml;nkar</h2>
  
  
  
@@ -4008,10 +3879,7 @@ INSERT INTO texts( meta_id, name, text, type )
   <h3 align="center">Avancerat</h3>
   <table border="0" width="75%">
     <tr>
-      <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge t
-
-
-r&auml;ff
+      <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
         vid s&ouml;kning. En <img border="0" src="/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
@@ -4102,10 +3970,7 @@ l;kning. En <img border="0" src="/images/se/helpimages/Lank-U1.GIF" width="13" h
     </tr>
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
-        arkiveras. L&auml;nken kommer att tas bort vid det datum och kl
-oc
-ks
-lag som
+        arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
         anges. En <img border="0" src="/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
@@ -4674,9 +4539,7 @@ Man kan begr&auml;nsa sin s&ouml;kning p&aring; n&aring;got av f&ouml;ljande s&a
 </td>
 	</tr>
 	<tr>
-		<td colspan="2"><img src="../resource/transpix
-.gif" widt
-h="1" height="8"></td>
+		<td colspan="2"><img src="../resource/transpix.gif" width="1" height="8"></td>
 	</tr>
 	<tr>
 		<td colspan="2" bgcolor="#cc0000" height="1"><img src="../resource/transpix.gif" width="1" height="1"></td>
@@ -4703,8 +4566,7 @@ Man kan anv&auml;nda <b>*</B> <i>(Wildcard)</i> i sin s&ouml;kning f&ouml;r att 
 	</tr>
 	<tr>
 		<td colspan="2"><img src="../resource/transpix.gif" wi
-dth="1" heig
-ht="8"></td>
+dth="1" height="8"></td>
 	</tr>
 	<tr>
 		<td colspan="2">
@@ -4826,8 +4688,7 @@ Man kan anv&auml;nda <b>*</B> <i>(Wildcard)</i> i sin s&ouml;kning f&ouml;r att 
 		<td colspan="2" bgcolor="#cc0000" height="1"><img src="../resource/transpix.gif" width="1" height="1"></td>
 	</tr>
 	<tr>
-		<td colspan="2"><img src="../resource/transpix.gif" width="1" height
-="8"></td>
+		<td colspan="2"><img src="../resource/transpix.gif" width="1" height="8"></td>
 	</tr>
 	<tr>
 		<td colspan="2">
