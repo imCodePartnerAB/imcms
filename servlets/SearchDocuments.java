@@ -587,15 +587,21 @@ public class SearchDocuments extends HttpServlet {
 
     /**
        Examines a text, and watches for ' signs, which will extended with another ' sign
+	   It also changes all comma signs (,) to spaces ( )
     */
     public String verifySqlText(String str ) { 
 	StringBuffer buf =  new StringBuffer(str) ;
 	char apostrof = '\'' ;
+	char comma = ',';
 	for(int i = 0 ; i < buf.length() ; i++) { 
 	    if (buf.charAt(i) == apostrof ) {
 		buf.insert(i,apostrof) ;
 		i+=1 ;
-	    }	
+	    }
+		else if (buf.charAt(i) == comma)
+		{
+			buf.replace(i,i+1," ") ;	
+		}
 	}
 	str = buf.toString() ;
 	return str ;
