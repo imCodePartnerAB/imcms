@@ -41,6 +41,8 @@ public class SendMailServlet extends HttpServlet {
     private final static String BODY_TEMPLATE_TO_ADMIN = "mail_body_to_admin.html";
     private final static String BODY_TEMPLATE_SHOP = "mail_body_shop.html";
 
+    private final static int MAIL_TEXT_COUNT = 100 ;
+
     public void init(ServletConfig config) throws ServletException{
 	super.init(config);
     }
@@ -79,8 +81,8 @@ public class SendMailServlet extends HttpServlet {
 	String mailError = req.getParameter("mailError") ;
 
 	//ok lets get all mailText stuff
-	String[] mailTextArr = new String[10];
-	for(int i=0; i<10;i++){
+	String[] mailTextArr = new String[MAIL_TEXT_COUNT];
+	for(int i=0; i<MAIL_TEXT_COUNT;i++){
 	    mailTextArr[i] = req.getParameter("mailText"+i) == null ? "":req.getParameter("mailText"+i);
 	}
 
@@ -100,7 +102,7 @@ public class SendMailServlet extends HttpServlet {
 
 	mailTextV.add("#mailSubject#"); mailTextV.add(mailSubject);
 	mailTextV.add("#mailLink#"); mailTextV.add(mailUrl.toString());
-	for(int i=0; i<10;i++){
+	for(int i=0; i<MAIL_TEXT_COUNT;i++){
 	    //lets setUp the tags and text to parse in the mail body
 	    mailTextV.add("#mailText"+i+"#");
 	    mailTextV.add( mailTextArr[i] );
