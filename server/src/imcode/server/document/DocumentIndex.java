@@ -194,6 +194,10 @@ public class DocumentIndex {
     private File createIndexDirectoryInDirectory( File dir ) {
         File indexDirectory = null;
         try {
+            if (!dir.isDirectory()) {
+                FileUtils.deleteDirectory( dir );
+                FileUtils.forceMkdir( dir );
+            }
             indexDirectory = File.createTempFile( "index", "", dir );
             FileUtils.forceDelete( indexDirectory );
             FileUtils.forceMkdir( indexDirectory );
