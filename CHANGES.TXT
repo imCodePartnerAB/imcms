@@ -1,3 +1,33 @@
+Version 1.10.2:
+
+    Of interest to API-using developers:
+
+    * Added method Image.isEmpty() to determine whether an image is empty or not. (Bug 2344)
+    * Image.getWidth() and Image.getHeight() now return the actual size of the image as it will be displayed,
+      instead of 0, unless the actual size couldn't be determined. (Bug 2475)
+
+    Bugs fixed:
+
+    * Fixed a bug which caused includes to be done with the included document in adminmode. (Bug 2449)
+    * Image-tags containing filedocument-images are hidden from users without permissions
+      to the filedocument. (Bug 2454)
+    * Fixed a mistake which prevented the imCMS-advertisement in "imcms_message.html"
+      from being output at the beginning of every page. (Bug 2445)
+    * Allow files with extensions "jsp" and "js" to be edited in the file administrator ("FileAdmin"). (Bug 2406)
+    * Build a zip file/tarball so people don't have to download more than one file. (Bug 2460)
+    * Fixed a number of problems with the conference login. (Bug 2419)
+    * Fixed a bug with the linkeditor in browsers other than Internet Explorer. (Bug 2462)
+    * Made the html-editor optional through the use of a cookie. (Bug 2327)
+    * Fixed a bug with creating external links in the html-editor. (Bug 2418)
+    * Fixed a couple of bugs related to creating new conferences and new conference-users. (Bugs 2461, 2466)
+    * Made listing many users somewhat quicker. (Bug 2316)
+
+    Known issues:
+
+    * Removing a single phone number from a user has no effect.
+      Removing all phone numbers from a user still works. (Bug 2471)
+
+
 Version 1.10.1:
 
     * Fixed exception and possible menu-deletion when trying to readd an already existing document
@@ -8,7 +38,7 @@ Version 1.10.1:
 
 Version 1.10.0:
 
-= Of interest to users:
+    Of interest to users:
 
     * Filedocuments of types "png", "gif", or "jpeg" can now be used as images. (Bug 2128)
     * Completely redid the image-selecting interface to allow for the new filedocuments-as-images paradigm. (Bug 2128)
@@ -21,7 +51,7 @@ Version 1.10.0:
     * Setting the modified time of a document is now possible,
       but it will still be updated the next time the document is modified. (Bug 2367)
 
-= Of interest to template creators:
+    Of interest to template creators:
 
     * The label attribute now works for the include-tag: <?imcms:include label="Include label"?> (Bug 1622)
     * The outputdescription-attribute of the documentcategories tag now takes two values, "true" or "only" (Bug 2151):
@@ -29,7 +59,7 @@ Version 1.10.0:
         - "only": <?imcms:documentcategories outputdescription="only"?> will output "categorydescription"
         - Not present: <?imcms:documentcategories?> will output "categoryname".
 
-= Of interest to administrators:
+    Of interest to administrators:
 
     * The file "host.properties" is gone, and everything is put in "server.properties". (Bug 2424)
     * Worked a little more on indexing robustness. (Bug 2354)
@@ -39,7 +69,7 @@ Version 1.10.0:
     * If "SessionCookieDomain" is set in "server.properties",
       a second JSESSIONID cookie will be set with the given domain. (Bug 1886)
 
-= Of interest to API-using developers:
+    Of interest to API-using developers:
 
     * Added methods TextDocument.getTextFields(), TextDocument.getImages(), and TextDocument.getIncludes() (Bug 2344)
     * Added accessors Document.setVisibleInMenusForUnauthorizedUsers(boolean visibleInMenusForUnauthorizedUsers)
@@ -49,7 +79,7 @@ Version 1.10.0:
     * Added accessors TextDocument.Menu.getSortOrder() and TextDocument.Menu.setSortOrder(int sortOrder) (Bug 2438)
     * Added method TextDocument.getMenus() (Bug 2438)
 
-= Of interest to developers:
+    Of interest to developers:
 
     * Removed user-"categories". (Bug 2149)
     * Refactored the code for creating and editing documents. (Bug 2039)
@@ -74,7 +104,7 @@ Version 1.9.1:
 
 Version 1.9.0:
 
-= Of interest to users:
+    Of interest to users:
 
     * Simple/advanced view toggle for docinfo.
     * Admin-pages will now work on non-javascript-enabled browsers.
@@ -85,14 +115,14 @@ Version 1.9.0:
       This means that each visitor is only counted once per browser session,
       instead of once when entering the site and then again when logging in.
 
-= Of interest to template creators:
+    Of interest to template creators:
 
     * New template tag: <?imcms:contextpath?> will be replaced by the "context path" of the webapp.
       The context path is the root path to the webapp, usually the name of the webapp preceded by a slash,
       for example "/imcms". This is useful when one wants to construct an absolute URL.
       Example: <img src="<?imcms:contextpath?>/images/imCMSpower.gif" alt="Powered by imCMS">
 
-= Of interest to administrators:
+    Of interest to administrators:
 
     * The webapp should now be possible to rename without having to change any templates.
     * We now return correct HTTP status codes: 404 for "Not found", and 403 for "Forbidden/Permission denied".
@@ -109,7 +139,7 @@ Version 1.9.0:
     * Reindexing of documents is now scheduled every 24 hours from startup. Reindexing is done to
       a new directory, "imcms/WEB-INF/index.new",  which replaces the current index "imcms/WEB-INF/index" when complete.
 
-= Of interest to API-using developers:
+    Of interest to API-using developers:
 
     * Moved the apisamples from "/apisamples/" to "/imcms/docs/apisamples/".
     * DocumentService.saveChanges(Document) is now synchronized as a poor mans transaction to prevent database conflicts.
@@ -121,7 +151,7 @@ Version 1.9.0:
     * Added convenience method DocumentService.parseLuceneSearchQuery(String) which returns a SearchQuery parsed according
       to Lucene syntax, see http://jakarta.apache.org/lucene/docs/queryparsersyntax.html
 
-= Of interest to developers:
+    Of interest to developers:
 
     * Cleaned up the file organization in the project.
     * Renamed all the ant-targets using more consistent names.
