@@ -12,6 +12,7 @@ public class SQLTransaction {
 
     public SQLTransaction( Connection con ) throws SQLException {
         this.con = con;
+        con.setTransactionIsolation( Connection.TRANSACTION_SERIALIZABLE );
         this.con.setAutoCommit( false );
     }
 
