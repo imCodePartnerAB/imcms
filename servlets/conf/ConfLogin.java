@@ -86,7 +86,7 @@ public class ConfLogin extends Conference {
 		// Lets generate the adduser page
 		if(loginType.equalsIgnoreCase("ADD_USER")) {
 			RmiConf rmi = new RmiConf(user) ;
-			String htmlPage = rmi.getLoginPage(imcServer) ;
+			String htmlPage = rmi.getLoginPage(host) ;
 
 			// Lets build the Responsepage to the loginpage
 			VariableManager vm = new VariableManager() ;
@@ -110,7 +110,7 @@ public class ConfLogin extends Conference {
 
 			// Lets get all users in this conference from db
 			RmiConf rmi = new RmiConf(user) ;
-			String[] usersArr = rmi.execSqlQuery(ConfPoolServer, "GetAllConfUsersInList " + params.get("META_ID")) ;
+			String[] usersArr = rmi.execSqlQuery(ConfPoolServer, "A_GetAllConfUsersInList " + params.get("META_ID")) ;
 			Vector usersV  = super.convert2Vector(usersArr) ;
 			VariableManager vm = new VariableManager() ;
 			Html ht = new Html() ;
@@ -209,7 +209,7 @@ public class ConfLogin extends Conference {
 
 			// Ok, we found the user, lets verify that the user is a member of this conference
 			// MemberInConf	@meta_id int,	@user_id int
-			String checkUserSql = "MemberInConf " + params.getProperty("META_ID") + ", "+ userId ;
+			String checkUserSql = "A_MemberInConf " + params.getProperty("META_ID") + ", "+ userId ;
 			log("CheckUserSql: " + checkUserSql) ;
 			String foundUserInConf = rmi.execSqlProcedureStr(confPoolServer, checkUserSql) ;
 
@@ -330,7 +330,7 @@ public class ConfLogin extends Conference {
 
 			// Ok, lets get the roles the user will get when he is selfregistering  and
 			// add those roles to the user
-			String sqlSproc = "SelfRegRoles_GetAll2 " + params.getProperty("META_ID") ;
+			String sqlSproc = "A_SelfRegRoles_GetAll2 " + params.getProperty("META_ID") ;
 			String sqlAnswer[] = rmi.execSqlProcedure(confPoolServer, sqlSproc ) ;
 
 			// First, get the langprefix
@@ -388,7 +388,7 @@ public class ConfLogin extends Conference {
 			String metaId = params.getProperty("META_ID") ;
 			String fName = userParams.getProperty("first_name") ;
 			String lName = userParams.getProperty("last_name") ;
-			String confUsersAddSql = "ConfUsersAdd "+ newUserId +", "+ metaId +", '"+ fName + "', '";
+			String confUsersAddSql = "A_ConfUsersAdd "+ newUserId +", "+ metaId +", '"+ fName + "', '";
 			confUsersAddSql += lName + "'";
 			// log("ConfUsersAddSql: " + confUsersAddSql) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, confUsersAddSql) ;
@@ -421,7 +421,7 @@ public class ConfLogin extends Conference {
 			String userInfo[] = rmi.execJanusSqlProcedure(imcServer, "GetUserInfo " + userId) ;
 
 			// Lets get the selected users userlevel
-			String level = rmi.execSqlProcedureStr(confPoolServer, "ConfUsersGetUserLevel " + params.getProperty("META_ID") +", " + userId) ;
+			String level = rmi.execSqlProcedureStr(confPoolServer, "A_ConfUsersGetUserLevel " + params.getProperty("META_ID") +", " + userId) ;
 			String levelStatus = "" ;
 			if(level.equalsIgnoreCase("1") ) levelStatus = "checked" ;
 			level = "EXPERT" ;
@@ -467,7 +467,7 @@ public class ConfLogin extends Conference {
 
 			// Lets add the new information into the conf user db
 			RmiConf rmi = new RmiConf(user) ;
-			String sqlQ = "ConfUsersSetUserLevel " + params.getProperty("META_ID") + ", " ;
+			String sqlQ = "A_ConfUsersSetUserLevel " + params.getProperty("META_ID") + ", " ;
 			sqlQ += userId + ", " + userLevel ;
 			//	log("SqlQ: " + sqlQ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;

@@ -104,7 +104,7 @@ public class ConfDisc extends Conference {
 			//	RmiConf rmi = new RmiConf(user) ;
 			HttpSession session = req.getSession(false) ;
 			if(session != null) {
-				String latestDiscId = rmi.execSqlProcedureStr(confPoolServer, "GetLastDiscussionId " +
+				String latestDiscId = rmi.execSqlProcedureStr(confPoolServer, "A_GetLastDiscussionId " +
 					params.getProperty("META_ID") + ", " + aForumId) ;
 
 				if(latestDiscId == null) {
@@ -147,13 +147,13 @@ public class ConfDisc extends Conference {
 
 			// Lets get the total nbr of discs in the forum
 			// RmiConf rmi = new RmiConf(user) ;
-			String sql = "GetNbrOfDiscs " + params.getProperty("FORUM_ID") ;
+			String sql = "A_GetNbrOfDiscs " + params.getProperty("FORUM_ID") ;
 			String nbrOfDiscsStr = rmi.execSqlProcedureStr(confPoolServer, sql) ;
 			int nbrOfDiscs = 0 ;
 
 			// Lets get the nbr of discussions to show. If it does not contain any
 			// discussions, 20 will be returned by default from db
-			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "GetNbrOfDiscsToShow " +
+			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "A_GetNbrOfDiscsToShow " +
 				params.getProperty("FORUM_ID"))  ;
 			int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
 			// log("Nbr of discs to show: " + showDiscsCounter) ;
@@ -184,7 +184,7 @@ public class ConfDisc extends Conference {
 
 			// Lets get the nbr of discussions to show. If it does not contain any
 			// discussions, 20 will be returned by default from db
-			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "GetNbrOfDiscsToShow " +
+			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "A_GetNbrOfDiscsToShow " +
 				params.getProperty("FORUM_ID"))  ;
 			int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
 			// log("Nbr of discs to show: " + showDiscsCounter) ;
@@ -210,8 +210,8 @@ public class ConfDisc extends Conference {
 			// Lets get the forumname for the current forum
 
 			String aForumId = params.getProperty("FORUM_ID") ;
-			String sqlForumName = "GetForumName " + aForumId ;
-			currForum = "" + rmi.execSqlProcedureStr(confPoolServer, "GetForumName " + aForumId) ;
+			String sqlForumName = "A_GetForumName " + aForumId ;
+			currForum = "" + rmi.execSqlProcedureStr(confPoolServer, "A_GetForumName " + aForumId) ;
 
 			//lets get metaId befor buildSearchDateParams destroys that info (happens if error in dateformat)
 			String metaId = params.getProperty("META_ID");
@@ -267,7 +267,7 @@ public class ConfDisc extends Conference {
 				else {
 					// Ok, Lets build the search string
 					//RmiConf rmi = new RmiConf(user) ;
-					String sqlQ = "SearchText " + metaId +", "+ aForumId + ", " ;
+					String sqlQ = "A_SearchText " + metaId +", "+ aForumId + ", " ;
 					sqlQ += category  + ", " + "'" + searchW + "'" + " ," ;
 					sqlQ += "'" + frDate  + "', '" + toDate + " 23:59:59" + "'" ;
 
@@ -405,7 +405,7 @@ public class ConfDisc extends Conference {
 		String aHrefHtmlFile = super.getExternalTemplateFolder(req) + A_HREF_HTML ;
 
 		// Lets get all Discussions
-		String sqlStoredProcOld = "GetAllDiscussions " + aMetaId + ", " + aForumId +", '"+ aLoginDate + "'"  ;
+		String sqlStoredProcOld = "A_GetAllDiscussions " + aMetaId + ", " + aForumId +", '"+ aLoginDate + "'"  ;
 		//log("GetAllDiscussionsSQL: " + sqlStoredProcOld) ;
 		String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProcOld ) ;
 
@@ -436,7 +436,7 @@ public class ConfDisc extends Conference {
 
 			// Lets get the nbr of discussions to show. If it does not contain any
 			// discussions, 20 will be returned by default from db
-			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "GetNbrOfDiscsToShow " +
+			String showDiscsStr = rmi.execSqlProcedureStr(confPoolServer, "A_GetNbrOfDiscsToShow " +
 				params.getProperty("FORUM_ID"))  ;
 			//int showDiscsCounter = Integer.parseInt(showDiscsStr) ;
 			showDiscsCounter = Integer.parseInt(showDiscsStr) ;
@@ -466,7 +466,7 @@ public class ConfDisc extends Conference {
 		}
 
 		// Lets get the forumname for the current forum
-		String currForum = "" + rmi.execSqlProcedureStr(confPoolServer, "GetForumName " + params.getProperty("FORUM_ID")) ;
+		String currForum = "" + rmi.execSqlProcedureStr(confPoolServer, "A_GetForumName " + params.getProperty("FORUM_ID")) ;
 		// log("CurrentForum: " + currForum) ;
 
 		//lets show newdiscbutton if user has more than readrights
@@ -1119,11 +1119,11 @@ public class ConfDisc extends Conference {
 		String sqlQ = "" ;
 
 			sqlQ += "SELECT DISTINCT '0' as 'newflag', disc.discussion_id, SUBSTRING( CONVERT(char(16), rep.create_date,20), 6, 16) AS 'create_date' , rep.headline, disc.count_replies, usr.first_name, usr.last_name " + ", SUBSTRING( CONVERT(char(20), disc.last_mod_date,20),1, 20) as 'updated_date'" + '\n' ;
-		sqlQ += "FROM replies rep, discussion disc, conf_users usr, conference conf, conf_forum cf, forum, conf_users_crossref crossref \n" ;
+		sqlQ += "FROM A_replies rep, A_discussion disc, A_conf_users usr, A_conference conf, A_conf_forum cf, A_forum, A_conf_users_crossref crossref \n" ;
 		sqlQ += "WHERE  rep.parent_id = disc.discussion_id \n" ;
-		sqlQ += "AND disc.forum_id = forum.forum_id \n" ;
-		sqlQ += "AND forum.forum_id = " + aForumId + "\n" ;
-		sqlQ += "AND forum.forum_id = cf.forum_id \n" ;
+		sqlQ += "AND disc.forum_id = A_forum.forum_id \n" ;
+		sqlQ += "AND A_forum.forum_id = " + aForumId + "\n" ;
+		sqlQ += "AND A_forum.forum_id = cf.forum_id \n" ;
 		sqlQ += "AND cf.conf_id =" + metaId +"\n" ;
 		// Lets check for the date
 		sqlQ += "AND rep.create_date > '" + frDate + "' AND rep.create_date < '" + toDate + " 23:59:59' \n"	;

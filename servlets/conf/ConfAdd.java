@@ -81,7 +81,7 @@ public class ConfAdd extends Conference {
 				//	this.addUserToDB(rmi, userParams, params ) ;
 
 				// Lets get the users reply level
-				String levelQ = "ConfUsersGetUserLevel "+ params.getProperty("META_ID") ;
+				String levelQ = "A_ConfUsersGetUserLevel "+ params.getProperty("META_ID") ;
 				levelQ += ", " + userId ;
 				String level = rmi.execSqlProcedureStr(confPoolServer, levelQ) ;
 				if(level.equalsIgnoreCase("-1")) {
@@ -109,7 +109,7 @@ public class ConfAdd extends Conference {
 				//log("TEXT AFTER: " + addText) ;
 
 				// Ok, Lets add the discussion to DB
-				String sqlQuest = "AddNewDisc " + aForumId + ", " + userId + ", " ;
+				String sqlQuest = "A_AddNewDisc " + aForumId + ", " + userId + ", " ;
 				sqlQuest += sqlPDelim(addHeader) ;
 				sqlQuest += sqlP(addText) + ", " + level ;
 				//log("AddNewDiscSQL: " + sqlQuest) ;
@@ -119,7 +119,7 @@ public class ConfAdd extends Conference {
 				// Ok, Lets get the last discussion in that forum
 				// HttpSession session = req.getSession(false) ;
 				if (session != null) {
-					String latestDiscId = rmi.execSqlProcedureStr(confPoolServer, "GetLastDiscussionId " +
+					String latestDiscId = rmi.execSqlProcedureStr(confPoolServer, "A_GetLastDiscussionId " +
 						params.getProperty("META_ID") + ", " + aForumId) ;
 					session.putValue("Conference.disc_id", latestDiscId) ;
 					//	userId = (String) session.getValue("Conference.user_id") ;
@@ -158,7 +158,7 @@ public class ConfAdd extends Conference {
 				}
 
 				// Lets get the users reply level
-				String levelQ = "ConfUsersGetUserLevel "+ params.getProperty("META_ID") ;
+				String levelQ = "A_ConfUsersGetUserLevel "+ params.getProperty("META_ID") ;
 				levelQ += ", " + userId ;
 				String level = rmi.execSqlProcedureStr(confPoolServer, levelQ) ;
 				if(level.equalsIgnoreCase("-1")) {
@@ -180,7 +180,7 @@ public class ConfAdd extends Conference {
 
 
 				// Ok, Lets add the reply
-				String sqlQuest = "AddReply " + userId + ", " + discId + ", "  ;
+				String sqlQuest = "A_AddReply " + userId + ", " + discId + ", "  ;
 				sqlQuest += sqlPDelim(addHeader);
 				sqlQuest += sqlP(addText) + ", " + level ;
 				// log("AddReply Sql: " + sqlQuest) ;
@@ -250,10 +250,10 @@ public class ConfAdd extends Conference {
 
 			// Lets get the users first and last names
 			RmiConf rmi = new RmiConf(user) ;
-			String sqlName = "GetConfLoginNames " + params.getProperty("META_ID") ;
+			String sqlName = "A_GetConfLoginNames " + params.getProperty("META_ID") ;
 			sqlName += ", " + loginUserId + ", " +  1 ;
 			String firstName = (String) rmi.execSqlProcedureStr(confPoolServer, sqlName ) ;
-			sqlName = "GetConfLoginNames " + params.getProperty("META_ID") ;
+			sqlName = "A_GetConfLoginNames " + params.getProperty("META_ID") ;
 			sqlName += ", " + loginUserId + ", " +  2 ;
 			String lastName = (String) rmi.execSqlProcedureStr(confPoolServer, sqlName ) ;
 
@@ -264,7 +264,7 @@ public class ConfAdd extends Conference {
 			vm.addProperty("ADD_TYPE", params.getProperty("ADD_TYPE")) ;
 
 			// Lets add the current forum name
-			String currForum = "" + rmi.execSqlProcedureStr(confPoolServer, "GetForumName " + params.getProperty("FORUM_ID")) ;
+			String currForum = "" + rmi.execSqlProcedureStr(confPoolServer, "A_GetForumName " + params.getProperty("FORUM_ID")) ;
 			vm.addProperty("CURRENT_FORUM_NAME", currForum) ;
 
 			// Lets get the addtype and add it to the page
@@ -285,7 +285,7 @@ public class ConfAdd extends Conference {
 			String discHeader = "" ;
 			if( params.getProperty("ADD_TYPE").equalsIgnoreCase("REPLY") ) {
 				String aDiscId = params.getProperty("DISC_ID") ;
-				String sqlQ = "GetDiscussionHeader " + aDiscId ;
+				String sqlQ = "A_GetDiscussionHeader " + aDiscId ;
 				String arr[] = rmi.execSqlProcedure(confPoolServer, sqlQ) ;
 				if( arr != null) {
 					if(arr.length > 0) {

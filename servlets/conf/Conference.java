@@ -443,7 +443,7 @@ public class Conference extends HttpServlet {
 	protected String getTemplateLibName(String server, String meta_id)
 	throws ServletException, IOException {
 		// RmiConf aRmiObj = new RmiConf() ;
-		String sqlQ = "GetTemplateLib " + meta_id ;
+		String sqlQ = "A_GetTemplateLib " + meta_id ;
 		String libName = RmiConf.execSqlProcedureStr(server, sqlQ) ;
 		if( libName == null) {
 			libName = "original" ;
@@ -695,7 +695,7 @@ public class Conference extends HttpServlet {
 
 		// Ok, Lets prepare the user for the conference.
 		// Lets get his lastLoginDate and update it to today
-		String sqlStoredProc = "GetLastLoginDate2 " + metaId + ", " + loginUserId ;
+		String sqlStoredProc = "A_GetLastLoginDate2 " + metaId + ", " + loginUserId ;
 		String lastLoginDate = rmi.execSqlProcedureStr(ConfPoolServer, sqlStoredProc) ;
 		String firstName = "" ;
 		String lastName = "" ;
@@ -708,7 +708,7 @@ public class Conference extends HttpServlet {
 
 			firstName = userParams.getProperty("FIRST_NAME") ;
 			lastName = userParams.getProperty("LAST_NAME") ;
-			String firstTimeInConfSql = "ConfUsersAdd " + loginUserId + ", " + metaId + ", '";
+			String firstTimeInConfSql = "A_ConfUsersAdd " + loginUserId + ", " + metaId + ", '";
 			firstTimeInConfSql += firstName + "', '" + lastName + "'" ;
 
 			log("AddExistingUserToConf: " + firstTimeInConfSql) ;
@@ -735,14 +735,14 @@ public class Conference extends HttpServlet {
 			// Ok, the user has logged in to the conference by the loginpage
 			// for the conference, he has a logindate. Lets get his names
 			// Lets get the users first and last names
-			String sqlName = "GetConfLoginNames " + metaId +", "+ loginUserId +", "+  1 ;
+			String sqlName = "A_GetConfLoginNames " + metaId +", "+ loginUserId +", "+  1 ;
 			firstName = (String) rmi.execSqlProcedureStr(ConfPoolServer, sqlName ) ;
-			sqlName = "GetConfLoginNames " + metaId +", "+ loginUserId +", "+  2 ;
+			sqlName = "A_GetConfLoginNames " + metaId +", "+ loginUserId +", "+  2 ;
 			lastName = (String) rmi.execSqlProcedureStr(ConfPoolServer, sqlName ) ;
 		} // end else
 
 		// Lets update his logindate and usernames
-		String sqlQuest = "ConfUsersUpdate " + metaId +", "+ loginUserId +", '" ;
+		String sqlQuest = "A_ConfUsersUpdate " + metaId +", "+ loginUserId +", '" ;
 		sqlQuest += firstName + "', '" + lastName + "'" ;
 		// log("Update users info in db: " + sqlQuest) ;
 		rmi.execSqlUpdateQuery(ConfPoolServer, sqlQuest) ;
@@ -761,11 +761,11 @@ public class Conference extends HttpServlet {
 			// Ok, we need to catch a forum_id. Lets get the first one for this meta_id.
 			// if not a forumid exists, the sp will return -1
 			rmi = new RmiConf(user) ;
-			String aForumId = rmi.execSqlProcedureStr(ConfPoolServer, "GetFirstForum " + params.getProperty("META_ID")) ;
+			String aForumId = rmi.execSqlProcedureStr(ConfPoolServer, "A_GetFirstForum " + params.getProperty("META_ID")) ;
 			session.putValue("Conference.forum_id", aForumId) ;
 
 			// Ok, Lets get the last discussion in that forum
-			String aDiscId = rmi.execSqlProcedureStr(ConfPoolServer, "GetLastDiscussionId " +
+			String aDiscId = rmi.execSqlProcedureStr(ConfPoolServer, "A_GetLastDiscussionId " +
 				params.getProperty("META_ID") + ", " + aForumId) ;
 
 			// Lets get the lastdiscussionid for that forum

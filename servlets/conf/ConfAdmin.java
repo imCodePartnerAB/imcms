@@ -83,7 +83,7 @@ public class ConfAdmin extends Conference {
 			}
 
 			String roleName = rmi.execJanusSqlProcedureStr(imcServer, "RoleGetName " + selfRegRoleId) ;
-			String sqlSproc = "SelfRegRoles_AddNew " + params.getProperty("META_ID") ;
+			String sqlSproc = "A_SelfRegRoles_AddNew " + params.getProperty("META_ID") ;
 			sqlSproc += ", " + selfRegRoleId + ", '" + roleName + "'" ;
 			log("SQLAdd: " + sqlSproc) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlSproc) ;
@@ -120,7 +120,7 @@ public class ConfAdmin extends Conference {
 			}
 
 			String roleName = rmi.execJanusSqlProcedureStr(imcServer, "RoleGetName " + selfRegRoleId) ;
-			String sqlSproc = "SelfRegRoles_Delete " + params.getProperty("META_ID") ;
+			String sqlSproc = "A_SelfRegRoles_Delete " + params.getProperty("META_ID") ;
 			sqlSproc += ", " + selfRegRoleId ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlSproc) ;
 			res.sendRedirect(MetaInfo.getServletPath(req) + "ConfAdmin?ADMIN_TYPE=SELF_REGISTER") ;
@@ -150,7 +150,7 @@ public class ConfAdmin extends Conference {
 			newLibName = super.verifySqlText(newLibName) ;
 
 			// Lets check if we already have a templateset with that name
-			String sql = "FindTemplateLib " + newLibName ;
+			String sql = "A_FindTemplateLib " + newLibName ;
 			String libNameExists = rmi.execSqlProcedureStr(confPoolServer, sql) ;
 			if( !libNameExists.equalsIgnoreCase("-1") ) {
 				String header = "ConfAdmin servlet. " ;
@@ -159,7 +159,7 @@ public class ConfAdmin extends Conference {
 				return ;
 			}
 
-			String sqlQ = "AddTemplateLib '" + newLibName + "'" ;
+			String sqlQ = "A_AddTemplateLib '" + newLibName + "'" ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 
 			// Lets copy the original folders to the new foldernames
@@ -228,7 +228,7 @@ public class ConfAdmin extends Conference {
 
 			// Lets find the selected template in the database and get its id
 			// if not found, -1 will be returned
-			String sqlQ = "GetTemplateIdFromName '" + newLibName + "'" ;
+			String sqlQ = "A_GetTemplateIdFromName '" + newLibName + "'" ;
 			String templateId = rmi.execSqlProcedureStr(confPoolServer, sqlQ) ;
 			if(templateId.equalsIgnoreCase("-1")) {
 				String header = "ConfAdmin servlet. " ;
@@ -237,7 +237,7 @@ public class ConfAdmin extends Conference {
 				return ;
 			}
 			// Ok, lets update the conference with this new templateset.
-			String updateSql = "SetTemplateLib " + params.getProperty("META_ID") ;
+			String updateSql = "A_SetTemplateLib " + params.getProperty("META_ID") ;
 			updateSql += ", '" + newLibName + "'" ;
 			rmi.execSqlUpdateProcedure(confPoolServer, updateSql) ;
 
@@ -266,7 +266,7 @@ public class ConfAdmin extends Conference {
 			// if the user wants to delete the first one then he has to delete the discussion
 			if( repliesIds != null ) {
 				for(int i = 0 ; i < repliesIds.length ; i++ ) {
-					String sqlQ = "DeleteReply " + discId + ", " + repliesIds[i] ;
+					String sqlQ = "A_DeleteReply " + discId + ", " + repliesIds[i] ;
 					rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 				}
 			}
@@ -310,7 +310,7 @@ public class ConfAdmin extends Conference {
 					newHeader = super.verifySqlText(newHeader) ;
 					newText = super.verifySqlText(newText) ;
 
-						String sqlQ = "UpdateReply " + repliesIds[i] + ", '" ;
+						String sqlQ = "A_UpdateReply " + repliesIds[i] + ", '" ;
 					sqlQ += newHeader + "', '" + newText + "'" ;
 					//log("sqlQ is :" + sqlQ) ;
 					rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
@@ -339,7 +339,7 @@ public class ConfAdmin extends Conference {
 			// Lets delete all the discussion and all the replies in that discussion.
 			if( discIds != null ) {
 				for(int i = 0 ; i < discIds.length ; i++ ) {
-					String sqlQ = "DeleteDiscussion " + discIds[i] ;
+					String sqlQ = "A_DeleteDiscussion " + discIds[i] ;
 					rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 				}
 			}
@@ -365,16 +365,16 @@ public class ConfAdmin extends Conference {
 
 			// Lets get all discussions for that forum and delete those before deleting the forum
 			// GetAllDiscsInForum @aForumId int
-			String discs[] = rmi.execSqlProcedure(confPoolServer, "GetAllDiscsInForum " + aForumId) ;
+			String discs[] = rmi.execSqlProcedure(confPoolServer, "A_GetAllDiscsInForum " + aForumId) ;
 			if( discs != null) {
 				for( int i = 0 ; i < discs.length; i++ ) {
-					String sqlQ = "DeleteDiscussion " + discs[i] ;
+					String sqlQ = "A_DeleteDiscussion " + discs[i] ;
 					rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 				}
 			}
 
 			// DeleteForum @aForumId int
-			String sqlQ = "DeleteForum " + params.getProperty("FORUM_ID") ;
+			String sqlQ = "A_DeleteForum " + params.getProperty("FORUM_ID") ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 			this.doGet(req, res) ;
 			return ;
@@ -398,7 +398,7 @@ public class ConfAdmin extends Conference {
 			params = super.verifyForSql(params) ;
 
 			// Lets check if a forum with that name exists
-			String findSql = "FindForumName " + params.getProperty("META_ID") + ", '" ;
+			String findSql = "A_FindForumName " + params.getProperty("META_ID") + ", '" ;
 			findSql += params.get("NEW_FORUM_NAME") + "'" ;
 			//log("FindForumNameSql: " + findSql) ;
 			String foundIt = rmi.execSqlProcedureStr(confPoolServer, findSql) ;
@@ -412,7 +412,7 @@ public class ConfAdmin extends Conference {
 			}
 
 			//	AddNewForum @meta_id int, @forum_name varchar(255), @archive_mode char, @archive_time int
-			String sqlAddQ = "AddNewForum " + params.getProperty("META_ID") + ", '" ;
+			String sqlAddQ = "A_AddNewForum " + params.getProperty("META_ID") + ", '" ;
 			sqlAddQ += params.getProperty("NEW_FORUM_NAME") + "', 'A', 30" ;
 			//log("AddNewForumSql: " + sqlAddQ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlAddQ) ;
@@ -437,7 +437,7 @@ public class ConfAdmin extends Conference {
 			// Lets verify the parameters for the sql questions.
 			params = super.verifyForSql(params) ;
 
-				String sqlAddQ = "RenameForum " + params.getProperty("FORUM_ID") + ", '" ;
+				String sqlAddQ = "A_RenameForum " + params.getProperty("FORUM_ID") + ", '" ;
 			sqlAddQ += params.getProperty("NEW_FORUM_NAME") + "'" ;
 			log("RenameForumSql: " + sqlAddQ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlAddQ) ;
@@ -458,7 +458,7 @@ public class ConfAdmin extends Conference {
 				return ;
 			}
 
-			String sqlAddQ = "SetNbrOfDiscsToShow " + params.getProperty("FORUM_ID") + ", " ;
+			String sqlAddQ = "A_SetNbrOfDiscsToShow " + params.getProperty("FORUM_ID") + ", " ;
 			sqlAddQ += params.getProperty("NBR_OF_DISCS_TO_SHOW") ;
 			log("SetShowDiscussionNbrSql: " + sqlAddQ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlAddQ) ;
@@ -532,7 +532,7 @@ public class ConfAdmin extends Conference {
 
 
 			// Lets get the current self register roles from DB
-			String sqlSproc = "SelfRegRoles_GetAll " + params.getProperty("META_ID") ;
+			String sqlSproc = "A_SelfRegRoles_GetAll " + params.getProperty("META_ID") ;
 			String sqlAnswer[] = rmi.execSqlProcedure(confPoolServer, sqlSproc ) ;
 			Vector selfRegV = super.convert2Vector(sqlAnswer) ;
 			String selfRegList = Html.createHtmlCode("ID_OPTION", "", selfRegV ) ;
@@ -599,11 +599,11 @@ public class ConfAdmin extends Conference {
 				log("OK, Administrera metainformation") ;
 
 				// Lets get the current template set for this metaid
-				String sqlStoredProc = "GetTemplateLib " + params.getProperty("META_ID") ;
+				String sqlStoredProc = "A_GetTemplateLib " + params.getProperty("META_ID") ;
 				String currTemplateSet = rmi.execSqlProcedureStr(confPoolServer,  sqlStoredProc ) ;
 
 				// Lets get all current template sets
-				String sqlAll = "GetAllTemplateLibs" ;
+				String sqlAll = "A_GetAllTemplateLibs" ;
 				String sqlAnswer[] = rmi.execSqlProcedure(confPoolServer,  sqlAll ) ;
 				Vector templateV = super.convert2Vector(sqlAnswer) ;
 
@@ -629,7 +629,7 @@ public class ConfAdmin extends Conference {
 			log("OK, Administrera FORUM") ;
 
 			// Lets get the information from DB
-			String sqlStoredProc = "GetAllForum " + params.getProperty("META_ID") ;
+			String sqlStoredProc = "A_GetAllForum " + params.getProperty("META_ID") ;
 			String sqlAnswer[] = rmi.execSqlProcedure(confPoolServer, sqlStoredProc ) ;
 			Vector forumV = super.convert2Vector(sqlAnswer) ;
 
@@ -637,15 +637,15 @@ public class ConfAdmin extends Conference {
 			String forumList = Html.createHtmlCode("ID_OPTION", "", forumV ) ;
 
 			// Lets get the name of the currently selected forum
-			String forumNameSql = "GetForumName " + params.getProperty("FORUM_ID") ;
+			String forumNameSql = "A_GetForumName " + params.getProperty("FORUM_ID") ;
 			String forumName = rmi.execSqlProcedureStr(confPoolServer, forumNameSql ) ;
 
 			// Lets get the name of the currently selected forum
-			String nbrOfDiscsToShowSql = "GetNbrOfDiscsToShow " + params.getProperty("FORUM_ID") ;
+			String nbrOfDiscsToShowSql = "A_GetNbrOfDiscsToShow " + params.getProperty("FORUM_ID") ;
 			String nbrOfDiscsToShow = rmi.execSqlProcedureStr(confPoolServer, nbrOfDiscsToShowSql ) ;
 
 			// Lets get all the showDiscs values
-			String sqlAllDiscsSql = "GetAllNbrOfDiscsToShow " + params.getProperty("META_ID") ;
+			String sqlAllDiscsSql = "A_GetAllNbrOfDiscsToShow " + params.getProperty("META_ID") ;
 			String sqlAllDiscs[] = rmi.execSqlProcedure(confPoolServer, sqlAllDiscsSql ) ;
 
 				Vector sqlAllDiscsV = new Vector() ;
@@ -686,12 +686,12 @@ public class ConfAdmin extends Conference {
 			// log("aHrefHtmlFile: " + aHrefHtmlFile ) ;
 
 			// Lets get all New Discussions
-			String sqlStoredProc = "GetAllNewDiscussions " + aMetaId + ", " + aForumId +", '"+ aLoginDate + "'"  ;
+			String sqlStoredProc = "A_GetAllNewDiscussions " + aMetaId + ", " + aForumId +", '"+ aLoginDate + "'"  ;
 			//log("SQL new: " + sqlStoredProc) ;
 			String sqlAnswerNew[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProc ) ;
 
 			// Lets get all Old Discussions
-			String sqlStoredProcOld = "GetAllOldDiscussions " + aMetaId + ", " + aForumId +", '"+ aLoginDate + "'"  ;
+			String sqlStoredProcOld = "A_GetAllOldDiscussions " + aMetaId + ", " + aForumId +", '"+ aLoginDate + "'"  ;
 			// log("SQL OLD: " + sqlStoredProcOld ) ;
 			String sqlAnswerOld[] = rmi.execSqlProcedureExt(confPoolServer, sqlStoredProcOld ) ;
 			//String sqlAnswerOld[] = null ;
@@ -737,14 +737,14 @@ public class ConfAdmin extends Conference {
 			// Lets get the replylist from DB
 			String discId = params.getProperty("DISC_ID") ;
 
-				String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, "GetAllRepliesInDiscAdmin " + discId + ", " + userId) ;
+				String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, "A_GetAllRepliesInDiscAdmin " + discId + ", " + userId) ;
 			//for(int m=0; m<sqlAnswer.length ; m++) {
 			//	log("VARDE: " + m + " : " +  sqlAnswer[m]) ;
 			//} // End of one records for
 
 			// Lets get the users sortorder from DB
 			String metaId = params.getProperty("META_ID") ;
-			String sqlQ = "ConfUsersGetReplyOrderSel " + metaId + ", " + userId  ;
+			String sqlQ = "A_ConfUsersGetReplyOrderSel " + metaId + ", " + userId  ;
 			// log("Sql: " + sqlQ) ;
 			String sortOrderVal = (String) rmi.execSqlProcedureStr(confPoolServer, sqlQ) ;
 			String checkBoxStr = "" ;

@@ -101,7 +101,7 @@ public class ConfReply extends Conference {
 
 			// Ok, Lets set the users sortorder preference
 			RmiConf rmi = new RmiConf(user) ;
-			String sqlQ = "ConfUsersSetReplyOrder " + metaId + ", " + userId ;
+			String sqlQ = "A_ConfUsersSetReplyOrder " + metaId + ", " + userId ;
 			sqlQ += ", " + ascSortOrder ;
 			//	log("Sql quest: " + sqlQ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
@@ -155,13 +155,13 @@ public class ConfReply extends Conference {
                 //log("ConfPoolServer: " + confPoolServer) ;
 
 		RmiConf rmi = new RmiConf(user) ;
-                String sqlQ = "GetAllRepliesInDisc " + discId + ", " + userId ;
+                String sqlQ = "A_GetAllRepliesInDisc " + discId + ", " + userId ;
                 //log("SQLQ: " + sqlQ ) ;
 		String sqlAnswer[] = rmi.execSqlProcedureExt(confPoolServer, sqlQ) ;
 
                 //log("sqlAnswer: " + sqlAnswer) ;
 		// Lets get the discussion header
-		String discHeader = rmi.execSqlProcedureStr(confPoolServer, "GetDiscussionHeader " + discId ) ;
+		String discHeader = rmi.execSqlProcedureStr(confPoolServer, "A_GetDiscussionHeader " + discId ) ;
                 if (discHeader == null || discId.equalsIgnoreCase("-1") )
 			discHeader = " " ;
 		//log("discHeader: " + discHeader) ;
@@ -182,7 +182,7 @@ public class ConfReply extends Conference {
 		// UsersSortOrderRadioButtons
 		String metaId = params.getProperty("META_ID") ;
 		int intMetaId = Integer.parseInt( metaId );
-		String sql = "ConfUsersGetReplyOrderSel " + metaId + ", " + userId  ;
+		String sql = "A_ConfUsersGetReplyOrderSel " + metaId + ", " + userId  ;
 		String sortOrderValue = (String) rmi.execSqlProcedureStr(confPoolServer, sql) ;
 		String ascState = "" ;
 		String descState = "" ;
@@ -218,7 +218,7 @@ public class ConfReply extends Conference {
 
 
 		// Lets get the current time from the sql server
-		String sqlTimeStr = rmi.execSqlProcedureStr(confPoolServer, "GetTime") ;
+		String sqlTimeStr = rmi.execSqlProcedureStr(confPoolServer, "A_GetTime") ;
 
 		// String dateString = formatter.format(sqlTime);
 		// Lets update the discussion list

@@ -59,7 +59,7 @@ public class ConfCreator extends Conference {
 			// doesnt already exists.
 			RmiConf rmi = new RmiConf(user) ;
 			String metaId = params.getProperty("META_ID") ;
-			String foundMetaId = rmi.execSqlProcedureStr(confPoolServer, "FindMetaId " + metaId) ;
+			String foundMetaId = rmi.execSqlProcedureStr(confPoolServer, "A_FindMetaId " + metaId) ;
 			if(!foundMetaId.equals("1")) {
 				action = "" ;
 				String header = "ConfCreator servlet. " ;
@@ -74,13 +74,13 @@ public class ConfCreator extends Conference {
 
 			String confName = confParams.getProperty("CONF_NAME") ;
 			// String sortType = "1" ;	// Default value, unused so far
-			String sqlQ = "AddNewConf " + metaId + ", '" + confName + "'" ;
+			String sqlQ = "A_AddNewConf " + metaId + ", '" + confName + "'" ;
 			log("AddNewConf sql:" + sqlQ ) ;
 			rmi.execSqlUpdateProcedure(confPoolServer, sqlQ) ;
 
 			// Lets add a new forum to the conference
 			// AddNewForum @meta_id int, @forum_name varchar(255), @archive_mode char, @archive_time int
-			String newFsql = "AddNewForum " + metaId +", '" + confParams.getProperty("FORUM_NAME") + "', ";
+			String newFsql = "A_AddNewForum " + metaId +", '" + confParams.getProperty("FORUM_NAME") + "', ";
 			newFsql += "'A' , 30" ;
 			//newFsql += "'" + confParams.getProperty("ARCHIVE_MODE") + "', " ;
 			//newFsql += confParams.getProperty("ARCHIVE_TIME")	;
@@ -91,11 +91,11 @@ public class ConfCreator extends Conference {
 			String user_id = user.getString("user_id") ;
 
 			// Lets get the recently added forums id
-			String forum_id = rmi.execSqlProcedureStr(confPoolServer, "GetFirstForum " + metaId) ;
+			String forum_id = rmi.execSqlProcedureStr(confPoolServer, "A_GetFirstForum " + metaId) ;
 
 			// Lets add this user into the conference if hes not exists there before were
 			// adding the discussion
-			String confUsersAddSql = "ConfUsersAdd "+ user_id +", "+ metaId +", '"+ user.getString("first_name") + "', '";
+			String confUsersAddSql = "A_ConfUsersAdd "+ user_id +", "+ metaId +", '"+ user.getString("first_name") + "', '";
 			confUsersAddSql += user.getString("last_name") + "'";
 			rmi.execSqlUpdateProcedure(confPoolServer, confUsersAddSql) ;
 

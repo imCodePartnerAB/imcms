@@ -63,7 +63,7 @@ public class ConfForum extends Conference {
 		String confPoolServer = Utility.getDomainPref("conference_server",host) ;
 
 		// Lets get the information from DB
-		String sqlStoredProc = "GetAllForum " + aMetaId ;
+		String sqlStoredProc = "A_GetAllForum " + aMetaId ;
 		String sqlAnswer[] = rmi.execSqlProcedure(confPoolServer, sqlStoredProc ) ;
 		Vector forumV = super.convert2Vector(sqlAnswer) ;
 
