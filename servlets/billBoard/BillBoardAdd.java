@@ -199,7 +199,8 @@ public class BillBoardAdd extends BillBoard
 				}
 
 				addHeader = super.verifySqlText(HTMLConv.toHTMLSpecial(addHeader));
-				addText = super.verifySqlText(HTMLConv.toHTMLSpecial(addText));
+				
+				addText = super.verifySqlText(textMailLinkFix(addText));
 				addEpost = super.verifySqlText(HTMLConv.toHTMLSpecial(addEpost));
 				
 				// Lets check the data size
@@ -493,13 +494,13 @@ public class BillBoardAdd extends BillBoard
 			boolean mailB = false;
 			String tempStr="";
 			int textLength = hackStr.length();//???
-			int lStart =hackStr.indexOf("#LINK#");
+			int lStart =hackStr.indexOf("<L>");
 			//log("lStart = "+lStart);
-			int lEnd = hackStr.indexOf("#/LINK#");
+			int lEnd = hackStr.indexOf("</L>");
 			//log("lEnd = "+lEnd);
-			int mStart = hackStr.indexOf("#MAIL#");
+			int mStart = hackStr.indexOf("<M>");
 			//log("mStart = "+mStart);
-			int mEnd = hackStr.indexOf("#/MAIL#");
+			int mEnd = hackStr.indexOf("</M>");
 			//log("mEnd ="+ mEnd);
 			//ok lets do some if cases to figure out what to do
 			if (lStart != -1 && lEnd != -1)
@@ -519,9 +520,9 @@ public class BillBoardAdd extends BillBoard
 					sendStr.append(HTMLConv.toHTMLSpecial(hackStr.substring(0, lStart)));
 					
 					//ok lets append the link string
-					sendStr.append(doLinkStuff(hackStr.substring(lStart+6, lEnd)));
+					sendStr.append(doLinkStuff(hackStr.substring(lStart+3, lEnd)));
 					
-					hackStr = hackStr.substring(lEnd+7);
+					hackStr = hackStr.substring(lEnd+4);
 					
 				}else //ok lets do mailstuff
 				{
@@ -530,9 +531,9 @@ public class BillBoardAdd extends BillBoard
 					sendStr.append(HTMLConv.toHTMLSpecial(hackStr.substring(0, mStart)));
 					
 					//ok lets append the mail string
-					sendStr.append(doMailStuff(hackStr.substring(mStart+6, mEnd)));
+					sendStr.append(doMailStuff(hackStr.substring(mStart+3, mEnd)));
 					
-					hackStr = hackStr.substring(mEnd+7);				
+					hackStr = hackStr.substring(mEnd+4);				
 				}
 			}else if(linkB)//ok lets do some linkstuff
 			{
@@ -541,18 +542,18 @@ public class BillBoardAdd extends BillBoard
 					sendStr.append(HTMLConv.toHTMLSpecial(hackStr.substring(0, lStart)));										
 			
 				//ok lets append the link string				
-				sendStr.append(doLinkStuff(hackStr.substring(lStart+6, lEnd)));
+				sendStr.append(doLinkStuff(hackStr.substring(lStart+3, lEnd)));
 				
-				hackStr = hackStr.substring(lEnd+7);				
+				hackStr = hackStr.substring(lEnd+4);				
 			}else if(mailB)	//lets do some mailstuff
 			{	//ok lets convert everything before the first #MAIL# mark
 				if(mStart > 0)
 				sendStr.append(HTMLConv.toHTMLSpecial(hackStr.substring(0, mStart)));
 					
 				//ok lets append the mail string
-				sendStr.append(doMailStuff(hackStr.substring(mStart+6, mEnd)));
+				sendStr.append(doMailStuff(hackStr.substring(mStart+3, mEnd)));
 					
-				hackStr = hackStr.substring(mEnd+7);
+				hackStr = hackStr.substring(mEnd+4);
 			
 			}else//ok we are done doing stuff 
 			{
@@ -574,7 +575,7 @@ public class BillBoardAdd extends BillBoard
 		int i = str.indexOf("HTTP://");
 		if(i < 0) daLink = "HTTP://";		
 		 
-		return	" <A HRef=" + daLink + str +" Target=_new>"+str + "</A> ";
+		return	"<A HRef=\"" + daLink + str +"\" Target=\"_new\">"+str + "</A>";
 	}
 	
 	/*
@@ -583,7 +584,7 @@ public class BillBoardAdd extends BillBoard
 	private String doMailStuff(String str)
 	{
 		//<A HRef="mailto:' + MailLink + '"' + 'Target=_new>' +' ' + MailLink + '</A>' + '&nbsp
-		return "<A HRef=\"mailto:" + str + "\" Target=_new> " +str + "</A> ";
+		return "<A HRef=\"mailto:" + str + "\" Target=_new> " +str + "</A>";
 	}
 	
 	
