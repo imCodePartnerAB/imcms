@@ -19,8 +19,10 @@ public class QuestionResult extends HttpServlet
 	throws ServletException, IOException 
 	{
 	
-		//get answer
-		String answer = req.getParameter("answer");
+	res.setContentType("text/html") ;
+			
+	//get answer
+	String answer = req.getParameter("answer");
 		
 		//get question
 		String question = req.getParameter("question");
@@ -194,8 +196,8 @@ out.println("</table>");
 		VariableManager vm, String htmlFile) throws ServletException, IOException
 	{
 
-//FIX template dynamiskt?
-		String templateLib = "C:\\Inetpub\\wwwroot\\maBra\\";
+	    //FIX template dynamiskt?
+		File templateLib = new File("C:\\Inetpub\\wwwroot\\maBra\\");
 		
 		log("templateLib: " + templateLib);
 		log("htmlFile: " + htmlFile);
