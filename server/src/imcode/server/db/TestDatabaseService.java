@@ -44,12 +44,15 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
 
     private static final int LANG_ID_SWEDEN = 1;
     private static final String LANG_PREFIX_SWEDEN = "se";
+    private static final int LANG_ID_ENGLAND = 2;
+    private static final String LANG_PREFIX_ENGLAND = "en";
+    private String USER_TEST_LOGIN_NAME = "TestUser";
 
     protected void setUp() throws IOException {
         databaseServices = new DatabaseService[]{
             DatabaseTestInitializer.static_initMySql(),
             DatabaseTestInitializer.static_initSqlServer(),
-            //DatabaseTestInitializer.static_initMimer(),
+            DatabaseTestInitializer.static_initMimer(),
         };
     }
 
@@ -77,20 +80,33 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             test_sproc_GetFileName( databaseService );
             test_sproc_GetDocType( databaseService );
             test_sproc_GetDocTypes( databaseService );
-            test_sproc_GetDocTypesForUser( databaseService ) ;
+            test_sproc_GetDocTypesForUser( databaseService );
             test_sproc_GetText( databaseService );
             test_sproc_GetIncludes( databaseService );
             test_sproc_GetImgs( databaseService );
             test_sproc_GetUserRoles( databaseService );
+            test_sproc_GetLangPrefixFromId( databaseService );
+            test_sproc_GetUserInfo( databaseService );
             testIsFileDoc( databaseService );
         }
     }
 
-    private void test_sproc_GetUserRoles( DatabaseService databaseService ) {
-	assertEquals( 2, databaseService.sproc_GetUserRoles( ROLE_TEST_ID ).length ) ;
+    private void test_sproc_GetUserInfo( DatabaseService databaseService ) {
+        assertNull( databaseService.sproc_GetUserInfo( USER_NEXT_FREE_ID ) );
+        assertEquals( USER_TEST_ID, databaseService.sproc_GetUserInfo( USER_TEST_ID ).user_id );
+        assertEquals( USER_TEST_LOGIN_NAME, databaseService.sproc_GetUserInfo( USER_TEST_ID ).login_name );
     }
 
-    private void test_sproc_GetImgs(  DatabaseService databaseService  ) {
+    private void test_sproc_GetLangPrefixFromId( DatabaseService databaseService ) {
+        assertEquals( LANG_PREFIX_SWEDEN, databaseService.sproc_GetLangPrefixFromId( LANG_ID_SWEDEN ).lang_prefix );
+        assertEquals( LANG_PREFIX_ENGLAND, databaseService.sproc_GetLangPrefixFromId( LANG_ID_ENGLAND ).lang_prefix );
+    }
+
+    private void test_sproc_GetUserRoles( DatabaseService databaseService ) {
+        assertEquals( 2, databaseService.sproc_GetUserRoles( ROLE_TEST_ID ).length );
+    }
+
+    private void test_sproc_GetImgs( DatabaseService databaseService ) {
         assertEquals( 1, databaseService.sproc_getImages( DOC_TEST_FIRST_ID ).length );
     }
 
@@ -104,9 +120,9 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     }
 
     private void test_sproc_GetDocTypesForUser( DatabaseService dbService ) {
-        DatabaseService.View_doc_types[] userDocTypes = dbService.sproc_GetDocTypesForUser(USER_TEST_ID, DOC_TEST_FIRST_ID, LANG_PREFIX_SWEDEN) ;
-        assertEquals(1, userDocTypes.length) ;
-        assertEquals(2, userDocTypes[0].doc_type) ;
+        DatabaseService.View_doc_types[] userDocTypes = dbService.sproc_GetDocTypesForUser( USER_TEST_ID, DOC_TEST_FIRST_ID, LANG_PREFIX_SWEDEN );
+        assertEquals( 1, userDocTypes.length );
+        assertEquals( 2, userDocTypes[0].doc_type );
     }
 
     private void testIsFileDoc( DatabaseService dbService ) {
@@ -226,7 +242,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             dbService.sproc_AddNewuser( user );
             int rowCount = dbService.sproc_updateUser( user );
             assertEquals( 1, rowCount );
-            DatabaseService.Table_users modifiedUser = dbService.getFromTable_users( new Integer(USER_NEXT_FREE_ID) );
+            DatabaseService.Table_users modifiedUser = dbService.getFromTable_users( new Integer( USER_NEXT_FREE_ID ) );
             assertEquals( user, modifiedUser );
         }
     }
@@ -304,11 +320,11 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
             dbService.sproc_AddNewuser( user );
 
             dbService.sproc_ChangeUserActiveStatus( USER_TEST_ID, false );
-            DatabaseService.Table_users modifiedUser = dbService.getFromTable_users( new Integer(USER_TEST_ID) );
+            DatabaseService.Table_users modifiedUser = dbService.getFromTable_users( new Integer( USER_TEST_ID ) );
             assertEquals( 0, modifiedUser.active );
 
             dbService.sproc_ChangeUserActiveStatus( USER_TEST_ID, true );
-            DatabaseService.Table_users modifiedUser2 = dbService.getFromTable_users( new Integer(USER_TEST_ID) );
+            DatabaseService.Table_users modifiedUser2 = dbService.getFromTable_users( new Integer( USER_TEST_ID ) );
             assertEquals( 1, modifiedUser2.active );
         }
     }
@@ -371,7 +387,7 @@ public class TestDatabaseService extends Log4JConfiguredTestCase {
     public void test_sproc_deleteInclude() {
         for( int i = 0; i < databaseServices.length; i++ ) {
             DatabaseService databaseService = databaseServices[i];
-            assertEquals( 0 , databaseService.sproc_deleteInclude( DOC_ID_NON_EXISTING, 1 ) );
+            assertEquals( 0, databaseService.sproc_deleteInclude( DOC_ID_NON_EXISTING, 1 ) );
         }
     }
 

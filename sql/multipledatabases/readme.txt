@@ -27,7 +27,6 @@ Kvar att undersöka/göra
 Sproc:ar kvar att flytta in i koden:
 (Ta bort den du håller på med)
 classification_fix.prc
-Hasse, arbetar med denna, färdigimplementerade men ej testad klart: copydocs.prc
 deletenewdocpermissionsetex.prc
 deleteuseradminpermissibleroles.prc
 existingdocsgetselectedmetaids.prc

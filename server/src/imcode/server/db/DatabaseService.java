@@ -192,7 +192,7 @@ public abstract class DatabaseService {
 
     static class Table_users {
         int user_id;
-        private String login_name;
+        String login_name;
         private String login_password;
         private String first_name;
         private String last_name;
@@ -2048,7 +2048,7 @@ public abstract class DatabaseService {
                 return result;
             }
         } );
-        if( null == queryResult ) {
+        if( queryResult.size() == 0 ) {
             return null;
         } else {
             return (Table_users)queryResult.get( 0 );
@@ -2067,5 +2067,45 @@ public abstract class DatabaseService {
         } );
 
         return (String[])roleNames.toArray( new String[roleNames.size()] );
+    }
+
+    // todo: Denna returnerar lang_id istället för lang prefix
+    // todo: anropa även sproc_GetLangPrefixFromId för denna information
+    Table_users sproc_GetUserInfo( int user_id ) {
+        return getFromTable_users( new Integer( user_id ) );
+    }
+
+    /** Get the users preferred language. Used by the administrator functions.
+     * Begin with getting the users langId from the userobject.
+     */
+    Table_lang_prefixes sproc_GetLangPrefixFromId( int lang_id ) {
+        return getFromTable_lang_prefixes( new Integer( lang_id ));
+    }
+
+    static class Table_lang_prefixes {
+        public Table_lang_prefixes( int lang_id, String lang_prefix ) {
+            this.lang_id = lang_id;
+            this.lang_prefix = lang_prefix;
+        }
+
+        int lang_id;
+        String lang_prefix;
+    }
+
+    Table_lang_prefixes getFromTable_lang_prefixes( Integer lang_id ) {
+        String sql = "SELECT lang_id, lang_prefix FROM lang_prefixes WHERE lang_id = ? ";
+        Object[] paramValues = new Object[]{ lang_id };
+        ArrayList queryResult = sqlProcessor.executeQuery( sql, paramValues, new SQLProcessor.ResultProcessor() {
+            Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
+                int lang_id = rs.getInt("lang_id");
+                String lang_prefix = rs.getString("lang_prefix");
+                return new Table_lang_prefixes( lang_id, lang_prefix );
+            }
+        } );
+        if( queryResult.size() == 0 ) {
+            return null;
+        } else {
+            return (Table_lang_prefixes)queryResult.get( 0 );
+        }
     }
 }
