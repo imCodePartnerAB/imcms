@@ -582,6 +582,8 @@
             <param name="srclanguage" value="en"/>
         </antcall>
 
+        <copy todir="${imcms}" file="install/htdocs/internalerrorpage.jsp"/>
+
         <!-- copy translated login templates for defaultlanguage to directory /login-->
         <copy todir="${login}">
             <fileset dir="${imcms}/${defaultlanguage}/login/" />
