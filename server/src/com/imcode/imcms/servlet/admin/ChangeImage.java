@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.*;
 import com.imcode.imcms.servlet.DocumentFinder;
+import com.imcode.imcms.servlet.superadmin.AdminManager;
 import com.imcode.util.ImageSize;
 import com.imcode.util.HumanReadable;
 import imcode.server.Imcms;
@@ -168,6 +169,7 @@ public class ChangeImage extends HttpServlet {
             }
         } );
         documentFinder.setRestrictingQuery( QUERY__IMAGE_FILE_DOCUMENTS );
+        documentFinder.addExtraSearchResultColumn( new AdminManager.DatesSummarySearchResultColumn());
         documentFinder.addExtraSearchResultColumn( new ImageThumbnailSearchResultColumn() );
         documentFinder.forward( request, response );
     }

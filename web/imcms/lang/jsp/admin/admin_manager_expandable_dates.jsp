@@ -17,8 +17,6 @@
                     <td nowrap><? web/imcms/lang/jsp/admin/admin_manager_expandable_dates_column.jsp/modified_abbreviation ?>&nbsp;</td>
                     <td nowrap><%= null != document.getModifiedDatetime() ? Utility.formatHtmlDatetime( document.getModifiedDatetime() ) : "--"%></td>
                     <td rowspan="3"><img src="<%= imagesPath %>/1x1.gif" width="1" height="1"></td>
-                    <td>&nbsp;</td>
-                    <td align="right">&nbsp;</td>
                 </tr>
                 <tr>
                     <td nowrap><? web/imcms/lang/jsp/admin/admin_manager_expandable_dates_column.jsp/created_abbreviation ?>&nbsp;</td>
@@ -37,8 +35,6 @@
                     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="1"></td>
                     <td><img src="<%= imagesPath %>/1x1.gif" width="90" height="1"></td>
                     <td><img src="<%= imagesPath %>/1x1.gif" width="8" height="1"></td>
-                    <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="1"></td>
-                    <td><img src="<%= imagesPath %>/1x1.gif" width="90" height="1"></td>
                 </tr>
             </table>
         <%} else { %>
@@ -48,16 +44,12 @@
                     <td nowrap><? web/imcms/lang/jsp/admin/admin_manager_expandable_dates_column.jsp/modified_abbreviation ?>&nbsp;</td>
                     <td nowrap><%= null != document.getModifiedDatetime() ? Utility.formatHtmlDatetime( document.getModifiedDatetime() ) : "--"%></td>
                     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="1"></td>
-                    <td>&nbsp;</td>
-                    <td align="right">&nbsp;</td>
                 </tr>
                 <tr>
                     <td><img src="<%= imagesPath %>/1x1.gif" width="8" height="1"></td>
                     <td><img src="<%= imagesPath %>/1x1.gif" width="1" height="1"></td>
                     <td><img src="<%= imagesPath %>/1x1.gif" width="90" height="1"></td>
                     <td><img src="<%= imagesPath %>/1x1.gif" width="8" height="1"></td>
-                    <td><img src="<%= imagesPath %>/1x1.gif" width="40" height="1"></td>
-                    <td><img src="<%= imagesPath %>/1x1.gif" width="90" height="1"></td>
                 </tr>
             </table>
         <% }%>
