@@ -829,6 +829,21 @@ public class IMCServiceRMI {
 		}
 	}
 
+        /** getLanguage. Returns the language prefix for a language_id.
+         *  Example: If the id for the swedish language is 1=se.
+         *  Then the procedure call getLangPrefixFromID("1") will return 'se'
+         */
+	public static String getLangPrefixFromId (String server, String lang_id_nbr) throws IOException {
+                IMCServiceInterface imc = getInterface( server ) ;
+		try {
+                        return imc.getLanguage(lang_id_nbr) ;
+
+		} catch ( IOException ex ) {
+			imc = renewInterface(server) ;
+			return imc.getLanguage(lang_id_nbr) ;
+		}
+	}
+
 	public static String getLanguage (String server) throws IOException {
 		IMCServiceInterface imc = getInterface( server ) ;
 		try {
