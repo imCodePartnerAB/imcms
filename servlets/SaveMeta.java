@@ -31,7 +31,6 @@ import java.util.Properties;
 public class SaveMeta extends HttpServlet {
 
     private final static Category mainLog = Category.getInstance(IMCConstants.MAIN_LOG);
-    private final static Logger log = Logger.getLogger("SaveMeta");
 
     /**
      init()
@@ -392,6 +391,8 @@ public class SaveMeta extends HttpServlet {
                     "archived_datetime = " + (null == archived_datetime ? "NULL" : "'" + archived_datetime + "'") + ",";
         }
 
+        sqlStr = addNullForPublisherIdToSqlStringIfInvalid(metaprops, sqlStr);
+
         Enumeration propkeys = metaprops.propertyNames();
         while (propkeys.hasMoreElements()) {
             String temp = (String) propkeys.nextElement();
@@ -465,6 +466,17 @@ public class SaveMeta extends HttpServlet {
         mainLog.info("Metadata on [" + meta_id + "] updated by user: [" + user.getFullName() + "]");
 
         return;
+    }
+
+    static String addNullForPublisherIdToSqlStringIfInvalid(Properties metaprops,
+                                                                             String sqlStr) {
+        try {
+            Integer.parseInt(metaprops.getProperty("publisher_id")) ;
+        } catch (NumberFormatException nfe) {
+            metaprops.remove("publisher_id") ;
+            sqlStr += "publisher_id = NULL," ;
+        }
+        return sqlStr;
     }
 
     private static Object putTemporaryPermissionSettingsInUser(UserDomainObject user, String meta_id,

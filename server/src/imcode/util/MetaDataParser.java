@@ -451,6 +451,8 @@ public class MetaDataParser {
 
         UserDomainObject[] users = userAndRoleMapper.getAllUsers();
         List usersInOptionList = new ArrayList();
+        usersInOptionList.add("");
+        usersInOptionList.add("");
         for (int i = 0; i < users.length; i++) {
             UserDomainObject user = users[i];
             usersInOptionList.add( "" + user.getUserId() );

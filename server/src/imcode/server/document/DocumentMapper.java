@@ -526,6 +526,15 @@ public class DocumentMapper {
         String sqlStr2 = ")\nvalues (" + doc_type + ",0,''," + (null == activated_datetime
                 ? "NULL" : "'" + activated_datetime + "'") + ","
                 + (null == archived_datetime ? "NULL" : "'" + archived_datetime + "'");
+
+        try {
+            Integer.parseInt(metaprops.getProperty("publisher_id")) ;
+        } catch(NumberFormatException nfe) {
+            metaprops.remove("publisher_id") ;
+            sqlStr += ",publisher_id" ;
+            sqlStr2 += ",NULL" ;
+        }
+
         Enumeration propkeys = metaprops.propertyNames();
         while (propkeys.hasMoreElements()) {
             String temp = (String) propkeys.nextElement();
