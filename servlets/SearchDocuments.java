@@ -105,13 +105,23 @@ public class SearchDocuments extends HttpServlet {
 	// Lets run the question
 
 	String sqlStr = buildSqlStr(imcode.server.HTMLConv.toHTML(question_field), search_type, search_prep, string_match, search_area) ;
-	// log("BuildSqlStr: " + sqlStr) ;  
+	System.out.println("BuildSqlStr: " + sqlStr) ;  
 	String[] answer= IMCServiceRMI.sqlQuery(imcserver, sqlStr) ;
+	
+	for(int i=0; i<answer.length ; i += 5)
+	{	//lets get rid of the pages that the user not allowed to see
+		if (!IMCServiceRMI.checkDocRights (imcserver, Integer.parseInt(answer[i]), user ))
+		{
+			for(int z = i; z<i+5; z++)
+				answer[z] = null;			
+		}
+	}
 
 	// Lets copy the array into a vector
-	Vector docs = new Vector(answer.length) ;
+	Vector docs = new Vector() ;
 	for(int i=0 ; i<answer.length; i++) {
-	    docs.add(answer[i]) ;
+	    if(answer[i] != null)
+			docs.add(answer[i]) ;
 	}
     
 	// Lets get the number of hits. Docs will have the following 'syntax'
