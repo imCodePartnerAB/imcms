@@ -151,6 +151,15 @@ function checkFocus() {
 		<td><input type="text" name="<%= EditDocumentInformationPageFlow.REQUEST_PARAMETER__HEADLINE %>" size="48" maxlength="255" style="width: 100%"
 		value="<%= StringEscapeUtils.escapeHtml(document.getHeadline()) %>"></td>
 	</tr>
+    <tr>
+        <td></td>
+        <td class="imNoteComment"><sup class="imNote">1</sup>
+        <? install/htdocs/sv/jsp/docadmin/document_information.jsp/46 ?></td>
+    </tr>
+	<tr>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="96" height="2"></td>
+		<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="556" height="2"></td>
+	</tr>
 	<tr>
 		<td class="imcmsAdmText" nowrap><? install/htdocs/sv/jsp/docadmin/document_information.jsp/1002 ?>&nbsp;</td>
 		<td class="imcmsAdmForm">
@@ -558,10 +567,6 @@ function checkFocus() {
 </tr>
 <tr>
 	<td>#gui_hr( "blue" )</td>
-</tr>
-<tr>
-	<td class="imNoteComment"><sup class="imNote">1</sup>
-	<? install/htdocs/sv/jsp/docadmin/document_information.jsp/46 ?></td>
 </tr>
 </form>
 </table>
