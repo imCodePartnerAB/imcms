@@ -1,8 +1,6 @@
 package imcode.server.db;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.dbcp.PoolableConnection;
-import org.apache.commons.dbcp.DelegatingConnection;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
