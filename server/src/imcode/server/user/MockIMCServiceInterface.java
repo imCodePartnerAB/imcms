@@ -35,11 +35,7 @@ class MockIMCServiceInterface extends MockObject implements IMCServiceInterface 
       return null;
    }
 
-    public boolean checkUserAdminrole( int userId, int adminRole ) {
-      return false;
-   }
-
-   public TextDocumentDomainObject.Text getText( int meta_id, int txt_no ) {
+    public TextDocumentDomainObject.Text getText( int meta_id, int txt_no ) {
       return null;
    }
 

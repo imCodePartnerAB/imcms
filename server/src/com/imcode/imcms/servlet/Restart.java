@@ -20,7 +20,7 @@ public class Restart extends HttpServlet {
         UserDomainObject user = Utility.getLoggedOnUser( req );
 
         // Is user superadmin?
-        if ( !imcref.checkAdminRights( user ) ) {
+        if ( !user.isSuperAdmin() ) {
             String start_url = imcref.getStartUrl();
             Utility.redirect( req, res, start_url );
             return;

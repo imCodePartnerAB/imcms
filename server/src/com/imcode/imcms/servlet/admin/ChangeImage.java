@@ -49,7 +49,7 @@ public class ChangeImage extends HttpServlet {
         // Check if user has write rights
         if ( !imcref.checkDocAdminRights( meta_id, user ) ) {
             String start_url = imcref.getStartUrl();
-            log( "User " + user.getUserId() + " was denied access to meta_id " + meta_id + " and was sent to " + start_url );
+            log( "User " + user.getId() + " was denied access to meta_id " + meta_id + " and was sent to " + start_url );
             res.sendRedirect( start_url );
             return;
         }

@@ -225,7 +225,7 @@ public class ConfLogin extends Conference {
                     log( header + err.getErrorMsg() + "\n the user exists, but is not a member in this conference" );
                     return;
                 }
-                user.setUserId( Integer.parseInt( userId ) );
+                user.setId( Integer.parseInt( userId ) );
                 user.setFirstName( firstName );
                 user.setLastName( lastName );
             }
@@ -351,7 +351,7 @@ public class ConfLogin extends Conference {
             }
 
             // Ok, Lets add the users roles into db, first get the role his in the system with
-            String userId = "" + user.getUserId();
+            String userId = "" + user.getId();
 
             String[] usersRoles = imcref.sqlProcedure( "GetUserRolesIDs", new String[]{userId} );
 

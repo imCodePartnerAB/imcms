@@ -24,7 +24,6 @@ import java.util.*;
 
 public class DocumentMapper {
 
-    private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
     private static final int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
 
@@ -131,7 +130,7 @@ public class DocumentMapper {
         String[] temp = sqlSelectTemplateInfoFromTextDocs( imcref, parent_meta_id );
 
         //lets get the users greatest permission_set for this dokument
-        final int perm_set = imcref.getUserHighestPermissionSet( Integer.parseInt( meta_id ), user.getUserId() );
+        final int perm_set = imcref.getUserHighestPermissionSet( Integer.parseInt( meta_id ), user.getId() );
         //ok now we have to setup the template too use
 
         if ( perm_set == IMCConstants.DOC_PERM_SET_RESTRICTED_1 ) {
@@ -496,25 +495,23 @@ public class DocumentMapper {
 
             document.setKeywords( getKeywords( metaId ) );
 
-            String[] sprocResult = sprocGetUserRolesDocPermissions( document );
+            String[][] sprocResult = service.sqlQueryMulti( "SELECT  r.role_id, r.role_name, r.admin_role, rr.set_id\n"
+                                                            + "FROM  roles AS r, roles_rights AS rr\n"
+                                                            + "WHERE rr.role_id = r.role_id AND rr.meta_id = ?",
+                                                         new String[]{""+document.getId()} );
 
-            int noOfColumns = 4;
-            for ( int i = 0, k = 0; i < sprocResult.length; i = i + noOfColumns, k++ ) {
-                int roleId = Integer.parseInt( sprocResult[i] );
-                String roleName = sprocResult[i + 1];
-                RoleDomainObject role = new RoleDomainObject( roleId, roleName );
-                int rolePermissionSetId = Integer.parseInt( sprocResult[i + 2] );
-                document.setPermissionSetForRole( role, rolePermissionSetId );
+            for ( int i = 0; i < sprocResult.length; ++i) {
+                int roleId = Integer.parseInt( sprocResult[i][0] );
+                String roleName = sprocResult[i][1];
+                int adminRoleId = Integer.parseInt( sprocResult[i][2]) ;
+                RoleDomainObject role = new RoleDomainObject( roleId, roleName, adminRoleId );
+
+                int rolePermissionSetId = Integer.parseInt( sprocResult[i][3] );
+                document.setPermissionSetIdForRole( role, rolePermissionSetId );
             }
         }
         NDC.pop();
         return document;
-    }
-
-    private String[] sprocGetUserRolesDocPermissions( DocumentDomainObject document ) {
-        String[] sprocResult = service.sqlProcedure( SPROC_GET_USER_ROLES_DOC_PERMISSONS,
-                                                     new String[]{String.valueOf( document.getId() ), "-1"} );
-        return sprocResult;
     }
 
     void initTextDocument( TextDocumentDomainObject document ) {
@@ -713,6 +710,17 @@ public class DocumentMapper {
         return searchingUserHasPermissionToFindDocument;
     }
 
+    //Check if user has a special adminRole
+    public boolean userHasAdminRoleWithId( int userId, int adminRoleId ) {
+        String[] adminrole = service.sqlProcedure( "userHasAdminRoleWithId ", new String[]{"" + userId, "" + adminRoleId} );
+        if ( adminrole.length > 0 ) {
+            if ( ( "" + adminRoleId ).equals( adminrole[0] ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean userHasAtLeastDocumentReadPermission( UserDomainObject user, DocumentDomainObject document ) {
         return userIsSuperAdminOrHasAtLeastPermissionSetIdOnDocument( user, IMCConstants.DOC_PERM_SET_READ, document );
     }
@@ -807,7 +815,7 @@ public class DocumentMapper {
         sqlColumnValues.add( document.getHeadline() );
         sqlColumnValues.add( document.getMenuText() );
         sqlColumnValues.add( document.getMenuImage() );
-        sqlColumnValues.add( document.getCreator().getUserId() + "" );
+        sqlColumnValues.add( document.getCreator().getId() + "" );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo() ) );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isLinkableByOtherUsers() ) );
         sqlColumnValues.add( makeSqlStringFromBoolean( document.isVisibleInMenusForUnauthorizedUsers() ) );
@@ -818,7 +826,7 @@ public class DocumentMapper {
         sqlColumnValues.add( document.getTarget() );
         sqlColumnValues.add( "1" );
         sqlColumnValues.add( makeSqlStringFromDate( document.getArchivedDatetime() ) );
-        sqlColumnValues.add( null != document.getPublisher() ? document.getPublisher().getUserId() + "" : null );
+        sqlColumnValues.add( null != document.getPublisher() ? document.getPublisher().getId() + "" : null );
         sqlColumnValues.add( "" + document.getStatus() );
         sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationStartDatetime() ) );
         sqlColumnValues.add( makeSqlStringFromDate( document.getPublicationEndDatetime() ) );
@@ -1006,7 +1014,7 @@ public class DocumentMapper {
         makeBooleanSqlUpdateClause( "shared", document.isLinkableByOtherUsers(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "show_meta", document.isVisibleInMenusForUnauthorizedUsers(), sqlUpdateColumns, sqlUpdateValues );
         makeBooleanSqlUpdateClause( "permissions", document.isPermissionSetOneIsMorePrivilegedThanPermissionSetTwo(), sqlUpdateColumns, sqlUpdateValues );
-        makeIntSqlUpdateClause( "publisher_id", ( publisher == null ? null : new Integer( publisher.getUserId() ) ), sqlUpdateColumns,
+        makeIntSqlUpdateClause( "publisher_id", ( publisher == null ? null : new Integer( publisher.getId() ) ), sqlUpdateColumns,
                                 sqlUpdateValues );
         makeIntSqlUpdateClause( "status", new Integer( document.getStatus() ), sqlUpdateColumns, sqlUpdateValues );
 

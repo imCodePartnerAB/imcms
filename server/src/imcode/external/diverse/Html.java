@@ -142,7 +142,7 @@ public class Html {
         Transformer userToStringPairTransformer = new Transformer() {
             public Object transform( Object o ) {
                 UserDomainObject user = (UserDomainObject)o;
-                return new String[]{"" + user.getUserId(), user.getLastName() + ", " + user.getFirstName()};
+                return new String[]{"" + user.getId(), user.getLastName() + ", " + user.getFirstName()};
             }
 
         };

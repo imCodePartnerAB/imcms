@@ -43,7 +43,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
         }
 
 
-        String userId = "" + user.getUserId();
+        String userId = "" + user.getId();
         if ( !super.prepareUserForBillBoard( req, res, params, userId ) ) {
             log( "Error in prepareUserFor Conf" );
         }
@@ -95,7 +95,7 @@ public class BillBoardLogin extends BillBoard {//ConfLogin
         // Ok, the user wants to login
         if ( loginType.equalsIgnoreCase( "login" ) /* && req.getParameter("submit") != null */ ) {
             //log("Ok, nu försöker vi verifiera logga in!") ;
-            String userId = "" + user.getUserId();
+            String userId = "" + user.getId();
 
             //  Lets update the users sessionobject with a a ok login to the conference
             //	Send him to the manager with the ability to get in

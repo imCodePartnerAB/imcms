@@ -67,7 +67,7 @@ public class SaveMeta extends HttpServlet {
         // Hey, hey! Watch as i fetch the permission-set set (pun intended) for each role!
         // Now watch as i fetch the permission_set for the user...
         String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet", new String[]{
-            metaIdStr, "" + user.getUserId()
+            metaIdStr, "" + user.getId()
         } );
         int userSetId = Integer.parseInt( current_permissions[0] );	// The users set_id
         int userPermSet = Integer.parseInt( current_permissions[1] );
@@ -142,7 +142,7 @@ public class SaveMeta extends HttpServlet {
             }
 
             if ( !permissionSettingSucceded ) {
-                mainLog.info( "User " + user.getUserId() + " with set_id " + userSetId + " and permission_set "
+                mainLog.info( "User " + user.getId() + " with set_id " + userSetId + " and permission_set "
                               + userPermSet
                               + " was denied permission to change set_id for role "
                               + role_id

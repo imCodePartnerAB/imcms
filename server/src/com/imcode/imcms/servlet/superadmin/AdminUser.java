@@ -26,10 +26,10 @@ public class AdminUser extends Administrator {
 
         // check if user is a Useradmin, adminRole = 2
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
+        boolean isUseradmin = user.isUserAdmin() ;
 
         // check if user is a Superadmin, adminRole = 1
-        boolean isSuperadmin = imcref.checkUserAdminrole( user.getUserId(), 1 );
+        boolean isSuperadmin = user.isSuperAdmin() ;
 
         // Lets verify that the user is an admin, otherwise throw him out.
         if ( !isSuperadmin && !isUseradmin ) {
@@ -79,7 +79,7 @@ public class AdminUser extends Administrator {
         String active = ( req.getParameter( "active" ) == null ) ? "1" : req.getParameter( "active" );
         String activeChecked = ( "0".equals( active ) ) ? "checked" : "";
         if ( req.getParameter( "showUsers" ) != null ) {
-            String[] usersArr = imcref.sqlProcedure( "GetCategoryUsers", new String[]{category, searchString, "" + user.getUserId(), "" + showAll, active} );
+            String[] usersArr = imcref.sqlProcedure( "GetCategoryUsers", new String[]{category, searchString, "" + user.getId(), "" + showAll, active} );
 
             Vector usersV = new Vector( java.util.Arrays.asList( usersArr ) );
             String usersOption = Html.createOptionList( "", usersV );
@@ -113,7 +113,7 @@ public class AdminUser extends Administrator {
 
         // check if user is a Useradmin, adminRole = 2
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        boolean isUseradmin = imcref.checkUserAdminrole( user.getUserId(), 2 );
+        boolean isUseradmin = user.isUserAdmin();
 
         // check if user is a Superadmin, adminRole = 1
         boolean isSuperadmin = imcref.checkAdminRights( user );
@@ -165,7 +165,7 @@ public class AdminUser extends Administrator {
             // Lets check if the user has right to do changes
             // only if he is an superadmin, useradmin or if he try to change his own values
             // otherwise throw him out.
-            if ( imcref.checkAdminRights( user ) == false && !useradmin && !userToChangeId.equals( "" + user.getUserId() ) ) {
+            if ( imcref.checkAdminRights( user ) == false && !useradmin && !userToChangeId.equals( "" + user.getId() ) ) {
                 String header = "Error in AdminUser, change user.";
                 Properties langproperties = imcref.getLangProperties( user );
                 String msg = langproperties.getProperty("error/servlet/AdminUser/user_have_no_permission") + "<br>";

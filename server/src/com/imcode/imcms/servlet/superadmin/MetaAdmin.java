@@ -30,7 +30,7 @@ public class MetaAdmin extends HttpServlet {
         };
 
         ServletOutputStream out = res.getOutputStream();
-        int user_id = user.getUserId();
+        int user_id = user.getId();
 
         boolean list = false; // show list if true.
         if ( req.getParameter( "showinterval" ) != null || req.getParameter( "showspan" ) != null ) {
@@ -130,7 +130,7 @@ public class MetaAdmin extends HttpServlet {
                 hl[i] = hl[i].substring( 0, 77 ) + "...";
             }
 
-            HashMap docTypesIdAndNames = DocumentMapper.getDocumentTypeIdsAndNames( imcref, Integer.parseInt(meta_id[i]), user.getUserId(), lang_prefix );
+            HashMap docTypesIdAndNames = DocumentMapper.getDocumentTypeIdsAndNames( imcref, Integer.parseInt(meta_id[i]), user.getId(), lang_prefix );
             String type = (String) docTypesIdAndNames.get( types[i] );
 
             out.println( "<A name=\"" + meta_id[i] + "\" href=\"AdminDoc?meta_id=" + meta_id[i] + "\"><FONT COLOR=\"#FF0000\">" + meta_id[i] + "</FONT></A>&nbsp;<A name=\"" + meta_id[i] + "\" href=\"GetDoc?meta_id=" + meta_id[i] + "\">" + type + ",&nbsp;" + pc[i] + "&nbsp;parents&nbsp;:&nbsp;" + Parser.parseDoc( hl[i], pd ) + "</A>" );

@@ -320,17 +320,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         return instance;
     }
 
-    //Check if user has a special adminRole
-    public boolean checkUserAdminrole( int userId, int adminRole ) {
-        String[] adminrole = sqlProcedure( "checkUserAdminrole ", new String[]{"" + userId, "" + adminRole} );
-        if ( adminrole.length > 0 ) {
-            if ( ( "" + adminRole ).equals( adminrole[0] ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public String parsePage( ParserParameters paramsToParse )
             throws IOException {
         return textDocParser.parsePage( paramsToParse );
@@ -341,7 +330,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      */
     public String getMenuButtons( UserDomainObject user, DocumentDomainObject document ) {
         int user_permission_set_id = documentMapper.getUsersMostPrivilegedPermissionSetIdOnDocument( user, document );
-        if ( user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ ) {
+        if ( user_permission_set_id >= IMCConstants.DOC_PERM_SET_READ && !user.isUserAdmin()) {
             return "";
         }
 
@@ -390,7 +379,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
         tags.put( "statusicon", documentMapper.getStatusIconTemplate( document, user ) ) ;
 
         // if user is superadmin or useradmin lets add superadmin button
-        if ( checkAdminRights( user ) || checkUserAdminrole( user.getUserId(), 2 ) ) {
+        if ( user.isSuperAdmin() || user.isUserAdmin() ) {
             tags.put( "superadmin", superadmin.toString() );
         } else {
             tags.put( "superadmin", "" );
@@ -863,7 +852,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * 0 = superadministrator
      */
     public boolean checkAdminRights( imcode.server.user.UserDomainObject user ) {
-        String[][] roles = sqlProcedureMulti( "CheckAdminRights", new String[]{"" + user.getUserId()} );
+        String[][] roles = sqlProcedureMulti( "CheckAdminRights", new String[]{"" + user.getId()} );
 
         for ( int i = 0; i < roles.length; i++ ) {
             String roleId = roles[i][1];
@@ -891,7 +880,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public boolean checkDocAdminRightsAny( int meta_id, UserDomainObject user, int permission ) {
         try {
             String[] perms = sqlProcedure( "GetUserPermissionSet",
-                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getUserId() )} );
+                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
 
             int set_id = Integer.parseInt( perms[0] );
             int set = Integer.parseInt( perms[1] );
@@ -920,7 +909,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public boolean checkDocAdminRights( int meta_id, UserDomainObject user, int permission ) {
         try {
             String[] perms = sqlProcedure( "GetUserPermissionSet",
-                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getUserId() )} );
+                                           new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
 
             if ( perms.length == 0 ) {
                 return false;
@@ -1201,7 +1190,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Set a user flag
      */
     public void setUserFlag( UserDomainObject user, String flagName ) {
-        int userId = user.getUserId();
+        int userId = user.getId();
 
         sqlUpdateProcedure( "SetUserFlag", new String[]{"" + userId, flagName} );
     }
@@ -1218,7 +1207,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Unset a user flag
      */
     public void unsetUserFlag( UserDomainObject user, String flagName ) {
-        int userId = user.getUserId();
+        int userId = user.getId();
 
         sqlUpdateProcedure( "UnsetUserFlag", new String[]{"" + userId, flagName} );
     }
@@ -1318,7 +1307,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Get all userflags for a single user
      */
     public Map getUserFlags( UserDomainObject user ) {
-        int userId = user.getUserId();
+        int userId = user.getId();
         String[] dbData = sqlProcedure( "GetUserFlagsForUser", new String[]{String.valueOf( userId )} );
 
         return getUserFlags( dbData );
@@ -1337,7 +1326,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
      * Get all userflags for a single user of a single type
      */
     public Map getUserFlags( UserDomainObject user, int type ) {
-        int userId = user.getUserId();
+        int userId = user.getId();
         String[] dbData = sqlProcedure( "GetUserFlagsForUserOfType",
                                         new String[]{String.valueOf( userId ), String.valueOf( type )} );
 

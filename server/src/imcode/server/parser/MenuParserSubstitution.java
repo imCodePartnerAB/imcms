@@ -77,7 +77,7 @@ class MenuParserSubstitution implements Substitution {
     private String createDocumentTypesOptionList() {
         int documentId = parserParameters.getDocumentRequest().getDocument().getId();
         String[] docTypes = parserParameters.getDocumentRequest().getServerObject().sqlProcedure( "GetDocTypesForUser", new String[]{
-            "" + documentId, "" + parserParameters.getDocumentRequest().getUser().getUserId(),
+            "" + documentId, "" + parserParameters.getDocumentRequest().getUser().getId(),
             parserParameters.getDocumentRequest().getUser().getLanguageIso639_2()
         } );
         List docTypesList = new ArrayList( Arrays.asList( docTypes ) );

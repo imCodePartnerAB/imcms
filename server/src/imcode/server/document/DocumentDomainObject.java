@@ -322,8 +322,8 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
 
     public abstract void saveNewDocument( DocumentMapper documentMapper, UserDomainObject user ) ;
 
-    public void setPermissionSetForRole( RoleDomainObject role, int permissionSetId ) {
-        getDocumentProperties().setPermissionSetForRole( role, permissionSetId );
+    public void setPermissionSetIdForRole( RoleDomainObject role, int permissionSetId ) {
+        getDocumentProperties().setPermissionSetIdForRole( role, permissionSetId );
     }
 
     private boolean isPublishedAtTime( Date date ) {
@@ -603,7 +603,7 @@ public abstract class DocumentDomainObject implements IMCConstants, Cloneable, S
             categories.remove( category );
         }
 
-        private void setPermissionSetForRole( RoleDomainObject role, int permissionSetId ) {
+        private void setPermissionSetIdForRole( RoleDomainObject role, int permissionSetId ) {
             rolesMappedToPermissionSetIds.put( role, new Integer( permissionSetId ) );
         }
 

@@ -6,6 +6,7 @@ import imcode.server.IMCServiceInterface;
 import imcode.server.LanguageMapper;
 import imcode.server.document.*;
 import imcode.server.user.UserDomainObject;
+import imcode.server.user.RoleDomainObject;
 import imcode.util.DateConstants;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -78,7 +79,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String meta_id_str = String.valueOf( meta_id );
 
             UserDomainObject user = documentRequest.getUser();
-            int user_id = user.getUserId();
+            int user_id = user.getId();
             String user_id_str = String.valueOf( user_id );
 
             DocumentMapper documentMapper = service.getDocumentMapper();
@@ -245,7 +246,6 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         tags.setProperty( "#param#", parserParameters.getParameter() );
         tags.setProperty( "#externalparam#", parserParameters.getExternalParameter() );
 
-        // Give the user a row of buttons if he is privileged enough.
         if (parserParameters.getFlags() >= 0) {
             tags.setProperty( "#adminMode#", service.getMenuButtons( user, document ) );
         }

@@ -224,7 +224,7 @@ public class Document {
         if ( null == role ) {
             throw new NoSuchRoleException( "No role by the name '" + roleName + "'." );
         }
-        internalDocument.setPermissionSetForRole( role, permissionSet );
+        internalDocument.setPermissionSetIdForRole( role, permissionSet );
     }
 
     /**

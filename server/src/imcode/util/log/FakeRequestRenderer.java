@@ -27,7 +27,7 @@ public class FakeRequestRenderer implements ObjectRenderer {
         Revisits revisits;
 
         StringBuffer result = new StringBuffer( docReq.getHttpServletRequest().getRemoteAddr() );
-        result.append( ' ' ).append( docReq.getUser().getUserId() );
+        result.append( ' ' ).append( docReq.getUser().getId() );
 
         result.append( " sessionID=" ).append( docReq.getHttpServletRequest().getSession().getId() );
         revisits = docReq.getRevisits();

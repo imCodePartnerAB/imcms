@@ -226,7 +226,7 @@ public class TemplateMapper {
     public static String[][] sprocGetTemplateGroupsForUser( IMCServiceInterface service, UserDomainObject user,
                                                             int meta_id ) {
         return service.sqlProcedureMulti( SPROC_GET_TEMPLATE_GROUPS_FOR_USER,
-                                          new String[]{String.valueOf( meta_id ), String.valueOf( user.getUserId() )} );
+                                          new String[]{String.valueOf( meta_id ), String.valueOf( user.getId() )} );
     }
 
     public static List sqlSelectGroupName( IMCServiceInterface service, String group_id ) {

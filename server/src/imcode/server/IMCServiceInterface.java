@@ -21,11 +21,6 @@ public interface IMCServiceInterface {
     UserDomainObject verifyUser(String login, String password)
 	;
 
-
-    /** Check if a user has a special admin role **/
-    public boolean checkUserAdminrole ( int userId, int adminRole )
-	;
-
     /**
        Retrieve a text-field
     **/

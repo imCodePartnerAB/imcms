@@ -59,7 +59,7 @@ public class ConfManager extends Conference {
         if ( action.equalsIgnoreCase( "VIEW" ) ) {
 
             // Lets get userparameters
-            String userId = "" + user.getUserId();
+            String userId = "" + user.getId();
 
             // Lets detect which type of user we got
             String loginType = user.getLoginType();

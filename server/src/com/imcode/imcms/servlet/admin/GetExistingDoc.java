@@ -211,7 +211,7 @@ public class GetExistingDoc extends HttpServlet {
             // First, get the doc_types the current user may use.
             String[] user_dt = imcref.sqlProcedure( "GetDocTypesForUser",
                                                     new String[]{
-                                                        "" + meta_id, "" + user.getUserId(),
+                                                        "" + meta_id, "" + user.getId(),
                                                         user.getLanguageIso639_2()
                                                     } );
             Set user_doc_types = new HashSet();

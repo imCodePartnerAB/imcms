@@ -75,7 +75,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         } else {
             user = new UserDomainObject();
 
-            user.setUserId( Integer.parseInt( sqlResult[0] ) );
+            user.setId( Integer.parseInt( sqlResult[0] ) );
             user.setLoginName( sqlResult[1] );
             user.setPassword( sqlResult[2].trim() );
             user.setFirstName( sqlResult[3] );
@@ -104,23 +104,21 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     private RoleDomainObject[] getRolesForUser( UserDomainObject user ) {
-        String sqlStr = "SELECT roles.role_id, role_name FROM roles, user_roles_crossref"
+        String sqlStr = "SELECT roles.role_id, role_name, roles.admin_role FROM roles, user_roles_crossref"
                         + " WHERE user_roles_crossref.role_id = roles.role_id"
                         + " AND user_roles_crossref.user_id = ?";
-        String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + user.getUserId()} );
+        String[][] sqlResult = service.sqlQueryMulti( sqlStr, new String[]{"" + user.getId()} );
         RoleDomainObject[] roles = new RoleDomainObject[sqlResult.length];
         for ( int i = 0; i < sqlResult.length; i++ ) {
             String[] sqlRow = sqlResult[i];
-            int roleId = Integer.parseInt( sqlRow[0] );
-            String roleName = sqlRow[1];
-            roles[i] = new RoleDomainObject( roleId, roleName );
+            roles[i] = getRoleFromSqlResult( sqlRow ) ;
         }
         return roles;
     }
 
     private void setPhoneNumbersForUser( UserDomainObject user ) {
         String[][] phoneNbr = service.sqlProcedureMulti( SPROC_GET_USER_PHONE_NUMBERS,
-                                                         new String[]{"" + user.getUserId()} );
+                                                         new String[]{"" + user.getId()} );
         String workPhone = "";
         String mobilePhone = "";
         String homePhone = "";
@@ -162,7 +160,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         String updateUserPRCStr = SPROC_UPDATE_USER;
         UserDomainObject imcmsUser = getUser( loginName );
         UserDomainObject tempUser = (UserDomainObject)newUser.clone();
-        tempUser.setUserId( imcmsUser.getUserId() );
+        tempUser.setId( imcmsUser.getId() );
         tempUser.setLoginName( loginName );
 
         callSprocModifyUserProcedure( updateUserPRCStr, tempUser );
@@ -174,27 +172,27 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         String updateUserPRCStr = SPROC_ADD_NEW_USER;
         String newUserId = service.sqlProcedureStr( SPROC_GET_HIGHEST_USER_ID, new String[]{} );
         int newIntUserId = Integer.parseInt( newUserId );
-        newUser.setUserId( newIntUserId );
+        newUser.setId( newIntUserId );
 
         callSprocModifyUserProcedure( updateUserPRCStr, newUser );
         addPhoneNumbers( newUser );
     }
 
     private void removePhoneNumbers( UserDomainObject newUser ) {
-        staticSprocDelPhoneNr( service, newUser.getUserId() );
+        staticSprocDelPhoneNr( service, newUser.getId() );
     }
 
     private void addPhoneNumbers( UserDomainObject newUser ) {
         final int PHONE_TYPE_HOME_PHONE = 1;
         final int PHONE_TYPE_WORK_PHONE = 2;
         final int PHONE_TYPE_WORK_MOBILE = 3;
-        staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE );
-        staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE );
-        staticSprocPhoneNbrAdd( service, newUser.getUserId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE );
+        staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getHomePhone(), PHONE_TYPE_HOME_PHONE );
+        staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getWorkPhone(), PHONE_TYPE_WORK_PHONE );
+        staticSprocPhoneNbrAdd( service, newUser.getId(), newUser.getMobilePhone(), PHONE_TYPE_WORK_MOBILE );
     }
 
     public String[] getRoleNames( UserDomainObject user ) {
-        String[] roleNames = service.sqlProcedure( SPROC_GET_USER_ROLES, new String[]{"" + user.getUserId()} );
+        String[] roleNames = service.sqlProcedure( SPROC_GET_USER_ROLES, new String[]{"" + user.getId()} );
         return roleNames;
     }
 
@@ -223,7 +221,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     public void addRoleToUser( UserDomainObject user, String roleName ) {
-        String userIdStr = String.valueOf( user.getUserId() );
+        String userIdStr = String.valueOf( user.getId() );
         addRole( roleName );
         log.debug( "Trying to assign role " + roleName + " to user " + user.getLoginName() );
         RoleDomainObject role = getRoleByName( roleName );
@@ -250,7 +248,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         if ( !includeUserExtern ) {
             for ( int i = 0; i < users.length; i++ ) {
                 UserDomainObject user = users[i];
-                boolean includeAcordingToUserExtern = !includeUserExtern && USER_EXTERN_ID != user.getUserId();
+                boolean includeAcordingToUserExtern = !includeUserExtern && USER_EXTERN_ID != user.getId();
                 boolean includeAcordingToInactiveUser = user.isActive() || includeInactiveUsers;
                 if ( includeAcordingToUserExtern && includeAcordingToInactiveUser ) {
                     filterdUsers.add( user );
@@ -270,7 +268,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
     }
 
     private void removeAllRoles( UserDomainObject user ) {
-        service.sqlUpdateProcedure( SPROC_DEL_USER_ROLES, new String[]{"" + user.getUserId(), "-1"} );
+        service.sqlUpdateProcedure( SPROC_DEL_USER_ROLES, new String[]{"" + user.getId(), "-1"} );
     }
 
     public UserDomainObject[] getAllUsersWithRole( String roleName ) {
@@ -321,7 +319,7 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
      * @return roleId
      */
     public RoleDomainObject getRoleByName( String wantedRoleName ) {
-        String sqlStr = "SELECT role_id, role_name FROM roles WHERE role_name = ?";
+        String sqlStr = "SELECT role_id, role_name, admin_role FROM roles WHERE role_name = ?";
         String[] sqlResult = service.sqlQuery( sqlStr, new String[]{wantedRoleName} );
         return getRoleFromSqlResult( sqlResult );
     }
@@ -331,14 +329,15 @@ public class ImcmsAuthenticatorAndUserMapper implements UserAndRoleMapper, Authe
         if ( sqlResult.length > 0 ) {
             int roleId = Integer.parseInt( sqlResult[0] );
             String roleName = sqlResult[1];
-            role = new RoleDomainObject( roleId, roleName );
+            int adminRoleId = Integer.parseInt( sqlResult[2] ) ;
+            role = new RoleDomainObject( roleId, roleName,adminRoleId );
         }
         return role;
     }
 
     private void callSprocModifyUserProcedure( String modifyUserProcedureName, UserDomainObject tempUser ) {
         String[] params = {
-            String.valueOf( tempUser.getUserId() ),
+            String.valueOf( tempUser.getId() ),
             tempUser.getLoginName(),
             null == tempUser.getPassword() ? "" : tempUser.getPassword(),
             tempUser.getFirstName(),

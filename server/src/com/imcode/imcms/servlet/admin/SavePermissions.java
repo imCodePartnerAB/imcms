@@ -52,7 +52,7 @@ public class SavePermissions extends HttpServlet {
             // User pressed ok.
 
             // Here i fetch the current users set-id and the document-permissions for this document (Whether set-id 1 is more privileged than set-id 2.)
-            String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet", new String[]{"" + meta_id, "" + user.getUserId()} );
+            String[] current_permissions = imcref.sqlProcedure( "GetUserPermissionSet", new String[]{"" + meta_id, "" + user.getId()} );
             int user_set_id = Integer.parseInt( current_permissions[0] );
             int user_perm_set = Integer.parseInt( current_permissions[1] );
             int currentdoc_perms = Integer.parseInt( current_permissions[2] );
@@ -62,7 +62,7 @@ public class SavePermissions extends HttpServlet {
             HashMap perm_ex_data_map = new HashMap();
 
             // Get an array containing perm_id, perm_data, perm_id, perm_data, and so on.
-            String[] user_permission_data = imcref.sqlProcedure( "GetUserPermissionSetEx", new String[]{"" + meta_id, "" + user.getUserId()} );
+            String[] user_permission_data = imcref.sqlProcedure( "GetUserPermissionSetEx", new String[]{"" + meta_id, "" + user.getId()} );
             for ( int i = 0; i < user_permission_data.length; i += 2 ) {
                 // Check if the map contains a set for this permission_id
                 HashSet temp_set = (HashSet)perm_ex_data_map.get( user_permission_data[i] );

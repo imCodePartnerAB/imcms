@@ -19,7 +19,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
     }
 
     public ShoppingOrder getShoppingOrderForUserById(UserDomainObject user, int orderId) {
-	int userId = user.getUserId() ;
+	int userId = user.getId() ;
 
 	String[] dbData = imcref.sqlProcedure("Shop_GetShoppingOrderForUserById", new String[] { String.valueOf(userId), String.valueOf(orderId) }) ;
 
@@ -28,7 +28,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 
     /** Retrieve a List of all ShoppingOrders for a User, sorted by datetime. **/
     public List getShoppingOrdersForUser(UserDomainObject user) {
-	int userId = user.getUserId() ;
+	int userId = user.getId() ;
 	String[][] dbData = imcref.sqlProcedureMulti("Shop_GetShoppingOrdersForUser", new String[] { String.valueOf(userId) }) ;
 
 	List theList = new ArrayList(dbData.length) ;
@@ -108,7 +108,7 @@ public class ShoppingOrderSystemImpl implements ShoppingOrderSystem {
 
 	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss") ;
 
-	String orderIdStr = imcref.sqlProcedureStr("Shop_AddShoppingOrder", new String[] {""+theOrder.getUser().getUserId(), dateFormat.format(theOrder.getDatetime()) } ) ;
+	String orderIdStr = imcref.sqlProcedureStr("Shop_AddShoppingOrder", new String[] {""+theOrder.getUser().getId(), dateFormat.format(theOrder.getDatetime()) } ) ;
 
 	addShoppingItemsToOrderInDb(orderIdStr, theOrder, theOrder.getItems()) ;
     }

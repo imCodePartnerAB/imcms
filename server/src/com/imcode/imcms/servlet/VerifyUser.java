@@ -94,7 +94,7 @@ public class VerifyUser extends HttpServlet {
                     nexturl = "GetDoc?meta_id=" + req.getParameter( "next_meta" );
                 }
 
-                session.setAttribute( "userToChange", "" + user.getUserId() );
+                session.setAttribute( "userToChange", "" + user.getId() );
                 session.setAttribute( "next_url", nexturl );
 
                 res.sendRedirect( "AdminUserProps?CHANGE_USER=true" );

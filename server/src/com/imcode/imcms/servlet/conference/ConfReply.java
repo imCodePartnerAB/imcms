@@ -83,7 +83,7 @@ public class ConfReply extends Conference {
 
             // Lets get ourselves a userid. we cant use the userparams id
             // since we got external users. so the userid could be an ip access nbr
-            String userId = "" + user.getUserId();
+            String userId = "" + user.getId();
             HttpSession session = req.getSession( false );
             if ( session != null ) {
                 userId = (String)session.getAttribute( "Conference.user_id" );

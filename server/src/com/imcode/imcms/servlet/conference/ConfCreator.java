@@ -75,7 +75,7 @@ public class ConfCreator extends Conference {
             confref.sqlUpdateProcedure( "A_AddNewForum", new String[]{metaId, confParams.getProperty( "FORUM_NAME" ), archiveMode, archiveTime} );
 
             // Lets get the administrators user_id
-            String user_id = "" + user.getUserId();
+            String user_id = "" + user.getId();
 
             // Lets add this user into the conference if hes not exists there before were
             // adding the discussion

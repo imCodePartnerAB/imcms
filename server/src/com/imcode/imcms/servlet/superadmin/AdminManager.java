@@ -33,7 +33,7 @@ public class AdminManager extends Administrator {
 
         // Lets verify that the user who tries to add a new user is an admin
         UserDomainObject user = Utility.getLoggedOnUser( req );
-        if (imcref.checkAdminRights(user) == false && imcref.checkUserAdminrole(user.getUserId(), 2) == false) {
+        if (imcref.checkAdminRights(user) == false && imcref.getDocumentMapper().userHasAdminRoleWithId(user.getId(), 2) == false) {
             String header = "Error in AdminManager.";
             Properties langproperties = imcref.getLangProperties( user );
             String msg = langproperties.getProperty("error/servlet/global/no_administrator") + "<br>";
