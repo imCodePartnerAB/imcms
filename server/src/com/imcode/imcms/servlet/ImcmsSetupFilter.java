@@ -9,16 +9,16 @@ import imcode.server.WebAppGlobalConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
 import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Cookie;
+import javax.servlet.http.*;
 import java.io.IOException;
 
 public class ImcmsSetupFilter implements Filter {
+
+    private final static Logger log = Logger.getLogger( ImcmsSetupFilter.class.getName() );
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
 
@@ -51,7 +51,13 @@ public class ImcmsSetupFilter implements Filter {
             NDC.push( contextPath );
         }
         NDC.push( StringUtils.substringAfterLast( ( (HttpServletRequest)request ).getRequestURI(), "/" ) );
-        chain.doFilter( request, response );
+        String path = httpServletRequest.getRequestURI() ;
+        path = StringUtils.substringAfter( path, httpServletRequest.getContextPath() ) ;
+        if (path.matches( "/\\d+" )) {
+            request.getRequestDispatcher( "/servlet/GetDoc?meta_id="+path.substring( 1 )).forward( request, response );
+        } else {
+            chain.doFilter( request, response );
+        }
         NDC.setMaxDepth( 0 );
     }
 
