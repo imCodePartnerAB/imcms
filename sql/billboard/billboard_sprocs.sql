@@ -277,7 +277,7 @@ B_AddNewBillBoard
 AS
 DECLARE @thisTemplateId int
 DECLARE @template_lib varchar(50)
-SET @template_lib = 'Original'
+SET @template_lib = 'original'
 INSERT INTO B_templates ( template_lib )
 VALUES  ( @template_lib )
 /* Lets get the template_id id for the just created template */ 
@@ -1009,7 +1009,7 @@ GO
 CREATE PROCEDURE B_GetTemplateLib
 /*
  Lets get the folder library where all the templates are situated. if nothing is found for that
-meta id , 'Original' is returned instead
+meta id , 'original' is returned instead
 */
 	@meta_id int
 AS
@@ -1019,7 +1019,7 @@ FROM B_billboard b , B_billboard_templates bt , B_templates t
 WHERE t.template_id = bt.template_id
 AND bt.billboard_id = b.meta_id
 AND b.meta_id = @meta_id
-SELECT @returnVal =  ISNULL(@returnVal, 'Original') 
+SELECT @returnVal =  ISNULL(@returnVal, 'original') 
 SELECT @returnVal AS 'TemplateLib'
 
 GO
