@@ -1,0 +1,38 @@
+Upgrade imCMS from version 1.8.1-RELEASE to 1.8.2-RELEASE
+
+- Stop the imcms webapp
+
+- Backup the default imcms database
+
+- Backup the imcms webapp directory
+
+- Run sql script "diff-1.8.1-1.8.2.sql" on imCMS database
+
+- Run sql script "imcms-sprocs-1.8.2.sql" on imCMS database
+
+- Stop tomcat engine
+
+- Remove the old imcms directory from tomcat/webapps
+
+- Remove the old imcms.war file from tomcat/webapps
+
+- Install the new imCMS version according to "Installing imCMS:" and
+    "Setting up imCMS:" in file "INSTALL.TXT"
+
+- From the imcms-backup, restore all user data from the following directories:
+    - /css
+    - /images
+    - /javascript
+    - /jsp
+    - /login  ( only files changed by user )
+    - /user
+    - /WEB-INF/fortunes
+    - /WEB-INF/includes
+    - /WEB-INF/logs ( new log files will be created, restore only access.log files used to generate statistics )
+    - /WEB-INF/templates/text
+    - /WEB-INF/uploads
+
+- Restart the webapplication
+
+
+You're done!
