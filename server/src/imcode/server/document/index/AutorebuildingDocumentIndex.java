@@ -77,7 +77,7 @@ public class AutorebuildingDocumentIndex extends DocumentIndex {
         int callersPriority = Thread.currentThread().getPriority();
         int newPriority = Math.max( callersPriority - 1, Thread.MIN_PRIORITY );
         indexBuildingThread.setPriority( newPriority );
-        log.debug("Setting the callersPriority on the background indexing thread to " + indexBuildingThread.getPriority() );
+        log.info("Setting the callersPriority on the background indexing thread to " + indexBuildingThread.getPriority() );
 
         indexBuildingThread.setDaemon(true);
         indexBuildingThread.start();
