@@ -49,19 +49,18 @@ public class TemplateAdd extends HttpServlet {
 	    if(req.getParameter("action").equals("noCacheImageView")) 
 		{
 		    String template = req.getParameter("template");
-		
+			 String mimeType ;	
 		    Object[] suffixAndStream = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
 		    byte[] temp = (byte[])suffixAndStream[1];
 				
 		    if ( temp == null || temp.length == 0 ) {
 			htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ).getBytes("8859_1") ;
+			mimeType = "text/html";
 		    } else {
+			mimeType = getServletContext().getMimeType(template+"."+(String)suffixAndStream[0]) ;
 			htmlStr = temp ;
 		    }
-			
-		    String suffix = (String)suffixAndStream[0];
-		    String mimeType = Utility.getMimeTypeFromExtension(suffix);
-
+			System.out.println("mimet: "+mimeType);
 		    res.setContentType(mimeType) ;
 		    out.write(htmlStr) ;
 		    return ;

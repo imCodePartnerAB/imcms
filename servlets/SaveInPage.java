@@ -123,16 +123,17 @@ public class SaveInPage extends HttpServlet {
 		return ;
 	    }
 	    Object[] temp = null ;
-	    try {
-		ServletOutputStream out = res.getOutputStream() ;
+	    try {		
 		temp = IMCServiceRMI.getDemoTemplate(imcserver,Integer.parseInt(template)) ;
 		String demoTemplateName = template+"."+(String)temp[0] ;
 		// Set content-type depending on type of demo-template.
 		res.setContentType(getServletContext().getMimeType(demoTemplateName)) ;
 		byte[] bytes = (byte[])temp[1] ;
+		ServletOutputStream out = res.getOutputStream() ;
 		res.setContentLength(bytes.length) ;
 		out.write(bytes) ;
-	    } catch ( NumberFormatException ex ) {
+		return;
+	    } catch ( Exception ex ) {
 		htmlStr = IMCServiceRMI.parseDoc( imcserver, null, "no_demotemplate.html", lang_prefix ) ;
 	    }
 	} else if ( req.getParameter("change_group")!=null ) {
