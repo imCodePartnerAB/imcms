@@ -23,7 +23,7 @@
     <!-- The directory to build in. -->
     <property name="build"          value="${basedir}/build"/>
     <property name="dist"           value="${basedir}/dist"/>
-    <property name="sql.temp.dir"   value="${basedir}/slqtemp"/>
+    <property name="sql.temp.dir"   value="${basedir}/sqltemp"/>
 
     <!-- Where to put generated documentation -->
     <property name="doc" value="${basedir}/doc"/>
@@ -369,7 +369,6 @@
         <remove url="${webapp.manager.url}" username="${tomcat.admin.username}" password="${tomcat.admin.password}"
             path="/${webappname}"/>
     </target>
-
 
     <!-- Run JUnit-tests -->
     <target name="test" depends="classes,junit-task-available" description="Runs JUnit-tests.">
