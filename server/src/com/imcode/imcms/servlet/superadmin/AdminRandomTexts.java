@@ -13,11 +13,7 @@ import imcode.util.fortune.*;
 
 import java.text.SimpleDateFormat;
 
-import com.imcode.imcms.servlet.superadmin.AdminError;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-
-
-public class AdminRandomTexts extends Administrator implements imcode.server.IMCConstants {
+public class AdminRandomTexts extends Administrator {
 
     private final static String HTML_TEMPLATE = "admin_random_texts.html";
     private final static String HTML_TEMPLATE_ADMIN = "admin_random_texts_file.html";

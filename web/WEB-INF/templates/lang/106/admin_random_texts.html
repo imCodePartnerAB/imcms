@@ -1,78 +1,39 @@
 <html>
 
 <head>
-<title><? templates/sv/fortunes/admin_random_texts.html/1 ?></title>
+<title><? templates/sv/fortunes/admin_random_texts.html/2 ?></title>
 
 
-<script language="JavaScript">
-<!--
-function MM_reloadPage(init) {  //reloads the window if Nav4 resized
-  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
-    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
-  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
-}
-MM_reloadPage(true);
-// -->
-</script>
+<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+<script src="$contextPath/imcms/$language/scripts/imcms_admin.js" type="text/javascript"></script>
 
 </head>
+<body>
 
-<body bgcolor="#FFFFFF">
+#gui_outer_start()
+#gui_head( "<? templates/sv/fortunes/admin_random_texts.html/2 ?>" )
+#gui_head_help_and_back_buttons( 97  "AdminManager" "abortForm" "CANCEL" )
+#gui_mid()
 
 <form method="post" action="AdminRandomTexts" name="AdminRandomTexts">
 
-  <table width="46%" border="0" cellspacing="0">
-    <tr bgcolor="#333366"> 
-      <td width="2%">&nbsp;</td>
-      <td colspan="2"> 
-        <div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2"><? templates/sv/fortunes/admin_random_texts.html/2 ?></font></b></div>
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="2%">&nbsp;</td>
-      <td colspan="3"> 
-        <hr>
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="2%">&nbsp;</td>
-      <td colspan="2"> 
-        <div align="left"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/fortunes/admin_random_texts.html/3 ?></font></div>
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="2%">&nbsp;</td>
-      <td colspan="2" nowrap> 
-        <select name="AdminFile">
-          #options#
-        </select>
-        &nbsp; 
-        <input type="submit" name="edit" value="<? templates/sv/fortunes/admin_random_texts.html/2001 ?>">
-        <input type="submit" name="back" value="<? templates/sv/fortunes/admin_random_texts.html/2002 ?>">
-        <a href="@documentationurl@/GetDoc?meta_id=97" target="_blank"><img src="$contextPath/imcms/$language/images/admin/btn_help_round.gif" width="21" height="21" border="0" alt="<? templates/sv/fortunes/admin_random_texts.html/2003 ?>"></a>
-      </td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="2%">&nbsp;</td>
-      <td colspan="3"> 
-        <hr>
-      </td>
-    </tr>
-    <tr bgcolor="#bababa"> 
-      <td width="2%">&nbsp;</td>
-      <td colspan="2">&nbsp;</td>
-      <td width="5%">&nbsp;</td>
-    </tr>
-  </table>
+ <table width="600">
+   <tr>
+     <td><? templates/sv/fortunes/admin_random_texts.html/3 ?></td>
+   </tr>
+   <tr>
+     <td colspan="2" nowrap> <select name="AdminFile">
+         #options#
+       </select> &nbsp; <input type="submit" class="imcmsFormBtnSmall" name="edit" value="<? templates/sv/fortunes/admin_random_texts.html/2001 ?>">       
+     </td>
+   </tr>
+ </table>
 
-  <p>&nbsp;</p>
+ </form>
 
-  </form>
+ #gui_bottom()
+ #gui_outer_end()
 
 </body>
-
 </html>
 
