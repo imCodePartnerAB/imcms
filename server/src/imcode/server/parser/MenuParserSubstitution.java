@@ -88,8 +88,9 @@ public class MenuParserSubstitution implements Substitution {
 	    String menutemplate = menuMatres.group(2) ;
 	    String menustarttemplate = "" , menustoptemplate = "" ;
 	    String looptemplate ;
+	    boolean looptags_present ;
 	    // Check if the looptags are present
-	    if (patMat.contains(menutemplate,MENULOOP_PATTERN)) {
+	    if (looptags_present = patMat.contains(menutemplate,MENULOOP_PATTERN)) {
 		MatchResult menuloopMatres = patMat.getMatch() ;
 		// Get the data between the looptags.
 		looptemplate = menuloopMatres.group(1) ;
@@ -101,17 +102,28 @@ public class MenuParserSubstitution implements Substitution {
 	    }
 	    // Create a list of menuitemtemplates
 	    LinkedList menuitemtemplatelist = new LinkedList() ;
+	    // Create a list of menuitemtemplate-betweens. (Everything between menuitemtemplate-tags.)
+	    LinkedList menuitemtemplatebetweenlist = new LinkedList() ;
 
 	    // Loop over the list and insert the menuitemtemplates
 	    PatternMatcherInput pmin = new PatternMatcherInput(looptemplate) ;
-	    while (patMat.contains(pmin, MENUITEM_PATTERN)) {
+	    int betweenindex = 0;
+	    for (; patMat.contains(pmin, MENUITEM_PATTERN); betweenindex = patMat.getMatch().endOffset(0)) {
 		MatchResult menuitemMatres = patMat.getMatch() ;
-		String menuitemtemplate = menuitemMatres.group(1) ;  // Pick out the content in "<?imcms:menuitem?>content<?/imcms:menuitem?>".
+		String menuitemtemplatebetween = looptemplate.substring(betweenindex, menuitemMatres.beginOffset(0)) ; // Pick out the foo in "foo<?imcms:menuitem?>bar<?/imcms:menuitem?>baz".
+		menuitemtemplatebetweenlist.add(menuitemtemplatebetween) ;
+		String menuitemtemplate = menuitemMatres.group(1) ;  // Pick out the bar in "foo<?imcms:menuitem?>bar<?/imcms:menuitem?>baz".
 		menuitemtemplatelist.add(menuitemtemplate) ;
 	    }
 
 	    if (menuitemtemplatelist.isEmpty()) { // Well, were there any menuitemtags present?
 		menuitemtemplatelist.add(looptemplate) ; // No? Use the looptemplate. (Which will be the entire menu if the looptags are missing.)
+
+		// menuitemtemplatelist now contains one element, menuitemtemplatebetweenlist none
+	    } else {
+		menuitemtemplatebetweenlist.add(looptemplate.substring(betweenindex)) ; // The were menuitemtags? Then pick out the baz in "foo<?imcms:menuitem?>bar<?/imcms:menuitem?>baz".
+
+		// menuitemtemplatebetweenlist now contains one more element than menuitemtemplatelist
 	    }
 
 	    if (currentMenu != null && currentMenu.size() > 0) {
@@ -119,15 +131,21 @@ public class MenuParserSubstitution implements Substitution {
 		result.append(menustarttemplate) ;
 		// Create an iterator over the menuitemtemplates
 		Iterator mitit = menuitemtemplatelist.iterator() ;
-
+		Iterator mitb_it = menuitemtemplatebetweenlist.iterator() ;
 		// Loop over the menus
 		imcode.server.parser.MapSubstitution mapsubstitution = new imcode.server.parser.MapSubstitution() ;
 		Substitution NULL_SUBSTITUTION = new StringSubstitution("") ;
 
 		for (Iterator mit = currentMenu.iterator() ; mit.hasNext() ; ) {
-		    // Make sure we loop over the templates.
-		    if (!mitit.hasNext()) {
-			mitit = menuitemtemplatelist.iterator() ;
+		    
+		    // Make sure we _loop_ over the templates.
+		    if (!mitit.hasNext()) { // If we're out of menuitemtemplates in the loop
+			mitit = menuitemtemplatelist.iterator() ; // Reset the iterator to the first menuitemtemplate. (A new iterator.)
+
+			if (mitb_it.hasNext()) { // If we hade any menuitemtemplatebetween's there should be exactly one left...
+			    result.append((String)mitb_it.next()) ; // append it.
+			    mitb_it = menuitemtemplatebetweenlist.iterator() ; // And renew the iterator.
+			}
 		    }
 
 		    String menuitemtemplate = (String)mitit.next() ;
@@ -137,12 +155,21 @@ public class MenuParserSubstitution implements Substitution {
 		    String menuitemresult = org.apache.oro.text.regex.Util.substitute(patMat,HASHTAG_PATTERN,mapsubstitution,menuitemtemplate,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
 		    // Since we wanted this menuitem, we don't need the menuitemhide-tags, so remove them.
 		    menuitemresult = org.apache.oro.text.regex.Util.substitute(patMat,MENUITEMHIDETAG_PATTERN, NULL_SUBSTITUTION, menuitemresult,org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
+		    if (mitb_it.hasNext()) { // If we have any menuitemtemplatebetween's...
+			result.append((String)mitb_it.next()) ; // append one.
+		    }
 		    result.append(menuitemresult) ;
 		}
 		// If we still have menuitemtemplates left, loop over them, and hide everything that is supposed to be hidden.
 		while (mitit.hasNext()) {
+		    if (mitb_it.hasNext()) { // If we hade any menuitemtemplatebetween's...
+			result.append((String)mitb_it.next()) ; // append one.
+		    }
 		    String menuitemresult = org.apache.oro.text.regex.Util.substitute(patMat,MENUITEMHIDE_PATTERN, NULL_SUBSTITUTION, (String)mitit.next(), org.apache.oro.text.regex.Util.SUBSTITUTE_ALL) ;
 		    result.append(menuitemresult) ;
+		}
+		if (mitb_it.hasNext()) { // If we hade any menuitemtemplatebetween's there should be exactly one left...
+		    result.append((String)mitb_it.next()) ; // append it.
 		}
 		result.append(menustoptemplate) ;
 	    }
