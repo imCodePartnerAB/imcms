@@ -14,6 +14,7 @@ import imcode.util.IdNamePair;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.iterators.FilterIterator;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.oro.text.regex.*;
 
 import java.net.URLEncoder;
@@ -327,7 +328,7 @@ class MenuParser {
         DocumentDomainObject document = menuItem.getDocument();
         String imageUrl = document.getMenuImage();
         String imageTag = imageUrl != null && imageUrl.length() > 0
-                          ? "<img src=\"" + imageUrl + "\" border=\"0\">" : "";
+                          ? "<img src=\"" + StringEscapeUtils.escapeHtml( imageUrl ) + "\" border=\"0\">" : "";
         String headline = document.getHeadline();
         if ( headline.length() == 0 ) {
             headline = "&nbsp;";
@@ -355,10 +356,10 @@ class MenuParser {
         tags.setProperty( "#menuitemindex#", "" + menuItemIndex );
         tags.setProperty( "#menuitemtreesortkey#", menuItem.getTreeSortKey().toString() );
         tags.setProperty( "#menuitemmetaid#", "" + document.getId() );
-        tags.setProperty( "#menuitemheadline#", headline );
-        tags.setProperty( "#menuitemtext#", document.getMenuText() );
+        tags.setProperty( "#menuitemheadline#", StringEscapeUtils.escapeHtml( headline ) );
+        tags.setProperty( "#menuitemtext#", StringEscapeUtils.escapeHtml( document.getMenuText() ) );
         tags.setProperty( "#menuitemimage#", imageTag );
-        tags.setProperty( "#menuitemimageurl#", imageUrl );
+        tags.setProperty( "#menuitemimageurl#", StringEscapeUtils.escapeHtml( imageUrl ) );
         tags.setProperty( "#menuitemtarget#", document.getTarget() );
         tags.setProperty( "#menuitemdatecreated#", createdDate );
         tags.setProperty( "#menuitemdatemodified#", modifiedDate );
