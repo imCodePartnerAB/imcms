@@ -132,7 +132,11 @@ public class AddDoc extends HttpServlet {
 			String[] allPossibleSearchPreps = {"and", "or"} ;
 			for(int i = 0 ; i < allPossibleSearchPreps.length; i++ ) {
 			  vec.add("#search_prep_check_" + allPossibleSearchPreps[i] + "#" ) ;
-			  vec.add("checked" ) ;
+			  if (i==0) {
+			  	vec.add("checked" ) ;
+			  }else {
+			  	vec.add("") ;
+			  }
 			}
 		      // Lets parse the html page which consists of the add an existing doc
 			out.print(IMCServiceRMI.parseDoc(imcserver,vec,"existing_doc.html",lang_prefix)) ;
