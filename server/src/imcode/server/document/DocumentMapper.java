@@ -158,9 +158,9 @@ public class DocumentMapper {
         int mostPrivilegedPermissionSetIdFoundYet = IMCConstants.DOC_PERM_SET_NONE;
         for ( int i = 0; i < usersRoles.length; i++ ) {
             RoleDomainObject usersRole = usersRoles[i];
-            int permissionSetId = ( (Integer)rolesMappedToPermissionSetIds.get( usersRole ) ).intValue();
-            if ( permissionSetId < mostPrivilegedPermissionSetIdFoundYet ) {
-                mostPrivilegedPermissionSetIdFoundYet = permissionSetId;
+            Integer permissionSetId = ( (Integer)rolesMappedToPermissionSetIds.get( usersRole ) );
+            if ( null != permissionSetId && permissionSetId.intValue() < mostPrivilegedPermissionSetIdFoundYet ) {
+                mostPrivilegedPermissionSetIdFoundYet = permissionSetId.intValue();
             }
         }
         return mostPrivilegedPermissionSetIdFoundYet;
