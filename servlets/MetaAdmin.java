@@ -6,6 +6,7 @@ import javax.servlet.http.*;
 
 import imcode.util.*;
 import imcode.server.*;
+import imcode.server.document.*;
 
 public class MetaAdmin extends HttpServlet {
 
@@ -131,22 +132,10 @@ public class MetaAdmin extends HttpServlet {
             if ( hl[i].length() > 80 ) {
                 hl[i] = hl[i].substring( 0, 77 ) + "...";
             }
-            String type;
-            if ( "5".equals( types[i] ) ) {
-                type = "URL-dok";
-            } else if ( "6".equals( types[i] ) ) {
-                type = "Browserkontroll";
-            } else if ( "7".equals( types[i] ) ) {
-                type = "HTML-dok";
-            } else if ( "8".equals( types[i] ) ) {
-                type = "Fil";
-            } else if ( "101".equals( types[i] ) ) {
-                type = "Diagram";
-            } else if ( "102".equals( types[i] ) ) {
-                type = "Konferens";
-            } else {
-                type = "Text/Meny-dok";
-            }
+
+            HashMap docTypesIdAndNames = DocumentMapper.getDocumentTypsAndNames( imcref, Integer.parseInt(meta_id[i]), user.getUserId(), lang_prefix );
+            String type = (String) docTypesIdAndNames.get( types[i] );
+
             out.println( "<A name=\"" + meta_id[i] + "\" href=\"AdminDoc?meta_id=" + meta_id[i] + "\"><FONT COLOR=\"#FF0000\">" + meta_id[i] + "</FONT></A>&nbsp;<A name=\"" + meta_id[i] + "\" href=\"GetDoc?meta_id=" + meta_id[i] + "\">" + type + ",&nbsp;" + pc[i] + "&nbsp;parents&nbsp;:&nbsp;" + Parser.parseDoc( hl[i], pd ) + "</A>" );
             if ( types[i].equals( "2" ) ) {
                 Hashtable h2 = imcref.sqlProcedureHash( "GetMenuDocChilds", new String[]{meta_id[i], "" + user_id} );
@@ -188,5 +177,6 @@ public class MetaAdmin extends HttpServlet {
         }
         out.println( "</body></html>" );
     }
+
 }
 

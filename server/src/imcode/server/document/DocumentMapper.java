@@ -951,5 +951,16 @@ public class DocumentMapper {
         return sections;
     }
 
+    public static HashMap getDocumentTypsAndNames( IMCServiceInterface service, int metaId, int userId, String lang_prefix ) {
+        String[] docTypesQueryResult = service.sqlProcedure( "GetDocTypesForUser", new String[]{""+metaId, "" + userId, lang_prefix} );
+        HashMap docTypesIdAndNames = new HashMap();
+        for (int j = 0; j < docTypesQueryResult.length; j+=2) {
+            String keyId = docTypesQueryResult[j];
+            String valueName = docTypesQueryResult[j+1];
+            docTypesIdAndNames.put( keyId, valueName );
+        }
+        return docTypesIdAndNames;
+    }
+
 }
 
