@@ -356,7 +356,7 @@
     </target>
 
 
-    <target name="install-tomcat-deploy" depends="install, tomcat-install"
+    <target name="install-tomcat-deploy" depends="install, tomcat-deploy"
         description="Install and deploy in running instance of tomcat"/>
 
 
