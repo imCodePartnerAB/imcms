@@ -11,12 +11,12 @@ GO
 CREATE PROCEDURE getDocs @user_id int, @start int, @end int AS
 -- Lists documents user is allowed to see.
 SELECT DISTINCT m.meta_id,
-   COUNT(DISTINCT c.meta_id) AS parentcount,
+   COUNT(DISTINCT menus.meta_id) AS parentcount,
    meta_headline,
    doc_type
 FROM   meta m
-LEFT JOIN menus     ON c.to_meta_id = menus.meta_id
-LEFT JOIN  childs c   ON c.menu_id = menus.menu_id
+LEFT JOIN  childs c   ON c.to_meta_id = m.meta_id
+LEFT JOIN menus     ON c.menu_id = menus.menu_id
 LEFT JOIN  roles_rights rr  ON rr.meta_id = m.meta_id
       AND rr.set_id < 4
 JOIN   user_roles_crossref urc ON urc.user_id = @user_id
