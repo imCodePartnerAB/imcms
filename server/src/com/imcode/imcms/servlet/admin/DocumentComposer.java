@@ -165,6 +165,7 @@ public class DocumentComposer extends HttpServlet {
                 newDocument.setPublicationStartDatetime( new Date() );
                 newDocument.setArchivedDatetime( null );
                 newDocument.setPublicationEndDatetime( null );
+                newDocument.setCreator( user );
                 addObjectToSessionAndSetSessionAttributeNameInRequest( "newDocument", newDocument, request, REQUEST_ATTR_OR_PARAM__DOCUMENT_SESSION_ATTRIBUTE_NAME );
                 forwardToDocinfoPage( request, response, user );
             } else if ( ACTION__PROCESS_NEW_DOCUMENT_INFORMATION.equalsIgnoreCase( action ) ) {
