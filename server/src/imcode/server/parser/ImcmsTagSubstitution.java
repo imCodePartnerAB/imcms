@@ -9,7 +9,6 @@ import imcode.server.document.textdocument.*;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
-import imcode.util.Utility;
 import imcode.util.FileCache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -617,7 +616,7 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
     private String tagCategories( Properties attributes ) {
         String categoryTypeName = attributes.getProperty( "type" );
         CategoryDomainObject[] categories;
-        final boolean shouldOutputDescription = Utility.toBoolean( attributes.getProperty( "outputdescription" ) );
+        final String shouldOutputDescription = attributes.getProperty( "outputdescription" );
         if ( null == categoryTypeName ) {
             categories = document.getCategories();
         } else {
@@ -632,7 +631,9 @@ class ImcmsTagSubstitution implements Substitution, IMCConstants {
             if ( null == categoryTypeName ) {
                 categoryString = category.getType() + ": " + categoryString;
             }
-            if ( shouldOutputDescription ) {
+            if ( "only".equalsIgnoreCase(shouldOutputDescription) ) {
+                categoryString = category.getDescription();
+            } else if( "true".equalsIgnoreCase(shouldOutputDescription) ) {
                 categoryString += " - " + category.getDescription();
             }
             categoryStrings[i] = categoryString;
