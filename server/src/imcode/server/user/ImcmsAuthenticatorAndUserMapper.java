@@ -7,6 +7,8 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
 
    private IMCServiceInterface service;
    private final Logger mainLog;
+   protected final static String ALWAYS_EXISTING_USERS_ROLE = "Users" ;
+   protected final static String ALWAYS_EXISTING_ADMIN_ROLE = "Superadmin" ;
 
    public ImcmsAuthenticatorAndUserMapper( IMCServiceInterface service, Logger mainLog ) {
       this.service = service;
@@ -135,11 +137,12 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
       callModifyUserProcedure( updateUserPRCStr, newUser );
    }
 
+
    private void callModifyUserProcedure( String modifyUserProcedureName, User tempUser ) {
       String[] params = {
          String.valueOf(tempUser.getUserId()),
          tempUser.getLoginName(),
-         tempUser.getPassword(),
+         null == tempUser.getPassword() ? "" : tempUser.getPassword(),
          tempUser.getFirstName(),
          tempUser.getLastName(),
          tempUser.getTitle(),
@@ -157,5 +160,24 @@ public class ImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticato
          String.valueOf( tempUser.getUserType() ),
          tempUser.isActive()?"1":"0" };
       service.sqlUpdateProcedure( modifyUserProcedureName, params );
+   }
+
+   public String[] getRoleNames( User user ) {
+     String[] roleNames = service.sqlProcedure("GetUserRoles", new String[] { ""+user.getUserId() } ) ;
+     return roleNames ;
+   }
+
+   public String[] getRoles() {
+      String[] roleNamesMinusUsers = service.sqlProcedure("GetAllRoles") ;
+      String[] roleNames = new String[roleNamesMinusUsers.length + 1] ;
+      roleNames[0] = ALWAYS_EXISTING_USERS_ROLE ;
+      for( int i = 0; i < roleNamesMinusUsers.length; i++ ) {
+         roleNames[i+1] = roleNamesMinusUsers[i];
+      }
+      return roleNames ;
+   }
+
+   public void addRole( String roleName ) {
+      service.sqlUpdateProcedure("RoleAddNew",new String[] { roleName }) ;
    }
 }

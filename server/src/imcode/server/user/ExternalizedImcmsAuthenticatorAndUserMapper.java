@@ -2,15 +2,21 @@ package imcode.server.user;
 
 import org.apache.log4j.Logger;
 
-public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper, Authenticator {
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Arrays;
+
+public class ExternalizedImcmsAuthenticatorAndUserMapper implements UserMapper, Authenticator {
    private ImcmsAuthenticatorAndUserMapper imcmsAuthenticatorAndUserMapper;
    private Authenticator otherAuthenticator;
    private UserMapper otherUserMapper;
+   private String defaultLanguage;
 
-   public AuthenticatorAndUserMapperUsingImcmsAndOther( ImcmsAuthenticatorAndUserMapper imcms, Authenticator otherAuthenticator, UserMapper otherUserMapper ) {
+   public ExternalizedImcmsAuthenticatorAndUserMapper( ImcmsAuthenticatorAndUserMapper imcms, Authenticator otherAuthenticator, UserMapper otherUserMapper, String defaultLanguage ) {
       this.imcmsAuthenticatorAndUserMapper = imcms;
       this.otherAuthenticator = otherAuthenticator;
       this.otherUserMapper = otherUserMapper;
+      this.defaultLanguage = defaultLanguage;
    }
 
    public boolean authenticate( String loginName, String password ) {
@@ -26,7 +32,7 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
 
    public User getUser( String loginName ) {
       User imcmsUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
-      User otherUser = otherUserMapper.getUser( loginName );
+      User otherUser = getUserFromOtherUserMapper( loginName );
       boolean imcmsUserExists = null != imcmsUser;
       boolean otherUserExists = null != otherUser;
       boolean imcmsUserIsInternal = (null != imcmsUser) && !imcmsUser.isImcmsExternal();
@@ -54,7 +60,16 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
       return result;
    }
 
+   private User getUserFromOtherUserMapper( String loginName ) {
+      User otherUser = otherUserMapper.getUser( loginName );
+      if( null != otherUser && null == otherUser.getLangPrefix() ) {
+         otherUser.setLangPrefix( defaultLanguage );
+      }
+      return otherUser;
+   }
+
    private User updateExternalUserInImcms( String loginName, User otherUser ) {
+      // TODO: Update the role-assignments for the user and make sure all roles exist
       otherUser.setImcmsExternal( true );
       imcmsAuthenticatorAndUserMapper.updateUser( loginName, otherUser );
       User updatedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
@@ -67,6 +82,8 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
    }
 
    private User addExternalUserToImcms( String loginName, User otherUser ) {
+      // TODO: Add roles for the user and assign them to the user
+
       otherUser.setImcmsExternal( true );
       imcmsAuthenticatorAndUserMapper.addUser( otherUser );
       User addedUser = imcmsAuthenticatorAndUserMapper.getUser( loginName );
@@ -86,6 +103,16 @@ public class AuthenticatorAndUserMapperUsingImcmsAndOther implements UserMapper,
    public void addUser( User newUser ) {
       // todo
       throw new UnsupportedOperationException( "Not implemented yet" );
+   }
+
+   public String[] getRoleNames( User user ) {
+      String[] imcmsRoleNames = imcmsAuthenticatorAndUserMapper.getRoleNames(user) ;
+      String[] otherRoleNames = otherUserMapper.getRoleNames(user) ;
+
+      HashSet roleNames = new HashSet(Arrays.asList(imcmsRoleNames)) ;
+      roleNames.addAll(Arrays.asList(otherRoleNames)) ;
+
+      return (String[])roleNames.toArray( new String[ imcmsRoleNames.length + otherRoleNames.length ] ) ;
    }
 
    public class UserConflictException extends RuntimeException {

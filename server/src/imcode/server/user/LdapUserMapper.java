@@ -4,6 +4,7 @@ import javax.naming.directory.*;
 import javax.naming.*;
 import java.util.Hashtable;
 import java.util.HashMap;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -52,18 +53,20 @@ public class LdapUserMapper implements UserMapper {
    private static final String NONSTANDARD_COMPANY = "company";
    private static final String NONSTANDARD_COUNTRY = "co";
 
+   protected static final String DEFAULT_LDAP_ROLE = "LDAP";
+
    private DirContext ctx = null;
    private String userIdentifier = null;
    private HashMap userFieldLdapMappings = null;
-   private HashMap ldapAttributeValues;
-   private String defaultLanguage;
+   private String[] ldapAttributesAutoMappedToRoles;
 
    public LdapUserMapper( String ldapServerURL,
                           String ldapAuthenticationType,
                           String ldapUserName,
                           String ldapPassword,
-                          String defaultLanguage) throws LdapInitException {
-      this.defaultLanguage = defaultLanguage;
+                          String[] ldapAttributesAutoMappedToRoles) throws LdapInitException {
+
+      this.ldapAttributesAutoMappedToRoles = ldapAttributesAutoMappedToRoles;
       userIdentifier = NONSTANDARD_USERID;
       userFieldLdapMappings = createLdapMappings();
 
@@ -87,24 +90,94 @@ public class LdapUserMapper implements UserMapper {
    public User getUser( String loginName ) {
       User result = null;
 
-      final String attributeName = userIdentifier + "=";
-      final String mappingString = attributeName + loginName;
+      final String mappingString = userIdentifier + "=" + loginName;
+
       NamingEnumeration enum = null;
+      boolean foundUser = false;
       try {
          enum = ctx.search( "", mappingString, null );
-         if( enum != null && enum.hasMore() ) {
-            User result11 = null;
-            SearchResult searchResult = (SearchResult)enum.nextElement();
-            NamingEnumeration attribEnum = searchResult.getAttributes().getAll();
-            result11 = mapAllPossibleAttributes( attribEnum );
-            result11.setLoginName( loginName );
-            result = result11;
-         }
+         foundUser = enum != null && enum.hasMore();
       } catch( NamingException e ) {
          result = null;
          getLogger().warn( "Could not find user", e );
       }
+
+      if( foundUser ) {
+         SearchResult searchResult = (SearchResult)enum.nextElement();
+
+         result = createUserFromLdapSearchResult( searchResult );
+
+         result.setLoginName( loginName );
+       }
+
       return result;
+   }
+
+   private User createUserFromLdapSearchResult( SearchResult searchResult) {
+      NamingEnumeration attribEnum = searchResult.getAttributes().getAll();
+
+      HashMap ldapAttributeValues = new HashMap();
+      while( attribEnum.hasMoreElements() ) {
+         Attribute attribute = (Attribute)attribEnum.nextElement();
+         String attributeName1 = attribute.getID();
+         String attributeValue = null;
+         try {
+            attributeValue = attribute.get().toString();
+         } catch( NamingException e ) {
+            getLogger().error( e );
+         }
+         ldapAttributeValues.put( attributeName1, attributeValue );
+      }
+
+      return createUserFromLdapAttributes( ldapAttributeValues );
+
+   }
+
+   private User createUserFromLdapAttributes( HashMap ldapAttributeValues ) {
+      User newlyFoundLdapUser = new User();
+
+      String value = getValueForUserField( "lastName", ldapAttributeValues );
+      newlyFoundLdapUser.setLastName( value );
+
+      value = getValueForUserField( "address", ldapAttributeValues );
+      newlyFoundLdapUser.setAddress( value );
+
+      value = getValueForUserField( "city", ldapAttributeValues );
+      newlyFoundLdapUser.setCity( value );
+
+      value = getValueForUserField( "county_council", ldapAttributeValues );
+      newlyFoundLdapUser.setCountyCouncil( value );
+
+      value = getValueForUserField( "emailAddress", ldapAttributeValues );
+      newlyFoundLdapUser.setEmailAddress( value );
+
+      value = getValueForUserField( "firstName", ldapAttributeValues );
+      newlyFoundLdapUser.setFirstName( value );
+
+      value = getValueForUserField( "homePhone", ldapAttributeValues );
+      newlyFoundLdapUser.setHomePhone( value );
+
+      value = getValueForUserField( "title", ldapAttributeValues );
+      newlyFoundLdapUser.setTitle( value );
+
+      value = getValueForUserField( "mobilePhone", ldapAttributeValues );
+      newlyFoundLdapUser.setMobilePhone( value );
+
+      value = getValueForUserField( "workPhone", ldapAttributeValues );
+      newlyFoundLdapUser.setWorkPhone( value );
+
+      value = getValueForUserField( "zip", ldapAttributeValues );
+      newlyFoundLdapUser.setZip( value );
+
+      value = getValueForUserField( "city", ldapAttributeValues );
+      newlyFoundLdapUser.setCity( value );
+
+      value = getValueForUserField( "company", ldapAttributeValues );
+      newlyFoundLdapUser.setCompany( value );
+
+      value = getValueForUserField( "country", ldapAttributeValues );
+      newlyFoundLdapUser.setCountry( value );
+      return newlyFoundLdapUser;
    }
 
    public User getUser( int id ) {
@@ -136,78 +209,10 @@ public class LdapUserMapper implements UserMapper {
       return result;
    }
 
-   private User mapAllPossibleAttributes( NamingEnumeration attribEnum ) {
-      ldapAttributeValues = createLdapMapNameValues( attribEnum );
-
-      User user = new User();
-      user.setPassword( "" );
-      user.setLangPrefix(defaultLanguage) ;
-
-      String value = getUserField( "lastName", ldapAttributeValues );
-      user.setLastName( value );
-
-      value = getUserField( "address", ldapAttributeValues );
-      user.setAddress( value );
-
-      value = getUserField( "city", ldapAttributeValues );
-      user.setCity( value );
-
-      value = getUserField( "county_council", ldapAttributeValues );
-      user.setCountyCouncil( value );
-
-      value = getUserField( "emailAddress", ldapAttributeValues );
-      user.setEmailAddress( value );
-
-      value = getUserField( "firstName", ldapAttributeValues );
-      user.setFirstName( value );
-
-      value = getUserField( "homePhone", ldapAttributeValues );
-      user.setHomePhone( value );
-
-      value = getUserField( "title", ldapAttributeValues );
-      user.setTitle( value );
-
-      value = getUserField( "mobilePhone", ldapAttributeValues );
-      user.setMobilePhone( value );
-
-      value = getUserField( "workPhone", ldapAttributeValues );
-      user.setWorkPhone( value );
-
-      value = getUserField( "zip", ldapAttributeValues );
-      user.setZip( value );
-
-      value = getUserField( "city", ldapAttributeValues );
-      user.setCity( value );
-
-      value = getUserField( "company", ldapAttributeValues );
-      user.setCompany( value );
-
-      value = getUserField( "country", ldapAttributeValues );
-      user.setCountry( value );
-
-      return user;
-   }
-
-   private String getUserField( String userFieldName, HashMap ldapAttributeValues ) {
+   private String getValueForUserField( String userFieldName, HashMap ldapAttributeValues ) {
       String ldapAttribute = (String)userFieldLdapMappings.get( userFieldName );
       String value = (String)ldapAttributeValues.get( ldapAttribute );
       return value;
-   }
-
-   private HashMap createLdapMapNameValues( NamingEnumeration attribEnum ) {
-      HashMap result = new HashMap();
-      while( attribEnum.hasMoreElements() ) {
-         Attribute attribute = (Attribute)attribEnum.nextElement();
-         String attributeName = attribute.getID();
-         String attributeValue = null;
-         try {
-            attributeValue = attribute.get().toString();
-         } catch( NamingException e ) {
-            getLogger().error( e );
-         }
-         result.put( attributeName, attributeValue );
-      }
-      return result;
    }
 
    private static DirContext staticSetupInitialDirContext( String ldapServerURL, String ldapAuthenticationType, String ldapUserName, String ldapPassword ) throws NamingException {
@@ -234,6 +239,12 @@ public class LdapUserMapper implements UserMapper {
 
    private Logger getLogger() {
       return Logger.getLogger( this.getClass() );
+   }
+
+   public String[] getRoleNames( User user ) {
+      // todo Really get the roles from ldap
+      String[] result = new String[] { DEFAULT_LDAP_ROLE };
+      return result;
    }
 
 }

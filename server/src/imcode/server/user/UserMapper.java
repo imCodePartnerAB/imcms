@@ -6,4 +6,5 @@ public interface UserMapper {
    User getUser( int id );
    void updateUser( String loginName, User user) ;
    void addUser( User newUser );
+   String[] getRoleNames( User user );
 }

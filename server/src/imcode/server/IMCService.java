@@ -146,7 +146,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     * Verify a Internet/Intranet user. User data retrived from SQL Database.
     */
 
-   AuthenticatorAndUserMapperUsingImcmsAndOther imcmsAndLdapAuthAndMapper = null;
+   ExternalizedImcmsAuthenticatorAndUserMapper imcmsAndLdapAuthAndMapper = null;
 
    public User verifyUser( String login, String password ) {
       User result = null;
@@ -170,16 +170,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
       String ldapUserName = "imcode\\hasbra";
       String ldapPassword = "hasbra";
 
-      LdapUserMapper ldapUserMapper = new LdapUserMapper( ldapServerURL,
-                                                          ldapAuthenticationType,
-                                                          ldapUserName,
-                                                          ldapPassword,
-                                                          this.getLanguage());
+      LdapUserMapper ldapUserMapper = new LdapUserMapper( ldapServerURL, ldapAuthenticationType, ldapUserName, ldapPassword, new String[0] );
 
-      imcmsAndLdapAuthAndMapper = new AuthenticatorAndUserMapperUsingImcmsAndOther(
-         new ImcmsAuthenticatorAndUserMapper( this, log ),
-         new SmbAuthenticator(),
-         ldapUserMapper );
+      imcmsAndLdapAuthAndMapper = new ExternalizedImcmsAuthenticatorAndUserMapper( new ImcmsAuthenticatorAndUserMapper( this, log ), new SmbAuthenticator(), ldapUserMapper, this.getLanguage() );
    }
 
    public User getUserById( int id ) {

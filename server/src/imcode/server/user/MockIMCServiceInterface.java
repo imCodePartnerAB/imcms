@@ -135,7 +135,7 @@ class MockIMCServiceInterface implements IMCServiceInterface {
 
    // Send a procedure to the database and return a string array
    public String[] sqlProcedure( String procedure ) {
-      return new String[0];
+      return sqlProcedure( procedure, new String[0]) ;
    }
 
    // Send a procedure to the database and return a string array

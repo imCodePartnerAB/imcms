@@ -1,5 +1,8 @@
 package imcode.server.user;
 
+import java.awt.List;
+import java.util.Arrays;
+
 
 public class TestLdapUserMapper extends UserBaseTestCase {
    private LdapUserMapper ldapUserMapper;
@@ -14,7 +17,7 @@ public class TestLdapUserMapper extends UserBaseTestCase {
                                               ldapAuthenticationType,
                                               ldapUserName,
                                               ldapPassword,
-                                              "se");
+                                              new String[0]);
       } catch( LdapUserMapper.LdapInitException e ) {
          fail();
       }
@@ -30,18 +33,18 @@ public class TestLdapUserMapper extends UserBaseTestCase {
       assertNull( user );
    }
 
-   public void testExistingUserCristoffer() {
+   public void testExistingUserChristoffer() {
       User user = ldapUserMapper.getUser("chrham");
       assertNotNull( user );
       assertEquals( "chrham", user.getLoginName());
-      assertEquals( "", user.getPassword() );
+      assertNull( user.getPassword() );
 
       assertEquals( "Skeppsbron 24", user.getAddress() );
       assertEquals( "VISBY", user.getCity() );
       assertEquals( "Imcode", user.getCompany() );
       assertEquals( "SWEDEN", user.getCountry() );
       assertEquals( "Gotland", user.getCountyCouncil() );
-      assertEquals( "kriger@imcode.se", user.getEmailAddress() );
+      assertEquals( "kreiger@imcode.com", user.getEmailAddress() );
       assertEquals( "Christoffer", user.getFirstName());
       assertEquals( "hemtelenummer", user.getHomePhone() );
       assertEquals( "Hammarström", user.getLastName());
@@ -49,6 +52,14 @@ public class TestLdapUserMapper extends UserBaseTestCase {
       assertEquals( "0708 60 89 68", user.getMobilePhone() );
       assertEquals( "0498 200 300", user.getWorkPhone() );
       assertEquals( "621 57", user.getZip() );
-      assertTrue( "SE".equalsIgnoreCase(user.getLangPrefix()) );
+      assertNull( user.getLangPrefix() );
    }
+
+   public void testGetRolesForChristoffer() {
+      User user = ldapUserMapper.getUser("chrham");
+      String[] roleNames = ldapUserMapper.getRoleNames( user );
+      assertNotNull( roleNames );
+      assertTrue( Arrays.asList( roleNames ).contains( LdapUserMapper.DEFAULT_LDAP_ROLE ) );
+   }
+
 }
