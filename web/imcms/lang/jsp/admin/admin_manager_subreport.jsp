@@ -22,9 +22,10 @@
     <table border="0" cellspacing="0" cellpadding="0">
     <tr>
         <% if ( subreport.isExpanded() ) { %>
-            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_hideAll" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/12 ?> &raquo;"></td>
+            <input type="hidden" name="<%= subreport.getName() %>_expand" value="1">
+            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_unexpand" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/12 ?> &raquo;"></td>
         <%}else{ %>
-            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_showAll" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/11 ?> &raquo;"></td>
+            <td><input type="submit" class="imcmsFormBtnSmall" style="width:70" name="<%= subreport.getName() %>_expand" value="<? web/imcms/lang/jsp/admin/admin_manager.jsp/11 ?> &raquo;"></td>
         <%}%>
     </tr>
     </table></td>

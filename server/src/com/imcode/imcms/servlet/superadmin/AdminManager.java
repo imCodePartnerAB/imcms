@@ -146,6 +146,9 @@ public class AdminManager extends Administrator {
                 subreport.setSortorder( newSortOrder );
             }
             Collections.sort( subreport.getDocuments(), getComparator( subreport.getSortorder() ) ) ;
+            boolean expanded = Utility.parameterIsSet( req, subreport.getName() + "_expand" )
+                           && !Utility.parameterIsSet( req, subreport.getName() + "_unexpand" ) ;
+            subreport.setExpanded( expanded );
         }
 
         AdminManagerPage adminManagerPage = null ;
