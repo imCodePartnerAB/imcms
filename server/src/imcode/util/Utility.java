@@ -183,6 +183,22 @@ public class Utility {
         return StringUtils.join( resultList.iterator(), ", " ) ;
     }
 
+    public static boolean parameterIsSet( HttpServletRequest request, String parameter ) {
+        return null != request.getParameter( parameter );
+    }
+
+    public static int[] getParameterInts( HttpServletRequest request, String parameterName ) {
+        String[] parameterValues = request.getParameterValues( parameterName );
+        if (null == parameterValues) {
+            return new int[0] ;
+        }
+        int[] parameterInts = new int[parameterValues.length] ;
+        for ( int i = 0; i < parameterValues.length; i++ ) {
+            parameterInts[i] = Integer.parseInt(parameterValues[i]);
+        }
+        return parameterInts;
+    }
+
     private static class TimeLengthSuffixPair {
         long timeLength;
         String suffix;

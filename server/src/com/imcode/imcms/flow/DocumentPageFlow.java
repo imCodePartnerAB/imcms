@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public abstract class DocumentPageFlow extends HttpPageFlow {
+public abstract class DocumentPageFlow extends PageFlow {
 
     protected CreateDocumentPageFlow.SaveDocumentCommand saveDocumentCommand;
 

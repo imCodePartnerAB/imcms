@@ -121,7 +121,7 @@ public class RoleDomainObject implements Serializable, Comparable {
         return 0 != ( unionOfRolePermissionIds & bitValue );
     }
 
-    public static class RolePermissionDomainObject {
+    public static class RolePermissionDomainObject implements Serializable {
         private int id ;
 
         RolePermissionDomainObject( int id ) {

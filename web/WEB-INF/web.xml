@@ -339,6 +339,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-class>
     </servlet>
@@ -371,6 +376,11 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.admin.PageDispatcher</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.admin.PageDispatcher</servlet-class>
     </servlet>
 
     <servlet>
@@ -424,11 +434,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveInclude</servlet-class>
     </servlet>
@@ -436,11 +441,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveInPage</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveMeta</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveMeta</servlet-class>
     </servlet>
 
     <servlet>
@@ -834,6 +834,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-name>
+        <url-pattern>/servlet/DocumentPageFlowDispatcher</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
         <url-pattern>/servlet/DocumentReferences</url-pattern>
     </servlet-mapping>
@@ -866,6 +871,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-name>
         <url-pattern>/servlet/ListDocuments</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.admin.PageDispatcher</servlet-name>
+        <url-pattern>/servlet/PageDispatcher</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -919,11 +929,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-name>
-        <url-pattern>/servlet/DocumentComposer</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
         <url-pattern>/servlet/SaveInclude</url-pattern>
     </servlet-mapping>
@@ -931,11 +936,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
         <url-pattern>/servlet/SaveInPage</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveMeta</servlet-name>
-        <url-pattern>/servlet/SaveMeta</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

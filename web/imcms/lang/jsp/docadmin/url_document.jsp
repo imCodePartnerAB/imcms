@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.servlet.admin.DocumentComposer,
+<%@ page import="com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
                  imcode.server.document.DocumentDomainObject,
                  org.apache.commons.lang.StringEscapeUtils,
                  org.apache.commons.lang.ObjectUtils,
@@ -6,7 +6,7 @@
                  imcode.util.*,
                  com.imcode.imcms.flow.EditUrlDocumentPageFlow,
                  com.imcode.imcms.flow.DocumentPageFlow,
-                 com.imcode.imcms.flow.HttpPageFlow,
+                 com.imcode.imcms.flow.PageFlow,
                  com.imcode.imcms.flow.EditDocumentPageFlow" contentType="text/html"%>
 <%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
@@ -24,7 +24,7 @@
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <table border="0" cellspacing="0" cellpadding="0">
-<form action="DocumentComposer">
+<form action="DocumentPageFlowDispatcher">
 <tr>
 	<td><input type="submit" name="cancel" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/url_document.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
@@ -33,9 +33,9 @@
 </table>
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="400">
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
-    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
+<input type="hidden" name="<%= PageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,PageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= PageFlow.REQUEST_PARAMETER__PAGE %>"
     value="<%= EditDocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td colspan="2">

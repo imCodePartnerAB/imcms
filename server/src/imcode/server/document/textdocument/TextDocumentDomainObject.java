@@ -12,8 +12,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private TemplateDomainObject template;
     private int templateGroupId;
     private TemplateDomainObject defaultTemplate;
-    private int defaultTemplateIdForRestrictedPermissionSetOne;
-    private int defaultTemplateIdForRestrictedPermissionSetTwo;
     private TreeMap texts = new TreeMap();
     private TreeMap images = new TreeMap();
     private TreeMap includes = new TreeMap();
@@ -113,14 +111,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         texts.put( new Integer( textIndex ), text );
     }
 
-    public int getDefaultTemplateIdForRestrictedPermissionSetOne() {
-        return defaultTemplateIdForRestrictedPermissionSetOne;
-    }
-
-    public int getDefaultTemplateIdForRestrictedPermissionSetTwo() {
-        return defaultTemplateIdForRestrictedPermissionSetTwo;
-    }
-
     public int getDocumentTypeId() {
         return DOCTYPE_TEXT;
     }
@@ -153,14 +143,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      */
     public Map getTexts() {
         return Collections.unmodifiableMap( texts );
-    }
-
-    public void setDefaultTemplateIdForRestrictedPermissionSetOne( int defaultTemplateIdForRestrictedPermissionSetOne ) {
-        this.defaultTemplateIdForRestrictedPermissionSetOne = defaultTemplateIdForRestrictedPermissionSetOne;
-    }
-
-    public void setDefaultTemplateIdForRestrictedPermissionSetTwo( int defaultTemplateIdForRestrictedPermissionSetTwo ) {
-        this.defaultTemplateIdForRestrictedPermissionSetTwo = defaultTemplateIdForRestrictedPermissionSetTwo;
     }
 
     public void setImages( Map images ) {

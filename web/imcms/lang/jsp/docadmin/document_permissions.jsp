@@ -9,10 +9,11 @@
                  imcode.util.HttpSessionUtils,
                  com.imcode.imcms.flow.*,
                  imcode.server.document.TemplateDomainObject,
-                 imcode.server.document.textdocument.TextDocumentDomainObject"%>
+                 imcode.server.document.textdocument.TextDocumentDomainObject,
+                 com.imcode.imcms.flow.Page"%>
 <%@page contentType="text/html"%><%@taglib uri="/WEB-INF/velocitytag.tld" prefix="vel"%><%
 
-    EditDocumentPermissionsPageFlow.DocumentPermissionsPage documentPermissionsPage = EditDocumentPermissionsPageFlow.DocumentPermissionsPage.fromRequest(request) ;
+    DocumentPermissionsPage documentPermissionsPage = (DocumentPermissionsPage)Page.fromRequest(request) ;
     DocumentDomainObject document = documentPermissionsPage.getDocument() ;
     UserDomainObject user = Utility.getLoggedOnUser( request );
 %><vel:velocity>
@@ -26,14 +27,11 @@
 #gui_outer_start()
 #gui_head( "<? global/imcms_administration ?>" )
 
-<form method="GET" action="DocumentComposer">
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
-    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
-        value="document_permissions">
+<form method="POST" action="PageDispatcher">
+<%= Page.htmlHidden( request ) %>
     <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-            <td><input type="submit" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2001 ?>"></td>
+            <td><input type="submit" name="<%= PageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2001 ?>"></td>
             <td>&nbsp;</td>
             <td><input type="button" value="<? templates/sv/docinfo/change_meta_rights.html/2002 ?>" title="<? templates/sv/docinfo/change_meta_rights.html/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(84)"></td>
         </tr>
@@ -92,7 +90,7 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <select name="<%= EditDocumentPermissionsPageFlow.DocumentPermissionsPage.REQUEST_PARAMETER__ROLES_WITHOUT_PERMISSIONS %>" size="4" multiple>
+                        <select name="<%= DocumentPermissionsPage.REQUEST_PARAMETER__ROLES_WITHOUT_PERMISSIONS %>" size="4" multiple>
                             <%
                                 for ( Iterator iterator = allRoles.iterator(); iterator.hasNext(); ) {
                                     RoleDomainObject role = (RoleDomainObject)iterator.next();
@@ -132,7 +130,7 @@
                         <? templates/sv/permissions/sets_precedence.html/precedence ?>
                     </td>
                     <td class="imcmsAdmText">
-                        <input type="CHECKBOX" name="<%= EditDocumentPermissionsPageFlow.DocumentPermissionsPage.REQUEST_PARAMETER__RESTRICTED_ONE_MORE_PRIVILEGED_THAN_RESTRICTED_TWO %>" value="1" <% if (document.isRestrictedOneMorePrivilegedThanRestrictedTwo()) { %>checked<% } %>>
+                        <input type="CHECKBOX" name="<%= DocumentPermissionsPage.REQUEST_PARAMETER__RESTRICTED_ONE_MORE_PRIVILEGED_THAN_RESTRICTED_TWO %>" value="1" <% if (document.isRestrictedOneMorePrivilegedThanRestrictedTwo()) { %>checked<% } %>>
                         <? templates/sv/permissions/sets_precedence.html/1001 ?>
                     </td>
                 </tr>
@@ -146,7 +144,7 @@
             <tr>
                 <td class="imcmsAdmText"><? templates/sv/docinfo/default_templates.html/2 ?></td>
                 <td class="imcmsAdmText">
-                    <select name="<%= EditDocumentPermissionsPageFlow.DocumentPermissionsPage.REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID %>">
+                    <select name="<%= DocumentPermissionsPage.REQUEST_PARAMETER__DEFAULT_TEMPLATE_ID %>">
                         <option value=""><? templates/sv/docinfo/default_templates_1.html/2 ?></option>
                         <%
                             TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
@@ -191,11 +189,11 @@
             <td align="right">
             <table border="0" cellspacing="0" cellpadding="0">
             <tr>
-                <td><input type="SUBMIT" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2005 ?>"></td>
+                <td><input type="SUBMIT" name="<%= PageFlow.REQUEST_PARAMETER__OK_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2005 ?>"></td>
                 <td>&nbsp;</td>
                 <td><input type="RESET" name="reset" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2006 ?>"></td>
                 <td>&nbsp;</td>
-                <td><input type="submit" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2007 ?>"></td>
+                <td><input type="submit" name="<%= PageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? templates/sv/docinfo/change_meta_rights.html/2007 ?>"></td>
             </tr>
             </table></td>
         </tr>

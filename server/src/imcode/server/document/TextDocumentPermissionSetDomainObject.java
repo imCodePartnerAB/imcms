@@ -6,6 +6,7 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
 
     private TemplateGroupDomainObject[] allowedTemplateGroups = new TemplateGroupDomainObject[0];
     private int[] allowedDocumentTypeIds = new int[0];
+    private TemplateDomainObject defaultTemplate;
 
     private static final String PERMISSION_NAME__EDIT_MENUS = "editMenus";
     private static final String PERMISSION_NAME__EDIT_TEMPLATES = "editTemplates";
@@ -77,4 +78,11 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
         return allowedDocumentTypeIds;
     }
 
+    public void setDefaultTemplate( TemplateDomainObject defaultTemplate ) {
+        this.defaultTemplate = defaultTemplate;
+    }
+
+    public TemplateDomainObject getDefaultTemplate() {
+        return defaultTemplate;
+    }
 }

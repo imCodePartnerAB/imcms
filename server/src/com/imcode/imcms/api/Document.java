@@ -56,7 +56,7 @@ public class Document {
                 case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1:
                 case DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2:
                     result.put( role.getName(),
-                                getDocumentPermissionSetMapper().createRestrictedPermissionSet( internalDocument,
+                                getDocumentPermissionSetMapper().getRestrictedPermissionSet( internalDocument,
                                                                                                 permissionType,
                                                                                                 false ) );
                     break;

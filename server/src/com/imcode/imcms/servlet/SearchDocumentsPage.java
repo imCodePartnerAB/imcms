@@ -101,7 +101,7 @@ public class SearchDocumentsPage {
 
     private void setDocumentFinderFromRequest( HttpServletRequest request ) {
         documentFinderSessionAttributeName = HttpSessionUtils.getSessionAttributeNameFromRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER );
-        DocumentFinder documentFinderFromSession = (DocumentFinder)request.getSession().getAttribute( documentFinderSessionAttributeName );
+        DocumentFinder documentFinderFromSession = (DocumentFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_OR_PARAMETER__DOCUMENT_FINDER) ;
         if ( null != documentFinderFromSession ) {
             documentFinder = documentFinderFromSession;
         } else {

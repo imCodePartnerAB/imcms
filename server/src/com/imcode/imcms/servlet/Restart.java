@@ -1,7 +1,6 @@
 package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Prefs;
 import imcode.util.Utility;
@@ -24,10 +23,8 @@ public class Restart extends HttpServlet {
             return;
         }
 
-        log( "Restarting..." );
         Prefs.flush();
-        log( "Flushed preferencescache" );
-        log( "Restart Complete." );
+        Imcms.getServices().getDocumentMapper().clearDocumentCache() ;
         res.getOutputStream().println( "Restart complete." );
     }
 }

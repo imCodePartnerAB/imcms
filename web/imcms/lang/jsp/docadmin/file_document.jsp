@@ -1,6 +1,6 @@
 <%@ page contentType="text/html"
 
-	import="com.imcode.imcms.servlet.admin.DocumentComposer,
+	import="com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
           imcode.server.document.DocumentMapper,
           org.apache.commons.lang.StringEscapeUtils,
           imcode.server.Imcms,
@@ -32,7 +32,7 @@
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <table border="0" cellspacing="0" cellpadding="0">
-<form method="POST" enctype="multipart/form-data" action="DocumentComposer" charset>
+<form method="POST" enctype="multipart/form-data" action="DocumentPageFlowDispatcher" charset>
 <input type="hidden" name="meta_id" value="#getMetaId#">
 <input type="hidden" name="new_meta_id" value="#new_meta_id#">
 <tr>
@@ -55,9 +55,9 @@
     String selectedFileId = editPage.getSelectedFileId();
     Map files = document.getFiles();
     boolean allowChoiceOfDefault = files.size() > 1; %>
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>" value="<%=
-	HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>" value="<%=
+<input type="hidden" name="<%= PageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>" value="<%=
+	HttpSessionUtils.getSessionAttributeNameFromRequest(request,PageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= PageFlow.REQUEST_PARAMETER__PAGE %>" value="<%=
 	EditDocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td>#gui_heading( "<? install/htdocs/sv/jsp/docadmin/file_document.jsp/4/1 ?>" )</td>
@@ -185,9 +185,9 @@ if (!files.isEmpty()) { %>
 <tr>
 	<td align="right"><%
 	if (!files.isEmpty()) { %>
-	<input type="submit" class="imcmsFormBtn" value="<? global/OK ?>" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>" onClick="return singleclicked();"><%
+	<input type="submit" class="imcmsFormBtn" value="<? global/OK ?>" name="<%= PageFlow.REQUEST_PARAMETER__OK_BUTTON %>" onClick="return singleclicked();"><%
 	} %>
-	<input type="submit" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/cancel ?>"></td>
+	<input type="submit" class="imcmsFormBtn" name="<%= PageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" value="<? global/cancel ?>"></td>
 </tr>
 </form>
 </table>

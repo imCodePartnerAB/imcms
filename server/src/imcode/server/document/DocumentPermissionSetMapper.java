@@ -2,13 +2,10 @@ package imcode.server.document;
 
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
-import imcode.server.user.UserDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.UserDomainObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class DocumentPermissionSetMapper {
 
@@ -37,9 +34,9 @@ public class DocumentPermissionSetMapper {
         this.service = service;
     }
 
-    public DocumentPermissionSetDomainObject createRestrictedPermissionSet( DocumentDomainObject document,
-                                                                            int permissionTypeId,
-                                                                            boolean forNewDocuments ) {
+    public DocumentPermissionSetDomainObject getRestrictedPermissionSet( DocumentDomainObject document,
+                                                                         int permissionTypeId,
+                                                                         boolean forNewDocuments ) {
         DocumentPermissionSetDomainObject documentPermissionSet = null;
         if ( document instanceof TextDocumentDomainObject ) {
             documentPermissionSet = new TextDocumentPermissionSetDomainObject( permissionTypeId );
@@ -75,30 +72,30 @@ public class DocumentPermissionSetMapper {
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetRestrictedOne( DocumentDomainObject document ) {
-        return createRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, false );
+        return getRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, false );
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwo( DocumentDomainObject document ) {
-        return createRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, false );
+        return getRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, false );
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetRestrictedOneForNewDocuments(
             DocumentDomainObject document ) {
-        return createRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, true );
+        return getRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1, true );
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetRestrictedTwoForNewDocuments(
             DocumentDomainObject document ) {
-        return createRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, true );
+        return getRestrictedPermissionSet( document, DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2, true );
     }
 
     public void saveRestrictedDocumentPermissionSets( DocumentDomainObject document, UserDomainObject user,
                                                       DocumentDomainObject oldDocument ) {
-        if (user.canDefineRestrictedOneFor( oldDocument )) {
+        if ( user.canDefineRestrictedOneFor( oldDocument ) ) {
             saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOne(), false );
             saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedOneForNewDocuments(), true );
         }
-        if (user.canDefineRestrictedTwoFor( oldDocument )) {
+        if ( user.canDefineRestrictedTwoFor( oldDocument ) ) {
             saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwo(), false );
             saveRestrictedDocumentPermissionSet( document, document.getPermissionSetForRestrictedTwoForNewDocuments(), true );
         }
@@ -229,14 +226,10 @@ public class DocumentPermissionSetMapper {
         textDocumentPermissionSet.setEditTemplates( 0
                                                     != ( permissionBits & EDIT_TEXT_DOCUMENT_TEMPLATE_PERMISSION_ID ) );
 
-        if ( textDocumentPermissionSet.getEditTemplates() ) {
-            TemplateGroupDomainObject[] allowedTemplateGroups = sqlGetTemplateGroupsWithPermissions( document.getId(), textDocumentPermissionSet, forNewDocuments );
-            textDocumentPermissionSet.setAllowedTemplateGroups( allowedTemplateGroups );
-        }
-        if ( textDocumentPermissionSet.getEditMenus() ) {
-            int[] documentTypeIds = sqlGetDocTypesWithPermissions( document.getId(), textDocumentPermissionSet, forNewDocuments );
-            textDocumentPermissionSet.setAllowedDocumentTypeIds( documentTypeIds );
-        }
+        TemplateGroupDomainObject[] allowedTemplateGroups = sqlGetTemplateGroupsWithPermissions( document.getId(), textDocumentPermissionSet, forNewDocuments );
+        textDocumentPermissionSet.setAllowedTemplateGroups( allowedTemplateGroups );
+        int[] documentTypeIds = sqlGetDocTypesWithPermissions( document.getId(), textDocumentPermissionSet, forNewDocuments );
+        textDocumentPermissionSet.setAllowedDocumentTypeIds( documentTypeIds );
     }
 
     private int[] sqlGetDocTypesWithPermissions( int metaId,

@@ -139,12 +139,13 @@ public class DocumentMapper {
                 newTextDocument.removeAllIncludes();
                 newTextDocument.removeAllMenus();
                 int permissionSetId = getDocumentPermissionSetIdForUser( parent, user );
-                TemplateMapper templateMapper = service.getTemplateMapper();
                 TemplateDomainObject template = null;
                 if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_1 == permissionSetId ) {
-                    template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetOne() );
+                    template = ((TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedOneForNewDocuments()).getDefaultTemplate();
                 } else if ( DocumentPermissionSetDomainObject.TYPE_ID__RESTRICTED_2 == permissionSetId ) {
-                    template = templateMapper.getTemplateById( newTextDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo() );
+                    template = ( (TextDocumentPermissionSetDomainObject)newTextDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
+                } else if ( parent instanceof TextDocumentDomainObject ) {
+                    template = ((TextDocumentDomainObject)parent).getDefaultTemplate() ;
                 }
                 if ( null != template ) {
                     newTextDocument.setTemplate( template );
@@ -1126,6 +1127,10 @@ public class DocumentMapper {
 
     static void deleteOtherFileDocumentFiles( final FileDocumentDomainObject fileDocument ) {
         deleteFileDocumentFilesAccordingToFileFilter( new SuperfluousFileDocumentFilesFileFilter( fileDocument ) );
+    }
+
+    public void clearDocumentCache() {
+        documentCache.clear();
     }
 
     public static class TextDocumentMenuIndexPair {

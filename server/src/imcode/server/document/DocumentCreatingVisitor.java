@@ -32,15 +32,19 @@ public class DocumentCreatingVisitor extends DocumentStoringVisitor {
     }
 
     public void visitTextDocument( TextDocumentDomainObject textDocument ) {
-        String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template, default_template_1, default_template_2) VALUES (?,?,?,?,?)";
+        String sqlTextDocsInsertStr = "INSERT INTO text_docs (meta_id, template_id, group_id, default_template, default_template_1, default_template_2) VALUES (?,?,?,?,?,?)";
         TemplateDomainObject textDocumentTemplate = textDocument.getTemplate();
+        TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
+        TemplateDomainObject defaultTemplateForRestricted1 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
+        TemplateDomainObject defaultTemplateForRestricted2 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
         service.sqlUpdateQuery( sqlTextDocsInsertStr,
                                 new String[]{
-                                    "" + textDocument.getId(), "" + textDocumentTemplate.getId(),
+                                    "" + textDocument.getId(),
+                                    "" + textDocumentTemplate.getId(),
                                     "" + textDocument.getTemplateGroupId(),
-                                    "" + textDocument.getDefaultTemplate().getId(),
-                                    "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
-                                    "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo()
+                                    null != defaultTemplate ? "" + defaultTemplate.getId() : null,
+                                    null != defaultTemplateForRestricted1 ? "" + defaultTemplateForRestricted1.getId() : "-1",
+                                    null != defaultTemplateForRestricted2 ? "" + defaultTemplateForRestricted2.getId() : "-1",
                                 } );
 
         updateTextDocumentTexts( textDocument );

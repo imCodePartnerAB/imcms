@@ -43,32 +43,38 @@ public class AddDoc extends HttpServlet {
         if ( 0 == documentTypeId ) {
             createExistingDocPage( parentId, parentMenuIndex, request, response );
         } else {
-            HttpPageFlow httpPageFlow = null;
-            DispatchCommand dispatchToMenuEditCommand = new DispatchToMenuEditCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
-            DocumentPageFlow.SaveDocumentCommand saveNewDocumentAndAddToMenuCommand = new SaveNewDocumentAndAddToMenuCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
-            if ( document instanceof TextDocumentDomainObject ) {
-                TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
-                String templateName = request.getParameter( REQUEST_PARAMETER__NEW_TEMPLATE ) ;
-                if (null != templateName) {
-                    TemplateDomainObject template = services.getTemplateMapper().getTemplateByName( templateName ) ;
-                    if (null != template) {
-                        textDocument.setTemplate( template );
-                    }
-                }
-                httpPageFlow = new CreateTextDocumentPageFlow( textDocument, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
-            } else if ( document instanceof UrlDocumentDomainObject ) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
-            } else if ( document instanceof HtmlDocumentDomainObject ) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
-            } else if ( document instanceof FileDocumentDomainObject ) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand, null ) );
-            } else if ( document instanceof BrowserDocumentDomainObject ) {
-                httpPageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
-            } else if ( document instanceof FormerExternalDocumentDomainObject ) {
-                httpPageFlow = new CreateFormerExternalDocumentPageFlow( (FormerExternalDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
-            }
-            httpPageFlow.dispatch( request, response );
+            PageFlow pageFlow = getPageFlow( parentDocument, parentMenuIndex, document, request, services );
+            pageFlow.dispatch( request, response );
         }
+    }
+
+    private PageFlow getPageFlow( DocumentDomainObject parentDocument, int parentMenuIndex,
+                                  DocumentDomainObject document, HttpServletRequest request, ImcmsServices services ) {
+        PageFlow pageFlow = null;
+        DispatchCommand dispatchToMenuEditCommand = new DispatchToMenuEditCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
+        DocumentPageFlow.SaveDocumentCommand saveNewDocumentAndAddToMenuCommand = new SaveNewDocumentAndAddToMenuCommand( (TextDocumentDomainObject)parentDocument, parentMenuIndex );
+        if ( document instanceof TextDocumentDomainObject ) {
+            TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document;
+            String templateName = request.getParameter( REQUEST_PARAMETER__NEW_TEMPLATE ) ;
+            if (null != templateName) {
+                TemplateDomainObject template = services.getTemplateMapper().getTemplateByName( templateName ) ;
+                if (null != template) {
+                    textDocument.setTemplate( template );
+                }
+            }
+            pageFlow = new CreateTextDocumentPageFlow( textDocument, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
+        } else if ( document instanceof UrlDocumentDomainObject ) {
+            pageFlow = new CreateDocumentWithEditPageFlow( new EditUrlDocumentPageFlow( (UrlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
+        } else if ( document instanceof HtmlDocumentDomainObject ) {
+            pageFlow = new CreateDocumentWithEditPageFlow( new EditHtmlDocumentPageFlow( (HtmlDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
+        } else if ( document instanceof FileDocumentDomainObject ) {
+            pageFlow = new CreateDocumentWithEditPageFlow( new EditFileDocumentPageFlow( (FileDocumentDomainObject)document, getServletContext(), dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand, null ) );
+        } else if ( document instanceof BrowserDocumentDomainObject ) {
+            pageFlow = new CreateDocumentWithEditPageFlow( new EditBrowserDocumentPageFlow( (BrowserDocumentDomainObject)document, dispatchToMenuEditCommand, saveNewDocumentAndAddToMenuCommand ) );
+        } else if ( document instanceof FormerExternalDocumentDomainObject ) {
+            pageFlow = new CreateFormerExternalDocumentPageFlow( (FormerExternalDocumentDomainObject)document, saveNewDocumentAndAddToMenuCommand, dispatchToMenuEditCommand );
+        }
+        return pageFlow;
     }
 
     private void createExistingDocPage( int meta_id, int doc_menu_no,

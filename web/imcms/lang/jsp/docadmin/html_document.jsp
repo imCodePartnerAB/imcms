@@ -1,9 +1,9 @@
-<%@ page import="com.imcode.imcms.servlet.admin.DocumentComposer,
+<%@ page import="com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
                  org.apache.commons.lang.StringEscapeUtils,
                  imcode.server.document.HtmlDocumentDomainObject,
                  org.apache.commons.lang.ObjectUtils,
                  imcode.util.HttpSessionUtils,
-                 com.imcode.imcms.flow.HttpPageFlow,
+                 com.imcode.imcms.flow.PageFlow,
                  com.imcode.imcms.flow.EditHtmlDocumentPageFlow,
                  com.imcode.imcms.flow.DocumentPageFlow,
                  com.imcode.imcms.flow.*" contentType="text/html"%>
@@ -20,7 +20,7 @@
 #gui_outer_start()
 #gui_head("<? global/imcms_administration ?>")
 <table border="0" cellspacing="0" cellpadding="0">
-<form method="POST" action="DocumentComposer">
+<form method="POST" action="DocumentPageFlowDispatcher">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="cancel" value="<? install/htdocs/sv/jsp/docadmin/html_document.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
@@ -30,14 +30,14 @@
 </table>
 #gui_mid()
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center">
-<form method="POST" action="DocumentComposer">
+<form method="POST" action="DocumentPageFlowDispatcher">
 <%
     DocumentPageFlow httpFlow = DocumentPageFlow.fromRequest(request) ;
     HtmlDocumentDomainObject document = (HtmlDocumentDomainObject)httpFlow.getDocument() ;
 %>
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
-    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
+<input type="hidden" name="<%= PageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,PageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= PageFlow.REQUEST_PARAMETER__PAGE %>"
     value="<%= EditDocumentPageFlow.PAGE__EDIT %>">
 <tr>
 	<td>

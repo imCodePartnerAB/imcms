@@ -14,10 +14,9 @@
             imcode.server.ImcmsServices,
             imcode.server.user.UserDomainObject,
             imcode.server.document.*,
-            com.imcode.imcms.servlet.admin.DocumentComposer,
+            com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher,
             org.apache.commons.lang.ObjectUtils,
             java.util.regex.Pattern,
-            org.apache.oro.text.perl.Perl5Util,
             java.text.Collator,
             java.util.*,
             com.imcode.imcms.servlet.admin.UserBrowser,
@@ -27,7 +26,7 @@
             com.imcode.imcms.flow.EditDocumentInformationPageFlow,
             com.imcode.imcms.flow.CreateDocumentPageFlow,
             com.imcode.imcms.flow.DocumentPageFlow,
-            com.imcode.imcms.flow.HttpPageFlow"
+            com.imcode.imcms.flow.PageFlow"
 
 %><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%><%
 
@@ -107,9 +106,9 @@ function checkFocus() {
 
 %>
 <table border="0" cellspacing="0" cellpadding="0">
-<form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentComposer">
+<form name="mainForm" method="POST" action="<%= request.getContextPath() %>/servlet/DocumentPageFlowDispatcher">
 <tr>
-	<td><input type="submit" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>"></td>
+	<td><input type="submit" name="<%= PageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>" class="imcmsFormBtn" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2001 ?>"></td>
 	<td>&nbsp;</td>
 	<td><input type="button" value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2002 ?>"
 	title="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2003 ?>" class="imcmsFormBtn" onClick="openHelpW(77)"></td>
@@ -124,9 +123,9 @@ function checkFocus() {
 
 %>
 <table border="0" cellspacing="0" cellpadding="2" width="660" align="center" onMouseOver="checkFocus();">
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
-    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,HttpPageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
-<input type="hidden" name="<%= HttpPageFlow.REQUEST_PARAMETER__PAGE %>"
+<input type="hidden" name="<%= PageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW %>"
+    value="<%= HttpSessionUtils.getSessionAttributeNameFromRequest(request,PageFlow.REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW) %>">
+<input type="hidden" name="<%= PageFlow.REQUEST_PARAMETER__PAGE %>"
     value="<%= EditDocumentInformationPageFlow.PAGE__DOCUMENT_INFORMATION %>">
 <% if (creatingNewDocument) { %>
 <tr>
@@ -552,10 +551,10 @@ function checkFocus() {
 			document.writeln('<td>&nbsp;&nbsp;</td>') ;
 		}
 		</script>
-		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__OK_BUTTON %>" onClick="return singleclicked();"
+		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= PageFlow.REQUEST_PARAMETER__OK_BUTTON %>" onClick="return singleclicked();"
 		value=" <? install/htdocs/sv/jsp/docadmin/document_information.jsp/2004 ?> "></td>
 		<td>&nbsp;</td>
-		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= HttpPageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>"
+		<td><input type="SUBMIT" class="imcmsFormBtn" name="<%= PageFlow.REQUEST_PARAMETER__CANCEL_BUTTON %>"
 		value="<? install/htdocs/sv/jsp/docadmin/document_information.jsp/2006 ?>"></td>
 	</tr>
 	</table></td>

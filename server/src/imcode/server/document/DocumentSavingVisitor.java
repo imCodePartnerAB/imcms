@@ -59,12 +59,15 @@ public class DocumentSavingVisitor extends DocumentStoringVisitor {
         String sqlStr = "UPDATE text_docs SET template_id = ?, group_id = ?,\n"
                         + "default_template = ?, default_template_1 = ?, default_template_2 = ? WHERE meta_id = ?";
         TemplateDomainObject defaultTemplate = textDocument.getDefaultTemplate();
+        TemplateDomainObject defaultTemplateForRestricted1 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedOneForNewDocuments() ).getDefaultTemplate();
+        TemplateDomainObject defaultTemplateForRestricted2 = ( (TextDocumentPermissionSetDomainObject)textDocument.getPermissionSetForRestrictedTwoForNewDocuments() ).getDefaultTemplate();
+
         service.sqlUpdateQuery( sqlStr, new String[]{
             "" + textDocument.getTemplate().getId(),
             "" + textDocument.getTemplateGroupId(),
             (null != defaultTemplate ? "" + defaultTemplate.getId() : null),
-            "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetOne(),
-            "" + textDocument.getDefaultTemplateIdForRestrictedPermissionSetTwo(),
+            null != defaultTemplateForRestricted1 ? "" + defaultTemplateForRestricted1.getId() : "-1",
+            null != defaultTemplateForRestricted2 ? "" + defaultTemplateForRestricted2.getId() : "-1",
             "" + textDocument.getId()
         } );
 

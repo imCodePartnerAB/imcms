@@ -89,10 +89,12 @@ class DocumentInitializingVisitor extends DocumentVisitor {
                 defaultTemplate = templateMapper.getTemplateById( defaultTemplateId );
             } catch ( NumberFormatException ignored ) {}
 
+            TemplateDomainObject defaultTemplateForRestrictedOne = templateMapper.getTemplateById( defaultTemplateIdForRestrictedPermissionSetOne ) ;
+            TemplateDomainObject defaultTemplateForRestrictedTwo = templateMapper.getTemplateById( defaultTemplateIdForRestrictedPermissionSetTwo );
             document.setTemplate( template );
             document.setTemplateGroupId( group_id );
-            document.setDefaultTemplateIdForRestrictedPermissionSetOne( defaultTemplateIdForRestrictedPermissionSetOne );
-            document.setDefaultTemplateIdForRestrictedPermissionSetTwo( defaultTemplateIdForRestrictedPermissionSetTwo );
+            ((TextDocumentPermissionSetDomainObject)document.getPermissionSetForRestrictedOneForNewDocuments()).setDefaultTemplate( defaultTemplateForRestrictedOne );
+            ((TextDocumentPermissionSetDomainObject)document.getPermissionSetForRestrictedTwoForNewDocuments()).setDefaultTemplate( defaultTemplateForRestrictedTwo );
             document.setDefaultTemplate( defaultTemplate );
         }
 
