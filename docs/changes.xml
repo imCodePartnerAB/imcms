@@ -59,7 +59,8 @@
         </change>
         <change>
             <p>
-                The text editor would insert spurious <tag>&lt;br /&gt;</tag> when the text was empty.
+                The text editor would insert spurious <tag>&lt;br /&gt;</tag>-tags when the text was empty.
+                They are now removed when saving and when switching formats.
             </p>
             <bug id="2890"/>
         </change>
