@@ -598,7 +598,7 @@ public class DocumentMapper {
         UserDomainObject publisher = document.publisher;
 
         sqlUpdateMeta(service, document.getMetaId(), activatedDatetime, archivedDatetime, createdDatetime, headline,
-                image, modifiedDatetime, target, text, archived, language, publisher.getUserId() );
+                image, modifiedDatetime, target, text, archived, language, publisher );
         updateSection(service, document, section);
 
         service.sqlUpdateQuery("DELETE FROM document_categories WHERE meta_id = ?", new String[] { ""+document.getMetaId()}) ;
@@ -658,7 +658,7 @@ public class DocumentMapper {
 
     private static void sqlUpdateMeta(IMCServiceInterface service, int meta_id, Date activatedDatetime,
                                       Date archivedDateTime, Date createdDatetime, String headline, String image, Date modifiedDateTime,
-                                      String target, String text, boolean isArchived, String language, int publisherID ) {
+                                      String target, String text, boolean isArchived, String language, UserDomainObject publisher ) {
 
         StringBuffer sqlStr = new StringBuffer("update meta set ");
 
@@ -672,17 +672,14 @@ public class DocumentMapper {
         sqlStr.append(makeStringSQL("meta_text", text));
         sqlStr.append(makeStringSQL("lang_prefix", language));
         sqlStr.append(makeBooleanSQL("archive", isArchived));
-        sqlStr.append(makeIntSQL("publisher_id", publisherID));
+        String publisherStr = "publisher_id = " + (publisher != null ? ""+publisher.getUserId() : "NULL");
+        sqlStr.append( publisherStr );
+
         // todo: Remove from the meta table all collumns that are not used.
         // Candidates: All not used above.
 
         sqlStr.append(" where meta_id = " + meta_id);
         service.sqlUpdateQuery(sqlStr.toString());
-    }
-
-    private static String makeIntSQL( String columnName, int publisherID ) {
-        String str = columnName + " = " + publisherID;
-        return str;
     }
 
     private static String makeBooleanSQL(String columnName, boolean field_isarchived) {

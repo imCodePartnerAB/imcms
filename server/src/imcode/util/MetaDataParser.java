@@ -418,10 +418,17 @@ public class MetaDataParser {
         ImcmsAuthenticatorAndUserMapper userAndRoleMapper = imcref.getUserAndRoleMapper();
 
         String publisherIdStr = ((String[])hash.get("publisher_id"))[0];
-        UserDomainObject publisher = userAndRoleMapper.getUser( Integer.parseInt(publisherIdStr));
+        UserDomainObject publisher = null;
+        if( null != publisherIdStr ) {
+             publisher = userAndRoleMapper.getUser( Integer.parseInt(publisherIdStr));
+        }
 
         vec.add("#current_publisher_name#");
-        vec.add( publisher.getLastName() + ", " + publisher.getFirstName() );
+        if( null != publisher ) {
+            vec.add( publisher.getLastName() + ", " + publisher.getFirstName() );
+        } else {
+            vec.add("");
+        }
 
         UserDomainObject[] users = userAndRoleMapper.getAllUsers();
         List usersInOptionList = new ArrayList();
@@ -430,7 +437,13 @@ public class MetaDataParser {
             usersInOptionList.add( "" + user.getUserId() );
             usersInOptionList.add( user.getLastName() + ", " + user.getFirstName() );
         }
-        String optionList = Html.createHtmlOptionList( "" + publisher.getUserId(), usersInOptionList );
+
+        String optionList;
+        if( null != publisher ) {
+            optionList= Html.createHtmlOptionList( "" + publisher.getUserId(), usersInOptionList );
+        } else {
+            optionList = Html.createHtmlOptionList( null, usersInOptionList );
+        }
         vec.add("#publisher_id#");
         vec.add( optionList );
     }
