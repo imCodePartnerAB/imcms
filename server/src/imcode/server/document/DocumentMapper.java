@@ -10,9 +10,7 @@ import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.DateConstants;
-import imcode.util.FileUtility;
-import imcode.util.IdNamePair;
+import imcode.util.*;
 import org.apache.commons.collections.map.AbstractMapDecorator;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
@@ -55,13 +53,6 @@ public class DocumentMapper {
     private static final int DOCUMENT_CACHE_MAX_SIZE = 100;
 
     private DocumentCache documentCache = new DocumentCache( new LRUMap( DOCUMENT_CACHE_MAX_SIZE ), this ) ;
-
-    private static final String TEMPLATE__STATUS_NEW = "status/new.frag";
-    private static final String TEMPLATE__STATUS_DISAPPROVED = "status/disapproved.frag";
-    private static final String TEMPLATE__STATUS_PUBLISHED = "status/published.frag";
-    private static final String TEMPLATE__STATUS_UNPUBLISHED = "status/unpublished.frag";
-    private static final String TEMPLATE__STATUS_ARCHIVED = "status/archived.frag";
-    private static final String TEMPLATE__STATUS_APPROVED = "status/approved.frag";
 
     public DocumentMapper( ImcmsServices service ) {
         this.service = service;
@@ -921,24 +912,6 @@ public class DocumentMapper {
         service.sqlUpdateProcedure( "DocumentDelete", new String[]{"" + document.getId()} );
         document.accept( new DocumentDeletingVisitor() );
         documentIndex.removeDocument( document );
-    }
-
-    public String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
-        String statusIconTemplateName;
-        if ( DocumentDomainObject.STATUS_NEW == document.getStatus() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_NEW;
-        } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_DISAPPROVED;
-        } else if ( document.isPublishedAndNotArchived() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_PUBLISHED;
-        } else if ( document.isNoLongerPublished() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_UNPUBLISHED;
-        } else if ( document.isArchived() ) {
-            statusIconTemplateName = TEMPLATE__STATUS_ARCHIVED;
-        } else {
-            statusIconTemplateName = TEMPLATE__STATUS_APPROVED;
-        }
-        return service.getAdminTemplate( statusIconTemplateName, user, null );
     }
 
     public IdNamePair[] getCreatableDocumentTypeIdsAndNamesInUsersLanguage( DocumentDomainObject document,

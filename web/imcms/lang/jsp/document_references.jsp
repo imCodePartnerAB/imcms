@@ -41,7 +41,7 @@
                 int menuIndex = textDocumentMenuIndexPair.getMenuIndex();
         %>
             <tr>
-                <td><%= Html.getLinkedStatusIconTemplate( textDocument, user ) %></td>
+                <td><%= Html.getLinkedStatusIconTemplate( textDocument, user, request ) %></td>
                 <td>
                     <a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%= textDocument.getId() %>&<%= AdminDoc.PARAMETER__DISPATCH_FLAGS %>=<%= ImcmsConstants.DISPATCH_FLAG__EDIT_MENU %>&editmenu=<%= menuIndex %>">
                         <%= textDocument.getId() %>: "<%= StringEscapeUtils.escapeHtml(textDocument.getHeadline()) %>"

@@ -7,6 +7,7 @@ import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringEscapeUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 public class Html {
@@ -86,17 +87,42 @@ public class Html {
         return categoryOptionList;
     }
 
-    public static String getLinkedStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        String statusIconTemplate = documentMapper.getStatusIconTemplate( document, user );
-        if ( user.canEdit( document ) ) {
-            statusIconTemplate = "<a href=\"AdminDoc?meta_id=" + document.getId() + "&"
+    public static String getLinkedStatusIconTemplate( DocumentDomainObject document, UserDomainObject user,
+                                                      HttpServletRequest request ) {
+        String statusIconTemplate = getStatusIconTemplate( document, user );
+        if ( user.canEditDocumentInformationFor( document ) ) {
+            statusIconTemplate = "<a href=\""+request.getContextPath()+"/servlet/AdminDoc?meta_id=" + document.getId() + "&"
                                  + AdminDoc.PARAMETER__DISPATCH_FLAGS
                                  + "=1\" target=\"_blank\">" +
                                  statusIconTemplate +
                                  "</a>";
         }
         return statusIconTemplate;
+    }
+
+    private static final String TEMPLATE__STATUS_NEW = "status/new.frag";
+    private static final String TEMPLATE__STATUS_DISAPPROVED = "status/disapproved.frag";
+    private static final String TEMPLATE__STATUS_PUBLISHED = "status/published.frag";
+    private static final String TEMPLATE__STATUS_UNPUBLISHED = "status/unpublished.frag";
+    private static final String TEMPLATE__STATUS_ARCHIVED = "status/archived.frag";
+    private static final String TEMPLATE__STATUS_APPROVED = "status/approved.frag";
+
+    public static String getStatusIconTemplate( DocumentDomainObject document, UserDomainObject user ) {
+        String statusIconTemplateName;
+        if ( DocumentDomainObject.STATUS_NEW == document.getStatus() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_NEW;
+        } else if ( DocumentDomainObject.STATUS_PUBLICATION_DISAPPROVED == document.getStatus() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_DISAPPROVED;
+        } else if ( document.isPublishedAndNotArchived() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_PUBLISHED;
+        } else if ( document.isNoLongerPublished() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_UNPUBLISHED;
+        } else if ( document.isArchived() ) {
+            statusIconTemplateName = TEMPLATE__STATUS_ARCHIVED;
+        } else {
+            statusIconTemplateName = TEMPLATE__STATUS_APPROVED;
+        }
+        return Imcms.getServices().getAdminTemplate( statusIconTemplateName, user, null );
     }
 
     public static String option( String elementValue, String content, boolean selected ) {

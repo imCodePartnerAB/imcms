@@ -39,7 +39,7 @@ public class AdminDoc extends HttpServlet {
             flags = 0;
         }
 
-        PageFlow pageFlow = createFlow( document, flags );
+        PageFlow pageFlow = createFlow( document, flags, user );
 
         if ( null != pageFlow && user.canEdit( document )) {
             pageFlow.dispatch( req, res );
@@ -58,14 +58,14 @@ public class AdminDoc extends HttpServlet {
         }
     }
 
-    private PageFlow createFlow( DocumentDomainObject document, int flags ) {
+    private PageFlow createFlow( DocumentDomainObject document, int flags, UserDomainObject user ) {
         RedirectToDocumentCommand returnCommand = new RedirectToDocumentCommand( document );
         DocumentMapper.SaveEditedDocumentCommand saveDocumentCommand = new DocumentMapper.SaveEditedDocumentCommand();
 
         PageFlow pageFlow = null;
-        if ( ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags ) {
+        if ( ImcmsConstants.DISPATCH_FLAG__DOCINFO_PAGE == flags && user.canEditDocumentInformationFor( document ) ) {
             pageFlow = new EditDocumentInformationPageFlow( document, returnCommand, saveDocumentCommand );
-        } else if ( ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags ) {
+        } else if ( ImcmsConstants.DISPATCH_FLAG__DOCUMENT_PERMISSIONS_PAGE == flags && user.canEditPermissionsFor( document ) ) {
             pageFlow = new EditDocumentPermissionsPageFlow( document, returnCommand, saveDocumentCommand );
         } else if ( document instanceof BrowserDocumentDomainObject
                     && ImcmsConstants.DISPATCH_FLAG__EDIT_BROWSER_DOCUMENT == flags ) {

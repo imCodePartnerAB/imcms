@@ -283,8 +283,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
      * Returns the menubuttonrow
      */
     public String getAdminButtons( HttpServletRequest request, UserDomainObject user, DocumentDomainObject document ) {
-        int user_permission_set_id = user.getPermissionSetIdFor( document );
-        if ( user_permission_set_id >= DocumentPermissionSetDomainObject.TYPE_ID__READ && !user.isUserAdmin() ) {
+        if ( !user.canAccess( document ) && !user.isUserAdmin() ) {
             return "";
         }
 
@@ -296,7 +295,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
             "user", user,
             "document", document,
             "documentPermissionSet", documentPermissionSet,
-            "statusicon", documentMapper.getStatusIconTemplate( document, user ),
+            "statusicon", Html.getLinkedStatusIconTemplate( document, user, request ),
             "pathToDocument", Utility.getAbsolutePathToDocument(request, document),
             "documentTypeName", documentTypeName
         } );

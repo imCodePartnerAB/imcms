@@ -381,7 +381,8 @@ class MenuParser {
 
         UserDomainObject user = documentRequest.getUser();
 
-        String a_href = documentRequest.getServerObject().getAdminTemplate( "textdoc/menuitem_a_href.frag", user, menuItemAHref );
+        ImcmsServices serverObject = documentRequest.getServerObject();
+        String a_href = serverObject.getAdminTemplate( "textdoc/menuitem_a_href.frag", user, menuItemAHref );
 
         tags.setProperty( "#menuitemlinkonly#", a_href );
         tags.setProperty( "#/menuitemlinkonly#", "</a>" );
@@ -408,7 +409,7 @@ class MenuParser {
                 menuItemSortKeyTags.add( "#sortkey#" );
                 menuItemSortKeyTags.add( sortKey );
 
-                a_href = documentRequest.getServerObject().getAdminTemplate( sortKeyTemplate, user, menuItemSortKeyTags )
+                a_href = serverObject.getAdminTemplate( sortKeyTemplate, user, menuItemSortKeyTags )
                          + a_href;
             }
 
@@ -416,16 +417,16 @@ class MenuParser {
             menuItemCheckboxTags.add( "#meta_id#" );
             menuItemCheckboxTags.add( "" + document.getId() );
 
-            a_href = documentRequest.getServerObject().getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags )
+            a_href = serverObject.getAdminTemplate( "textdoc/admin_menuitem_checkbox.frag", user, menuItemCheckboxTags )
                      + a_href;
-            a_href = Html.getLinkedStatusIconTemplate( menuItem.getDocument(), user ) + a_href;
+            a_href = Html.getLinkedStatusIconTemplate( menuItem.getDocument(), user, documentRequest.getHttpServletRequest() ) + a_href;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );
         tags.setProperty( "#/menuitemlink#",
                           editingThisMenu && user.canEdit( document )
                           ? "</a>"
-                            + documentRequest.getServerObject().getAdminTemplate( "textdoc/admin_menuitem.frag", user, Arrays.asList( new String[]{
+                            + serverObject.getAdminTemplate( "textdoc/admin_menuitem.frag", user, Arrays.asList( new String[]{
                                 "#meta_id#", ""
                                              + document.getId()
                             } ) )

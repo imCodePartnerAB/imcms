@@ -76,7 +76,7 @@ if (null != formData.documentsIterator) { %>
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			%></a><%
 		} %></td>
-	<td align="center"><%= Html.getLinkedStatusIconTemplate( document, user ) %></td>
+	<td align="center"><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
 	<td><%
 		if (document instanceof TextDocumentDomainObject) {
 			TextDocumentDomainObject textDocument = (TextDocumentDomainObject)document ;

@@ -602,4 +602,7 @@ public class UserDomainObject extends Hashtable {
         return searchingUserHasPermissionToFindDocument;
     }
 
+    public boolean canEditDocumentInformationFor( DocumentDomainObject document ) {
+        return getPermissionSetFor( document ).getEditDocumentInformation() ;
+    }
 }

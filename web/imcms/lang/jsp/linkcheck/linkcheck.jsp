@@ -67,7 +67,7 @@
                             </td>
                             <td>&nbsp;</td>
                         <% } %>
-                    <td><%= Html.getLinkedStatusIconTemplate( document, user ) %></td>
+                    <td><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
                     <td><a href="<%= link.getUrl() %>"><%= link.getUrl() %></a></td>
 										<vel:velocity>
                     <td align="center"><img
