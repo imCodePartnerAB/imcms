@@ -92,7 +92,7 @@ public class SearchDocuments extends HttpServlet {
         String activated_start 	= "";
 		String activated_stop 	= formatter.format(date);
         String archived_start 	= "";
-		String archived_stop 	= "";//formatter.format(date);
+		String archived_stop 	= formatter.format(date);
 		
 		// lets set up the search string
 		StringTokenizer token = new StringTokenizer(searchString," \"+-",true);

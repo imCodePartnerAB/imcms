@@ -192,8 +192,8 @@ public class MetaDataParser {
 		
 		*/
 	SimpleDateFormat dateFormat_date = new SimpleDateFormat("yyyy-MM-dd") ;
-	SimpleDateFormat dateFormat_time = new SimpleDateFormat("hh:mm");
-	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm") ;
+	SimpleDateFormat dateFormat_time = new SimpleDateFormat("HH:mm");
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm") ;
 	Date theDate = null;
 	try {
 		theDate = dateFormat.parse(((String[])hash.get("activated_datetime"))[0]);
