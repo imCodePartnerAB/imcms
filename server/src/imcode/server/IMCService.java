@@ -35,7 +35,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private File m_TemplateHome ;           // template home
     private File m_IncludePath ;
     private File m_FortunePath ;
-	private File m_SearchTemplatePath;
     private int m_DefaultHomePage ;        // default home page
     private String m_ServletUrl  ;			   // servlet url
     private String m_ImageFolder ;            // image folder
@@ -84,10 +83,6 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	String fortunePathString = props.getProperty("FortunePath").trim() ;
 	m_FortunePath       = imcode.util.Utility.getAbsolutePathFromString(fortunePathString) ;
 	log.info("FortunePath: " + m_IncludePath) ;
-	
-	String searchTemplatePathString = props.getProperty("SearchTemplatePath").trim() ;
-	m_SearchTemplatePath = imcode.util.Utility.getAbsolutePathFromString(searchTemplatePathString) ;
-	log.info("SearchTemplatePath: " + m_SearchTemplatePath) ;
 	    
 	try {
 	    m_DefaultHomePage   = Integer.parseInt(props.getProperty("StartDocument").trim()) ;    //FIXME: Get from DB
@@ -2789,7 +2784,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        Return a file relative to the search_template-path.
     **/
     public String getSearchTemplate(String path) throws IOException {
-	return fileCache.getCachedFileString(new File(m_SearchTemplatePath,path)) ;
+	return fileCache.getCachedFileString(new File(m_TemplateHome+"/search",path)) ;
     }
 	
     /**
