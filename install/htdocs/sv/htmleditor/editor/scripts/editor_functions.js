@@ -1,7 +1,7 @@
 /* **********************************
- *   By: Tommy Ullberg, imCode       
- *   Copyright © imCode AB           
- *   www.imcode.com                  
+ *   By: Tommy Ullberg, imCode
+ *   Copyright © imCode AB
+ *   www.imcode.com
  ********************************* */
 
 
@@ -29,7 +29,7 @@ if (isModal) {
 	var metaId = oArgs.metaId;
 	var txtNr = oArgs.txtNr;
 	var sLabel = '';
-	
+
 } else {
 	var metaId = getParam('meta_id');
 	var txtNr = getParam('txt');
@@ -46,12 +46,12 @@ function init() {
 	//alert(document.frames['changeTextFrame'].document.forms[0]);
 	document.getElementById("javascriptDisabled").style.display = "none";
 	var textToEdit = ((directEditEnabled && !directEditViaChangeText) || isModal) ? document.frames['changeTextFrame'].document.forms[0].text.value : parent.opener.document.forms[0].text.value;
-	
+
 	/* fix links and other paths */
 	textToEdit = fixOnLoad(textToEdit);
-	
+
 	/* mode */
-	
+
 	if(textToEdit.indexOf('<') < 0 && textToEdit.indexOf('>') < 0){
 		//alert('TEXT');
 		editorDiv.innerText = textToEdit;
@@ -60,7 +60,7 @@ function init() {
 		editorDiv.innerHTML = textToEdit;
 	}
 	editorDiv.focus();
-	
+
 	var tableNodeList = document.getElementsByTagName('table');
 	numberOfTables = tableNodeList.length;
 	for ( i = 0 ; i < numberOfTables ; i++ ) {
@@ -98,7 +98,7 @@ function init() {
 				document.frames['changeTextFrame'].document.forms[0].text.value = editorDiv.innerHTML
 		}
 	}
-	
+
 	/* focus */
 	if (editorDiv) editorDiv.focus();
 }
@@ -180,7 +180,7 @@ var timer;
 function doSend() {
 	var doSave = (confirmSave) ? 0 : 1;
 	if (confirmSave) {
-		doSave = confirm('Vill du spara dina ändringar?\n\nEv. tidigare innehåll kommer att skrivas över!');
+		doSave = confirm('<? sv/htmleditor/scripts/editor_functions.js/1 ?>');
 	}
 	if (doSave) {
 		var editedCode            = editorDiv.innerHTML;
@@ -258,7 +258,7 @@ function fixHTML(inStr) {
 	inStr = inStr.replace(/\sdir=ltr/gi,"");
 	inStr = inStr.replace(/\sstyle=\"MARGIN-RIGHT: 0px\"/gi,"");
 	inStr = inStr.replace(/\sid=null/gi,"");
-	
+
 	for (var i = 0; i < arrOneBreakBeforeElements.length; i++) {
 		var re = new RegExp(arrOneBreakBeforeElements[i], 'gi')
 		inStr = inStr.replace(re,"\n" + arrOneBreakBeforeElements[i]);
@@ -275,17 +275,17 @@ function fixHTML(inStr) {
 		var re = new RegExp(arrTwoBreakAfterElements[i], 'gi')
 		inStr = inStr.replace(re,arrTwoBreakAfterElements[i] + "\n\n");
 	}
-	
+
 	for (var i = 0; i < arrTabBeforeElements.length; i++) {
 		var re = new RegExp(arrTabBeforeElements[i], 'gi')
 		inStr = inStr.replace(re,"\t" + arrTabBeforeElements[i]);
 	}
-	
+
 	inStr = inStr.replace(/<BR>[\n\r]<BR>/gi,"<BR><BR>\n");
 	inStr = inStr.replace(/<BR>[\n\r]{1,}<\/{1}/gi,"<BR></");
-	
+
 	/* replace all MS-HTML absolute paths */
-	
+
 	for (var i = 0; i < arrWrongPaths.length; i++) {
 		if (arrWrongPaths[i] != "") {
 			re = new RegExp(arrWrongPaths[i], "gi");
@@ -298,9 +298,9 @@ function fixHTML(inStr) {
 		re = new RegExp(strRightPath, "gi");
 		inStr = inStr.replace(re, "/");
 	}
-	
+
 	/* Fix all anchor jumps */
-	
+
 	re = new RegExp("#", "gi") ;
 	if (re.test(inStr)) {
 		re = /"[^"]*?#[^"]*?"/gi ;
@@ -316,7 +316,7 @@ function fixHTML(inStr) {
 			}
 		}
 	}
-	
+
 	return inStr
 }
 
@@ -353,7 +353,7 @@ function replaceParagraphs(inString) {
 	re = /^\s*>P\/<([\s\S]*?)(>[^<]*?\bP<)/i;
 	retStr = retStr.replace(re, "$1$2");
 	retStr = strRev(retStr);
-	
+
 	return retStr;
 }
 
@@ -373,7 +373,7 @@ function strRev(str) {
 /* ******************************** */
 
 function doClose() {
-	var closeMess = "Vill du stänga fönstret?\n\nEv. ändringar du inte sparat kommer att gå förlorade!";
+	var closeMess = "<? sv/htmleditor/scripts/editor_functions.js/2 ?>";
 	if (confirmClose && directEditEnabled) {
 		if (document.frames['changeTextFrame'].document.forms[0].text.value != editorDiv.innerHTML) {
 			if (confirm(closeMess)) window.close();
@@ -411,9 +411,9 @@ function fileUpLoad(){
 
 function createFileLink( file , nn ){
 	var link = ("A");
-	var aElement=document.createElement(link);    
-	eval("aElement." + "innerText" + "='" + nn + "'");  
-	aElement.href=file;            
+	var aElement=document.createElement(link);
+	eval("aElement." + "innerText" + "='" + nn + "'");
+	aElement.href=file;
 	editorDiv.appendChild(aElement);
 	editorDiv.focus();
 }
@@ -446,7 +446,7 @@ function createTable(iRows,iCols,iSpacing,iPadding,iBorder,iWidth){
 	}
 	oTable.appendChild(oTBody);
 	editorDiv.appendChild(oTable);
-	editorDiv.innerText = editorDiv.innerHTML; // * Reloads the editor - to render the tables correctly	
+	editorDiv.innerText = editorDiv.innerHTML; // * Reloads the editor - to render the tables correctly
 	editorDiv.innerHTML = editorDiv.innerText;
 	editorDiv.innerHTML = editorDiv.innerHTML.replace(/border=0/g,"style='BORDER-RIGHT: #c0c0c0 4px solid'");
 	editorDiv.focus();
@@ -487,10 +487,10 @@ function popWinOpen(iWidth,iHeight,sUrl,sName,sMenu,sScroll,sStatus) {
 	//var window_height = iHeight;
 	var window_width = (iWidth == '100%')? screen.width-10 : iWidth;
 	var window_height = (iHeight == '100%')? screen.height-100 : iHeight;
-	if(screen.height < 700){ 
+	if(screen.height < 700){
 		var window_top = 0;
 		var window_left = (screen.width-window_width)/2;
-	} else { 
+	} else {
 		var window_top = (screen.height-window_height)/2;
 		var window_left = (screen.width-window_width)/2;
 	}
@@ -503,7 +503,7 @@ function popWinOpen(iWidth,iHeight,sUrl,sName,sMenu,sScroll,sStatus) {
 }
 
 /*function winOpen(sUrl,sName){
-	
+
 }*/
 
 function changeFontColor(theValue){
@@ -558,7 +558,7 @@ function doExecCommand(what,gui,avalue){
 				editorDiv.innerHTML = editorDiv.innerHTML.replace(/border=0/g,"style='BORDER-RIGHT: #c0c0c0 4px solid'");
 				editorDiv.focus();
 			}
-			
+
 		} else { // document.execCommand("x")
 			if(gui == true){
 				if(avalue != ''){
@@ -588,7 +588,7 @@ function insertSpan(){
 
 
 function doFind(){ // Not in use - runs by VBScript
-	var textToFind = window.prompt("Sök efter ord eller fras i texten!", "");
+	var textToFind = window.prompt("<? sv/htmleditor/scripts/editor_functions.js/3 ?>", "");
 	var r = document.body.createTextRange();
 	r.findText(textToFind);
 	r.select();
@@ -617,7 +617,7 @@ function showAdvanced(){
 				oadvBtnText.left = 0;
 			}
 			editorDiv.focus();
-			
+
 		} else { // * Advanced
 			advMode = 1;
 			if(showAdv){
@@ -795,7 +795,7 @@ function previewCode(){
 		theEditor.style.fontSize       = cssCodeFontSize;
 		theEditor.style.fontFamily     = cssCodeFontFamily;
 		disableButtons();
-		
+
 	} else {
 		if (!showSimple && !showAdv) {
 			editorDiv.style.width = 675;
@@ -893,7 +893,7 @@ function moveLayer(id,posX,posY,show,zind){
 			//alert('Hide modeAdv - ' + id);
 		}
   }
-	
+
   if (show == 1){
     sShow = 'visible';
   } else if (show == 2){

@@ -125,8 +125,8 @@ var ns4 = (document.layers) ? 1 : 0;
 var ns6 = (document.getElementById) ? 1 : 0;
 var moz = (document.getElementById) ? 1 : 0;
 
-var arrTheFieldValues = new Array("Skriv nummer!", "http:/\/", "Skriv adressen!", "Skriv ankarnamn!", "Skriv ankarnamn!", "ftp:/\/");
-var defValDesc = "Det som syns på sidan!";
+var arrTheFieldValues = new Array("<? imcms/html/link_editor.html/3001 ?>", "http:/\/", "<? imcms/html/link_editor.html/3002 ?>", "<? imcms/html/link_editor.html/3003 ?>", "<? imcms/html/link_editor.html/3003 ?>", "ftp:/\/");
+var defValDesc = "<? imcms/html/link_editor.html/3004 ?>";
 
 function changeLinkType(what) {
 	var theField     = document.forms.createLinkForm.createLinkValue;
@@ -229,7 +229,7 @@ function createLink() {
 	if (po) {
 		var poEl = (po.format_type) ? po.format_type[1] : po.type[1] ;
 		if (!(poEl.checked == 1)) {
-			if(confirm("Du måste välja HTML läge för att\nlägga in en länk i texten!\n\nVill du göra detta nu?")){
+			if(confirm("<? imcms/html/link_editor.html/3005 ?>")){
 				poEl.checked = 1;
 			}
 		}
@@ -249,7 +249,7 @@ function createLink() {
 	if (moz) {
 		if (document.getElementById("theLinkCodeFieldDiv")) {
 			hideLinkExample(1) ;
-			document.getElementById("theLinkCodeFieldDiv").innerHTML = "&nbsp;<br><span class=\"imcmsAdmText\"><b>Länkexempel: &nbsp;</b>" + previewHref + "</span>" ;
+			document.getElementById("theLinkCodeFieldDiv").innerHTML = "&nbsp;<br><span class=\"imcmsAdmText\"><b><? imcms/html/link_editor.html/3006 ?>: &nbsp;</b>" + previewHref + "</span>" ;
 		}
 	}
 }
