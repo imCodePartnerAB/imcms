@@ -26,6 +26,9 @@ public class QuestionEngine extends HttpServlet
 		String imcServer = Utility.getDomainPref("userserver",host) ;
 		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
 		
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		
 		//get parameters
 		String inFile = req.getParameter("file");
 
@@ -33,23 +36,28 @@ public class QuestionEngine extends HttpServlet
 		statisticsFile.createNewFile();
 		
 		String question="Ingen text kan visas";
-
+		
 		//check if files exists
 		File currentFile = new File(fortune_path , inFile + "current.txt");
 		if (currentFile.createNewFile())
 		{
+			out.println("currentFile.createNewFile()");
 			//om filen inte fanns, skapa den och skriv in aktuell text
 			question =this.getNewQuestion(host,imcServer,inFile);
 		}
 		else
 		{
+			out.println("!currentFile.createNewFile()");
 			//gets the filecontent 
 			String resFile = IMCServiceRMI.getFortune(imcServer,inFile + "current.txt");
+			out.println("resFile: " + resFile );
+			
 			StringTokenizer tokens = new StringTokenizer(resFile,"#");
 		
 			SimpleDateFormat dateF = new SimpleDateFormat("yyMMdd");
 		
 			Date date1 = new Date();
+		
 			Date date2 = new Date();
 				
 			try
@@ -62,15 +70,18 @@ public class QuestionEngine extends HttpServlet
 		
 				if( ( date1.before(date) || (dateF.format(date1)).equals(dateF.format(date))  ) && ( date2.after(date) || (dateF.format(date2)).equals(dateF.format(date)) ) )
 				{
+					out.println("date correct " );
 					question = tokens.nextToken();
 				}
 				else
 				{
+					out.println("date not correct " );
 					//save old question
-					saveOldQuestion(host,imcServer,inFile);
+					this.saveOldQuestion(host,imcServer,inFile);
+					out.println("after question " );
+					
 					//get new question
 					question = this.getNewQuestion(host,imcServer,inFile);
-		
 				}
 			}
 			catch(ParseException e)
@@ -93,8 +104,7 @@ public class QuestionEngine extends HttpServlet
 		
 		String parsed = IMCServiceRMI.parseExternalDoc(imcServer, values, questionTemplate , "se", "106");
 		
-		res.setContentType("text/html");
-		PrintWriter out = res.getWriter();
+		
 		out.println(parsed);
 		
 		return ;
@@ -109,6 +119,21 @@ public class QuestionEngine extends HttpServlet
 		this.doGet(req,res);
 		return ;
 	}	
+
+	public void saveOldQuestion(String host, String imcServer,String inFile)
+	throws ServletException, IOException
+	{
+		String svarFile = IMCServiceRMI.getFortune(imcServer,inFile + "current.txt");
+		File fortune_path = Utility.getDomainPrefPath("FortunePath",host);
+		String file = new String(fortune_path + inFile + "statistics.txt");
+		BufferedWriter fileW = new BufferedWriter( new FileWriter(file,true) );
+		fileW.newLine();
+		fileW.write(svarFile);
+		fileW.flush();
+		fileW.close();
+		
+	}
+
 
 	public String getNewQuestion(String host, String imcServer,String inFile)
 	throws ServletException, IOException
@@ -156,21 +181,7 @@ public class QuestionEngine extends HttpServlet
 		return theQuestion;
 	}
 
-	public void saveOldQuestion(String host, String imcServer,String inFile)
-	throws ServletException, IOException
-	{
-		String svarFile = IMCServiceRMI.getFortune(imcServer,inFile + "current.txt");
 	
-		String fortune_path = Utility.getDomainPref("fortune_path",host);
-		String file = new String(fortune_path + inFile + "statistics.txt");
-		BufferedWriter fileW = new BufferedWriter( new FileWriter(file,true) );
-		fileW.newLine();
-		fileW.write(svarFile);
-		fileW.flush();
-		fileW.close();
-		
-	}
-
 	/**
 	Log function, will work for both servletexec and Apache
 	**/
