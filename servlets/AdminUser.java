@@ -66,8 +66,11 @@ public class AdminUser extends Administrator
 		if (category == null) category = "1" ; // 1 is the ordinary user
 		// log("Category: " + category) ;
 
+		String lang_prefix = (String)user.get("lang_prefix");
+		if(lang_prefix == null)lang_prefix="se";
+
 		// Lets get all USERTYPES from DB
-		String[] userTypes = rmi.execSqlQuery(server, "GetUserTypes") ;
+		String[] userTypes = rmi.execSqlQuery(server, "GetUserTypes "+lang_prefix) ;
 		Vector userTypesV  = /* super. */ convert2Vector(userTypes) ;
 		String user_type = ht.createHtmlCode("ID_OPTION", category, userTypesV ) ;
 		vm.addProperty("USER_TYPES", user_type  ) ;
@@ -120,6 +123,10 @@ public class AdminUser extends Administrator
 
 		// Lets set up the servlet to send the next request to:
 		String theServlet = "AdminUserProps?adminTask=" ;
+		
+		//Lets get the prefered lang prefix
+		String lang_prefix = (String)user.get("lang_prefix");
+		if(lang_prefix == null)lang_prefix="se";
 
 
 		// ******* GENERATE AN ADD_USER PAGE **********
@@ -158,10 +165,9 @@ public class AdminUser extends Administrator
 			Vector phonesV  = new Vector();
 			String phones = htm.createHtmlCode("ID_OPTION", "" , phonesV ) ;
 			vm.addProperty("PHONES_MENU", phones  ) ;
-			
-		
+						
 			// Lets get all USERTYPES from DB
-			String[] usersArr = rmi.execSqlQuery(server, "GetUserTypes") ;
+			String[] usersArr = rmi.execSqlQuery(server, "GetUserTypes "+lang_prefix) ;
 			Vector usersV  = /* super. */ convert2Vector(usersArr) ;
 			String user_type = htm.createHtmlCode("ID_OPTION", "1", usersV ) ;
 			vm.addProperty("USER_TYPES", user_type  ) ;
@@ -230,7 +236,7 @@ public class AdminUser extends Administrator
 			String theUsersType = imc.execSqlQueryStr(server, "GetUserType " + userId) ;
 			
 			// Lets get all USERTYPES from DB
-			String[] usersArr = imc.execSqlQuery(server, "GetUserTypes") ;
+			String[] usersArr = imc.execSqlQuery(server, "GetUserTypes "+lang_prefix) ;
 			Vector usersV  = /* super. */ convert2Vector(usersArr) ;
 			String user_type = htm.createHtmlCode("ID_OPTION", theUsersType, usersV ) ;
 			vm.addProperty("USER_TYPES", user_type  ) ;
