@@ -94,7 +94,7 @@ group by to_meta_id, c.menu_sort,manual_sort_order, doc_type,
   meta_headline,meta_text,meta_image,frame_name,
   activated_datetime,archived_datetime,
   fd.filename
-order by  menu_sort,convert (varchar,date_created,120) desc
+order by  menu_sort,convert (varchar,date_modified,120) desc
 end
 else if @sort_by = 1
 begin
