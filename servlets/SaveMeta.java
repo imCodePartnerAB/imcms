@@ -153,32 +153,40 @@ public class SaveMeta extends HttpServlet {
 		Properties temp_permission_settings = new Properties() ;
 
 		for ( int i = 0 ; i < role_permissions.length ; ++i ) {
-			int role_set_id = Integer.parseInt(role_permissions[i][2]) ;
-			String role_id = role_permissions[i][0] ;
-			String new_set_id_str = req.getParameter("role_"+role_permissions[i][0]) ;
-			if ( new_set_id_str == null ) {				// If a new set_id for this role didn't come from the form,
-				continue ;								// skip to the next role.
-			}
-			int new_set_id = Integer.parseInt(new_set_id_str) ;
-			if 	( (	user_set_id == 0 				// If user has set_id == 0...
-						|| (user_perm_set & 4) != 0)	// ...or the user may edit permissions for this document
-					&& user_set_id <= role_set_id 	// If user potentially has a more privileged set_id than the role...
-					&&	(user_set_id != 1	 		// If user has set_id == 1 (that is , != 0 && != 2)
-						||	(role_set_id != 2 			// ...he may not change set_id for a role with set_id 2..
-							&& new_set_id != 2)			// ...and he may not set set_id to 2 for any role...
-						|| (currentdoc_perms&1) != 0// ...unless set_id 1 is more privileged than set_id 2 for this document.
-					)
-				) {
-				// log("Role "+role_id+": Old: "+role_set_id+" New: "+new_set_id) ;
+		    String role_set_id_str = role_permissions[i][2] ; // Get the old set_id for this role from the db
+		    int role_set_id = Integer.parseInt(role_set_id_str) ;
+		    String role_id = role_permissions[i][0] ;                    // Get the role_id from the db
+		    String new_set_id_str = req.getParameter("role_"+role_id) ;  // Check the value from the form
+		    if ( new_set_id_str == null ) {  // If a new set_id for this role didn't come from the form
+			continue ;							     // skip to the next role.
+		    }
+		    int new_set_id = Integer.parseInt(new_set_id_str) ;
+		    if 	( (
+			   // May the user edit permissions at all?
+			   user_set_id == 0 				// If user has set_id == 0...
+				|| (user_perm_set & 4) != 0)	// ...or the user may edit permissions for this document
+
+			  // May the user set this particular permission-set?
+			  && user_set_id <= new_set_id
+
+			  // May the user edit the permissions for this particular role?
+			  && user_set_id <= role_set_id 	// If user potentially has a more privileged set_id than the role...
+			  &&	(user_set_id != 1	 		// If user has set_id == 1 (that is , != 0 && != 2)
+				 ||	(role_set_id != 2 			// ...he may not change set_id for a role with set_id 2..
+					 && new_set_id != 2)			// ...and he may not set set_id to 2 for any role...
+				 || (currentdoc_perms&1) != 0// ...unless set_id 1 is more privileged than set_id 2 for this document.
+				 )
+			  ) {
+			
 				// We used to save to the db immediately. Now we do it a little bit differently to make it possible to store stuff in the session instead of the db.
 				// IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
-				temp_permission_settings.setProperty(String.valueOf(role_id),String.valueOf(new_set_id)) ;
-			} else {
-				log ("User "+user.getInt("user_id")+" with set_id "+user_set_id+" and permission_set "+user_perm_set+" was denied permission to change set_id for role "
-					+role_id+" from "+role_set_id+" to "+new_set_id+" on meta_id "+meta_id) ;
-			}
+			temp_permission_settings.setProperty(String.valueOf(role_id),String.valueOf(new_set_id)) ;
+		    } else {
+			log ("User "+user.getInt("user_id")+" with set_id "+user_set_id+" and permission_set "+user_perm_set+" was denied permission to change set_id for role "
+			     +role_id+" from "+role_set_id+" to "+new_set_id+" on meta_id "+meta_id) ;
+		    }
 		}
-
+		
 		// Loop through all meta-table-properties
 		// Checking permissions as we go.
 		for ( int i=0 ; i<metatable.length ; i+=metatable_cols ) {
@@ -188,8 +196,6 @@ public class SaveMeta extends HttpServlet {
 				&& ((user_perm_set & metatable_restrictions[i+1]) == 0) // check permission-bitvector for the users set_id.
 				)
 				) {
-				//	log("User with minimum set_id "+user_set_id+" denied access to changing") ;
-				//	log(metatable[i]+": "+tmp) ;
 				continue ;
 			}
 			if ( tmp != null) {
@@ -273,7 +279,7 @@ public class SaveMeta extends HttpServlet {
 			String role_id = (String)role_permissions[i][0] ;
 			String new_set_id = temp_permission_settings.getProperty(role_id) ;
 			if (new_set_id == null) {
-			    new_set_id = "4" ; // Delete it.
+			    continue ;
 			}
 			IMCServiceRMI.sqlUpdateProcedure(imcserver, "SetRoleDocPermissionSetId "+role_id+","+meta_id+","+new_set_id) ;
 		}

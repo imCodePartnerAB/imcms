@@ -323,12 +323,14 @@ public class MetaDataParser {
 				if ( temp_role_set_id!=null ) {
 					role_set_id = Integer.parseInt(temp_role_set_id) ;
 				} else {
+				    // This has a permission in the db, but is currently about to be disabled.
 				    role_set_id = 4 ;
 				}
 			}
 			// If the role has no permissions for this document, we put it away in a special html-optionlist.
 			if (role_set_id == 4) {
 				roles_no_rights.append("<option value=\""+role_id+"\">"+role_name+"</option>") ;
+				roles_rights.append("<input type=\"hidden\" name=\"role_"+role_id+"\" value=\"4\">") ;
 				// So... it's put away for later... we don't need it now.
 				continue ;
 			}
@@ -338,6 +340,7 @@ public class MetaDataParser {
 			vec2.add("#user_role#") ;
 			vec2.add("0".equals(role_permissions[i][3]) ? "" : "*") ;
 			// As we all know... 0 is full, 3 is read, 4 is none, and 1 and 2 are "other"
+			// FIXME: Hire the mafia to force me to put these as constants in an interface.
 			for ( int j=0 ; j<5 ; ++j ) {
 				vec2.add("#"+j+"#") ;
 				if ( user_set_id <= role_set_id 		// User has more privileged set_id than role

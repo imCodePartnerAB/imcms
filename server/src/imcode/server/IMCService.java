@@ -6537,6 +6537,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	  checkDocAdminRights
 	  */
 	public boolean checkDocAdminRights(int meta_id, User user) {
+	    try {
 		DBConnect dbc = new DBConnect(m_conPool) ;
 		dbc.getConnection() ;
 
@@ -6552,6 +6553,10 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		} else {
 			return false ;
 		}
+	    } catch (RuntimeException ex) {
+		log.log(Log.ERROR, "Exception in checkDocAdminRights(int,User)",ex) ;
+		throw ex ;
+	    }
 	}
 
 
@@ -6559,6 +6564,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 	  checkDocRights
 	  */
 	public boolean checkDocRights(int meta_id, User user) {
+	    try {
 		DBConnect dbc = new DBConnect(m_conPool) ;
 		dbc.getConnection() ;
 
@@ -6574,6 +6580,10 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		} else {
 			return false ;
 		}
+	    } catch (RuntimeException ex) {
+		log.log(Log.ERROR, "Exception in checkDocRights(int,User)",ex) ;
+		throw ex ;
+	    }
 	}
 
 	/**
@@ -6583,6 +6593,7 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		@param			A bitmap containing the permissions.
 	*/
 	public boolean checkDocAdminRightsAny (int meta_id, User user, int permission) {
+	    try {
 		DBConnect dbc = new DBConnect(m_conPool) ;
 		dbc.getConnection() ;
 
@@ -6604,6 +6615,10 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		} else {
 			return false ;
 		}
+	    } catch (RuntimeException ex) {
+		log.log(Log.ERROR, "Exception in checkDocAdminRightsAny(int,User,int)",ex) ;
+		throw ex ;
+	    }
 	}
 
 	/**
@@ -6612,8 +6627,8 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		@param user		    The user
 		@param permissions	A bitmap containing the permissions.
 	*/
-	public boolean checkDocAdminRights (int meta_id, User user, int permission) {
-
+    public boolean checkDocAdminRights (int meta_id, User user, int permission) {
+	    try {
 		DBConnect dbc = new DBConnect(m_conPool) ;
 		dbc.getConnection() ;
 		String sqlStr = "GetUserPermissionSet (?,?)" ;
@@ -6623,17 +6638,24 @@ public class IMCService extends UnicastRemoteObject implements IMCServiceInterfa
 		dbc.clearResultSet() ;
 		dbc.closeConnection() ;
 
+		if (perms.size() == 0) {
+		    return false ;
+		}
+
 		int set_id = Integer.parseInt((String)perms.elementAt(0)) ;
 		int set = Integer.parseInt((String)perms.elementAt(1)) ;
 
-		if (perms.size() > 0
-				&& set_id == 0 		// User has full permission for this document
+		if (set_id == 0 		// User has full permission for this document
 				|| (set_id < 3 && ((set & permission) == permission))	// User has all the permissions given.
 			) {
 			return true ;
 		} else {
 			return false ;
 		}
+	    } catch (RuntimeException ex) {
+		log.log(Log.ERROR, "Exception in checkDocAdminRights(int,User,int)",ex) ;
+		throw ex ;
+	    }
 	}
 
 
