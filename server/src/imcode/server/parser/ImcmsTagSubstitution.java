@@ -298,7 +298,15 @@ public class ImcmsTagSubstitution implements Substitution, IMCConstants {
 	String finalresult = result ;
 	if (textMode) {
 	    // FIXME: Remove this html-crap.
-	    finalresult = "<img src=\""+imageUrl+"red.gif\" border=\"0\">&nbsp;"+finalresult+"<a href=\"ChangeText?meta_id="+meta_id+"&txt="+noStr+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
+	    String redbar = "<img src=\""+imageUrl+"red.gif\" border=\"0\">" ;
+
+	    String label = attributes.getProperty("label","") ;
+	    String labelparam = "" ;
+	    if (!"".equals(label)) {
+		labelparam = "&label="+java.net.URLEncoder.encode(label) ;
+		label = redbar+label ;
+	    }
+	    finalresult = label+redbar+"&nbsp;"+finalresult+"<a href=\"ChangeText?meta_id="+meta_id+"&txt="+noStr+labelparam+"\"><img src=\""+imageUrl+"txt.gif\" border=\"0\"></a>" ;
 	} else if (!"".equals(result)) { // Else, we're not in textmode, and do we have something other than the empty string?
 	    String tempAtt = null ;
 	    if ((tempAtt = attributes.getProperty("pre")) != null) {

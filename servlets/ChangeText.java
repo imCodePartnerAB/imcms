@@ -40,6 +40,11 @@ public class ChangeText extends HttpServlet {
 	int meta_id = Integer.parseInt(req.getParameter("meta_id")) ;
 	int txt_no = Integer.parseInt(req.getParameter("txt")) ;
 
+	String label = req.getParameter("label") ;
+	if (label == null) {
+	    label = "" ;
+	}
+
 	// Get the session
 	HttpSession session = req.getSession(true);
 
@@ -87,6 +92,8 @@ public class ChangeText extends HttpServlet {
 	    vec.add("#!html#") ;
 	    vec.add("checked") ;
 	}
+	vec.add("#label#") ;
+	vec.add(label) ;
 	vec.add("#type#") ;
 	vec.add(String.valueOf(text.getType())) ;
 	vec.add("#txt#") ;
