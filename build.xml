@@ -463,6 +463,7 @@
             <formatter type="brief" usefile="false"/>
 
             <test name="imcode.buildtests.TestLanguagePropertyFilesInSync"/>
+            <test name="imcode.buildtests.TestForMissingLanguageProperties"/>
         </junit>
 
     </target>

@@ -1,14 +1,30 @@
-use Test::More tests => 15 ;
+#!/usr/bin/perl -w
 
+use warnings ;
+use strict ;
+
+use Test::More tests => 23 ;
+
+use lib '..' ;
 use Properties ;
 
-my $p = new Properties('t/test.properties') ;
+my @keys = (qw( 	empty 		        true
+				    undefined	        unicode
+				    tab 		        formfeed
+				    newline 	        carriagereturn
+				    backslash 	        backslash\\in\\key\\
+				    equals=in=key=      backslash\\=and\\=equals\\=in\\=key\\=
+				    linecontinuation ), 'space in key ' ) ;
+
+chdir 't' unless -e 'test.properties' ;
+
+my $p = new Properties('test.properties') ;
 
 ok( defined $p, 'new' ) ;
 
 is( $p->{empty}, '', 'empty' ) ;
 
-ok( $p->{true} == 1, 'true = 1' ) ;
+is( $p->{true}, '1', 'true = 1' ) ;
 
 ok( !defined($p->{undefined}), 'defined' ) ;
 
@@ -30,11 +46,31 @@ ok( defined($p->{'backslash\\in\\key\\'}), 'backslash in key' ) ;
 
 ok( defined($p->{'equals=in=key='}), 'equals in key' ) ;
 
+ok( defined($p->{'space in key '}), 'space in key' ) ;
+
 ok( defined($p->{'backslash\\=and\\=equals\\=in\\=key\\='}), 'backslash and equals in key' ) ;
+
+is( Properties::escape_key(" ... "), "\\ ...\\ ", 'escape space' ) ;
+
+is( Properties::escape_key("...\f..."), "...\\f...", 'escape formfeed' ) ;
+
+is( Properties::escape_key("...\r..."), "...\\r...", 'escape carriagereturn' ) ;
+
+is( Properties::escape_key("...\n"), "...\\n", 'escape newline' ) ;
+
+is( Properties::escape_key("...\n ... "), "...\\n\\ \\\n\t\t...\\ ", 'escape newline with trail' ) ;
+
+is( Properties::escape_key(" \n \r "), "\\ \\n\\ \\\n\t\t\\r\\ ", 'escape spaces, newline, and carriagereturn' ) ;
+
+unlink '/tmp/test.properties' ;
+$p->save('/tmp/test.properties') ;
+ok(-f '/tmp/test.properties', 'save') ;
+
+# Check for unwanted keys
 
 my %copy = %$p ;
 
-delete $copy{$_} foreach qw( true undefined unicode tab formfeed newline carriagereturn backslash ) ;
+delete $copy{$_} for @keys ;
 
-ok( (0 == keys %copy) or (print join("\n", keys %copy), "\n") and 0, 'extra keys') ;
+ok( (0 == keys %copy), 'unwanted keys') or diag("Unwanted keys:\n", map { "\t".Properties::escape_key($_) } keys %copy) ;
 

@@ -151,12 +151,12 @@ public class Translate extends Task {
                 String bundleKey = translatedLine.substring( startTokenIndex + startToken.length(), endTokenIndex );
                 String bundleValue = bundleProperties.getProperty( bundleKey );
                 if ( null != bundleValue ) {
-                    //log("Replacing key "+bundleKey+ " with value "+bundleValue, Project.MSG_DEBUG) ;
+                    log("Replacing key "+bundleKey+ " with value "+bundleValue, Project.MSG_DEBUG) ;
                     translatedLine = translatedLine.substring( 0, startTokenIndex ) + bundleValue
                             + translatedLine.substring( endTokenIndex + endToken.length() );
                     startTokenIndex += bundleValue.length();
                 } else {
-                    //log("Found key "+bundleKey+" with no correspomding value.", Project.MSG_DEBUG) ;
+                    log("Found key "+bundleKey+" with no corresponding value.", Project.MSG_DEBUG) ;
                     startTokenIndex += startToken.length();
                 }
             } else {

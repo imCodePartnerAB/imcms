@@ -26,6 +26,12 @@ public class TestLanguagePropertyFilesInSync extends TestCase {
         compareLanguagePropertyFiles( dir, "sv", "en" );
     }
 
+    public void testSqlLanguagePropertyFiles() throws IOException {
+        String dir = "sql";
+        compareLanguagePropertyFiles( dir, "en", "sv" );
+        compareLanguagePropertyFiles( dir, "sv", "en" );
+    }
+
     private void compareLanguagePropertyFiles( String dir, String lang1, String lang2 ) throws IOException {
         String testedFileName = "imcms_" + lang1 + ".properties";
         Properties lang1Properties = loadPropertyFile( dir, testedFileName );
@@ -39,9 +45,9 @@ public class TestLanguagePropertyFilesInSync extends TestCase {
     }
 
     private Properties loadPropertyFile( String dir, String fileName ) throws IOException {
-        Properties swedishProperties = new Properties() ;
-        swedishProperties.load( new FileInputStream(new File(dir, fileName ))) ;
-        return swedishProperties;
+        Properties properties = new Properties() ;
+        properties.load( new FileInputStream(new File(dir, fileName ))) ;
+        return properties;
     }
 
     private void removeKeysFromProperties( Properties propertiesToRemoveFrom, Set keysToRemove ) {
