@@ -1,3 +1,4 @@
+<!-- saved from url=(0022)http://internet.e-mail -->
 <html>
 <head>
 <title>Add/edit users</title>
@@ -11,21 +12,30 @@ function evalPrepareAdd() {
 	var valFieldsOk 
 	valFielsOk = true
 
-	if( document.UserInfo.login_name.value == "" ) valFieldsOk = false  	
-	//if( document.UserInfo.password1.value == "" ) valFieldsOk = false  	
-	//if( document.UserInfo.password2.value == "" ) valFieldsOk = false  	
-	if( document.UserInfo.first_name.value == "" ) valFieldsOk = false  	
-	if( document.UserInfo.last_name.value == "" ) valFieldsOk = false  	
+	if( document.forms[0].login_name.value == "" ) valFieldsOk = false  	
+	//if( document.forms[0].password1.value == "" ) valFieldsOk = false  	
+	//if( document.forms[0].password2.value == "" ) valFieldsOk = false  	
+	if( document.forms[0].first_name.value == "" ) valFieldsOk = false  	
+	if( document.forms[0].last_name.value == "" ) valFieldsOk = false  	
 
 	if(valFieldsOk == "") {
 		var msg = "You have not filled in an obligatory field! Please fill in all obligatory information fields."
 		alert(msg)
 		return false	
 	}
-
-
+	
+	if(document.forms[0].password1.value != document.forms[0].password2.value){
+	
+		var msg = "NB! Verification of the password failed as the password entries did not match!"
+		document.forms[0].password1.value = "" 
+		document.forms[0].password2.value = ""
+		document.forms[0].password1.focus()
+		alert(msg)		
+		return false
+	}
+	
 	var userType 
-	userType = document.UserInfo.user_type.selectedIndex 
+	userType = document.forms[0].user_type.selectedIndex 
 	
 // Lets check if the user has make a choice
 	if(userType == "-1") {
@@ -35,7 +45,7 @@ function evalPrepareAdd() {
 	}
 
 	var userRole 
-	userRole = document.UserInfo.roles.selectedIndex 
+	userRole = document.forms[0].roles.selectedIndex 
 	if(userRole == "-1") {
 		var msg = "You have not selected a role for the user! Please choose which role(s) "
 		msg += "the user should have."
@@ -51,7 +61,7 @@ function evalPrepareAdd() {
 </head>
 
 <body bgcolor="#FFFFFF">
-<form method="post" action="#SERVLET_URL#AdminUserProps" name="UserInfo">
+<form method="post" action="AdminUserProps">
   <input type="hidden" name="CURR_USER_ID" value="#CURR_USER_ID#">
   <input type="hidden" name="adminTask" value="#ADMIN_TASK#">
   <table width="40%" border="0" cellspacing="0">
