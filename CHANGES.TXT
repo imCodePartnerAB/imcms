@@ -14,9 +14,12 @@ Version 2.0.0
     * Specifically, the new url format is "<contextpath><prefix><document-id>".
       The prefix can be set with the setting "DocumentPathPrefix" in "server.properties".
       Comment this out to disable the new url format. (Bug 2733)
-    * The latest 100 documents requested from the database are now cached in memory.
-      This makes imCMS much faster, but means that changes to the database won't be seen. (Bug 2083)
-    * All the class-files that lived in "WEB-INF/classes" are now packaged in one jar file in "WEB-INF/lib". (Bug 2746)
+    * The latest documents requested from the database are now cached in memory.
+      This makes imCMS much faster, but means that changes to the database won't be seen.
+      The maximum number of documents cached can be set using "DocumentCacheMaxSize" in "server.properties."
+      The default is to cache at most 100 documents. (Bug 2083, bug 2864)
+    * All the class-files that used to live in "WEB-INF/classes"
+      are now packaged in one jar file in "WEB-INF/lib". (Bug 2746)
     * Some objects were put in sessions when editing documents, and never removed.
       These are now removed when no longer needed. This might reduce memory usage a bit. (Bug 2750)
 
@@ -30,6 +33,7 @@ Version 2.0.0
     * The search page now allows much more advanced searches. (Bug 2578)
     * File extension "dot" is now recognized as a Microsoft Word file. (Bug 2681)
     * File extension "ppt" is now recognized as a Microsoft Powerpoint file. (Bug 2743)
+    * Updated the look of the user interface a bit, notably the adminbuttons and the template dialog. (Bug 2796)
     * One can now on the permission page set a default template to be used for new text documents. (Bug 2451)
     * Don't display a broken image for an empty image field. (Bug 2567)
     * Fixed problem with previewing images with non-ASCII characters in the name in the image browser. (Bug 2653)
@@ -44,9 +48,17 @@ Version 2.0.0
     * Added shortcut buttons to set dates to "Now" on "page info" page. (Bug 2794)
     * The creator and some dates were not set properly for copied documents. (Bug 2803)
     * Removed misleading instructions on how to create documents. (Bug 2799)
+    * Fixed problem with data for browser documents not being saved on creation. (Bug 2839)
+    * Missing schemes are now automatically added to urls. (Bug 2860)
+    * The link checker now handles relative and schemeless urls. (Bug 2861)
+    * When editing menus, for each menu display two numbers.
+      One number is the number of documents a visitor to the site would see in the menu,
+      and the other number is the number of documents the current user can see when editing the menu. (Bug 2800)
+    * Allow setting the link target when editing a file document. (Bug 2771)
 
     Of interest to template creators:
 
+    * Added a "TEMPLATE_SYNTAX.TXT" file containing a basic reference to the template tags. (Bug 2689)
     * Local includes can now be made using <?imcms:include path="/relative/to/context/path"?>.
       These don't require a http-request to localhost as url-includes do, are a magnitude more efficient,
       and don't spam the access-log. (Bug 2684)
@@ -57,9 +69,9 @@ Version 2.0.0
       to use for new text documents.
     * New attribute for <?imcms:menu?> tag: "defaulttemplate" - specify the name of a template to use for
       new text documents created in this menu. (Bug 2689)
-    * Added a "TEMPLATE_SYNTAX.TXT" file containing a basic reference to the template tags. (Bug 2689)
-    * New attribute for <?imcms:text?> tag: "formats" - specify what editor modes are available.
+    * New attribute for <?imcms:text?> tag: "formats" - specify what editor modes are available. (Bug 2709)
     * Attributes in tags can now be html-escaped, like so: <?imcms:text label="&quot;quoted text&quot;"?>. (Bug 2783)
+    * New attribute for <?imcms:text?> tag: "rows" - indicate the preferred number of rows to the editor. (Bug 2764)
 
     Of interest to administrators:
 
@@ -75,6 +87,19 @@ Version 2.0.0
       Also, one can specify a range of document ids to check. (Bug 2789)
     * Use a default value of 1440 (24 hours) for "IndexingSchedulePeriodInMinutes"
       if missing from "server.properties". (Bug 2786)
+    * Reversed sort order of "List new/updated pages". (Bug 2842)
+    * Allow to set no roles for users, leaving only the "Users"-role. (Bug 2806)
+    * Fixed a problem with mismatched filenames in the chat on case-sensitive filesystems. (Bug 2845)
+    * Empty passwords are no longer allowed for external authentication, e.g. LDAP. (Bug 2847)
+    * Updated the look of the "Edit external user" page. (Bug 2334)
+    * Fixed a problem with modified date of a document only being updated on every second save. (Bug 2858)
+    * The checksums in "WEB-INF/version.txt" are now in "WEB-INF/checksums.txt" instead,
+      and are not output by the "Version" servlet. (Bug 2865)
+    * Made a "RebuildIndex" servlet for rebuilding the index,
+      and fixed the "Restart" servlet to do a more thorough/proper restart of imCMS. (Bug 2855)
+    * Don't allow removing a template group that contains templates. (Bug 2836)
+    * Don't print password to log when failing to log in to an LDAP server. (Bug 2828)
+    * List users in order of last name and first name instead of by id. (Bug 2821)
 
     Of interest to API-using developers:
 
@@ -107,8 +132,8 @@ Version 2.0.0
         - Document.getPermissionSetIdForRole(Role) - Get the permission set id for a role
         - DocumentService.getSection(String) - Get a section by name. (Bug 2648)
         - Section.getId() - Get the id for a section.
-        - TextDocument.Menu.getVisibleDocuments() - Returns the documents visible in the menu.
-        - TextDocument.Menu.getVisibleMenuItems() - Returns the menuitems visible in the menu.
+        - TextDocument.Menu.getVisibleDocuments() - Returns the documents visible in the menu. (Bug 2827)
+        - TextDocument.Menu.getVisibleMenuItems() - Returns the menuitems visible in the menu. (Bug 2827)
         - User.getRoles() - Get the user's roles.
         - User.setRoles(Role[]) - Set the user's roles.
         - User.hasRole(Role) - Returns true if the user has the role.
@@ -128,8 +153,8 @@ Version 2.0.0
     * Changed methods:
         - DocumentService.saveChanges(Document) - Throws SaveException instead of MaxCategoriesOfTypeExceededException.
         - TextDocument.setInclude(int,TextDocument) - Now requires you to call DocumentService.saveChanges() afterwards.
-        - TextDocument.Menu.getDocuments() - Returns the same documents as can be seen when editing the menu.
-        - TextDocument.Menu.getMenuItems() - Returns the same menuitems as can be seen when editing the menu.
+        - TextDocument.Menu.getDocuments() - Returns the same documents as can be seen when editing the menu. (Bug 2827)
+        - TextDocument.Menu.getMenuItems() - Returns the same menuitems as can be seen when editing the menu. (Bug 2827)
             No longer throws NoPermissionException.
         - UserService.addNewRole(String) - Returns the new role.
     * Undeprecated methods:
@@ -170,6 +195,9 @@ Version 2.0.0
     * Made an ant-target "distcheck" for verifying that the source distribution is buildable. (Bug 2774)
     * Made it easier to build with LDAP enabled (Bug 2818)
     * Texts are doubly indexed: With and without HTML-tags. (Bug 2775)
+    * Added the concept of "LifeCyclePhase" for a document corresponding to what users think of as "status",
+      indexed as "phase". (Bug 2855)
+    * A group can now be used as the to-address of e-mails. (Bug 2798)
 
 
 Version 1.11.1

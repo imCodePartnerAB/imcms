@@ -12,9 +12,9 @@ Upgrading imCMS:
 
 * Backup the imCMS webapp directory ("tomcat/webapps/imcms")
 
-* Remove the imCMS webapp directory from tomcat/webapps.
+* Remove the imCMS webapp directory from "tomcat/webapps".
 
-* Remove the old "imcms.war" file from tomcat/webapps.
+* Remove the old "imcms.war" file from "tomcat/webapps".
 
 * Install the new imCMS version according to "Installing imCMS" and
   "Setting up imCMS" in file "INSTALL.TXT".
@@ -26,7 +26,8 @@ Upgrading imCMS:
 
 * Run the stored procedures sql script "tomcat/webapps/WEB-INF/sql/imcms-sprocs-<version>.sql" on the database.
 
-* Restore all user files and directories from the backup. You'll need to look at at least these directories:
+* Restore any files or directories you our your users have added, from the backup.
+  You'll probably need to look at at least these directories:
     - /css
     - /images
     - /javascript
@@ -34,12 +35,15 @@ Upgrading imCMS:
     - /user
     - /WEB-INF/fortunes
     - /WEB-INF/includes
-    - /WEB-INF/logs ( new log files will be created, restore only access.log files used to generate statistics )
+    - /WEB-INF/logs   (new log files will be created, restore only access.log files used to generate statistics)
     - /WEB-INF/templates/text
     - /WEB-INF/uploads
   Note that this is not an exhaustive list.
 
 * Restart tomcat.
+
+* If you want to make sure searches work properly, and don't want to wait for the automatic (usually daily) reindexing,
+  access "/servlet/RebuildIndex" as superadmin to rebuild the search index.
 
 
 You're done!
