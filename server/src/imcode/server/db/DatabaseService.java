@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
+import imcode.server.user.UserDomainObject;
+
 public class DatabaseService {
     final static int MIMER = 0;
     final static int SQL_SERVER = 1;
@@ -103,6 +105,10 @@ public class DatabaseService {
             System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
             sqlProcessor.executeUpdate( conn, command, null );
         }
+
+        // I tried to use batchUpdate but for the current Mimer driver that only works for SELECT, INSERT, UPDATE,
+        // and DELETE operations and this method is also used for create table and drop table commands. /Hasse
+        // sqlProcessor.executeBatchUpdate( conn, (String[])commands.toArray( new String[commands.size()] ) );
     }
 
     private Vector readCommandsFromFile( String fileName ) throws IOException {
@@ -159,6 +165,20 @@ public class DatabaseService {
             closeConnection( conn );
         }
         return result;
+    }
+
+    private int executeUpdate( String sql, Object[] paramValues ) {
+        Connection conn = null;
+        int rowsModified = 0;
+        try {
+            conn = connectionPool.getConnection();
+            rowsModified = sqlProcessor.executeUpdate( conn, sql, paramValues );
+        } catch (SQLException ex ) {
+            log.fatal( "Exception in executeQuery()", ex );
+        } finally {
+            closeConnection( conn );
+        }
+        return rowsModified;
     }
 
     private void closeConnection( Connection conn ) {
@@ -400,7 +420,7 @@ public class DatabaseService {
         }
     }
 
-    ViewTemplateGroup sproc_getTamplatesInGroup( int groupId ) {
+    ViewTemplateGroup sproc_getTemplatesInGroup( int groupId ) {
         String sql = "SELECT t.template_id,simple_name FROM  templates t JOIN templates_cref c ON  t.template_id = c.template_id " +
             "WHERE c.group_id = ? " +
             "ORDER BY simple_name";
@@ -418,5 +438,12 @@ public class DatabaseService {
 
         ArrayList result = executeQuery( sql, paramValues, resultProcessor );
         return (ViewTemplateGroup)result.get(0);
+    }
+
+    int sproc_AddNewuser( UserDomainObject user ) {
+        String sql = "INSERT INTO users (user_id,login_name,login_password,first_name,last_name, title, company, address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id, user_type, active, create_date) " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        Object[] paramValues = new Object[]{ new Integer( user.getUserId()),user.getLoginName(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getTitle(), user.getCompany(), user.getAddress(), user.getCity(), user.getZip(), user.getCountyCouncil(), user.getEmailAddress(), new Integer(user.isImcmsExternal()?1:0), new Integer(1001), new Integer(0), new Integer(user.getLangId()), new Integer(user.getUserType()), new Integer( user.isActive()?1:0) };
+        return executeUpdate( sql, paramValues );
     }
 }

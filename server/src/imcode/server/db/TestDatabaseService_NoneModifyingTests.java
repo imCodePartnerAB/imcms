@@ -1,29 +1,12 @@
 package imcode.server.db;
 
-import junit.framework.TestCase;
-
-public class TestDatabaseService_NoneModifyingTests extends TestCase {
+public class TestDatabaseService_NoneModifyingTests extends TestDatabaseService {
 
     DatabaseService sqlServer;
     DatabaseService mimer;
-    private static final String DB_HOST = "localhost";
-
-    private static final int SQL_SERVER_PORT = 1433;
-    private static final String SQLSERVER_DATABASE_NAME = "test";
-    private static final String SQLSERVE_DATABASE_USER = "sa";
-    private static final String SQLSERVE_DATABASE_PASSWORD = "sa";
-
-    private static final int MIMER_PORT = 1360;
-    private static final String MIMMER_DATABASE_NAME = "test";
-    private static final String MIMMER_DATABASE_USER = "sysadm";
-    private static final String MIMMER_DATABASE_PASSWORD = "admin";
 
     public static void main( String[] args ) throws Exception {
-        DatabaseService sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, DB_HOST, SQL_SERVER_PORT, SQLSERVER_DATABASE_NAME, SQLSERVE_DATABASE_USER, SQLSERVE_DATABASE_PASSWORD );
-        sqlServer.initializeDatabase();
-
-        DatabaseService mimer = new DatabaseService( DatabaseService.MIMER, DB_HOST, MIMER_PORT, MIMMER_DATABASE_NAME, MIMMER_DATABASE_USER, MIMMER_DATABASE_PASSWORD );
-        mimer.initializeDatabase();
+        initDatabases();
     }
 
     protected void setUp() throws Exception {
@@ -63,8 +46,8 @@ public class TestDatabaseService_NoneModifyingTests extends TestCase {
     }
 
     public void testSameResultFromSprocGetTamplatesInGroup() {
-        assertEquals( sqlServer.sproc_getTamplatesInGroup(0), mimer.sproc_getTamplatesInGroup(0) );
-        assertEquals( sqlServer.sproc_getTamplatesInGroup(1), mimer.sproc_getTamplatesInGroup(1) );
-        assertEquals( sqlServer.sproc_getTamplatesInGroup(2), mimer.sproc_getTamplatesInGroup(2) );
+        assertEquals( sqlServer.sproc_getTemplatesInGroup(0), mimer.sproc_getTemplatesInGroup(0) );
+        assertEquals( sqlServer.sproc_getTemplatesInGroup(1), mimer.sproc_getTemplatesInGroup(1) );
+        assertEquals( sqlServer.sproc_getTemplatesInGroup(2), mimer.sproc_getTemplatesInGroup(2) );
     }
 }

@@ -28,29 +28,46 @@ public class SQLProcessor {
             }
             rs = statement.executeQuery();
         } catch( SQLException e ) {
-            logSQLException( e, sql );
+            logSQLException( sql, e );
             static_closeStatement( statement );
         }
         return rs;
     }
 
-    public void executeUpdate( Connection conn, String sql, Object[] statmentValues ) {
+    public void executeBatchUpdate( Connection conn, String[] sql ) {
+        try {
+            Statement statment = conn.createStatement();
+            for( int i = 0; i < sql.length; i++ ) {
+                String command = sql[i];
+                statment.addBatch( command );
+            }
+            statment.executeBatch();
+        }
+        catch( SQLException ex ) {
+            logSQLException( "batch update failed", ex );
+        }
+    }
+
+    public int executeUpdate( Connection conn, String sql, Object[] statmentValues ) {
         PreparedStatement statement = null;
+        int rowsModified = 0;
         try {
             statement = conn.prepareStatement( sql );
             if( statmentValues != null ) {
                 static_buildStatement( statement, statmentValues );
             }
-            statement.executeUpdate();
-        } catch( SQLException e ) {
-            logSQLException( e, sql );
+            rowsModified = statement.executeUpdate();
+        } catch( SQLException ex ) {
+            logSQLException( sql, ex );
         }
         finally {
             static_closeStatement( statement );
         }
+        return rowsModified;
     }
 
-    private void logSQLException( SQLException ex, String sql ) {
+    // todo use log4j also
+    private void logSQLException( String sql, SQLException ex ) {
         System.out.println( "Couldn't execute the command '" + sql + "'" );
         ex.printStackTrace( System.out );
     }
