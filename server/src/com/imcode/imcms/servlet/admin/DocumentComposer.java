@@ -313,7 +313,7 @@ public class DocumentComposer extends HttpServlet {
 
     private void redirectToDocumentIdInMenumode( HttpServletResponse response, int parentId, int menuIndex ) throws IOException {
         response.sendRedirect( "AdminDoc?meta_id=" + parentId + "&flags="
-                               + IMCConstants.PERM_DT_TEXT_EDIT_MENUS + "&editmenu=" + menuIndex );
+                               + IMCConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + menuIndex );
     }
 
     public static void saveNewDocumentAndAddToMenuAndRemoveSessionAttribute( DocumentDomainObject newDocument,

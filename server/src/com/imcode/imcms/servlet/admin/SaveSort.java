@@ -122,9 +122,6 @@ public class SaveSort extends HttpServlet {
             }
         }
 
-        String output = AdminDoc.adminDoc( documentId, documentId, user, req, res );
-        if ( output != null ) {
-            out.write( output );
-        }
+        res.sendRedirect( "AdminDoc?meta_id="+documentId+"&flags="+IMCConstants.DISPATCH_FLAG__EDIT_MENU+"&editmenu="+menuIndex);
     }
 }

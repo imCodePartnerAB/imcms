@@ -102,4 +102,5 @@ public interface IMCConstants {
     final static int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_DT_HTML_EDIT;
     final static int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_DT_URL_EDIT;
     final static int DISPATCH_FLAG__EDIT_FILE_DOCUMENT = PERM_DT_FILE_EDIT;
+    final static int DISPATCH_FLAG__EDIT_MENU = PERM_DT_TEXT_EDIT_MENUS;
 }
