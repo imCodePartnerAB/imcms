@@ -27,19 +27,16 @@ class MenuParser {
 
     private Substitution NULLSUBSTITUTION = new StringSubstitution( "" );
 
-    private Map menus;
     private int[] implicitMenus = {1};
     private ParserParameters parserParameters;
     private static final int EXISTING_DOCTYPE_ID = 0;
 
     MenuParser( ParserParameters parserParameters ) {
         this.parserParameters = parserParameters;
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)parserParameters.getDocumentRequest().getDocument();
-        this.menus = textDocument.getMenus();
     }
 
-    private MenuDomainObject getMenuByIndex( int id ) {
-        MenuDomainObject menu = (MenuDomainObject)menus.get( new Integer( id ) );
+    private MenuDomainObject getMenuByIndex( int index ) {
+        MenuDomainObject menu = ((TextDocumentDomainObject)parserParameters.getDocumentRequest().getDocument()).getMenu( index );
         if (null == menu) {
             menu = new MenuDomainObject();
         }
@@ -66,7 +63,7 @@ class MenuParser {
         MenuItemDomainObject[] menuItems = menu.getMenuItemsUserCanSee(documentRequest.getUser() ) ;
         ImcmsAuthenticatorAndUserAndRoleMapper userMapper = documentRequest.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         UserDomainObject defaultUser = userMapper.getDefaultUser() ;
-        MenuItemDomainObject[] defaultUserMenuItems = menu.getMenuItemsUserCanSee( defaultUser );
+        MenuItemDomainObject[] defaultUserMenuItems = menu.getPublishedMenuItemsUserCanSee( defaultUser );
         List parseTags = Arrays.asList( new String[]{
             "#menuindex#", "" + menuIndex,
             "#menuitemcount#", ""+menuItems.length,
@@ -228,12 +225,7 @@ class MenuParser {
             public boolean evaluate( Object o ) {
                 DocumentDomainObject document = ( (MenuItemDomainObject)o ).getDocument();
                 UserDomainObject user = parserParameters.getDocumentRequest().getUser();
-                if ( user.canSeeDocumentInMenus( document ) ) {
-                    if ( editingMenu( menuIndex ) || document.isPublishedAndNotArchived() ) {
-                        return true;
-                    }
-                }
-                return false;
+                return userCanSeeDocumentInMenu( user, document, menuIndex );
             }
         } );
 
@@ -273,6 +265,11 @@ class MenuParser {
                 }
             }
         }
+    }
+
+    boolean userCanSeeDocumentInMenu( UserDomainObject user, DocumentDomainObject document,
+                                              final int menuIndex ) {
+        return user.canSeeDocumentInMenus( document ) && document.isPublishedAndNotArchived() || editingMenu( menuIndex ) && user.canEdit( document ) ;
     }
 
     /**

@@ -16,23 +16,23 @@ public class TestTextDocument extends TestCase {
 
     TextDocument.Menu menu ;
     private UserDomainObject internalUser;
-    private TextDocumentDomainObject textDocumentDomainObject;
+    private TextDocumentDomainObject textDocument;
     private RoleDomainObject readRole;
 
     protected void setUp() throws Exception {
         super.setUp();
-        textDocumentDomainObject = new TextDocumentDomainObject();
-        textDocumentDomainObject.setId( 1001 );
+        textDocument = new TextDocumentDomainObject();
+        textDocument.setId( 1001 );
         readRole = new RoleDomainObject( "Test" );
-        textDocumentDomainObject.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
+        textDocument.setPermissionSetIdForRole( readRole, DocumentPermissionSetDomainObject.TYPE_ID__READ );
         int menuIndex = 1;
-        DocumentReference documentReference = new MockDocumentReference( textDocumentDomainObject );
-        MenuDomainObject menu = textDocumentDomainObject.getMenu( menuIndex );
+        DocumentReference documentReference = new MockDocumentReference( textDocument );
+        MenuDomainObject menu = textDocument.getMenu( menuIndex );
         menu.addMenuItem( new MenuItemDomainObject( documentReference ) );
         MockContentManagementSystem contentManagementSystem = new MockContentManagementSystem();
         internalUser = new UserDomainObject();
         contentManagementSystem.setCurrentUser( new User( internalUser ) );
-        TextDocument textDocument = new TextDocument( textDocumentDomainObject, contentManagementSystem );
+        TextDocument textDocument = new TextDocument( this.textDocument, contentManagementSystem );
         this.menu = new TextDocument.Menu( textDocument, menuIndex );
     }
 
@@ -44,15 +44,15 @@ public class TestTextDocument extends TestCase {
 
     public void testMenuGetDocumentsIncludesArchived() throws Exception {
         internalUser.addRole( readRole );
-        textDocumentDomainObject.setArchivedDatetime( new Date( 0 ) );
-        assertFalse(internalUser.canEdit( textDocumentDomainObject )) ;
-        assertTrue( internalUser.canAccess( textDocumentDomainObject ) );
+        textDocument.setArchivedDatetime( new Date( 0 ) );
+        assertFalse(internalUser.canEdit( textDocument )) ;
+        assertTrue( internalUser.canAccess( textDocument ) );
         assertTrue( menu.getDocuments().length > 0 );
     }
 
     public void testMenuGetDocumentsIncludesVisibleForUnauthorizedUsers() throws Exception {
         assertFalse( menu.getDocuments().length > 0 );
-        textDocumentDomainObject.setVisibleInMenusForUnauthorizedUsers( true );
+        textDocument.setVisibleInMenusForUnauthorizedUsers( true );
         assertTrue( menu.getDocuments().length > 0 );
     }
 

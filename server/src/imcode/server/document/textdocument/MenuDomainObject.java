@@ -3,6 +3,7 @@ package imcode.server.document.textdocument;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
@@ -62,6 +63,11 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public MenuItemDomainObject[] getMenuItemsUserCanSee( UserDomainObject user ) {
+        List menuItemsUserCanSee = getListOfMenuItemsUserCanSee( user );
+        return (MenuItemDomainObject[])menuItemsUserCanSee.toArray( new MenuItemDomainObject[menuItemsUserCanSee.size()] );
+    }
+
+    private List getListOfMenuItemsUserCanSee( UserDomainObject user ) {
         List menuItemsUserCanSee = new ArrayList(menuItems.size()) ;
         for ( Iterator iterator = menuItems.values().iterator(); iterator.hasNext(); ) {
             MenuItemDomainObject menuItem = (MenuItemDomainObject)iterator.next();
@@ -70,7 +76,17 @@ public class MenuDomainObject implements Cloneable, Serializable {
             }
         }
         Collections.sort( menuItemsUserCanSee, getMenuItemComparatorForSortOrder( sortOrder ) );
-        return (MenuItemDomainObject[])menuItemsUserCanSee.toArray( new MenuItemDomainObject[menuItemsUserCanSee.size()] );
+        return menuItemsUserCanSee;
+    }
+
+    public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee( UserDomainObject user ) {
+        List menuItems = getListOfMenuItemsUserCanSee( user ) ;
+        CollectionUtils.filter( menuItems, new Predicate() {
+            public boolean evaluate( Object object ) {
+                return ((MenuItemDomainObject)object).getDocument().isPublishedAndNotArchived() ;
+            }
+        } );
+        return (MenuItemDomainObject[])menuItems.toArray( new MenuItemDomainObject[menuItems.size()] );
     }
 
     public MenuItemDomainObject[] getMenuItems() {

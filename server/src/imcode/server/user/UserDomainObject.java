@@ -30,7 +30,7 @@ public class UserDomainObject extends Hashtable {
     private boolean active;
     private String create_date;
 
-    private String languageIso639_2 ;
+    private String languageIso639_2;
 
     private TemplateGroupDomainObject templateGroup;
     private String loginType;
@@ -46,9 +46,9 @@ public class UserDomainObject extends Hashtable {
     Set roles = new HashSet();
 
     public Object clone() {
-        UserDomainObject clone = (UserDomainObject)super.clone() ;
-        clone.roles = new HashSet( roles ) ;
-        return clone ;
+        UserDomainObject clone = (UserDomainObject)super.clone();
+        clone.roles = new HashSet( roles );
+        return clone;
     }
 
     /**
@@ -398,14 +398,14 @@ public class UserDomainObject extends Hashtable {
     }
 
     public void removeRole( RoleDomainObject role ) {
-        if (!RoleDomainObject.USERS.equals( role )) {
+        if ( !RoleDomainObject.USERS.equals( role ) ) {
             roles.remove( role );
         }
     }
 
     public void setRoles( RoleDomainObject[] rolesForUser ) {
         this.roles = new HashSet( Arrays.asList( rolesForUser ) );
-        roles.add( RoleDomainObject.USERS ) ;
+        roles.add( RoleDomainObject.USERS );
     }
 
     public boolean hasRole( RoleDomainObject role ) {
@@ -463,11 +463,11 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean isSuperAdminOrHasFullPermissionOn( DocumentDomainObject document ) {
-        return isSuperAdminOrHasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__FULL, document ) ;
+        return isSuperAdminOrHasAtLeastPermissionSetIdOn( DocumentPermissionSetDomainObject.TYPE_ID__FULL, document );
     }
 
     public boolean canDefineRestrictedOneFor( DocumentDomainObject document ) {
-        return isSuperAdminOrHasFullPermissionOn( document ) ;
+        return isSuperAdminOrHasFullPermissionOn( document );
     }
 
     public boolean canDefineRestrictedTwoFor( DocumentDomainObject document ) {
@@ -477,7 +477,8 @@ public class UserDomainObject extends Hashtable {
         boolean hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo = hasAtLeastRestrictedOne
                                                                                         && document.isRestrictedOneMorePrivilegedThanRestrictedTwo();
         return hasFullPermission
-               || canEditPermissionsForDocument && hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo;
+               || canEditPermissionsForDocument
+                  && hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo;
     }
 
     private boolean hasAtLeastRestrictedOnePermissionOn( DocumentDomainObject document ) {
@@ -498,17 +499,17 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn( int permissionSetId, DocumentDomainObject document ) {
-        return isSuperAdmin() || hasAtLeastPermissionSetIdOn( permissionSetId, document ) ;
+        return isSuperAdmin() || hasAtLeastPermissionSetIdOn( permissionSetId, document );
     }
 
     public boolean canEditPermissionsFor( DocumentDomainObject document ) {
-        return getPermissionSetFor( document ).getEditPermissions() ;
+        return getPermissionSetFor( document ).getEditPermissions();
     }
 
     public boolean canSetPermissionSetIdForRoleOnDocument( int permissionSetId, RoleDomainObject role,
                                                            DocumentDomainObject document ) {
-        if (!canEditPermissionsFor( document )) {
-            return false ;
+        if ( !canEditPermissionsFor( document ) ) {
+            return false;
         }
         int currentPermissionSetId = document.getPermissionSetIdForRole( role );
         boolean userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn( currentPermissionSetId, document );
@@ -522,7 +523,8 @@ public class UserDomainObject extends Hashtable {
 
         boolean canDo = userIsSuperAdminOrHasAtLeastTheWantedPermissionSet
                         && userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet
-                        && ( !changingRestrictedTwo || !userHasAtLeastRestrictedOne || canDefineRestrictedTwoForDocument );
+                        && ( !changingRestrictedTwo || !userHasAtLeastRestrictedOne
+                             || canDefineRestrictedTwoForDocument );
         return canDo;
 
     }
@@ -574,7 +576,8 @@ public class UserDomainObject extends Hashtable {
         return mostPrivilegedPermissionSetIdFoundYet;
     }
 
-    public boolean hasAtLeastPermissionSetIdOn( int leastPrivilegedPermissionSetIdWanted, DocumentDomainObject document ) {
+    public boolean hasAtLeastPermissionSetIdOn( int leastPrivilegedPermissionSetIdWanted,
+                                                DocumentDomainObject document ) {
         return getPermissionSetIdFor( document )
                <= leastPrivilegedPermissionSetIdWanted;
     }
@@ -600,27 +603,26 @@ public class UserDomainObject extends Hashtable {
     }
 
     public boolean canEditDocumentInformationFor( DocumentDomainObject document ) {
-        return getPermissionSetFor( document ).getEditDocumentInformation() ;
+        return getPermissionSetFor( document ).getEditDocumentInformation();
     }
 
     public boolean canAccessAdminPages() {
-        RolePermissionDomainObject rolePermissionToAccessAdminPages = RoleDomainObject.ADMIN_PAGES_PERMISSION ;
-        return isSuperAdmin() || isUserAdmin() || hasRoleWithPermission(rolePermissionToAccessAdminPages) ;
+        RolePermissionDomainObject rolePermissionToAccessAdminPages = RoleDomainObject.ADMIN_PAGES_PERMISSION;
+        return isSuperAdmin() || isUserAdmin() || hasRoleWithPermission( rolePermissionToAccessAdminPages );
     }
 
     public boolean hasRoleWithPermission( RolePermissionDomainObject rolePermission ) {
         for ( Iterator iterator = roles.iterator(); iterator.hasNext(); ) {
             RoleDomainObject role = (RoleDomainObject)iterator.next();
-            if (role.hasPermission( rolePermission )) {
-                return true ;
+            if ( role.hasPermission( rolePermission ) ) {
+                return true;
             }
         }
-        return false ;
+        return false;
     }
 
-    public boolean canSeeDocumentInMenus(DocumentDomainObject document) {
-        return document.isVisibleInMenusForUnauthorizedUsers()
-               || canAccess( document );
+    public boolean canSeeDocumentInMenus( DocumentDomainObject document ) {
+        return document.isVisibleInMenusForUnauthorizedUsers() || canAccess( document );
 
     }
 }
