@@ -1,525 +1,536 @@
-if exists (select * from sysobjects where id = object_id(N'[dbo].[AddBrowserStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddBrowserStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddBrowserStatistics]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[AddNewuser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddNewuser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddNewuser]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[AddPhoneNr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddPhoneNr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddPhoneNr]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[AddScreenStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddScreenStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddScreenStatistics]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[AddStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddStatistics]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[AddStatisticsCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddStatisticsCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddStatisticsCount]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[AddUserRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddUserRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddUserRole]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[AddVersionStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[AddVersionStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[AddVersionStatistics]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ChangeUserActiveStatus]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ChangeUserActiveStatus]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[ChangeUserActiveStatus]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[CheckAdminRights]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CheckAdminRights]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[CheckAdminRights]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[CheckExistsInMenu]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CheckDocSharePermissionForUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[CheckDocSharePermissionForUser]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CheckExistsInMenu]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[CheckExistsInMenu]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[CheckUserDocSharePermission]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CheckUserDocSharePermission]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[CheckUserDocSharePermission]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[classification_convert]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[classification_convert]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[Classification_Fix]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[Classification_Fix]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[Classification_Get_All]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[Classification_Get_All]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ClassificationAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ClassificationAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[ClassificationAdd]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[CopyDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[Classification_Fix]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[Classification_Fix]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[Classification_Get_All]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[Classification_Get_All]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CopyDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[CopyDocs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[DeleteDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[DeleteDocPermissionSetEx]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[DeleteInclude]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[DeleteInclude]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[DeleteNewDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[DeleteNewDocPermissionSetEx]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[DelPhoneNr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[DelPhoneNr]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[DelPhoneNr]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[DelUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[DelUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[DelUser]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[DelUserRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[DelUserRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[DelUserRoles]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[DocumentDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[DeleteDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[DeleteDocPermissionSetEx]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[DeleteInclude]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[DeleteInclude]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[DeleteNewDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[DeleteNewDocPermissionSetEx]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[DocumentDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[DocumentDelete]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ExistingDocsGetSelectedMetaIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ExistingDocsGetSelectedMetaIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[ExistingDocsGetSelectedMetaIds]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[FindMetaId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FindMetaId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[FindMetaId]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[FindUserName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FindUserName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[FindUserName]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetAllRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetAllRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetAllRoles]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetAllUsers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetAllUsers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetAllUsers]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetAllUsersInList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetAllUsersInList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetAllUsersInList]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[getBrowserDocChilds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[getBrowserDocChilds]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetCategoryUsers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetCategoryUsers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetCategoryUsers]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetChilds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetChilds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetChilds]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetCurrentSessionCounter]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetCurrentSessionCounter]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetCurrentSessionCounter]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetCurrentSessionCounterDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetCurrentSessionCounterDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetCurrentSessionCounterDate]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[getDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[getDocs]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetDocType]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetDocType]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetDocType]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetDocTypes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetDocTypes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetDocTypes]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetDocTypesForUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetDocTypesForUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetDocTypesForUser]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetDocTypesWithNewPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetDocTypesWithNewPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetDocTypesWithNewPermissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetDocTypesWithPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetDocTypesWithPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetDocTypesWithPermissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetHighestUserId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetHighestUserId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetHighestUserId]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetImgs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetImgs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetImgs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetIncludes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetIncludes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetIncludes]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetLangPrefix]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetLangPrefix]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetLangPrefix]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetLangPrefixFromId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetLangPrefixFromId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetLangPrefixFromId]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetLanguageList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetLanguageList]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetLanguageList]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[getLanguages]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[getLanguages]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[getMenuDocChilds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[getMenuDocChilds]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetMetaPathInfo]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetMetaPathInfo]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetMetaPathInfo]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetNewPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetNewPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetNewPermissionSet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetNoOfTemplates]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetNoOfTemplates]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetNoOfTemplates]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetPermissionSet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetRolesDocPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetRolesDocPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetRolesDocPermissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[getTemplategroups]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[getTemplategroups]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetTemplateGroupsForUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetTemplateGroupsForUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetTemplateGroupsForUser]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetTemplateGroupsWithNewPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetTemplateGroupsWithNewPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetTemplateGroupsWithNewPermissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetTemplateGroupsWithPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetTemplateGroupsWithPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetTemplateGroupsWithPermissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[getTemplates]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[getTemplates]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[getTemplatesInGroup]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[getTemplatesInGroup]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetTextDocData]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetTextDocData]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetTextDocData]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetTextNumber]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetTextNumber]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetTextNumber]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetTexts]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetTexts]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetTexts]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserCreateDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserCreateDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserCreateDate]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserId]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserIdFromName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserIdFromName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserIdFromName]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserInfo]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserInfo]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserInfo]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserNames]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserNames]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserNames]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserPassword]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserPassword]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserPassword]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserPermissionSet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserPermissionSetEx]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserPhoneNumbers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserPhoneNumbers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserPhoneNumbers]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserPhones]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserPhones]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserPhones]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserRoles]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserRolesDocPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserRolesDocPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserRolesDocPermissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserRolesIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserRolesIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserRolesIds]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUsersWhoBelongsToRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[GetUsersWhoBelongsToRole]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserType]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserType]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserType]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[GetUserTypes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUserTypes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[GetUserTypes]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[IncSessionCounter]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[IncSessionCounter]
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[GetUsersWhoBelongsToRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[GetUsersWhoBelongsToRole]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[InheritPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[InheritPermissions]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[IPAccessAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[IPAccessAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[IPAccessAdd]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[IPAccessDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[IPAccessDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[IPAccessDelete]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[IPAccessesGetAll]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[IPAccessesGetAll]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[IPAccessUpdate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[IPAccessUpdate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[IPAccessUpdate]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ListConferences]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[IPAccessesGetAll]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[IPAccessesGetAll]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[IncSessionCounter]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[IncSessionCounter]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[InheritPermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[InheritPermissions]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ListConferences]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[ListConferences]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ListDocsByDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ListDocsByDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[ListDocsByDate]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ListDocsGetInternalDocTypes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ListDocsGetInternalDocTypes]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[ListDocsGetInternalDocTypes]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ListDocsGetInternalDocTypesValue]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ListDocsGetInternalDocTypesValue]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[ListDocsGetInternalDocTypesValue]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[PermissionsGetPermission]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[PermissionsGetPermission]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[PermissionsGetPermission]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[phoneNbrAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure [dbo].[phoneNbrAdd]
-GO
-
-if exists (select * from sysobjects where id = object_id(N'[dbo].[PhoneNbrDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[PhoneNbrDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[PhoneNbrDelete]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[PhoneNbrUpdate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[PhoneNbrUpdate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[PhoneNbrUpdate]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RemoveUserFromRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RemoveUserFromRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RemoveUserFromRole]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleAddNew]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleAddNew]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleAddNew]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleAdminGetAll]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleAdminGetAll]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleAdminGetAll]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleCheckConferenceAllowed]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleCheckConferenceAllowed]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleCheckConferenceAllowed]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleCount]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleCount]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleCountAffectedUsers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleCountAffectedUsers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleCountAffectedUsers]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleDelete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleDelete]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleDeleteViewAffectedMetaIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleDeleteViewAffectedMetaIds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleDeleteViewAffectedMetaIds]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleDeleteViewAffectedUsers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleDeleteViewAffectedUsers]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleDeleteViewAffectedUsers]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleFindName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleFindName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleFindName]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleGetAllApartFromRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleGetAllApartFromRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleGetAllApartFromRole]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleGetConferenceAllowed]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleGetConferenceAllowed]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleGetConferenceAllowed]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleGetName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleGetName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleGetName]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleGetPermissionsByLanguage]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleGetPermissionsByLanguage]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleGetPermissionsByLanguage]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleGetPermissionsFromRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleGetPermissionsFromRole]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleGetPermissionsFromRole]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RolePermissionsAddNew]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RolePermissionsAddNew]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RolePermissionsAddNew]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleUpdateName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleUpdateName]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleUpdateName]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[RoleUpdatePermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[RoleUpdatePermissions]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[RoleUpdatePermissions]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SearchDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SearchDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SearchDocs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ServerMasterGet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ServerMasterGet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[ServerMasterGet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[ServerMasterSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[ServerMasterSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[ServerMasterSet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SetDocPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetDocPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetDocPermissionSet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SetDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetDocPermissionSetEx]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SetInclude]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetInclude]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetInclude]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SetNewDocPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetNewDocPermissionSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetNewDocPermissionSet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SetNewDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetNewDocPermissionSetEx]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetNewDocPermissionSetEx]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SetRoleDocPermissionSetId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetRoleDocPermissionSetId]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetRoleDocPermissionSetId]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SetSessionCounterDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SetSessionCounterDate]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SetSessionCounterDate]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SortOrder_GetExistingDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SortOrder_GetExistingDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SortOrder_GetExistingDocs]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SystemMessageGet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SystemMessageGet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SystemMessageGet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[SystemMessageSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SystemMessageSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[SystemMessageSet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[UpdateParentsDateModified]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[UpdateDefaultTemplates]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[UpdateDefaultTemplates]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[UpdateParentsDateModified]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[UpdateParentsDateModified]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[UpdateTemplateTextsAndImages]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[UpdateTemplateTextsAndImages]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[UpdateTemplateTextsAndImages]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[UpdateUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[UpdateUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[UpdateUser]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[UserPrefsChange]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[UserPrefsChange]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[UserPrefsChange]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[WebMasterGet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[WebMasterGet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[WebMasterGet]
 GO
 
-if exists (select * from sysobjects where id = object_id(N'[dbo].[WebMasterSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[WebMasterSet]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
 drop procedure [dbo].[WebMasterSet]
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[classification_convert]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[classification_convert]
 GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getBrowserDocChilds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[getBrowserDocChilds]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getDocs]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[getDocs]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getLanguages]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[getLanguages]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getMenuDocChilds]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[getMenuDocChilds]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getTemplategroups]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[getTemplategroups]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getTemplates]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[getTemplates]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[getTemplatesInGroup]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[getTemplatesInGroup]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[phoneNbrAdd]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[phoneNbrAdd]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE AddBrowserStatistics @os VARCHAR(30), @browser varchar(30), @version varchar(30) AS
 DECLARE @newline CHAR(2)
@@ -530,12 +541,18 @@ SET @browserstring =  'Os: '+@os+@newline+
    'Version: '+@version
 EXEC AddStatistics @browserstring
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE AddNewuser
 /*
@@ -592,12 +609,18 @@ VALUES (@user_id, @login_name, @login_password, @first_name, @last_name, @addres
    @county_council, @email, @admin_mode, @last_page, @archive_mode, @lang_id ,@user_type, @active, getDate())
 */
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE AddPhoneNr
 /* Adds a role to a particular user
@@ -627,24 +650,36 @@ AS
 */ 
 
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER ON 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE AddScreenStatistics @width INT, @height INT, @bits INT AS
 DECLARE @screen VARCHAR(20) 
 SET @screen = 'Screen: '+LTRIM(STR(@width))+'x'+LTRIM(STR(@height))+'x'+LTRIM(STR(@bits))
 EXEC AddStatistics @screen
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE AddStatistics @name VARCHAR(120) AS
 UPDATE stats
@@ -658,22 +693,34 @@ VALUES ( @name,
   )
 END
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE AddStatisticsCount AS
 EXEC AddStatistics 'Count'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE AddUserRole
 /* Adds a role to a particular user
@@ -702,24 +749,36 @@ AS
  VALUES( @aUser_id , @aRole_id)
 */ 
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE AddVersionStatistics @name VARCHAR(30), @version VARCHAR(30) AS
 DECLARE @string VARCHAR(62)
 SET @string = @name+': '+@version
 EXEC AddStatistics @string
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE ChangeUserActiveStatus @user_id int, @active int AS
 /* 
@@ -730,12 +789,18 @@ SET
 active = @active
 WHERE user_id = @user_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE CheckAdminRights
 /*
@@ -750,12 +815,45 @@ FROM users INNER JOIN
     roles ON user_roles_crossref.role_id = roles.role_id
 WHERE roles.role_id = 0 AND users.user_id = @aUserId
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS OFF 
+GO
+
+CREATE PROCEDURE CheckDocSharePermissionForUser @user_id INT, @meta_id INT AS
+SELECT m.meta_id
+FROM meta m
+JOIN user_roles_crossref urc
+				ON	urc.user_id = @user_id
+				AND	m.meta_id = @meta_id
+LEFT join roles_rights rr
+				ON	rr.meta_id = m.meta_id
+				AND	rr.role_id = urc.role_id
+WHERE				(
+						shared = 1
+					OR	rr.set_id < 3
+					OR	urc.role_id = 0
+				)
+GROUP BY m.meta_id
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE CheckExistsInMenu
 /*
@@ -773,12 +871,18 @@ WHERE to_meta_id = @aMetaId
 SELECT @returnVal = ISNULL(@returnVal, 0) 
 SELECT @returnVal AS 'ExistsInMenu'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS OFF 
+GO
+
 
 CREATE PROCEDURE CheckUserDocSharePermission @user_id INT, @meta_id INT AS
 
@@ -796,42 +900,62 @@ WHERE				(
 					OR	urc.role_id = 0
 				)
 GROUP BY m.meta_id
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE classification_convert AS
--- Hämta alla klassificeringskoder och för över dem till nya systemet. Observera att denna inte fixar
--- de fält som har , tecken som delimiter
-DECLARE @meta_id int
-DECLARE @class varchar(200)
-DECLARE tmpCursor CURSOR FOR
- SELECT meta_id, classification
- FROM meta
- WHERE classification IS NOT NULL
- and classification <> ''
- and classification NOT LIKE 'META NAME%'
- and classification NOT LIKE 'Test'
- --AND meta_id = 1014
-OPEN tmpCursor
-FETCH NEXT FROM tmpCursor INTO @meta_id, @class
-WHILE @@fetch_status = 0 BEGIN
- PRINT 'Class: ' + @class 
- EXEC classification_fix @meta_id, @class 
- FETCH NEXT FROM tmpCursor INTO @meta_id, @class
-END
-CLOSE tmpCursor
-DEALLOCATE tmpCursor
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE ClassificationAdd 
+ @theMetaId int,
+  @theClassCode varchar(200)
+AS
+/*
+Adds a classification code and fix the crossreference. If a code already exists in the table, it will link to that 
+code 
+*/
+-- Lets check if a code already exists, if so just link to that code
+DECLARE @foundCode int
+SELECT @foundCode = 0
+-- Lets start with to find the id for the classification code
+SELECT @foundCode = class_id
+FROM classification
+WHERE code LIKE @theClassCode
+-- Lets check if the lassification code exists or if we should create it 
+-- IF ( @foundCode <> 0 ) BEGIN 
+ -- PRINT 'Koden fanns redan'
+--END ELSE BEGIN 
+-- Ok, Lets link to that code
+IF ( @foundCode = 0 ) BEGIN 
+ --PRINT 'Koden fanns inte'
+ -- Lets start to add the classification
+ INSERT INTO classification (  Code)
+ VALUES (  @theClassCode )
+ SELECT @foundCode = @@identity
+END 
+-- Lets insert the new crossreferences
+INSERT INTO meta_classification (meta_id,class_id)
+VALUES (  @theMetaId , @foundCode )
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE Classification_Fix
  @meta_id int ,
@@ -868,12 +992,18 @@ SELECT  @value  = lTrim(rTrim( ( @value ) ))
 EXEC ClassificationAdd @meta_id , @value
 -- INSERT INTO data (value) VALUES (@string)
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE Classification_Get_All AS
 /*
@@ -886,50 +1016,18 @@ SELECT meta_id, classification
  and classification NOT LIKE 'META NAME%'
  and classification NOT LIKE 'Test'
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE ClassificationAdd 
- @theMetaId int,
-  @theClassCode varchar(200)
-AS
-/*
-Adds a classification code and fix the crossreference. If a code already exists in the table, it will link to that 
-code 
-*/
--- Lets check if a code already exists, if so just link to that code
-DECLARE @foundCode int
-SELECT @foundCode = 0
--- Lets start with to find the id for the classification code
-SELECT @foundCode = class_id
-FROM classification
-WHERE code LIKE @theClassCode
--- Lets check if the lassification code exists or if we should create it 
--- IF ( @foundCode <> 0 ) BEGIN 
- -- PRINT 'Koden fanns redan'
---END ELSE BEGIN 
--- Ok, Lets link to that code
-IF ( @foundCode = 0 ) BEGIN 
- --PRINT 'Koden fanns inte'
- -- Lets start to add the classification
- INSERT INTO classification (  Code)
- VALUES (  @theClassCode )
- SELECT @foundCode = @@identity
-END 
--- Lets insert the new crossreferences
-INSERT INTO meta_classification (meta_id,class_id)
-VALUES (  @theMetaId , @foundCode )
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS OFF 
+GO
+
 
 
 CREATE PROCEDURE CopyDocs @documents_string VARCHAR(200), @parent_id INT, @menu_id INT, @user INT AS
@@ -1317,53 +1415,18 @@ select * from meta_classification where meta_id = 1009
 
 DROP TABLE #documents
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE DeleteDocPermissionSetEx @meta_id INT, @set_id INT AS
-/*
- Delete extended permissions for a permissionset for a document
-*/
-DELETE FROM  doc_permission_sets_ex
-WHERE  meta_id = @meta_id
-  AND set_id = @set_id
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-CREATE PROCEDURE DeleteInclude @meta_id INT, @include_id INT AS
-
-DELETE FROM includes WHERE meta_id = @meta_id AND include_id = @include_id
-
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE DeleteNewDocPermissionSetEx @meta_id INT, @set_id INT AS
-/*
- Delete extended permissions for a permissionset for a document
-*/
-DELETE FROM  new_doc_permission_sets_ex
-WHERE  meta_id = @meta_id
-  AND set_id = @set_id
-
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
 
 CREATE PROCEDURE DelPhoneNr
  @aUserId int
@@ -1373,12 +1436,18 @@ AS
  WHERE user_id = @aUserId
 
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE DelUser
  @aUserId int
@@ -1391,12 +1460,18 @@ AS
  FROM users
  WHERE user_id = @aUserId
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE DelUserRoles
  @aUserId int
@@ -1405,12 +1480,77 @@ AS
  FROM user_roles_crossref
  WHERE user_id = @aUserId
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE DeleteDocPermissionSetEx @meta_id INT, @set_id INT AS
+/*
+ Delete extended permissions for a permissionset for a document
+*/
+DELETE FROM  doc_permission_sets_ex
+WHERE  meta_id = @meta_id
+  AND set_id = @set_id
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+
+CREATE PROCEDURE DeleteInclude @meta_id INT, @include_id INT AS
+
+DELETE FROM includes WHERE meta_id = @meta_id AND include_id = @include_id
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE DeleteNewDocPermissionSetEx @meta_id INT, @set_id INT AS
+/*
+ Delete extended permissions for a permissionset for a document
+*/
+DELETE FROM  new_doc_permission_sets_ex
+WHERE  meta_id = @meta_id
+  AND set_id = @set_id
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
 
 CREATE PROCEDURE [dbo].[DocumentDelete] 
 	@meta_id int
@@ -1436,12 +1576,18 @@ delete from browser_docs where meta_id = @meta_id
 delete from fileupload_docs where meta_id = @meta_id  
 delete from frameset_docs where meta_id = @meta_id  
 delete from meta where meta_id = @meta_id
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS OFF 
+GO
+
 
 CREATE PROCEDURE ExistingDocsGetSelectedMetaIds
 		@string varchar(1024) 
@@ -1517,12 +1663,18 @@ WHERE meta_id IN
 
 DROP TABLE #wanted_meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE [FindMetaId]
  @meta_id int
@@ -1531,12 +1683,18 @@ SELECT meta_id
 FROM meta
 WHERE meta_id = @meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE [FindUserName] 
  @userName char(15)
@@ -1550,12 +1708,18 @@ SELECT  u.login_name
 FROM users u
 WHERE u.login_name = @userName
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetAllRoles AS
 SELECT role_id, role_name
@@ -1563,12 +1727,18 @@ FROM roles
  
 ORDER BY role_name
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE [GetAllUsers] AS
   select *
@@ -1576,12 +1746,18 @@ CREATE PROCEDURE [GetAllUsers] AS
  
  order by  last_name
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetAllUsersInList AS
 /*
@@ -1590,40 +1766,18 @@ This function is used from AdminIpAcces servlet to generate a list
 SELECT user_id, last_name + ', ' + first_name from users
 ORDER BY last_name
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE getBrowserDocChilds @meta_id int, @user_id int AS
--- Lists the childs for a specific browser_doc
-SELECT DISTINCT to_meta_id,
-   meta_headline
-FROM browser_docs bd
-JOIN meta m
-      ON  bd.to_meta_id = m.meta_id
-      AND  bd.meta_id = @meta_id
-LEFT JOIN roles_rights rr
-      ON rr.meta_id = m.meta_id
-      AND rr.set_id < 4
-JOIN user_roles_crossref urc
-      ON urc.user_id = @user_id
-      AND (
-        urc.role_id = 0
-       OR urc.role_id = rr.role_id
-       OR m.shared = 1
-      )
-WHERE m.activate = 1
-ORDER BY to_meta_id
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetCategoryUsers
 /*
@@ -1639,12 +1793,18 @@ ORDER BY last_name
 
 
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 
 
@@ -1780,12 +1940,18 @@ end
 
 
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetCurrentSessionCounter 
  
@@ -1794,12 +1960,18 @@ AS
  FROM sys_data
  WHERE type_id  = 1
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetCurrentSessionCounterDate
  
@@ -1808,43 +1980,18 @@ AS
  FROM sys_data
  WHERE type_id  = 2
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE getDocs @user_id int, @start int, @end int AS
--- Lists documents user is allowed to see.
-SELECT DISTINCT m.meta_id,
-   COUNT(DISTINCT c.meta_id) parentcount,
-   meta_headline,
-   doc_type
-FROM   meta m
-LEFT JOIN  childs c   ON c.to_meta_id = m.meta_id
-LEFT JOIN  roles_rights rr  ON rr.meta_id = m.meta_id
-      AND rr.set_id < 4
-JOIN   user_roles_crossref urc ON urc.user_id = @user_id
-      AND (
-        urc.role_id = 0
-       OR (
-         urc.role_id = rr.role_id
-        )
-       OR m.shared = 1
-       )
-WHERE  m.activate = 1
-  AND m.meta_id > (@start-1) 
-  AND m.meta_id < (@end+1)
-GROUP BY  m.meta_id,m.meta_headline,m.doc_type,c.to_meta_id
-ORDER BY  m.meta_id
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetDocType
  @meta_id int
@@ -1856,24 +2003,36 @@ SELECT doc_type
 FROM meta
 WHERE meta_id = @meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER ON 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetDocTypes @lang_prefix VARCHAR(3) AS
 SELECT doc_type,type FROM doc_types
 WHERE lang_prefix = @lang_prefix
 ORDER BY doc_type
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetDocTypesForUser @meta_id INT,@user_id INT, @lang_prefix VARCHAR(3) AS
 /*
@@ -1902,12 +2061,18 @@ WHERE
        OR urc.role_id = 0
 ORDER BY dt.doc_type
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 --
 -- Procedure Create
@@ -1931,12 +2096,18 @@ LEFT JOIN new_doc_permission_sets_ex dpse
 WHERE dt.lang_prefix = @lang_prefix
 ORDER BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC,doc_type
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 --
 -- Procedure Create
@@ -1960,12 +2131,18 @@ LEFT JOIN doc_permission_sets_ex dpse
 WHERE dt.lang_prefix = @lang_prefix
 ORDER BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC,doc_type
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetHighestUserId
 AS
@@ -1973,34 +2150,52 @@ AS
 SELECT MAX(user_id) +1
 FROM users
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetImgs
 @meta_id int AS
 select '#img'+convert(varchar(5), name)+'#',name,imgurl,linkurl,width,height,border,v_space,h_space,image_name,align,alt_text,low_scr,target,target_name from images where meta_id = @meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS OFF 
+GO
+
 
 CREATE PROCEDURE GetIncludes @meta_id INT AS
 
 SELECT include_id, included_meta_id  FROM includes WHERE meta_id = @meta_id
 ORDER BY include_id
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetLangPrefix
  @meta_id int
@@ -2012,12 +2207,18 @@ SELECT lang_prefix
 FROM meta
 WHERE meta_id = @meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetLangPrefixFromId
 /* Get the users preferred language. Used by the administrator functions.
@@ -2029,12 +2230,18 @@ SELECT lang_prefix
 FROM lang_prefixes
 WHERE lang_id = @aLangId
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetLanguageList
  @user_lang_prefix VARCHAR(3)
@@ -2047,49 +2254,18 @@ FROM lang_prefixes lp, languages lang
 WHERE lp.lang_prefix = lang.lang_prefix
 AND lang.user_prefix = @user_lang_prefix
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE getLanguages AS
-select lang_prefix,language from languages order by language
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-CREATE PROCEDURE getMenuDocChilds @meta_id int, @user_id int AS
--- Lists the childs of menudoc @meta_id
-SELECT DISTINCT to_meta_id,
-   meta_headline
-FROM  childs c
-JOIN  meta m
-     ON c.to_meta_id = m.meta_id
-           AND c.meta_id = @meta_id
-LEFT JOIN roles_rights rr
-     ON rr.meta_id = m.meta_id
-     AND rr.set_id < 4
-JOIN  user_roles_crossref urc
-     ON urc.user_id = @user_id
-           AND (  urc.role_id = 0
-      OR urc.role_id = rr.role_id
-      OR  m.shared = 1
-     )
-WHERE m.activate = 1
-ORDER BY to_meta_id
-
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
 
 CREATE PROCEDURE GetMetaPathInfo
  @meta_id int
@@ -2105,12 +2281,18 @@ SELECT RTRIM(lang_prefix) + '/' +  RTRIM(doc_type) + '/'
 FROM META 
 WHERE meta_id = @meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE [GetNewPermissionSet] @meta_id INT, @set_id INT, @lang_prefix VARCHAR(3) AS
 /*
@@ -2138,22 +2320,34 @@ LEFT JOIN new_doc_permission_sets dps
        AND dps.set_id = @set_id
        AND dps.meta_id = m.meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetNoOfTemplates AS
 select count(*) from templates
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER ON 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE [GetPermissionSet] @meta_id INT, @set_id INT, @lang_prefix VARCHAR(3) AS
 /*
@@ -2181,12 +2375,18 @@ LEFT JOIN doc_permission_sets dps
        AND dps.set_id = @set_id
        AND dps.meta_id = m.meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetRolesDocPermissions @meta_id INT AS
 /* Selects all roles except for superadmin, and returns the permissionset each has for the document. */
@@ -2203,22 +2403,18 @@ RIGHT JOIN
 WHERE r.role_id > 0
 ORDER BY role_name
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE getTemplategroups AS
-select group_id,group_name from templategroups order by group_name
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetTemplateGroupsForUser @meta_id INT, @user_id INT AS
 /*
@@ -2247,12 +2443,18 @@ WHERE
        OR urc.role_id = 0
 ORDER BY dt.group_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 --
 -- Procedure Create
@@ -2275,12 +2477,18 @@ LEFT JOIN new_doc_permission_sets_ex dpse
        AND dpse.permission_id = 524288
 ORDER  BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC, group_name
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetTemplateGroupsWithPermissions @meta_id INT, @set_id INT AS
 /*
@@ -2299,37 +2507,18 @@ LEFT JOIN doc_permission_sets_ex dpse
        AND dpse.permission_id = 524288
 ORDER  BY CAST(ISNULL(dpse.permission_data,-1)+1  AS BIT) DESC, group_name
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE getTemplates AS
-select template_id, simple_name from templates
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
 GO
 
-CREATE PROCEDURE getTemplatesInGroup @grp_id INT AS
-SELECT t.template_id,simple_name
-FROM  templates t JOIN
-  templates_cref c
-ON  t.template_id = c.template_id
-WHERE c.group_id = @grp_id
-ORDER BY simple_name
-
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
-GO
 
 CREATE PROCEDURE GetTextDocData @meta_id INT AS
 SELECT t.template_id, simple_name, sort_order, t.group_id
@@ -2338,12 +2527,18 @@ JOIN   templates c
      ON t.template_id = c.template_id
 WHERE meta_id = @meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetTextNumber @meta_id int,  @name int AS
 /* selects text name @number from meta id @meta_id */
@@ -2352,23 +2547,35 @@ select text from
 where
  meta_id = @meta_id  and name = @name
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetTexts
 @meta_id int AS
 select '#txt'+convert(varchar(5), name)+'#',name,type,text from texts where meta_id = @meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER ON 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserCreateDate
 /*
@@ -2386,12 +2593,18 @@ WHERE users.user_id = @userId
 ---SELECT @retVal AS 'TemplateId'
 SELECT @retVal  AS 'Usercreatedate'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserId 
  @aUserId int
@@ -2400,12 +2613,18 @@ AS
  FROM users
  WHERE user_id  = @aUserId
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE [GetUserIdFromName] 
 /*
@@ -2420,12 +2639,18 @@ FROM users u
 WHERE u.login_name = @userName
 AND u.login_password = @userPwd
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER ON 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserInfo
 /* Returns all the information about a user. Used by adminsystem & conference system
@@ -2436,12 +2661,18 @@ AS
  FROM users
  WHERE user_id = @aUserId 
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserNames
 /* 
@@ -2464,12 +2695,18 @@ END
 SELECT @returnVal =  ISNULL(@returnVal, -1) 
 SELECT @returnVal AS 'UserName'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserPassword 
 /* Used by AdminUserProps servlet to retrieve the users password 
@@ -2483,12 +2720,18 @@ WHERE user_id = @user_id
 SELECT @retVal =  ISNULL(@retVal , '') 
 SELECT @retVal AS 'Password'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserPermissionSet @meta_id INT, @user_id INT AS
 /*
@@ -2526,12 +2769,18 @@ LEFT JOIN doc_permission_sets dps
 GROUP BY ISNULL(dps.permission_id,0),m.permissions
 ORDER BY ISNULL((MIN(ISNULL(rr.set_id,4))*CAST(MIN(ISNULL(urc.role_id,1)) AS BIT)),4)
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserPermissionSetEx @meta_id INT, @user_id INT AS
 /*
@@ -2550,12 +2799,18 @@ JOIN  doc_permission_sets_ex dps
       ON dps.meta_id = m.meta_id
       AND rr.set_id = dps.set_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserPhoneNumbers
 /*
@@ -2569,12 +2824,18 @@ FROM users u , phones p
 WHERE u.user_id = p.user_id
 AND u.user_id = @user_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserPhones
  @user_id int
@@ -2587,12 +2848,18 @@ FROM users u , phones p
 WHERE u.user_id = p.user_id
 AND u.user_id = @user_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserRoles
 /*
@@ -2605,12 +2872,18 @@ Used to get all roles for a user
  WHERE roles.role_id = user_roles_crossref.role_id
   AND user_roles_crossref.user_id = @aUserId
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserRolesDocPermissions @meta_id INT, @user_id INT AS
 SELECT
@@ -2630,12 +2903,18 @@ LEFT JOIN user_roles_crossref urc
 WHERE r.role_id > 0
 ORDER BY role_name
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserRolesIds
 /* Returns the roles id:s for a user 
@@ -2647,30 +2926,18 @@ CREATE PROCEDURE GetUserRolesIds
  WHERE roles.role_id = user_roles_crossref.role_id
   AND user_roles_crossref.user_id = @aUserId
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE GetUsersWhoBelongsToRole @role_id int AS
-/*
- * select user who belongs to role role_id
-*/
-select us.user_id, u.last_name + ', ' + u.first_name 
-from user_roles_crossref us
-join users u
-  on us.user_id = u.user_id
-where role_id = @role_id
-order by  last_name
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserType
 /*
@@ -2685,12 +2952,18 @@ WHERE user_id = @User_id
 SELECT @returnVal =  ISNULL(@returnVal, 1) 
 SELECT @returnVal AS 'Usertype'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER ON 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE GetUserTypes
 /*
@@ -2702,12 +2975,137 @@ Used to generate a list with all type of users. Used from AdminUserProps
  SELECT DISTINCT user_type, type_name 
  FROM user_types
  WHERE lang_prefix=@lang_prefix
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE GetUsersWhoBelongsToRole @role_id int AS
+/*
+ * select user who belongs to role role_id
+*/
+select us.user_id, u.last_name + ', ' + u.first_name 
+from user_roles_crossref us
+join users u
+  on us.user_id = u.user_id
+where role_id = @role_id
+order by  last_name
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE IPAccessAdd
+/*
+This function adds a new ip-access to the db. Used by AdminManager
+*/
+ @user_id int,
+ @ip_start DECIMAL , 
+ @ip_end DECIMAL
+AS
+INSERT INTO IP_ACCESSES ( user_id , ip_start , ip_end )
+VALUES ( @user_id , @ip_start , @ip_end )
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE IPAccessDelete
+/*
+ Deletes an Ip-access for a user. Used by the AdminIpAccess servlet
+*/
+ @ipAccessId int
+AS
+DELETE FROM IP_ACCESSES 
+WHERE ip_access_id = @ipAccessId
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE IPAccessUpdate
+/*
+Updates the IPaccess table
+*/
+ @IpAccessId int ,
+ @newUserId int,
+ @newIpStart DECIMAL ,
+ @newIpEnd DECIMAL 
+AS
+UPDATE IP_ACCESSES
+SET user_id = @newUserId ,
+ ip_start = @newIpStart,
+ ip_end = @newIpEnd
+WHERE ip_access_id = @IpAccessId 
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE IPAccessesGetAll AS
+/*
+Lets get all IPaccesses from db. Used  by the AdminIpAccesses
+*/
+SELECT ip.ip_access_id, ip.user_id, usr.login_name, ip.ip_start, ip.ip_end    
+FROM IP_ACCESSES ip, USERS usr
+WHERE ip.user_id = usr.user_id
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE IncSessionCounter 
 AS
@@ -2720,12 +3118,18 @@ AS
  
   return
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE InheritPermissions @new_meta_id INT, @parent_meta_id INT, @doc_type INT AS
 
@@ -2805,95 +3209,36 @@ WHERE meta_id = @parent_meta_id
 
 
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE IPAccessAdd
-/*
-This function adds a new ip-access to the db. Used by AdminManager
-*/
- @user_id int,
- @ip_start DECIMAL , 
- @ip_end DECIMAL
-AS
-INSERT INTO IP_ACCESSES ( user_id , ip_start , ip_end )
-VALUES ( @user_id , @ip_start , @ip_end )
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-CREATE PROCEDURE IPAccessDelete
-/*
- Deletes an Ip-access for a user. Used by the AdminIpAccess servlet
-*/
- @ipAccessId int
-AS
-DELETE FROM IP_ACCESSES 
-WHERE ip_access_id = @ipAccessId
-
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE IPAccessesGetAll AS
-/*
-Lets get all IPaccesses from db. Used  by the AdminIpAccesses
-*/
-SELECT ip.ip_access_id, ip.user_id, usr.login_name, ip.ip_start, ip.ip_end    
-FROM IP_ACCESSES ip, USERS usr
-WHERE ip.user_id = usr.user_id
-
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE IPAccessUpdate
-/*
-Updates the IPaccess table
-*/
- @IpAccessId int ,
- @newUserId int,
- @newIpStart DECIMAL ,
- @newIpEnd DECIMAL 
-AS
-UPDATE IP_ACCESSES
-SET user_id = @newUserId ,
- ip_start = @newIpStart,
- ip_end = @newIpEnd
-WHERE ip_access_id = @IpAccessId 
-
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
 
 CREATE PROCEDURE ListConferences AS
 select meta_id, meta_headline 
 from meta 
 where doc_type = 102
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE ListDocsByDate @listMod int,  @doc_type int, @startDate varchar(10), @endDate varchar(20), @lang_prefix varchar(3) AS
 /*
@@ -3040,12 +3385,18 @@ else begin
  end
 end
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE ListDocsGetInternalDocTypes @lang_prefix VARCHAR(3) AS
 /* selct all internal doc types */
@@ -3054,12 +3405,18 @@ from doc_types
 where doc_type <= 100
 and lang_prefix = @lang_prefix
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE ListDocsGetInternalDocTypesValue AS
 /* selct all internal doc types */
@@ -3067,12 +3424,18 @@ select doc_type
 from doc_types
 where doc_type <= 100
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE PermissionsGetPermission @login_name varchar(15), @permission int AS
 /*
@@ -3088,36 +3451,18 @@ join roles r
 where login_name = @login_name
 group by login_password, first_name, last_name, email, lang_prefix 
 
-GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
-GO
-
-CREATE PROCEDURE phoneNbrAdd
-/*
-This function adds a new phone numbers to the db. Used by AdminUserPhones
-*/
- @user_id int,
- @country varchar(15) ,
- @area varchar(15) , 
- @nbr varchar(15)
-AS
-DECLARE @newPhoneId int
-SELECT @newPhoneId = MAX(phone_id) + 1
-FROM phones
-IF @newPhoneId IS NULL 
- SET @newPhoneId = 1
-INSERT INTO PHONES ( phone_id , country_code, area_code, number , user_id )
-VALUES (@newPhoneId , @country, @area,  @nbr, @user_id )  
 
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE PhoneNbrDelete
 /*
@@ -3128,12 +3473,18 @@ AS
 DELETE FROM PHONES 
 WHERE phone_id = @phoneId
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE PhoneNbrUpdate 
 /*
@@ -3152,12 +3503,18 @@ UPDATE phones
 WHERE phones.user_id = @user_id
 AND phones.phone_id = @phone_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RemoveUserFromRole
  @userId int, @role_id int
@@ -3167,12 +3524,18 @@ DELETE
 FROM user_roles_crossref
 WHERE user_id = @userId and role_id = @role_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleAddNew
  @newRoleName char(25)
@@ -3185,12 +3548,18 @@ INSERT INTO roles (  role_id , role_name )
 VALUES( @newRoleId , @newRoleName )
  
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleAdminGetAll AS
 /*
@@ -3200,12 +3569,18 @@ SELECT role_id , role_name FROM ROLES
 WHERE role_id != 0
 ORDER BY role_name
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS OFF 
+GO
+
 
 CREATE PROCEDURE RoleCheckConferenceAllowed 
  @lang_prefix varchar(3),
@@ -3222,12 +3597,18 @@ JOIN  roles r
  AND r.role_id = @lookForRoleId
 WHERE lang_prefix = @lang_prefix
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleCount
  @aRoleId int
@@ -3244,12 +3625,18 @@ WHERE ROLE_ID = @aRoleId
 SELECT @returnVal = ISNULL(  @returnVal , 0 )
 SELECT @returnVal AS 'Number_of_roles'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleCountAffectedUsers
  @aRoleId int
@@ -3263,12 +3650,18 @@ FROM user_roles_crossref usr, roles r, users u
 WHERE usr.ROLE_ID = @aRoleId 
 AND usr.user_id = u.user_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleDelete
 /* Deletes an role from the role table. Used by the AdminRoles servlet
@@ -3279,12 +3672,18 @@ DELETE FROM ROLES_RIGHTS WHERE ROLE_ID = @roleId
 DELETE FROM user_roles_crossref WHERE ROLE_ID =@roleId
 DELETE FROM ROLES WHERE ROLE_ID = @roleId
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleDeleteViewAffectedMetaIds
  @aRoleId int
@@ -3300,12 +3699,18 @@ WHERE ROLE_ID = @aRoleId
 --SELECT @returnVal = ISNULL(  @returnVal , -1 )
 --SELECT @returnVal AS 'FoundRoleName'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleDeleteViewAffectedUsers
  @aRoleId int
@@ -3321,12 +3726,18 @@ AND usr.user_id = u.user_id
 --GROUP BY (RTRIM(last_name) + ', ' + RTRIM(first_name)), usr.role_id
 ORDER BY (RTRIM(last_name) + ', ' + RTRIM(first_name))
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleFindName
  @newRoleName char(25)
@@ -3343,12 +3754,18 @@ WHERE r.role_name = @newRoleName
 SELECT @returnVal = ISNULL(  @returnVal , -1 )
 SELECT @returnVal AS 'FoundRoleName'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleGetAllApartFromRole @role_id int AS
 /*
@@ -3358,12 +3775,18 @@ SELECT role_id , role_name FROM ROLES
 WHERE role_id != 0 and role_id != @role_id
 ORDER BY role_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS OFF 
+GO
+
 
 CREATE PROCEDURE RoleGetConferenceAllowed
  @lang_prefix varchar(3)
@@ -3386,12 +3809,18 @@ JOIN  roles r
  --AND r.role_id = 5
 WHERE lang_prefix = @lang_prefix
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleGetName
  @roleId int
@@ -3408,12 +3837,18 @@ WHERE r.role_id = @roleId
 SELECT @returnStr = ISNULL(  @returnStr , '---' )
 SELECT @returnStr AS 'Rolename'
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleGetPermissionsByLanguage @lang_prefix varchar(3) AS
 /*select permissions by language prefix.*/
@@ -3422,12 +3857,18 @@ from roles_permissions
 where lang_prefix = @lang_prefix
 order by permission_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleGetPermissionsFromRole @role_id int, @lang_prefix varchar(3) AS
 /*
@@ -3440,12 +3881,18 @@ LEFT JOIN  roles r
      AND r.role_id = @role_id
 WHERE lang_prefix = @lang_prefix
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RolePermissionsAddNew
  @newRoleName char(25), @permissions int
@@ -3457,12 +3904,18 @@ FROM roles r
 INSERT INTO roles (  role_id , role_name, permissions )
 VALUES( @newRoleId , @newRoleName, @permissions )
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleUpdateName
 /*
@@ -3475,12 +3928,18 @@ UPDATE ROLES
 SET role_name = @newRole_name
 WHERE role_id = @role_id 
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE RoleUpdatePermissions @role_id int,  @permissions int AS
 /* update permissions for role */
@@ -3488,12 +3947,18 @@ update roles
 Set permissions = @permissions 
 where role_id = @role_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE SearchDocs
   @user_id INT,
@@ -3792,12 +4257,18 @@ DROP TABLE #keywords
 DROP TABLE #doc_types
 DROP TABLE #keywords_matched
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE ServerMasterGet AS
 DECLARE @smname VARCHAR(80)
@@ -3806,12 +4277,18 @@ SELECT @smname = value FROM sys_data WHERE type_id = 4
 SELECT @smaddress = value FROM sys_data WHERE type_id = 5
 SELECT @smname,@smaddress
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE ServerMasterSet 
 @smname VARCHAR(80), 
@@ -3819,12 +4296,18 @@ CREATE PROCEDURE ServerMasterSet
 UPDATE sys_data SET value = @smname WHERE type_id = 4
 UPDATE sys_data SET value = @smaddress WHERE type_id = 5
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE SetDocPermissionSet @meta_id INT, @set_id INT, @permission_id INT AS
 /*
@@ -3838,12 +4321,18 @@ AND  set_id = @set_id
 INSERT INTO doc_permission_sets
 VALUES (@meta_id,@set_id,@permission_id)
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE SetDocPermissionSetEx @meta_id INT, @set_id INT, @permission_id INT, @permission_data INT AS
 /*
@@ -3853,12 +4342,18 @@ CREATE PROCEDURE SetDocPermissionSetEx @meta_id INT, @set_id INT, @permission_id
 INSERT INTO doc_permission_sets_ex
 VALUES (@meta_id,@set_id,@permission_id, @permission_data)
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER ON 
 GO
+SET ANSI_NULLS OFF 
+GO
+
 
 CREATE PROCEDURE SetInclude @meta_id INT, @include_id INT, @included_meta_id INT AS
 
@@ -3869,12 +4364,18 @@ WHERE 	meta_id = @meta_id
 INSERT INTO	includes	 (meta_id, include_id, included_meta_id)
 VALUES	(@meta_id, @include_id, @included_meta_id)
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER ON 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE SetNewDocPermissionSet @meta_id INT, @set_id INT, @permission_id INT AS
 /*
@@ -3888,12 +4389,18 @@ AND  set_id = @set_id
 INSERT INTO new_doc_permission_sets
 VALUES (@meta_id,@set_id,@permission_id)
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  ON    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER ON 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE SetNewDocPermissionSetEx @meta_id INT, @set_id INT, @permission_id INT, @permission_data INT AS
 /*
@@ -3903,12 +4410,18 @@ CREATE PROCEDURE SetNewDocPermissionSetEx @meta_id INT, @set_id INT, @permission
 INSERT INTO new_doc_permission_sets_ex
 VALUES (@meta_id,@set_id,@permission_id, @permission_data)
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE SetRoleDocPermissionSetId @role_id INT, @meta_id INT, @set_id INT AS
 -- First delete the previous set_id
@@ -3922,12 +4435,18 @@ BEGIN
  VALUES ( @role_id, @meta_id, @set_id )
 END
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE SetSessionCounterDate
    @new_date varchar(20)
@@ -3938,12 +4457,18 @@ AS
  
   return
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  OFF 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS OFF 
+GO
+
 
 CREATE PROCEDURE SortOrder_GetExistingDocs 
 
@@ -3963,12 +4488,18 @@ INNER JOIN display_name display
 	AND lang.lang_prefix = @langPrefixString
 INNER JOIN sort_by sType
 	ON sType.sort_by_id = display.sort_by_id
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE SystemMessageGet AS
 /*
@@ -3978,12 +4509,18 @@ SELECT s.value
 FROM sys_data s
 WHERE s.type_id = 3
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE SystemMessageSet
 /*
@@ -3995,12 +4532,38 @@ UPDATE sys_data
 SET value = @newMsg
 WHERE type_id = 3
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS OFF 
+GO
+
+CREATE PROCEDURE [UpdateDefaultTemplates] 
+ @meta_id INT,
+ @template1 int,
+ @template2 int
+ AS
+UPDATE text_docs
+SET default_template_1= @template1,
+default_template_2=@template2 
+WHERE meta_id = @meta_id
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE [UpdateParentsDateModified] @meta_id INT AS
 UPDATE meta
@@ -4009,12 +4572,18 @@ FROM meta JOIN childs c
 ON meta.meta_id = c.meta_id 
 WHERE c.to_meta_id = @meta_id
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE UpdateTemplateTextsAndImages
 @t_id int AS
@@ -4057,12 +4626,18 @@ end
 close tmp
 deallocate tmp
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE UpdateUser
 /*
@@ -4106,12 +4681,18 @@ active = @active,
 lang_id = @lang_id
 WHERE user_id = @User_id 
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE UserPrefsChange
   @aUserId int
@@ -4125,12 +4706,18 @@ SELECT user_id, login_name,  "", "", first_name, last_name,  title, company, add
 FROM users
 WHERE user_id = @aUserId 
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE WebMasterGet AS
 DECLARE @wmname VARCHAR(80)
@@ -4139,12 +4726,18 @@ SELECT @wmname = value FROM sys_data WHERE type_id = 6
 SELECT @wmaddress = value FROM sys_data WHERE type_id = 7
 SELECT @wmname,@wmaddress
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
 GO
+SET ANSI_NULLS ON 
+GO
+
 
 CREATE PROCEDURE WebMasterSet 
 @wmname VARCHAR(80), 
@@ -4152,7 +4745,249 @@ CREATE PROCEDURE WebMasterSet
 UPDATE sys_data SET value = @wmname WHERE type_id = 6
 UPDATE sys_data SET value = @wmaddress WHERE type_id = 7
 
+
 GO
-SET QUOTED_IDENTIFIER  OFF    SET ANSI_NULLS  ON 
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE classification_convert AS
+-- Hämta alla klassificeringskoder och för över dem till nya systemet. Observera att denna inte fixar
+-- de fält som har , tecken som delimiter
+DECLARE @meta_id int
+DECLARE @class varchar(200)
+DECLARE tmpCursor CURSOR FOR
+ SELECT meta_id, classification
+ FROM meta
+ WHERE classification IS NOT NULL
+ and classification <> ''
+ and classification NOT LIKE 'META NAME%'
+ and classification NOT LIKE 'Test'
+ --AND meta_id = 1014
+OPEN tmpCursor
+FETCH NEXT FROM tmpCursor INTO @meta_id, @class
+WHILE @@fetch_status = 0 BEGIN
+ PRINT 'Class: ' + @class 
+ EXEC classification_fix @meta_id, @class 
+ FETCH NEXT FROM tmpCursor INTO @meta_id, @class
+END
+CLOSE tmpCursor
+DEALLOCATE tmpCursor
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE getBrowserDocChilds @meta_id int, @user_id int AS
+-- Lists the childs for a specific browser_doc
+SELECT DISTINCT to_meta_id,
+   meta_headline
+FROM browser_docs bd
+JOIN meta m
+      ON  bd.to_meta_id = m.meta_id
+      AND  bd.meta_id = @meta_id
+LEFT JOIN roles_rights rr
+      ON rr.meta_id = m.meta_id
+      AND rr.set_id < 4
+JOIN user_roles_crossref urc
+      ON urc.user_id = @user_id
+      AND (
+        urc.role_id = 0
+       OR urc.role_id = rr.role_id
+       OR m.shared = 1
+      )
+WHERE m.activate = 1
+ORDER BY to_meta_id
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE getDocs @user_id int, @start int, @end int AS
+-- Lists documents user is allowed to see.
+SELECT DISTINCT m.meta_id,
+   COUNT(DISTINCT c.meta_id) parentcount,
+   meta_headline,
+   doc_type
+FROM   meta m
+LEFT JOIN  childs c   ON c.to_meta_id = m.meta_id
+LEFT JOIN  roles_rights rr  ON rr.meta_id = m.meta_id
+      AND rr.set_id < 4
+JOIN   user_roles_crossref urc ON urc.user_id = @user_id
+      AND (
+        urc.role_id = 0
+       OR (
+         urc.role_id = rr.role_id
+        )
+       OR m.shared = 1
+       )
+WHERE  m.activate = 1
+  AND m.meta_id > (@start-1) 
+  AND m.meta_id < (@end+1)
+GROUP BY  m.meta_id,m.meta_headline,m.doc_type,c.to_meta_id
+ORDER BY  m.meta_id
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE getLanguages AS
+select lang_prefix,language from languages order by language
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE getMenuDocChilds @meta_id int, @user_id int AS
+-- Lists the childs of menudoc @meta_id
+SELECT DISTINCT to_meta_id,
+   meta_headline
+FROM  childs c
+JOIN  meta m
+     ON c.to_meta_id = m.meta_id
+           AND c.meta_id = @meta_id
+LEFT JOIN roles_rights rr
+     ON rr.meta_id = m.meta_id
+     AND rr.set_id < 4
+JOIN  user_roles_crossref urc
+     ON urc.user_id = @user_id
+           AND (  urc.role_id = 0
+      OR urc.role_id = rr.role_id
+      OR  m.shared = 1
+     )
+WHERE m.activate = 1
+ORDER BY to_meta_id
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE getTemplategroups AS
+select group_id,group_name from templategroups order by group_name
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE getTemplates AS
+select template_id, simple_name from templates
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE getTemplatesInGroup @grp_id INT AS
+SELECT t.template_id,simple_name
+FROM  templates t JOIN
+  templates_cref c
+ON  t.template_id = c.template_id
+WHERE c.group_id = @grp_id
+ORDER BY simple_name
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+CREATE PROCEDURE phoneNbrAdd
+/*
+This function adds a new phone numbers to the db. Used by AdminUserPhones
+*/
+ @user_id int,
+ @country varchar(15) ,
+ @area varchar(15) , 
+ @nbr varchar(15)
+AS
+DECLARE @newPhoneId int
+SELECT @newPhoneId = MAX(phone_id) + 1
+FROM phones
+IF @newPhoneId IS NULL 
+ SET @newPhoneId = 1
+INSERT INTO PHONES ( phone_id , country_code, area_code, number , user_id )
+VALUES (@newPhoneId , @country, @area,  @nbr, @user_id )  
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
 GO
 
