@@ -42,7 +42,7 @@ INSERT INTO templates_cref
  VALUES(0,1)
 
 INSERT INTO text_docs
- VALUES (1001, <? default_lang_id ?>, 0, 1, -1, -1)
+ VALUES (1001, 1, 0, 1, -1, -1)
 INSERT INTO roles_rights
  VALUES (2,1001,3)
 INSERT INTO texts
