@@ -432,12 +432,12 @@
 
 	    <!-- Copy swedish text-files -->
 	    <fileset dir="install/htdocs/sv">
-		<include name="adminuser/**"/>
-		<include name="shop/**"/>
-		<include name="poll/**"/>
-        <include name="apisamples/**"/>
-		<exclude name="**/*.gif"/>
-		<exclude name="**/*.jpg"/>
+            <include name="adminuser/**"/>
+            <include name="shop/**"/>
+            <include name="poll/**"/>
+            <include name="apisamples/**"/>
+            <exclude name="**/*.gif"/>
+            <exclude name="**/*.jpg"/>
 	    </fileset>
 	</copy>
 

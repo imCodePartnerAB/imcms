@@ -2169,7 +2169,7 @@ public abstract class DatabaseService {
     }
 
     public static class Table_templates {
-        private int template_id;
+        public int template_id;
         public String simple_name;
 
         Table_templates( ResultSet rs ) throws SQLException {
@@ -2697,8 +2697,8 @@ public abstract class DatabaseService {
     }
 
     public static class Table_templategroups {
-        int group_id;
-        String group_name;
+        public int group_id;
+        public String group_name;
 
         public Table_templategroups( ResultSet rs ) throws SQLException {
             group_id = rs.getInt( "group_id" );

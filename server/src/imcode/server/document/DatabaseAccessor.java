@@ -16,14 +16,8 @@ import java.text.SimpleDateFormat;
 /**
  *  This is the only class in this package that are allowed to call the database direct.
  */
-
+// Todo: Exchange this entire class to DatabaseService
 public class DatabaseAccessor {
-    /**
-     * Stored procedure names used in this class
-     */
-    // These are only used within this class.
-    private static final String SPROC_GET_TEMPLATES_IN_GROUP = "GetTemplatesInGroup";
-    private static final String SPROC_GET_TEMPLATE_GROUPS_FOR_USER = "GetTemplategroupsForUser";
     private static final String SPROC_GET_FILE_NAME = "GetFileName";
     private static final String SPROC_INSERT_TEXT = "InsertText";
     private static final String SPROC_UPDATE_PARENTS_DATE_MODIFIED = "UpdateParentsDateModified";
@@ -34,15 +28,9 @@ public class DatabaseAccessor {
     private static final String SPROC_GET_DOC_TYPES_WITH_PERMISSIONS = "GetDocTypesWithPermissions";
     private static final String SPROC_GET_TEMPLATE_GROUPS_WITH_PERMISSIONS = "getTemplateGroupsWithPermissions";
     private static final String SPROC_GET_TEMPLATE_ID = "GetTemplateId";
-
-    // todo make sure all the following is only used in one and only sprocMethod and nowhere else
-    // these are found to be used elseware in
     private static final String SPROC_GET_TEXT = "GetText";
     private static final String SPROC_GET_DOC_TYPES_FOR_USER = "GetDocTypesForUser";
     private final static String SPROC_GET_USER_ROLES_DOC_PERMISSONS = "GetUserRolesDocPermissions";
-    // These are not checked yet:
-    // All checked for now!
-    // Add new sprocs here.
 
     /** @return the filename for a fileupload-document, or null if the document isn't a fileupload-docuemnt. **/
     static String sprocGetFilename( IMCService service, int meta_id ) {
@@ -264,7 +252,6 @@ public class DatabaseAccessor {
         return textdoc_data;
     }
 
-    // todo make sure all following sproc and sql mehtods has "package" visability and that the callers use the "API" instead.
     public static DatabaseService.Table_section sprocSectionGetInheritId( IMCServiceInterface service, int meta_id ) {
         DatabaseService.Table_section sectionData = service.getDatabaseService().sproc_SectionGetInheritId( meta_id );
         return sectionData;
@@ -296,23 +283,6 @@ public class DatabaseAccessor {
         return vectT;
     }
 
-
-    public static Vector sprocGetTemplateGroupsForUser( DBConnect dbc, UserDomainObject user, int meta_id ) {
-        String sqlStr = SPROC_GET_TEMPLATE_GROUPS_FOR_USER;
-        String[] sqlAry2 = {String.valueOf( meta_id ), String.valueOf( user.getUserId() )};
-        dbc.setProcedure( sqlStr, sqlAry2 );
-        Vector templategroups = dbc.executeProcedure();
-        dbc.clearResultSet();
-        return templategroups;
-    }
-
-    public static Vector sprocGetTemplatesInGroup( DBConnect dbc, int selected_group ) {
-        String sqlStr = SPROC_GET_TEMPLATES_IN_GROUP;
-        dbc.setProcedure( sqlStr, String.valueOf( selected_group ) );
-        Vector templates = dbc.executeProcedure();
-        dbc.clearResultSet();
-        return templates;
-    }
 
     public static DatabaseService.Table_images[] sprocGetImgs( IMCServiceInterface service, int meta_id ) {
         // Get the images from the db

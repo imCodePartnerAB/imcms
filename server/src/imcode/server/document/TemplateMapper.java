@@ -1,7 +1,7 @@
 package imcode.server.document;
 
 import imcode.server.IMCService;
-import imcode.server.db.DBConnect;
+import imcode.server.db.*;
 import imcode.server.user.UserDomainObject;
 
 import java.util.Vector;
@@ -9,41 +9,33 @@ import java.util.Iterator;
 
 public class TemplateMapper {
 
-    private IMCService service;
+    private IMCService service; // todo: remove this.
+    private DatabaseService databaseService;
 
     public TemplateMapper( IMCService service ) {
         this.service = service;
+        databaseService = service.getDatabaseService();
     }
 
     public TemplateGroupDomainObject[] getAllTemplateGroups( UserDomainObject user, int metaId ) {
-        DBConnect dbc = new DBConnect( service.getConnectionPool() );
-        dbc.getConnection();
-        Vector sprocResult = DatabaseAccessor.sprocGetTemplateGroupsForUser( dbc, user, metaId );
-        dbc.closeConnection();
-        Iterator iter = sprocResult.iterator();
-        int noOfColumnsInResult = 2;
-        TemplateGroupDomainObject[] result = new TemplateGroupDomainObject[sprocResult.size()/noOfColumnsInResult];
-        for( int i = 0, k = 0 ; iter.hasNext() ; i=i + noOfColumnsInResult, k++ ) {
-            int id = Integer.parseInt((String)iter.next());
-            String name = (String)iter.next();
-            result[k] = new TemplateGroupDomainObject( id, name );
+        DatabaseService.Table_templategroups[] templateGroups = databaseService.sproc_GetTemplateGroupsForUser( metaId, user.getUserId() );
+        TemplateGroupDomainObject[] result = new TemplateGroupDomainObject[templateGroups.length];
+        for (int i = 0; i < templateGroups.length; i++) {
+            DatabaseService.Table_templategroups templateGroup = templateGroups[i];
+            int group_id = templateGroup.group_id;
+            String group_name = templateGroup.group_name;
+            result[i] = new TemplateGroupDomainObject( group_id, group_name );
         }
         return result;
     }
 
     public TemplateDomainObject[] getTemplates( int groupId ) {
-        DBConnect dbc = new DBConnect( service.getConnectionPool() );
-        dbc.getConnection();
-        Vector templates = DatabaseAccessor.sprocGetTemplatesInGroup( dbc, groupId );
-        dbc.closeConnection();
-        Iterator iterator = templates.iterator();
-        int noOfColumns = 2;
-        TemplateDomainObject[] result = new TemplateDomainObject[templates.size()/noOfColumns];
-        if( templates.size() > 0 ){
-            for( int k=0; iterator.hasNext(); k++ ) {
-                String templateIdStr = (String)iterator.next();
-                iterator.next(); // String templateNameStr = (String)iterator.next();
-                result[k] = getTemplate( service, Integer.parseInt(templateIdStr) );
+        DatabaseService.Table_templates[] templates = databaseService.sproc_GetTemplatesInGroup( groupId );
+        TemplateDomainObject[] result = new TemplateDomainObject[templates.length];
+        if( templates.length > 0 ) {
+            for (int i = 0; i < templates.length; i++) {
+                DatabaseService.Table_templates template = templates[i];
+                result[i] = getTemplate( service, template.template_id );
             }
         }
         return result;

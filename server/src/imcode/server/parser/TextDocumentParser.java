@@ -52,7 +52,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             READRUNNER_START_BODY_PATTERN = patComp.compile( "(<body.*?)(>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
             READRUNNER_END_BODY_PATTERN = patComp.compile( "(</body>)", Perl5Compiler.READ_ONLY_MASK | Perl5Compiler.CASE_INSENSITIVE_MASK );
 
-        } catch( MalformedPatternException ignored ) {
+        } catch (MalformedPatternException ignored) {
             // I ignore the exception because i know that these patterns work, and that the exception will never be thrown.
             log.fatal( "Danger, Will Robinson!", ignored );
         }
@@ -64,6 +64,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     private File includePath;
     private String imageUrl;
     private String servletUrl;
+    private DatabaseService databaseService;
 
     public TextDocumentParser( IMCServiceInterface serverobject, ConnectionPool connpool, File templatepath, File includepath, String imageurl, String servleturl ) {
         this.connPool = connpool;
@@ -72,13 +73,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
         this.imageUrl = imageurl;
         this.servletUrl = servleturl;
         this.serverObject = serverobject;
-    }
-
-    /*
-     return a referens to IMCServerInterface used by TextDocumentParser
-    */
-    public IMCServiceInterface getServerObject() {
-        return this.serverObject;
+        databaseService = serverobject.getDatabaseService();
     }
 
     public String parsePage( DocumentRequest documentRequest, int flags, ParserParameters paramsToParse ) throws IOException {
@@ -99,7 +94,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             String extparam_value = paramsToParse.getExternalParameter();
 
             DatabaseService.JoinedTables_permissions user_permission_set = serverObject.getDatabaseService().getUserPermissionSetForDocument( meta_id, user_id );
-            if( null == user_permission_set ) {
+            if (null == user_permission_set) {
                 log.error( "parsePage: getUserPermissionSetForDocument returned null" );
                 return ("getUserPermissionSetForDocument returned null");
             }
@@ -113,7 +108,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             boolean templatemode = false;
             boolean includemode = false;
 
-            if( flags > 0 ) {
+            if (flags > 0) {
 
                 textmode = (flags & PERM_DT_TEXT_EDIT_TEXTS) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_EDIT_TEXTS) != 0);
                 imagemode = (flags & PERM_DT_TEXT_EDIT_IMAGES) != 0 && (user_set_id == 0 || (user_perm_set & PERM_DT_TEXT_EDIT_IMAGES) != 0);
@@ -124,51 +119,35 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             DBConnect dbc = new DBConnect( connPool );
 
-            String template_id = "" + myDoc.getTemplate().getId();
+            String templateIdStr = "" + myDoc.getTemplate().getId();
+            int currentTemplateId = Integer.parseInt( templateIdStr );
             String simple_name = myDoc.getTemplate().getSimple_name();
             int sort_order = myDoc.getMenuSortOrder();
             String group_id = "" + myDoc.getTemplateGroupId();
 
-            if( template_name != null ) {
+            if (template_name != null) {
                 //lets validate that the template exists before we changes the original one
                 Vector vectT = DatabaseAccessor.sprocGetTemplateId( dbc, template_name );
-                if( vectT.size() > 0 ) {
+                if (vectT.size() > 0) {
                     try {
-                        int temp_template = Integer.parseInt( (String)vectT.get( 0 ) );
-                        if( temp_template > 0 ) {
-                            template_id = temp_template + "";
-                            documentRequest.getDocument().setTemplate( TemplateMapper.getTemplate( (IMCService)serverObject, Integer.parseInt(template_id) ) );
+                        int temp_template = Integer.parseInt( (String) vectT.get( 0 ) );
+                        if (temp_template > 0) {
+                            templateIdStr = temp_template + "";
+                            documentRequest.getDocument().setTemplate( TemplateMapper.getTemplate( (IMCService) serverObject, Integer.parseInt( templateIdStr ) ) );
                         }
-                    } catch( NumberFormatException nfe ) {
+                    } catch (NumberFormatException nfe) {
                         //do nothing, we keep the original template
                     }
                 }
             }
 
-            Vector templategroups = null;
-            Vector templates = null;
-            Vector groupnamevec = null;
-
-            int selected_group = user.getTemplateGroup();
-            if( templatemode ) {
-                templategroups = DatabaseAccessor.sprocGetTemplateGroupsForUser( dbc, user, meta_id );
-                // do templatemode queries
-
-                if( selected_group == -1 ) {
-                    selected_group = Integer.parseInt( group_id );
-                }
-
-                templates = DatabaseAccessor.sprocGetTemplatesInGroup( dbc, selected_group );
-                groupnamevec = DatabaseAccessor.sqlSelectGroupName( dbc, group_id );
-            }
-
-            String[] emp = (String[])user.get( "emphasize" );
+            String[] emp = (String[]) user.get( "emphasize" );
 
             // Here we have the most timeconsuming part of parsing the page.
             // Selecting all the documents with permissions from the DB
             DatabaseService.JoinedTables_meta_childs[] childs = serverObject.getDatabaseService().sproc_getChilds( meta_id, user_id );
 
-            if( childs == null ) {
+            if (childs == null) {
                 dbc.closeConnection();
                 log.error( "parsePage: sprocGetChilds returned null" );
                 return ("sprocGetChilds returned null");
@@ -177,7 +156,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             dbc.clearResultSet();
 
             DatabaseService.Table_images[] images = DatabaseAccessor.sprocGetImgs( serverObject, meta_id );
-            if( images == null ) {
+            if (images == null) {
                 dbc.closeConnection();
                 log.error( "parsePage: sprocGetImgs returned null" );
                 return ("sprocGetImgs returned null");
@@ -196,11 +175,11 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             Map textMap = serverObject.getTexts( meta_id );
             HashMap imageMap = new HashMap();
 
-            Iterator imit = Arrays.asList(images).iterator();
+            Iterator imit = Arrays.asList( images ).iterator();
             // This is where we gather all images from the database and put them in our maps.
-            while( imit.hasNext() ) {
-                DatabaseService.Table_images image = (DatabaseService.Table_images)imit.next(); // String imgtag = (String)imit.next();
-                int imgnumber = image.name ;
+            while (imit.hasNext()) {
+                DatabaseService.Table_images image = (DatabaseService.Table_images) imit.next(); // String imgtag = (String)imit.next();
+                int imgnumber = image.name;
                 String imgurl = image.imgurl;
                 String linkurl = image.linkurl;
                 int width = image.width;
@@ -215,50 +194,50 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 String target = image.target;
                 String target_name = image.target_name;
                 StringBuffer value = new StringBuffer( 96 );
-                if( !"".equals( imgurl ) ) {
-                    if( !"".equals( linkurl ) ) {
+                if (!"".equals( imgurl )) {
+                    if (!"".equals( linkurl )) {
                         value.append( "<a href=\"" + linkurl + "\"" );
-                        if( target.equals( "_other" ) ) {
+                        if (target.equals( "_other" )) {
                             value.append( " target=\"" + target_name + "\">" );
-                        } else if( !"".equals( target ) ) {
+                        } else if (!"".equals( target )) {
                             value.append( " target=\"" + target + "\">" );
                         }
                     }
 
                     value.append( "<img src=\"" + imageUrl + imgurl + "\"" ); // FIXME: Get imageurl from webserver somehow. The user-object, perhaps?
-                    if( 0 != width ) {
+                    if (0 != width) {
                         value.append( " width=\"" + width + "\"" );
                     }
-                    if( 0 != height ) {
+                    if (0 != height) {
                         value.append( " height=\"" + height + "\"" );
                     }
                     value.append( " border=\"" + border + "\"" );
 
-                    if( 0 != vspace ) {
+                    if (0 != vspace) {
                         value.append( " vspace=\"" + vspace + "\"" );
                     }
-                    if( 0 != hspace ) {
+                    if (0 != hspace) {
                         value.append( " hspace=\"" + hspace + "\"" );
                     }
-                    if( !"".equals( image_name ) ) {
+                    if (!"".equals( image_name )) {
                         value.append( " name=\"" + image_name + "\"" );
                     }
-                    if( !"".equals( alt ) ) {
+                    if (!"".equals( alt )) {
                         value.append( " alt=\"" + alt + "\"" );
                     }
-                    if( !"".equals( lowscr ) ) {
+                    if (!"".equals( lowscr )) {
                         value.append( " lowscr=\"" + lowscr + "\"" );
                     }
-                    if( !"".equals( align ) && !"none".equals( align ) ) {
+                    if (!"".equals( align ) && !"none".equals( align )) {
                         value.append( " align=\"" + align + "\"" );
                     }
-                    if( !"".equals( linkurl ) || imagemode ) {
+                    if (!"".equals( linkurl ) || imagemode) {
                         value.append( "></a>" );
                     } else {
                         value.append( ">" );
                     }
                 }
-                imageMap.put( ""+imgnumber, value.toString() );
+                imageMap.put( "" + imgnumber, value.toString() );
             }
 
             /*
@@ -273,7 +252,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             int old_menu = -1;
             SimpleDateFormat DATETIMEFORMAT = DateHelper.DATE_TIME_FORMAT_IN_DATABASE;
 
-            for( int i = 0; i < childs.length; i++ ) {
+            for (int i = 0; i < childs.length; i++) {
                 DatabaseService.JoinedTables_meta_childs child = childs[i];
                 // The menuitemproperties are retrieved in the following order:
                 // to_meta_id,
@@ -294,7 +273,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 // filename
                 int childMetaId = child.to_meta_id;
                 int menuno = child.menu_sort;              // What menu in the page the child is in.
-                if( menuno != old_menu ) {	               // If we come upon a new menu...
+                if (menuno != old_menu) {	               // If we come upon a new menu...
                     old_menu = menuno;
                     currentMenu = new Menu( menuno, sort_order, menumode, imageUrl );	     // We make a new Menu,
                     menus.put( new Integer( menuno ), currentMenu );		     // and add it to the page.
@@ -312,10 +291,10 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 menuItem.setImage( child.meta_image );                          // An optional imageurl for this document.
                 menuItem.setActivatedDatetime( child.activated_datetime ); // The datetime the child will be/was activated
                 menuItem.setArchivedDatetime( child.archived_datetime ); // The datetime the child will be/was archived
-                menuItem.setEditable( serverObject.checkDocAdminRightsAny(meta_id,user,~0));           // if the user may admin it.
+                menuItem.setEditable( serverObject.checkDocAdminRightsAny( meta_id, user, ~0 ) );           // if the user may admin it.
                 menuItem.setFilename( child.filename );                       // The filename, if it is a file-doc.
 
-                if( (!menuItem.isActive() || menuItem.isArchived()) && !menumode ) { // if not menumode, and document is inactive or archived, don't include it.
+                if ((!menuItem.isActive() || menuItem.isArchived()) && !menumode) { // if not menumode, and document is inactive or archived, don't include it.
                     continue;
                 }
 
@@ -340,7 +319,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#metaHeadline#", myDoc.getHeadline() );
 
             String meta_image = myDoc.getImage();
-            if( !"".equals( meta_image ) ) {
+            if (!"".equals( meta_image )) {
                 meta_image = "<img src=\"" + meta_image + "\" border=\"0\">";
             }
             tags.setProperty( "#metaImage#", meta_image );
@@ -361,28 +340,38 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             tags.setProperty( "#readrunner_quote_substitution_count#", "#readrunner_quote_substitution_count#" );
 
             // Give the user a row of buttons if he is privileged enough.
-            if( (serverObject.checkDocAdminRights( meta_id, user ) || serverObject.checkUserAdminrole( user.getUserId(), 2 )) && flags >= 0 ) {
+            if ((serverObject.checkDocAdminRights( meta_id, user ) || serverObject.checkUserAdminrole( user.getUserId(), 2 )) && flags >= 0) {
                 tags.setProperty( "#adminMode#", serverObject.getMenuButtons( meta_id, user ) );
             }
 
-            if( templatemode ) {	//Templatemode! :)
+            if (templatemode) {	//Templatemode! :)
+
+                Vector groupnamevec = null;
+
+                groupnamevec = DatabaseAccessor.sqlSelectGroupName( dbc, group_id );
 
                 String group_name;
-                if( !groupnamevec.isEmpty() ) {
-                    group_name = (String)groupnamevec.elementAt( 0 );
+                if (!groupnamevec.isEmpty()) {
+                    group_name = (String) groupnamevec.elementAt( 0 );
                 } else {
                     group_name = "";
                 }
 
-                StringBuffer templatelist = new StringBuffer();
                 // Make a HTML option-list of them...
-                while( !templates.isEmpty() ) {
-                    String temp_id = (String)templates.remove( 0 );
-                    templatelist.append( "<option value=\"" + temp_id );
-                    if( temp_id.equals( template_id ) ) {
-                        templatelist.append( "\" selected>" + templates.remove( 0 ) + "</option>" );
+                int selected_group = user.getTemplateGroup();
+                if (selected_group == -1) {
+                    selected_group = Integer.parseInt( group_id );
+                }
+                DatabaseService.Table_templates[] templates = databaseService.sproc_GetTemplatesInGroup( selected_group );
+
+                StringBuffer templatelist = new StringBuffer();
+                for (int i = 0; i < templates.length; i++) {
+                    DatabaseService.Table_templates template = templates[i];
+                    templatelist.append( "<option value=\"" + template.template_id );
+                    if ( currentTemplateId == template.template_id ) {
+                        templatelist.append( "\" selected>" + template.simple_name + "</option>" );
                     } else {
-                        templatelist.append( "\">" + templates.remove( 0 ) + "</option>" );
+                        templatelist.append( "\">" + template.simple_name + "</option>" );
                     }
                 }
 
@@ -390,13 +379,14 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 StringBuffer grouplist = new StringBuffer();
 
                 // Make a HTML option-list of the templategroups
-                while( !templategroups.isEmpty() ) {
-                    String temp_id = (String)templategroups.remove( 0 );
-                    grouplist.append( "<option value=\"" + temp_id );
-                    if( selected_group == Integer.parseInt( temp_id ) ) {
-                        grouplist.append( "\" selected>" + templategroups.remove( 0 ) + "</option>" );
+                DatabaseService.Table_templategroups[] templateGroups = databaseService.sproc_GetTemplateGroupsForUser( meta_id, user.getUserId() );
+                for (int i = 0; i < templateGroups.length; i++) {
+                    DatabaseService.Table_templategroups templateGroup = templateGroups[i];
+                    grouplist.append( "<option value=\"" + templateGroup.group_id );
+                    if (selected_group == templateGroup.group_id ) {
+                        grouplist.append( "\" selected>" + templateGroup.group_name + "</option>" );
                     } else {
-                        grouplist.append( "\">" + templategroups.remove( 0 ) + "</option>" );
+                        grouplist.append( "\">" + templateGroup.group_name + "</option>" );
                     }
                 }
 
@@ -413,7 +403,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             temptags.setProperty( "#servlet_url#", servletUrl );
 
-            if( menumode ) {
+            if (menumode) {
                 DatabaseService.Table_doc_types[] docTypes = null;
 
                 // I'll retrieve a list of all doc-types the user may create.
@@ -425,7 +415,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
                 for (int i = 0; i < docTypes.length; i++) {
                     DatabaseService.Table_doc_types docType = docTypes[i];
-                    String dt = ""+docType.doc_type;
+                    String dt = "" + docType.doc_type;
                     String dtt = docType.type;
                     doc_types_sb.append( "<option value=\"" );
                     doc_types_sb.append( dt );
@@ -440,7 +430,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
                 existing_doc_name = fileCache.getCachedFileString( new File( existing_doc_filename ) );
 
-                if( docTypes != null && docTypes.length > 0 ) {
+                if (docTypes != null && docTypes.length > 0) {
                     doc_types_sb.append( "<option value=\"0\">" + existing_doc_name + "</option>" );
                 }
 
@@ -466,9 +456,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             try {
                 StringBuffer templatebuffer = new StringBuffer();
                 Enumeration propenum = toload.propertyNames();
-                while( propenum.hasMoreElements() ) {
+                while (propenum.hasMoreElements()) {
 
-                    String filetag = (String)propenum.nextElement();
+                    String filetag = (String) propenum.nextElement();
                     String templatebufferfilename = toload.getProperty( filetag );
                     String templatebufferstring = fileCache.getCachedFileString( new File( templatebufferfilename ) );
                     // Humm... Now we must replace the tags in the loaded files too.
@@ -477,12 +467,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                     tags.setProperty( filetag, templatebufferstring );
                     templatebuffer.setLength( 0 );
                 }
-            } catch( IOException e ) {
+            } catch (IOException e) {
                 log.error( "An error occurred reading file during parsing.", e );
                 return ("Error occurred reading file during parsing.\n" + e);
             }
 
-            if( menumode ) {	//Menumode! :)
+            if (menumode) {	//Menumode! :)
 
                 // Make a Properties of all tags that contain numbers, and what the number is supposed to replace
                 // in the tag's corresponding data
@@ -502,7 +492,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             // Now... let's load the template!
             // Get templatedir and read the file.
-            StringBuffer templatebuffer = new StringBuffer( fileCache.getCachedFileString( new File( templatePath, "text/" + template_id + ".html" ) ) );
+            StringBuffer templatebuffer = new StringBuffer( fileCache.getCachedFileString( new File( templatePath, "text/" + templateIdStr + ".html" ) ) );
 
             // Check file for tags
             String template = templatebuffer.toString();
@@ -522,17 +512,17 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
             // Well. Here we have it. The main parseloop.
             // The Inner Sanctum of imCMS. Have fun.
-            while( pit.hasNext() ) {
+            while (pit.hasNext()) {
                 // So, let's jump in and out of blocks delimited by <!--IMSCRIPT--> and <!--/IMSCRIPT-->
-                String nextbit = (String)pit.next();
-                if( nextbit.equals( "<!--/IMSCRIPT-->" ) ) { // We matched <!--/IMSCRIPT-->
+                String nextbit = (String) pit.next();
+                if (nextbit.equals( "<!--/IMSCRIPT-->" )) { // We matched <!--/IMSCRIPT-->
                     parsing = false;       // So, we're not parsing.
                     continue;
-                } else if( nextbit.equals( "<!--IMSCRIPT-->" ) ) { // We matched <!--IMSCRIPT-->
+                } else if (nextbit.equals( "<!--IMSCRIPT-->" )) { // We matched <!--IMSCRIPT-->
                     parsing = true;              // So let's get to parsing.
                     continue;
                 }
-                if( !parsing ) {
+                if (!parsing) {
                     result.append( nextbit );
                     continue;
                 }
@@ -557,7 +547,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
             int readrunnerQuoteSubstitutionCount = readrunnerFilter.getReadrunnerQuoteSubstitutionCount();
             String returnresult = result.toString();
 
-            if( readrunnerQuoteSubstitutionCount > 0 ) {
+            if (readrunnerQuoteSubstitutionCount > 0) {
                 // We found a couple of readrunner-text-tags, and did a few substitutions
 
                 Vector readrunnerSubstitutionCountVector = new Vector();
@@ -606,14 +596,14 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
               First, i'll split the html (returnresult) on html-tags, and then go through every non-tag part and parse it for keywords to emphasize,
               and then i'll puzzle it together again. Whe-hey. This will be fun. Not to mention fast. Oh yes, siree.
             */
-            if( emp != null ) { // If we have something to emphasize...
+            if (emp != null) { // If we have something to emphasize...
                 StringBuffer emphasized_result = new StringBuffer( returnresult.length() ); // A StringBuffer to hold the result
                 PatternMatcherInput emp_input = new PatternMatcherInput( returnresult );    // A PatternMatcherInput to match on
                 int last_html_offset = 0;
                 int current_html_offset = 0;
                 String non_html_tag_string = null;
                 String html_tag_string = null;
-                while( patMat.contains( emp_input, HTML_TAG_PATTERN ) ) {
+                while (patMat.contains( emp_input, HTML_TAG_PATTERN )) {
                     current_html_offset = emp_input.getMatchBeginOffset();
                     non_html_tag_string = result.substring( last_html_offset, current_html_offset );
                     last_html_offset = emp_input.getMatchEndOffset();
@@ -629,7 +619,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
                 returnresult = emphasized_result.toString();
             }
             return returnresult;
-        } catch( RuntimeException ex ) {
+        } catch (RuntimeException ex) {
             log.error( "Error occurred during parsing.", ex );
             return ex.toString();
         }
@@ -639,12 +629,12 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
         Perl5Compiler empCompiler = new Perl5Compiler();
         // for each string to emphasize
-        for( int i = 0; i < emp.length; ++i ) {
+        for (int i = 0; i < emp.length; ++i) {
             try {
                 Pattern empPattern = empCompiler.compile( "(" + Perl5Compiler.quotemeta( emp[i] ) + ")", Perl5Compiler.CASE_INSENSITIVE_MASK );
                 str = org.apache.oro.text.regex.Util.substitute( // Threadsafe
-                    patMat, empPattern, emphasize_substitution, str, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
-            } catch( MalformedPatternException ex ) {
+                        patMat, empPattern, emphasize_substitution, str, org.apache.oro.text.regex.Util.SUBSTITUTE_ALL );
+            } catch (MalformedPatternException ex) {
                 log.warn( "Dynamic Pattern-compilation failed in IMCService.emphasizeString(). Suspected bug in jakarta-oro Perl5Compiler.quotemeta(). The String was '" + emp[i] + "'", ex );
             }
         }
@@ -654,9 +644,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     private String escapeSubstitution( String substitution ) {
         StringBuffer result = new StringBuffer();
 
-        for( int i = 0; i < substitution.length(); ++i ) {
+        for (int i = 0; i < substitution.length(); ++i) {
             char c = substitution.charAt( i );
-            switch( c ) {
+            switch (c) {
                 case '\\':
                 case '$':
                     result.append( '\\' );
