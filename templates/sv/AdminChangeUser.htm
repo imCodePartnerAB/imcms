@@ -69,7 +69,7 @@ function openHelp(id){
 	  <form method="post" action="AdminUser" name="user_categoriesForm">
 		<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Anv&auml;ndarkategori: 
 		<br>
-		<select name="user_categories" style="WIDTH: 200px">
+		<select name="user_categories"  style="WIDTH: 200px">
 			<option value="All_Choice" selected>-- Alla kategorier --</option>	
            #USER_TYPES#
           
@@ -80,7 +80,7 @@ function openHelp(id){
 		<br><br>
 		<input type="checkbox" name="showall" value="0">Visa &auml;ven EJ aktiva anv&auml;ndare.
 		<br><br>
-		<input type="submit" name="showUsers" value="Visa anv&auml;ndare" onClick="if(evalShowUser()==false) return false; return true;">
+		<input type="submit" name="showUsers" value="Visa anv&auml;ndare" onClick="if(!evalShowUser()) return false;">
 		</font> 
 	  </form>
 	</td>
@@ -106,7 +106,7 @@ function openHelp(id){
 		<br>
 		<br>
 		<input type="submit" name="ADD_USER" value="L&auml;gg till">
-		<input type="submit" name="CHANGE_USER" value="Redigera " onClick="if(evalEditUser()==false)return false; return true;">
+		<input type="submit" name="CHANGE_USER" value="Redigera " onClick="if( !evalEditUser() ) return false;">
 		<input type="submit" name="GO_BACK" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=38" target="_blank" onClick="openHelp('38'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	  </form>
 	  &nbsp; <font size="2"> </font> </td>

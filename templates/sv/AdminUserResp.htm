@@ -1,9 +1,10 @@
-
 <html>
+<!-- template: AdminUserResp.htm  -->
 <head>
 <title>Lägg till/redigera användare</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<script language=javascript><!--
+<script language=javascript>
+<!--
 function evalPrepareAdd() {
 	// Lets check that those fields which are mandatory
 	var valFieldsOk = true;
@@ -51,12 +52,15 @@ function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 
+
 function activateUseradmin_roles(){
-	var list = document.forms[0].roles;
-	document.forms[0].useradmin_roles.disabled = true;
-	for ( i = 0 ; i < list.length ; i++ ){
-		if ( list.options[i].text == "Useradmin"  && list.options[i].selected ){
-			document.forms[0].useradmin_roles.disabled = false;
+	if ( document.forms[0].useradmin_roles ){
+		var list = document.forms[0].roles;
+		document.forms[0].useradmin_roles.disabled = true;
+		for ( i = 0 ; i < list.length ; i++ ){
+			if ( list.options[i].text == "Useradmin"  && list.options[i].selected ){
+				document.forms[0].useradmin_roles.disabled = false;
+			}
 		}
 	}
 }
@@ -235,7 +239,7 @@ function activateUseradmin_roles(){
 <tr>
 	<td>&nbsp;</td>
 	<td colspan="3">
-	<input type="submit" name="SAVE_USER" value="Spara" onClick="if(evalPrepareAdd()==false)return false; return true;">
+	<input type="submit" name="SAVE_USER" value="Spara" onClick="if( !evalPrepareAdd() ) return false;">
 	<input type="submit" name="RESET_FORM" value="Återställ">
 	<input type="submit" name="CANCEL" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=71" target="_blank" onClick="openHelp('71'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
 	<td>&nbsp;</td>

@@ -82,8 +82,9 @@ public class AdminUser extends Administrator
 	Vector userTypesV  = new Vector(java.util.Arrays.asList(userTypes)) ;
 	String user_type = ht.createHtmlCode("ID_OPTION", category, userTypesV ) ;
 	vm.addProperty("USER_TYPES", user_type  ) ;
+	
+	
 	String show = ( "null".equals(req.getParameter("showall"))) ? "1" : "0" ;
-
 
 	// Lets get all USERS from DB with firstname or lastname or login name like the searchString
 	String param = category + ", " + searchString + ", " + user.getUserId() + ", " + show ;
