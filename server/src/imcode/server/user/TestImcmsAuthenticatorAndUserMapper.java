@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import com.imcode.imcms.api.*;
 
-public class TestImcmsAuthenticatorAndUserMapper extends UserBaseTestCase {
+public class TestImcmsAuthenticatorAndUserMapper extends TestUserBaseTestCase {
    private ImcmsAuthenticatorAndUserMapper imcmsAAUM;
    private MockIMCServiceInterface mockImcmsService;
 

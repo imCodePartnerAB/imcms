@@ -1,6 +1,6 @@
 INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(0, 0, '1001');
 INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(1, 1, '0');
-INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(2, 2, CAST(CURRENT_TIMESTAMP AS CHAR(80)));
+INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(8, 2, CAST(CURRENT_TIMESTAMP AS CHAR(80)));
 INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(3, 3, '');
 INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(4, 4, '@servermaster-name@');
 INSERT INTO sys_data (sys_id, type_id, sysdata_value) VALUES(5, 5, '@servermaster-email@');

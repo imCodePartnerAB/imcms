@@ -3,7 +3,7 @@ package imcode.server.user;
 import java.util.Arrays;
 
 
-public class TestLdapUserMapper extends UserBaseTestCase {
+public class TestLdapUserMapper extends TestUserBaseTestCase {
    private LdapUserAndRoleMapper ldapUserMapper;
 
    public void setUp() {

@@ -2,19 +2,14 @@ package imcode.server.db;
 
 public class TestDatabaseService_NoneModifyingTests extends TestDatabaseService {
 
-    DatabaseService sqlServer;
-    DatabaseService mimer;
-
     public static void main( String[] args ) throws Exception {
-        initDatabases();
+        TestDatabaseService_NoneModifyingTests testClass = new TestDatabaseService_NoneModifyingTests();
+        testClass.initAllDatabases();
     }
 
     protected void setUp() throws Exception {
-        if( sqlServer == null ) {
-            sqlServer = new DatabaseService( DatabaseService.SQL_SERVER, DB_HOST, SQL_SERVER_PORT, SQLSERVER_DATABASE_NAME, SQLSERVE_DATABASE_USER, SQLSERVE_DATABASE_PASSWORD );
-        }
-        if( mimer == null ) {
-            mimer = new DatabaseService( DatabaseService.MIMER, DB_HOST, MIMER_PORT, MIMMER_DATABASE_NAME, MIMMER_DATABASE_USER, MIMMER_DATABASE_PASSWORD );
+        if( sqlServer == null && mimer == null ) {
+            initAllDatabases();
         }
     }
 
@@ -38,7 +33,7 @@ public class TestDatabaseService_NoneModifyingTests extends TestDatabaseService 
     }
 
     public void testSameResultFromSprocGetAllRoles() {
-        static_assertEquals( sqlServer.sproc_getallroles(), mimer.sproc_getallroles() );
+        static_assertEquals( sqlServer.sprocGetAllRoles(), mimer.sprocGetAllRoles() );
     }
 
     public void testSameResultFromSprocGetAllUsers() {

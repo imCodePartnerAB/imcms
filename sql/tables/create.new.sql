@@ -3,7 +3,7 @@ CREATE TABLE meta (
 	description varchar (80) NOT NULL ,
 	doc_type int NOT NULL ,
 	meta_headline varchar (255) NOT NULL ,
-	meta_text varchar (1000) NOT NULL ,
+	meta_text varchar (255) NOT NULL ,
 	meta_image varchar (255) NOT NULL ,
 	owner_id int NOT NULL ,
 	permissions int NOT NULL ,
@@ -198,7 +198,7 @@ CREATE TABLE user_flags (
 	user_flag_id int NOT NULL ,
 	name varchar (64) NOT NULL ,
 	type int NOT NULL ,
-	description varchar (256) NOT NULL ,
+	description varchar (255) NOT NULL ,
 	PRIMARY KEY (user_flag_id)
 );
 
@@ -271,7 +271,7 @@ CREATE TABLE doc_permission_sets_ex (
 
 CREATE TABLE frameset_docs (
 	meta_id int NOT NULL ,
-	frame_set varchar(8000) ,
+	frame_set varchar(255) ,
 	PRIMARY KEY (meta_id) ,
 	FOREIGN KEY (meta_id) REFERENCES meta (meta_id)
 );
@@ -397,7 +397,7 @@ CREATE TABLE text_docs (
 CREATE TABLE texts (
 	meta_id int NOT NULL ,
 	name int NOT NULL ,
-	text varchar(8000) NOT NULL ,
+	text varchar(255) NOT NULL ,
 	type int ,
 	counter int NOT NULL ,
 	PRIMARY KEY (counter) ,

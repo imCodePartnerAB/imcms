@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import java.util.Vector;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import java.sql.SQLException;
 import java.sql.ResultSet;
@@ -16,12 +18,10 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-import imcode.server.user.UserDomainObject;
-
 public class DatabaseService {
     final static int MIMER = 0;
     final static int SQL_SERVER = 1;
-    //final static int MY_SQL = 2;
+    final static int MY_SQL = 2;
 
     private static final char END_OF_COMMAND = ';';
     private final static String FILE_PATH = "E:/backuppas/projekt/imcode2003/imCMS/1.3/sql/";
@@ -33,33 +33,37 @@ public class DatabaseService {
     private static String SQL92_TYPE_TIMESTAMP = "timestamp";
     private static String SQL_SERVER_TIMESTAMP_TYPE = "datetime";
 
-    public static void main( String[] args ) throws Exception {
-    }
-
     private static Logger log = Logger.getLogger( DatabaseService.class );
 
     private ConnectionPool connectionPool;
     private SQLProcessor sqlProcessor = new SQLProcessor();
     private int databaseType;
 
-    public DatabaseService( int databaseType, String host, int port, String databaseName, String user, String password ) {
+    public DatabaseService( int databaseType, String hostName, int port, String databaseName, String user, String password ) {
         this.databaseType = databaseType;
         String serverUrl = null;
         String jdbcDriver = null;
         String serverName = null;
 
+        String jdbcUrl;
         switch( databaseType ) {
             case MIMER:
                 jdbcDriver = "com.mimer.jdbc.Driver";
-                String jdbcUrl = "jdbc:mimer://";
-                serverUrl = jdbcUrl + host + ":" + port + "/" + databaseName;
+                jdbcUrl = "jdbc:mimer://";
+                serverUrl = jdbcUrl + hostName + ":" + port + "/" + databaseName;
                 serverName = "Mimer test server";
                 break;
             case SQL_SERVER:
                 jdbcDriver = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
-                String jdbcUrl1 = "jdbc:microsoft:sqlserver://";
-                serverUrl = jdbcUrl1 + host + ":" + port + ";DatabaseName=" + databaseName;
+                jdbcUrl = "jdbc:microsoft:sqlserver://";
+                serverUrl = jdbcUrl + hostName + ":" + port + ";DatabaseName=" + databaseName;
                 serverName = "SQL Server test server";
+                break;
+            case MY_SQL:
+                jdbcDriver = "com.mysql.jdbc.Driver";
+                jdbcUrl = "jdbc:mysql://";
+                serverUrl = jdbcUrl + hostName + ":" + port + "/" + databaseName;
+                serverName = "MySql test server";
                 break;
         }
 
@@ -67,32 +71,62 @@ public class DatabaseService {
         try {
             connectionPool = new ConnectionPoolForNonPoolingDriver( serverName, jdbcDriver, serverUrl, user, password, maxConnectionCount );
         } catch( Exception ex ) {
-            log.fatal( "Couldn't initialize connection pool", ex );
+            log.fatal( "Couldn't initialize connection pool: serverName :' " + serverName + "', jdbcDriver : '" + jdbcDriver + "', serverUrl : " + serverUrl + "', user : '" + user + "', password :' " + password + "'"  );
+            log.fatal( ex );
         }
     }
 
     void initializeDatabase() throws Exception {
-        executeCommandsFromFile( DROP_TABLES );
-        executeCommandsFromFile( CREATE_TABLES );
-        executeCommandsFromFile( ADD_TYPE_DATA );
-        executeCommandsFromFile( INSERT_NEW_DATA );
+        Vector commands = readCommandsFromFile( DROP_TABLES );
+        executeCommands( commands );
+        log.info( "Dropped tables" );
+
+        commands = readCommandsFromFile( CREATE_TABLES );
+        switch( databaseType ) {
+            case SQL_SERVER :
+            case MY_SQL:
+                commands = changeTimestampToDateTimeType( commands );
+                break;
+        }
+        executeCommands( commands );
+        log.info( "Created tables" );
+
+        commands = readCommandsFromFile( ADD_TYPE_DATA );
+        executeCommands( commands );
+        log.info( "Added type data" );
+
+        commands = readCommandsFromFile( INSERT_NEW_DATA );
+        switch( databaseType ) {
+            case MY_SQL:
+                commands = changeCharInCurrentTimestampCast( commands );
+                break;
+        }
+        executeCommands( commands );
+        log.info( "Inserted data, finished!" );
     }
 
-    private void executeCommandsFromFile( String fileName ) throws Exception {
-        Vector commands = readCommandsFromFile( fileName );
+    private Vector changeCharInCurrentTimestampCast( Vector commands ) {
+        Vector modifiedCommands = new Vector();
+        // CAST(CURRENT_TIMESTAMP AS CHAR(80)) is changed to CAST(CURRENT_TIMESTAMP AS CHAR)"
+        String patternStr = "CAST *\\( *CURRENT_TIMESTAMP *AS *CHAR *\\( *[0-9]+ *\\) *\\)";
+        String replacementStr = "CAST(CURRENT_TIMESTAMP AS CHAR)";
+        Pattern pattern = Pattern.compile(patternStr, Pattern.CASE_INSENSITIVE);
 
-        if( databaseType == SQL_SERVER ) {
-            commands = changeSQLSpecificDateTimeDataType( commands );
+        for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
+            String command = (String)iterator.next();
+            Matcher matcher = pattern.matcher(command);
+            String modifiedCommand = matcher.replaceAll(replacementStr);
+            modifiedCommands.add( modifiedCommand );
         }
 
-        executeCommands( commands );
+        return modifiedCommands;
     }
 
-    private Vector changeSQLSpecificDateTimeDataType( Vector commands ) {
+    private Vector changeTimestampToDateTimeType( Vector commands ) {
         Vector modifiedCommands = new Vector();
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
-            String modifiedCommand = static_changeSQLServerTimestampType( command );
+            String modifiedCommand = command.replaceAll( SQL92_TYPE_TIMESTAMP, SQL_SERVER_TIMESTAMP_TYPE );
             modifiedCommands.add( modifiedCommand );
         }
         return modifiedCommands;
@@ -102,7 +136,7 @@ public class DatabaseService {
         Connection conn = connectionPool.getConnection();
         for( Iterator iterator = commands.iterator(); iterator.hasNext(); ) {
             String command = (String)iterator.next();
-            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
+//            System.out.println( command.length() < 25 ? command : command.substring( 0, 25 ) );
             sqlProcessor.executeUpdate( conn, command, null );
         }
 
@@ -134,14 +168,6 @@ public class DatabaseService {
         } while( null != aLine );
         return commands;
     }
-
-
-
-    private static String static_changeSQLServerTimestampType( String createCommand ) {
-        String result = createCommand.replaceAll( SQL92_TYPE_TIMESTAMP, SQL_SERVER_TIMESTAMP_TYPE );
-        return result;
-    }
-
 
     private abstract class ResultProcessor {
         abstract Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException;
@@ -191,30 +217,22 @@ public class DatabaseService {
         }
     }
 
-    class TableRole {
+    class Table_roles {
         private int id;
         private String name;
 
-        public TableRole( int id, String name ) {
+        public Table_roles( int id, String name ) {
             this.id = id;
             this.name = name;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
         }
 
         public boolean equals( Object o ) {
             if( this == o )
                 return true;
-            if( !(o instanceof TableRole) )
+            if( !(o instanceof Table_roles) )
                 return false;
 
-            final TableRole roleTableData = (TableRole)o;
+            final Table_roles roleTableData = (Table_roles)o;
 
             if( id != roleTableData.id )
                 return false;
@@ -230,7 +248,7 @@ public class DatabaseService {
      */
     // todo: rename to getallroles _but_ user
     // todo: user RoleDomainObject or create one if it dosn't exist
-    public TableRole[] sproc_getallroles() {
+    public Table_roles[] sprocGetAllRoles() {
         String sql = "SELECT role_id, role_name FROM roles ORDER BY role_name";
         Object[] paramValues = null;
 
@@ -239,20 +257,20 @@ public class DatabaseService {
                 int id = rs.getInt( "role_id" );
                 String name = rs.getString( "role_name" );
 
-                TableRole result = null;
+                Table_roles result = null;
                 if( !name.equalsIgnoreCase( "users" ) ) { // all roles but user should be mapped.
-                    result = new TableRole( id, name );
+                    result = new Table_roles( id, name );
                 }
                 return result;
             }
         };
 
         ArrayList result = executeQuery( sql, paramValues, resultProcessor );
-        return (TableRole[])result.toArray( new TableRole[result.size()] );
+        return (Table_roles[])result.toArray( new Table_roles[result.size()] );
     }
 
-    class TableUsers {
-        public TableUsers( int userId, String loginName, String password, String firstName, String lastName, String title, String company, String address, String city, String zip, String country, String county_council, String emailAddress, int external, int lastPage, int archiveMode, int langId, int userType, int active, Timestamp createDate ) {
+    static class Table_users {
+        public Table_users( int userId, String loginName, String password, String firstName, String lastName, String title, String company, String address, String city, String zip, String country, String county_council, String emailAddress, int external, int lastPage, int archiveMode, int langId, int userType, int active, Timestamp createDate ) {
             this.userId = userId;
             this.loginName = loginName;
             this.password = password;
@@ -299,10 +317,10 @@ public class DatabaseService {
         public boolean equals( Object o ) {
             if( this == o )
                 return true;
-            if( !(o instanceof TableUsers) )
+            if( !(o instanceof Table_users) )
                 return false;
 
-            final TableUsers usersTabelData = (TableUsers)o;
+            final Table_users usersTabelData = (Table_users)o;
 
             if( active != usersTabelData.active )
                 return false;
@@ -358,13 +376,13 @@ public class DatabaseService {
      * @return
      */
 
-    TableUsers[] sproc_getallusers() {
+    Table_users[] sproc_getallusers() {
         String sql = "select user_id,login_name,login_password,first_name,last_name,title,company,address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id,user_type,active,create_date from users ORDER BY last_name";
         Object[] paramValues = null;
 
         ResultProcessor resultProcessor = new ResultProcessor() {
             Object mapOneRowFromResultsetToObject( ResultSet rs ) throws SQLException {
-                TableUsers result = null;
+                Table_users result = null;
                 int userId = rs.getInt( "user_id" );
                 String loginName = rs.getString("login_name");
                 String password = rs.getString("login_password");
@@ -385,13 +403,13 @@ public class DatabaseService {
                 int userType = rs.getInt("user_type");
                 int active = rs.getInt("active");
                 Timestamp createDate = rs.getTimestamp("create_date");
-                result = new TableUsers( userId, loginName, password, firstName, lastName, title, company, address, city, zip, country, county_council, emailAddress, external, lastPage, archiveMode, langId, userType, active, createDate );
+                result = new Table_users( userId, loginName, password, firstName, lastName, title, company, address, city, zip, country, county_council, emailAddress, external, lastPage, archiveMode, langId, userType, active, createDate );
                 return result;
             }
         };
 
         ArrayList result = executeQuery( sql, paramValues, resultProcessor );
-        return (TableUsers[])result.toArray(new TableUsers[result.size()]);
+        return (Table_users[])result.toArray(new Table_users[result.size()]);
     }
 
     class ViewTemplateGroup {
@@ -440,10 +458,11 @@ public class DatabaseService {
         return (ViewTemplateGroup)result.get(0);
     }
 
-    int sproc_AddNewuser( UserDomainObject user ) {
-        String sql = "INSERT INTO users (user_id,login_name,login_password,first_name,last_name, title, company, address,city,zip,country,county_council,email,external,last_page,archive_mode,lang_id, user_type, active, create_date) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Object[] paramValues = new Object[]{ new Integer( user.getUserId()),user.getLoginName(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getTitle(), user.getCompany(), user.getAddress(), user.getCity(), user.getZip(), user.getCountyCouncil(), user.getEmailAddress(), new Integer(user.isImcmsExternal()?1:0), new Integer(1001), new Integer(0), new Integer(user.getLangId()), new Integer(user.getUserType()), new Integer( user.isActive()?1:0) };
+    // todo, ska man behöva stoppa in userId här? Kan man inte bara få ett unikt?
+    int sproc_AddNewuser( Table_users userData ) {
+        String sql = "INSERT INTO users (user_id, login_name, login_password, first_name, last_name, title, company, address, city, zip, country, county_council, email, external, last_page, archive_mode, lang_id, user_type, active, create_date ) " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        Object[] paramValues = new Object[]{ new Integer( userData.userId ), userData.loginName, userData.password, userData.firstName, userData.lastName, userData.title, userData.company, userData.address, userData.city, userData.zip, userData.country, userData.county_council, userData.emailAddress, new Integer( userData.external ), new Integer(1001), new Integer(0), new Integer(userData.langId), new Integer(userData.userType), new Integer( userData.active ), userData.createDate };
         return executeUpdate( sql, paramValues );
     }
 }

@@ -7,6 +7,14 @@ Förändringar mot SQL Server orginalscriptet tables.ascii.sql
  * Microsofts text & ntext (unicode variant av text) utbytt mot VARCHAR(8000), vad betyder det för text tabellen?
    8000 är den maximala storleken SQLServer verkar stödja. Vad SQL92 säger vet jag (ännu) inte.
 
+* MySQL krävde ytterligare förändringar:
+* CREATE TABLE meta, meta_text varchar (1000) -> varchar (255)
+* CREATE TABLE user_flags, description varchar (256) - varchar (255)
+* CREATE TABLE frameset_docs, varchar(8000) -> varchar (255)
+* CREATE TABLE texts, text varchar(8000) -> varchar (255)
+* MySQL använder samma datum/tid typer som SQL Server
+* Bytte ut CAST( CURRENT_TIME AS CHAR(80)) -> CAST( CURRENT_TIME AS CHAR) i koden.
+
  * Default värden satta till NULL är borttagna
  * Andra default värden är inte satta (ännu, går det, finns det en standard?)
  * Microsofts Indexeringen är droppad, skapa annan? Verkar ingå i standardsql
