@@ -42,7 +42,7 @@ var pa  = "(\\.(GIF|JPE?G|PNG|BMP|AVI|MPE?G|HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRA
 	/* isEditFileText - viewable file types that will open in readonly mode in "FileAdmin_edit.jsp" */
 var pat = "(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)$)|(\\.LOG)";
 	/* isEditFile - editable file types (change in "FileAdmin_edit.jsp" too) */
-var pae = "\\.(HTML?|CSS|JS|VBS|TXT|FRAG)$";
+var pae = "\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)$";
 	/* isDir */
 var isDirectoryPattern = "(/|\\.|\\\\)$";
 	/* isSysFold */
@@ -291,18 +291,18 @@ function setSelectedFolder(iside) {
 		switch (iside) {
 			case 1:
 				for (var i = 0; i < f.files1.length; i++) {
-					if (f.files1.options[i].value == f.dir1.value + "\\") {
+					if (f.files1.options[i].text == f.dir1.value) {
 						f.files1.options[i].style.backgroundColor = "#FFFF99"; // the Dir
-					} else  if (f.dir1.value.indexOf(f.files1.options[i].value.substring(0,f.files1.options[i].value.length-1)) != -1 && f.files1.options[i].value.indexOf("\\") != -1) {
+					} else  if (f.dir1.value.substring(0,f.files1.options[i].text.length) == f.files1.options[i].text.substring(0,f.files1.options[i].text.length) && f.files1.options[i].text.indexOf("\\") != -1) {
 						f.files1.options[i].style.backgroundColor = "#FFFFCC"; // a subDir
 					}
 				}
 			break;
 			case 2:
 				for (var i = 0; i < f.files2.length; i++) {
-					if (f.files2.options[i].value == f.dir2.value + "\\") {
+					if (f.files2.options[i].text == f.dir2.value) {
 						f.files2.options[i].style.backgroundColor = "#FFFF99"; // the Dir
-					} else  if (f.dir2.value.indexOf(f.files2.options[i].value.substring(0,f.files2.options[i].value.length-1)) != -1 && f.files2.options[i].value.indexOf("\\") != -1) {
+					} else  if (f.dir2.value.substring(0,f.files2.options[i].text.length) == f.files2.options[i].text.substring(0,f.files2.options[i].text.length) && f.files2.options[i].text.indexOf("\\") != -1) {
 						f.files2.options[i].style.backgroundColor = "#FFFFCC"; // a subDir
 					}
 				}

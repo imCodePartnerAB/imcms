@@ -5,7 +5,7 @@
  *           SETTINGS                                                *
  ******************************************************************* */
 
-String acceptedExtPattern         = "/\\.(HTML?|CSS|JS|VBS|TXT|FRAG)+$/i" ;
+String acceptedExtPattern         = "/\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)+$/i" ;
 String acceptedExtPatternReadonly = "/" +
 	"(\\.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG)+$)" +
 	"|(\\.LOG+)" +
