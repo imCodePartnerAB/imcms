@@ -100,7 +100,7 @@
     <!-- A target to use for reformat a properties   -->
     <target name="reformatproperties">
 
-        <taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpath="lib/ant-contrib-0.5.jar"/>
+        <taskdef name="propertyregex" classname="net.sf.antcontrib.property.RegexTask" classpathref="libraries"/>
         <propertyregex property="version"
                  input="${cvsname}"
                  regexp=".Name: v(.*) ."
