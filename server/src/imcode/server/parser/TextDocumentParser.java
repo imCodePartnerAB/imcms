@@ -202,7 +202,7 @@ public class TextDocumentParser {
             temptags.add( "#getMetaId#" );
             temptags.add( "" + document.getId() );
             temptags.add( "#group#" );
-            temptags.add( selectedTemplateGroup.getName() );
+            temptags.add( selectedTemplateGroup != null ? selectedTemplateGroup.getName(): "" );
             temptags.add( "#getTemplateGroups#" );
             temptags.add( templateGroupsHtmlOptionList );
             temptags.add( "#simple_name#" );
