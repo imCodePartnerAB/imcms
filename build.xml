@@ -1,7 +1,8 @@
 <project name="imCMS" default="dist" basedir=".">
 
   <property name="build"          value="./build"/>
-  
+  <property name="doc"            value="./doc"/>  
+
   <property name="webroot"        value="${build}"/>
 
   <property name="images"         value="${webroot}/images"/>
@@ -68,6 +69,29 @@
     <echo> Done packaging distribution 'imcms.war'. </echo>
 
   </target>
+
+  <target name="doc"
+          depends="init"
+	  description="Generates javadoc.">
+    <javadoc destdir="${doc}">
+      <package name="imcode.util"/>
+      <package name="imcode.util.log"/>
+      <package name="imcode.server"/>
+      <package name="imcode.external.diverse"/>
+      <package name="imcode.external.chat"/>
+      <package name=""/>
+      <classpath>
+	  <fileset dir="install/lib">
+	    <include name="**/*.jar"/>
+	  </fileset>
+      </classpath>
+      <sourcepath>
+	 <pathelement path="server/src/"/>
+	 <pathelement path="servlets/"/>
+      </sourcepath>
+    </javadoc>
+  </target>
+
 
   <target name="install-war" depends="dist" description="Copies the WAR-package into the deployroot.">
     <copy file="${wardist}" todir="${deployroot}" overwrite="yes"/>
