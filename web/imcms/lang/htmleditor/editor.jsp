@@ -10,6 +10,35 @@
           java.util.*"
   contentType="text/html; charset=windows-1252"
 
+%><%!
+/* *******************************************************************************************
+ *         COOKIE FUNCTIONS                                                                  *
+ ******************************************************************************************* */
+
+public String getCookie ( String theName, HttpServletRequest req ) {
+	String retVal = "" ;
+	Cookie cookie = null;
+	Cookie[] cookies = req.getCookies();
+	for (int i = 0; i < cookies.length; i++) {
+		cookie = cookies[i];
+		if (theName.equals(cookie.getName())) {
+			retVal = cookie.getValue() ;
+			break;
+		}
+	}
+	return retVal ;
+}
+
+public void setCookie ( String theName, String theValue, HttpServletResponse res ) {
+	Cookie cookie = null;
+	cookie = new Cookie(theName, theValue);
+	cookie.setMaxAge(60*60*24*365*1);
+	cookie.setPath("/");
+	res.addCookie(cookie);
+}
+//setCookie("DUMMY", "YEPP", response) ;
+//if (debug) out.print(getCookie("DUMMY", request)) ;
+
 %><%
 
 ContentManagementSystem imcmsSystem = (ContentManagementSystem) request.getAttribute(RequestConstants.SYSTEM) ;
@@ -877,15 +906,49 @@ for(i=9;i<=48;i++){
 
 <script language="JavaScript">
 <!--
+/*
+NOT IN USE
+
 if (showKBshortcuts) {
-	document.write('<div id="bottomLeftLayer" style="position:absolute; left:10; top:454" unselectable="on">');
+	document.write('');
 } else {
-	document.write('<div id="bottomLeftLayer" style="position:absolute; left:10; top:454; display:none" unselectable="on">');
+	document.write('<div id="bottomLeftLayer" style="position:absolute; left:10; top:454; display:block" unselectable="on">');
+}
+*/
+function toggleEditorOnOff(on) {
+	if (on) {
+		setCookie("imcms_use_editor", "true") ;
+		document.getElementById("editorOnOffBtn1").style.display = "none" ;
+		document.getElementById("editorOnOffBtn0").style.display = "block" ;
+	} else {
+		setCookie("imcms_use_editor", "") ;
+		document.getElementById("editorOnOffBtn1").style.display = "block" ;
+		document.getElementById("editorOnOffBtn0").style.display = "none" ;
+	}
 }
 //-->
 </script>
-<img src="images/1x1.gif" width="1" height="5">
-</div>
+<div id="bottomLeftLayer" style="position:absolute; left:10; top:454" unselectable="on">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+	<td colspan="2"><img src="images/1x1.gif" width="1" height="16"></td>
+</tr>
+<tr>
+	<td nowrap><? install/htdocs/sv/htmleditor/editor/editor.jsp/3000 ?> &nbsp;</td>
+	<td><%
+	if (getCookie("imcms_use_editor", request).equals("true")) { %>
+	<button id="editorOnOffBtn0" onClick="toggleEditorOnOff(0);"
+		class="fButtonSmall" style="width:40"><? global/off ?></button>
+	<button id="editorOnOffBtn1" onClick="toggleEditorOnOff(1);"
+		class="fButtonSmall" style="width:40; border-style:inset; display:none"><? global/on ?></button><%
+	} else { %>
+	<button id="editorOnOffBtn0" onClick="toggleEditorOnOff(0);"
+		class="fButtonSmall" style="width:40; display:none"><? global/off ?></button>
+	<button id="editorOnOffBtn1" onClick="toggleEditorOnOff(1);"
+		class="fButtonSmall" style="width:40; border-style:inset"><? global/on ?></button><%
+	} %></td>
+</tr>
+</table></div>
 
 
 <!-- ***** Bottom Right panel ***** -->

@@ -52,7 +52,7 @@ function openLinkEditor() {
 
 <script language="JavaScript">
 <!--
-if(isIE55) {
+if(isIE55 && readCookie("imcms_use_editor") != "true") {
 	openEditor("#meta_id#","#txt_no#") ;
 	document.location = "AdminDoc?meta_id=#meta_id#&flags=65536" ;
 }
