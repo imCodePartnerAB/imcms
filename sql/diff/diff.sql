@@ -3776,3 +3776,12 @@ GO
 
 --2002-02-14
 
+
+-- set type=1 (html) on every helptext to have html-escaped on the way out from db
+GO
+update texts 
+set type = 1
+where meta_id < 1000
+GO
+
+--2002-02-14

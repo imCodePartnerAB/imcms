@@ -1,7 +1,4 @@
 
-declare @webroot varchar(30)
-set @webroot='/imcms' 
-
 -- kollar att det inte redan finns mallar med id 2 eller 3
 DECLARE @temp int 
 declare @message varchar(100)
@@ -631,7 +628,7 @@ values (90,0,0,0,0,0,1,'','_self','','top','','','se/helpimages/Lagg-till-dokume
 
 insert into texts(meta_id,name,text,type)
 values(
-2,1,'Administrera filer',0
+2,1,'Administrera filer',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -654,11 +651,11 @@ values(<BR>
 <BR>F&ouml;r att radera en katalog eller fil, markera katalogen/filen och klicka sedan p&aring; &quot;Radera&quot;. Knappen till v&auml;nster om katalogen/filen finns i v&auml;nstra rutan, knappen till h&ouml;ger om katalogen/filen finns i h&ouml;gra rutan. En varningsruta d&auml;r hela s&ouml;kv&auml;gen till katalogen/filen finns visas. Klicka &quot;Ja&quot; om du &auml;r s&auml;ker p&aring; att katalogen/filen skall tas bort, annars p&aring; &quot;Nej&quot;.
 <BR>
 <BR>&quot;Tillbaka&quot; leder till Administrat&ouml;rsmenyn.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-3,1,'Aktivera/avaktivera anv&auml;ndare',0
+3,1,'Aktivera/avaktivera anv&auml;ndare',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -667,11 +664,11 @@ values(
 <BR>Markera den/de anv&auml;ndare som du vill aktivera och klicka sedan p&aring; &quot;Aktivera&quot;. Anv&auml;ndaren/anv&auml;ndarna &auml;r nu aktiverade och har tillg&aring;ng till systemet igen.
 <BR>
 <BR>Markera den/de anv&auml;ndare som du vill avaktivera och klicka sedan p&aring; &quot;Avktivera&quot;. Anv&auml;ndaren/anv&auml;ndarna &auml;r nu avaktiverade och har inte l&auml;ngre tillg&aring;ng till systemet.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-4,1,'Administrera anv&auml;ndarroller',0
+4,1,'Administrera anv&auml;ndarroller',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -684,11 +681,11 @@ values(
 <BR>F&ouml;r att flytta en anv&auml;ndare till en annan roll - klicka f&ouml;rst p&aring; anv&auml;ndaren och sedan p&aring; den roll som anv&auml;ndaren skall flyttas till och till sist klicka p&aring; &quot;Flytta&quot;. Anv&auml;ndaren flyttas fr&aring;n aktuell roll till den nya rollen.
 <BR>
 <BR>&quot;Avbryt&quot; leder tillbaka till f&ouml;reg&aring;ende sida.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-5,1,'Administrationssida f&ouml;r Browserkontroll',0
+5,1,'Administrationssida f&ouml;r Browserkontroll',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -716,13 +713,13 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-6,1,'F&ouml;r&auml;ndrade dokument - bild 1',0
+6,1,'F&ouml;r&auml;ndrade dokument - bild 1',1
 )
 insert into texts(meta_id,name,text,type)
 values(
 6,2,'H&auml;r kan man s&ouml;ka fram alla dokument som lagts till i systemet under en viss tidsperiod.
 <BR>
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -733,23 +730,23 @@ values(
 <BR>Klicka sedan p&aring; &quot;Visa&quot;.
 <BR>
 <BR>I ett nytt f&ouml;nster visas resultatet av s&ouml;kningen.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-6,4,'Bilden visar alla dokument som skapats under perioden. Det g&aring;r att klicka p&aring; antingen Meta id eller Rubrik f&ouml;r att se sidan (dokumentet).',0
+6,4,'Bilden visar alla dokument som skapats under perioden. Det g&aring;r att klicka p&aring; antingen Meta id eller Rubrik f&ouml;r att se sidan (dokumentet).',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-7,1,'F&ouml;r&auml;ndrade dokument - bild 2',0
+7,1,'F&ouml;r&auml;ndrade dokument - bild 2',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-7,2,'Bilden visar alla dokument som skapats under perioden. Det g&aring;r att klicka p&aring; antingen Meta id eller Rubrik f&ouml;r att se sidan (dokumentet).',0
+7,2,'Bilden visar alla dokument som skapats under perioden. Det g&aring;r att klicka p&aring; antingen Meta id eller Rubrik f&ouml;r att se sidan (dokumentet).',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-8,1,'Administrera formatmallar/formatgrupper',0
+8,1,'Administrera formatmallar/formatgrupper',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -790,18 +787,18 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-9,1,'Byta namn p&aring; formatgrupp',0
+9,1,'Byta namn p&aring; formatgrupp',1
 )
 insert into texts(meta_id,name,text,type)
 values(
 9,2,'V&auml;lj den befintliga formatgruppen genom att bl&auml;ddra fram den i rullgardinslistan. Skriv sedan in det nya namnet vid Nytt namn. Klicka p&aring; &quot;OK&quot;.
 <BR>
 <BR>&quot;Tillbaka&quot; leder till Administrera formatmallar/formatgrupper.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-10,1,'L&auml;gga till/ta bort formatmallar',0
+10,1,'L&auml;gga till/ta bort formatmallar',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -814,11 +811,11 @@ values(
 <BR>Ta bort formatmall fr&aring;n en grupp: Markera mallen i rutan till h&ouml;ger, klicka sedan p&aring; &quot;Ta bort&quot; och mallen tas bort fr&aring;n gruppen och visas i det v&auml;nstra f&ouml;nstret..
 <BR>
 <BR>&quot;Tillbaka&quot; leder till Administrera formatmallar/formatgrupper.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-11,1,'Skapa formatgrupp',0
+11,1,'Skapa formatgrupp',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -829,18 +826,18 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-12,1,'Ta bort formatgrupp',0
+12,1,'Ta bort formatgrupp',1
 )
 insert into texts(meta_id,name,text,type)
 values(
 12,2,'V&auml;lj den formatgrupp du vill ta bort genom att bl&auml;ddra fram den i rullgardinslistan. Klicka sedan p&aring; &quot;Ta bort&quot;.
 <BR>
 <BR>&quot;Tillbaka&quot; leder till Administrera formatmallar/formatgrupper.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-13,1,'Ta bort formatgrupp - varning',0
+13,1,'Ta bort formatgrupp - varning',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -851,19 +848,19 @@ values(
 <BR>Klicka sedan p&aring; &quot;OK&quot;.
 <BR>
 <BR>Om du inte vill ta bort gruppen klicka p&aring; &quot;Avbryt&quot;.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-14,1,'Administrationssida f&ouml;r IP-accesser - bild 1',0
+14,1,'Administrationssida f&ouml;r IP-accesser - bild 1',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-14,2,'Genom att koppla anv&auml;ndarnamnet till anv&auml;ndarens dators IP-nr kan anv&auml;ndaren f&aring; direkt tillg&aring;ng till systemet utan att beh&ouml;va logga in. De f&aring;r ett anv&auml;ndarnamn som &auml;r kopplat till datorns IP-nr. Man kan ge flera anv&auml;ndare inom ett visst intervall av IP-nr ett gemensamt anv&auml;ndarnamn.&nbsp;',0
+14,2,'Genom att koppla anv&auml;ndarnamnet till anv&auml;ndarens dators IP-nr kan anv&auml;ndaren f&aring; direkt tillg&aring;ng till systemet utan att beh&ouml;va logga in. De f&aring;r ett anv&auml;ndarnamn som &auml;r kopplat till datorns IP-nr. Man kan ge flera anv&auml;ndare inom ett visst intervall av IP-nr ett gemensamt anv&auml;ndarnamn.&nbsp;',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-14,3,'N&auml;r ingen IP-access &auml;r registrerad ser bilden ut som ovan. N&auml;r n&aring;gon IP-access har blivit registrerad, ser den ut som nedan.',0
+14,3,'N&auml;r ingen IP-access &auml;r registrerad ser bilden ut som ovan. N&auml;r n&aring;gon IP-access har blivit registrerad, ser den ut som nedan.',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -874,29 +871,29 @@ values(
 <BR>F&ouml;r att ta bort en anv&auml;ndare - s&auml;tt en bock i rutan framf&ouml;r anv&auml;ndaren, och klicka sedan p&aring; &quot;Ta bort&quot;.
 <BR>
 <BR>F&ouml;r att &aring;terg&aring; till f&ouml;reg&aring;ende bild - klicka p&aring; &quot;Tillbaka&quot;.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-15,1,'L&auml;gga till ny IP-access',0
+15,1,'L&auml;gga till ny IP-access',1
 )
 insert into texts(meta_id,name,text,type)
 values(
 15,2,'V&auml;lja anv&auml;ndare genom att bl&auml;ddra i rullgardinslistan. Skriv in tillh&ouml;rande IP-nr eller intervall av IP-nr som g&auml;ller f&ouml;r anv&auml;ndaren. Klicka p&aring; &quot;Spara&quot;.
 <BR>
-<BR>F&ouml;r att &aring;terg&aring; till f&ouml;reg&aring;ende bild utan att l&auml;gga till ny IP-access - klicka p&aring; &quot;Avbryt&quot;.',0
+<BR>F&ouml;r att &aring;terg&aring; till f&ouml;reg&aring;ende bild utan att l&auml;gga till ny IP-access - klicka p&aring; &quot;Avbryt&quot;.',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-16,1,'Ta bort IP-accesser - varning',0
+16,1,'Ta bort IP-accesser - varning',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-16,2,'F&ouml;r att ta bort IP-accessen - klicka &quot;OK&quot;, f&ouml;r att &aring;terg&aring; till f&ouml;reg&aring;ende sida - klicka p&aring; &quot;Avbryt&quot;.',0
+16,2,'F&ouml;r att ta bort IP-accessen - klicka &quot;OK&quot;, f&ouml;r att &aring;terg&aring; till f&ouml;reg&aring;ende sida - klicka p&aring; &quot;Avbryt&quot;.',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-17,1,'Administrera r&auml;knare',0
+17,1,'Administrera r&auml;knare',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -905,19 +902,19 @@ values(
 <BR>F&ouml;r att &auml;ndra startdatum fyller man i ett nytt datum i den nedersta vita rutan och klickar sedan p&aring; &quot;Uppdatera&quot;. Det &auml;r det datum som sedan kommer att visas som sedan-datum.
 <BR>
 <BR>Ex Antal bes&ouml;kare &auml;r 6731 sedan 2000-01-01
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-18,1,'Kontrollera internet-l&auml;nkar',0
+18,1,'Kontrollera internet-l&auml;nkar',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-18,2,'H&auml;r kan man v&auml;lja att klicka p&aring; meta-id-l&auml;nkarna och kommer d&aring; till adminl&auml;get d&auml;r l&auml;nken &auml;r. Klickar man p&aring; URL:erna s&aring; kommer man till den sidan dit l&auml;nken leder. Rutorna under rubrikerna: &quot;Servern hittades&quot;, &quot;Servern gick att n&aring;&quot; och &quot;Dokumentet hittades&quot; f&auml;rgas gr&ouml;na om s&aring; &auml;r fallet annars f&auml;rgas de r&ouml;da. P&aring; s&aring; s&auml;tt kan man se var felet ligger om man ej n&aring;r de externa l&auml;nkarna i fr&aring;n systemet.',0
+18,2,'H&auml;r kan man v&auml;lja att klicka p&aring; meta-id-l&auml;nkarna och kommer d&aring; till adminl&auml;get d&auml;r l&auml;nken &auml;r. Klickar man p&aring; URL:erna s&aring; kommer man till den sidan dit l&auml;nken leder. Rutorna under rubrikerna: &quot;Servern hittades&quot;, &quot;Servern gick att n&aring;&quot; och &quot;Dokumentet hittades&quot; f&auml;rgas gr&ouml;na om s&aring; &auml;r fallet annars f&auml;rgas de r&ouml;da. P&aring; s&aring; s&auml;tt kan man se var felet ligger om man ej n&aring;r de externa l&auml;nkarna i fr&aring;n systemet.',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-19,1,'L&auml;gga till l&auml;nk till ett befintligt dokument',0
+19,1,'L&auml;gga till l&auml;nk till ett befintligt dokument',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -959,18 +956,18 @@ normal"><i style="mso-bidi-font-style:normal">S&ouml;k</i></b>". Resultatet av
 )
 insert into texts(meta_id,name,text,type)
 values(
-20,1,'Byt namn p&aring; formatmall',0
+20,1,'Byt namn p&aring; formatmall',1
 )
 insert into texts(meta_id,name,text,type)
 values(
 20,2,'V&auml;lj vilken mall som skall bytas namn p&aring; genom att bl&auml;ddra fram namnet p&aring; mallen i rullgardinslistan. Skriv in det nya namnet. Klicka sedan p&aring; &quot;Byt namn&quot;.
 <BR>
 <BR>&quot;Tillbaka&quot; leder tillbaka till f&ouml;reg&aring;ende sida.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-21,1,'H&auml;mta uppladdad formatmall',0
+21,1,'H&auml;mta uppladdad formatmall',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -979,11 +976,11 @@ values(
 <BR>En ny sida d&auml;r du f&aring;r v&auml;lja om du vill se p&aring; mallen eller om du vill spara den p&aring; disk visas. Bilden visas p&aring; det spr&aring;k som din webbl&auml;sare anv&auml;nder. Klicka p&aring; &quot;OK&quot; och v&auml;lj sedan var p&aring; din h&aring;rddisk/n&auml;tverk du vill spara mallen.
 <BR>
 <BR>&quot;Tillbaka&quot; (delvis dold under rullgardinslistan p&aring; bilden) leder till Administrera formatmallar/formatgrupper.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-22,1,'Ladda upp ny formatmall',0
+22,1,'Ladda upp ny formatmall',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -997,10 +994,10 @@ values(
                   upp genom att anv&auml;nda "Browse/S&ouml;k" (namnet beror
                   p&aring; vilket spr&aring;k din webbl&auml;sare anv&auml;nder).</p>
                   <p align="left">Skriv in det namn du vill att formatmallen
-                  skall ha. En <img border="0" src="'+@webroot+'/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                  skall ha. En <img border="0" src="@imageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                   vid <i>"Skriv &ouml;ver existerande" </i>g&ouml;r att om en
                   formatmall med det namnet redan finns, skrivs den &ouml;ver. S&auml;tt
-                  inte <img border="0" src="'+@webroot+'/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                  inte <img border="0" src="@imageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                   om du inte &auml;r riktigt s&auml;ker p&aring; att du verkligen skall
                   skriva &ouml;ver den befintliga mallen.</p>
                   <p align="left">Markera i rutan till h&ouml;ger den/de
@@ -1020,7 +1017,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-23,1,'Ladda upp ny exempelmall',0
+23,1,'Ladda upp ny exempelmall',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1057,7 +1054,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-24,1,'Ladda upp ny formatmall - klart!',0
+24,1,'Ladda upp ny formatmall - klart!',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1068,7 +1065,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-25,1,'Ta bort formatmall',0
+25,1,'Ta bort formatmall',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1077,11 +1074,11 @@ values(
 <BR>Genom att klicka p&aring; &quot;Ta bort&quot; tas mallen bort. Innan mallen tas bort visas en sida d&auml;r det g&aring;r att tilldela de dokument, som har den mallen som skall tas bort, n&aring;gon annan formatmall.
 <BR>
 <BR>&quot;Tillbaka&quot; leder till f&ouml;reg&aring;ende sida.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-26,1,'Ta bort formatmall - varning!',0
+26,1,'Ta bort formatmall - varning!',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1090,22 +1087,22 @@ values(
 <BR>Klicka sedan p&aring; &quot;OK&quot;.
 <BR>
 <BR>&quot;Avbryt&quot; leder tillbaka till f&ouml;reg&aring;ende sida.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-27,1,'Visa formatmallar',0
+27,1,'Visa formatmallar',1
 )
 insert into texts(meta_id,name,text,type)
 values(
 27,2,'Till v&auml;nster p&aring; bilden visas alla formatmallar. Inom [ ] st&aring;r det hur m&aring;nga dokument som anv&auml;nder mallen. Markera mallen och klicka p&aring; &quot;Lista dokument&quot;. Dokumenten visas nu till h&ouml;ger p&aring; bilden. Genom att markera ett dokument och sedan klicka p&aring; &quot;Visa dokument&quot; f&aring;r du se dokumentet.&nbsp;
 <BR>&nbsp;
 <BR>&quot;Tillbaka&quot; leder till Administrera formatmallar/formatgrupper.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-28,1,'Administrat&ouml;rsmenyn',0
+28,1,'Administrat&ouml;rsmenyn',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1140,7 +1137,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-29,1,'Administrera anv&auml;ndare och roller',0
+29,1,'Administrera anv&auml;ndare och roller',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1149,22 +1146,22 @@ values(
 <BR>&quot;av/Aktivera&quot; leder till en sida d&auml;r anv&auml;ndare kan aktiveras eller avaktiveras. Avaktivering g&ouml;r att anv&auml;ndaren inte l&auml;ngre kan logga in i systemet. En anv&auml;ndare som &auml;r avaktiverad kan aktiveras igen. OBS att endast de anv&auml;ndare som tillh&ouml;r den roll som &auml;r vald visas. Om Alla markeras visas alla anv&auml;ndare.
 <BR>
 <BR>&quot;Tillbaka&quot; leder tillbaka till f&ouml;reg&aring;ende sida.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-30,1,'Administrera roller ',0
+30,1,'Administrera roller ',1
 )
 insert into texts(meta_id,name,text,type)
 values(
 30,2,'Knappen &quot;Administrera roller&quot; leder till den sida d&auml;r nya roller kan l&auml;ggas till, namnet bytas p&aring; en roll, r&auml;ttigheterna f&ouml;r rollen kan redigeras eller rollen kan tas bort.
 <BR>
 <BR>Knappen &quot;Administrera anv&auml;ndar-roller&quot; leder till den sida d&auml;r administration av rollen sker. D&auml;r kan anv&auml;ndare l&auml;ggas till, tas bort och flyttas fr&aring;n en roll till en annan.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-31,1,'Byt namn p&aring; roll',0
+31,1,'Byt namn p&aring; roll',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1173,7 +1170,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-32,1,'L&auml;gg till ny roll',0
+32,1,'L&auml;gg till ny roll',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1183,12 +1180,12 @@ values(
       <td>
                 <p align="left">Skriv in namnet p&aring; den roll som skall l&auml;ggas
                 till. </p>
-                <p align="left">Genom att s&auml;tta en <img border="0" src="'+@webroot+'/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                <p align="left">Genom att s&auml;tta en <img border="0" src="@imageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                 vid <i>"R&auml;tt att f&aring; l&ouml;senord per mail"</i> f&aring;r en
                 anv&auml;ndare som tillh&ouml;r rollen m&ouml;jlighet att f&aring; sitt l&ouml;senord
                 s&auml;nt till sig per mail om han/hon gl&ouml;mt bort det.
                 (Best&auml;llningen av l&ouml;senordet g&ouml;rs p&aring; inloggningssidan).</p>
-                <p align="left">Genom att s&auml;tta en <img border="0" src="'+@webroot+'/images/se/helpimages/Admin-4.GIF" width="13" height="14">
+                <p align="left">Genom att s&auml;tta en <img border="0" src="@imageurl@/se/helpimages/Admin-4.GIF" width="13" height="14">
                 vid <i>"Sj&auml;lvregistreringsr&auml;tt i konferens"</i> f&aring;r
                 en anv&auml;ndare som tillh&ouml;r rollen r&auml;tt att registrera sig
                 sj&auml;lv f&ouml;r att kunna delta i en konferens. OBS att Konferens
@@ -1205,7 +1202,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-33,1,'Redigera r&auml;ttigheter f&ouml;r roll',0
+33,1,'Redigera r&auml;ttigheter f&ouml;r roll',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1224,7 +1221,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-34,1,'Ta bort roll - varning!',0
+34,1,'Ta bort roll - varning!',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1233,15 +1230,15 @@ values(
 <BR>Dessutom ser du vilka dokument som rollen har r&auml;ttigheter till. Att ta bort rollen g&ouml;r att anv&auml;ndarna inte kan se dessa dokument l&auml;ngre (om de inte ocks&aring; tillh&ouml;r n&aring;gon annan roll som har r&auml;ttigheter till dessa dokument).
 <BR>
 <BR>F&ouml;r att ta bort rollen, klicka p&aring; &quot;OK&quot;. Om du inte vill ta bort rollen, klicka p&aring; &quot;Avbryt&quot;.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-35,1,'Administrera systeminformation',0
+35,1,'Administrera systeminformation',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-35,2,'H&auml;r kan man skriva in systemmeddelanden, ange vem som &auml;r servermaster och webbmaster. OBS att f&ouml;r att dessa uppgifter skall visas p&aring; en sida m&aring;ste de &quot;imCMS-taggar&quot; som styr detta vara inlagda i den mall som styr utseendet p&aring; sidan (dokumentet).',0
+35,2,'H&auml;r kan man skriva in systemmeddelanden, ange vem som &auml;r servermaster och webbmaster. OBS att f&ouml;r att dessa uppgifter skall visas p&aring; en sida m&aring;ste de &quot;imCMS-taggar&quot; som styr detta vara inlagda i den mall som styr utseendet p&aring; sidan (dokumentet).',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1268,7 +1265,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-36,1,'L&auml;gga till/&auml;ndra text',0
+36,1,'L&auml;gga till/&auml;ndra text',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1287,15 +1284,15 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-37,1,'Visa alla dokument',0
+37,1,'Visa alla dokument',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-37,2,'',0
+37,2,'',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-37,3,'H&auml;r v&auml;ljer man f&ouml;rst dokumentnummer p&aring; start, vilket blir det f&ouml;rsta dokumentet som listas. N&auml;r man kommer in p&aring; sidan ligger det f&ouml;rsta  tillg&auml;ngliga dokumentet automatiskt p&aring; start. P&aring; intervall v&auml;ljer man sen inom vilket intervall dokumenten man vill se ska ligga. Slutligen trycker man p&aring; knappen &quot;Lista&quot; och f&aring;r d&aring; upp en lista av l&auml;nkar till alla de dokument som har dokumentnummer inom det intervall man valt.',0
+37,3,'H&auml;r v&auml;ljer man f&ouml;rst dokumentnummer p&aring; start, vilket blir det f&ouml;rsta dokumentet som listas. N&auml;r man kommer in p&aring; sidan ligger det f&ouml;rsta  tillg&auml;ngliga dokumentet automatiskt p&aring; start. P&aring; intervall v&auml;ljer man sen inom vilket intervall dokumenten man vill se ska ligga. Slutligen trycker man p&aring; knappen &quot;Lista&quot; och f&aring;r d&aring; upp en lista av l&auml;nkar till alla de dokument som har dokumentnummer inom det intervall man valt.',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1303,7 +1300,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-38,1,'&Auml;ndra anv&auml;ndaregenskaper',0
+38,1,'&Auml;ndra anv&auml;ndaregenskaper',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1321,7 +1318,7 @@ F&ouml;r att &aring;terg&aring; till f&ouml;reg&aring;ende sida klicka p&aring; 
 )
 insert into texts(meta_id,name,text,type)
 values(
-39,1,'&Auml;ndra dokumentinfo',0
+39,1,'&Auml;ndra dokumentinfo',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1346,7 +1343,7 @@ values(
   <table border="1" width="100%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -1364,7 +1361,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14"> i
+        anges. En <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14"> i
         rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -1380,7 +1377,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-40,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 1',0
+40,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 1',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1448,7 +1445,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-41,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 1, f&ouml;r nya dokument',0
+41,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 1, f&ouml;r nya dokument',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1519,7 +1516,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-42,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 2',0
+42,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 2',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1587,7 +1584,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-43,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 2, f&ouml;r nya dokument',0
+43,1,'R&auml;ttigheter f&ouml;r begr&auml;nsad beh&ouml;righet 2, f&ouml;r nya dokument',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1658,31 +1655,31 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-44,1,'L&auml;gga till bild - Bildarkiv',0
+44,1,'L&auml;gga till bild - Bildarkiv',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-44,2,'H&auml;r visas alla bilder som redan finns uppladdade i systemet. Klicka f&ouml;rst p&aring; en bild och sedan p&aring; &quot;F&ouml;rhandsgranska markerad bild&quot; f&ouml;r att f&aring; se bilden innan du l&auml;gger in den p&aring; din sida. N&auml;r du hittat den bild du s&ouml;ker klicka p&aring; &quot;Anv&auml;nd markerad bild&quot;.',0
+44,2,'H&auml;r visas alla bilder som redan finns uppladdade i systemet. Klicka f&ouml;rst p&aring; en bild och sedan p&aring; &quot;F&ouml;rhandsgranska markerad bild&quot; f&ouml;r att f&aring; se bilden innan du l&auml;gger in den p&aring; din sida. N&auml;r du hittat den bild du s&ouml;ker klicka p&aring; &quot;Anv&auml;nd markerad bild&quot;.',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-45,1,'Meddelande',0
+45,1,'Meddelande',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-45,2,'En bild med samma filnamn finns redan. Klicka p&aring; &quot;OK&quot; och g&aring; sedan in i &quot;Bildarkivet&quot; f&ouml;r att se att det &auml;r samma bild som du f&ouml;rs&ouml;ker ladda upp. Om det inte &auml;r samma bild f&aring;r du byta namn p&aring; filen i ditt n&auml;tverk innan du laddar upp filen igen.',0
+45,2,'En bild med samma filnamn finns redan. Klicka p&aring; &quot;OK&quot; och g&aring; sedan in i &quot;Bildarkivet&quot; f&ouml;r att se att det &auml;r samma bild som du f&ouml;rs&ouml;ker ladda upp. Om det inte &auml;r samma bild f&aring;r du byta namn p&aring; filen i ditt n&auml;tverk innan du laddar upp filen igen.',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-46,1,'L&auml;gga till l&auml;nk till Browserkontroll - sida 2',0
+46,1,'L&auml;gga till l&auml;nk till Browserkontroll - sida 2',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-46,2,'Samma webbsida kan se olika ut beorende p&aring; vilken webbl&auml;sare (browser) som anv&auml;nds. D&auml;rf&ouml;r kan man g&ouml;ra flera alternativa sidor och styra vilken sida som skall visas i respektive webbl&auml;sare. Markera webbl&auml;saren och klicka p&aring; &quot;L&auml;gg till&quot;. Ett f&auml;lt kommer upp p&aring; h&ouml;ger sida. Skriv in MetaId f&ouml;r den sida som skall visas. Upprepa om det &auml;r flera olika webbl&auml;sare som skall visa olika sidor. Klicka sedan p&aring; &quot;OK&quot;.',0
+46,2,'Samma webbsida kan se olika ut beorende p&aring; vilken webbl&auml;sare (browser) som anv&auml;nds. D&auml;rf&ouml;r kan man g&ouml;ra flera alternativa sidor och styra vilken sida som skall visas i respektive webbl&auml;sare. Markera webbl&auml;saren och klicka p&aring; &quot;L&auml;gg till&quot;. Ett f&auml;lt kommer upp p&aring; h&ouml;ger sida. Skriv in MetaId f&ouml;r den sida som skall visas. Upprepa om det &auml;r flera olika webbl&auml;sare som skall visa olika sidor. Klicka sedan p&aring; &quot;OK&quot;.',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-47,1,'L&auml;gga till diagram - bild 1',0
+47,1,'L&auml;gga till diagram - bild 1',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1743,7 +1740,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-48,1,'L&auml;gga till diagram - bild 2 - Skapa nytt diagram',0
+48,1,'L&auml;gga till diagram - bild 2 - Skapa nytt diagram',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1754,7 +1751,7 @@ values(
       <td>
 <p align="center">H&auml;r v&auml;ljs vilken typ av diagram som skall skapas.</p>
 <blockquote>
-                <p align="left">V&auml;lj diagramtyp: Klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
+                <p align="left">V&auml;lj diagramtyp: Klicka p&aring; <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">
                 f&ouml;r att kunna markera den diagramtyp du vill ha. De olika
                 alternativen visas p&aring; bildens nedersta del. Klicka sedan p&aring;
                 "Skapa nytt diagram".</p>
@@ -1770,7 +1767,7 @@ insert into texts(meta_id,name,text,type)
 values(
 49,1,'L&auml;gga till diagram - bild 3
 <BR>Inmatningsformul&auml;r f&ouml;r diagram och tabeller
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1834,12 +1831,12 @@ values(
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort rad: </b>Tar bort en rad. Vilken rad
-      som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardingsmenyn sl&auml;pps tas raden bort. </td>
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort kolumn: </b> Tar bort en
-      kolumn. Vilken kolumn som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      kolumn. Vilken kolumn som skall tas bort v&auml;ljer man i rullgardingsmenyn <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardingsmenyn sl&auml;pps tas kolumnen bort. </td>
   </tr>
   <tr>
@@ -1885,12 +1882,12 @@ values(
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort rad: </b>Tar bort en rad. Vilken rad
-      som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardinsmenyn sl&auml;pps tas raden bort. </td>
   </tr>
   <tr>
     <td width="100%" height="19"><b>Ta bort kolumn: </b> Tar bort en kolumn.
-      Vilken kolumn som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">,
+      Vilken kolumn som skall tas bort v&auml;ljer man i rullgardinsmenyn <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">,
       n&auml;r rullgardinsmenyn sl&auml;pps tas kolumnen bort. </td>
   </tr>
   <tr>
@@ -1905,7 +1902,7 @@ values(
 insert into texts(meta_id,name,text,type)
 values(
 50,1,'L&auml;gga till diagram - bild 4
-<BR>Nytt diagram meny',0
+<BR>Nytt diagram meny',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1929,7 +1926,7 @@ values(
 insert into texts(meta_id,name,text,type)
 values(
 51,1,'R&auml;ttighet att f&aring; l&ouml;senord via e-post saknas
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1937,7 +1934,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-52,1,'L&ouml;senord via e-post',0
+52,1,'L&ouml;senord via e-post',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1948,7 +1945,7 @@ registreringen.</p>
 )
 insert into texts(meta_id,name,text,type)
 values(
-53,1,'Inkludera en befintlig sida i en annan sida',0
+53,1,'Inkludera en befintlig sida i en annan sida',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1972,7 +1969,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-54,1,'Inloggning',0
+54,1,'Inloggning',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -1992,7 +1989,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-55,1,'Knappraden',0
+55,1,'Knappraden',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2135,7 +2132,7 @@ windowtext;text-decoration:none;text-underline:none">F&ouml;r&auml;ndrade dokume
 )
 insert into texts(meta_id,name,text,type)
 values(
-56,1,'Konferens - &auml;ndra anv&auml;ndare',0
+56,1,'Konferens - &auml;ndra anv&auml;ndare',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2157,7 +2154,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-57,1,'Konferens - administrera anv&auml;ndardata',0
+57,1,'Konferens - administrera anv&auml;ndardata',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2165,8 +2162,8 @@ values(
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><i>Expertanv&auml;ndare:</i> Genom att s&auml;tta en <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a1.GIF" width="13" height="14">
-        i rutan efter Expertanv&auml;ndare kommer det att visas en&nbsp; <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
+      <td><i>Expertanv&auml;ndare:</i> Genom att s&auml;tta en <img border="0" src="@imageurl@/se/helpimages/Konf-a1.GIF" width="13" height="14">
+        i rutan efter Expertanv&auml;ndare kommer det att visas en&nbsp; <img border="0" src="@imageurl@/se/helpimages/Konf-a2.GIF" width="12" height="16">&nbsp;
         framf&ouml;r rubriken i de inl&auml;gg
         som anv&auml;ndaren g&ouml;r. Detta visar att anv&auml;ndaren &auml;r specialist i
         &auml;mnet. </td>
@@ -2178,16 +2175,16 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-58,1,'Konferens - varning vid byte av mallset',0
+58,1,'Konferens - varning vid byte av mallset',1
 )
 insert into texts(meta_id,name,text,type)
 values(
 58,2,'Om du &auml;r s&auml;ker p&aring; att du vill byta mallset, klicka &quot;OK&quot;. Om du &auml;r tveksam och vill kontrollera allt igen, klicka p&aring; &quot;Avbryt&quot;.
-<BR>',0
+<BR>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-59,1,'Konferens - administrera diskussion',0
+59,1,'Konferens - administrera diskussion',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2195,7 +2192,7 @@ values(
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td>F&ouml;r att ta bort en diskussion: <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+      <td>F&ouml;r att ta bort en diskussion: <img border="0" src="@imageurl@/se/helpimages/Konf-a3.GIF" width="13" height="14">
         f&ouml;r den diskussion som du vill ta bort och klicka sedan p&aring; "TA
         BORT".
         <p>F&ouml;r att l&auml;mna administrationsl&auml;get: klicka p&aring; "Avsluta admin".</td>
@@ -2206,7 +2203,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-60,1,'Konferens - administrera forum',0
+60,1,'Konferens - administrera forum',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2229,7 +2226,7 @@ values(
         du vill &auml;ndra antalet diskussioner i genom att klicka p&aring; det i listan
         till h&ouml;ger. Det befintliga antalet diskussioner som visas i forumet
         visas inom parentes i listan. V&auml;lj sedan det&nbsp; nya antalet
-        diskussioner som skall visas genom att klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
+        diskussioner som skall visas genom att klicka p&aring; <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">
         och markera det antalet. Klicka sedan p&aring; "Uppdatera".</td>
     </tr>
   </table>
@@ -2238,7 +2235,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-61,1,'Konferens - administrera inl&auml;gg',0
+61,1,'Konferens - administrera inl&auml;gg',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2246,7 +2243,7 @@ values(
   <center>
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
-      <td><b>Ta bort en kommentar:</b> <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+      <td><b>Ta bort en kommentar:</b> <img border="0" src="@imageurl@/se/helpimages/Konf-a3.GIF" width="13" height="14">
         f&ouml;r den/de kommentarer du vill ta bort och klicka sedan p&aring; "TA
         BORT". En varningsbild visas d&auml;r du f&aring;r bekr&auml;fta att du
         verkligen vill ta bort inl&auml;gget. Inl&auml;gget kommer d&aring; att tas bort
@@ -2255,7 +2252,7 @@ values(
         redigera inl&auml;gget alternativt ta bort hela diskussionen. Var d&aring;
         medveten om att samtliga inl&auml;gg i diskussionen f&ouml;rsvinner.
         <p><b>Spara om en kommentar: </b>F&ouml;r att &auml;ndra ett befintligt inl&auml;gg,
-        &auml;ndra den text som skall uppdateras och markera inl&auml;gget genom att <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-a3.GIF" width="13" height="14">
+        &auml;ndra den text som skall uppdateras och markera inl&auml;gget genom att <img border="0" src="@imageurl@/se/helpimages/Konf-a3.GIF" width="13" height="14">
         f&ouml;r det. Klicka sedan p&aring; "SPARA OM".</p>
         <p>F&ouml;r att &aring;terg&aring; till anv&auml;ndarl&auml;ge, klicka p&aring; "Avsluta admin".</td>
     </tr>
@@ -2265,7 +2262,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-62,1,'Konferens - administrera mallset',0
+62,1,'Konferens - administrera mallset',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2296,7 +2293,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-63,1,'Konferens - administrera sj&auml;lvregistrering',0
+63,1,'Konferens - administrera sj&auml;lvregistrering',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2322,7 +2319,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-64,1,'Konferens - &auml;ndra befintlig mallfil',0
+64,1,'Konferens - &auml;ndra befintlig mallfil',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2342,7 +2339,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-65,1,'Konferens - inloggning',0
+65,1,'Konferens - inloggning',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2361,7 +2358,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-66,1,'Konferensvy',0
+66,1,'Konferensvy',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2370,18 +2367,18 @@ values(
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>Varje konferens har minst ett forum d&auml;r olika diskussionen p&aring;g&aring;r.
-        V&auml;lj vilket forum du vill genom att klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
+        V&auml;lj vilket forum du vill genom att klicka p&aring; <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">
         under rubriken <i>V&auml;lj forum, </i>markera forumet och klicka p&aring;
         "V&auml;lj". De diskussioner som visas i f&ouml;nstrets v&auml;nstra del &auml;r
         rubrikerna till de f&ouml;rsta inl&auml;ggen som skrivits i respektive
         diskussion. F&ouml;r att leta bland de diskussioner som inte visas anv&auml;nds
-        knapparna "Tidigare inl&auml;gg" och "Senare inl&auml;gg. Om <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
+        knapparna "Tidigare inl&auml;gg" och "Senare inl&auml;gg. Om <img border="0" src="@imageurl@/se/helpimages/Konf-k4.GIF" width="21" height="15">&nbsp;
         (Ny-symbolen) visas framf&ouml;r en diskussion s&aring; inneb&auml;r det att antingen
         &auml;r detta en ny diskussion eller s&aring; har det tillkommit nya inl&auml;gg
         sedan du sist var inloggad i konferensen. F&ouml;r att visa de inl&auml;gg som
         tillkommit sedan du sist var inloggad, klicka p&aring; "Uppdatera".
         <p>Genom att klicka p&aring; diskussionsrubriken visas alla inl&auml;gg i
-        diskussionen i f&ouml;nstrets h&ouml;gra del. Om <img border="0" src="'+@webroot+'/images/se/helpimages/Konf-k3.GIF" width="14" height="16">
+        diskussionen i f&ouml;nstrets h&ouml;gra del. Om <img border="0" src="@imageurl@/se/helpimages/Konf-k3.GIF" width="14" height="16">
         (specialist-symbolen) visas framf&ouml;r rubriken inneb&auml;r det att inl&auml;gget
         skrivits av en anv&auml;ndare som i den h&auml;r konferensen &auml;r n&aring;gon form av
         specialist. Efter den eventuella "specialistsymbolen" f&ouml;ljer
@@ -2422,7 +2419,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-67,1,'Konferens - sj&auml;lvregistrering',0
+67,1,'Konferens - sj&auml;lvregistrering',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2451,7 +2448,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-68,1,'Konferens - konferensdata',0
+68,1,'Konferens - konferensdata',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2468,7 +2465,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-69,1,'Konferens - skapa en ny diskussion',0
+69,1,'Konferens - skapa en ny diskussion',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2490,7 +2487,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-70,1,'Konferens - skapa en ny kommentar',0
+70,1,'Konferens - skapa en ny kommentar',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2510,7 +2507,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-71,1,'L&auml;gga till/redigera anv&auml;ndare',0
+71,1,'L&auml;gga till/redigera anv&auml;ndare',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2531,15 +2528,15 @@ values(
                     telefonnummer - ange landskod (inget + framf&ouml;r), riktnr och
                     telefonnr.&nbsp; Klicka sedan p&aring; OK. F&ouml;r att ta bort eller
                     &auml;ndra ett telefonnr: bl&auml;ddra fram det telefonnr som skall
-                    &auml;ndras/tas bort genom att klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="17" height="22">.
+                    &auml;ndras/tas bort genom att klicka p&aring; <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="17" height="22">.
                     N&auml;r telefonnr &auml;r markerat - klicka p&aring; den knapp som
                     g&auml;ller f&ouml;r det du vill g&ouml;ra. Om "&Auml;ndra" &auml;r
                     valet, kommer telefonnr att visas i rutorna och sedan kan
                     man &auml;ndra det som skall &auml;ndras och till sist klicka p&aring;
                     "OK". </li>
                   <li>
-                    <p align="left"><i>Aktiverad - </i>en <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t1.GIF" width="13" height="14">
-                    g&ouml;r att anv&auml;ndaren &auml;r aktiverad och kan logga in. <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t2.GIF" width="13" height="14">
+                    <p align="left"><i>Aktiverad - </i>en <img border="0" src="@imageurl@/se/helpimages/Lagg-t1.GIF" width="13" height="14">
+                    g&ouml;r att anv&auml;ndaren &auml;r aktiverad och kan logga in. <img border="0" src="@imageurl@/se/helpimages/Lagg-t2.GIF" width="13" height="14">
                     kan tas bort om anv&auml;ndaren inte l&auml;ngre skall kunna logga
                     in i systemet.</li>
                   <li>
@@ -2567,7 +2564,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-72,1,'L&auml;gga till bild',0
+72,1,'L&auml;gga till bild',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2628,7 +2625,7 @@ values(
           <tr>
             <td width="100%"><b>N&auml;sta textf&auml;lts placering: </b>H&auml;r v&auml;ljs var
               texten kring bilden kommer att hamna. OBS att det beror p&aring;
-              utseendemallen om dessa val fungerar eller ej. Klicka p&aring;<b> <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t3.GIF">
+              utseendemallen om dessa val fungerar eller ej. Klicka p&aring;<b> <img border="0" src="@imageurl@/se/helpimages/Lagg-t3.GIF">
               </b>f&ouml;r att v&auml;lja alternativ.
               <ul>
                 <li><i>Ingen: </i>Textens placering styrs av webbl&auml;sarens
@@ -2677,7 +2674,7 @@ values(
           </tr>
           <tr>
             <td width="100%"><b>L&auml;nk &ouml;ppnas i: </b>H&auml;r v&auml;ljs i vilket
-              f&ouml;nster/frame l&auml;nken skall &ouml;ppnas. Klicka p&aring;<b> <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t3.GIF">
+              f&ouml;nster/frame l&auml;nken skall &ouml;ppnas. Klicka p&aring;<b> <img border="0" src="@imageurl@/se/helpimages/Lagg-t3.GIF">
               </b>f&ouml;r att v&auml;lja alternativ.
               <ul>
                 <li><i>Aktuellt f&ouml;nster: </i>&Ouml;ppnar sidan som bilden l&auml;nkar
@@ -2697,7 +2694,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-73,1,'L&auml;gga till bild - Browse/S&ouml;k',0
+73,1,'L&auml;gga till bild - Browse/S&ouml;k',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2719,7 +2716,7 @@ den s&aring; att filnamnet visas i rutan f&ouml;r File name.</p>
 )
 insert into texts(meta_id,name,text,type)
 values(
-74,1,'L&auml;gga till l&auml;nk till en fil - sida 2',0
+74,1,'L&auml;gga till l&auml;nk till en fil - sida 2',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2750,7 +2747,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-75,1,'L&auml;gga till l&auml;nk till HTML-dokument - sida 1',0
+75,1,'L&auml;gga till l&auml;nk till HTML-dokument - sida 1',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2776,7 +2773,7 @@ values(
   <table border="1" width="100%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -2794,7 +2791,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t5.GIF" width="13" height="14"> i
+        anges. En <img border="0" src="@imageurl@/se/helpimages/Lagg-t5.GIF" width="13" height="14"> i
         rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -2816,7 +2813,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-76,1,'L&auml;gga till l&auml;nk till HTML-dokument - sida 2',0
+76,1,'L&auml;gga till l&auml;nk till HTML-dokument - sida 2',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2838,7 +2835,7 @@ knappen "<b style="mso-bidi-font-weight:normal">OK</b>".</span> OBS att koden m&
 )
 insert into texts(meta_id,name,text,type)
 values(
-77,1,'L&auml;gga till l&auml;nk till Text-dokument - sida 1',0
+77,1,'L&auml;gga till l&auml;nk till Text-dokument - sida 1',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2864,7 +2861,7 @@ values(
   <table border="1" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -2882,7 +2879,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        anges. En <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -2904,7 +2901,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-78,1,'L&auml;gga till l&auml;nk till Text-dokument - sida 2',0
+78,1,'L&auml;gga till l&auml;nk till Text-dokument - sida 2',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2936,7 +2933,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-79,1,'L&auml;gga till l&auml;nk - funktion',0
+79,1,'L&auml;gga till l&auml;nk - funktion',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -2945,7 +2942,7 @@ values(
   <table border="0" cellpadding="0" cellspacing="0" width="550">
     <tr>
       <td>
-<p align="center">Klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
+<p align="center">Klicka p&aring; <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">
 f&ouml;r att f&aring; se hela listan p&aring; vilka olika typer av l&auml;nkar det g&aring;r att l&auml;gga
 till.</p>
 <div align="center">
@@ -2995,7 +2992,7 @@ insert into texts(meta_id,name,text,type)
 values(
 79,4,'<p align="center">&nbsp;</p>
         <blockquote>
-            <p align="left">Genom att <img border="0" src="'+@webroot+'/images/se/helpimages/Lank.h6.GIF" width="13" height="14">
+            <p align="left">Genom att <img border="0" src="@imageurl@/se/helpimages/Lank.h6.GIF" width="13" height="14">
             f&ouml;r en l&auml;nk kan den tas bort, arkiveras eller kopieras genom att klicka p&aring;
             respektive knapp. N&auml;r en l&auml;nk &auml;r arkiverad visas det genom att
             l&auml;nken &auml;r &ouml;verstruken (se bilden - Dokument 1). Arkiveringen kan
@@ -3020,7 +3017,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-80,1,'L&auml;gga till l&auml;nk till en fil - sida 1',0
+80,1,'L&auml;gga till l&auml;nk till en fil - sida 1',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3046,7 +3043,7 @@ values(
   <table border="1" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imageurl@/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3064,7 +3061,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
+        anges. En <img border="0" src="@imageurl@/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -3087,7 +3084,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-81,1,'L&auml;gga till l&auml;nk till URL-dokument - sida 1',0
+81,1,'L&auml;gga till l&auml;nk till URL-dokument - sida 1',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3112,7 +3109,7 @@ values(
   <table border="1" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imageurl@/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3130,7 +3127,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lank-U1.GIF" width="13" height="14">
+        anges. En <img border="0" src="@imageurl@/se/helpimages/Lank-U1.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>
@@ -3155,7 +3152,7 @@ sj&auml;lva Internet-adressen skrivs in.</b></p>
 )
 insert into texts(meta_id,name,text,type)
 values(
-82,1,'L&auml;gga till l&auml;nk till URL-dokument - sida 2',0
+82,1,'L&auml;gga till l&auml;nk till URL-dokument - sida 2',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3198,7 +3195,7 @@ visas.</p>
 )
 insert into texts(meta_id,name,text,type)
 values(
-83,1,'Misslyckad inloggning',0
+83,1,'Misslyckad inloggning',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3209,7 +3206,7 @@ systemadministrat&ouml;ren.</p>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-84,1,'R&auml;ttigheter',0
+84,1,'R&auml;ttigheter',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3219,7 +3216,7 @@ sidan. </p>
 <table border="1" width="100%">
   <tr>
     <td width="100%"><b>Rubrik: </b>Visar dokumentets rubrik (l&auml;nktexten).
-      Genom att <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      Genom att <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       f&ouml;r <i>Visa rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig</i> till&aring;ts
       obeh&ouml;riga att se l&auml;nken men kan inte komma in p&aring; sj&auml;lva sidan.</td>
   </tr>
@@ -3228,7 +3225,7 @@ sidan. </p>
       av r&auml;ttighet p&aring; sidan. 
       <ul>
         <li><i>Ingen </i>betyder att l&auml;nken inte visas f&ouml;r rollen, om inte <i>Visa
-          rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig </i>&auml;r <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">.
+          rubrik &auml;ven om anv&auml;ndaren &auml;r obeh&ouml;rig </i>&auml;r <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">.
         </li>
         <li><i>L&auml;sa</i> betyder att anv&auml;ndare med rollen kan l&auml;sa allt p&aring;
           sidan, men inte kan &auml;ndra n&aring;got p&aring; den.</li>
@@ -3258,10 +3255,10 @@ sidan. </p>
     <td width="100%"><b>Definiera beh&ouml;righet: </b>Genom att klicka p&aring;
       "Definiera" vid antingen <i>Begr&auml;nsad beh&ouml;righet 1 </i>eller <i>Begr&auml;nsad
       beh&ouml;righet 2 </i>f&aring;s den sida upp d&auml;r dessa r&auml;ttigheter kan &auml;ndras.
-      En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      En <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       betyder att Begr&auml;nsad 1 &auml;r mer priviligerad &auml;n Begr&auml;nsad 2 f&ouml;r den
       h&auml;r sidan. Om den rutan skall bockas f&ouml;r beror p&aring; hur beh&ouml;righeterna
-      f&ouml;r respektive &auml;r inst&auml;lld. Denna&nbsp; <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      f&ouml;r respektive &auml;r inst&auml;lld. Denna&nbsp; <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       &auml;r en hj&auml;lp s&aring; att administrat&ouml;ren av sidan l&auml;tt skall kunna se
       vilken begr&auml;nsning som har mest r&auml;ttigheter att g&ouml;ra saker p&aring; sidan.
       "Definiera f&ouml;r nya dokument" betyder att r&auml;ttigheterna st&auml;lls
@@ -3270,7 +3267,7 @@ sidan. </p>
   </tr>
   <tr>
     <td width="100%"><b>Skapad av: </b>(namnet p&aring; den anv&auml;ndare som skapat
-      sidan). Genom en <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+      sidan). Genom en <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
       vid <i>Dela ut dokumentet </i>ges m&ouml;jlighet f&ouml;r andra anv&auml;ndare att
       l&auml;nka till sidan fr&aring;n "sina" dokument.</td>
   </tr>
@@ -3279,7 +3276,7 @@ sidan. </p>
 )
 insert into texts(meta_id,name,text,type)
 values(
-85,1,'Ta bort ett dokument',0
+85,1,'Ta bort ett dokument',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3300,7 +3297,7 @@ p&aring; "Ta bort" och en kontrollruta kommer upp innan dokumentet raderas fr&ar
 )
 insert into texts(meta_id,name,text,type)
 values(
-86,1,'Ta bort ett dokument - varning',0
+86,1,'Ta bort ett dokument - varning',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3311,7 +3308,7 @@ att dokumentet tas bort.</p>',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-87,1,'&Auml;ndra utseende p&aring; dokumentet',0
+87,1,'&Auml;ndra utseende p&aring; dokumentet',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3321,12 +3318,12 @@ values(
     <tr>
       <td>
             <p align="left">Aktuell formatgrupp och mall visas. F&ouml;r att &auml;ndra
-            utseendet - klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
+            utseendet - klicka p&aring; <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">
             vid format-mallen. Om mallen som du vill ha ligger i en annan
-            formatgrupp m&aring;ste du f&ouml;rst klicka p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
+            formatgrupp m&aring;ste du f&ouml;rst klicka p&aring; <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">
             vid formatgrupp, v&auml;lja ny formatgrupp och klicka p&aring; "&Auml;ndra
             grupp". De mallar som tillh&ouml;r den nu valda formatgruppen visas
-            vid klick p&aring; <img border="0" src="'+@webroot+'/images/se/helpimages/Pil.GIF" width="16" height="21">
+            vid klick p&aring; <img border="0" src="@imageurl@/se/helpimages/Pil.GIF" width="16" height="21">
             vid formatmall. Markera formatmallen och klicka sedan p&aring;
             "Spara". F&ouml;r att se hur mallen ser ut, klicka p&aring;
             "Visa mall". OBS fungerar bara om det finns en exempelmall
@@ -3339,15 +3336,15 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-88,1,'Ta bort roll - varning',0
+88,1,'Ta bort roll - varning',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-88,2,'Om du &auml;r s&auml;ker p&aring; att du vill ta bort rollen - klicka p&aring; &quot;OK&quot;, annars klicka p&aring; &quot;Avbryt&quot;.',0
+88,2,'Om du &auml;r s&auml;ker p&aring; att du vill ta bort rollen - klicka p&aring; &quot;OK&quot;, annars klicka p&aring; &quot;Avbryt&quot;.',1
 )
 insert into texts(meta_id,name,text,type)
 values(
-89,1,'Administrera roller - huvudsida',0
+89,1,'Administrera roller - huvudsida',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3372,7 +3369,7 @@ values(
 )
 insert into texts(meta_id,name,text,type)
 values(
-90,1,'L&auml;gga till l&auml;nk - sida 1',0
+90,1,'L&auml;gga till l&auml;nk - sida 1',1
 )
 insert into texts(meta_id,name,text,type)
 values(
@@ -3398,7 +3395,7 @@ values(
   <table border="1" width="75%">
     <tr>
       <td width="100%"><b>S&ouml;kord: </b>H&auml;r anges de s&ouml;kord som skall ge tr&auml;ff
-        vid s&ouml;kning. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        vid s&ouml;kning. En <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Blockera s&ouml;kning</i> g&ouml;r att sidan inte kommer att ge n&aring;gon
         tr&auml;ff vid s&ouml;kningar.</td>
     </tr>
@@ -3416,7 +3413,7 @@ values(
     <tr>
       <td width="100%"><b>Arkivera: </b>H&auml;r anges det datum d&aring; sidan skall
         arkiveras. L&auml;nken kommer att tas bort vid det datum och klockslag som
-        anges. En <img border="0" src="'+@webroot+'/images/se/helpimages/Lagg-t4.GIF" width="13" height="14">
+        anges. En <img border="0" src="@imageurl@/se/helpimages/Lagg-t4.GIF" width="13" height="14">
         i rutan vid <i>Arkivera nu</i> g&ouml;r att sidan arkiveras direkt.</td>
     </tr>
     <tr>

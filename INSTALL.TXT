@@ -22,8 +22,9 @@ Building:
        This will build imCMS in the "build"-directory
        and generate a file named "imcms.war" in this directory.
 
-       This will also generate a file named "imcms.sql" in this directory.
-       Run "imcms.sql" on the empty database to create an imCMS-database.
+       This will also generate files named "imcms.sql" and "help.sql in this directory.
+       To create an default imCMS-database, first run "imcms.sql" on the empty database
+	 and then run "help.sql" on same database.
 
     (For more possible ant-targets, run "ant -projecthelp".)
 

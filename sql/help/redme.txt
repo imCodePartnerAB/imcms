@@ -23,9 +23,6 @@ OBS VIKTIGT att kolla punkt 1 !!!
 
 5. Lägg upp de statiska html sidorna login error osv på sina platser.
 
-   Vid multi installation eller om webroten har ett annat namn än imcms måste ni ändra 
-   @webroot = '/imcms' som finns i början på scriptet.
-	
 6. Kör scriptet help.sql
 
 

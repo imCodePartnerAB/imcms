@@ -237,7 +237,11 @@
     <cat destfile="${sprocs-sql}" orderby="path">
       <fileset dir="sql/sprocs"/>
     </cat>
-    <copy file="sql/help/help.sql" tofile="${help-sql}"/>
+    <copy file="sql/help/help.sql" tofile="${help-sql}">
+	<filterset>
+	   <filter token="imageurl" value="${imageurl}"/>
+      </filterset>
+    </copy>	
   </target>
 
 
