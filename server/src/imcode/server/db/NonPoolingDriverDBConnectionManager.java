@@ -15,7 +15,7 @@ import java.util.Collection;
  * It does so by registrer with the DriverManager a new driver that has Connection Pooling that
  * in turn calls the non pooled driver.
  */
-public class NonPoolingDriverDBConnectionManager implements DBConnectionManager {
+public class NonPoolingDriverDBConnectionManager {
     private final static String POOLED_DATA_SOURCE_NAME_PREFIX = "imcode.server.db.";
     private final static String URI_FOR_POOLED_DRIVER = "jdbc:apache:commons:dbcp:";
 
