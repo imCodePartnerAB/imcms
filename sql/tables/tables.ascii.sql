@@ -493,8 +493,8 @@ CREATE TABLE [dbo].[polls] (
 GO
 
 CREATE TABLE [dbo].[roles] (
-	[role_id] [int] NOT NULL ,
-	[role_name] [varchar] (30) NOT NULL ,
+	[role_id] [int] NOT NULL IDENTITY (1, 1) ,
+	[role_name] [varchar] (60) NOT NULL ,
 	[permissions] [int] NOT NULL ,
 	[admin_role] [int] NOT NULL
 ) ON [PRIMARY]
