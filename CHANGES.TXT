@@ -95,7 +95,7 @@ Version 1.11.0:
     * It's now possible to send attachments with mails.
       This uses the Java Activation Framework (javax.activation) and JavaMail API implementations from the
       GNU classpathx project. (Bug 2542)
-    * Replaced imCMS own image-parsing routines with java.imageio.ImageIO (Bug 2493)
+    * Replaced imCMS own image-parsing routines with javax.imageio.ImageIO (Bug 2493)
     * Started to change the database API to allow for transactions. (Bug 2569)
     * Text document menus are now saved inside a transaction. (Bug 2569)
 
