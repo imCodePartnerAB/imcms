@@ -1,4 +1,4 @@
-<%@ page import="imcode.server.ApplicationServer,
+<%@ page contentType="text/html; charset=cp1252"  import="imcode.server.ApplicationServer,
                  org.apache.commons.lang.StringEscapeUtils,
                  java.util.Date,
                  java.text.SimpleDateFormat,

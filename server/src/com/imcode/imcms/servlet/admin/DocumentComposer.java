@@ -7,10 +7,7 @@ package com.imcode.imcms.servlet.admin;
  * Time: 16:19:25
  */
 
-import imcode.server.ApplicationServer;
-import imcode.server.ExternalDocType;
-import imcode.server.IMCConstants;
-import imcode.server.IMCServiceInterface;
+import imcode.server.*;
 import imcode.server.document.*;
 import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
 import imcode.server.user.UserDomainObject;
@@ -110,6 +107,7 @@ public class DocumentComposer extends HttpServlet {
     }
 
     public void doPost( HttpServletRequest r, HttpServletResponse response ) throws ServletException, IOException {
+        r.setCharacterEncoding( WebAppGlobalConstants.DEFAULT_ENCODING_CP1252 );
         MultipartHttpServletRequest request = new MultipartHttpServletRequest( r );
 
         String action = request.getParameter( REQUEST_ATTR_OR_PARAM__ACTION );
