@@ -9,7 +9,7 @@ public class DBConnect {
     private final static String CVS_REV = "$Revision$";
     private final static String CVS_DATE = "$Date$";
 
-    DBConnectionManager conPool; // Inet poolmanager
+    ConnectionPool conPool; // Inet poolmanager
 
     protected Connection con = null;                 // The JDBC Connection
     protected Statement stmt = null;		    // The JDBC Statement
@@ -27,12 +27,12 @@ public class DBConnect {
     private static Category log = Category.getInstance( "DBConnect" );
 
     // constructor
-    public DBConnect( DBConnectionManager conPool ) {
+    public DBConnect( ConnectionPool conPool ) {
         this.conPool = conPool;
     }
 
     // constructor
-    public DBConnect( DBConnectionManager conPool, String sqlString ) {
+    public DBConnect( ConnectionPool conPool, String sqlString ) {
         this.conPool = conPool;
         strSQLString = sqlString;
     }

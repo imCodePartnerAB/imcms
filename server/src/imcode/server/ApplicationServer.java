@@ -1,8 +1,8 @@
 package imcode.server;
 
 import imcode.util.Prefs;
-import imcode.server.db.DBConnectionManager;
-import imcode.server.db.NonPoolingDriverDBConnectionManager;
+import imcode.server.db.ConnectionPool;
+import imcode.server.db.ConnectionPoolForNonPoolingDriver;
 // import imcode.server.db.InetPoolManager;
 import org.apache.log4j.Category;
 
@@ -71,9 +71,9 @@ public class ApplicationServer {
                 Class objClass = Class.forName( classname );
 
                 // Let's find the constructor that takes an "InetPoolManager" and a Properties.
-                Constructor objConstructor = objClass.getConstructor( new Class[]{DBConnectionManager.class, Properties.class} );
+                Constructor objConstructor = objClass.getConstructor( new Class[]{ConnectionPool.class, Properties.class} );
 
-                DBConnectionManager dbConnectionManager = createDBConnectionMananger( servername, serverprops );
+                ConnectionPool dbConnectionManager = createDBConnectionMananger( servername, serverprops );
                 Object[] paramArr = {dbConnectionManager, serverprops};
 
                 // Invoke Constructor(InetPoolManager, Properties) on class
@@ -98,8 +98,8 @@ public class ApplicationServer {
         log.info( "imcmsd running..." );
     }
 
-    private DBConnectionManager createDBConnectionMananger( String servername, Properties props ) {
-        DBConnectionManager result = null;
+    private ConnectionPool createDBConnectionMananger( String servername, Properties props ) {
+        ConnectionPool result = null;
 
         String jdbcDriver = props.getProperty( "JdbcDriver" );
         String jdbcUrl = props.getProperty( "Url" );
@@ -129,8 +129,10 @@ public class ApplicationServer {
                                       user, password, "30");
             */
             String serverUrl = jdbcUrl + host + ":" + port + ";DatabaseName=" + databaseName;
-            result = new NonPoolingDriverDBConnectionManager( servername, jdbcDriver, serverUrl, user, password, maxConnectionCount );
-            result.testConnectionAndLogResultToTheErrorLog();
+
+            result = new ConnectionPoolForNonPoolingDriver( servername, jdbcDriver, serverUrl, user, password, maxConnectionCount );
+            result.testConnectionAndLoggResultToTheErrorLog();
+
 
         } catch( Exception ex ) {
             log.fatal( "Failed to create database connection pool");

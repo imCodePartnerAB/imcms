@@ -9,7 +9,7 @@ import org.apache.oro.text.regex.* ;
 import imcode.server.parser.* ;
 import imcode.server.* ;
 import imcode.server.db.DBConnect;
-import imcode.server.db.DBConnectionManager;
+import imcode.server.db.ConnectionPool;
 import imcode.util.* ;
 
 import org.apache.log4j.Category;
@@ -60,13 +60,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     private IMCServiceInterface serverObject ;
-    private DBConnectionManager connPool ;
+    private ConnectionPool connPool ;
     private File templatePath ;
     private File includePath ;
     private String imageUrl ;
     private String servletUrl ;
 
-    public TextDocumentParser(IMCServiceInterface serverobject, DBConnectionManager connpool, File templatepath, File includepath, String imageurl, String servleturl) {
+    public TextDocumentParser(IMCServiceInterface serverobject, ConnectionPool connpool, File templatepath, File includepath, String imageurl, String servleturl) {
 		this.connPool = connpool ;
 		this.templatePath = templatepath ;
 		this.includePath = includepath ;

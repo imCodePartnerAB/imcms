@@ -17,7 +17,7 @@ import java.net.MalformedURLException ;
 
 import imcode.server.* ;
 import imcode.server.db.DBConnect;
-import imcode.server.db.DBConnectionManager;
+import imcode.server.db.ConnectionPool;
 import imcode.server.parser.* ;
 
 import imcode.util.FileCache ;
@@ -37,7 +37,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private final static String CVS_REV="$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 
-    private final DBConnectionManager m_conPool ; // inet pool of connections
+    private final ConnectionPool m_conPool ; // inet pool of connections
     private TextDocumentParser textDocParser ;
 
     private File m_TemplateHome ;           // template home
@@ -72,7 +72,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Contructs an IMCService object.
      */
-    public IMCService(DBConnectionManager conPool,Properties props) {
+    public IMCService(ConnectionPool conPool,Properties props) {
 	super();
 	m_conPool    = conPool ;
 

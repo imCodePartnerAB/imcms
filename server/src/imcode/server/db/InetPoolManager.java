@@ -9,9 +9,11 @@ import com.inet.pool.PDataSource;
 
 import org.apache.log4j.Category;
 
-public class InetPoolManager implements DBConnectionManager {
+
+public class InetPoolManager implements ConnectionPool {
     private final static String CVS_REV = "$Revision$";
     private final static String CVS_DATE = "$Date$";
+
 
     private PoolManager manager;
     private ConnectionPoolDataSource ds;
@@ -120,7 +122,8 @@ public class InetPoolManager implements DBConnectionManager {
         return pds;
     }
 
-    public void testConnectionAndLogResultToTheErrorLog() {
+    public void testConnectionAndLoggResultToTheErrorLog() {
+
         try {
             testConnectionAndLogMetaData( "Bla" );
         }

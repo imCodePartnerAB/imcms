@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.*;
 import imcode.server.* ;
 import imcode.server.db.DBConnect;
-import imcode.server.db.DBConnectionManager;
+import imcode.server.db.ConnectionPool;
 
 
 
@@ -17,12 +17,12 @@ public class IMCPool implements IMCPoolInterface {
 	private final static String CVS_REV="$Revision$" ;
 	private final static String CVS_DATE = "$Date$" ;
     //	ConnectionPool m_conPool ;            // our pool of connections
-    DBConnectionManager m_conPool ; // inet pool of connections
+    ConnectionPool m_conPool ; // inet pool of connections
 
     /**
        Construct a pool object
     */
-    public IMCPool(DBConnectionManager conPool,Properties props) {
+    public IMCPool(ConnectionPool conPool,Properties props) {
 	super();
 	m_conPool = conPool ;
     }
