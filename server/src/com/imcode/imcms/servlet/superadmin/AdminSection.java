@@ -13,9 +13,6 @@ import java.io.IOException;
 import java.util.Vector;
 import java.util.Properties;
 
-import com.imcode.imcms.servlet.superadmin.Administrator;
-import com.imcode.imcms.servlet.superadmin.Administrator;
-
 public class AdminSection extends Administrator {
 
     private final static String ADMIN_TEMPLATE = "sections/admin_section.html";
@@ -93,8 +90,6 @@ public class AdminSection extends Administrator {
 
             vec.add("#errormsg#");
             vec.add( errormsg );
-            vec.add("#new_section_name#");
-            vec.add(new_section_name);
             vec.add("#section_list#");
             vec.add(createOptionList(section_arr, user, null));
             //ok lets parse the page with right template
