@@ -1,51 +1,254 @@
-<HTML>
+<html>
+
 <HEAD>
 <TITLE>Admin</TITLE>
 </HEAD>
 <BODY  bgcolor="#FFFFFF">
-<H3>
-<FORM METHOD=POST ACTION="GetExistingDoc">
+<FORM METHOD="post" ACTION="/servlet/GetExistingDoc">
 <CENTER>
-      <TABLE cellpadding="2" cellspacing="0" align="center" border="1" width="250">
+      <TABLE cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
 		<TR bgcolor="#333366"> 
-		  <TD><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">&nbsp;V&auml;lj 
-			dokument </font></b></font></TD>
+		  
+        <TD width="623" height="16"><font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF"><b>&nbsp;V&auml;lj 
+          befintligt dokument </b></font></TD>
 		</TR>
 		<TR bgcolor="#333366"> 
-		  <TD> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;MetaId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#meta_id#</font> 
+		  <TD width="623" height="16"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2" color="#FFFFFF">&nbsp;MetaId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2726</font> 
 		  </TD>
 		</TR>
 		<TR valign="middle"> 
-		  <TD bgcolor="#BABABA"> 
-			<p>&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Dokument</font>&nbsp;&nbsp;&nbsp;&nbsp; 
-			  <input type="TEXT" name="existing_meta_id" value="" SIZE=10 >
-			  &nbsp;&nbsp;&nbsp; <!--<INPUT TYPE = SUBMIT VALUE = "Sök" NAME="submit"> --> 
+		  <TD bgcolor="#BABABA" width="623" height="52"> 
+			<p>&nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Dokument
+            med metaId</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="TEXT" name="existing_meta_id" value="" SIZE=10> &nbsp;&nbsp;&nbsp;
+            <INPUT TYPE=SUBMIT VALUE="Lägg till" NAME="ok"><INPUT TYPE=RESET VALUE="Rensa"><INPUT TYPE=SUBMIT VALUE="Avbryt" NAME="cancel"> 
 			</p>
 			</TD>
 		</TR>
-		<TR valign="middle">
-		  <TD bgcolor="#BABABA">
-			<center>
-			  <a href="MetaAdmin" target="_blank">Visa lista p&aring; existerande 
-			  dokument.</a> 
-			</center>
-		  </TD>
-		</TR>
-		<TR> 
-		  <TD bgcolor="#BABABA"> 
-			<CENTER>
-			  <INPUT TYPE=SUBMIT VALUE="OK" NAME="ok">
-			  <INPUT TYPE=RESET VALUE="Rensa">
-			  <INPUT TYPE=SUBMIT VALUE="Avbryt" NAME="cancel">
-			</center>
-		  </TD>
-		</TR>
-		<input type=hidden name=meta_id value="#meta_id#">
-		<input type=hidden name=doc_menu_no value="#doc_menu_no#">
+		</TABLE>
+		<BR><input type="hidden" name="meta_id_value" value=#meta_id#>
+			<input type="hidden" name="doc_meny_no" value=#doc_meny_no#>
 		
-	  </TABLE>
+    <TABLE cellpadding="2" cellspacing="0" align="center" border="1" width="631" height="1">
+      <TR bgcolor="#333366" valign="middle"> 
+        <TD bgcolor="#333366" width="623" height="26" colspan="2"> 
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr> 
+              <td><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b>&nbsp;Sök 
+                befintliga dokument </b></font> 
+              </td>
+            </tr>
+          </table>
+          <font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+          &nbsp;S&ouml;kord: 
+          <input type="text" name="searchstring" size="65">
+          &nbsp;&nbsp;AND</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+          <input type="radio" value="and" name="search_prep">
+          </font><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2">&nbsp;&nbsp;OR</font><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
+          <input type="radio" value="or" name="search_prep" checked>
+          </font></TD>
+      </TR>
+      <TR> 
+        <TD bgcolor="#BABABA" width="623" height="52" colspan="2"> 
+          <table width="100%" border="1" cellspacing="1" cellpadding="1">
+            <tr> 
+              <td width="50%"> 
+                <table border="0" cellspacing="1" cellpadding="1" width="100%" height="100%">
+                  <tr> 
+                    <td colspan="2"> 
+                      <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><u>Inkludera 
+                        dokument av typen</u></b></font></div>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Textsida: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="2">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">L&auml;nk: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="5" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Browserkontroll: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="6" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">HTML-dokument: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="7" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Fil: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="8">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Diagram 
+                        dokument: </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="101">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Konferens 
+                        dokument: </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="doc_type" value="102">
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="50%"> 
+                <table border="0" cellspacing="1" cellpadding="1" width="100%" height="100%">
+                  <tr> 
+                    <td colspan="2"> 
+                      <div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"><b><u>Inkludera 
+                        dokument mellan dessa datum</u></b></font></div>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Start 
+                        datum: </font></div>
+                    </td>
+                    <td> 
+                      <input type="text" name="start_date" size="16" maxlength="16" value="#now#">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Slut 
+                        datum: </font></div>
+                    </td>
+                    <td> 
+                      <input type="text" name="end_date" size="16" maxlength="16" value="#now#">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Skapat: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="include_doc" value="created" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">&Auml;ndrat: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="include_doc" value="changed" checked>
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Aktiverat: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="include_doc" value="activated">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td> 
+                      <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Arkiverat: 
+                        </font></div>
+                    </td>
+                    <td> 
+                      <input type="checkbox" name="include_doc" value="archived">
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td colspan="2">&nbsp; </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </TD>
+      </TR>
+      <TR> 
+        <TD bgcolor="#BABABA" height="" colspan="2">
+          <table width="100%" border="0" cellspacing="1" cellpadding="1">
+            <tr> 
+              <td width="25%"> 
+                <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Sortera 
+                  efter: </font></div>
+              </td>
+              <td width="25%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+                <select name="sortBy">
+                  <option value="doc_type">Dokument typ</option>
+                  <option value="change_date">&Auml;ndrat datum</option>
+                  <option value="create_date">Skapat datum</option>
+                  <option value="archive_date">Arkiverat datum</option>
+                  <option value="activate_date">Aktiverat datum</option>
+                  <option value="alphabetically">Bokstavsorning</option>
+                  <option value="meta_id">Meta ID</option>
+                </select>
+                </font></td>
+              <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font></td>
+            </tr>
+            <tr> 
+              <td width="25%"> 
+                <div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">Tr&auml;ffar 
+                  per sida: </font></div>
+              </td>
+              <td width="25%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1">
+                <select name="HitsPerPage">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                </font></td>
+              <td width="50%"><font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font></td>
+            </tr>
+            <tr> 
+              <td colspan="3"> 
+                <div align="left"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b></b> 
+                  </font><font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font><font face="Verdana, Arial, Helvetica, sans-serif" size="1"></font> 
+                </div>
+                <div align="right"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><a href="/help/existing_doc_HELP.html" target="_blank"><font size="1">Hj&auml;lp</font></a></b> 
+                  &nbsp; </font> 
+                  <input type="submit" name="search" value="S&ouml;k">
+                  <font face="Verdana, Arial, Helvetica, sans-serif" size="1"> 
+                  </font></div>
+              </td>
+            </tr>
+          </table>
+        </TD>
+      </TR>
+    </TABLE>
     </center>
 </FORM>
-</h3>
 </BODY>
 </HTML>
