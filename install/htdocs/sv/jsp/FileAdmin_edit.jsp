@@ -180,6 +180,81 @@ String sReadonly = "" ;
 if (isReadonly) {
 	sReadonly = " readonly onFocus=\"blur()\"" ;
 }
+
+
+
+/* *******************************************************************************************
+ *         Help window                                                                       *
+ ******************************************************************************************* */
+
+boolean isHelpWin = (request.getParameter("show") != null && request.getParameter("show").equals("help")) ? true : false ;
+
+if (isHelpWin) { %>
+<html>
+<head>
+<title>:: imCMS ::</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<STYLE TYPE="text/css">
+<!--
+.imHeading { font: bold 17px Verdana, Geneva, sans-serif; color:#000066; }
+.imFilename { font: 10px Verdana, Geneva, sans-serif; color:#006600; }
+.norm { font: 11px Verdana, Geneva, sans-serif; color:#333333; }
+TT, .edit { font: 11px "Courier New", Courier, monospace, color:#000000; }
+SELECT, INPUT, .small { font: 10px Verdana, Geneva, sans-serif; color:#333333; }
+A:link, A:visited, A:active { color:#000099; text-decoration:none; }
+B { font-weight:bold; }
+-->
+</STYLE>
+
+</head>
+<body>
+
+<table border="0" cellspacing="0" cellpadding="0" width="90%" align="center">
+<tr>
+	<td class="imHeading">Tips!</td>
+</tr>
+<tr>
+	<td colspan="2" align="center"><img src="<%= IMG_PATH %>line_hr2.gif" width="<%
+	if (isMoz || isIE) {
+		%>100%<%
+	} else {
+		%>380<%
+	} %>" height="6" vspace="5"></td>
+</tr>
+<tr>
+	<td class="norm"><%
+	if (!isNS && !isMac) { %>
+	<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/6 ?> <i><%
+		if (isReadonly) {
+			%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/7 ?> <%
+		} else {
+			%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?> <%
+		}
+		if (isTempl) {
+			%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/9 ?><%
+		} else {
+			%><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/10 ?><%
+		} %></i> <? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/11 ?><%
+		if (isIE) {
+		%> <? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/12 ?><%
+		} %><br><br><%
+	}
+	if (!isReadonly) { %>
+	<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/13 ?><%
+		if (isIE && !isMac) { %>
+	<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/14 ?><%
+		}
+	} %></td>
+</tr>
+</table>
+
+
+</body>
+</html><%
+	return ;
+}
 %>
 <html>
 <head>
@@ -195,6 +270,7 @@ if (isReadonly) {
 TT, .edit { font: 11px "Courier New", Courier, monospace, color:#000000; }
 SELECT, INPUT, .small { font: 10px Verdana, Geneva, sans-serif; color:#333333; }
 A:link, A:visited, A:active { color:#000099; text-decoration:none; }
+B { font-weight:bold; }
 -->
 </STYLE>
 
@@ -278,14 +354,13 @@ function checkSaved(ch) {
 			el.disabled = 0;
 		}<%
 		} %>
-		resize<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field();
-		loopMess(0);
+		resizeEditField();
 	}
 }
 
-function resize<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field() {
+function resizeEditField() {
 	if (isMoz) {
-		var el<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?> = document.getElementById("txtField");
+		var elEdit = document.getElementById("txtField");
 		var availW = 0;
 		var availH = 0;
 		if (isIE) {
@@ -295,53 +370,12 @@ function resize<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?>Field() {
 			availW = parseInt(innerWidth);
 			availH = parseInt(innerHeight);
 		}
-		if (availW > 0) el<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?>.style.width = availW - 13;
-		if (availH > 0) el<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?>.style.height = availH - 72;
+		if (availW > 0) elEdit.style.width = availW - 13;
+		if (availH > 0) elEdit.style.height = availH - 62;
 	}
 }
 
 var errMess = <% if (!sError.equals("")) { %>1<% } else { %>2<% } %>;
-
-function loopMess(stopit) {
-	if (isMoz) {
-		if (stopit) {
-			window.clearTimeout(oTimer);
-			if (errMess) {
-				errMess = 0;
-				return;
-			} else if (isIE) {
-				errMess = 2;
-			}
-		}
-		var el = document.getElementById("messId");
-		var colorRed   = "#cc0000";
-		var colorGreen = "#009900";
-		var oTimer;
-		if (errMess == 2) {
-			el.style.color = colorGreen;
-			el.innerHTML = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/6 ?><i><% if (isReadonly) { %><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/7 ?><% } else { %><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/8 ?><% } %> <% if (isTempl) { %><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/9 ?><% } else { %><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/10 ?><% } %></i> <? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/11 ?><% if (isIE) { %> <? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/12 ?><% } %>";
-			errMess = 3;<%
-			if (!isReadonly) { %>
-			oTimer = window.setTimeout("loopMess()", 5000);<%
-			} %>
-		} else if (errMess == 3) {
-			el.style.color = colorGreen;
-			el.innerHTML = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/13 ?>";
-			errMess = 4;
-			oTimer = window.setTimeout("loopMess()", 5000);
-		} else if (errMess == 4) {
-			el.style.color = colorGreen;
-			el.innerHTML = "<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2/14 ?>";
-			errMess = <% if (!sError.equals("")) { %>1<% } else { %>2<% } %>;
-			oTimer = window.setTimeout("loopMess()", 5000);
-		} else if (errMess == 1) {
-			el.style.color = colorRed;
-			el.innerHTML = "<%= sError %>";
-			errMess = 2;
-			oTimer = window.setTimeout("loopMess()", 10000);
-		}
-	}
-}
 
 function toggleFontSize() {
 	if (isMoz) {
@@ -364,6 +398,22 @@ function toggleFontSize() {
 		} else if (theSize == 10) {
 			el.style.fontSize = "11px";
 		}
+	}
+}
+
+function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
+	if (screen) {
+		if ((screen.height - winH) < 150) {
+			var winX = (screen.width - winW) / 2;
+			var winY = 0;
+		} else {
+			var winX = (screen.width - winW) / 2;
+			var winY = (screen.height - winH) / 2;
+		}
+		var popWindow = window.open(sUrl,sName,"resizable=" + iResize + ",menubar=0,scrollbars=" + iScroll + ",width=" + winW + ",height=" + winH + ",top=" + winY + ",left=" + winX + "");
+		if (popWindow) popWindow.focus();
+	} else {
+		window.open(sUrl,sName,"resizable=yes,menubar=0,scrollbars=" + iScroll + ",width=" + winW + ",height=" + winH);
 	}
 }
 //-->
@@ -476,7 +526,13 @@ function toggleFontSize() {
 				} else {
 					%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2004 ?>" onClick="closeIt(); return false"><%
 				} %></td>
-				<td class="norm">&nbsp;&nbsp;</td>
+				<td class="norm"><a href="javascript: popWinOpen(400,200,'<%= thisPage %>?show=help<%
+			if (isTempl) {
+				%>&template=1<%
+			}
+			if (isReadonly) {
+				%>&readonly=1<%
+			} %>&file=<%= file %>&templName=<%= templName %>','FileAdminEditHelp',0,0)"><img src="../htmleditor/images/btn_help_subject.gif" width="16" height="16" alt="Tips!" border="0" hspace="10"></a></td>
 			</tr>
 			</table></td>
 		</tr>
@@ -491,6 +547,13 @@ function toggleFontSize() {
 			} else {
 				%><input name="btnClose" id="btnClose" type="image" src="<%= IMG_PATH %>btn_close.gif" border="0" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2006 ?>" onClick="closeIt(); return false"><%
 			} %></td>
+			<td class="norm"><a href="javascript: popWinOpen(400,200,'<%= thisPage %>?show=help<%
+			if (isTempl) {
+				%>&template=1<%
+			}
+			if (isReadonly) {
+				%>&readonly=1<%
+			} %>&file=<%= file %>&templName=<%= templName %>','FileAdminEditHelp',0,0)"><img src="../htmleditor/images/btn_help_subject.gif" width="16" height="16" alt="Tips!" border="0" hspace="10"></a></td>
 		</tr>
 		</table><%
 		} %></td>
@@ -504,19 +567,31 @@ function toggleFontSize() {
 			} %>" height="6"></td>
 	</tr>
 	<tr>
-		<td colspan="2" height="18" class="small">&nbsp;&nbsp;&nbsp;<span id="messId" style="color:#cc0000" onClick="loopMess(1)"><%
-				if (!sError.equals("")) {
-					%><%= sError %><%
-				} %></span></td>
+		<td colspan="2" height="18" class="small"><span style="font: <% if (isNS) { %>10<% } else { %>9<% } %>px Verdana"><%
+			if (isTempl && !(isMac && (isNS || isIE))) { %>
+		&nbsp;&nbsp;<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/1 ?>&nbsp;
+		<a href="javascript: imScriptCount('text');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/2 ?></a> |
+		<a href="javascript: imScriptCount('image');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/3 ?></a> |
+		<a href="javascript: imScriptCount('menu');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/4 ?></a> |
+		<a href="javascript: imScriptCount('include');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/5 ?></a> |
+		<a href="javascript: imScriptCount('date');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/6 ?></a> |
+		<a href="javascript: imScriptCount('bradgard');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/7 ?></a> |
+		<a href="javascript: imScriptCount('other');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/8 ?></a><%
+			} else {
+				out.print("&nbsp;") ;
+			}
+			if (!sError.equals("")) {
+				%><div style="color:#cc0000"><%= sError %></div><%
+			} %></span></td>
 	</tr><%
 			String taRows = (isTempl && !(isMac && (isNS || isIE))) ? "39" : "40" ;
 			if (isIE || (isMac && isMoz)) { %>
 	<tr>
-		<td colspan="2"<% if (isMac) { %> align="center"<% } %>>
+		<td colspan="2" align="center">
 		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit" style="width:790; height:<% if (isTempl || (isMac && isIE)) { %>505<% } else { %>515<% } %>; overflow:auto" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (isMoz) { %>
 	<tr>
-		<td colspan="2" valign="top">
+		<td colspan="2" align="center" valign="top">
 		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" wrap="soft" class="edit" style="width:98%; height:<% if (isTempl) { %>500<% } else { %>510<% } %>" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (isMac && isNS) { %>
 	<tr>
@@ -527,17 +602,7 @@ function toggleFontSize() {
 		<td colspan="2" align="center" class="norm">
 		<textarea name="txtField" id="txtField" cols="82" rows="<%= taRows %>" wrap="soft" class="edit" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} %>
-<%= fileSrc %></textarea><%
-			if (isTempl && !(isMac && (isNS || isIE))) { %>
-		<div align="center"><span style="font: <% if (isNS) { %>10<% } else { %>9<% } %>px Verdana"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/1 ?>&nbsp;
-			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/2 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/2 ?></a> |
-			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/3 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/3 ?></a> |
-			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/4 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/4 ?></a> |
-			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/5 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/5 ?></a> |
-			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/6 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/6 ?></a> |
-			<a href="javascript: imScriptCount('bradgard');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/7 ?></a> |
-			<a href="javascript: imScriptCount('<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/8 ?>');"><? install/htdocs/sv/jsp/FileAdmin_edit.jsp/1004/8 ?></a></div><%
-			} %></td>
+<%= fileSrc %></textarea></td>
 	</tr>
 	</form>
 	</table></td>
