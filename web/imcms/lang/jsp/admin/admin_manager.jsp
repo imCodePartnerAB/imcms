@@ -7,7 +7,8 @@
                  com.imcode.imcms.servlet.beans.AdminManagerSubreport,
                  java.util.*,
                  imcode.server.document.*,
-                 com.imcode.imcms.servlet.beans.Tab"%>
+                 com.imcode.imcms.servlet.beans.Tab,
+                 org.apache.commons.lang.StringEscapeUtils"%>
 <%@page contentType="text/html"%><%@taglib prefix="vel" uri="/WEB-INF/velocitytag.tld"%>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
@@ -71,6 +72,9 @@
 <%= tabString %>
 #gui_mid_tabs2()
 <% if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabName())) { %>
+    <% if (null != adminManagerPage.getErrorMessage()) {
+        %><div style="color: red"><%= StringEscapeUtils.escapeHtml( adminManagerPage.getErrorMessage().toLocalizedString(request) )%></div><%
+    } %>
     <form method="POST" action="AdminManager">
     <input type="hidden" name="<%= AdminManager.REQUEST_PARAMETER__SHOW %>" value="<%= adminManagerPage.getTabName() %>">
     <% if (AdminManager.PARAMETER_VALUE__SHOW_NEW.equals( adminManagerPage.getTabName() ) ) { %>

@@ -20,7 +20,6 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.LocalizedMessage;
 import imcode.util.Utility;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -34,8 +33,6 @@ import java.io.Serializable;
 import java.util.*;
 
 public class AdminManager extends Administrator {
-
-    private final static Logger log = Logger.getLogger( AdminManager.class.getName() );
 
     private final static String HTML_ADMINTASK = "AdminManager_adminTask_element.htm";
     private final static String HTML_USERADMINTASK = "AdminManager_useradminTask_element.htm";
@@ -53,6 +50,7 @@ public class AdminManager extends Administrator {
     public static final String REQUEST_PARAMETER__ACTION__COPY = "copy";
 
     public static final String PAGE_SEARCH = "search";
+    private static final LocalizedMessage ERROR_MESSAGE__NO_CREATE_PERMISSION = new LocalizedMessage( "error/servlet/AdminManager/no_create_permission" );
 
     public void doGet( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
         this.doPost( req, res );
@@ -91,7 +89,7 @@ public class AdminManager extends Administrator {
             String createDocumentAction = request.getParameter( REQUEST_PARAMETER__CREATE_DOCUMENT_ACTION );
             if ( REQUEST_PARAMETER__ACTION__COPY.equals( createDocumentAction ) ) {
                 SaveSort.copyDocument( parentDocument, user );
-                createAndShowAdminManagerPage( request, response );
+                createAndShowAdminManagerPage( request, response, null );
             } else {
                 int documentTypeId = Integer.parseInt( createDocumentAction );
 
@@ -99,14 +97,19 @@ public class AdminManager extends Administrator {
                 DispatchCommand returnCommand = new ShowAdminManagerPageCommand();
 
                 AddDoc.DocumentCreator documentCreator = new AddDoc.DocumentCreator( saveNewDocumentCommand, returnCommand, getServletContext() );
-                documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
+                try {
+                    documentCreator.createDocumentAndDispatchToCreatePageFlow( documentTypeId, parentDocument, request, response );
+                } catch( SecurityException ex ) {
+                    createAndShowAdminManagerPage( request, response, ERROR_MESSAGE__NO_CREATE_PERMISSION );
+                }
             }
         } else {
-            createAndShowAdminManagerPage( request, response );
+            createAndShowAdminManagerPage( request, response, null );
         }
     }
 
-    private void createAndShowAdminManagerPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+    private void createAndShowAdminManagerPage( HttpServletRequest request, HttpServletResponse response,
+                                                LocalizedMessage errorMessage ) throws IOException, ServletException {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
         ImcmsServices service = Imcms.getServices();
         final DocumentMapper documentMapper = service.getDocumentMapper();
@@ -228,6 +231,7 @@ public class AdminManager extends Administrator {
             adminManagerPage = searchAdminManagerPage;
         }
 
+        adminManagerPage.setErrorMessage( errorMessage );
         adminManagerPage.setHtmlAdminPart( "".equals( html_admin_part ) ? null : html_admin_part );
         adminManagerPage.forward( request, response, loggedOnUser );
     }
@@ -339,6 +343,8 @@ public class AdminManager extends Administrator {
         String htmlAdminPart;
         public static final String REQUEST_ATTRIBUTE__PAGE = "ampage";
 
+        private LocalizedMessage errorMessage;
+
         public LocalizedMessage getHeading() {
             return heading;
         }
@@ -379,6 +385,14 @@ public class AdminManager extends Administrator {
 
         public void putInRequest( HttpServletRequest request ) {
             request.setAttribute( REQUEST_ATTRIBUTE__PAGE, this );
+        }
+
+        public LocalizedMessage getErrorMessage() {
+            return errorMessage;
+        }
+
+        public void setErrorMessage( LocalizedMessage errorMessage ) {
+            this.errorMessage = errorMessage;
         }
 
     }
@@ -534,7 +548,7 @@ public class AdminManager extends Administrator {
     private class ShowAdminManagerPageCommand implements DispatchCommand {
 
         public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-            createAndShowAdminManagerPage( request, response );
+            createAndShowAdminManagerPage( request, response, null );
         }
     }
 } // End of class
