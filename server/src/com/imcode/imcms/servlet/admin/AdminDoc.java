@@ -23,7 +23,7 @@ import org.apache.commons.lang.ObjectUtils;
 public class AdminDoc extends HttpServlet {
 
     private static final String PARAMETER__META_ID = "meta_id";
-    private static final String PARAMETER__DISPATCH_FLAGS = "flags";
+    public static final String PARAMETER__DISPATCH_FLAGS = "flags";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         doPost(req, res);

@@ -11,6 +11,8 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.imcode.imcms.servlet.admin.AdminDoc;
+
 class MenuParserSubstitution implements Substitution {
 
     private Substitution NULLSUBSTITUTION = new StringSubstitution( "" );
@@ -415,7 +417,7 @@ class MenuParserSubstitution implements Substitution {
                      + a_href;
 
             DocumentMapper documentMapper = parserParameters.getDocumentRequest().getServerObject().getDocumentMapper();
-            a_href = "<a href=\"AdminDoc?meta_id="+document.getId()+"&flags=1\">"+documentMapper.getStatusIconTemplate( menuItem.getDocument(), user ) + "</a>" + a_href;
+            a_href = "<a href=\"AdminDoc?meta_id="+document.getId()+"&"+AdminDoc.PARAMETER__DISPATCH_FLAGS+"=1\">"+documentMapper.getStatusIconTemplate( menuItem.getDocument(), user ) + "</a>" + a_href;
         }
 
         tags.setProperty( "#menuitemlink#", a_href );
