@@ -430,9 +430,24 @@ class TagParser {
         }
         String finalresult = result;
         if ( textMode ) {
-            String[] replace_tags = getLabelTags( attributes, no, finalresult );
+            HttpServletRequest request = documentRequest.getHttpServletRequest() ;
+            HttpServletResponse response = documentRequest.getHttpServletResponse();
+            String formatsAttribute = attributes.getProperty( "formats", "" ) ;
+            String[] formats = null != formatsAttribute ? formatsAttribute.split( "\\W+" ) : null ;
+            request.setAttribute( "document", documentRequest.getDocument());
+            request.setAttribute( "textIndex", new Integer( no ));
+            String label = attributes.getProperty( "label", "" );
+            request.setAttribute( "label", label);
+            request.setAttribute( "content", finalresult );
+            request.setAttribute( "formats", formats );
 
-            finalresult = service.getAdminTemplate( "textdoc/admin_text.frag", documentRequest.getUser(), Arrays.asList( replace_tags ) );
+            try {
+                finalresult = Utility.getContents( "/imcms/"+documentRequest.getUser().getLanguageIso639_2()+"/jsp/docadmin/text/edit_text.jsp", request, response ) ;
+            } catch ( ServletException e ) {
+                throw new UnhandledException( e );
+            } catch ( IOException e ) {
+                throw new UnhandledException( e );
+            }
         }
 
         return finalresult;
@@ -457,8 +472,7 @@ class TagParser {
 
     private String removeHtmlTagsAndUrlEncode( String label ) {
         String label_urlparam;
-        org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util();
-        label_urlparam = perl5util.substitute( "s!<.+?>!!g", label );
+        label_urlparam = Html.removeTags( label );
         label_urlparam = URLEncoder.encode( label_urlparam );
         return label_urlparam;
     }

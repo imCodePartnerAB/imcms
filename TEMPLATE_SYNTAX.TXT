@@ -61,6 +61,10 @@ Single tags
             * mode - Possible values:
                 - "write" - The content is only output if in "edit image" mode.
                 - "read" - The content is only output if not in "edit image" mode.
+            * formats - List of allowed formats in the editor. Possible values:
+                - "html" - Use the html-editor to input HTML.
+                - "none" - Do not use the html-editor to input HTML.
+                - "text" - Use plain text, newlines converted to "<BR>" and html escaped on output.
 
 
     <?imcms:include?>

@@ -173,4 +173,11 @@ public class Html {
             throw new UnhandledException( e );
         }
     }
+
+    public static String removeTags( String html ) {
+        String label_urlparam;
+        org.apache.oro.text.perl.Perl5Util perl5util = new org.apache.oro.text.perl.Perl5Util();
+        label_urlparam = perl5util.substitute( "s!<.+?>!!g", html );
+        return label_urlparam;
+    }
 }
