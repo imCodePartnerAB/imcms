@@ -661,6 +661,21 @@ function RRcheckLineBreaks() {
 						myCount = myCount + (test - last + 1);
 					}
 				} while (test>0);
+				do {
+					myRe = /&/g;
+					myRe.lastIndex=test;
+					myRe.exec(oldHTML.substr(0,(myTextLength+myCount)));
+					test=myRe.lastIndex;
+					last=test;
+					if (test>0) {
+						myRe = /;/g;
+						myRe.lastIndex=test;
+						myRe.exec(oldHTML);
+						if((test - last) < 6){
+						test=myRe.lastIndex;
+						myCount = myCount + (test - last);}
+					}
+				} while (test>0);
 				resultString = resultString + oldHTML.substr(0,myTextLength+myCount)
 				oldHTML = oldHTML.substr(myTextLength+myCount)
 				if (/ $/.exec(resultString)) {
