@@ -1,6 +1,12 @@
-En ANNONS/ANSLAGSTAVLA DATABAS
+Skapa en ANNONS/ANSLAGSTAVLA  i en databas
 
-1. För att skapa tabeller i en annons/anslagstavla databas, kör scriptet billboard_tables.sql. 
+Med hjälp av SQL Query Analyzer
 
-2. För att skapa rätt stored procedures i en annons/anslagstavla, kör scriptet billboard_sprocs.sql.
+1. Skapa tabeller genom att köra scriptet billboard_tables.sql i aktuell databas 
+
+2. Skapa stored procedures genom att köra scriptet billboard_sprocs.sql
+
+  
+
+
 

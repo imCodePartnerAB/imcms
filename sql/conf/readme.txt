@@ -1,7 +1,10 @@
-EN KONFERENS DATABAS
+Skapa en KONFERENS i en databas
 
-För att scripta upp en konferens databas. Kör scriptet conf_tables.sql. 
+Med hjälp av SQL Query Analyzer
 
-För att applicera rätt stored procedures på en befintligt konferens. Kör scriptet
-conf_sprocs.
+1. Skapa tabeller genom att köra scriptet conf_tables.sql i aktuell databas 
+
+2. Skapa stored procedures genom att köra scriptet conf_sprocs.sql
+
+
 
