@@ -40,4 +40,8 @@ public class Category {
         return internalCategory.toString();
     }
 
+    public String getDescription() {
+        return internalCategory.getDescription() ;
+    }
+
 }

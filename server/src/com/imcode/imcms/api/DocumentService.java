@@ -65,4 +65,24 @@ public class DocumentService {
         return null ;
     }
 
+    public Category[] getAllCategoriesOfType(CategoryType categoryType) {
+        CategoryDomainObject[] categoryDomainObjects = documentMapper.getAllCategoriesOfType(categoryType.getInternal()) ;
+        Category[] categories = new Category[categoryDomainObjects.length] ;
+        for (int i = 0; i < categoryDomainObjects.length; i++) {
+            CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
+            categories[i] = new Category(categoryDomainObject) ;
+        }
+        return categories ;
+    }
+
+    public CategoryType[] getAllCategoryTypes() {
+        CategoryTypeDomainObject[] categoryTypeDomainObjects = documentMapper.getAllCategoryTypes() ;
+        CategoryType[] categoryTypes = new CategoryType[categoryTypeDomainObjects.length];
+        for (int i = 0; i < categoryTypeDomainObjects.length; i++) {
+            CategoryTypeDomainObject categoryTypeDomainObject = categoryTypeDomainObjects[i];
+            categoryTypes[i] = new CategoryType(categoryTypeDomainObject) ;
+        }
+        return categoryTypes ;
+    }
+
 }

@@ -53,6 +53,8 @@ It currently looks like this, <a href="../servlet/GetDoc?meta_id=1001">document<
 Get the information about the document, <%= makeLink("document_get_document_info.jsp") %><br>
 Change the document information, <%= makeLink("document_change_document_info.jsp") %><br>
 <br>
+List all possible document categories, <%= makeLink("categories_show_all.jsp") %><br>
+<br>
 Show template for a document, <%= makeLink("document_show_templates.jsp") %><br>
 Change template for a document, <%= makeLink("document_change_template.jsp") %><br>
 Set template for a document to "Start", <%= makeLink("document_change_template_by_name.jsp") %><br>

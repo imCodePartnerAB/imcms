@@ -1,7 +1,5 @@
 package imcode.server.document;
 
-import org.apache.commons.collections.MultiHashMap;
-
 /**
  * @author kreiger
  */
@@ -10,8 +8,10 @@ public class CategoryDomainObject {
     private String name;
     private int id;
     private CategoryTypeDomainObject type;
+    private String description;
 
-    CategoryDomainObject(int id, String name, CategoryTypeDomainObject type) {
+    CategoryDomainObject(int id, String name, String description, CategoryTypeDomainObject type) {
+        this.description = description;
         this.type = type;
         this.name = name;
         this.id = id;
@@ -46,6 +46,10 @@ public class CategoryDomainObject {
 
     public int hashCode() {
         return id;
+    }
+
+    public String getDescription() {
+        return description ;
     }
 
 }
