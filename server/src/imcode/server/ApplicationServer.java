@@ -17,7 +17,7 @@ import imcode.util.Prefs;
  */
 public class ApplicationServer {
 
-    private final static String VERSION = "1.3.3 (2000-08-27 14:00)";
+    private final static String VERSION = "1.4.0 (2000-09-19 13:00)";
     private final static String CONFIG_FILE = "ImcServer.cfg";
 
     private final static int LOGINTERVAL = 10000;
