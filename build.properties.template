@@ -12,12 +12,13 @@ deployroot =
 
 # Database parameters for the main database.
 
+db-driver = com.microsoft.jdbc.sqlserver.SQLServerDriver
+db-url = jdbc:microsoft:sqlserver://
 db-host = 
 db-port = 1433
 db-name = 
 db-user = 
 db-pass = 
-db-timeout = 30
 db-maxconnections = 20
 
 

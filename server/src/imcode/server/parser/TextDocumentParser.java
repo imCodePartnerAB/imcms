@@ -8,6 +8,8 @@ import org.apache.oro.text.regex.* ;
 
 import imcode.server.parser.* ;
 import imcode.server.* ;
+import imcode.server.db.DBConnect;
+import imcode.server.db.DBConnectionManager;
 import imcode.util.* ;
 
 import org.apache.log4j.Category;
@@ -16,7 +18,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     private final static String CVS_REV = "$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 
-    private static Category log = Category.getInstance("server") ;
+    private static Category log = Category.getInstance("TextDocumentParser") ;
     private FileCache fileCache = new FileCache() ;
 
     private final static String SECTION_MSG_TEMPLATE = "sections/admin_section_no_one_msg.html";
@@ -58,13 +60,13 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
     }
 
     private IMCServiceInterface serverObject ;
-    private InetPoolManager connPool ;
+    private DBConnectionManager connPool ;
     private File templatePath ;
     private File includePath ;
     private String imageUrl ;
     private String servletUrl ;
 
-    public TextDocumentParser(IMCServiceInterface serverobject, InetPoolManager connpool, File templatepath, File includepath, String imageurl, String servleturl) {
+    public TextDocumentParser(IMCServiceInterface serverobject, DBConnectionManager connpool, File templatepath, File includepath, String imageurl, String servleturl) {
 		this.connPool = connpool ;
 		this.templatePath = templatepath ;
 		this.includePath = includepath ;
@@ -72,9 +74,9 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		this.servletUrl = servleturl ;
 		this.serverObject = serverobject ;
     }
-	
-	/* 
-	 return a referens to IMCServerInterface used by TextDocumentParser  
+
+	/*
+	 return a referens to IMCServerInterface used by TextDocumentParser
 	*/
 	public IMCServiceInterface getServerObject(){
 		return this.serverObject;
@@ -113,7 +115,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 		user_id_str
 	    } ;
 
-	    dbc.setProcedure("GetUserPermissionSet (?,?)",sqlAry) ;
+	    dbc.setProcedure("GetUserPermissionSet",sqlAry) ;
 	    Vector user_permission_set = (Vector)dbc.executeProcedure() ;
 	    dbc.clearResultSet() ;
 	    if ( user_permission_set == null ) {
@@ -177,7 +179,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 	    String sqlStr = null ;
 	    if (menumode) {
 		// I'll retrieve a list of all doc-types the user may create.
-		sqlStr = "GetDocTypesForUser (?,?,?)" ;
+		sqlStr = "GetDocTypesForUser" ;
 		String[] sqlAry2 = {
 		    String.valueOf(meta_id),
 		    String.valueOf(user.getUserId()),
@@ -194,7 +196,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    int selected_group = user.getTemplateGroup() ;
 	    if (templatemode) {
-		sqlStr = "GetTemplategroupsForUser (?,?)" ;
+		sqlStr = "GetTemplategroupsForUser" ;
 		String[] sqlAry2 = {
 		    String.valueOf(meta_id),
 		    String.valueOf(user.getUserId())
@@ -224,7 +226,7 @@ public class TextDocumentParser implements imcode.server.IMCConstants {
 
 	    // Here we have the most timeconsuming part of parsing the page.
 	    // Selecting all the documents with permissions from the DB
-	    sqlStr = "getChilds (?,?)" ;
+	    sqlStr = "getChilds" ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector childs = (Vector)dbc.executeProcedure() ;
 

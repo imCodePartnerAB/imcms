@@ -16,6 +16,8 @@ import java.net.URL ;
 import java.net.MalformedURLException ;
 
 import imcode.server.* ;
+import imcode.server.db.DBConnect;
+import imcode.server.db.DBConnectionManager;
 import imcode.server.parser.* ;
 
 import imcode.util.FileCache ;
@@ -33,7 +35,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     private final static String CVS_REV="$Revision$" ;
     private final static String CVS_DATE = "$Date$" ;
 
-    private final imcode.server.InetPoolManager m_conPool ; // inet pool of connections
+    private final DBConnectionManager m_conPool ; // inet pool of connections
     private TextDocumentParser textDocParser ;
 
     private File m_TemplateHome ;           // template home
@@ -68,7 +70,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Contructs an IMCService object.
      */
-    public IMCService(imcode.server.InetPoolManager conPool,Properties props) {
+    public IMCService(DBConnectionManager conPool,Properties props) {
 	super();
 	m_conPool    = conPool ;
 
@@ -154,7 +156,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	login = login.trim() ;
 
 	User user = null ;
-	String[] user_data = sqlProcedure("GetUserByLogin ", new String[] { login } ) ;
+	String[] user_data = sqlProcedure("GetUserByLogin", new String[] { login } ) ;
 
 	/*
 	  The columns are:
@@ -182,9 +184,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	if ( user_data.length > 0 ) {
 
 	    user = new User() ;
-			
-	    /* user object 
-	       private int userId ;			
+
+	    /* user object
+	       private int userId ;
 	       private String loginName ;		//varchar 50
 	       private String password ;		//varchar 15
 	       private String firstName;		//varchar 25
@@ -197,17 +199,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	       private String country;			//varchar 30
 	       private String county_council;	//varchar 30
 	       private String emailAddress;	//varchar 50
-	       private int lang_id;			
-	       private int user_type;			
+	       private int lang_id;
+	       private int user_type;
 	       private boolean active ;		//int
 	       private Date create_date;		//smalldatetime
-				
+
 	       private String langPrefix;
-			    
+
 	       private int template_group = -1 ;
 	       private String loginType ;
-				
-				
+
+
 	    */
 
 	    user.setUserId       	( Integer.parseInt( user_data[0]  ) ) ;
@@ -228,7 +230,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    user.setActive       	( 0 != Integer.parseInt( user_data[16] ) ) ;
 	    user.setCreateDate   	( user_data[17] ) ;
 	    user.setLangPrefix   	( user_data[14] ) ;
-			
+
 	    String login_password_from_db = user.getPassword() ;
 	    String login_password_from_form = password ;
 
@@ -254,15 +256,15 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        @return An object representing the user with the given id.
     **/
     public User getUserById(int userId) {
-	
-	String[] user_data = sqlProcedure("GetUserInfo ", new String[] { ""+userId } ) ;
-		
-	user_data = sqlProcedure("GetUserByLogin ", new String[] { user_data[1] } ) ;	
-		
+
+	String[] user_data = sqlProcedure("GetUserInfo", new String[] { ""+userId } ) ;
+
+	user_data = sqlProcedure("GetUserByLogin", new String[] { user_data[1] } ) ;
+
 
 	// if resultSet > 0 a user is found
 	if ( user_data.length > 0 ) {
-		
+
 	    User user = new User() ;
 
 	    user.setUserId       ( Integer.parseInt( user_data[0]  ) ) ;
@@ -285,17 +287,17 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    user.setLangPrefix   ( user_data[14] ) ;
 
 	    return user ;
-		
+
 	} else {
 	    // No user with that id.
 	    return null ;
 	}
     }
-	
+
     // Fixme! public bolean addUser(User user) save a user in db
     //		  public bolean updateUser(User user) save a user in db
-	
-	
+
+
     //Check if user has a special adminRole
     public boolean checkUserAdminrole ( int userId, int adminRole ) {
 	String[] adminrole = sqlProcedure("checkUserAdminrole ", new String[] {"" + userId, "" + adminRole });
@@ -306,8 +308,8 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	}
 	return false;
     }
-	
-	
+
+
 
     public String parsePage (DocumentRequest documentRequest, int flags,ParserParameters paramsToParse) throws IOException {
 	return textDocParser.parsePage(documentRequest,flags,paramsToParse) ;
@@ -363,7 +365,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	String doctypeStr = sqlQueryStr("select type from doc_types where doc_type = "+doc_type) ;
 	tags.put("doc_type",doctypeStr) ;
-	
+
 	// if user is superadmin or useradmin lets add superadmin button
 	if ( checkAdminRights(user) || 	checkUserAdminrole( user.getUserId(), 2 ) ) {
 	    tags.put("superadmin",superadmin.toString()) ;
@@ -550,14 +552,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /* Fixme:  delete doc from plugin db */
     public void deleteDocAll(int meta_id,imcode.server.User user) {
 	String sqlStr = "DocumentDelete " + meta_id ;
-	
+
 	String filename = meta_id + "_se";
 	File file = new File(m_FilePath, filename);
 	//System.out.println("FilePath: " + file.toString()) ;
-	
+
 	//If meta_id is a file document we have to delete the file from file system
 	if ( file.exists() ) {
-	    file.delete(); 
+	    file.delete();
 	}
 
 	// Create a db connection and execte sp DocumentDelete on meta_id
@@ -1316,20 +1318,12 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     public String[] sqlProcedure(String procedure, String[] params, boolean trim) {
 	Vector data = new Vector() ;
 
-	DBConnect dbc = new DBConnect(m_conPool) ;
-	dbc.setTrim(trim) ;
-	dbc.getConnection() ;
-	if ( params.length > 0 ) {
-	    StringBuffer procedureBuffer = new StringBuffer(procedure) ;
-	    procedureBuffer.append(" ?") ;
-	    for (int i = 1; i < params.length; ++i) {
-		procedureBuffer.append(",?") ;
-	    }
-	    procedure = procedureBuffer.toString() ;
-	}
+    DBConnect dbc = new DBConnect(m_conPool) ;
+    dbc.setTrim(trim) ;
+    dbc.getConnection() ;
 
 	dbc.setProcedure(procedure, params) ;
-	data = (Vector)dbc.executeProcedure() ;
+	data = dbc.executeProcedure() ;
 	dbc.clearResultSet() ;
 	dbc.closeConnection() ;
 	dbc = null ;
@@ -1638,7 +1632,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 
 	    // data
 	    for ( int j = 0 ; j < data.size() ; j++ )
-		result[j+i+1] = 
+		result[j+i+1] =
 		    null != data.elementAt(j)
 		    ? data.elementAt(j).toString()
 		    : null ;
@@ -1938,7 +1932,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    DBConnect dbc = new DBConnect(m_conPool) ;
 	    dbc.getConnection() ;
 
-	    String sqlStr = "GetUserPermissionSet (?,?)" ;
+	    String sqlStr = "GetUserPermissionSet" ;
 	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector perms = (Vector)dbc.executeProcedure() ;
@@ -1965,7 +1959,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    DBConnect dbc = new DBConnect(m_conPool) ;
 	    dbc.getConnection() ;
 
-	    String sqlStr = "GetUserPermissionSet (?,?)" ;
+	    String sqlStr = "GetUserPermissionSet" ;
 	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector perms = (Vector)dbc.executeProcedure() ;
@@ -1987,14 +1981,14 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        Checks to see if a user has any permission of a particular set of permissions for a document.
        @param meta_id	The document-id
        @param user		The user
-       @param			A bitmap containing the permissions.
+       @param permission A bitmap containing the permissions.
     */
     public boolean checkDocAdminRightsAny (int meta_id, User user, int permission) {
 	try {
 	    DBConnect dbc = new DBConnect(m_conPool) ;
 	    dbc.getConnection() ;
 
-	    String sqlStr = "GetUserPermissionSet (?,?)" ;
+	    String sqlStr = "GetUserPermissionSet" ;
 	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector perms = (Vector)dbc.executeProcedure() ;
@@ -2022,13 +2016,13 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
        Checks to see if a user has a particular set of permissions for a document.
        @param meta_id      The document-id
        @param user		    The user
-       @param permissions	A bitmap containing the permissions.
+       @param permission	A bitmap containing the permissions.
     */
     public boolean checkDocAdminRights (int meta_id, User user, int permission) {
 	try {
 	    DBConnect dbc = new DBConnect(m_conPool) ;
 	    dbc.getConnection() ;
-	    String sqlStr = "GetUserPermissionSet (?,?)" ;
+	    String sqlStr = "GetUserPermissionSet" ;
 	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user.getUserId())} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector perms = (Vector)dbc.executeProcedure() ;
@@ -2067,7 +2061,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	try{
 	    DBConnect dbc = new DBConnect(m_conPool) ;
 	    dbc.getConnection() ;
-	    String sqlStr = "GetUserPermissionSet (?,?)" ;
+	    String sqlStr = "GetUserPermissionSet" ;
 	    String[] sqlAry = {String.valueOf(meta_id),String.valueOf(user_id)} ;
 	    dbc.setProcedure(sqlStr,sqlAry) ;
 	    Vector perms = (Vector)dbc.executeProcedure() ;
@@ -2910,7 +2904,7 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 	    null != rrUserData.getExpiryDate()
 	    ? new SimpleDateFormat("yyyy-MM-dd").format(rrUserData.getExpiryDate())
 	    : null ;
-	
+
 	String temp[] = {""+userId,
 			 ""+rrUserData.getUses(),
 			 ""+rrUserData.getMaxUses(),
@@ -2919,9 +2913,9 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
 			 ""+rrUserData.getExpiryDateWarningThreshold(),
 			 ""+rrUserData.getExpiryDateWarningSent()
 	};
-	for (int i = 0 ; i < temp.length ; i++ ){	
+	for (int i = 0 ; i < temp.length ; i++ ){
 	    System.out.println("temp[]= " + temp[i]);
-	}	
+	}
 
 	sqlUpdateProcedure("SetReadrunnerUserDataForUser",
 			   new String[] {
