@@ -15,7 +15,7 @@ function openHelp(id){
 
 <body bgcolor="#FFFFFF">
 <form method="post" action="TemplateAdmin">
-  <table width="40%" border="0" cellspacing="0">
+  <table width="550" cellspacing="0" cellpadding="0" border="0">
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
@@ -24,9 +24,17 @@ function openHelp(id){
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
+	  <td colspan="4">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> <font size="2" face="Verdana, Arial, Helvetica, sans-serif">Uppladdningen 
 		lyckades.</font> </td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa">
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"><hr></td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
@@ -34,14 +42,12 @@ function openHelp(id){
 	  <td width="90%"> 
 		<input type="submit" name="add_template" value="Tillbaka">
 		<input type="HIDDEN" name="add_template" value="Tillbaka">
-		<input type="HIDDEN" name="language" value="#language#">&nbsp; <a href="GetDoc?meta_id=24" target="_blank" onClick="openHelp('24'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		<input type="HIDDEN" name="language" value="#language#">&nbsp; <a href="GetDoc?meta_id=24" target="_blank" onClick="openHelp('24'); return false;"><img src="/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	  </td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
-	<tr bgcolor="#bababa">
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
+	<tr bgcolor="#bababa"> 
+	  <td colspan="3">&nbsp;</td>
 	</tr>
   </table>
 </form>

@@ -2,41 +2,51 @@
 <head>
 <title>Varning!</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-</head>
 
+<SCRIPT language=JavaScript>
+<!--
+function openHelp(id){
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
+}
+//-->
+</SCRIPT>
+
+</head>
 <body bgcolor="#FFFFFF">
+
 <form method="post" action="TemplateAdmin">
-  <table width="40%" border="0" cellspacing="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">Varning!</font></b></font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		Du gl&ouml;mde ange en fil. V&auml;nligen f&ouml;rs&ouml;k igen. </font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<p> 
-		  <input type="submit" name="add_template" value="Tillbaka">
-		  <input type="HIDDEN" name="add_template" value="Tillbaka">
-		  <input type="HIDDEN" name="language" value="#language#">
-		</p>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td>&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-  </table>
+<input type="HIDDEN" name="language" value="#language#">
+<input type="HIDDEN" name="add_template" value="Tillbaka">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Varning!</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+	Du gl&ouml;mde ange en fil. V&auml;nligen f&ouml;rs&ouml;k igen.</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><input type="submit" name="add_template" value="Tillbaka"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
 </form>
+
 </body>
 </html>

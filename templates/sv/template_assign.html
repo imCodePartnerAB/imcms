@@ -1,89 +1,137 @@
 <html>
 <head>
-<title>Lägg till / Ta bort formatmallar</title>
+<title>Administrera formatmallar / formatgrupper</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
+<script language="JavaScript">
 <!--
 function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
-</SCRIPT>
+</script>
 
 </head>
-
 <body bgcolor="#FFFFFF">
-<form method="post" action="TemplateChange">
-  <table width="40%" border="0" cellspacing="0" cellpadding="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="3"> 
-		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">L&auml;gg 
-		  till / Ta bort formatmallar</font></b></font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="3"> 
-		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Formatgrupper: 
-		  <select name="templategroup">
-			#templategroups#
-             
-          </select>
-		  <input type="submit" name="show_assigned" value="Visa mallar">
-		  </font></p>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="30%" valign="center"> 
-		<div align="right"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Tillg&auml;ngliga 
-		  mallar:<br>
-		  <select name="unassigned" size="7" multiple>
-			#unassigned#
-           
-          </select>
-		  </font></div>
-	  </td>
-	  <td width="30%" valign="center" align="center"> 
-		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Grupp: 
-		  <i><b>#group#</b></i></font></p>
-		<p> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="assign" value="L&auml;gg till--&gt;">
-		  </font></p>
-		<p> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  <input type="submit" name="deassign" value="&lt;-- Ta bort">
-		  </font></p>
-	  </td>
-	  <td width="30%" valign="center"> 
-		<div align="left"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Mallar 
-		  i gruppen:<br>
-		  <select name="assigned" size="7" multiple>
-			#assigned#
-           
-          </select>
-		  </font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="3"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		<input type="submit" name="cancel" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=10" target="_blank" onClick="openHelp('10'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-		<input type="HIDDEN" name="group_id" value="#group_id#">
-		<input type="HIDDEN" name="language" value="#language#">
-		*&nbsp;=&nbsp;Exempelmall finns </font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="3">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-  </table>
+
+<form name="TemplateAdmin" action="TemplateAdmin" method="post">
+<input type="HIDDEN" name="language" value="se">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Administrera formatmallar / formatgrupper</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatmallar:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_template" value="L&auml;gg till">
+	<input type="submit" name="delete_template" value="Ta bort">
+	<input type="submit" name="rename_template" value="Byt namn">
+	<input type="submit" name="get_template" value="H&auml;mta uppladdad"><br>
+	<input type="submit" name="add_demotemplate" value="Ladda upp exempelmallar">
+	<input type="submit" name="show_templates" value="Visa formatmallar"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatgrupp:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_group" value="Skapa">
+	<input type="submit" name="delete_group" value="Ta bort">
+	<input type="submit" name="rename_group" value="Byt namn">
+	<input type="submit" name="assign_group" value="Tilldela formatmallar" disabled></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
 </form>
+
+
+
+<form name="TemplateChange" action="TemplateChange" method="post">
+<input type="hidden" name="group_id" value="#group_id#">
+<input type="hidden" name="language" value="#language#">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
+	<b>Tilldela formatmallar till grupper</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr>
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatgrupper:&nbsp;&nbsp;</font></td>
+		<td>
+		<select name="templategroup">
+		#templategroups#
+		</select></td>
+		<td>&nbsp;&nbsp;<input name="show_assigned" type="submit" value="Visa mallar"></td>
+	</tr>
+	</table><hr></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center">
+	<font size="2" face="Verdana, Arial, Helvetica, sans-serif">Grupp: <b><i>#group#</i></b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td width="45%" align="right"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Tillgängliga mallar:</font></td>
+		<td>&nbsp;</td>
+		<td width="45%"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Mallar i gruppen:</font></td>
+	</tr>
+	<tr>
+		<td align="right">
+		<select name="unassigned" size="7" style="width:100%" multiple>
+		#unassigned#
+		</select></td>
+		<td align="center">
+		&nbsp;<input type="submit" name="assign" value="L&auml;gg till &gt;&gt;" style="width:70">&nbsp;
+		&nbsp;<input type="submit" name="deassign" value="&lt;&lt; Ta bort " style="width:70">&nbsp;</td>
+		<td>
+		<select name="assigned" size="7" style="width:100%" multiple>
+		#assigned#
+		</select></td>
+	</tr>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b>*</b>&nbsp;=&nbsp;Exempelmall finns</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr>
+	<input type="submit" name="cancel" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=10" target="_blank" onClick="openHelp('10'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</form>
+
 </body>
 </html>

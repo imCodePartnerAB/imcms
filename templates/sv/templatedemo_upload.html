@@ -1,73 +1,118 @@
 <html>
 <head>
-<title>Ladda upp ny exempelmall</title>
+<title>Administrera formatmallar / formatgrupper</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
+<script language="JavaScript">
 <!--
 function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
-</SCRIPT>
+</script>
 
 </head>
-
 <body bgcolor="#FFFFFF">
-<form method="post" action="TemplateAdd" enctype="multipart/form-data">
-  <table width="40%" border="0" cellspacing="0" cellpadding="4">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> 
-		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"><b><font size="2">Ladda 
-		  upp ny exempelmall</font></b></font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="45%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Ange 
-		exempelmall: </font></td>
-	  <td width="45%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		<input type="file" name="file">
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="45%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">V&auml;lj 
-		mall: </font></td>
-	  <td width="45%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		<select name="template">
-			#templates#
-		</select>
-		*&nbsp;=&nbsp;Exempelmall finns </font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Existerande 
-		exempelmall kommer att skrivas &ouml;ver.</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> 
-		<input type="submit" name="ok" value="Ladda upp">
-		<input type="submit" name="view_demo" value="Visa exempelmall">
-		<input type="submit" name="delete_demo" value="Ta bort exempelmall">
-		<input type="submit" name="cancel" value="Tillbaka">
-		<input type="HIDDEN" name="language" value="#language#">
-		<input type="HIDDEN" name="demo" value="true">&nbsp; <a href="GetDoc?meta_id=23" target="_blank" onClick="openHelp('23'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td colspan="2">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-  </table>
+
+<form name="TemplateAdmin" action="TemplateAdmin" method="post">
+<input type="HIDDEN" name="language" value="se">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Administrera formatmallar / formatgrupper</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatmallar:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_template" value="L&auml;gg till">
+	<input type="submit" name="delete_template" value="Ta bort">
+	<input type="submit" name="rename_template" value="Byt namn">
+	<input type="submit" name="get_template" value="H&auml;mta uppladdad"><br>
+	<input type="submit" name="add_demotemplate" value="Ladda upp exempelmallar" disabled>
+	<input type="submit" name="show_templates" value="Visa formatmallar"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatgrupp:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_group" value="Skapa">
+	<input type="submit" name="delete_group" value="Ta bort">
+	<input type="submit" name="rename_group" value="Byt namn">
+	<input type="submit" name="assign_group" value="Tilldela formatmallar"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
 </form>
+
+<form method="post" action="TemplateAdd" enctype="multipart/form-data">
+<input type="hidden" name="language" value="#language#">
+<input type="hidden" name="demo" value="true">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
+	<b>Ladda upp ny exemplemall</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr>
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td width="20%" nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Ange exempelmall:&nbsp;&nbsp;</font></td>
+		<td><input type="file" name="file" size="25" style="width:100%"></td>
+	</tr>
+	<tr>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Välj mall:&nbsp;&nbsp;</font></td>
+		<td>
+		<select name="template">
+		#templates#
+		</select><font size="1" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;<b>*</b>&nbsp;=&nbsp;Exempelmall finns</font></td>
+	</tr>
+	<tr>
+		<td colspan="2" height="22"><font size="1" face="Verdana, Arial, Helvetica, sans-serif">
+		Existerande exempelmall kommer att skrivas &ouml;ver.</font></td>
+	</tr>
+	<tr>
+		<td colspan="2">
+		<table border="0" cellpadding="0" cellspacing="0">
+		<tr>
+			<td><input type="submit" name="ok" value="Ladda upp" style="width:150"></td>
+			<td>&nbsp;</td>
+			<td><input type="submit" name="view_demo" value="Visa exempelmall" style="width:150"></td>
+			<td>&nbsp;</td>
+			<td><input type="submit" name="delete_demo" value="Ta bort exempelmall" style="width:150"></td>
+		</tr>
+		</table></td>
+	</tr>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr>
+	<input type="submit" name="cancel" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=23" target="_blank" onClick="openHelp('23'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</form>
+
 </body>
 </html>

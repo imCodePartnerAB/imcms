@@ -15,13 +15,16 @@ function openHelp(id){
 
 <body bgcolor="#FFFFFF">
 <form method="post" action="TemplateChange">
-  <table width="40%" border="0" cellspacing="0">
+  <table width="550" cellspacing="0" cellpadding="0" border="0">
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="180%" colspan="2"> 
 		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">Varning!</font></b></font></div>
 	  </td>
 	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td colspan="4">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
@@ -54,18 +57,21 @@ function openHelp(id){
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
-	  <td colspan="2"> <nobr> 
-		<input type="submit" name="template_delete" value="OK">
-		<input type="submit" name="template_delete_cancel" value="Avbryt">
-		<input type="HIDDEN" name="template" value="#template#">
-		<input type="HIDDEN" name="language" value="#language#">&nbsp; <a href="GetDoc?meta_id=26" target="_blank" onClick="openHelp('26'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-		</nobr> </td>
+	  <td colspan="2"><hr></td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
-	  <td colspan="2">&nbsp;</td>
+	  <td colspan="2"> <nobr> 
+		<input type="submit" name="template_delete" value="OK">
+		<input type="submit" name="template_delete_cancel" value="Avbryt">
+		<input type="HIDDEN" name="template" value="#template#">
+		<input type="HIDDEN" name="language" value="#language#">&nbsp; <a href="GetDoc?meta_id=26" target="_blank" onClick="openHelp('26'); return false;"><img src="/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		</nobr> </td>
 	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
+	  <td colspan="4">&nbsp;</td>
 	</tr>
   </table>
 </form>

@@ -1,49 +1,52 @@
 <html>
 <head>
-<title>Logga in</title>
+<title>Du &auml;r utloggad</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
 </head>
-<body bgcolor="#FFFFFF">
-<p align="center">&nbsp;</p>
-<p align="center">&nbsp;</p>
-<h2 align="center">Du har inte beh&ouml;righet</h2>
-<h2 align="center">till det h&auml;r dokumentet!</h2>
-<form action="@servleturl@/VerifyUser" method=POST>
-	<center>
-    <table border=1 cellpadding="0" cellspacing="0" width="200">
-	  <tr bgcolor="#333366"> 
-		<td colspan=2 align="center"><font color="#FFFFFF" face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		  Ange ditt namn och l&ouml;senord<br>
-		  f&ouml;r att logga in.</font> </td>
-	  </tr>
-	  <tr> 
-		<td bgcolor="#bababa" valign="middle"> &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">Namn:</font><b> 
-		  </b> </td>
-		<td bgcolor="#bababa" valign="middle" align="center"> 
-		  <input type=TEXT name="name" value="" size=15>
-		</td>
-	  </tr>
-	  <tr> 
-		<td bgcolor="#bababa" valign="middle"> &nbsp;<font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&ouml;senord:</font> 
-		</td>
-		<td bgcolor="#bababa" valign="middle" align="center"> 
-		  <input type=PASSWORD name="passwd" value="" size=15>
-		</td>
-	  </tr>
-	  <tr bgcolor="#bababa" valign="middle"> 
-		<td colspan=2> 
-		  <center>
-			<input type=SUBMIT value="  OK   " name="SUBMIT">
-		  </center>
-		</td>
-	  </tr>
-	</table>
-  </center>
-</form>
-<SCRIPT language="JavaScript1.2">
-<!--
-document.forms[0].elements["name"].focus();
-//-->
-</SCRIPT>
+<body bgcolor="#FFFFFF" onLoad="document.forms[0].name.focus()">
+
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"><b>V&auml;lkommen!</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4" align="center">
+	<font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#cc0000">Du har inte beh&ouml;righet till det h&auml;r dokumentet!</font></td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center">
+	<table border="0" cellpadding="1" cellspacing="0">
+	<form action="/servlet/VerifyUser" method="post">
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Namn:</font></td>
+		<td><input type="text" name="name" size="15"></td>
+	</tr>
+	<tr>
+		<td><font face="Verdana, Arial, Helvetica, sans-serif" size="2">L&ouml;senord:&nbsp;</font></td>
+		<td><input type="password" name="passwd" size="15"></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" value="Logga in">&nbsp;<a href="javascript:openHelp('54');"><img alt="&Ouml;ppna hj&auml;lpsidan" border="0" height="21" src="@imageurl@/se/helpimages/btn_help_round.gif" width="19"></a></td>
+	</tr>
+	</form>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+
 </body>
 </html>

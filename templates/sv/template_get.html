@@ -1,53 +1,98 @@
 <html>
 <head>
-<title>Hämta uppladdad formatmall</title>
+<title>Administrera formatmallar / formatgrupper</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
+<script language="JavaScript">
 <!--
 function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
-</SCRIPT>
+</script>
 
 </head>
-
 <body bgcolor="#FFFFFF">
-<form method="post" action="TemplateChange">
-  <table width="40%" border="0" cellspacing="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> 
-		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"><b><font color="#FFFFFF">H&auml;mta 
-		  uppladdad formatmall</font></b></font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Formatmallar: 
-		<select name="template">
-			#templates#
-        </select>
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%"><font face="Verdana, Arial, Helvetica, sans-serif" size="2"> 
-		<input type="submit" name="template_get" value="H&auml;mta">
-		<input type="submit" name="cancel" value="Tillbaka">
-		<input type="HIDDEN" name="language" value="#language#">&nbsp; <a href="GetDoc?meta_id=21" target="_blank" onClick="openHelp('21'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-		</font></td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa">
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-  </table>
+
+<form name="TemplateAdmin" action="TemplateAdmin" method="post">
+<input type="HIDDEN" name="language" value="se">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Administrera formatmallar / formatgrupper</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatmallar:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_template" value="L&auml;gg till">
+	<input type="submit" name="delete_template" value="Ta bort">
+	<input type="submit" name="rename_template" value="Byt namn">
+	<input type="submit" name="get_template" value="H&auml;mta uppladdad" disabled><br>
+	<input type="submit" name="add_demotemplate" value="Ladda upp exempelmallar">
+	<input type="submit" name="show_templates" value="Visa formatmallar"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatgrupp:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_group" value="Skapa">
+	<input type="submit" name="delete_group" value="Ta bort">
+	<input type="submit" name="rename_group" value="Byt namn">
+	<input type="submit" name="assign_group" value="Tilldela formatmallar"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
 </form>
+
+<form action="TemplateChange" method="post">
+<input type="HIDDEN" name="language" value="#language#">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
+	<b>Hämta uppladdad formatmall</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr>
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatmall:&nbsp;&nbsp;</font></td>
+		<td>
+		<select name="template">
+		#templates#
+		</select></td>
+	</tr>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr>
+	<input type="submit" name="template_get" value="H&auml;mta">
+	<input type="button" name="back" value="Tillbaka" onClick="document.location = 'TemplateAdmin';">&nbsp; <a href="GetDoc?meta_id=25" target="_blank" onClick="openHelp('25'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</form>
+
 </body>
 </html>

@@ -1,77 +1,38 @@
 <html>
-
 <head>
-
-<title>imCMS Adminstrat&ouml;rsida</title>
-
+<title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-
-
 <SCRIPT language=JavaScript>
-
 <!--
-
-function openHelp(id) {
-
-	window.open('GetDoc?meta_id=' + id,'help','scrollbars=yes,width=650,height=570');
-
+function openHelp(id){
+	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
-
 //-->
-
 </SCRIPT>
 
-
-
 </head>
-
-
-
 <body bgcolor="#FFFFFF">
 
 <form method="post" action="AdminManager" name="AdminManager">
-
-  <table width="40%" border="0" cellspacing="0">
-
-	<tr bgcolor="#333366">
-
-      <td width="5%">&nbsp;</td>
-
-      <td colspan="2">
-
-	<div align="center"><b><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF" size="2">Administrat&ouml;rsmeny</font></b></div>
-
-      </td>
-
-      <td width="5%">&nbsp;</td>
-
-    </tr>
-
-    <tr bgcolor="#bababa">
-
-      <td width="5%">&nbsp;</td>
-
-      <td colspan="2">
-
-		<div align="left"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">V&auml;lj
-
-		  administrationsfunktion.</font></div>
-
-      </td>
-
-      <td width="5%">&nbsp;</td>
-
-    </tr>
-
-    <tr bgcolor="#bababa">
-
-      <td width="5%">&nbsp;</td>
-
-      <td colspan="2">
-
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Administrat&ouml;rsmeny</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><font size="2" face="Verdana, Arial, Helvetica, sans-serif">V&auml;lj administrationsfunktion.</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td>
 	<select name="AdminTask">
-
 	  <option value="No_Choice" selected>-- V&auml;lj Administrat&ouml;rsfunktion --</option>
 	  <option value="UserStart">         Anv&auml;ndare                             </option>
 	  <option value="AdminSection">      Avdelningar                                </option>
@@ -88,31 +49,17 @@ function openHelp(id) {
 	  <option value="SystemMessage">     Systeminställningar                        </option>
 	  <option value="DeleteDocs">        Ta bort ett dokument                       </option>
 	  <option value="MetaAdmin">         Visa alla dokument                         </option>
-
-	</select>
-	<input type="submit" name="submit" value="G&aring; till Adminsida">&nbsp; <a href="GetDoc?meta_id=28" target="_blank" onClick="openHelp('28'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-      </td>
-
-      <td width="5%">&nbsp;</td>
-
-    </tr>
-
-    <tr bgcolor="#bababa">
-
-      <td width="5%">&nbsp;</td>
-
-      <td colspan="2">&nbsp;</td>
-
-      <td width="5%">&nbsp;</td>
-
-    </tr>
-
-  </table>
-
-  <p><a href="StartDoc">Tillbaka till startsidan</a></p>
-
-  </form>
+	</select></td>
+	<td align="right" nowrap><a href="GetDoc?meta_id=28" target="_blank" onClick="openHelp('28'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>&nbsp; <input type="submit" name="submit" value="G&aring; till Adminsida"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</form>
+<font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+<a href="StartDoc">&lt;&lt; Till startsidan</a></font>
 
 </body>
-
 </html>

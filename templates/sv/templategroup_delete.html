@@ -1,56 +1,98 @@
 <html>
 <head>
-<title>Ta bort formatgrupp</title>
+<title>Administrera formatmallar / formatgrupper</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<SCRIPT language=JavaScript>
+<script language="JavaScript">
 <!--
 function openHelp(id){
 	window.open("GetDoc?meta_id=" + id,"help","scrollbars=yes,width=650,height=570");
 }
 //-->
-</SCRIPT>
+</script>
 
 </head>
-
 <body bgcolor="#FFFFFF">
-<form method="post" action="TemplateChange">
-  <table width="40%" cellspacing="0" cellpadding="0" border="0">
-	<tr bgcolor="#333366"> 
-	  <td width="5%">&nbsp;</td>
-	  <td><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"></font> 
-		<div align="center"><font face="Verdana, Arial, Helvetica, sans-serif" color="#FFFFFF"><b><font size="2">Ta 
-		  bort formatgrupp</font></b></font></div>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<p><font face="Verdana, Arial, Helvetica, sans-serif" size="2">Formatgrupper: 
-		  </font> 
-		  <select name="templategroup">
-			#templategroups#
-          </select>
-		</p>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td> 
-		<input type="submit" name="group_delete_check" value="Ta bort">
-		<input type="submit" name="cancel" value="Tillbaka">
-		<!--input type="HIDDEN" name="cancel" value="Tillbaka"-->&nbsp; <a href="GetDoc?meta_id=12" target="_blank" onClick="openHelp('12'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
-	  </td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-	<tr bgcolor="#bababa">
-	  <td width="5%">&nbsp;</td>
-	  <td>&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
-	</tr>
-  </table>
+
+<form name="TemplateAdmin" action="TemplateAdmin" method="post">
+<input type="HIDDEN" name="language" value="se">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff"><b>Administrera formatmallar / formatgrupper</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatmallar:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_template" value="L&auml;gg till">
+	<input type="submit" name="delete_template" value="Ta bort">
+	<input type="submit" name="rename_template" value="Byt namn">
+	<input type="submit" name="get_template" value="H&auml;mta uppladdad"><br>
+	<input type="submit" name="add_demotemplate" value="Ladda upp exempelmallar">
+	<input type="submit" name="show_templates" value="Visa formatmallar"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatgrupp:</font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2">
+	<input type="submit" name="add_group" value="Skapa">
+	<input type="submit" name="delete_group" value="Ta bort" disabled>
+	<input type="submit" name="rename_group" value="Byt namn">
+	<input type="submit" name="assign_group" value="Tilldela formatmallar"></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
 </form>
+
+<form name="TemplateChange" action="TemplateChange" method="post">
+<input type="hidden" name="language" value="#language#">
+<table width="550" border="0" cellspacing="0" bgcolor="#bababa">
+<tr bgcolor="#333366">
+	<td width="5%">&nbsp;</td>
+	<td colspan="2" align="center"><font size="2" face="Verdana, Arial, Helvetica, sans-serif" color="#ffffff">
+	<b>Ta bort formatgrupp</b></font></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr>
+	<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td nowrap><font size="2" face="Verdana, Arial, Helvetica, sans-serif">Formatgrupp:&nbsp;&nbsp;</font></td>
+		<td>
+		<select name="templategroup">
+		#templategroups#
+		</select></td>
+	</tr>
+	</table></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td width="5%">&nbsp;</td>
+	<td colspan="2"><hr>
+	<input type="submit" name="group_delete_check" value="Ta bort">
+	<input type="submit" name="cancel" value="Tillbaka">&nbsp; <a href="GetDoc?meta_id=12" target="_blank" onClick="openHelp('12'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a></td>
+	<td width="5%">&nbsp;</td>
+</tr>
+<tr>
+	<td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</form>
+
 </body>
 </html>

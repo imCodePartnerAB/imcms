@@ -15,7 +15,7 @@ function openHelp(id){
 
 <body bgcolor="#FFFFFF">
 <form method="post" action="TemplateChange">
-  <table width="40%" border="0" cellspacing="0">
+  <table width="550" cellspacing="0" cellpadding="0" border="0">
 	<tr bgcolor="#333366"> 
 	  <td width="5%">&nbsp;</td>
 	  <td width="90%"> 
@@ -24,10 +24,13 @@ function openHelp(id){
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
+	  <td colspan="3">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td>
-	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">&Auml;r 
-		du s&auml;ker p&aring; att formatgruppen skall tas bort? Formatgruppen 
-		inneh&aring;ller f&ouml;ljande mallar:</font></td>
+	  <td width="90%"> <font face="Verdana, Arial, Helvetica, sans-serif" size="2">
+		&Auml;r du s&auml;ker p&aring; att formatgruppen skall tas bort?<br>
+		Formatgruppen inneh&aring;ller f&ouml;ljande mallar:</font></td>
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
@@ -38,17 +41,20 @@ function openHelp(id){
 	  <td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
+	  <td width="5%">&nbsp;</td>
+	  <td width="90%"><hr></td>
+	  <td width="5%">&nbsp;</td>
+	</tr>
+	<tr bgcolor="#bababa"> 
 	  <td width="5%">&nbsp;</td><td width="90%"> 
 		<input type="submit" name="group_delete" value="OK">
 		<input type="submit" name="group_delete_cancel" value="Avbryt">
 		<input type="HIDDEN" name="templategroup" value="#templategroup#">
-		<input type="HIDDEN" name="group_delete_cancel" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=13" target="_blank" onClick="openHelp('13'); return false;"><img src="@imageurl@/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
+		<input type="HIDDEN" name="group_delete_cancel" value="Avbryt">&nbsp; <a href="GetDoc?meta_id=13" target="_blank" onClick="openHelp('13'); return false;"><img src="/images/se/helpimages/btn_help_round.gif" width="19" height="21" border="0" alt="&Ouml;ppna hj&auml;lpsidan"></a>
 	  </td><td width="5%">&nbsp;</td>
 	</tr>
 	<tr bgcolor="#bababa"> 
-	  <td width="5%">&nbsp;</td>
-	  <td width="90%">&nbsp;</td>
-	  <td width="5%">&nbsp;</td>
+	  <td colspan="3">&nbsp;</td>
 	</tr>
   </table>
 </form>
