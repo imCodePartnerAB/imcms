@@ -1,33 +1,28 @@
 package imcode.server ;
 
-import org.apache.oro.util.* ;
-import org.apache.oro.text.* ;
-import org.apache.oro.text.regex.* ;
-import org.apache.oro.text.perl.* ;
-import java.sql.*;
-import java.sql.Date ;
-import java.io.*;
-import java.util.*;
-import java.text.Collator ;
-import java.text.DateFormat;
-import java.text.ParseException ;
-import java.text.SimpleDateFormat;
-import java.net.URL ;
-import java.net.MalformedURLException ;
-
-import imcode.server.* ;
-import imcode.server.db.DBConnect;
+import imcode.readrunner.ReadrunnerUserData;
 import imcode.server.db.ConnectionPool;
-import imcode.server.parser.* ;
+import imcode.server.db.DBConnect;
+import imcode.server.parser.Document;
+import imcode.server.parser.ParserParameters;
+import imcode.server.parser.TextDocumentParser;
+import imcode.server.user.ImcmsAuthenticatorAndUserMapper;
+import imcode.server.user.Authenticator;
+import imcode.server.user.UserMapper;
+import imcode.util.FileCache;
+import imcode.util.fortune.*;
+import imcode.util.poll.PollHandlingSystem;
+import imcode.util.poll.PollHandlingSystemImpl;
+import imcode.util.shop.ShoppingOrderSystem;
+import imcode.util.shop.ShoppingOrderSystemImpl;
+import org.apache.log4j.Logger;
 
-import imcode.util.FileCache ;
-import imcode.util.fortune.* ;
-import imcode.util.shop.* ;
-import imcode.util.poll.*;
-
-import imcode.readrunner.* ;
-
-import org.apache.log4j.* ;
+import java.io.*;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
    Main services for the Imcode Net Server.
@@ -153,187 +148,74 @@ final public class IMCService implements IMCServiceInterface, IMCConstants {
     /**
      * Verify a Internet/Intranet user. User data retrived from SQL Database.
      */
+
+
     public imcode.server.User verifyUser(String login, String password) {
-
-	login = login.trim() ;
-
-	User user = null ;
-	String[] user_data = sqlProcedure("GetUserByLogin", new String[] { login } ) ;
-
-	/*
-	  The columns are:
-	  0 user_id,
-	  1 login_name,
-	  2 login_password,
-	  3 first_name,
-	  4 last_name,
-	  5 title,
-	  6 company,
-	  7 address,
-	  8 city,
-	  9 zip,
-	  10 country,
-	  11 county_council,
-	  12 email,
-	  13 lang_id
-	  14 lang_prefix,
-	  15 user_type,
-	  16 active,
-	  17 create_date
-	*/
-
-	// if resultSet > 0 a user is found
-	if ( user_data.length > 0 ) {
-
-	    user = new User() ;
-
-	    /* user object
-	       private int userId ;
-	       private String loginName ;		//varchar 50
-	       private String password ;		//varchar 15
-	       private String firstName;		//varchar 25
-	       private String lastName;		//varchar 30
-	       private String title;			//varchar 30
-	       private String company;			//varchar 30
-	       private String address;			//varchar 40
-	       private String city;			//varchar 30
-	       private String zip;				//varchar 15
-	       private String country;			//varchar 30
-	       private String county_council;	//varchar 30
-	       private String emailAddress;	    //varchar 50
-	       private String workPhone;       //varchar 25
-	       private String mobilePhone;     //varchar 25
-	       private String homePhone;       //varchar 25
-	       private int lang_id;
-	       private int user_type;
-	       private boolean active ;		//int
-	       private Date create_date;		//smalldatetime
-
-	       private String langPrefix;
-
-	       private int template_group = -1 ;
-	       private String loginType ;
-
-
-	    */
-
-	    user.setUserId	( Integer.parseInt( user_data[0]  ) ) ;
-	    user.setLoginName	( user_data[1] ) ;
-	    user.setPassword	( user_data[2].trim() ) ;
-	    user.setFirstName	( user_data[3] ) ;
-	    user.setLastName	( user_data[4] ) ;
-	    user.setTitle		( user_data[5] ) ;
-	    user.setCompany			( user_data[6] ) ;
-	    user.setAddress	( user_data[7] ) ;
-	    user.setCity	( user_data[8] ) ;
-	    user.setZip	( user_data[9] ) ;
-	    user.setCountry	( user_data[10] ) ;
-	    user.setCountyCouncil	( user_data[11] ) ;
-	    user.setEmailAddress	( user_data[12] ) ;
-	    user.setLangId	( Integer.parseInt( user_data[13] ) ) ;
-	    user.setUserType	( Integer.parseInt( user_data[15] ) ) ;
-	    user.setActive	( 0 != Integer.parseInt( user_data[16] ) ) ;
-	    user.setCreateDate	( user_data[17] ) ;
-	    user.setLangPrefix	( user_data[14] ) ;
-
-	    String [][] phoneNbr = sqlProcedureMulti("GetUserPhoneNumbers " + user_data[0]) ;
-	    String workPhone = "";
-	    String mobilePhone = "";
-	    String homePhone = "";
-
-	    if ( phoneNbr != null ){
-		for (int i=0; i < phoneNbr.length; i++) {
-		    if ( ("2").equals( phoneNbr[i][3] ) ){
-			workPhone = phoneNbr[i][1];
-		    }
-		    else if ( ("3").equals( phoneNbr[i][3] ) ){
-			mobilePhone = phoneNbr[i][1];
-		    }
-		    else if ( ("1").equals( phoneNbr[i][3] ) ){
-			homePhone = phoneNbr[i][1];
-		    }
-		}
-	    }
-	    user.setWorkPhone		( workPhone );
-	    user.setMobilePhone		( mobilePhone );
-	    user.setHomePhone		( homePhone );
-
-	    String login_password_from_db = user.getPassword() ;
-	    String login_password_from_form = password ;
-
-	    if ( login_password_from_db.equals(login_password_from_form) && user.isActive()){
-		this.updateLogs("->User " + login + " succesfully logged in.") ;
-	    } else if (!user.isActive() ) {
-		this.updateLogs("->User " + (login) + " tried to logged in: User deleted!") ;
-		return null ;
-	    } else {
-		this.updateLogs("->User " + (login) + " tried to logged in: Wrong password!") ;
-		return null ;
-	    }
-
-	} else {
-	    this.updateLogs("->User " + (login) + " tried to logged in: User not found!") ;
-	    return null ;
-	}
-
-	return user ;
+       User result = null;
+       Authenticator auth = new ImcmsAuthenticatorAndUserMapper( this, mainLog );
+       boolean userAuthenticates = auth.authenticate( login, password );
+       if( userAuthenticates ) {
+          UserMapper userMapper = new ImcmsAuthenticatorAndUserMapper(this, mainLog );
+          result = userMapper.getUser(login) ;
+       }
+       return result ;
     }
 
-    /**
-       @return An object representing the user with the given id.
+   /**
+    @return An object representing the user with the given id.
     **/
-    public User getUserById(int userId) {
+   public User getUserById( int userId ) {
 
-	String[] user_data = sqlProcedure("GetUserInfo ", new String[] { ""+userId } ) ;
+      String[] user_data = sqlProcedure( "GetUserInfo ", new String[]{"" + userId} );
 
-	user_data = sqlProcedure("GetUserByLogin ", new String[] { user_data[1] } ) ;
+      user_data = sqlProcedure( "GetUserByLogin ", new String[]{user_data[1]} );
 
-	// if resultSet > 0 a user is found
-	if ( user_data.length > 0 ) {
+      // if resultSet > 0 a user is found
+      if( user_data.length > 0 ) {
 
-	    User user = new User() ;
+         User user = new User();
 
-	    user.setUserId       ( Integer.parseInt( user_data[0]  ) ) ;
-	    user.setLoginName    ( user_data[1] ) ;
-	    user.setPassword     ( user_data[2].trim() ) ;
-	    user.setFirstName    ( user_data[3] ) ;
-	    user.setLastName     ( user_data[4] ) ;
-	    user.setTitle	     ( user_data[5] ) ;
-	    user.setCompany		 ( user_data[6] ) ;
-	    user.setAddress      ( user_data[7] ) ;
-	    user.setCity         ( user_data[8] ) ;
-	    user.setZip          ( user_data[9] ) ;
-	    user.setCountry      ( user_data[10] ) ;
-	    user.setCountyCouncil( user_data[11] ) ;
-	    user.setEmailAddress ( user_data[12] ) ;
-	    user.setLangId       ( Integer.parseInt( user_data[13] ) ) ;
-	    user.setUserType     ( Integer.parseInt( user_data[15] ) ) ;
-	    user.setActive       ( 0 != Integer.parseInt( user_data[16] ) ) ;
-	    user.setCreateDate   ( user_data[17] ) ;
-	    user.setLangPrefix   ( user_data[14] ) ;
+         user.setUserId( Integer.parseInt( user_data[0] ) );
+         user.setLoginName( user_data[1] );
+         user.setPassword( user_data[2].trim() );
+         user.setFirstName( user_data[3] );
+         user.setLastName( user_data[4] );
+         user.setTitle( user_data[5] );
+         user.setCompany( user_data[6] );
+         user.setAddress( user_data[7] );
+         user.setCity( user_data[8] );
+         user.setZip( user_data[9] );
+         user.setCountry( user_data[10] );
+         user.setCountyCouncil( user_data[11] );
+         user.setEmailAddress( user_data[12] );
+         user.setLangId( Integer.parseInt( user_data[13] ) );
+         user.setUserType( Integer.parseInt( user_data[15] ) );
+         user.setActive( 0 != Integer.parseInt( user_data[16] ) );
+         user.setCreateDate( user_data[17] );
+         user.setLangPrefix( user_data[14] );
 
-	    return user ;
+         return user;
 
-	} else {
-	    // No user with that id.
-	    return null ;
-	}
-    }
+      } else {
+         // No user with that id.
+         return null;
+      }
+   }
 
-    // Fixme! public bolean addUser(User user) save a user in db
-    //		  public bolean updateUser(User user) save a user in db
+   // Fixme! public bolean addUser(User user) save a user in db
+   //		  public bolean updateUser(User user) save a user in db
 
 
-    //Check if user has a special adminRole
-    public boolean checkUserAdminrole ( int userId, int adminRole ) {
-	String[] adminrole = sqlProcedure("checkUserAdminrole ", new String[] {"" + userId, "" + adminRole });
-	if ( adminrole.length > 0 ){
-	    if ( (""+adminRole).equals(adminrole[0]) ){
-		return true;
-	    }
-	}
-	return false;
-    }
+   //Check if user has a special adminRole
+   public boolean checkUserAdminrole( int userId, int adminRole ) {
+      String[] adminrole = sqlProcedure( "checkUserAdminrole ", new String[]{"" + userId, "" + adminRole} );
+      if( adminrole.length > 0 ) {
+         if( ("" + adminRole).equals( adminrole[0] ) ) {
+            return true;
+         }
+      }
+      return false;
+   }
 
 
 
