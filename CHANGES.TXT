@@ -39,6 +39,8 @@ Version 1.10.0
       and Document.isVisibleInMenusForUnauthorizedUsers() (Bug 2351)
     * Added accessor Document.setCreator(User creator) (Bug 2388)
     * Added method Document.getDocumentPermissionSetForUser() (Bug 2153)
+    * Added accessors TextDocument.Menu.getSortOrder() and TextDocument.Menu.setSortOrder(int sortOrder) (Bug 2438)
+    * Added method TextDocument.getMenus() (Bug 2438)
 
 = Of interest to developers:
 

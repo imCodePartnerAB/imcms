@@ -16,15 +16,19 @@
     <%
         for (int i = 0; i < categoryTypes.length; i++) {
             CategoryType categoryType = categoryTypes[i];
-            %><li>Category type name "<%= categoryType.getName() %>", id = <%=categoryType.getId()%><ul><%
-            Category[] categories = documentService.getAllCategoriesOfType(categoryType);
-            for (int j = 0; j < categories.length; j++) {
-                Category category = categories[j];
-                %><li>Category name "<%= category.getName() %>", id = <%=category.getId()%><ul><%
-            }
-            %></ul></li><%
+            %>
+            <li>Category type name "<%= categoryType.getName() %>", id = <%=categoryType.getId()%>
+                <ul>
+                    <%
+                    Category[] categories = documentService.getAllCategoriesOfType(categoryType);
+                    for (int j = 0; j < categories.length; j++) {
+                        Category category = categories[j];
+                        %><li>Category name "<%= category.getName() %>", id = <%=category.getId()%></li><%
+                    }
+                    %>
+                </ul>
+            </li><%
         }
-        %></ul></li><%
     %>
     </ul>
     </body>

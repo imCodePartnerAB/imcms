@@ -40,8 +40,7 @@ public class TextDocument extends Document {
 
         Map textFieldsMap = getInternalTextDocument().getTexts();
 
-        return FilterAndConvertValues(textFieldsMap, predicate, fromDomainToAPITransformer);
-
+        return filterAndConvertValues(textFieldsMap, predicate, fromDomainToAPITransformer);
     }
 
     /**
@@ -66,7 +65,7 @@ public class TextDocument extends Document {
 
         Map imagesMap = getInternalTextDocument().getImages();
 
-        return FilterAndConvertValues(imagesMap, predicate, fromDomainToAPITransformer);
+        return filterAndConvertValues(imagesMap, predicate, fromDomainToAPITransformer);
 
     }
 
@@ -93,13 +92,13 @@ public class TextDocument extends Document {
 
         Map includeMap = getInternalTextDocument().getIncludes();
 
-        return FilterAndConvertValues(includeMap, predicate, fromDomainToAPITransformer);
+        return filterAndConvertValues(includeMap, predicate, fromDomainToAPITransformer);
 
     }
 
-    private SortedMap FilterAndConvertValues(Map textFieldsMap, Predicate predicate, Transformer fromDomainToAPITransformer) {
-        Collection nonEmptyTextFields = CollectionUtils.select(textFieldsMap.entrySet(), predicate);
-        final SortedMap sortedMap = TransformedSortedMap.decorate(new TreeMap(), CloneTransformer.INSTANCE, fromDomainToAPITransformer);
+    private SortedMap filterAndConvertValues(Map map, Predicate predicate, Transformer transformer) {
+        Collection nonEmptyTextFields = CollectionUtils.select(map.entrySet(), predicate);
+        final SortedMap sortedMap = TransformedSortedMap.decorate(new TreeMap(), CloneTransformer.INSTANCE, transformer);
 
         for (Iterator iterator = nonEmptyTextFields.iterator(); iterator.hasNext();) {
             Map.Entry entry = (Map.Entry) iterator.next();
@@ -266,6 +265,16 @@ public class TextDocument extends Document {
     public Menu getMenu(int menuIndexInDocument) throws NoPermissionException {
         securityChecker.hasAtLeastDocumentReadPermission(this);
         return new Menu(this, menuIndexInDocument, securityChecker);
+    }
+
+    public SortedMap getMenus() {
+        Map internalMenus = getInternalTextDocument().getMenus() ;
+        SortedMap menus = new TreeMap();
+        for ( Iterator iterator = internalMenus.keySet().iterator(); iterator.hasNext(); ) {
+            Integer menuIndex = (Integer)iterator.next();
+            menus.put( menuIndex, new Menu( this, menuIndex.intValue(), securityChecker)) ;
+        }
+        return menus ;
     }
 
     public static class TextField {
@@ -445,6 +454,14 @@ public class TextDocument extends Document {
                 }
             }
             return (Document[]) documentList.toArray(new Document[documentList.size()]);
+        }
+
+        public void setSortOrder( int sortOrder ) {
+            internalTextDocument.getMenu( menuIndex ).setSortOrder( sortOrder ) ;
+        }
+
+        public int getSortOrder() {
+            return internalTextDocument.getMenu( menuIndex ).getSortOrder();
         }
     }
 }

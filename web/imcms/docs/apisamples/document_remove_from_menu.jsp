@@ -3,8 +3,8 @@
 <%!
     int documentId = 1001 ;
     int menuIndex = 1 ;
-    private String makeLink(int documentId) {
-        return "<a href=\"../servlet/GetDoc?meta_id="+ documentId +"\">document "+ documentId +"</a>" ;
+    private String makeLink(int documentId, HttpServletRequest request) {
+        return "<a href=\""+request.getContextPath()+"/servlet/GetDoc?meta_id="+ documentId +"\">document "+ documentId +"</a>" ;
     }
 
 %>
@@ -19,10 +19,10 @@
     if (documents.length > 0) {
         Document firstDocument = documents[0] ;
         menu.removeDocument(firstDocument);
-        %>Removed the first document (<%= makeLink(firstDocument.getId()) %> with headline <b><%= firstDocument.getHeadline() %></b>)
-        from menu <%= menuIndex %> on <%= makeLink(document.getId()) %>.<br><%
+        %>Removed the first document (<%= makeLink(firstDocument.getId(), request) %> with headline "<b><%= firstDocument.getHeadline() %></b>")
+        from menu <%= menuIndex %> on <%= makeLink(document.getId(), request) %>.<br><%
     } else {
-        %>There are no documents in menu <%= menuIndex %> on <%= makeLink(documentId) %>.<%
+        %>There are no documents in menu <%= menuIndex %> on <%= makeLink(documentId, request) %>.<%
     }
 %>
 

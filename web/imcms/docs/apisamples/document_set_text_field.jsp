@@ -8,7 +8,7 @@
     TextDocument document = documentService.getTextDocument(documentId) ;
 
     int textFieldIndexInDocument = 1;
-    String newHtmlText = "<a href=\"../login/\">Log in!</a><br><a href=\"../apisamples/\">API-samples.</a>";
+    String newHtmlText = "<a href=\""+request.getContextPath()+"/login/\">Log in!</a><br><a href=\""+request.getContextPath()+"/imcms/docs/apisamples/\">API-samples.</a>";
     document.setHtmlTextField( textFieldIndexInDocument, newHtmlText ) ;
 
     textFieldIndexInDocument = 2;
@@ -17,4 +17,4 @@
 
     documentService.saveChanges( document );
 %>
-Done.
+Done. See <a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=<%= documentId %>">document <%= documentId %></a>.

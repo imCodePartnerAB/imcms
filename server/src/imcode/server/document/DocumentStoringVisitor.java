@@ -90,8 +90,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
                 }
             } );
             String sqlInMenuIds = StringUtils.join( menuIds.iterator(), "," );
-            log.debug( sqlInMenuIds );
-
+ 
             String whereClause = "menu_id NOT IN (" + sqlInMenuIds + ")";
             String sqlDeleteUnusedMenuItems = "DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?) AND " + whereClause;
             service.sqlUpdateQuery( sqlDeleteUnusedMenuItems, new String[] {""+textDocument.getId()}  );

@@ -429,11 +429,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveImage</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveImage</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.SaveInclude</servlet-class>
     </servlet>
@@ -921,11 +916,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.DocumentComposer</servlet-name>
         <url-pattern>/servlet/DocumentComposer</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveImage</servlet-name>
-        <url-pattern>/servlet/SaveImage</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -357,6 +357,9 @@
         <mkdir dir="${login}"/>
         <mkdir dir="${webroot}/css"/>
         <mkdir dir="${webroot}/images"/>
+        <mkdir dir="${webroot}/javascript"/>
+        <mkdir dir="${webroot}/jsp"/>
+        <mkdir dir="${webroot}/user"/>
 
         <mkdir dir="${WEB-INF}/includes"/>
         <mkdir dir="${WEB-INF}/logs"/>

@@ -39,7 +39,6 @@ public class AutorebuildingDirectoryIndex implements DocumentIndex {
     }
 
     public synchronized void indexDocument( DocumentDomainObject document ) {
-        log.debug( "indexDocument - called" );
         if ( buildingNewIndex ) {
             documentsToAddToNewIndex.add( document );
         }

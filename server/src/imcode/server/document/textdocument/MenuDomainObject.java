@@ -106,4 +106,11 @@ public class MenuDomainObject {
         return comparator ;
     }
 
+    public void setSortOrder( int sortOrder ) {
+        this.sortOrder = sortOrder;
+    }
+
+    public boolean isEmpty() {
+        return menuItems.isEmpty();
+    }
 }

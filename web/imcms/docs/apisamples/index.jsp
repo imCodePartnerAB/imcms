@@ -39,7 +39,7 @@ In this sample page, the first choice is made; see <%=makeLinks("error.jsp")%> f
 To see what user you are logged in as, <%= makeLinks("logged_in_user.jsp") %><br>
 <br>
 First, make sure that you are logged in, <a href="<%= request.getContextPath() %>/login/"><%= request.getContextPath() %>/login/</a><br>
-Log out (and become an non-logged in user), <a href="../../../servlet/LogOut">../../../servlet/LogOut</a>
+Log out (and become an non-logged in user), <a href="<%= request.getContextPath() %>/servlet/LogOut"><%= request.getContextPath() %>/servlet/LogOut</a>
 </p>
 
 <h3>Users</h3>
@@ -54,7 +54,7 @@ List users with different roles, <%= makeLinks("role_get_user_with_role.jsp") %>
 
 <h3>Document</h3>
 The following samples modify document 1001.<br>
-It currently looks like this, <a href="../../../servlet/GetDoc?meta_id=1001">../../../servlet/GetDoc?meta_id=1001</a><br>
+It currently looks like this, <a href="<%= request.getContextPath() %>/servlet/GetDoc?meta_id=1001"><%= request.getContextPath() %>/servlet/GetDoc?meta_id=1001</a><br>
 <br>
 Get the information about the document, <%= makeLinks("document_get_document_info.jsp") %><br>
 Change the document information, <%= makeLinks("document_change_document_info.jsp") %><br>
